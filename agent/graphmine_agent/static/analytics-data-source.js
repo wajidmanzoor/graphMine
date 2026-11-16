@@ -229,9 +229,9 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     projection.onchange = () => { describeProjection(); invalidate(); };
     sharedMovies.onclick = () => {
       editor.value = [
-        "MATCH (u:GM_MovieLens32M:User)",
+        "MATCH (u:User)",
         "WITH u ORDER BY u.userId LIMIT $userLimit",
-        "MATCH (u)-[:RATED]->(m:GM_MovieLens32M:Movie)",
+        "MATCH (u)-[:RATED]->(m:Movie)",
         "WITH m, collect(DISTINCT u) AS users",
         "UNWIND users AS a",
         "UNWIND users AS b",

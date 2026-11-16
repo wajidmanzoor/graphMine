@@ -37,6 +37,12 @@ Development and testing start with empty database-connection configurations.
 Use disposable test databases or separately provisioned read-only benchmark
 connections; never copy production write credentials into these configurations.
 
+The development benchmark registry adds independent Neo4j connections only after
+their dataset verification passes. Its registry, instance-root and private
+password-file paths are configured only in the development environment. See
+[Database workspace](DATABASE_CYPHER_WORKSPACE.md#benchmark-datasets-and-schemas)
+for ports, storage, loading gates and the deferred Stack Overflow dataset.
+
 Production keeps its existing `/data/labdata/wajid/graphmine_data/store` data.
 Studio's production workspace and dataset root are under
 `/data/labdata/wajid/graphmine_data/dataset-studio/`. Development and testing data

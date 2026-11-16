@@ -1,0 +1,2460 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Neo4j Yelp Implementation | Workloads</title>
+        <link href="../style.css" rel="stylesheet" />
+        <style>
+            /* Main Tab Navigation Styles */
+            .tab-container {
+                display: flex;
+                gap: 5px;
+                margin: 20px 0 0 0;
+                border-bottom: 2px solid #f41c40;
+            }
+
+            .tab-link {
+                background: #f1f1f1;
+                border: none;
+                outline: none;
+                padding: 12px 25px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: bold;
+                transition: 0.3s;
+                border-radius: 8px 8px 0 0;
+                color: #555;
+            }
+
+            .tab-link:hover {
+                background-color: #ddd;
+            }
+
+            .tab-link.active {
+                background-color: #990000;
+                color: white;
+            }
+
+            /* Nested (Sub-sub) Tab Styles for Queries */
+            .sub-tab-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 15px;
+                margin: 15px 0;
+                background: #f8fafc;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            .query-category-group {
+                background: white;
+                padding: 12px;
+                border-radius: 6px;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .query-category-title {
+                font-size: 13px;
+                font-weight: bold;
+                color: #1e293b;
+                border-bottom: 2px solid #e2e8f0;
+                padding-bottom: 5px;
+                margin-bottom: 5px;
+            }
+
+            .query-category-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .no-queries-msg {
+                font-size: 12px;
+                color: #64748b;
+                font-style: italic;
+                padding: 5px 0;
+            }
+
+            .sub-tab-link {
+                background: white;
+                border: 1px solid #e2e8f0;
+                padding: 6px 12px;
+                cursor: pointer;
+                font-size: 13px;
+                border-radius: 6px;
+                transition: all 0.2s;
+                min-width: 40px;
+                text-align: center;
+            }
+
+            .sub-tab-link:hover {
+                border-color: #f41c40;
+                color: #990000;
+            }
+
+            .sub-tab-link.active {
+                background: #fff1f2;
+                border-color: #f41c40;
+                color: #990000;
+                font-weight: bold;
+            }
+
+            .query-subcategory {
+                font-size: 13px;
+                color: #475569;
+                margin: 8px 0 15px 0;
+                background: #f1f5f9;
+                padding: 6px 12px;
+                border-radius: 4px;
+                display: inline-block;
+                border-left: 3px solid #f41c40;
+            }
+
+            .gql-unsupported-note {
+                background: #fef2f2;
+                border-left: 3px solid #ef4444;
+                color: #991b1b;
+                padding: 10px 12px;
+                border-radius: 4px;
+                font-size: 13px;
+                margin-top: 10px;
+            }
+
+            /* Content Visibility */
+            .tab-content,
+            .sub-tab-content {
+                display: none;
+                animation: fadeIn 0.3s;
+            }
+
+            .active-content {
+                display: block;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+            #schema-section {
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            h4 {
+                scroll-margin-top: 80px;
+            }
+
+            #data-loading-header {
+                scroll-margin-top: 80px;
+            }
+
+            .tab-container,
+            #loading-tab-header {
+                scroll-margin-top: 80px;
+            }
+
+            .back-to-code-nav {
+                position: fixed;
+                right: 24px;
+                bottom: 24px;
+                z-index: 1000;
+                padding: 10px 16px;
+                border: none;
+                border-radius: 999px;
+                background: #990000;
+                color: white;
+                box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition:
+                    background-color 0.2s,
+                    transform 0.2s,
+                    opacity 0.2s,
+                    visibility 0.2s;
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .back-to-code-nav.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .back-to-code-nav:hover {
+                background: #6d0808;
+                transform: translateY(-2px);
+            }
+
+            @media (max-width: 600px) {
+                .back-to-code-nav {
+                    right: 12px;
+                    bottom: 12px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav>
+            <div class="container">
+                <a class="site-title" href="../index.html">
+                    <h1>PropG<span>Bench</span></h1>
+                </a>
+                <ul>
+                    <li class="dropdown">
+                        <a class="dropbtn" href="../datasets.html">Datasets ▾</a>
+                        <div class="dropdown-content">
+                            <a href="../datasets/yelp.html">Yelp</a>
+                            <a href="../datasets/ml32m.html">MovieLens 32M</a>
+                            <a href="../datasets/mlgenome.html">MovieLens Tag Genome</a>
+                            <a href="../datasets/amazon.html">Amazon</a>
+                            <a href="../datasets/stackoverflow.html">Stack Overflow</a>
+                            <a href="../datasets/ontime.html">OnTime</a>
+                            <a href="../datasets/fars.html">FARS</a>
+                            <a href="../datasets/snb.html">LDBC SNB</a>
+                        </div>
+                    </li>
+                    <li><a href="../download.html">Download</a></li>
+                    <li><a href="../documentation.html">Documentation</a></li>
+                    <li><a href="../publications.html">Publications</a></li>
+                    <li><a href="../team.html">Team</a></li>
+                </ul>
+            </div>
+        </nav>
+        <header>
+            <div class="container">
+                <a class="btn-secondary" href="../datasets/yelp.html">← Back to Yelp Dataset</a>
+                <h2>Neo4j Implementation</h2>
+                <p>Deployment and Query logic for Neo4j Community 5.26.0.</p>
+            </div>
+        </header>
+        <main class="container">
+            <section>
+                <h3>Schema Diagram and Graph Statistics</h3>
+
+                <div class="chart-container">
+                    <img alt="Yelp Neo4j Schema" class="result-chart" src="../imgs/yelpneo4jschema.png" />
+                </div>
+                <div class="dataset-stats-grid">
+                    <div class="dataset-stat-group">
+                        <h4>Node Statistics</h4>
+                        <div class="table-wrapper">
+                            <table class="dataset-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Node Label</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Business</td>
+                                        <td>150,346</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Category</td>
+                                        <td>1,311</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Review</td>
+                                        <td>6,990,247</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tip</td>
+                                        <td>908,915</td>
+                                    </tr>
+                                    <tr>
+                                        <td>User</td>
+                                        <td>1,987,897</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="dataset-stat-group">
+                        <h4>Edge Statistics</h4>
+                        <div class="table-wrapper">
+                            <table class="dataset-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Relationship</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>(:Tip)-[:FOR]-(:Business)</td>
+                                        <td>908,915</td>
+                                    </tr>
+                                    <tr>
+                                        <td>(:User)-[:FRIEND]-(:User)</td>
+                                        <td>14,611,748</td>
+                                    </tr>
+                                    <tr>
+                                        <td>(:Business)-[:IN_CATEGORY]-(:Category)</td>
+                                        <td>668,592</td>
+                                    </tr>
+                                    <tr>
+                                        <td>(:Review)-[:REVIEWS]-(:Business)</td>
+                                        <td>6,990,247</td>
+                                    </tr>
+                                    <tr>
+                                        <td>(:User)-[:TIPPED]-(:Tip)</td>
+                                        <td>908,915</td>
+                                    </tr>
+                                    <tr>
+                                        <td>(:User)-[:WROTE]-(:Review)</td>
+                                        <td>6,990,247</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <p>Disk space: 10.64 GiB</p>
+                <p>Total import time: 1930.66 Seconds</p>
+            </section>
+            <div id="loading-tab-header" class="tab-container">
+                <button class="back-to-code-nav" type="button" onclick="scrollToId('loading-tab-header')">
+                    Code block menu
+                </button>
+
+                <button class="tab-link active" onclick="openTab(event, 'loading-tab')">Data Loading</button>
+                <button class="tab-link" onclick="openTab(event, 'query-tab')">Queries</button>
+            </div>
+            <div class="tab-content active-content" id="loading-tab">
+                <section>
+                    <h3>Data Loading</h3>
+                    <div class="sub-tab-container">
+                        <button class="sub-tab-link" onclick="scrollToId('loading-intro')">Overview</button>
+                        <button class="sub-tab-link" onclick="scrollToId('create-schema')">Create Indices</button>
+                        <button class="sub-tab-link" onclick="scrollToId('vertex-defs')">Define Nodes</button>
+                        <button class="sub-tab-link" onclick="scrollToId('edge-defs')">Define Edges</button>
+                    </div>
+                    <h4 id="loading-intro">Overview</h4>
+                    <p>
+                        Data import is handled in two stages: node creation followed by sequential edge ingestion. We
+                        put all the csv files under the data import directory of Neo4j. This directory can be set in the
+                        neo4j.conf file using the parameter 'dbms.directories.import'.
+                    </p>
+                    <p>
+                        For the implementation of Yelp Open Dataset on Neo4j, we used the original files downloaded from
+                        their website. We will read the JSON files unpacked from the downloaded file to complete node
+                        and edge imports.
+                    </p>
+                    <h4 id="create-schema">Create Indices</h4>
+                    <p>
+                        To speed up the import process and future queries, we create B+-tree indices for some node
+                        labels.
+                    </p>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre class="code-block cypher-ui"><span class="sh-cmt">// For Users</span>
+<span class="cy-kw">CREATE INDEX</span> user_user_id_index <span class="cy-kw">FOR</span> (u<span class="cy-lab">:User</span>) <span class="cy-kw">ON</span> (u.<span class="cy-prop">user_id</span>);
+<span class="sh-cmt">// For Businesses</span>
+<span class="cy-kw">CREATE INDEX</span> business_id_index <span class="cy-kw">FOR</span> (b<span class="cy-lab">:Business</span>) <span class="cy-kw">ON</span> (b.<span class="cy-prop">id</span>);</pre>
+                    </div>
+                    <h4 id="vertex-defs">Define Nodes</h4>
+                    <p>First we define the <code>Business</code> nodes.</p>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre
+                            class="code-block cypher-ui"
+                        ><span class="cy-kw">CALL</span> <span class="cy-func">apoc.periodic.iterate</span>(
+  <span class="cy-call-str">"CALL apoc.load.json('file:///yelp/yelp_academic_dataset_business.json') YIELD value"</span>,
+  "CREATE (b<span class="cy-lab">:Business</span> {
+      <span class="cy-prop">id</span>: value.business_id,
+      <span class="cy-prop">name</span>: value.name,
+      <span class="cy-prop">address</span>: value.address,
+      <span class="cy-prop">city</span>: value.city,
+      <span class="cy-prop">state</span>: value.state,
+      <span class="cy-prop">postal_code</span>: value.postal_code,
+      <span class="cy-prop">latitude</span>: value.latitude,
+      <span class="cy-prop">longitude</span>: value.longitude,
+      <span class="cy-prop">is_open</span>: value.is_open,
+      <span class="cy-prop">categories</span>: value.categories,
+      <span class="cy-prop">rating</span>: value.stars,
+      <span class="cy-prop">review_count</span>: value.review_count
+    })",
+  {<span class="cy-prop">batchSize</span>: <span class="cy-num">1000</span>, <span class="cy-prop">parallel</span>: <span class="cy-num">true</span>}
+)</pre>
+                    </div>
+                    <p>Then we define the <code>User</code> nodes.</p>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre
+                            class="code-block"
+                        ><span class="cy-kw">CALL</span> <span class="cy-func">apoc.periodic.iterate</span>(
+  <span class="cy-call-str">"CALL apoc.load.json('file:///yelp/yelp_academic_dataset_user.json') YIELD value"</span>,
+  "CREATE (u<span class="cy-lab">:User</span> {
+      <span class="cy-prop">user_id</span>: value.user_id,
+      <span class="cy-prop">name</span>: value.name,
+      <span class="cy-prop">review_count</span>: value.review_count,
+      <span class="cy-prop">yelping_since</span>: value.yelping_since,
+      <span class="cy-prop">friends</span>: value.friends,
+      <span class="cy-prop">useful</span>: value.useful,
+      <span class="cy-prop">funny</span>: value.funny,
+      <span class="cy-prop">cool</span>: value.cool,
+      <span class="cy-prop">fans</span>: value.fans,
+      <span class="cy-prop">elite</span>: value.elite,
+      <span class="cy-prop">average_stars</span>: value.average_stars,
+      <span class="cy-prop">compliment_hot</span>: value.compliment_hot,
+      <span class="cy-prop">compliment_more</span>: value.compliment_more,
+      <span class="cy-prop">compliment_profile</span>: value.compliment_profile,
+      <span class="cy-prop">compliment_cute</span>: value.compliment_cute,
+      <span class="cy-prop">compliment_list</span>: value.compliment_list,
+      <span class="cy-prop">compliment_note</span>: value.compliment_note,
+      <span class="cy-prop">compliment_plain</span>: value.compliment_plain,
+      <span class="cy-prop">compliment_cool</span>: value.compliment_cool,
+      <span class="cy-prop">compliment_funny</span>: value.compliment_funny,
+      <span class="cy-prop">compliment_writer</span>: value.compliment_writer,
+      <span class="cy-prop">compliment_photos</span>: value.compliment_photos
+    })",
+  {<span class="cy-prop">batchSize</span>: <span class="cy-num">1000</span>, <span class="cy-prop">parallel</span>: <span class="cy-num">true</span>}
+)</pre>
+                    </div>
+                    <h4 id="edge-defs">Define Edges</h4>
+                    <p>Then we define the <code>REVIEW</code> and <code>WROTE</code> edges.</p>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre
+                            class="code-block"
+                        ><span class="cy-kw">CALL</span> <span class="cy-func">apoc.periodic.iterate</span>(
+  <span class="cy-call-str">"CALL apoc.load.json('file:///yelp/yelp_academic_dataset_review.json') YIELD value"</span>,
+  "
+  <span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: value.user_id})
+  <span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span> {<span class="cy-prop">id</span>: value.business_id})
+  CREATE (r<span class="cy-lab">:Review</span> {
+    <span class="cy-prop">id</span>: value.review_id,
+    <span class="cy-prop">stars</span>: value.stars,
+    <span class="cy-prop">date</span>: value.date,
+    <span class="cy-prop">text</span>: value.text,
+    <span class="cy-prop">useful</span>: value.useful,
+    <span class="cy-prop">funny</span>: value.funny,
+    <span class="cy-prop">cool</span>: value.cool
+  })
+  CREATE (u)-[<span class="cy-rel">:WROTE</span>]-&gt;(r)
+  CREATE (r)-[<span class="cy-rel">:REVIEWS</span>]-&gt;(b)
+  ",
+  {<span class="cy-prop">batchSize</span>: <span class="cy-num">1000</span>, <span class="cy-prop">parallel</span>: <span class="cy-num">false</span>}
+)</pre>
+                    </div>
+                    <p>
+                        Then we define the <code>TIP</code> and <code>FOR</code> edges. We would also create
+                        <code>Tip</code> nodes during the process.
+                    </p>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre
+                            class="code-block cypher-ui"
+                        ><span class="cy-kw">CALL</span> <span class="cy-func">apoc.periodic.iterate</span>(
+  <span class="cy-call-str">"CALL apoc.load.json('file:///yelp/yelp_academic_dataset_tip.json') YIELD value"</span>,
+  "
+  <span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: value.user_id})
+  <span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span> {<span class="cy-prop">id</span>: value.business_id})
+  CREATE (t<span class="cy-lab">:Tip</span> {
+    <span class="cy-prop">text</span>: value.text,
+    <span class="cy-prop">date</span>: value.date,
+    <span class="cy-prop">compliment_count</span>: value.compliment_count
+  })
+  CREATE (u)-[<span class="cy-rel">:TIPPED</span>]-&gt;(t)
+  CREATE (t)-[<span class="cy-rel">:FOR</span>]-&gt;(b)
+  ",
+  {<span class="cy-prop">batchSize</span>: <span class="cy-num">1000</span>, <span class="cy-prop">parallel</span>: <span class="cy-num">false</span>}
+)</pre>
+                    </div>
+
+                    <p>
+                        Then we define the <code>IN_CATEGORY</code> edges. We would create <code>Category</code> nodes
+                        during the process.
+                    </p>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre class="code-block cypher-ui">
+CALL apoc.periodic.iterate(
+  "MATCH (b:Business) WHERE b.categories IS NOT NULL RETURN b",
+  "
+  WITH b, apoc.text.split(b.categories, ',') AS categoryList
+  UNWIND categoryList AS rawCategory
+  WITH b, trim(rawCategory) AS category
+  MERGE (c:Category {name: category})
+  CREATE (b)-[:IN_CATEGORY]->(c)
+  ",
+  {batchSize: 1000, parallel: false})</pre
+                        >
+                    </div>
+
+                    <p>Then we define the <code>FRIEND</code> edges.</p>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre class="code-block cypher-ui">
+CALL apoc.periodic.iterate(
+  "MATCH (u:User) WHERE u.friends IS NOT NULL RETURN u",
+  "
+  WITH u, apoc.text.split(u.friends, ', ') AS friendIds
+  UNWIND friendIds AS friendId
+  MATCH (f:User {user_id: friendId})
+  CREATE(u)-[:FRIEND]->(f)
+  ",
+  {batchSize: 10000, parallel: false})</pre
+                        >
+                    </div>
+                </section>
+            </div>
+            <div class="tab-content" id="query-tab">
+                <section>
+                    <h3>Queries</h3>
+                    <p>Select a query below to view its logic and description.</p>
+                    <div class="sub-tab-container">
+                        <div class="query-category-group">
+                            <div class="query-category-title">1. Neighborhood</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link active" onclick="openSubTab(event, 'q1-content')">
+                                    Q1
+                                </button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q2-content')">Q2</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q3-content')">Q3</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q4-content')">Q4</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">2. Path</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q5-content')">Q5</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q6-content')">Q6</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q7-content')">Q7</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q8-content')">Q8</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q9-content')">Q9</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">3. Pattern</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q10-content')">Q10</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q11-content')">Q11</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q12-content')">Q12</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q13-content')">Q13</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q14-content')">Q14</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q15-content')">Q15</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">4. Aggregation</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q16-content')">Q16</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q17-content')">Q17</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q18-content')">Q18</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q19-content')">Q19</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q20-content')">Q20</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q21-content')">Q21</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q22-content')">Q22</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q23-content')">Q23</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q24-content')">Q24</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">5. Analytics</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q25-content')">Q25</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q26-content')">Q26</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q27-content')">Q27</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q28-content')">Q28</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q29-content')">Q29</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">6. Hybrid</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q30-content')">Q30</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q31-content')">Q31</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q32-content')">Q32</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">7. Others</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q33-content')">Q33</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q34-content')">Q34</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q35-content')">Q35</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q36-content')">Q36</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q37-content')">Q37</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q38-content')">Q38</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q39-content')">Q39</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q40-content')">Q40</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content active-content" id="q1-content">
+                        <h4>Q1. Find the friends of all "John"s</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.1 One-Hop Neighbors</div>
+                        <p>This query retrieves the name and user ID of up to 20 friends of users named "John".</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (<span class="cy-lab">:User</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"John"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(friend)
+<span class="cy-kw">RETURN</span> friend.<span class="cy-prop">name</span>, friend.<span class="cy-prop">user_id</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (<span class="cy-lab">:User</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"John"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(friend)
+<span class="cy-kw">RETURN</span> friend.<span class="cy-prop">name</span>, friend.<span class="cy-prop">user_id</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q2-content">
+                        <h4>Q2. Find all users within two friend hops of a given user</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.2 k-Hop Neighborhood</div>
+                        <p>
+                            This query finds all distinct users reachable within one or two FRIEND hops from a starting
+                            user.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (start<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>*<span class="cy-num">1</span>..<span class="cy-num">2</span>]-(neighbor<span class="cy-lab">:User</span>)
+<span class="cy-kw">WHERE</span> neighbor &lt;&gt; start
+<span class="cy-kw">RETURN DISTINCT</span> neighbor.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> name, neighbor.<span class="cy-prop">user_id</span> <span class="cy-kw">AS</span> user_id
+<span class="cy-kw">ORDER BY</span> name, user_id
+<span class="cy-kw">LIMIT</span> <span class="cy-num">100</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = (start<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-{<span class="cy-num">1</span>,<span class="cy-num">2</span>}(neighbor<span class="cy-lab">:User</span>)
+<span class="cy-kw">WHERE</span> neighbor != start
+<span class="cy-kw">RETURN DISTINCT</span> neighbor.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> name, neighbor.<span class="cy-prop">user_id</span> <span class="cy-kw">AS</span> user_id
+<span class="cy-kw">ORDER BY</span> name, user_id
+<span class="cy-kw">LIMIT</span> <span class="cy-num">100</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q3-content">
+                        <h4>Q3. Get 3-hop neighbors of a given user</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.3 Exact kth-Hop Neighbors</div>
+                        <p>
+                            This query identifies the unique names and user IDs of all neighbors exactly three
+                            friend-connections away from a given user.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (start<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>*<span class="cy-num">3</span>]-(neighbor)
+<span class="cy-kw">WHERE</span> neighbor.<span class="cy-prop">user_id</span> &lt;&gt; <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>
+<span class="cy-kw">RETURN DISTINCT</span> neighbor.<span class="cy-prop">name</span>, neighbor.<span class="cy-prop">user_id</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (start<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-{<span class="cy-num">3</span>}(neighbor)
+<span class="cy-kw">WHERE</span> neighbor.<span class="cy-prop">user_id</span> != <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>
+<span class="cy-kw">RETURN DISTINCT</span> neighbor.<span class="cy-prop">name</span>, neighbor.<span class="cy-prop">user_id</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q4-content">
+                        <h4>Q4. Find high-review-count users within two friend hops</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T1.4 Neighborhood with Property Filter
+                        </div>
+                        <p>
+                            This query finds distinct users within one or two FRIEND hops of a starting user, filtered
+                            to users with at least 100 reviews and an average rating of 4.0 or higher.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (start<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>*<span class="cy-num">1</span>..<span class="cy-num">2</span>]-(neighbor<span class="cy-lab">:User</span>)
+<span class="cy-kw">WHERE</span> neighbor &lt;&gt; start
+  <span class="cy-kw">AND</span> neighbor.<span class="cy-prop">review_count</span> &gt;= <span class="cy-num">100</span>
+  <span class="cy-kw">AND</span> neighbor.<span class="cy-prop">average_stars</span> &gt;= <span class="cy-num">4.0</span>
+<span class="cy-kw">RETURN DISTINCT</span> neighbor.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> name,
+       neighbor.<span class="cy-prop">user_id</span> <span class="cy-kw">AS</span> user_id,
+       neighbor.<span class="cy-prop">review_count</span> <span class="cy-kw">AS</span> review_count,
+       neighbor.<span class="cy-prop">average_stars</span> <span class="cy-kw">AS</span> average_stars
+<span class="cy-kw">ORDER BY</span> review_count <span class="cy-kw">DESC</span>, average_stars <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">100</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = (start<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-{<span class="cy-num">1</span>,<span class="cy-num">2</span>}(neighbor<span class="cy-lab">:User</span>)
+<span class="cy-kw">WHERE</span> neighbor != start
+  <span class="cy-kw">AND</span> neighbor.<span class="cy-prop">review_count</span> &gt;= <span class="cy-num">100</span>
+  <span class="cy-kw">AND</span> neighbor.<span class="cy-prop">average_stars</span> &gt;= <span class="cy-num">4.0</span>
+<span class="cy-kw">RETURN DISTINCT</span> neighbor.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> name,
+       neighbor.<span class="cy-prop">user_id</span> <span class="cy-kw">AS</span> user_id,
+       neighbor.<span class="cy-prop">review_count</span> <span class="cy-kw">AS</span> review_count,
+       neighbor.<span class="cy-prop">average_stars</span> <span class="cy-kw">AS</span> average_stars
+<span class="cy-kw">ORDER BY</span> review_count <span class="cy-kw">DESC</span>, average_stars <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">100</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q5-content">
+                        <h4>Q5. Find open, highly rated businesses in Pennsylvania</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.1 Node Filtering (Single Node Paths)
+                        </div>
+                        <p>
+                            This query filters individual Business nodes by state, open status, rating, and review count
+                            without traversing edges.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">state</span> = <span class="cy-call-str">"PA"</span>
+  <span class="cy-kw">AND</span> b.<span class="cy-prop">is_open</span> = <span class="cy-num">1</span>
+  <span class="cy-kw">AND</span> b.<span class="cy-prop">rating</span> &gt;= <span class="cy-num">4.5</span>
+  <span class="cy-kw">AND</span> b.<span class="cy-prop">review_count</span> &gt;= <span class="cy-num">100</span>
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span>, b.<span class="cy-prop">city</span>, b.<span class="cy-prop">rating</span>, b.<span class="cy-prop">review_count</span>
+<span class="cy-kw">ORDER BY</span> b.<span class="cy-prop">rating</span> <span class="cy-kw">DESC</span>, b.<span class="cy-prop">review_count</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">state</span> = <span class="cy-call-str">"PA"</span>
+  <span class="cy-kw">AND</span> b.<span class="cy-prop">is_open</span> = <span class="cy-num">1</span>
+  <span class="cy-kw">AND</span> b.<span class="cy-prop">rating</span> &gt;= <span class="cy-num">4.5</span>
+  <span class="cy-kw">AND</span> b.<span class="cy-prop">review_count</span> &gt;= <span class="cy-num">100</span>
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span>, b.<span class="cy-prop">city</span>, b.<span class="cy-prop">rating</span>, b.<span class="cy-prop">review_count</span>
+<span class="cy-kw">ORDER BY</span> b.<span class="cy-prop">rating</span> <span class="cy-kw">DESC</span>, b.<span class="cy-prop">review_count</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q6-content">
+                        <h4>Q6. Find useful five-star review edges</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T2.2 Edge Filtering</div>
+                        <p>
+                            The Yelp Neo4j schema stores review attributes on Review nodes that mediate User-to-Business
+                            edges, so this query filters those edge records by rating and usefulness.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(r<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> r.<span class="cy-prop">stars</span> = <span class="cy-num">5</span>
+  <span class="cy-kw">AND</span> r.<span class="cy-prop">useful</span> &gt;= <span class="cy-num">10</span>
+<span class="cy-kw">RETURN</span> u.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> user_name,
+       r.<span class="cy-prop">id</span> <span class="cy-kw">AS</span> review_id,
+       r.<span class="cy-prop">stars</span> <span class="cy-kw">AS</span> stars,
+       r.<span class="cy-prop">useful</span> <span class="cy-kw">AS</span> useful_votes,
+       b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> business_name,
+       b.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> city
+<span class="cy-kw">ORDER BY</span> useful_votes <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(r<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> r.<span class="cy-prop">stars</span> = <span class="cy-num">5</span>
+  <span class="cy-kw">AND</span> r.<span class="cy-prop">useful</span> &gt;= <span class="cy-num">10</span>
+<span class="cy-kw">RETURN</span> u.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> user_name,
+       r.<span class="cy-prop">id</span> <span class="cy-kw">AS</span> review_id,
+       r.<span class="cy-prop">stars</span> <span class="cy-kw">AS</span> stars,
+       r.<span class="cy-prop">useful</span> <span class="cy-kw">AS</span> useful_votes,
+       b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> business_name,
+       b.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> city
+<span class="cy-kw">ORDER BY</span> useful_votes <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q7-content">
+                        <h4>Q7. Check whether Steven can reach Niki within four friend hops</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.3 Reachability between Two Nodes
+                        </div>
+                        <p>This query tests whether a bounded friend path exists between two User nodes.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (source<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>}),
+      (target<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"WwulXySQN8t2hwqH_yWurA"</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-kw">EXISTS</span> {
+  <span class="cy-kw">MATCH</span> (source)-[<span class="cy-lab">:FRIEND</span>*<span class="cy-num">1</span>..<span class="cy-num">4</span>]-(target)
+} <span class="cy-kw">AS</span> reachable</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = <span class="cy-kw">ANY</span> (source<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-{<span class="cy-num">1</span>,<span class="cy-num">4</span>}(target<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"WwulXySQN8t2hwqH_yWurA"</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-kw">true</span> <span class="cy-kw">AS</span> reachable</pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q8-content">
+                        <h4>Q8. Find the shortest friend path between Steven and Niki</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T2.4 Shortest Path</div>
+                        <p>This query returns the shortest bounded path connecting two users in the friend graph.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = <span class="cy-func">shortestPath</span>(
+  (<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>*<span class="cy-num">1</span>..<span class="cy-num">6</span>]-(<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"WwulXySQN8t2hwqH_yWurA"</span>})
+)
+<span class="cy-kw">RETURN</span> [n <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(p) | n.<span class="cy-prop">name</span>] <span class="cy-kw">AS</span> user_path, <span class="cy-func">length</span>(p) <span class="cy-kw">AS</span> hop_count</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = <span class="cy-kw">SHORTEST</span> (<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-{<span class="cy-num">1</span>,<span class="cy-num">6</span>}(<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"WwulXySQN8t2hwqH_yWurA"</span>})
+<span class="cy-kw">RETURN</span> p</pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q9-content">
+                        <h4>Q9. Enumerate simple friend paths between Steven and Niki up to length three</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.5 All Simple Paths up to Length k
+                        </div>
+                        <p>This query materializes acyclic friend paths up to three hops between two users.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = (<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>*<span class="cy-num">1</span>..<span class="cy-num">3</span>]-(<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"WwulXySQN8t2hwqH_yWurA"</span>})
+<span class="cy-kw">WHERE</span> <span class="cy-kw">all</span>(i <span class="cy-kw">IN</span> <span class="cy-func">range</span>(<span class="cy-num">0</span>, <span class="cy-func">size</span>(<span class="cy-func">nodes</span>(p)) - <span class="cy-num">1</span>)
+          <span class="cy-kw">WHERE</span> <span class="cy-kw">single</span>(n <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(p) <span class="cy-kw">WHERE</span> n = <span class="cy-func">nodes</span>(p)[i]))
+<span class="cy-kw">RETURN</span> [n <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(p) | n.<span class="cy-prop">user_id</span>] <span class="cy-kw">AS</span> user_ids, <span class="cy-func">length</span>(p) <span class="cy-kw">AS</span> hop_count
+<span class="cy-kw">ORDER BY</span> hop_count <span class="cy-kw">ASC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = <span class="cy-kw">ACYCLIC</span> (<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"WwulXySQN8t2hwqH_yWurA"</span>})
+<span class="cy-kw">RETURN</span> p
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q10-content">
+                        <h4>Q10. Find friend triangles around Steven</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.1 Triangle Detection</div>
+                        <p>This query finds three-user cycles in the friend graph anchored at Steven.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (a<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-(b<span class="cy-lab">:User</span>),
+      (b)-[<span class="cy-lab">:FRIEND</span>]-(c<span class="cy-lab">:User</span>),
+      (c)-[<span class="cy-lab">:FRIEND</span>]-(a)
+<span class="cy-kw">WHERE</span> a &lt;&gt; b <span class="cy-kw">AND</span> b &lt;&gt; c <span class="cy-kw">AND</span> a &lt;&gt; c
+<span class="cy-kw">RETURN DISTINCT</span> b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> friend_one, c.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> friend_two
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (a<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-(b<span class="cy-lab">:User</span>),
+      (b)-[<span class="cy-lab">:FRIEND</span>]-(c<span class="cy-lab">:User</span>),
+      (c)-[<span class="cy-lab">:FRIEND</span>]-(a)
+<span class="cy-kw">WHERE</span> a &lt;&gt; b <span class="cy-kw">AND</span> b &lt;&gt; c <span class="cy-kw">AND</span> a &lt;&gt; c
+<span class="cy-kw">RETURN DISTINCT</span> b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> friend_one, c.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> friend_two
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q11-content">
+                        <h4>Q11. Find friend squares around Steven</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.2 Square Detection</div>
+                        <p>This query searches for four-user cycles that include Steven.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (a<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-(b<span class="cy-lab">:User</span>),
+      (b)-[<span class="cy-lab">:FRIEND</span>]-(c<span class="cy-lab">:User</span>),
+      (c)-[<span class="cy-lab">:FRIEND</span>]-(d<span class="cy-lab">:User</span>),
+      (d)-[<span class="cy-lab">:FRIEND</span>]-(a)
+<span class="cy-kw">WHERE</span> a &lt;&gt; b <span class="cy-kw">AND</span> a &lt;&gt; c <span class="cy-kw">AND</span> a &lt;&gt; d
+  <span class="cy-kw">AND</span> b &lt;&gt; c <span class="cy-kw">AND</span> b &lt;&gt; d <span class="cy-kw">AND</span> c &lt;&gt; d
+<span class="cy-kw">RETURN DISTINCT</span> b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> first_friend, c.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> bridge_friend, d.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> second_friend
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (a<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-(b<span class="cy-lab">:User</span>),
+      (b)-[<span class="cy-lab">:FRIEND</span>]-(c<span class="cy-lab">:User</span>),
+      (c)-[<span class="cy-lab">:FRIEND</span>]-(d<span class="cy-lab">:User</span>),
+      (d)-[<span class="cy-lab">:FRIEND</span>]-(a)
+<span class="cy-kw">WHERE</span> a &lt;&gt; b <span class="cy-kw">AND</span> a &lt;&gt; c <span class="cy-kw">AND</span> a &lt;&gt; d
+  <span class="cy-kw">AND</span> b &lt;&gt; c <span class="cy-kw">AND</span> b &lt;&gt; d <span class="cy-kw">AND</span> c &lt;&gt; d
+<span class="cy-kw">RETURN DISTINCT</span> b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> first_friend, c.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> bridge_friend, d.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> second_friend
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q12-content">
+                        <h4>Q12. Find high-review-count friend stars</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.3 Star Pattern Query</div>
+                        <p>This query finds users who are connected to many prolific reviewer friends.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (center<span class="cy-lab">:User</span>)-[<span class="cy-lab">:FRIEND</span>]-&gt;(friend<span class="cy-lab">:User</span>)
+<span class="cy-kw">WHERE</span> friend.<span class="cy-prop">review_count</span> &gt;= <span class="cy-num">100</span>
+<span class="cy-kw">RETURN</span> center.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> center_name,
+       center.<span class="cy-prop">user_id</span> <span class="cy-kw">AS</span> center_id,
+       <span class="cy-func">count</span>(friend) <span class="cy-kw">AS</span> prolific_friend_count
+<span class="cy-kw">ORDER BY</span> prolific_friend_count <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (center<span class="cy-lab">:User</span>)-[<span class="cy-lab">:FRIEND</span>]-&gt;(friend<span class="cy-lab">:User</span>)
+<span class="cy-kw">WHERE</span> friend.<span class="cy-prop">review_count</span> &gt;= <span class="cy-num">100</span>
+<span class="cy-kw">RETURN</span> center.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> center_name,
+       center.<span class="cy-prop">user_id</span> <span class="cy-kw">AS</span> center_id,
+       <span class="cy-func">count</span>(friend) <span class="cy-kw">AS</span> prolific_friend_count
+<span class="cy-kw">ORDER BY</span> prolific_friend_count <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q13-content">
+                        <h4>Q13. Find four-user cliques around Steven</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.4 4-Clique</div>
+                        <p>This query finds fully connected groups of four users containing Steven.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (a<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-(b<span class="cy-lab">:User</span>),
+      (a)-[<span class="cy-lab">:FRIEND</span>]-(c<span class="cy-lab">:User</span>),
+      (a)-[<span class="cy-lab">:FRIEND</span>]-(d<span class="cy-lab">:User</span>),
+      (b)-[<span class="cy-lab">:FRIEND</span>]-(c),
+      (b)-[<span class="cy-lab">:FRIEND</span>]-(d),
+      (c)-[<span class="cy-lab">:FRIEND</span>]-(d)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">user_id</span> &lt; c.<span class="cy-prop">user_id</span> <span class="cy-kw">AND</span> c.<span class="cy-prop">user_id</span> &lt; d.<span class="cy-prop">user_id</span>
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> user_b, c.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> user_c, d.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> user_d
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (a<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-(b<span class="cy-lab">:User</span>),
+      (a)-[<span class="cy-lab">:FRIEND</span>]-(c<span class="cy-lab">:User</span>),
+      (a)-[<span class="cy-lab">:FRIEND</span>]-(d<span class="cy-lab">:User</span>),
+      (b)-[<span class="cy-lab">:FRIEND</span>]-(c),
+      (b)-[<span class="cy-lab">:FRIEND</span>]-(d),
+      (c)-[<span class="cy-lab">:FRIEND</span>]-(d)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">user_id</span> &lt; c.<span class="cy-prop">user_id</span> <span class="cy-kw">AND</span> c.<span class="cy-prop">user_id</span> &lt; d.<span class="cy-prop">user_id</span>
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> user_b, c.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> user_c, d.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> user_d
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q14-content">
+                        <h4>Q14. Find mutual friends between Steven and Niki</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.5 Two-hop Join Pattern</div>
+                        <p>
+                            This query finds the names and user IDs of all mutual friends between two specific users,
+                            Steven and Niki.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (a<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(mutual)&lt;-[<span class="cy-lab">:FRIEND</span>]-(b<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"WwulXySQN8t2hwqH_yWurA"</span>})
+<span class="cy-kw">RETURN DISTINCT</span> mutual.<span class="cy-prop">name</span>, mutual.<span class="cy-prop">user_id</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (a<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(mutual)&lt;-[<span class="cy-lab">:FRIEND</span>]-(b<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"WwulXySQN8t2hwqH_yWurA"</span>})
+<span class="cy-kw">RETURN DISTINCT</span> mutual.<span class="cy-prop">name</span>, mutual.<span class="cy-prop">user_id</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q15-content">
+                        <h4>Q15. For a given user's friends, find their reviewed businesses along with locations</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.6 Line Pattern</div>
+                        <p>
+                            This query lists the businesses, including their physical addresses and coordinates, that
+                            have been reviewed by a given user's friends.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(friend<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(r<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">RETURN DISTINCT</span> friend.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> friend_name,
+b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> business_name,
+b.<span class="cy-prop">address</span>, b.<span class="cy-prop">city</span>, b.<span class="cy-prop">state</span>,
+b.<span class="cy-prop">latitude</span>, b.<span class="cy-prop">longitude</span>
+<span class="cy-kw">ORDER BY</span> friend_name, business_name</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(friend<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(r<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">RETURN DISTINCT</span> friend.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> friend_name,
+b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> business_name,
+b.<span class="cy-prop">address</span>, b.<span class="cy-prop">city</span>, b.<span class="cy-prop">state</span>,
+b.<span class="cy-prop">latitude</span>, b.<span class="cy-prop">longitude</span>
+<span class="cy-kw">ORDER BY</span> friend_name, business_name</pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q16-content">
+                        <h4>Q16. Count the friends of all "John"s</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.1 Ungrouped Node Degree Statistics by Label
+                        </div>
+                        <p>
+                            This query calculates the total number of unique friends belonging to all users named
+                            "John".
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (<span class="cy-lab">:User</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"John"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(friend)
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> friend) <span class="cy-kw">AS</span> total_friends
+</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (<span class="cy-lab">:User</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"John"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(friend)
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> friend) <span class="cy-kw">AS</span> total_friends
+</pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q17-content">
+                        <h4>Q17. Find businesses with only negative reviews</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.2 Grouped Node Degree Statistics by Label
+                        </div>
+                        <p>
+                            This query finds businesses where every review rating is less than 3 stars, ordered by the
+                            volume of reviews.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)&lt;-[<span class="cy-lab">:REVIEWS</span>]-(r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">WITH</span> b, <span class="cy-func">collect</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> stars
+<span class="cy-kw">WHERE</span> <span class="cy-kw">ALL</span>(star <span class="cy-kw">IN</span> stars <span class="cy-kw">WHERE</span> star &lt; <span class="cy-num">3</span>)
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span>, stars
+<span class="cy-kw">ORDER BY</span> <span class="cy-func">size</span>(stars) <span class="cy-kw">DESC</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)&lt;-[<span class="cy-lab">:REVIEWS</span>]-(r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span>, <span class="cy-func">collect</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> stars
+  <span class="cy-kw">WHERE</span> <span class="cy-kw">ALL</span>(star <span class="cy-kw">IN</span> stars <span class="cy-kw">WHERE</span> star &lt; <span class="cy-num">3</span>)
+<span class="cy-kw">ORDER BY</span> <span class="cy-func">size</span>(stars) <span class="cy-kw">DESC</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q18-content">
+                        <h4>Q18. Summarize review-edge counts and ratings</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.3 Ungrouped Edge Count and Property Statistics (Optional)
+                        </div>
+                        <p>
+                            The Yelp schema stores review rating on Review nodes rather than relationship properties, so
+                            this query summarizes the review-mediated User-to-Business edges.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(r<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(<span class="cy-lab">:Business</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(r) <span class="cy-kw">AS</span> review_edge_count,
+       <span class="cy-func">avg</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> avg_review_stars,
+       <span class="cy-func">min</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> min_review_stars,
+       <span class="cy-func">max</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> max_review_stars</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(r<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(<span class="cy-lab">:Business</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(r) <span class="cy-kw">AS</span> review_edge_count,
+       <span class="cy-func">avg</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> avg_review_stars,
+       <span class="cy-func">min</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> min_review_stars,
+       <span class="cy-func">max</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> max_review_stars</pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q19-content">
+                        <h4>Q19. Summarize review ratings by business state</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.4 Grouped Edge Count and Property Statistics (Optional)
+                        </div>
+                        <p>
+                            This query groups review-mediated User-to-Business edges by the destination business state
+                            and summarizes ratings.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(r<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> state,
+       <span class="cy-func">count</span>(r) <span class="cy-kw">AS</span> review_edge_count,
+       <span class="cy-func">avg</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> avg_review_stars,
+       <span class="cy-func">min</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> min_review_stars,
+       <span class="cy-func">max</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> max_review_stars
+<span class="cy-kw">ORDER BY</span> review_edge_count <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(r<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> state,
+       <span class="cy-func">count</span>(r) <span class="cy-kw">AS</span> review_edge_count,
+       <span class="cy-func">avg</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> avg_review_stars,
+       <span class="cy-func">min</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> min_review_stars,
+       <span class="cy-func">max</span>(r.<span class="cy-prop">stars</span>) <span class="cy-kw">AS</span> max_review_stars
+<span class="cy-kw">ORDER BY</span> review_edge_count <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q20-content">
+                        <h4>Q20. Count Steven's friend paths by length</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T4.5 Path Counts by Length</div>
+                        <p>This query counts all bounded friend paths from Steven and groups them by hop length.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = (<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>*<span class="cy-num">1</span>..<span class="cy-num">3</span>]-(neighbor<span class="cy-lab">:User</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(p) <span class="cy-kw">AS</span> path_length,
+       <span class="cy-func">count</span>(p) <span class="cy-kw">AS</span> path_count,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> neighbor) <span class="cy-kw">AS</span> distinct_neighbor_count
+<span class="cy-kw">ORDER BY</span> path_length <span class="cy-kw">ASC</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = (<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(neighbor<span class="cy-lab">:User</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(p) <span class="cy-kw">AS</span> path_length,
+       <span class="cy-func">count</span>(p) <span class="cy-kw">AS</span> path_count,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> neighbor) <span class="cy-kw">AS</span> distinct_neighbor_count
+<span class="cy-kw">ORDER BY</span> path_length <span class="cy-kw">ASC</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q21-content">
+                        <h4>Q21. Count Steven's friend paths by length and rating bucket</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.6 Grouped Path Counts by Length and Endpoint Type
+                        </div>
+                        <p>This query extends Q20 by grouping endpoint users into average-star buckets.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = (<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>*<span class="cy-num">1</span>..<span class="cy-num">3</span>]-(neighbor<span class="cy-lab">:User</span>)
+<span class="cy-kw">WITH</span> p, neighbor,
+     <span class="cy-kw">CASE</span>
+       <span class="cy-kw">WHEN</span> neighbor.<span class="cy-prop">average_stars</span> &gt;= <span class="cy-num">4.0</span> <span class="cy-kw">THEN</span> <span class="cy-call-str">"high"</span>
+       <span class="cy-kw">WHEN</span> neighbor.<span class="cy-prop">average_stars</span> &gt;= <span class="cy-num">3.0</span> <span class="cy-kw">THEN</span> <span class="cy-call-str">"medium"</span>
+       <span class="cy-kw">ELSE</span> <span class="cy-call-str">"low"</span>
+     <span class="cy-kw">END</span> <span class="cy-kw">AS</span> rating_bucket
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(p) <span class="cy-kw">AS</span> path_length,
+       rating_bucket,
+       <span class="cy-func">count</span>(p) <span class="cy-kw">AS</span> path_count,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> neighbor) <span class="cy-kw">AS</span> distinct_neighbor_count
+<span class="cy-kw">ORDER BY</span> path_length <span class="cy-kw">ASC</span>, path_count <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> p = (<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(neighbor<span class="cy-lab">:User</span>)
+<span class="cy-kw">WITH</span> p, neighbor,
+     <span class="cy-kw">CASE</span>
+       <span class="cy-kw">WHEN</span> neighbor.<span class="cy-prop">average_stars</span> &gt;= <span class="cy-num">4.0</span> <span class="cy-kw">THEN</span> <span class="cy-call-str">"high"</span>
+       <span class="cy-kw">WHEN</span> neighbor.<span class="cy-prop">average_stars</span> &gt;= <span class="cy-num">3.0</span> <span class="cy-kw">THEN</span> <span class="cy-call-str">"medium"</span>
+       <span class="cy-kw">ELSE</span> <span class="cy-call-str">"low"</span>
+     <span class="cy-kw">END</span> <span class="cy-kw">AS</span> rating_bucket
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(p) <span class="cy-kw">AS</span> path_length,
+       rating_bucket,
+       <span class="cy-func">count</span>(p) <span class="cy-kw">AS</span> path_count,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> neighbor) <span class="cy-kw">AS</span> distinct_neighbor_count
+<span class="cy-kw">ORDER BY</span> path_length <span class="cy-kw">ASC</span>, path_count <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">25</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q22-content">
+                        <h4>Q22. Find the total number of reviews and tips for each business</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T4.7 Union and Intersection</div>
+                        <p>
+                            This query calculates the combined count of reviews and tips for every business, sorting
+                            them in descending order of total user interactions.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">OPTIONAL MATCH</span> (b)&lt;-[<span class="cy-lab">:REVIEWS</span>]-(r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">WITH</span> b, <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> r) <span class="cy-kw">AS</span> num_reviews
+<span class="cy-kw">OPTIONAL MATCH</span> (b)&lt;-[<span class="cy-lab">:FOR</span>]-(t<span class="cy-lab">:Tip</span>)&lt;-[<span class="cy-lab">:TIPPED</span>]-(<span class="cy-lab">:User</span>)
+<span class="cy-kw">WITH</span> b, num_reviews, <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> t) <span class="cy-kw">AS</span> num_tips
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> business_name,
+       num_reviews,
+       num_tips,
+       num_reviews + num_tips <span class="cy-kw">AS</span> total
+<span class="cy-kw">ORDER BY</span> total <span class="cy-kw">DESC</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">OPTIONAL MATCH</span> (b)&lt;-[<span class="cy-lab">:REVIEWS</span>]-(r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">OPTIONAL MATCH</span> (b)&lt;-[<span class="cy-lab">:TIPPED</span>]-(t<span class="cy-lab">:Tip</span>)
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> business_name,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> r) <span class="cy-kw">AS</span> num_reviews,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> t) <span class="cy-kw">AS</span> num_tips,
+       (<span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> r) + <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> t)) <span class="cy-kw">AS</span> total
+<span class="cy-kw">ORDER BY</span> total <span class="cy-kw">DESC</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q23-content">
+                        <h4>Q23. Find the businesses with both tips and reviews, and return their counts</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T4.7 Union and Intersection</div>
+                        <p>
+                            This query finds businesses that have received both reviews and tips, returning the counts
+                            of each along with their combined total.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)&lt;-[<span class="cy-lab">:REVIEWS</span>]-(r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">WITH</span> b, <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> r) <span class="cy-kw">AS</span> num_reviews
+<span class="cy-kw">MATCH</span> (b)&lt;-[<span class="cy-lab">:FOR</span>]-(t<span class="cy-lab">:Tip</span>)&lt;-[<span class="cy-lab">:TIPPED</span>]-(<span class="cy-lab">:User</span>)
+<span class="cy-kw">WITH</span> b, num_reviews, <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> t) <span class="cy-kw">AS</span> num_tips
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> business_name,
+       num_reviews,
+       num_tips,
+       num_reviews + num_tips <span class="cy-kw">AS</span> total
+<span class="cy-kw">ORDER BY</span> total <span class="cy-kw">DESC</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)&lt;-[<span class="cy-lab">:REVIEWS</span>]-(r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">MATCH</span> (b)&lt;-[<span class="cy-lab">:TIPPED</span>]-(t<span class="cy-lab">:Tip</span>)
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> business_name,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> r) <span class="cy-kw">AS</span> num_reviews,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> t) <span class="cy-kw">AS</span> num_tips,
+       (<span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> r) + <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> t)) <span class="cy-kw">AS</span> total
+<span class="cy-kw">ORDER BY</span> total <span class="cy-kw">DESC</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q24-content">
+                        <h4>Q24. Print all the text reviews and tips for a specific restaurant</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T4.7 Union and Intersection</div>
+                        <p>
+                            This query compiles all text content from reviews and tips written for a specific restaurant
+                            named "Acme Oyster House".
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"Acme Oyster House"</span>})
+<span class="cy-kw">MATCH</span> (b)&lt;-[<span class="cy-lab">:REVIEWS</span>]-(r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">id</span> <span class="cy-kw">AS</span> business_id, r.<span class="cy-prop">text</span> <span class="cy-kw">AS</span> text, <span class="cy-call-str">'review'</span> <span class="cy-kw">AS</span> type
+
+<span class="cy-kw">UNION</span>
+
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"Acme Oyster House"</span>})
+<span class="cy-kw">MATCH</span> (b)&lt;-[<span class="cy-lab">:FOR</span>]-(t<span class="cy-lab">:Tip</span>)&lt;-[<span class="cy-lab">:TIPPED</span>]-(<span class="cy-lab">:User</span>)
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">id</span> <span class="cy-kw">AS</span> business_id, t.<span class="cy-prop">text</span> <span class="cy-kw">AS</span> text, <span class="cy-call-str">'tip'</span> <span class="cy-kw">AS</span> type</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"Acme Oyster House"</span>})
+<span class="cy-kw">MATCH</span> (b)&lt;-[<span class="cy-lab">:REVIEWS</span>]-(r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">id</span> <span class="cy-kw">AS</span> business_id, r.<span class="cy-prop">text</span> <span class="cy-kw">AS</span> text, <span class="cy-call-str">'review'</span> <span class="cy-kw">AS</span> type
+<span class="cy-kw">UNION</span>
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"Acme Oyster House"</span>})
+<span class="cy-kw">MATCH</span> (b)&lt;-[<span class="cy-lab">:TIPPED</span>]-(t<span class="cy-lab">:Tip</span>)
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">id</span> <span class="cy-kw">AS</span> business_id, t.<span class="cy-prop">text</span> <span class="cy-kw">AS</span> text, <span class="cy-call-str">'tip'</span> <span class="cy-kw">AS</span> type</pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q25-content">
+                        <h4>
+                            Q25. Run degree centrality on the in-memory friend-graph and write the results back to the
+                            database
+                        </h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.1 Degree Centrality</div>
+                        <p>
+                            This query runs the Degree Centrality algorithm on the friend graph to count each user's
+                            direct connections and stores the centrality score.
+                        </p>
+                        <p>
+                            The queries in the <strong>Analytics</strong> category would require projecting a in-memory
+                            GDS graph first. Run the below query to do it.
+                        </p>
+
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> gds.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">'FriendGraph'</span>,
+  <span class="cy-call-str">'User'</span>,
+  {
+    <span class="cy-prop">FRIEND</span>: {
+      <span class="cy-prop">type</span>: <span class="cy-call-str">'FRIEND'</span>,
+      <span class="cy-prop">orientation</span>: <span class="cy-call-str">'UNDIRECTED'</span>
+    }
+  }
+)
+<span class="cy-kw">YIELD</span> graphName, nodeCount, relationshipCount, projectMillis
+<span class="cy-kw">RETURN</span> graphName, nodeCount, relationshipCount, projectMillis;</pre>
+                        </div>
+                        <p>Then run the following analytic query.</p>
+
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> gds.<span class="cy-prop">degree</span>.<span class="cy-prop">stream</span>(
+  <span class="cy-call-str">'FriendGraph'</span>
+)
+<span class="cy-kw">YIELD</span> nodeId, score
+<span class="cy-kw">WITH</span> gds.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(nodeId) <span class="cy-kw">AS</span> u, score
+<span class="cy-kw">RETURN</span>
+  u.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> name,
+  u.<span class="cy-prop">user_id</span> <span class="cy-kw">AS</span> user_id,
+  score <span class="cy-kw">AS</span> degree
+<span class="cy-kw">ORDER BY</span> degree <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span>;</pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because Graph Data Science (GDS)
+                            procedures and centrality algorithms are not supported by standard GQL.
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q26-content">
+                        <h4>
+                            Q26. Run page rank on the in-memory friend-graph and write the results back to the database
+                        </h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.2 PageRank</div>
+                        <p>
+                            This query runs the PageRank algorithm on the friend graph to measure user influence and
+                            lists the top 10 most influential users.
+                        </p>
+                        <p>
+                            The queries in the <strong>Analytics</strong> category would require projecting a in-memory
+                            GDS graph first. Run the below query to do it.
+                        </p>
+
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> gds.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">'FriendGraph'</span>,
+  <span class="cy-call-str">'User'</span>,
+  {
+    <span class="cy-prop">FRIEND</span>: {
+      <span class="cy-prop">type</span>: <span class="cy-call-str">'FRIEND'</span>,
+      <span class="cy-prop">orientation</span>: <span class="cy-call-str">'UNDIRECTED'</span>
+    }
+  }
+)
+<span class="cy-kw">YIELD</span> graphName, nodeCount, relationshipCount, projectMillis
+<span class="cy-kw">RETURN</span> graphName, nodeCount, relationshipCount, projectMillis;</pre>
+                        </div>
+                        <p>Then run the following analytic query.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> gds.<span class="cy-prop">pageRank</span>.<span class="cy-prop">stream</span>(<span class="cy-call-str">'FriendGraph'</span>)
+<span class="cy-kw">YIELD</span> nodeId, score
+<span class="cy-kw">WITH</span> gds.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(nodeId) <span class="cy-kw">AS</span> u, score
+<span class="cy-kw">RETURN</span>
+  u.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> name,
+  u.<span class="cy-prop">user_id</span> <span class="cy-kw">AS</span> user_id,
+  score <span class="cy-kw">AS</span> pagerank
+<span class="cy-kw">ORDER BY</span> pagerank <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span>;</pre>
+                        </div>
+
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because Graph Data Science (GDS)
+                            procedures and projected graphs are not supported by standard GQL.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q27-content">
+                        <h4>Q27. Find weakly connected components (WCC) and query the size of each WCC</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T5.3 Connected Components / Weakly Connected Components
+                        </div>
+                        <p>
+                            This query groups users into weakly connected components based on mutual or directional
+                            friendships and lists the sizes of the largest components.
+                        </p>
+                        <p>
+                            The queries in the <strong>Analytics</strong> category would require projecting a in-memory
+                            GDS graph first. Run the below query to do it.
+                        </p>
+
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> gds.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">'FriendGraph'</span>,
+  <span class="cy-call-str">'User'</span>,
+  {
+    <span class="cy-prop">FRIEND</span>: {
+      <span class="cy-prop">type</span>: <span class="cy-call-str">'FRIEND'</span>,
+      <span class="cy-prop">orientation</span>: <span class="cy-call-str">'UNDIRECTED'</span>
+    }
+  }
+)
+<span class="cy-kw">YIELD</span> graphName, nodeCount, relationshipCount, projectMillis
+<span class="cy-kw">RETURN</span> graphName, nodeCount, relationshipCount, projectMillis;</pre>
+                        </div>
+                        <p>Then run the following analytic query.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> gds.<span class="cy-prop">wcc</span>.<span class="cy-prop">stream</span>(<span class="cy-call-str">'FriendGraph'</span>)
+<span class="cy-kw">YIELD</span> nodeId, componentId
+<span class="cy-kw">WITH</span> componentId, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> component_size
+<span class="cy-kw">RETURN</span> componentId, component_size
+<span class="cy-kw">ORDER BY</span> component_size <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span>;</pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because Graph Data Science (GDS)
+                            procedures and weakly connected components algorithms are not supported by standard GQL.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q28-content">
+                        <h4>Q28. Find strongly connected components in the directed friend graph</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T5.4 Strongly Connected Components
+                        </div>
+                        <p>
+                            This query runs strongly connected components on the directed FRIEND graph and reports the
+                            largest components.
+                        </p>
+                        <p>
+                            The queries in the <strong>Analytics</strong> category would require projecting a in-memory
+                            GDS graph first. Run the below query to do it.
+                        </p>
+
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> gds.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">'FriendGraph'</span>,
+  <span class="cy-call-str">'User'</span>,
+  {
+    <span class="cy-prop">FRIEND</span>: {
+      <span class="cy-prop">type</span>: <span class="cy-call-str">'FRIEND'</span>,
+      <span class="cy-prop">orientation</span>: <span class="cy-call-str">'UNDIRECTED'</span>
+    }
+  }
+)
+<span class="cy-kw">YIELD</span> graphName, nodeCount, relationshipCount, projectMillis
+<span class="cy-kw">RETURN</span> graphName, nodeCount, relationshipCount, projectMillis;</pre>
+                        </div>
+                        <p>Then run the following analytic query.</p>
+
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> gds.<span class="cy-prop">scc</span>.<span class="cy-prop">stream</span>(<span class="cy-call-str">'FriendGraph'</span>)
+<span class="cy-kw">YIELD</span> nodeId, componentId
+<span class="cy-kw">WITH</span> componentId, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> component_size
+<span class="cy-kw">RETURN</span> componentId, component_size
+<span class="cy-kw">ORDER BY</span> component_size <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span>;</pre>
+                        </div>
+
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because Graph Data Science (GDS)
+                            procedures and strongly connected component algorithms are not supported by standard GQL.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q29-content">
+                        <h4>Q29. Find Louvain Community and query the size of each community</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.5 Community Detection</div>
+                        <p>
+                            This query identifies community structures within the user friendship network using the
+                            Louvain modularity optimization algorithm and lists the largest communities.
+                        </p>
+                        <p>
+                            The queries in the <strong>Analytics</strong> category would require projecting a in-memory
+                            GDS graph first. Run the below query to do it.
+                        </p>
+
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> gds.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">'FriendGraph'</span>,
+  <span class="cy-call-str">'User'</span>,
+  {
+    <span class="cy-prop">FRIEND</span>: {
+      <span class="cy-prop">type</span>: <span class="cy-call-str">'FRIEND'</span>,
+      <span class="cy-prop">orientation</span>: <span class="cy-call-str">'UNDIRECTED'</span>
+    }
+  }
+)
+<span class="cy-kw">YIELD</span> graphName, nodeCount, relationshipCount, projectMillis
+<span class="cy-kw">RETURN</span> graphName, nodeCount, relationshipCount, projectMillis;</pre>
+                        </div>
+                        <p>Then run the following analytic query.</p>
+
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> gds.<span class="cy-prop">louvain</span>.<span class="cy-prop">stream</span>(<span class="cy-call-str">'FriendGraph'</span>)
+<span class="cy-kw">YIELD</span> nodeId, communityId
+<span class="cy-kw">WITH</span> communityId, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> size
+<span class="cy-kw">RETURN</span> communityId, size
+<span class="cy-kw">ORDER BY</span> size <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span>;</pre>
+                        </div>
+
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because Graph Data Science (GDS)
+                            procedures and community detection algorithms are not supported by standard GQL.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q30-content">
+                        <h4>Q30. Count 3-hop neighbors of a given user</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T1.3 Exact kth-Hop Neighbors and T4.1 Ungrouped Node Degree
+                            Statistics by Label
+                        </div>
+                        <p>
+                            This query calculates the total number of unique users who are exactly three
+                            friend-connections away from a given user.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (start<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>*<span class="cy-num">3</span>]-(neighbor)
+<span class="cy-kw">WHERE</span> neighbor.<span class="cy-prop">user_id</span> &lt;&gt; <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> neighbor) <span class="cy-kw">AS</span> three_hop_count</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (start<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-{<span class="cy-num">3</span>}(neighbor)
+<span class="cy-kw">WHERE</span> neighbor.<span class="cy-prop">user_id</span> != <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> neighbor) <span class="cy-kw">AS</span> three_hop_count</pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q31-content">
+                        <h4>Q31. Who has the most mutual friends with a given user</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T3.5 Two-hop Join Pattern and T4.1 Ungrouped Node Degree
+                            Statistics by Label
+                        </div>
+                        <p>
+                            This query finds the top 50 users who share the highest number of mutual friends with a
+                            given user.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (me<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(f<span class="cy-lab">:User</span>)
+<span class="cy-kw">MATCH</span> (other<span class="cy-lab">:User</span>)-[<span class="cy-lab">:FRIEND</span>]-&gt;(f)
+<span class="cy-kw">WHERE</span> other.<span class="cy-prop">user_id</span> &lt;&gt; me.<span class="cy-prop">user_id</span>
+<span class="cy-kw">RETURN</span> other.<span class="cy-prop">user_id</span> <span class="cy-kw">AS</span> user_id,
+       other.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> name,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> f.<span class="cy-prop">user_id</span>) <span class="cy-kw">AS</span> mutual_count
+<span class="cy-kw">ORDER BY</span> mutual_count <span class="cy-kw">DESC</span>, user_id <span class="cy-kw">ASC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">50</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (me<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(f<span class="cy-lab">:User</span>)
+<span class="cy-kw">MATCH</span> (other<span class="cy-lab">:User</span>)-[<span class="cy-lab">:FRIEND</span>]-&gt;(f)
+<span class="cy-kw">WHERE</span> other != me
+<span class="cy-kw">RETURN</span> other.<span class="cy-prop">name</span>, <span class="cy-func">count</span>(f) <span class="cy-kw">AS</span> mutual_count
+<span class="cy-kw">ORDER BY</span> mutual_count <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">50</span></pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q32-content">
+                        <h4>Q32. For a given user's friends, count the friend-business pairs</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T3.6 Line Pattern and T4.1 Ungrouped Node Degree Statistics by
+                            Label
+                        </div>
+                        <p>
+                            This query counts the total number of distinct friend-business review relationships among
+                            the friends of a given user.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">'Oi1qbcz2m2SnwUeztGYcnQ'</span>})
+      -[<span class="cy-lab">:FRIEND</span>]-&gt;(friend<span class="cy-lab">:User</span>)
+      -[<span class="cy-lab">:WROTE</span>]-&gt;(<span class="cy-lab">:Review</span>)
+      -[<span class="cy-lab">:REVIEWS</span>]-&gt;(business<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WITH DISTINCT</span>
+     friend.<span class="cy-prop">user_id</span> <span class="cy-kw">AS</span> friend_id,
+     business.<span class="cy-prop">id</span> <span class="cy-kw">AS</span> business_id
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> total_results</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CALL</span> {
+  <span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(friend<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(r<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(b<span class="cy-lab">:Business</span>)
+  <span class="cy-kw">RETURN DISTINCT</span>
+    friend.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> friend_name,
+    b.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> business_name,
+    b.<span class="cy-prop">address</span> <span class="cy-kw">AS</span> address,
+    b.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> city,
+    b.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> state,
+    b.<span class="cy-prop">latitude</span> <span class="cy-kw">AS</span> latitude,
+    b.<span class="cy-prop">longitude</span> <span class="cy-kw">AS</span> longitude
+}
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> total_results</pre>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q33-content">
+                        <h4>Q33. Find all users who commented on the above businesses</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            This query lists all unique users who have written reviews for businesses situated within a
+                            5-mile radius of a specific coordinate.
+                        </p>
+                        <p>
+                            The following query requires a new attribute on Business nodes be set. Run this query to set
+                            <code>location</code> on <code>Business</code> nodes.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">latitude</span> <span class="cy-kw">IS NOT NULL</span> <span class="cy-kw">AND</span> b.<span class="cy-prop">longitude</span> <span class="cy-kw">IS NOT NULL</span>
+<span class="cy-kw">SET</span> b.<span class="cy-prop">location</span> = <span class="cy-func">point</span>({<span class="cy-prop">latitude</span>: b.<span class="cy-prop">latitude</span>, <span class="cy-prop">longitude</span>: b.<span class="cy-prop">longitude</span>})</pre>
+                        </div>
+                        <p>Then we build point index with the location values.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CREATE POINT INDEX</span> business_location_index <span class="cy-func">FOR</span> (b<span class="cy-lab">:Business</span>) <span class="cy-func">ON</span> (b.<span class="cy-prop">location</span>)</pre>
+                        </div>
+
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">WITH</span> <span class="cy-func">point</span>({<span class="cy-prop">latitude</span>: <span class="cy-num">39.877788</span>, <span class="cy-prop">longitude</span>: <span class="cy-num">-75.69293535784999</span>}) <span class="cy-kw">AS</span> center
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">location</span> <span class="cy-kw">IS NOT NULL</span> <span class="cy-kw">AND</span> point.<span class="cy-prop">distance</span>(b.<span class="cy-prop">location</span>, center) &lt;= <span class="cy-num">8046.72</span>
+<span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(b)
+<span class="cy-kw">RETURN DISTINCT</span> u.<span class="cy-prop">user_id</span>, u.<span class="cy-prop">name</span>
+<span class="cy-kw">ORDER BY</span> u.<span class="cy-prop">name</span></pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because spatial calculations,
+                            point representations, and distance filters are not supported by standard GQL.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q34-content">
+                        <h4>Q34. Find the median of the above locations (from Q15)</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            This query calculates the median latitude and longitude of all businesses reviewed by the
+                            friends of a given user.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span> {<span class="cy-prop">user_id</span>: <span class="cy-call-str">"Oi1qbcz2m2SnwUeztGYcnQ"</span>})-[<span class="cy-lab">:FRIEND</span>]-&gt;(<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">latitude</span> <span class="cy-kw">IS NOT NULL</span> <span class="cy-kw">AND</span> b.<span class="cy-prop">longitude</span> <span class="cy-kw">IS NOT NULL</span>
+<span class="cy-kw">WITH DISTINCT</span> b.<span class="cy-prop">id</span> <span class="cy-kw">AS</span> bid, b.<span class="cy-prop">latitude</span> <span class="cy-kw">AS</span> lat, b.<span class="cy-prop">longitude</span> <span class="cy-kw">AS</span> lon
+<span class="cy-kw">RETURN</span>
+<span class="cy-func">percentileCont</span>(lat, <span class="cy-num">0.5</span>) <span class="cy-kw">AS</span> median_latitude,
+<span class="cy-func">percentileCont</span>(lon, <span class="cy-num">0.5</span>) <span class="cy-kw">AS</span> median_longitude</pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because
+                            <code>percentileCont</code>
+                            is a non-standard aggregate function not supported by standard GQL.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q35-content">
+                        <h4>Q35. Count the number of users who commented on the above businesses</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            This query calculates the total number of unique users who have reviewed businesses within a
+                            5-mile radius of a specific coordinate.
+                        </p>
+                        <p>
+                            The following query requires a new attribute on Business nodes be set. Run this query to set
+                            <code>location</code> on <code>Business</code> nodes.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">latitude</span> <span class="cy-kw">IS NOT NULL</span> <span class="cy-kw">AND</span> b.<span class="cy-prop">longitude</span> <span class="cy-kw">IS NOT NULL</span>
+<span class="cy-kw">SET</span> b.<span class="cy-prop">location</span> = <span class="cy-func">point</span>({<span class="cy-prop">latitude</span>: b.<span class="cy-prop">latitude</span>, <span class="cy-prop">longitude</span>: b.<span class="cy-prop">longitude</span>})</pre>
+                        </div>
+                        <p>Then we build point index with the location values.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CREATE POINT INDEX</span> business_location_index <span class="cy-func">FOR</span> (b<span class="cy-lab">:Business</span>) <span class="cy-func">ON</span> (b.<span class="cy-prop">location</span>)</pre>
+                        </div>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">WITH</span> <span class="cy-func">point</span>({<span class="cy-prop">latitude</span>: <span class="cy-num">39.877788</span>, <span class="cy-prop">longitude</span>: <span class="cy-num">-75.69293535784999</span>}) <span class="cy-kw">AS</span> center
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">location</span> <span class="cy-kw">IS NOT NULL</span> <span class="cy-kw">AND</span> point.<span class="cy-prop">distance</span>(b.<span class="cy-prop">location</span>, center) &lt;= <span class="cy-num">8046.72</span>
+<span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span>)-[<span class="cy-lab">:WROTE</span>]-&gt;(<span class="cy-lab">:Review</span>)-[<span class="cy-lab">:REVIEWS</span>]-&gt;(b)
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> u) <span class="cy-kw">AS</span> user_count</pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because spatial calculations,
+                            point representations, and distance filters are not supported by standard GQL.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q36-content">
+                        <h4>Q36. Find the most frequent names</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            This query counts the occurrences of each user name in the dataset and returns the top 30
+                            most frequent names in descending order.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span>)
+<span class="cy-kw">RETURN</span> u.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> name, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> occurrences
+<span class="cy-kw">ORDER BY</span> occurrences <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">30</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (u<span class="cy-lab">:User</span>)
+<span class="cy-kw">RETURN</span> u.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> name, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> occurrences
+<span class="cy-kw">ORDER BY</span> occurrences <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">30</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q37-content">
+                        <h4>Q37. Find all businesses within 5 miles from a spicified location</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            This query retrieves all businesses located within a 5-mile radius of a specific
+                            geographical coordinate, sorted by proximity.
+                        </p>
+                        <p>
+                            The following query requires a new attribute on Business nodes be set. Run this query to set
+                            <code>location</code> on <code>Business</code> nodes.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">latitude</span> <span class="cy-kw">IS NOT NULL</span> <span class="cy-kw">AND</span> b.<span class="cy-prop">longitude</span> <span class="cy-kw">IS NOT NULL</span>
+<span class="cy-kw">SET</span> b.<span class="cy-prop">location</span> = <span class="cy-func">point</span>({<span class="cy-prop">latitude</span>: b.<span class="cy-prop">latitude</span>, <span class="cy-prop">longitude</span>: b.<span class="cy-prop">longitude</span>})</pre>
+                        </div>
+                        <p>Then we build point index with the location values.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CREATE POINT INDEX</span> business_location_index <span class="cy-func">FOR</span> (b<span class="cy-lab">:Business</span>) <span class="cy-func">ON</span> (b.<span class="cy-prop">location</span>)</pre>
+                        </div>
+
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">WITH</span> <span class="cy-func">point</span>({<span class="cy-prop">latitude</span>: <span class="cy-num">39.877788</span>, <span class="cy-prop">longitude</span>: <span class="cy-num">-75.69293535784999</span>}) <span class="cy-kw">AS</span> center
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">location</span> <span class="cy-kw">IS NOT NULL</span> <span class="cy-kw">AND</span> point.<span class="cy-prop">distance</span>(b.<span class="cy-prop">location</span>, center) &lt;= <span class="cy-num">8046.72</span>  <span class="sh-cmt">// 5 miles in meters</span>
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span>, b.<span class="cy-prop">address</span>, b.<span class="cy-prop">city</span>, b.<span class="cy-prop">state</span>, b.<span class="cy-prop">latitude</span>, b.<span class="cy-prop">longitude</span>, point.<span class="cy-prop">distance</span>(b.<span class="cy-prop">location</span>, center) <span class="cy-kw">AS</span> dist_meters
+<span class="cy-kw">ORDER BY</span> dist_meters <span class="cy-kw">ASC</span></pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because spatial distance
+                            calculations and point representations are not supported by standard GQL.
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q38-content">
+                        <h4>Q38. Find the top-10 nearest business to the specific location</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            This query identifies the 10 nearest businesses to a specific geographical coordinate and
+                            ranks them in order of distance.
+                        </p>
+                        <p>
+                            The following query requires a new attribute on Business nodes be set. Run this query to set
+                            <code>location</code> on <code>Business</code> nodes.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">latitude</span> <span class="cy-kw">IS NOT NULL</span> <span class="cy-kw">AND</span> b.<span class="cy-prop">longitude</span> <span class="cy-kw">IS NOT NULL</span>
+<span class="cy-kw">SET</span> b.<span class="cy-prop">location</span> = <span class="cy-func">point</span>({<span class="cy-prop">latitude</span>: b.<span class="cy-prop">latitude</span>, <span class="cy-prop">longitude</span>: b.<span class="cy-prop">longitude</span>})</pre>
+                        </div>
+                        <p>Then we build point index with the location values.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">CREATE POINT INDEX</span> business_location_index <span class="cy-func">FOR</span> (b<span class="cy-lab">:Business</span>) <span class="cy-func">ON</span> (b.<span class="cy-prop">location</span>)</pre>
+                        </div>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">WITH</span> <span class="cy-func">point</span>({<span class="cy-prop">latitude</span>: <span class="cy-num">39.877788</span>, <span class="cy-prop">longitude</span>: <span class="cy-num">-75.69293535784999</span>}) <span class="cy-kw">AS</span> center
+<span class="cy-kw">MATCH</span> (b<span class="cy-lab">:Business</span>)
+<span class="cy-kw">WHERE</span> b.<span class="cy-prop">location</span> <span class="cy-kw">IS NOT NULL</span>
+<span class="cy-kw">RETURN</span> b.<span class="cy-prop">name</span>, b.<span class="cy-prop">address</span>, b.<span class="cy-prop">city</span>, b.<span class="cy-prop">state</span>,
+b.<span class="cy-prop">latitude</span>, b.<span class="cy-prop">longitude</span>,
+point.<span class="cy-prop">distance</span>(b.<span class="cy-prop">location</span>, center) <span class="cy-kw">AS</span> dist_meters
+<span class="cy-kw">ORDER BY</span> dist_meters <span class="cy-kw">ASC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span></pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because spatial distance
+                            calculations and point representations are not supported by standard GQL.
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q39-content">
+                        <h4>Q39. Find reviews containing “disgusting”</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            This query searches for and returns up to 100 review texts that contain the word
+                            "disgusting".
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-func">toLower</span>(r.<span class="cy-prop">text</span>) <span class="cy-kw">CONTAINS</span> <span class="cy-call-str">"disgusting"</span>
+<span class="cy-kw">RETURN</span> r.<span class="cy-prop">id</span>, r.<span class="cy-prop">text</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">100</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-func">toLower</span>(r.<span class="cy-prop">text</span>) <span class="cy-kw">CONTAINS</span> <span class="cy-call-str">"disgusting"</span>
+<span class="cy-kw">RETURN</span> r.<span class="cy-prop">id</span>, r.<span class="cy-prop">text</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">100</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q40-content">
+                        <h4>Q40. Find the most frequently used words in reviews</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            This query extracts, filters (length &gt; 3), and ranks the top 20 most frequent individual
+                            words used across all review text.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">WITH</span> <span class="cy-func">split</span>(<span class="cy-func">toLower</span>(r.<span class="cy-prop">text</span>), <span class="cy-call-str">" "</span>) <span class="cy-kw">AS</span> words
+<span class="cy-kw">UNWIND</span> words <span class="cy-kw">AS</span> word
+<span class="cy-kw">WITH</span> word, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> freq
+<span class="cy-kw">WHERE</span> <span class="cy-func">size</span>(word) &gt; <span class="cy-num">3</span>
+<span class="cy-kw">RETURN</span> word, freq
+<span class="cy-kw">ORDER BY</span> freq <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> (r<span class="cy-lab">:Review</span>)
+<span class="cy-kw">UNWIND</span> <span class="cy-func">split</span>(<span class="cy-func">toLower</span>(r.<span class="cy-prop">text</span>), <span class="cy-call-str">" "</span>) <span class="cy-kw">AS</span> word
+<span class="cy-kw">RETURN</span> word, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> freq
+  <span class="cy-kw">WHERE</span> <span class="cy-func">size</span>(word) &gt; <span class="cy-num">3</span>
+<span class="cy-kw">ORDER BY</span> freq <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span></pre>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+        <script>
+            function highlightRawCodeBlocks() {
+                const multiKeywordPattern =
+                    /^(ORDER\s+BY|IS\s+NOT\s+NULL|IS\s+NULL|OPTIONAL\s+MATCH|RETURN\s+DISTINCT|WITH\s+DISTINCT|CREATE\s+POINT\s+INDEX)\b/i;
+                const keywords = new Set([
+                    "MATCH",
+                    "WHERE",
+                    "RETURN",
+                    "WITH",
+                    "CALL",
+                    "YIELD",
+                    "LIMIT",
+                    "ORDER",
+                    "BY",
+                    "DESC",
+                    "ASC",
+                    "AND",
+                    "OR",
+                    "NOT",
+                    "AS",
+                    "IN",
+                    "CASE",
+                    "WHEN",
+                    "THEN",
+                    "ELSE",
+                    "END",
+                    "DISTINCT",
+                    "UNION",
+                    "CREATE",
+                    "SET",
+                    "EXISTS",
+                    "TRUE",
+                    "FALSE",
+                    "ALL",
+                    "SINGLE",
+                    "ANY",
+                    "SHORTEST",
+                    "ACYCLIC",
+                    "UNWIND",
+                    "OPTIONAL",
+                    "CONTAINS",
+                ]);
+                const functionPattern = /^([A-Za-z_][A-Za-z0-9_.]*)\s*(?=\()/;
+                const identifierPattern = /^[A-Za-z_][A-Za-z0-9_]*/;
+                const numberPattern = /^-?\d+(\.\d+)?/;
+
+                function escapeHtml(text) {
+                    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                }
+
+                function span(className, text) {
+                    return `<span class="${className}">${escapeHtml(text)}</span>`;
+                }
+
+                function readQuoted(text, start) {
+                    const quote = text[start];
+                    let end = start + 1;
+                    while (end < text.length) {
+                        if (text[end] === "\\" && end + 1 < text.length) {
+                            end += 2;
+                            continue;
+                        }
+                        if (text[end] === quote) {
+                            end++;
+                            break;
+                        }
+                        end++;
+                    }
+                    return text.slice(start, end);
+                }
+
+                function highlight(text) {
+                    let html = "";
+                    let i = 0;
+
+                    while (i < text.length) {
+                        const rest = text.slice(i);
+
+                        if (rest.startsWith("//")) {
+                            const lineEnd = text.indexOf("\n", i);
+                            const comment = lineEnd === -1 ? text.slice(i) : text.slice(i, lineEnd);
+                            html += span("sh-cmt", comment);
+                            i += comment.length;
+                            continue;
+                        }
+
+                        if (text[i] === '"' || text[i] === "'") {
+                            const quoted = readQuoted(text, i);
+                            html += span("cy-call-str", quoted);
+                            i += quoted.length;
+                            continue;
+                        }
+
+                        const multiKeyword = rest.match(multiKeywordPattern);
+                        if (multiKeyword) {
+                            html += span("cy-kw", multiKeyword[0]);
+                            i += multiKeyword[0].length;
+                            continue;
+                        }
+
+                        const number = rest.match(numberPattern);
+                        if (number) {
+                            html += span("cy-num", number[0]);
+                            i += number[0].length;
+                            continue;
+                        }
+
+                        if (text[i] === ":" && /[A-Za-z_]/.test(text[i + 1] || "")) {
+                            const label = text.slice(i + 1).match(identifierPattern);
+                            html += span("cy-lab", ":" + label[0]);
+                            i += label[0].length + 1;
+                            continue;
+                        }
+
+                        if (text[i] === "." && /[A-Za-z_]/.test(text[i + 1] || "")) {
+                            const prop = text.slice(i + 1).match(identifierPattern);
+                            html += "." + span("cy-prop", prop[0]);
+                            i += prop[0].length + 1;
+                            continue;
+                        }
+
+                        const mapKey = rest.match(/^([A-Za-z_][A-Za-z0-9_]*)(\s*:\s+)/);
+                        if (mapKey) {
+                            html += span("cy-prop", mapKey[1]) + escapeHtml(mapKey[2]);
+                            i += mapKey[0].length;
+                            continue;
+                        }
+
+                        const identifier = rest.match(identifierPattern);
+                        if (identifier) {
+                            const token = identifier[0];
+                            const func = rest.match(functionPattern);
+                            if (keywords.has(token.toUpperCase())) {
+                                html += span("cy-kw", token);
+                            } else if (func && func[1] === token) {
+                                html += span("cy-func", token);
+                            } else {
+                                html += escapeHtml(token);
+                            }
+                            i += token.length;
+                            continue;
+                        }
+
+                        html += escapeHtml(text[i]);
+                        i++;
+                    }
+
+                    return html;
+                }
+
+                document.querySelectorAll("pre.code-block").forEach((block) => {
+                    block.innerHTML = highlight(block.textContent);
+                });
+            }
+
+            highlightRawCodeBlocks();
+
+            function copyCode(button) {
+                // 1. Move up to the common parent (.code-wrapper)
+                const wrapper = button.closest(".code-wrapper");
+                // 2. Find the code block (.code-block) within that specific wrapper
+                const codeElement = wrapper.querySelector(".code-block");
+                // 3. Extract the plain text (ignoring any <span> color tags)
+                const text = codeElement.innerText;
+                // 4. Use the Clipboard API to save the text
+                navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+                        // Change button text to provide feedback
+                        const originalText = button.innerText;
+                        button.innerText = "Copied!";
+                        // Optional: Apply Neo4j Green to the button border for success
+                        button.style.borderColor = "#A6E22E";
+                        button.style.color = "#A6E22E";
+                        // Reset the button after 2 seconds
+                        setTimeout(() => {
+                            button.innerText = originalText;
+                            button.style.borderColor = "";
+                            button.style.color = "";
+                        }, 2000);
+                    })
+                    .catch((err) => {
+                        console.error("Failed to copy text: ", err);
+                        alert("Failed to copy code. Please check console for errors.");
+                    });
+            }
+            function openSubTab(evt, subTabName) {
+                var i, subcontent, sublinks;
+                subcontent = document.getElementsByClassName("sub-tab-content");
+                for (i = 0; i < subcontent.length; i++) {
+                    subcontent[i].classList.remove("active-content");
+                }
+                sublinks = document.getElementsByClassName("sub-tab-link");
+                for (i = 0; i < sublinks.length; i++) {
+                    sublinks[i].classList.remove("active");
+                }
+                document.getElementById(subTabName).classList.add("active-content");
+                evt.currentTarget.classList.add("active");
+            }
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tab-content");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].classList.remove("active-content");
+                }
+                tablinks = document.getElementsByClassName("tab-link");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].classList.remove("active");
+                }
+                document.getElementById(tabName).classList.add("active-content");
+                evt.currentTarget.classList.add("active");
+                handleScroll();
+            }
+            function scrollToId(id) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            }
+
+            function handleScroll() {
+                const menuSection = document.getElementById("loading-tab-header");
+                const btn = document.querySelector(".back-to-code-nav");
+                if (menuSection && btn) {
+                    const rect = menuSection.getBoundingClientRect();
+                    if (rect.bottom < 0) {
+                        btn.classList.add("visible");
+                    } else {
+                        btn.classList.remove("visible");
+                    }
+                }
+            }
+            window.addEventListener("scroll", handleScroll);
+            window.addEventListener("resize", handleScroll);
+            handleScroll();
+        </script>
+        <footer>
+            <div class="container">
+                <a class="btn-secondary" href="../datasets/yelp.html">← Back to Yelp Dataset</a>
+            </div>
+            <div class="container">
+                <p>© 2026 Property Graph Benchmark Project.</p>
+            </div>
+        </footer>
+    </body>
+</html>

@@ -1,0 +1,407 @@
+{
+  "version": 1,
+  "id": "movielens-32m",
+  "name": "MovieLens 32M",
+  "url": "https://pgraphbenchweb.vercel.app/workloads/ml32m-neo4j.html",
+  "copied_at": "2026-11-15T22:51:58+00:00",
+  "page_sha256": "eb830351a348b9ead6752e1698714591eb8447d476f209a94d8fa49e48dc3927",
+  "load_order": [
+    {
+      "file": "load/001.cypher",
+      "source_block": 1,
+      "heading": "Overview"
+    },
+    {
+      "file": "load/002.cypher",
+      "source_block": 2,
+      "heading": "Movie Nodes, Genre Nodes, and HAS_GENRE Edges"
+    },
+    {
+      "file": "load/003.cypher",
+      "source_block": 3,
+      "heading": "User Nodes and RATED Edges"
+    },
+    {
+      "file": "load/004.cypher",
+      "source_block": 4,
+      "heading": "TAGGED Edges"
+    }
+  ],
+  "reference_scripts": [],
+  "required_files": [
+    "movielens/ml-32m/movies.csv",
+    "movielens/ml-32m/ratings.csv",
+    "movielens/ml-32m/tags.csv"
+  ],
+  "queries": [
+    {
+      "id": "Q01",
+      "file": "queries/Q01.cypher",
+      "title": "Q1. Movies Rated by a User",
+      "source_blocks": [
+        5
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q02",
+      "file": "queries/Q02.cypher",
+      "title": "Q2. Genres within Two Hops of a User",
+      "source_blocks": [
+        7
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q03",
+      "file": "queries/Q03.cypher",
+      "title": "Q3. Users Exactly Two Rating Hops Away",
+      "source_blocks": [
+        9
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q04",
+      "file": "queries/Q04.cypher",
+      "title": "Q4. Highly Rated One-Hop Movies",
+      "source_blocks": [
+        11
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q05",
+      "file": "queries/Q05.cypher",
+      "title": "Q5. Filter Movies by Title Text",
+      "source_blocks": [
+        13
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q06",
+      "file": "queries/Q06.cypher",
+      "title": "Q6. Filter High-Rating Edges",
+      "source_blocks": [
+        15
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q07",
+      "file": "queries/Q07.cypher",
+      "title": "Q7. Check Whether a User Can Reach a Movie",
+      "source_blocks": [
+        17
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q08",
+      "file": "queries/Q08.cypher",
+      "title": "Q8. Shortest Co-Rating Path to a Movie",
+      "source_blocks": [
+        19
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q09",
+      "file": "queries/Q09.cypher",
+      "title": "Q9. Simple Co-Rating Paths up to Three Hops",
+      "source_blocks": [
+        21
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q10",
+      "file": "queries/Q10.cypher",
+      "title": "Q10. Top Weighted Co-Rating Paths",
+      "source_blocks": [
+        23
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q11",
+      "file": "queries/Q11.cypher",
+      "title": "Q11. Three-Movie Triangle by Shared Genres",
+      "source_blocks": [
+        25
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q12",
+      "file": "queries/Q12.cypher",
+      "title": "Q12. Four-Movie Square by Shared Genres",
+      "source_blocks": [
+        27
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q13",
+      "file": "queries/Q13.cypher",
+      "title": "Q13. Users with Many Rated Movies",
+      "source_blocks": [
+        29
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q14",
+      "file": "queries/Q14.cypher",
+      "title": "Q14. Four-Movie Clique by Shared Genres",
+      "source_blocks": [
+        31
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q15",
+      "file": "queries/Q15.cypher",
+      "title": "Q15. Users Who Rated the Same Movie",
+      "source_blocks": [
+        33
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q16",
+      "file": "queries/Q16.cypher",
+      "title": "Q16. List users and the movies they rated that belong to the specific genre \"Comedy\", find top-20 results in descending order of ratings",
+      "source_blocks": [
+        35
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q17",
+      "file": "queries/Q17.cypher",
+      "title": "Q17. Movie Rating Degree Summary",
+      "source_blocks": [
+        37
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q18",
+      "file": "queries/Q18.cypher",
+      "title": "Q18. Find users who have rated movies from at least 3 distinct genres, list the top-10 in descending order of the genre count",
+      "source_blocks": [
+        39
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q19",
+      "file": "queries/Q19.cypher",
+      "title": "Q19. Find top-20 movies with the highest number of 5-ratings, return the movies and this rating number",
+      "source_blocks": [
+        41
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q20",
+      "file": "queries/Q20.cypher",
+      "title": "Q20. Check different rating values and their occurrence frequencies",
+      "source_blocks": [
+        43
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q21",
+      "file": "queries/Q21.cypher",
+      "title": "Q21. Find the top-50 most frequent tags, return the tags along with their frequencies",
+      "source_blocks": [
+        45
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q22",
+      "file": "queries/Q22.cypher",
+      "title": "Q22. User Rating Path Counts by Length",
+      "source_blocks": [
+        47
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q23",
+      "file": "queries/Q23.cypher",
+      "title": "Q23. User Rating Path Counts by Length and Genre",
+      "source_blocks": [
+        49
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q24",
+      "file": "queries/Q24.cypher",
+      "title": "Q24. Find the title of the movies that belong to multiple genres, e.g., \"Comedy\" and \"Romance\"",
+      "source_blocks": [
+        51
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q25",
+      "file": "queries/Q25.cypher",
+      "title": "Q25. Find users who have rated movies in both \"Action\" and \"Romance\" genres, list 10 userIds",
+      "source_blocks": [
+        53
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q26",
+      "file": "queries/Q26.cypher",
+      "title": "Q26. Degree Centrality on the User-Movie Rating Graph",
+      "source_blocks": [
+        55
+      ],
+      "gds": true,
+      "has_cypher": true
+    },
+    {
+      "id": "Q27",
+      "file": "queries/Q27.cypher",
+      "title": "Q27. PageRank on the User-Movie Rating Graph",
+      "source_blocks": [
+        57
+      ],
+      "gds": true,
+      "has_cypher": true
+    },
+    {
+      "id": "Q28",
+      "file": "queries/Q28.cypher",
+      "title": "Q28. Weakly Connected Components of Ratings",
+      "source_blocks": [
+        58
+      ],
+      "gds": true,
+      "has_cypher": true
+    },
+    {
+      "id": "Q29",
+      "file": "queries/Q29.cypher",
+      "title": "Q29. Strongly Connected Components of Directed Ratings",
+      "source_blocks": [],
+      "gds": false,
+      "has_cypher": false
+    },
+    {
+      "id": "Q30",
+      "file": "queries/Q30.cypher",
+      "title": "Q30. Louvain Communities in the Rating Graph",
+      "source_blocks": [
+        59
+      ],
+      "gds": true,
+      "has_cypher": true
+    },
+    {
+      "id": "Q31",
+      "file": "queries/Q31.cypher",
+      "title": "Q31. Find movies that span at least 3 genres and have at least 50 user ratings, return top-10 movies in descending order of their rating count, along with the list of genres and the rating count",
+      "source_blocks": [
+        60
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q32",
+      "file": "queries/Q32.cypher",
+      "title": "Q32. Find top-20 movies with the highest number of genres + tags, return this number, list of their genres, and list of their tags",
+      "source_blocks": [
+        62
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q33",
+      "file": "queries/Q33.cypher",
+      "title": "Q33. Find (user, movie) pairs where the movie is first rated by the user, and then tagged by the user, return 10 such user-movie pairs with the latest timestamps, along with the rating and the list of tags (tagged after the rating)",
+      "source_blocks": [
+        64
+      ],
+      "gds": false,
+      "has_cypher": true
+    }
+  ],
+  "import_mode": "cypher",
+  "artifact_sha256": {
+    "load/001.cypher": "38d0a4d12de63d7a713ddd719ab78c3acc403cd52a386ef6fdec9aac82939849",
+    "load/002.cypher": "b82e5d6a55087bb5aecfd83376b9973af8b7f47ce22f788b512aefd5c5b1735e",
+    "load/003.cypher": "1d98109cd9634b79be0f9313a51326ed506e5ea51cffcd66268f9e9a476df8d6",
+    "load/004.cypher": "09d01f7e95e9e05c15292f827073b6a15a1205389f41046f47933e7df5f115e2",
+    "queries/Q01.cypher": "be2584a77c771db2d1e6e3a678991601f4e511c057d783dee1917d3eeed6d023",
+    "queries/Q02.cypher": "6c2118c115419169661aa4212d38fc79eeee1ebda5ce00f687affdd526809f77",
+    "queries/Q03.cypher": "6f1fb8718a5b8390d52b4c839f1cf0aa1f840491c23662485594a9d67e9610a1",
+    "queries/Q04.cypher": "d897312e6c4924658a13f052996d7d6304eae9f59ea3778e8a773f5bbcddd04f",
+    "queries/Q05.cypher": "27cb90fdd7044b441ba6fb9ca43fd81689307724ae52471eaced75342be4c95b",
+    "queries/Q06.cypher": "aad97eae87ee1f7cce716c436667cc6d250a49f656ec8f34f1d76dd99de87214",
+    "queries/Q07.cypher": "8211caca84b64afe1c422710ce399c4db21f02bba5068a4a122ba712589c6df2",
+    "queries/Q08.cypher": "349ab6ac5949a280fadfbc534da8b5533ef2becea12c54f2f6fac92e5636af1b",
+    "queries/Q09.cypher": "2a40aa4a6cd48e4e14234ff1d3d55b865a923faecb0bf7413c9b9904f3a3f7bd",
+    "queries/Q10.cypher": "f22d193b9fbb1ff469a13040173a4ae97019e97245d0bd9aefccd2f49451de96",
+    "queries/Q11.cypher": "e9fe2be9e8f96a1fcd8cfd838ec7573650048548d235c22fe00f57262a0ac523",
+    "queries/Q12.cypher": "62165730c87434745e0284bbf318cc889a8de6be1281348015340a5b635b28df",
+    "queries/Q13.cypher": "5d6eb8e76a771dc86adc0fc5345a08d689afc39da0cb3852c29fb35870d8d4d4",
+    "queries/Q14.cypher": "e94c3b4f217d19cf2f7d15a7b1dbfdeafc6b5f7a378f3f6312275bebcff9a626",
+    "queries/Q15.cypher": "8ebccac90dc8fad94cb70a213b40f843d33737f800adee7594cca702128ec2fe",
+    "queries/Q16.cypher": "c7ac02ddf3f8f21a2281f16f4418d361b37f73cb18b742561ebcff33a7a016e0",
+    "queries/Q17.cypher": "bf70e6ed35d8afc146fb92094f4cfa458dd4d3036b7dfdca0a3ec06a6fdd5054",
+    "queries/Q18.cypher": "521ea9b6e1f8b52af446485eedea8d275cc3cc3fa1a80a49d5fc762712e8bfc5",
+    "queries/Q19.cypher": "95e91bf4d65421a7c865fc182523a4cb30106b717398bfa538ef970d3a9741d7",
+    "queries/Q20.cypher": "5d5be34934a4113138c7cc3b2008c6b3a78b53e32b4e0fd2f17bf9ff66667175",
+    "queries/Q21.cypher": "68d95005202718b7937841606330e1487aef0c94bc60e4d918d97597dcbe1834",
+    "queries/Q22.cypher": "9db4b50368acf1b0ecbd6271fe609c11c552ead467333b76523854b8af3944c6",
+    "queries/Q23.cypher": "dd6f88047fe0dc80de259b607c133bb2667929843db82dfbe80111a1742d6520",
+    "queries/Q24.cypher": "3e934ca345064fb6e635cfea3b763277e314066a4f56f7281c9ea6326f6c9d6b",
+    "queries/Q25.cypher": "b6b6279877005ad3bba3b342c4056953e60f277bd4f7ab29f037420bad0ee55b",
+    "queries/Q26.cypher": "a4975dd7f3a35475635d91ef08135a0fab2015f5c171146b4231381b07783640",
+    "queries/Q27.cypher": "b9301f0d503f780f137bf2ce659eaff5865f7602be321c405e0ea5c11d24eeaf",
+    "queries/Q28.cypher": "d74191e9a78eba1815193f20edc8c0ad3eebbf2d363447a6a50b50fbd9e40d2a",
+    "queries/Q29.cypher": "d6f5cfef0187bf915e1a6691eb644fd7341ef5e57ee02810cc5dc131593eb625",
+    "queries/Q30.cypher": "5e50a98edea2b063ff925590e35408673c7e1b34411645fcd4634ecb0dadf3d6",
+    "queries/Q31.cypher": "17690e18cb7bc70567c5bea6026894f2ec54f082f1b04b8b8ebcab957b93ecad",
+    "queries/Q32.cypher": "b0b3de4cc1f2e51bccf332163d6c1be9f0d024305aecadf2c53259b2de4d0965",
+    "queries/Q33.cypher": "1d6c425fd00f032315a9127dae19c10d4d642a543c7c499a353278348bba9088",
+    "expected_counts.json": "b931cb8f9dec386de6838d4ea7fc5617cc5dd3db7d17c4eca9c5e9fd85aa4771"
+  }
+}

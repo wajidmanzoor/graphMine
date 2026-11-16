@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "datasets": [
+    {
+      "id": "yelp",
+      "name": "Yelp",
+      "bolt_uri": "bolt://127.0.0.1:17701",
+      "http_port": 17401,
+      "bolt_port": 17701,
+      "password_env": "GRAPHMINE_NEO4J_YELP_PASSWORD",
+      "workload_url": "https://pgraphbenchweb.vercel.app/workloads/yelp-neo4j.html",
+      "default_query": "MATCH p = (a)-[r]->(b) RETURN p LIMIT 1000",
+      "memory": {
+        "heap_gib": 4,
+        "page_cache_gib": 12,
+        "maximum_gib": 18
+      }
+    },
+    {
+      "id": "movielens-32m",
+      "name": "MovieLens 32M",
+      "bolt_uri": "bolt://127.0.0.1:17702",
+      "http_port": 17402,
+      "bolt_port": 17702,
+      "password_env": "GRAPHMINE_NEO4J_MOVIELENS_32M_PASSWORD",
+      "workload_url": "https://pgraphbenchweb.vercel.app/workloads/ml32m-neo4j.html",
+      "default_query": "MATCH p = (a)-[r]->(b) RETURN p LIMIT 1000",
+      "memory": {
+        "heap_gib": 4,
+        "page_cache_gib": 8,
+        "maximum_gib": 14
+      }
+    },
+    {
+      "id": "movielens-genome",
+      "name": "MovieLens Tag Genome",
+      "bolt_uri": "bolt://127.0.0.1:17703",
+      "http_port": 17403,
+      "bolt_port": 17703,
+      "password_env": "GRAPHMINE_NEO4J_MOVIELENS_GENOME_PASSWORD",
+      "workload_url": "https://pgraphbenchweb.vercel.app/workloads/mlgenome-neo4j.html",
+      "default_query": "MATCH p = (a)-[r]->(b) RETURN p LIMIT 1000",
+      "memory": {
+        "heap_gib": 4,
+        "page_cache_gib": 8,
+        "maximum_gib": 14
+      }
+    }
+  ]
+}

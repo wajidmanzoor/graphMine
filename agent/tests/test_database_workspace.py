@@ -147,6 +147,13 @@ def workspace(settings, source, tmp_path, monkeypatch):
         "USE system RETURN 1",
         "MATCH (n) SET n.x=1 RETURN n",
         "CREATE INDEX foo FOR (n:Foo) ON (n.x)",
+        "START DATABASE x",
+        "STOP DATABASE x",
+        "TERMINATE TRANSACTIONS 'transaction-1'",
+        "MATCH (n) WITH n CALL db.labels() YIELD label RETURN label",
+        "RETURN COUNT { CALL db.labels() YIELD label RETURN label }",
+        "MATCH (n) WHERE EXISTS { MATCH (m) SET m.changed=true RETURN m } RETURN n",
+        "RETURN 1 UNION ALL CALL db.labels()",
     ],
 )
 def test_query_editor_rejects_writes_and_procedures(statement):
@@ -161,6 +168,13 @@ def test_query_editor_rejects_writes_and_procedures(statement):
         "// SET is a comment\nMATCH (n) WHERE n.name='DELETE; CALL' RETURN n;",
         "RETURN {text: 'CREATE'} AS value",
         "MATCH (n) RETURN n.`set`",
+        "MATCH (start:User) RETURN start",
+        "MATCH (start:User)-[:FRIEND]-(stop:User) WHERE stop <> start RETURN start, stop",
+        "MATCH (n) WITH n AS start RETURN start.start AS stop",
+        "MATCH (n) WHERE n.start=$start RETURN {start:n.start, stop:n.stop}",
+        "MATCH (count) RETURN count {start:count.start, call:count.call}",
+        "RETURN COUNT { MATCH (start:User) RETURN start }",
+        "MATCH (n) RETURN n; // trailing comment",
     ],
 )
 def test_query_editor_accepts_read_queries_with_literals_and_comments(statement):

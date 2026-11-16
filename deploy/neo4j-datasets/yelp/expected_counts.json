@@ -1,0 +1,100 @@
+{
+  "nodes": {
+    "Business": 150346,
+    "Category": 1311,
+    "Review": 6990247,
+    "Tip": 908915,
+    "User": 1987897
+  },
+  "relationships": {
+    "FOR": 908915,
+    "FRIEND": 14611748,
+    "IN_CATEGORY": 668592,
+    "REVIEWS": 6990247,
+    "TIPPED": 908915,
+    "WROTE": 6990247
+  },
+  "relationship_rows": [
+    {
+      "pattern": "(:Tip)-[:FOR]-(:Business)",
+      "type": "FOR",
+      "count": 908915
+    },
+    {
+      "pattern": "(:User)-[:FRIEND]-(:User)",
+      "type": "FRIEND",
+      "count": 14611748
+    },
+    {
+      "pattern": "(:Business)-[:IN_CATEGORY]-(:Category)",
+      "type": "IN_CATEGORY",
+      "count": 668592
+    },
+    {
+      "pattern": "(:Review)-[:REVIEWS]-(:Business)",
+      "type": "REVIEWS",
+      "count": 6990247
+    },
+    {
+      "pattern": "(:User)-[:TIPPED]-(:Tip)",
+      "type": "TIPPED",
+      "count": 908915
+    },
+    {
+      "pattern": "(:User)-[:WROTE]-(:Review)",
+      "type": "WROTE",
+      "count": 6990247
+    }
+  ],
+  "published_totals": {},
+  "published_tables": [
+    [
+      [
+        "Business",
+        "150,346"
+      ],
+      [
+        "Category",
+        "1,311"
+      ],
+      [
+        "Review",
+        "6,990,247"
+      ],
+      [
+        "Tip",
+        "908,915"
+      ],
+      [
+        "User",
+        "1,987,897"
+      ]
+    ],
+    [
+      [
+        "(:Tip)-[:FOR]-(:Business)",
+        "908,915"
+      ],
+      [
+        "(:User)-[:FRIEND]-(:User)",
+        "14,611,748"
+      ],
+      [
+        "(:Business)-[:IN_CATEGORY]-(:Category)",
+        "668,592"
+      ],
+      [
+        "(:Review)-[:REVIEWS]-(:Business)",
+        "6,990,247"
+      ],
+      [
+        "(:User)-[:TIPPED]-(:Tip)",
+        "908,915"
+      ],
+      [
+        "(:User)-[:WROTE]-(:Review)",
+        "6,990,247"
+      ]
+    ]
+  ]
+}

@@ -9,6 +9,7 @@ import pytest
 from neo4j import Record
 
 from graphmine_agent.analytics import AnalyticsError
+from graphmine_agent.database import RecordNotFound
 from graphmine_agent.database_connections import ConnectionPair, check_connection, delete_pair, owner_directory, save_pair
 from graphmine_agent.database_datasets import datasets, selected_dataset
 from graphmine_agent.database_queries import execute_query
@@ -79,7 +80,7 @@ def test_health_and_default_selection_skip_sql_and_report_optional_outage(settin
         calls.append(1); raise OSError('private SQL credential')
     monkeypatch.setattr('graphmine_agent.database_connections.neo4j_session', neo)
     monkeypatch.setattr('graphmine_agent.database_connections.sql_connection', unavailable)
-    monkeypatch.setattr('graphmine_agent.database_datasets.sql_connection', unavailable)
+    monkeypatch.setattr('graphmine_agent.database_sources.sql_connection', unavailable)
     health = check_connection(source)
     assert health['connected'] and health['query_available'] and not health['enrichment_available']
     assert health['sql']['configured'] is False and health['sql']['connected'] is None and not calls
@@ -93,11 +94,10 @@ def test_health_and_default_selection_skip_sql_and_report_optional_outage(settin
     health = check_connection(source)
     assert not health['connected'] and health['query_available']
     entries = datasets(settings, source)
-    assert entries[0]['status'] == 'ready' and entries[0]['discovery_warning']
+    assert entries[0]['status'] == 'ready' and 'discovery_warning' not in entries[0]
     assert 'private SQL' not in json.dumps(entries)
-    with pytest.raises(AnalyticsError) as error:
+    with pytest.raises(RecordNotFound):
         selected_dataset(settings, source, 'missing-catalog')
-    assert error.value.code == 'dataset_discovery'
 
 
 def test_actual_query_projection_and_chat_work_without_sql(workspace, source, monkeypatch):
@@ -112,7 +112,7 @@ def test_actual_query_projection_and_chat_work_without_sql(workspace, source, mo
     monkeypatch.setattr('graphmine_agent.database_queries.execute_query', execute_query)
     def forbidden(*_):
         raise AssertionError('A direct Neo4j query must never open SQL')
-    monkeypatch.setattr('graphmine_agent.database_datasets.sql_connection', forbidden)
+    monkeypatch.setattr('graphmine_agent.database_sources.sql_connection', forbidden)
     monkeypatch.setattr('graphmine_agent.database_enrichment.sql_connection', forbidden)
     response = workspace.client.post('/api/database-sources/demo/queries', json={'statement': 'MATCH p=()-[]->() RETURN p', 'dataset_id': 'default'})
     assert response.status_code == 201, response.text

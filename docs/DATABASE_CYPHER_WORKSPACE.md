@@ -24,7 +24,8 @@ flowchart LR
    conversation toolbar.
    The **Database** tab selects an available query or import connection. For
    Neo4j it checks the graph service and any configured PostgreSQL service.
-   Its **Dataset** picker includes the default Neo4j graph and available SQL catalog datasets.
+   Each verified benchmark has its own Neo4j connection and dataset.
+   Ordinary connections expose their default Neo4j graph.
    Selecting a dataset displays its published schema and a starting Cypher query.
    **Add connection** offers Neo4j with optional PostgreSQL, a private SQLite
    upload, or a REST export. SQLite and REST use **Preview source** and an
@@ -177,7 +178,7 @@ entity and relationship mappings. Select node types, relationship direction,
 filters, row limits and analysis direction, then choose **Generate Cypher**.
 The generated statement and parameters are inspectable. **Use generated query**
 explicitly replaces the current editor contents; generation does not execute
-anything. For an unmapped default Neo4j graph, the builder discovers label,
+anything. For an unmapped Neo4j graph, including an isolated benchmark, the builder discovers label,
 relationship and property names from read-only samples of at most 500 nodes and
 500 relationships, also bounded by the connection's row and byte limits.
 Discovery uses no administrative procedures. The UI states that this sample
@@ -185,8 +186,8 @@ may omit graph structure; the manual Cypher editor remains available. Discovery
 failure does not disable manual queries. Mapped SQL-only attributes are excluded
 from graph filters.
 
-The builder scopes mapped elements to their source and mapping identifiers and
-catalog nodes to their dataset label. Filter values are parameters, never query
+The builder scopes mapped elements to their source and mapping identifiers.
+Benchmark queries use the selected instance and its original published labels. Filter values are parameters, never query
 fragments. **Edge weight property** overrides the analysis weight while keeping
 original relationship identity and SQL lineage. Every returned relationship must
 contain a finite numeric value for the chosen property. Source/target projection
@@ -281,9 +282,9 @@ For MovieLens 32M, the **Example: users who rated the same movies** button fills
 in this query, the parameters, the projection mode and undirected analysis:
 
 ```cypher
-MATCH (u:GM_MovieLens32M:User)
+MATCH (u:User)
 WITH u ORDER BY u.userId LIMIT $userLimit
-MATCH (u)-[:RATED]->(m:GM_MovieLens32M:Movie)
+MATCH (u)-[:RATED]->(m:Movie)
 WITH m, collect(DISTINCT u) AS users
 UNWIND users AS a
 UNWIND users AS b
@@ -299,8 +300,9 @@ reverse duplicates. Increasing the user limit can grow the number of pairs
 quadratically. GraphMine enforces its normal row and graph size limits.
 
 The derived edges exist only in the saved analysis graph; the source database is
-read without creating relationships. Source nodes retain SQL enrichment support.
-Derived edges have no SQL row mapping. Duplicate endpoint rows produce parallel
+read without creating relationships. Isolated benchmark snapshots have no SQL
+lineage or enrichment. Mapped connections such as Transfers retain their SQL
+features; derived edges have no SQL row mapping. Duplicate endpoint rows produce parallel
 edges, so aggregate in Cypher when one edge per pair is wanted. Preview, saved
 inputs, chat and subsequent analysis use the same graph; reopening the source
 picker restores its projection mode.
@@ -310,133 +312,145 @@ even when there are no graph nodes. An empty query result is reported separately
 
 ## Benchmark datasets and schemas
 
-The Dataset picker lists datasets belonging to the selected connection and
-displays the publisher's original schema diagrams when a dataset is selected.
-Switch between
-Neo4j, TigerGraph, PuppyGraph and GraphFrames where the site publishes diagrams.
-The view supports full-size zoom, image download, and downloading the published
-loading commands and queries. These source snippets are saved as text and are
-never executed by the downloader.
-The searchable table list shows imported labels, relationship types, SQL
-columns and their types alongside the published diagrams.
+Development uses one Neo4j 5.26 Community instance per benchmark, with the
+publisher's labels, properties and relationships. Each verified dataset is a
+separate connection named after the dataset (`benchmark-<id>` in the API).
+Selecting it shows its published schema diagrams, a starting query and a link
+to the PropGBench Neo4j workload. Queries run on that instance. There is no
+shared-store dataset-label filter and no SQL catalog dependency.
 
-Benchmark snapshots resolve source lineage from the connection's SQL catalog
-and the original keys retained in Neo4j. Node and relationship mappings are
-scoped to the selected dataset; Neo4j element IDs are never treated as SQL keys.
-LDBC relationships recover import-only endpoint keys from their original
-endpoint nodes. Attribute fetches and relationship expansion use these mappings
-without requiring a new graph import. Ambiguous SQL keys are rejected instead
-of merging records. Source schema changes require a fresh query snapshot.
+The app lists only entries in `deploy/neo4j-datasets/registry.json` whose
+instance has `status=ready`, a passed verification report, matching load hashes,
+and the recorded report checksum. A prepared or loaded dataset is unavailable
+until verification passes. Source fingerprints include the dataset identity,
+load time and script hashes; each snapshot preserves those values and the
+workload URL. Neo4j element IDs are namespaced by dataset. Different users'
+queries and snapshots remain private and use their selected connections.
 
-```bash
-python deploy/database-workspace/download-benchmarks.py \
-  /data/labdata/wajid/graphmine_data/datasets --workers 4
-python deploy/database-workspace/download-benchmark-schemas.py \
-  /data/labdata/wajid/graphmine_data/datasets
-export GRAPHMINE_BENCHMARK_DATASETS_ROOT=/data/labdata/wajid/graphmine_data/datasets
-```
+Benchmark connections expose no SQL mappings or writer credentials. **Add table
+attributes** and **Add relationships** are hidden for their snapshots; the API
+also rejects those operations. The Transfers demo retains mapped SQL enrichment,
+expansion and synchronization. Ordinary Neo4j connections expose their default
+graph even when an optional SQL service is unavailable.
 
-The data downloader preserves Dataverse metadata, resumes partial transfers,
-checks published MD5 hashes and sizes, and records SHA-256 receipts for each
-completed file. Tabular files use `format=original` because Dataverse hashes
-refer to the original CSV rather than its generated tab-separated export.
-Split files remain in their published form. Import preparation joins them by
-bytes, validates their published file set, and retains the originals.
-Unavailable or access-controlled downloads are skipped. Amazon's data download
-requires access, and FARS has no usable published data link. Their public schemas
-are retained, but neither is listed as an imported database dataset.
+The Cypher validator accepts identifiers such as `start` and `stop` in patterns,
+properties and aliases while rejecting administrative and writing clauses.
+`CALL`, including GDS calls, remains disabled in the app. EXPLAIN must classify
+each statement as read-only before execution; reads use READ_ACCESS and rollback.
+The existing app limits remain 30 seconds, 100,000 rows and 64 MiB per registry
+connection. Administrative verification separately consumes every result from four
+representative published queries without changing their text. The user approved
+this scope after long Yelp traversals. Remaining queries are explicitly untested;
+`--all-queries` is available for a separate exhaustive run.
 
-The local installation stores data under
-`/data/labdata/wajid/graphmine_data`:
+### Instances and files
+
+All ports bind to loopback; no database firewall ports or public routes are
+opened. Each instance uses a systemd user service named
+`graphmine-neo4j-<dataset>.service`. These are the configured memory budgets;
+actual memory and disk measurements are saved in each `verify_report.json`.
+
+| Dataset | Bolt / HTTP | Heap / page cache | Service memory cap |
+| --- | --- | --- | --- |
+| Yelp | 17701 / 17401 | 4 / 12 GiB | 18 GiB |
+| MovieLens 32M | 17702 / 17402 | 4 / 8 GiB | 14 GiB |
+| MovieLens Tag Genome | 17703 / 17403 | 4 / 8 GiB | 14 GiB |
+| Stack Overflow (deferred) | 17704 / 17404 reserved | 4 / 40 GiB planned | 46 GiB planned |
+| OnTime | 17705 / 17405 | 16 / 12 GiB | 30 GiB |
+| LDBC SNB SF100 | 17706 / 17406 | 4 / 56 GiB | 62 GiB |
+
+The five active service caps total 138 GiB on this 251 GiB host. The old shared
+Neo4j and PostgreSQL services remain intact. LDBC is loaded last, after the other
+four active datasets pass verification. OnTime started with a 4 GiB heap; its
+first flight import exhausted that heap. The failed new store was preserved
+and the loader retried against a fresh empty store with the larger budget above,
+without changing the published Cypher.
+
+The local data root is `/data/labdata/wajid/graphmine_data`:
 
 | Directory | Contents |
 | --- | --- |
-| `datasets/{dataset}/raw` | Original published data and verification receipts |
-| `datasets/{dataset}/schemas` | Original schema diagrams, loading definitions and source pages |
-| `databases/postgresql/data` | PostgreSQL's live database files |
-| `databases/neo4j/data` | Neo4j's live graph and system databases |
-| `imports/{dataset}` | Resumable preparation, import manifests and graph import files |
+| `datasets/<dataset>/raw` | Original downloads and verification receipts |
+| `datasets/<dataset>/schemas` | Published diagrams, source pages and snippets |
+| `neo4j-instances/<dataset>/conf` | Instance-specific Neo4j and APOC configuration |
+| `neo4j-instances/<dataset>/data` | New graph and system stores |
+| `neo4j-instances/<dataset>/transactions` | Transaction logs |
+| `neo4j-instances/<dataset>/import` | Exact published import paths |
+| `neo4j-instances/<dataset>/source-cache` | Verified joined or derived import files |
+| `neo4j-instances/<dataset>/logs` | Database logs |
+| `neo4j-instances/<dataset>/status.json` | Loading state, counts, load time and hashes |
+| `neo4j-instances/<dataset>/verify_report.json` | Query results, counts, indexes and resource measurements |
+| `databases/neo4j`, `databases/postgresql`, `imports` | Preserved old stores and preparation artifacts |
 
-PostgreSQL database `graphmine_demo` contains separate schemas for Yelp,
-MovieLens 32M, MovieLens Tag Genome, Stack Overflow, OnTime and LDBC SNB.
-`graphmine_catalog.datasets` records each dataset's tables, graph label, counts,
-default query and readiness. The existing Transfers demo is retained.
-The local PostgreSQL and Neo4j services run as user services on ports 55432 and
-17687 respectively. Their previous stores are retained as migration backups.
-
-The import scripts require a separate environment with `duckdb`,
-`psycopg[binary]`, `orjson`, `neo4j` and `pytz`. Credentials come from the private
-demo environment file. The preparation scripts load complete tables into
-PostgreSQL. Typed Parquet graph inputs preserve text, including embedded line
-breaks, and avoid CSV multiline boundary inference in the native importer:
+Passwords are stored only in the owner's mode-600
+`.database-workspace/demo.env`, never in the registry, source code or provenance.
+The app reads the required password reference from that file when connecting.
+Configure these paths in the development environment:
 
 ```bash
-set -a
-. .database-workspace/demo.env
-set +a
-export GRAPHMINE_LAB_DATA_ROOT=/data/labdata/wajid/graphmine_data
-# Run once for each of yelp, movielens-32m, movielens-genome, ontime, stackoverflow.
-# Use an appropriate memory budget when running preparations concurrently.
-GRAPHMINE_IMPORT_MEMORY=64GB .database-workspace/import-venv/bin/python \
-  deploy/database-workspace/import-benchmark-tables.py stackoverflow
-.database-workspace/import-venv/bin/python \
-  deploy/database-workspace/import-ldbc-tables.py
-# Verify typed graph files for every prepared dataset.
-for dataset in yelp movielens-32m movielens-genome ontime stackoverflow ldbc-snb; do
-  .database-workspace/import-venv/bin/python \
-    deploy/database-workspace/prepare-benchmark-parquet.py "$dataset"
-done
-# Requires all six preparations to have completed.
-.database-workspace/import-venv/bin/python \
-  deploy/database-workspace/build-benchmark-graphs.py
+GRAPHMINE_NEO4J_DATASETS_REGISTRY=/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/deploy/neo4j-datasets/registry.json
+GRAPHMINE_NEO4J_INSTANCES_ROOT=/data/labdata/wajid/graphmine_data/neo4j-instances
+GRAPHMINE_NEO4J_DATASETS_PASSWORD_FILE=/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.database-workspace/demo.env
+GRAPHMINE_BENCHMARK_DATASETS_ROOT=/data/labdata/wajid/graphmine_data/datasets
 ```
 
-The graph builder imports into a separate store while the existing graph remains
-available. It preserves the demo graph and authentication database, retains the
-previous store, and checks global and per-dataset node and relationship counts before marking the
-datasets ready. Installation briefly restarts the local Neo4j service and rolls
-back to the previous store if verification fails. It refuses unrecognized
-staging directories and does not skip duplicate nodes or invalid relationships.
-Repeated completed preparations use manifests rather than duplicating rows.
-New table imports commit a recovery receipt in `graphmine_catalog.imported_tables`
-in the same transaction as COPY. A retry can recover the local manifest after a
-crash between the database commit and the file write. Repeating an unchanged
-preparation preserves ready status. Rerunning the graph builder after installation
-verifies the installed counts and input identity before restoring catalog readiness.
-New node tables receive unique SQL indexes on their source identifier columns.
-Existing imported tables are not rebuilt or reindexed automatically by the app.
-The bulk importer budgets 24 GiB of Java heap, 64 GiB for Parquet direct buffers,
-and up to 96 GiB for import structures; it allows garbage collection of unused
-direct buffers. These settings are for the local 251 GiB server.
-Other hosts can set `GRAPHMINE_NEO4J_HOME`, `GRAPHMINE_NEO4J_ROOT`,
-`GRAPHMINE_NEO4J_SERVICE`, `JAVA_HOME`, `GRAPHMINE_IMPORT_HEAP`,
-`GRAPHMINE_IMPORT_DIRECT_MEMORY`, `GRAPHMINE_IMPORT_OFF_HEAP`, and
-`GRAPHMINE_IMPORT_THREADS`. SQL preparation supports
-`GRAPHMINE_IMPORT_SQL_HOST`, `GRAPHMINE_IMPORT_SQL_DATABASE`, and
-`GRAPHMINE_IMPORT_SQL_USER` in addition to the existing port/password variables.
+Leaving the registry setting absent disables benchmark discovery. Production
+and testing retain their separate environment settings until deliberate rollout.
 
-LDBC uses the complete SF100 BI initial snapshot; published insertion/deletion
-streams and query parameters are also downloaded and retained. Stack Overflow's
-published original answer and question files end inside a record. Complete
-original records are imported; incomplete tails are preserved both in
-`imports/stackoverflow/incomplete-source-records` and the catalog's
-`source_fragments` table. The dataset displays this source limitation. Question
-metadata from the cleaned export supplies additional IDs absent from the original;
-the merge prefers original records wherever both exist. Questions available only
-as metadata have no fabricated title or body. Published variants are retained
-separately, and the graph contains one node per question ID.
-Relationship preparation follows the publisher's joins: an edge requires both
-endpoints to be present in the available node files.
+### Loading and verification
 
-Remote PostgreSQL connections read their own catalog if available. Ordinary
-relational schemas are also listed and identified as needing a graph mapping.
-An existing Neo4j graph remains queryable without a table mapping or SQL service.
-SQL discovery failures show a warning alongside the default graph. Selecting
-and querying that default never opens SQL; an unavailable named catalog dataset
-returns a discovery error instead of silently changing its selection. Dataset
-selection is validated on the server; graph snapshots cannot include nodes from
-a different catalog dataset. SQL and Neo4j connection permissions still govern
-access to the database as a whole.
+The source copies, audit, instance creator, loader and verifier live in
+[`deploy/neo4j-datasets/`](../deploy/neo4j-datasets/README.md). Each dataset's
+`SOURCE.md` records its workload URL, copy date, paths and compatibility notes.
+Only file paths are substituted in the published Cypher. No extra labels,
+properties or relationships are added.
+
+1. Audit source copies with `source_pages.py audit all`.
+2. Prepare exact import paths with `prepare_import_dir.py <dataset>` using the
+   import virtual environment. It validates original receipts and hashes and
+   reuses `legacy/benchmark_import.py::Builder.source()` for byte-split files.
+   Links resolve to hard-linked files inside APOC's import boundary without
+   duplicating or modifying the originals.
+3. Run `create_instance.py <dataset>` using the app virtual environment. It
+   refuses existing stores, checks loopback ports and empty databases, and checks
+   APOC and the import directory. Matching APOC 5.26.32 is used because 5.26.0
+   failed against the installed Neo4j libraries; the evidence is in `SOURCE.md`.
+4. In tmux, run `load_dataset.py <dataset>`. It refuses non-empty databases,
+   executes each published statement and fails on any APOC batch error. It waits
+   for indexes and records the load without publishing the dataset.
+5. After loading succeeds, run `verify_dataset.py <dataset>` in tmux. It checks
+   label/type counts and indexes, executes four representative published queries,
+   records other queries as untested or excluded, and checks that graph counts
+   are unchanged. Selected queries have a five-minute timeout by default.
+   A failure keeps the dataset unavailable. Count differences require exact
+   expected/actual values and source-backed explanations in `SOURCE.md` and
+   `count_explanations.json`; mappings and expected counts are never altered to
+   force a match. Only a passed report publishes the registry entry.
+
+The user approved adapting LDBC's published bulk importer to a dedicated Neo4j
+5.26 Community instance. Its eight node and 23 relationship groups use pinned
+upstream typed headers. Derived shards omit only the verified CSV column header;
+all data records are preserved. The adapter stops only the dedicated LDBC
+service, retains its empty bootstrap store, and applies the published schema
+statements individually after import. Its source record explains these version
+compatibility changes. Original archive, extracted data and update streams stay
+on disk.
+
+The data and schema downloaders remain in `deploy/database-workspace/`. They
+preserve publisher metadata, verify original-file checksums, resume transfers,
+and retain published schema images and snippets. Schema downloads never execute
+those snippets. The former PostgreSQL/Parquet/shared-Neo4j import scripts are in
+`deploy/database-workspace/legacy/` for reference. They are no longer the active
+benchmark loading path. Old stores remain until their deletion is approved.
+
+### Deferred sources
+
+Stack Overflow is deferred at the user's request. The published original answer
+and question CSVs end inside records despite matching the publisher's checksums.
+The publisher's own cleaning helper rejects that incomplete input. No replacement
+records are invented and no new Stack Overflow instance is published. Complete
+input files are needed to resume. Amazon remains access-controlled and FARS has
+no published usable data link; neither is an active database connection.
 
 ## Saved connections
 
@@ -838,16 +852,25 @@ selection; the live suite requires the explicit database integration selection.
   agent/tests/test_database_connections.py agent/tests/test_database_datasets.py \
   agent/tests/test_benchmark_datasets.py agent/tests/test_result_views.py -q
 .database-workspace/import-venv/bin/python \
-  deploy/database-workspace/test_benchmark_import.py
+  deploy/database-workspace/legacy/test_benchmark_import.py
 
 # Only against the disposable seeded demo; the integration test refreshes it.
 GRAPHMINE_TEST_DATABASE_INTEGRATION=1 .venv/bin/python -m pytest \
   agent/tests/test_database_integration.py \
   agent/browser_tests/test_database_roundtrip.py -q
 
-# After the benchmark graph installation: schema → query → preview → domain/chat.
+# Deployment gates and four real Yelp queries (skipped when Yelp is offline).
+.venv/bin/python -m pytest deploy/neo4j-datasets/tests -q
+.venv/bin/python -m pytest agent/tests/test_yelp_instance_integration.py -q
+# Two authenticated users querying separate real instances; temporary app data.
+GRAPHMINE_TEST_BENCHMARK_INTEGRATION=1 .venv/bin/python -m pytest \
+  agent/tests/test_benchmark_instances_integration.py -q
+
+# After all five active datasets are verified, with the four registry/schema
+# paths above exported and GRAPHMINE_TEST_RUNTIME_ROOT set to a built runtime.
 GRAPHMINE_TEST_DATABASE_INTEGRATION=1 GRAPHMINE_TEST_BENCHMARK_INTEGRATION=1 \
-  .venv/bin/python -m pytest agent/browser_tests/test_data_source_workspace.py -q
+  .venv/bin/python -m pytest agent/browser_tests/test_data_source_workspace.py \
+  -k 'benchmark or imported_dataset or movielens or published_schemas' -q
 ```
 
 The live checks use real PostgreSQL, Neo4j, native CPU calculations, the API and

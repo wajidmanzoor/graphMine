@@ -1,145 +1,142 @@
-"""Existing benchmark graph properties resolve to exact, scoped SQL keys."""
+"""Verified benchmarks use separate instances and never acquire SQL lineage."""
+
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
+import hashlib
+import json
 
 import pytest
-import sqlite3
 from neo4j.graph import Graph, Node
 
-from graphmine_agent.analytics import AnalyticsError, _key
-from graphmine_agent.benchmark_mappings import catalog_source
+from graphmine_agent.analytics import AnalyticsError
+from graphmine_agent.benchmark_mappings import resolve_source
+from graphmine_agent.database import RecordNotFound
+from graphmine_agent.database_datasets import datasets
 from graphmine_agent.database_queries import GraphCollector
-from graphmine_agent.database_sources import source_keys, sql_connection
-from graphmine_agent.database_sync import mapped_records
-from graphmine_agent.database_enrichment import canonical_records
+from graphmine_agent.database_sources import get_source, neo4j_session
+from graphmine_agent.identity import current_principal
+from graphmine_agent.neo4j_registry import password, ready_datasets, sources as registry_sources
+from test_connectors import sources  # noqa: F401
 from test_database_workspace import source, workspace  # noqa: F401
 
 
-def dataset(identifier="yelp"):
-    return {
-        "id": identifier, "name": "Imported benchmark", "status": "ready",
-        "graph_label": "GM_Test", "schema_name": identifier.replace("-", "_"),
-        "tables": [{"name": "accounts", "kind": "nodes", "key": "id",
-                    "labels": ["Account", "GM_Test"],
-                    "columns": [{"name": name, "type": dtype} for name, dtype in [
-                        ("id", "bigint"), ("name", "text"), ("risk", "bigint"), ("country", "text")
-                    ]]}],
-    }
+def registry_setup(settings, directory, slugs=("yelp", "movielens-32m")):
+    directory.mkdir(parents=True, exist_ok=True)
+    root, registry, credentials = directory / "instances", directory / "registry.json", directory / "demo.env"
+    entries, secrets = [], []
+    for index, slug in enumerate(slugs, 1):
+        env = "GRAPHMINE_NEO4J_" + slug.upper().replace("-", "_") + "_PASSWORD"
+        entries.append({"id": slug, "name": slug, "bolt_uri": f"bolt://127.0.0.1:{17700+index}",
+                        "password_env": env, "workload_url": f"https://pgraphbenchweb.vercel.app/workloads/{slug}-neo4j.html",
+                        "default_query": "MATCH (n) RETURN n LIMIT 20", "memory": {"heap_gib": 4}})
+        secrets.append(env + "=private-test-" + slug)
+        home = root / slug
+        home.mkdir(parents=True)
+        hashes = {"load/001.cypher": "a" * 64}
+        report = {"id": slug, "passed": True, "script_hashes": hashes}
+        payload = json.dumps(report)
+        (home / "verify_report.json").write_text(payload)
+        (home / "status.json").write_text(json.dumps({"id": slug, "status": "ready", "phase": "ready",
+            "verify_report_sha256": hashlib.sha256(payload.encode()).hexdigest(), "script_hashes": hashes,
+            "load_finished_at": "2026-11-15T00:00:00+00:00", "verified_at": "2026-11-15T00:01:00+00:00", "load_seconds": 60,
+            "counts": {"nodes": {"User": 1}, "relationships": {}, "total_nodes": 1, "total_relationships": 0}}))
+    registry.write_text(json.dumps({"version": 1, "datasets": entries}))
+    credentials.write_text("\n".join(secrets) + "\n")
+    credentials.chmod(0o600)
+    return replace(settings, neo4j_datasets_registry=registry, neo4j_instances_root=root,
+                   neo4j_datasets_password_file=credentials)
 
 
-@pytest.mark.parametrize("identifier", ["yelp", "movielens-32m", "movielens-genome", "ontime", "stackoverflow", "ldbc-snb"])
-def test_catalog_node_lineage_uses_source_key_and_dataset_namespace(source, identifier):
-    mapped = catalog_source(source, dataset(identifier))
-    collector = GraphCollector(mapped, 100_000)
-    value = Node(Graph(), "native-element-123", 123, {"Account", "GM_Test"}, {"id": 1, "name": "Ada"})
-    identity = collector.node(value)
-    assert identity != "neo4j:native-element-123"
-    assert collector.lineage["vertices"][_key(identity)] == {
-        "mapping": identifier.replace("-", "_") + "_accounts", "keys": [1],
-    }
-    # Merely sharing a label/property with a different graph grants no lineage.
-    other = Node(Graph(), "foreign", 124, {"Account"}, {"id": 1, "gm_source": source.id, "gm_mapping": "accounts"})
-    other_id = collector.node(other)
-    assert _key(other_id) not in collector.lineage["vertices"]
-    with pytest.raises(AnalyticsError, match="SQL type"):
-        collector.node(Node(Graph(), "invalid", 125, {"Account", "GM_Test"}, {"id": 1.5}))
+def test_registry_requires_ready_state_and_matching_successful_report(settings, tmp_path):
+    settings = registry_setup(settings, tmp_path / "registry")
+    assert len(ready_datasets(settings)) == 2
+    path = settings.neo4j_instances_root / "yelp/status.json"
+    state = json.loads(path.read_text())
+    path.write_text(json.dumps({**state, "status": "loading"}))
+    assert [d["id"] for d in ready_datasets(settings)] == ["movielens-32m"]
+    path.write_text(json.dumps(state))
+    (path.parent / "verify_report.json").write_text('{"id":"yelp","passed":false}')
+    assert [d["id"] for d in ready_datasets(settings)] == ["movielens-32m"]
 
 
-def test_catalog_snapshot_can_fetch_current_sql_attributes(workspace, monkeypatch):
-    imported = dataset()
-    monkeypatch.setattr("graphmine_agent.database_datasets.datasets", lambda *_: [imported])
+def test_each_instance_has_its_own_connection_and_identity_without_sql(settings, tmp_path):
+    settings = registry_setup(settings, tmp_path / "registry")
+    first, second = registry_sources(settings)
+    assert first.neo4j_uri != second.neo4j_uri
+    assert first.fingerprint() != second.fingerprint()
+    identities = []
+    for source in [first, second]:
+        assert not source.entities and not source.relationships and source.sql_type is None
+        assert source.capabilities()["enrichment"] is False
+        assert datasets(settings, source)[0]["graph_label"] is None
+        collector = GraphCollector(source, 100_000)
+        identities.append(collector.node(Node(Graph(), "same-element-id", 1, {"User"}, {"name": "Ada"})))
+        assert collector.lineage == {"vertices": {}, "edges": {}}
+        with pytest.raises(AnalyticsError, match="read queries only"):
+            with neo4j_session(source, write=True):
+                pytest.fail("No writer should be opened")
+    assert identities[0] != identities[1]
+    with pytest.raises(RecordNotFound):
+        resolve_source(settings, first, "movielens-32m")
+    assert "private-test" not in json.dumps([s.public() for s in [first, second]])
 
+
+def test_password_file_is_private_and_values_are_not_evaluated(settings, tmp_path):
+    settings = registry_setup(settings, tmp_path / "registry", ("yelp",))
+    path = settings.neo4j_datasets_password_file
+    path.write_text("GRAPHMINE_NEO4J_YELP_PASSWORD='literal $(not-a-command)'\n")
+    assert password(path, "GRAPHMINE_NEO4J_YELP_PASSWORD") == "literal $(not-a-command)"
+    path.chmod(0o644)
+    with pytest.raises(AnalyticsError) as error:
+        password(path, "GRAPHMINE_NEO4J_YELP_PASSWORD")
+    assert "not-a-command" not in str(error.value)
+
+
+def test_snapshot_provenance_and_enrichment_capabilities(workspace, tmp_path, monkeypatch):
+    workspace.runtime.settings = registry_setup(workspace.runtime.settings, tmp_path / "registry")
     def execute(source, body, limit):
         collector = GraphCollector(source, limit)
-        collector.node(Node(Graph(), "n1", 1, {"Account", "GM_Test"}, {"id": 1, "name": "Ada"}))
+        collector.node(Node(Graph(), "n1", 1, {"User"}, {"name": "Ada"}))
         return collector.graph(), collector.lineage, [], 1, None
-
     monkeypatch.setattr("graphmine_agent.database_queries.execute_query", execute)
-    client = workspace.client
-    snapshot = client.post("/api/database-sources/demo/queries", json={
-        "statement": "MATCH (n:GM_Test) RETURN n LIMIT 1", "dataset_id": "yelp",
-    })
-    assert snapshot.status_code == 201, snapshot.text
-    opened = client.post(f"/api/database-query-snapshots/{snapshot.json()['dataset']['id']}/chat", json={})
+    response = workspace.client.post("/api/database-sources/benchmark-yelp/queries", json={
+        "statement": "MATCH (start:User) RETURN start", "dataset_id": "yelp"})
+    assert response.status_code == 201, response.text
+    snapshot = response.json()["dataset"]
+    provenance = snapshot["source"]
+    assert provenance["database_dataset"]["id"] == "yelp"
+    assert provenance["database_dataset"]["script_hashes"] == {"load/001.cypher": "a" * 64}
+    assert provenance["database_dataset"]["load_seconds"] == 60
+    assert not provenance["database_source"]["capabilities"]["enrichment"]
+    opened = workspace.client.post(f"/api/database-query-snapshots/{snapshot['id']}/chat", json={})
     assert opened.status_code == 201, opened.text
-    file_id = opened.json()["file"]["id"]
-    schema = client.get(f"/api/files/{file_id}/source-schema")
-    assert schema.status_code == 200, schema.text
-    assert schema.json()["entities"][0]["id"] == "yelp_accounts"
-    result = client.post(f"/api/files/{file_id}/enrichments", json={
-        "mapping": "yelp_accounts", "kind": "vertices", "fields": ["risk", "country"],
-    })
-    assert result.status_code == 201, result.text
-    assert result.json()["updates"][0]["attributes"] == {"risk": 9, "country": "UK"}
+    result = workspace.client.post(f"/api/files/{opened.json()['file']['id']}/enrichments", json={
+        "mapping": "accounts", "fields": ["risk"]})
+    assert result.status_code == 409 and result.json()["error"]["code"] == "sql_unavailable"
+    result = workspace.client.post(f"/api/files/{opened.json()['file']['id']}/expansions", json={"mapping": "unavailable"})
+    assert result.status_code == 409 and result.json()["error"]["code"] == "sql_unavailable"
+    assert get_source(workspace.runtime.settings, "demo").capabilities()["enrichment"] is True
 
 
-def test_ldbc_relationship_uses_endpoint_keys_and_preserves_parallel_work_years(source):
-    imported = {"id": "ldbc-snb", "graph_label": "GM_LDBC", "tables": []}
-    for name in ("Person", "Organisation"):
-        imported["tables"].append({
-            "name": name, "kind": "nodes", "key": "id", "labels": [name, "GM_LDBC"],
-            "columns": [{"name": "id", "type": "bigint"}, {"name": "name", "type": "text"}],
-        })
-    imported["tables"].append({
-        "name": "Person_workAt_Company", "kind": "relationships", "relationship_type": "WORK_AT",
-        "columns": [{"name": name, "type": "bigint"} for name in ["PersonId", "CompanyId", "workFrom"]],
-    })
-    mapped = catalog_source(source, imported)
-    collector = GraphCollector(mapped, 100_000)
-    g = Graph()
-    person = Node(g, "p", 1, {"Person", "GM_LDBC"}, {"id": 9007199254740993})
-    company = Node(g, "c", 2, {"Organisation", "Company", "GM_LDBC"}, {"id": 42})
-    for year in (2010, 2015):
-        edge = g.relationship_type("WORK_AT")(g, str(year), year, {"workFrom": year})
-        edge._start_node, edge._end_node = person, company
-        collector.relationship(edge)
-    assert len(collector.graph()["edges"]) == 2
-    assert sorted(link["keys"] for link in collector.lineage["edges"].values()) == [
-        [9007199254740993, 42, 2010], [9007199254740993, 42, 2015],
-    ]
-
-
-def test_catalog_mapping_change_changes_snapshot_fingerprint(workspace):
-    original = dataset()
-    # Changing a key or schema must change the fingerprint used by snapshots.
-    from graphmine_agent.database_sources import get_source
-    base = get_source(workspace.runtime.settings, "demo")
-    before = catalog_source(base, original)
-    changed = {**original, "schema_name": "replacement"}
-    assert before.fingerprint() != catalog_source(base, changed).fingerprint()
-
-
-def test_expansion_matches_text_foreign_keys_to_integer_node_ids(source):
-    with sqlite3.connect(source.sqlite_path) as db:
-        db.executescript("""
-            CREATE TABLE directors(name TEXT PRIMARY KEY);
-            CREATE TABLE movies(item_id INTEGER PRIMARY KEY, title TEXT);
-            CREATE TABLE directed(src TEXT, dst TEXT);
-            INSERT INTO directors VALUES ('Director');
-            INSERT INTO movies VALUES (42,'Film');
-            INSERT INTO directed VALUES ('Director','42');
-        """)
-    imported = {"id": "movielens-genome", "graph_label": "GM_Genome", "tables": [
-        {"name": "directors", "kind": "nodes", "key": "name", "labels": ["Director", "GM_Genome"],
-         "columns": [{"name": "name", "type": "text"}]},
-        {"name": "movies", "kind": "nodes", "key": "item_id", "labels": ["Movie", "GM_Genome"],
-         "columns": [{"name": "item_id", "type": "bigint"}, {"name": "title", "type": "text"}]},
-        {"name": "directed", "kind": "relationships", "relationship_type": "DIRECTED",
-         "columns": [{"name": "src", "type": "text"}, {"name": "dst", "type": "text"}]},
-    ]}
-    mapped = catalog_source(source, imported)
-    relation = mapped.relationships[0]
-    assert source_keys(mapped, relation, [42], ["dst"]) == ["42"]
-    with sql_connection(mapped) as db:
-        nodes, edges = mapped_records(mapped, db, "expansion", relationship=relation, selected=[
-            {"mapping": relation.target_entity, "keys": [42]},
-        ])
-    expanded, _ = canonical_records(mapped, nodes, edges)
-    collector, g = GraphCollector(mapped, 100_000), Graph()
-    director = Node(g, "d", 1, {"Director", "GM_Genome"}, {"name": "Director"})
-    movie = Node(g, "m", 2, {"Movie", "GM_Genome"}, {"item_id": 42, "title": "Film"})
-    edge = g.relationship_type("DIRECTED")(g, "r", 3, {"src": "Director", "dst": "42"})
-    edge._start_node, edge._end_node = director, movie
-    collector.relationship(edge)
-    assert {v["id"] for v in expanded["vertices"]} == {v["id"] for v in collector.graph()["vertices"]}
-    assert [(e["id"], e["source"], e["target"]) for e in expanded["edges"]] == [
-        (e["id"], e["source"], e["target"]) for e in collector.graph()["edges"]
-    ]
+def test_two_users_select_different_instances_and_cannot_open_each_others_results(sources, tmp_path, monkeypatch):
+    client, runtime, alice, bob, *_ = sources
+    runtime.settings = registry_setup(runtime.settings, tmp_path / "registry")
+    calls = []
+    def execute(source, body, limit):
+        calls.append((current_principal.get().username, source.neo4j_uri))
+        collector = GraphCollector(source, limit)
+        collector.node(Node(Graph(), "n1", 1, {"User"}, {"dataset": source._catalog["id"]}))
+        return collector.graph(), collector.lineage, [], 1, None
+    monkeypatch.setattr("graphmine_agent.database_queries.execute_query", execute)
+    def query(slug, headers):
+        return client.post(f"/api/database-sources/benchmark-{slug}/queries", headers=headers,
+                           json={"statement": "MATCH (n:User) RETURN n", "dataset_id": slug})
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first = pool.submit(query, "yelp", alice)
+        second = pool.submit(query, "movielens-32m", bob)
+        a, b = first.result(), second.result()
+    assert a.status_code == b.status_code == 201, (a.text, b.text)
+    assert sorted(calls) == [("alice", "bolt://127.0.0.1:17701"), ("bob", "bolt://127.0.0.1:17702")]
+    assert a.json()["graph"]["vertices"][0]["id"] != b.json()["graph"]["vertices"][0]["id"]
+    response = client.post(f"/api/database-query-snapshots/{b.json()['dataset']['id']}/chat", headers=alice, json={})
+    assert response.status_code == 404

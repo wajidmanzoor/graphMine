@@ -1,0 +1,130 @@
+{
+  "nodes": {
+    "Actor": 122974,
+    "Director": 33592,
+    "Movie": 84661,
+    "Review": 2623824,
+    "Survey": 58903,
+    "Tag": 1094,
+    "User": 247389
+  },
+  "relationships": {
+    "ABOUT_MOVIE": 58903,
+    "ABOUT_TAG": 58903,
+    "ACTED_IN": 371629,
+    "ANSWERED": 58903,
+    "DIRECTED": 84294,
+    "HAS_REVIEW": 2623824,
+    "HAS_TAG": 212092,
+    "RATED": 28454882
+  },
+  "relationship_rows": [
+    {
+      "pattern": "(:Survey)-[:ABOUT_MOVIE]-(:Movie)",
+      "type": "ABOUT_MOVIE",
+      "count": 58903
+    },
+    {
+      "pattern": "(:Survey)-[:ABOUT_TAG]-(:Tag)",
+      "type": "ABOUT_TAG",
+      "count": 58903
+    },
+    {
+      "pattern": "(:Actor)-[:ACTED_IN]-(:Movie)",
+      "type": "ACTED_IN",
+      "count": 371629
+    },
+    {
+      "pattern": "(:User)-[:ANSWERED]-(:Survey)",
+      "type": "ANSWERED",
+      "count": 58903
+    },
+    {
+      "pattern": "(:Director)-[:DIRECTED]-(:Movie)",
+      "type": "DIRECTED",
+      "count": 84294
+    },
+    {
+      "pattern": "(:Movie)-[:HAS_REVIEW]-(:Review)",
+      "type": "HAS_REVIEW",
+      "count": 2623824
+    },
+    {
+      "pattern": "(:Movie)-[:HAS_TAG]-(:Tag)",
+      "type": "HAS_TAG",
+      "count": 212092
+    },
+    {
+      "pattern": "(:User)-[:RATED]-(:Movie)",
+      "type": "RATED",
+      "count": 28454882
+    }
+  ],
+  "published_totals": {},
+  "published_tables": [
+    [
+      [
+        "Actor",
+        "122,974"
+      ],
+      [
+        "Director",
+        "33,592"
+      ],
+      [
+        "Movie",
+        "84,661"
+      ],
+      [
+        "Review",
+        "2,623,824"
+      ],
+      [
+        "Survey",
+        "58,903"
+      ],
+      [
+        "Tag",
+        "1,094"
+      ],
+      [
+        "User",
+        "247,389"
+      ]
+    ],
+    [
+      [
+        "(:Survey)-[:ABOUT_MOVIE]-(:Movie)",
+        "58,903"
+      ],
+      [
+        "(:Survey)-[:ABOUT_TAG]-(:Tag)",
+        "58,903"
+      ],
+      [
+        "(:Actor)-[:ACTED_IN]-(:Movie)",
+        "371,629"
+      ],
+      [
+        "(:User)-[:ANSWERED]-(:Survey)",
+        "58,903"
+      ],
+      [
+        "(:Director)-[:DIRECTED]-(:Movie)",
+        "84,294"
+      ],
+      [
+        "(:Movie)-[:HAS_REVIEW]-(:Review)",
+        "2,623,824"
+      ],
+      [
+        "(:Movie)-[:HAS_TAG]-(:Tag)",
+        "212,092"
+      ],
+      [
+        "(:User)-[:RATED]-(:Movie)",
+        "28,454,882"
+      ]
+    ]
+  ]
+}

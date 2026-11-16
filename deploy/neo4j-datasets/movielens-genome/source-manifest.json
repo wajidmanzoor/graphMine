@@ -1,0 +1,506 @@
+{
+  "version": 1,
+  "id": "movielens-genome",
+  "name": "MovieLens Tag Genome",
+  "url": "https://pgraphbenchweb.vercel.app/workloads/mlgenome-neo4j.html",
+  "copied_at": "2026-11-15T22:51:58+00:00",
+  "page_sha256": "18b580efca3f96bd4312e48a94b716272e1d26072a18abffb907a8627dd22f8b",
+  "load_order": [
+    {
+      "file": "load/001.cypher",
+      "source_block": 1,
+      "heading": "Create Indices"
+    },
+    {
+      "file": "load/002.cypher",
+      "source_block": 2,
+      "heading": "Movie Node"
+    },
+    {
+      "file": "load/003.cypher",
+      "source_block": 3,
+      "heading": "User Nodes and RATED Edges"
+    },
+    {
+      "file": "load/004.cypher",
+      "source_block": 4,
+      "heading": "Tags Node"
+    },
+    {
+      "file": "load/005.cypher",
+      "source_block": 5,
+      "heading": "HAS_TAG Edge"
+    },
+    {
+      "file": "load/006.cypher",
+      "source_block": 6,
+      "heading": "Review Node and HAS_REVIEW Edge"
+    },
+    {
+      "file": "load/007.cypher",
+      "source_block": 7,
+      "heading": "Survey Node, ANSWERED, ABOUT_MOVIE, and ABOUT_TAG Edges"
+    },
+    {
+      "file": "load/008.cypher",
+      "source_block": 8,
+      "heading": "Director Node and DIRECTED Edge"
+    },
+    {
+      "file": "load/009.cypher",
+      "source_block": 9,
+      "heading": "Actor Node and ACTED_IN Edge"
+    }
+  ],
+  "reference_scripts": [],
+  "required_files": [
+    "movielens/genome_2021/raw/metadata.json",
+    "movielens/genome_2021/raw/ratings.json",
+    "movielens/genome_2021/raw/review_with_id.json",
+    "movielens/genome_2021/raw/surveys_id.json",
+    "movielens/genome_2021/raw/tag_count.json",
+    "movielens/genome_2021/raw/tags.json"
+  ],
+  "queries": [
+    {
+      "id": "Q01",
+      "file": "queries/Q01.cypher",
+      "title": "Q1. Movies Rated by a Selected User",
+      "source_blocks": [
+        10
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q02",
+      "file": "queries/Q02.cypher",
+      "title": "Q2. Two-Hop Rating Neighborhood of a User",
+      "source_blocks": [
+        12
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q03",
+      "file": "queries/Q03.cypher",
+      "title": "Q3. Users Exactly Two Hops Away Through Shared Movies",
+      "source_blocks": [
+        14
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q04",
+      "file": "queries/Q04.cypher",
+      "title": "Q4. High-Rated One-Hop Movie Neighborhood",
+      "source_blocks": [
+        16
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q05",
+      "file": "queries/Q05.cypher",
+      "title": "Q5. Users Who Did NOT Participate in Any Survey",
+      "source_blocks": [
+        18
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q06",
+      "file": "queries/Q06.cypher",
+      "title": "Q6. High-Count Movie Tag Edges",
+      "source_blocks": [
+        20
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q07",
+      "file": "queries/Q07.cypher",
+      "title": "Q7. User Reachability to a Tag Through Rated Movies",
+      "source_blocks": [
+        22
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q08",
+      "file": "queries/Q08.cypher",
+      "title": "Q8. Shortest User-to-Tag Explanation Path",
+      "source_blocks": [
+        24
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q09",
+      "file": "queries/Q09.cypher",
+      "title": "Q9. Simple Co-Rating Paths Between Users",
+      "source_blocks": [
+        26
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q10",
+      "file": "queries/Q10.cypher",
+      "title": "Q10. User-Movie Co-Rating Squares",
+      "source_blocks": [
+        28
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q11",
+      "file": "queries/Q11.cypher",
+      "title": "Q11. Movie Star Pattern Across Cast, Tags, and Reviews",
+      "source_blocks": [
+        30
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q12",
+      "file": "queries/Q12.cypher",
+      "title": "Q12. Four-Actor Co-Starring Cliques",
+      "source_blocks": [
+        32
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q13",
+      "file": "queries/Q13.cypher",
+      "title": "Q13. Most Similar Users Based on Ratings for the Same Movies (Find pairs of users with overlapping movie preferences. (Collaborative filtering foundation))",
+      "source_blocks": [
+        34
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q14",
+      "file": "queries/Q14.cypher",
+      "title": "Q14. User-Survey-Movie-Tag Line Pattern",
+      "source_blocks": [
+        36
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q15",
+      "file": "queries/Q15.cypher",
+      "title": "Q15. Movie Degree Summary Across All Relationship Types",
+      "source_blocks": [
+        38
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q16",
+      "file": "queries/Q16.cypher",
+      "title": "Q16. Directors by Average Movie Rating (Filtering to avoid bias from 1-hit wonders, so considering movies >= 3)",
+      "source_blocks": [
+        40
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q17",
+      "file": "queries/Q17.cypher",
+      "title": "Q17. Actors by Number of Movies Acted In",
+      "source_blocks": [
+        42
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q18",
+      "file": "queries/Q18.cypher",
+      "title": "Q18. Rating Edge Summary",
+      "source_blocks": [
+        44
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q19",
+      "file": "queries/Q19.cypher",
+      "title": "Q19. Users Who Rate Harshly (Lowest Average Rating)",
+      "source_blocks": [
+        46
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q20",
+      "file": "queries/Q20.cypher",
+      "title": "Q20. Bounded Rating Path Counts by Length",
+      "source_blocks": [
+        48
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q21",
+      "file": "queries/Q21.cypher",
+      "title": "Q21. Bounded Rating Path Counts by Length and Endpoint Type",
+      "source_blocks": [
+        50
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q22",
+      "file": "queries/Q22.cypher",
+      "title": "Q22. Directors with the Most Movies Above 4.0 Rating (Not just average, how many great movies have they made? Considered minimum of 2 movies)",
+      "source_blocks": [
+        52
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q23",
+      "file": "queries/Q23.cypher",
+      "title": "Q23. Top Tags by Frequency in Surveys (Which tags are evaluated most often by users?)",
+      "source_blocks": [
+        54
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q24",
+      "file": "queries/Q24.cypher",
+      "title": "Q24. Tags Most Frequently Scored Highly in Surveys (Which tags do users consistently agree are applicable to movies (score \u2265 4)?)",
+      "source_blocks": [
+        56
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q25",
+      "file": "queries/Q25.cypher",
+      "title": "Q25. Movies With Most Tagged Survey Feedback (Which movies have been analyzed most often in surveys?)",
+      "source_blocks": [
+        58
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q26",
+      "file": "queries/Q26.cypher",
+      "title": "Q26. Users Who Participated in the Most Surveys",
+      "source_blocks": [
+        60
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q27",
+      "file": "queries/Q27.cypher",
+      "title": "Q27. PageRank on the MovieLens Genome Rating Graph",
+      "source_blocks": [
+        62
+      ],
+      "gds": true,
+      "has_cypher": true
+    },
+    {
+      "id": "Q28",
+      "file": "queries/Q28.cypher",
+      "title": "Q28. Weakly Connected Components of the Rating Graph",
+      "source_blocks": [
+        63
+      ],
+      "gds": true,
+      "has_cypher": true
+    },
+    {
+      "id": "Q29",
+      "file": "queries/Q29.cypher",
+      "title": "Q29. Strongly Connected Components of Directed Rating Edges",
+      "source_blocks": [],
+      "gds": false,
+      "has_cypher": false
+    },
+    {
+      "id": "Q30",
+      "file": "queries/Q30.cypher",
+      "title": "Q30. Louvain Communities in the Rating Graph",
+      "source_blocks": [
+        64
+      ],
+      "gds": true,
+      "has_cypher": true
+    },
+    {
+      "id": "Q31",
+      "file": "queries/Q31.cypher",
+      "title": "Q31. Best Tags per Movie by Survey and Tag_Count",
+      "source_blocks": [
+        65
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q32",
+      "file": "queries/Q32.cypher",
+      "title": "Q32. Top Actor-Director Pairs by Number of Collaborations",
+      "source_blocks": [
+        67
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q33",
+      "file": "queries/Q33.cypher",
+      "title": "Q33. Directors Whose Movies Collect the Most Reviews",
+      "source_blocks": [
+        69
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q34",
+      "file": "queries/Q34.cypher",
+      "title": "Q34. Actor-Director Collaboration Quality (Which pairs consistently produce great movies?)",
+      "source_blocks": [
+        71
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q35",
+      "file": "queries/Q35.cypher",
+      "title": "Q35. Tag-Movie Associations with High Confidence (Which movie-tag pairs were most confidently agreed upon by users?)",
+      "source_blocks": [
+        73
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q36",
+      "file": "queries/Q36.cypher",
+      "title": "Q36. Actors Frequently Appearing in High-Rated Movies with Different Directors (Highlights high-performing, collaborative actors trusted by many top directors.)",
+      "source_blocks": [
+        75
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q37",
+      "file": "queries/Q37.cypher",
+      "title": "Q37. Most Frequently Used Words in Reviews",
+      "source_blocks": [
+        77
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q38",
+      "file": "queries/Q38.cypher",
+      "title": "Q38. Movies Most Frequently Called \"Boring\", \"Disgusting\", etc.",
+      "source_blocks": [
+        78
+      ],
+      "gds": false,
+      "has_cypher": true
+    },
+    {
+      "id": "Q39",
+      "file": "queries/Q39.cypher",
+      "title": "Q39. Users With Highest Survey Agreement Accuracy (Measures users whose survey scores closely align with consensus (like those who gave 5 when others did too))",
+      "source_blocks": [
+        80
+      ],
+      "gds": false,
+      "has_cypher": true
+    }
+  ],
+  "import_mode": "cypher",
+  "artifact_sha256": {
+    "load/001.cypher": "43eda9c422b3e7621ab7bc65f3e89ceef9a26b01019ec869c02456f829265922",
+    "load/002.cypher": "a39beeba61678e21ce0589428b29c9c615a1a7e709bda280163cfba4822b3511",
+    "load/003.cypher": "119cc89a593737706f7718b87a59f5476c3320f0982962feefb70af06d72f9b8",
+    "load/004.cypher": "2a73c850eed04fa7a358291596fa0205ef6b43ea1dfca0809c6e86e7fe99ea78",
+    "load/005.cypher": "7123ee1d9bcc3723ef512818f4d997d524ce4144702c44856eb3b6e6d71b4039",
+    "load/006.cypher": "293a3c15da550d90f0b7a5062cb42648526fab0dcbe3f09f730bba4e8e301dd0",
+    "load/007.cypher": "51c440daff4dbba5a8642049f853fb399656cc66a1d34e7c42bf1b23b02c476e",
+    "load/008.cypher": "2bb8890a769e62eb08240e2edec880a3ec22919e62aff11973a88fa64dc099cb",
+    "load/009.cypher": "da548e6ff590622a1f7dd53678e69b5eb3351ccf3fdd82a7291ec87b565ab753",
+    "queries/Q01.cypher": "94ccd2abd84533b2946a1749ab02b177992ff8a6cbf580dd542bba9685e6f17c",
+    "queries/Q02.cypher": "7f77b9862099960a294c425d77e10cd47752d4bc999cf4e15a95f8ac3d608a0d",
+    "queries/Q03.cypher": "c379471ffe4e531fb5223383655bc9806f670257cef1839da69a67f26c17b3ab",
+    "queries/Q04.cypher": "bb6743a8a06d83faf8d1e4d9b22268d5dffc29b2f6d357e51fa66aaac24135be",
+    "queries/Q05.cypher": "baa3240dbd4a8969aea5c7eed33021838e72be9ebacc9c7886245c5d186f0511",
+    "queries/Q06.cypher": "dde880d601873bda9ca967a64f2faf0d13f56d34ed19b5a12f9b7a989bd9cdc4",
+    "queries/Q07.cypher": "0df360b6a75496271ea1b96797538873d8db4916a7945ba7f7ad8b0595b5f3eb",
+    "queries/Q08.cypher": "e367ec6566771829de5be88aa3f0cbe95014526bc30084965bf723bad4647a0f",
+    "queries/Q09.cypher": "b4ef8127a43106f6d05170df61bb2d1267e60e0bc0853347ddb057175fc8b109",
+    "queries/Q10.cypher": "c2975891abd6c590773b72f402eded0ca60ef162b908a600bfea242c270fd9cc",
+    "queries/Q11.cypher": "c242430883fab62b0fd82c481ab580e780f4420e949121531b12567cbb3df0dd",
+    "queries/Q12.cypher": "96b180f21a9018f83df083d8507bae01173a39104afd0ab5f26d998bcb26cc79",
+    "queries/Q13.cypher": "5a72b53dc54181f901e690b0b9b8a9eb200c267d6f942486a4053987d9ef1336",
+    "queries/Q14.cypher": "ab4d8d1145f7666be46f0f5faeedcc8e50037fdbc4dd41e244dbb0fbd029bb59",
+    "queries/Q15.cypher": "39d90914efa8f4a0e7bba5a6a5fa0316187552705a3c5468955c5a60543d2949",
+    "queries/Q16.cypher": "71884d6a4aedddd2013a77cf6b62c6ae60983b489520ee75e91dc49c88215fb4",
+    "queries/Q17.cypher": "b519adba166911117a9da03ec567db61178b8b53bf25b9edc0aa809735d121f1",
+    "queries/Q18.cypher": "c76e3b46e98c988fae3dfdc0ec659e6d4590822e075ff5f80598d6d1604ea23c",
+    "queries/Q19.cypher": "62e3f7697a058fc8e5c67138b3c2deca669013796fed70a6a7ea0189a90c47fb",
+    "queries/Q20.cypher": "3f21ae5bd75e5d9c1bc2d57d7962a39938a0632f399bd337a8ed90a73d9b8614",
+    "queries/Q21.cypher": "8a8b092a10dadcca67c65c490966c5038973941150e0cfe0818a6e58ebc3bf92",
+    "queries/Q22.cypher": "b2bda09312bf8dd53bf1325a3f08ef21eae97fa800ac03befa4dc8fc5885f522",
+    "queries/Q23.cypher": "a2b1be3835c461ca39286495965473b4d33d4d3b57836a6c491c0d4a3c5f6156",
+    "queries/Q24.cypher": "f5fbf49570f01ad5228a3df4802c26237312eec1fd715dcbeab634301a465e64",
+    "queries/Q25.cypher": "6b05593c2e59b0e9ce12fb2e1d8176bd973f728acebaa0619c33ad6f71df3303",
+    "queries/Q26.cypher": "dd4180bd7d66ec77c24ecf44646a0abf2f3218b9be05b0b644c084357b99f655",
+    "queries/Q27.cypher": "f73ceb1805910cdc7f1e5b81f673c7e22b24bb57ac7075ab47d7d76d477e6e03",
+    "queries/Q28.cypher": "3073a3008049bfec95c945da88aebe2069ebe8bc8338160d1d2c128737f688e3",
+    "queries/Q29.cypher": "8749f531c912dbf29c96c0babdcdd9f3210ddc5cec87b8b5e3b1c8755432cdd9",
+    "queries/Q30.cypher": "730753e1845f616f7cc2e20a888241ae8ca819db76177c3e7b00a329a740c2b5",
+    "queries/Q31.cypher": "ba7dd681526a8f43c92ef1c2cb6aed70d9f78e291ca1992d7d386794090ac38f",
+    "queries/Q32.cypher": "f8d07785aea1eadc38f333b9528bba6ad73318ae116c05f1b7f27722a0edf0e3",
+    "queries/Q33.cypher": "3ea62ec823e543432c73393171b0a1ab4064d3040f94f7c2d6d6323965f789d2",
+    "queries/Q34.cypher": "df07af6dd8504f947cf1f1ec1a931a55149d44f7cc8ca52c771bceef1da07d60",
+    "queries/Q35.cypher": "8a103c007fb0541abe18165834fdf13729e27112fc0701f0ce1632efbe71cbbc",
+    "queries/Q36.cypher": "9d90709e5738effaf5a0a9b154f937059a0cdc13fd199f4f744e5b424e0f129b",
+    "queries/Q37.cypher": "f32ad26ba448844348941a237a8174529c8943cf4b078e8d1dcba4942ab58f60",
+    "queries/Q38.cypher": "3b605a51aa1a86f5e89eef85c9102863b895e5a273077cafbfa521a5f4ffcb93",
+    "queries/Q39.cypher": "fab450760e5bc0915b143079471896960841c0c2ef9783698d1f5682bcaf8b89",
+    "expected_counts.json": "c14eeb98ca5315996af73aca22b50eff1fb3a2d3ebc470d6f80872b29da661df"
+  }
+}

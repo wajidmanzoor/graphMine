@@ -5,6 +5,9 @@ window.GraphMineBenchmarkDatasets = ({api, node, container, dataset}) => {
   const platformNames = {neo4j: "Neo4j", tigergraph: "TigerGraph", puppygraph: "PuppyGraph", graphframes: "GraphFrames"};
   const clean = () => { if (blobUrl) URL.revokeObjectURL(blobUrl); blobUrl = null; };
   container.replaceChildren();
+  if (dataset?.workload_url) {
+    container.append(node("a", {href: dataset.workload_url, target: "_blank", rel: "noopener noreferrer", class: "benchmark-attribution"}, "Published Neo4j workload ↗"));
+  }
   const search = node("input", {id: "database-schema-search", type: "search", placeholder: "Search tables, labels and columns", "aria-label": "Search dataset schema"});
   const tableList = node("div", {class: "dataset-schema-tables"});
   const tableStatus = node("p", {class: "source-hint", role: "status"});
@@ -65,7 +68,7 @@ window.GraphMineBenchmarkDatasets = ({api, node, container, dataset}) => {
       blobUrl = URL.createObjectURL(blob); image.src = blobUrl;
       image.alt = `${dataset.name} — ${platformNames[selected.platform] || selected.platform} schema, from PropGBench`;
       image.hidden = false; download.disabled = zoom.disabled = false; definitions.disabled = !selected.definition_url;
-      status.textContent = dataset.graph_label ? `Query this dataset with the ${dataset.graph_label} label. The diagram shows the publisher’s original graph structure.` : "";
+      status.textContent = "The diagram shows the publisher’s graph structure.";
     } catch (error) { if (current === generation && container.isConnected) status.textContent = error.message; }
   }
   platforms.onchange = showSchema;

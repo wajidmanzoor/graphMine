@@ -1,0 +1,30 @@
+{
+  "nodes": {
+    "Airport": 379
+  },
+  "relationships": {
+    "FLIGHT": 17412876
+  },
+  "relationship_rows": [
+    {
+      "pattern": "FLIGHT",
+      "type": "FLIGHT",
+      "count": 17412876
+    }
+  ],
+  "published_totals": {},
+  "published_tables": [
+    [
+      [
+        "Airport",
+        "379"
+      ]
+    ],
+    [
+      [
+        "FLIGHT",
+        "17,412,876"
+      ]
+    ]
+  ]
+}

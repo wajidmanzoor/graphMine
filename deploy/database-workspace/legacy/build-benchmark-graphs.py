@@ -22,7 +22,7 @@ from neo4j import GraphDatabase
 from benchmark_import import ROOT, NAMES, postgres, publish_catalog, write_json, graph_signature
 from benchmark_parquet import source_signature, write_parquet
 
-BRANCH = Path(__file__).resolve().parents[2]
+BRANCH = Path(__file__).resolve().parents[3]
 NEO_HOME = Path(os.environ.get("GRAPHMINE_NEO4J_HOME", BRANCH / ".database-workspace" / "neo4j-community-5.26.32"))
 NEO_ROOT = Path(os.environ.get("GRAPHMINE_NEO4J_ROOT", ROOT / "databases" / "neo4j"))
 STAGING = NEO_ROOT / "benchmark-build"

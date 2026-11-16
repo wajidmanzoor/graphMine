@@ -25,7 +25,7 @@ from .database_sources import (
     validate_cypher,
 )
 from .datasets import DatasetLibrary
-from .benchmark_mappings import catalog_source, graph_identity, resolve_source
+from .benchmark_mappings import resolve_source
 from .models import SessionRecord, utc_now
 from .query_previews import QueryPreviews
 from .database_job_context import begin_commit, checkpoint
@@ -61,16 +61,13 @@ class GraphCollector:
         self.used = 0
 
     def _identity(self, value, kind):
+        if self.source._catalog.get("registry"):
+            # An element ID belongs to one database; no SQL lineage is inferred.
+            return f"neo4j:{self.source._catalog['id']}:{value.element_id}"
         props = dict(value)
         identity = props.get("gm_id")
         if type(identity) not in (str, int) or identity == "":
             identity = f"neo4j:{value.element_id}"
-        catalog_identity = graph_identity(self.source, value, kind, self.node_refs)
-        if catalog_identity:
-            mapping, keys = catalog_identity
-            identity = stable_id(self.source, mapping, keys)
-            self.lineage[kind][_key(identity)] = {"mapping": mapping.id, "keys": keys}
-            return identity
         if not self.source._catalog and props.get("gm_source") == self.source.id and props.get("gm_mapping"):
             mapping = self.source.mapping(props["gm_mapping"])
             try:
@@ -431,11 +428,11 @@ def _run_query(runtime, source_id, body):
     started = perf_counter()
     source = get_source(runtime.settings, source_id)
     dataset = None
-    if body.dataset_id:
+    if body.dataset_id or source._catalog.get("registry"):
         from .database_datasets import selected_dataset
 
-        dataset = selected_dataset(runtime.settings, source, body.dataset_id)
-        source = catalog_source(source, dataset)
+        dataset = selected_dataset(runtime.settings, source, body.dataset_id or source._catalog["id"])
+        source = resolve_source(runtime.settings, source, dataset["id"])
     limit = min(
         runtime.settings.analytics_max_input_bytes,
         runtime.settings.account_upload_bytes,
@@ -446,18 +443,11 @@ def _run_query(runtime, source_id, body):
         raise AnalyticsError(
             "Source settings changed. Run the query again.", "source_changed", 409
         )
-    if dataset and dataset["graph_label"] and any(
-        dataset["graph_label"] not in vertex["attributes"].get("neo4j_labels", [])
-        for vertex in graph["vertices"]
-    ):
-        raise AnalyticsError(
-            "The query returned nodes outside the selected dataset. Use its dataset label in the query.",
-            "dataset_scope",
-        )
     metadata = table_metadata = None
     provenance = {
         "type": "database_query",
-        "database_dataset": {"id": dataset["id"], "name": dataset["name"]} if dataset else None,
+        "database_dataset": {key: dataset[key] for key in ("id", "name", "registry", "workload_url", "load_finished_at", "load_seconds", "script_hashes")
+                             if key in dataset} if dataset else None,
         "database_source": {"id": source.id, "name": source.name, "mapping_hash": source.fingerprint(), "revision": source.revision,
                             "capabilities": source.capabilities()},
         "query": body.statement, "parameters": body.parameters, "projection": body.projection,

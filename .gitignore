@@ -9,6 +9,7 @@
 .venv-training/
 .venv-analytics/
 .database-workspace/
+/deploy/neo4j-datasets/registry.lock
 # Shared runtime links used by isolated worktree deployments.
 /.venv
 /.venv-analytics

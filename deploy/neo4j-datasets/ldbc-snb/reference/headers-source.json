@@ -1,0 +1,163 @@
+{
+  "source": "https://github.com/ldbc/ldbc_snb_bi/tree/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers",
+  "referenced_by": "https://pgraphbenchweb.vercel.app/datasets/snb.html",
+  "commit": "47dd38b40844ecdb0e42e5a610c369535304786d",
+  "copied_at": "2026-11-15",
+  "files": [
+    {
+      "path": "headers/static/Organisation.csv",
+      "git_blob_sha": "842d66ddffe97b5a079cf6811c1040ef7832d3c5",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/static/Organisation.csv"
+    },
+    {
+      "path": "headers/static/Organisation_isLocatedIn_Place.csv",
+      "git_blob_sha": "ace19d98a741202ee6d77ab9cd1159e00840c467",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/static/Organisation_isLocatedIn_Place.csv"
+    },
+    {
+      "path": "headers/static/Place.csv",
+      "git_blob_sha": "f0ea353d27e408b3f08a3d8129072d936ed43636",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/static/Place.csv"
+    },
+    {
+      "path": "headers/static/Place_isPartOf_Place.csv",
+      "git_blob_sha": "efe64cdf82ae2ce386731195202ceda7edf3970c",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/static/Place_isPartOf_Place.csv"
+    },
+    {
+      "path": "headers/static/Tag.csv",
+      "git_blob_sha": "c4f80e7dc19f0d6d1aecb3096b7937ed4ce1363b",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/static/Tag.csv"
+    },
+    {
+      "path": "headers/static/TagClass.csv",
+      "git_blob_sha": "a0299da89cb379f7289c52df15d07c5d3daeac4f",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/static/TagClass.csv"
+    },
+    {
+      "path": "headers/static/TagClass_isSubclassOf_TagClass.csv",
+      "git_blob_sha": "153dd57da0e9e355f71f13446329f6baf6db10da",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/static/TagClass_isSubclassOf_TagClass.csv"
+    },
+    {
+      "path": "headers/static/Tag_hasType_TagClass.csv",
+      "git_blob_sha": "77b600704ae247a4164c21f208b239de95979ecc",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/static/Tag_hasType_TagClass.csv"
+    },
+    {
+      "path": "headers/dynamic/Comment.csv",
+      "git_blob_sha": "33e84ad50de363a76712bbe1e7fcdf8a1674ffbf",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Comment.csv"
+    },
+    {
+      "path": "headers/dynamic/Comment_hasCreator_Person.csv",
+      "git_blob_sha": "873b161931369c9bd81a5360f0c7155fe6d0d7ad",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Comment_hasCreator_Person.csv"
+    },
+    {
+      "path": "headers/dynamic/Comment_hasTag_Tag.csv",
+      "git_blob_sha": "a6ee2cc5397cd127edb93b56b56fc1b64974bb8d",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Comment_hasTag_Tag.csv"
+    },
+    {
+      "path": "headers/dynamic/Comment_isLocatedIn_Country.csv",
+      "git_blob_sha": "0db77bd8750890f5052c36e683d6c28d230550ff",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Comment_isLocatedIn_Country.csv"
+    },
+    {
+      "path": "headers/dynamic/Comment_replyOf_Comment.csv",
+      "git_blob_sha": "af5c4b366e7aba6774a87347b8d056bf223787f2",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Comment_replyOf_Comment.csv"
+    },
+    {
+      "path": "headers/dynamic/Comment_replyOf_Post.csv",
+      "git_blob_sha": "d4099aa0379aef285ff069d7fea126a474e1e840",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Comment_replyOf_Post.csv"
+    },
+    {
+      "path": "headers/dynamic/Forum.csv",
+      "git_blob_sha": "59d9dec962fffb9a1a513e9dba723d9084ac30eb",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Forum.csv"
+    },
+    {
+      "path": "headers/dynamic/Forum_containerOf_Post.csv",
+      "git_blob_sha": "6a27b45acdaded5434e41d9b14030c77e71430bf",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Forum_containerOf_Post.csv"
+    },
+    {
+      "path": "headers/dynamic/Forum_hasMember_Person.csv",
+      "git_blob_sha": "adb45f4a69d1ce5016906b866b4385849a24e940",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Forum_hasMember_Person.csv"
+    },
+    {
+      "path": "headers/dynamic/Forum_hasModerator_Person.csv",
+      "git_blob_sha": "adb45f4a69d1ce5016906b866b4385849a24e940",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Forum_hasModerator_Person.csv"
+    },
+    {
+      "path": "headers/dynamic/Forum_hasTag_Tag.csv",
+      "git_blob_sha": "6e064aff7648785be3a38a099dbfb702b489df2b",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Forum_hasTag_Tag.csv"
+    },
+    {
+      "path": "headers/dynamic/Person.csv",
+      "git_blob_sha": "11970d88c2e165b7273d35efc8a54e1d646b6600",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Person.csv"
+    },
+    {
+      "path": "headers/dynamic/Person_hasInterest_Tag.csv",
+      "git_blob_sha": "359521ebcb6e6bf25673eff9a23914b08c3a98a2",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Person_hasInterest_Tag.csv"
+    },
+    {
+      "path": "headers/dynamic/Person_isLocatedIn_City.csv",
+      "git_blob_sha": "d07fa1c9474a71bbeae28c8a6e719c485dc0fed6",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Person_isLocatedIn_City.csv"
+    },
+    {
+      "path": "headers/dynamic/Person_knows_Person.csv",
+      "git_blob_sha": "61abefb2b1d8c9e3f2ba132975e2c90ecd2ec095",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Person_knows_Person.csv"
+    },
+    {
+      "path": "headers/dynamic/Person_likes_Comment.csv",
+      "git_blob_sha": "45a107c285d063ac47e1e901cdfd5b94e36a9241",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Person_likes_Comment.csv"
+    },
+    {
+      "path": "headers/dynamic/Person_likes_Post.csv",
+      "git_blob_sha": "d83445e7061d26b5e7083b78658b1fb8dcb000af",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Person_likes_Post.csv"
+    },
+    {
+      "path": "headers/dynamic/Person_studyAt_University.csv",
+      "git_blob_sha": "1b5b79618a642587a4c9f4e1d4f8cdc9d3a1bd2a",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Person_studyAt_University.csv"
+    },
+    {
+      "path": "headers/dynamic/Person_workAt_Company.csv",
+      "git_blob_sha": "9548530971e10f775fa3eef5cf41c2bbf5c27fbf",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Person_workAt_Company.csv"
+    },
+    {
+      "path": "headers/dynamic/Post.csv",
+      "git_blob_sha": "ed39d56ed5cbde74374d79c6a723a8835efa159a",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Post.csv"
+    },
+    {
+      "path": "headers/dynamic/Post_hasCreator_Person.csv",
+      "git_blob_sha": "0ed86912eec86eff18364ac6ca14d4ec48d730fd",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Post_hasCreator_Person.csv"
+    },
+    {
+      "path": "headers/dynamic/Post_hasTag_Tag.csv",
+      "git_blob_sha": "87f00e0e53c6302280356516b448744604666e66",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Post_hasTag_Tag.csv"
+    },
+    {
+      "path": "headers/dynamic/Post_isLocatedIn_Country.csv",
+      "git_blob_sha": "d4537d7ab817e0dcbb8515e34d676df3f64a2092",
+      "url": "https://github.com/ldbc/ldbc_snb_bi/blob/47dd38b40844ecdb0e42e5a610c369535304786d/neo4j/headers/dynamic/Post_isLocatedIn_Country.csv"
+    }
+  ]
+}

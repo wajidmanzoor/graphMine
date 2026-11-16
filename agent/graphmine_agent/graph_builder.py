@@ -8,7 +8,7 @@ from pydantic import Field
 from starlette.concurrency import run_in_threadpool
 
 from .analytics import AnalyticsError
-from .benchmark_mappings import catalog_source
+from .benchmark_mappings import resolve_source
 from .database_datasets import selected_dataset
 from .database_sources import Strict, get_source, validate_cypher
 
@@ -35,40 +35,27 @@ class GraphBuild(Strict):
 def builder_schema(settings, source_id, dataset_id):
     source = get_source(settings, source_id)
     dataset = selected_dataset(settings, source, dataset_id)
-    mapped = catalog_source(source, dataset)
+    mapped = resolve_source(settings, source, dataset_id)
     entities, relationships = [], []
     sampled = None
-    if dataset_id == "default" and not mapped.entities:
+    if (dataset_id == "default" or dataset.get("registry")) and not mapped.entities:
         from .neo4j_schema import sample_schema
 
         sampled = sample_schema(mapped)
         entities, relationships = sampled["entities"], sampled["relationships"]
-        if get_source(settings, source_id).fingerprint() != source.fingerprint():
+        if resolve_source(settings, get_source(settings, source_id), dataset_id).fingerprint() != mapped.fingerprint():
             raise AnalyticsError("The connection changed. Reload its graph choices.", "source_changed", 409)
     # Mappings expose only properties actually copied to Neo4j. SQL-only fields
     # remain available through enrichment, not as misleading query filters.
-    if dataset_id == "default" or mapped._catalog:
-        for mappings, target in ((mapped.entities, entities), (mapped.relationships, relationships)):
-            for mapping in mappings:
-                properties = mapping.graph_attributes if mapping.graph_attributes is not None else mapping.attributes
-                types = mapped._catalog.get("types", {}).get(mapping.id, {})
-                item = {"id": mapping.id, "label": mapping.label,
-                        "properties": [{"name": name, "type": types.get(name, "")} for name in properties]}
-                if not mapped._catalog:
-                    item["mapping_id"] = mapping.id
-                if hasattr(mapping, "source_entity"):
-                    item.update(source_entity=mapping.source_entity, target_entity=mapping.target_entity)
-                target.append(item)
-    else:
-        for table in dataset.get("tables", []):
-            properties = [column for column in table.get("columns", []) if not column["name"].startswith(("gm_", "_gm_"))]
-            if table.get("kind") == "nodes":
-                labels = [label for label in table.get("labels", []) if label != dataset["graph_label"]]
-                if labels:
-                    entities.append({"id": table["name"], "label": labels[-1], "properties": properties})
-            elif table.get("kind") == "relationships" and table.get("relationship_type"):
-                relationships.append({"id": table["name"], "label": table["relationship_type"], "properties": properties})
-    return {"source_id": source.id, "dataset_id": dataset_id, "graph_label": dataset.get("graph_label"),
+    for mappings, target in ((mapped.entities, entities), (mapped.relationships, relationships)):
+        for mapping in mappings:
+            properties = mapping.graph_attributes if mapping.graph_attributes is not None else mapping.attributes
+            item = {"id": mapping.id, "label": mapping.label, "mapping_id": mapping.id,
+                    "properties": [{"name": name, "type": ""} for name in properties]}
+            if hasattr(mapping, "source_entity"):
+                item.update(source_entity=mapping.source_entity, target_entity=mapping.target_entity)
+            target.append(item)
+    return {"source_id": source.id, "dataset_id": dataset_id, "graph_label": None,
             "mapping_hash": mapped.fingerprint(), "max_rows": source.max_rows,
             "entities": entities, "relationships": relationships,
             "message": "" if entities else "This connection has no graph schema yet. Use the Cypher editor or add a graph mapping.",
@@ -109,8 +96,7 @@ def compile_query(schema, body):
             clauses.append(f"{alias}.gm_source = $source_id AND {alias}.gm_mapping = $mapping_{alias}")
 
     def node_pattern(alias, entity):
-        labels = list(dict.fromkeys(filter(None, [schema["graph_label"], entity["label"]])))
-        return f"({alias}:" + ":".join(quoted(label) for label in labels) + ")"
+        return f"({alias}:{quoted(entity['label'])})"
 
     pattern = node_pattern("a", source)
     if relation:

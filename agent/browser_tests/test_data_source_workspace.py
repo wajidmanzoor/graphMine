@@ -25,6 +25,19 @@ def open_source(browser, server):
     wait(browser, "document.querySelectorAll('#database-health [data-state=connected]').length===2")
 
 
+def open_benchmark(browser, server, identifier):
+    if os.environ.get("GRAPHMINE_TEST_BENCHMARK_INTEGRATION") != "1":
+        pytest.skip("requires verified local benchmark instances")
+    browser.get(server.url)
+    browser.execute_script("localStorage.setItem('graphmine.apiToken', 'test-secret')")
+    browser.refresh()
+    wait(browser, "GraphMineWorkspace.state.caps && !GraphMineWorkspace.state.busy")
+    click(browser, "nav-database")
+    wait(browser, f"document.querySelector('#database-source option[value=benchmark-{identifier}]') !== null && !document.getElementById('database-source').disabled")
+    Select(browser.find_element(By.ID, "database-source")).select_by_value("benchmark-" + identifier)
+    wait(browser, f"document.getElementById('database-dataset').value === {json.dumps(identifier)} && !document.getElementById('preview-cypher').disabled")
+
+
 @pytest.mark.parametrize("width,height", [(1440, 1050), (390, 844)])
 def test_source_layout_connection_checks_and_upload(loading_browser, database_server, width, height):
     browser = loading_browser
@@ -143,8 +156,7 @@ def test_movielens_shared_movies_projection_opens_in_chat(loading_browser, datab
     if os.environ.get("GRAPHMINE_TEST_BENCHMARK_INTEGRATION") != "1":
         pytest.skip("requires the completed local benchmark graph import")
     browser = loading_browser
-    open_source(browser, database_server)
-    Select(browser.find_element(By.ID, "database-dataset")).select_by_value("movielens-32m")
+    open_benchmark(browser, database_server, "movielens-32m")
     wait(browser, "document.getElementById('preview-cypher').disabled === false")
     click(browser, "query-shared-movies")
     click(browser, "preview-cypher")
@@ -163,7 +175,8 @@ def test_movielens_shared_movies_projection_opens_in_chat(loading_browser, datab
     assert all(edge["weight"] >= 1 and edge["type"] == "SHARED_MOVIE" for edge in graph["edges"])
     provenance = file.provenance["source"]
     assert provenance["projection"] == "rows"
-    assert len(provenance["lineage"]["vertices"]) == 100 and provenance["lineage"]["edges"] == {}
+    assert provenance["lineage"] == {"vertices": {}, "edges": {}}
+    assert provenance["database_dataset"]["registry"] is True
     click(browser, "toggle-data")
     wait(browser, "document.getElementById('query-graph-projection')?.value === 'rows'")
     assert Select(browser.find_element(By.ID, "query-graph-direction")).first_selected_option.get_attribute("value") == "undirected"
@@ -171,17 +184,17 @@ def test_movielens_shared_movies_projection_opens_in_chat(loading_browser, datab
 
 
 @pytest.mark.parametrize("dataset", [
-    "yelp", "movielens-32m", "movielens-genome", "stackoverflow", "ontime", "ldbc-snb",
+    "yelp", "movielens-32m", "movielens-genome", "ontime", "ldbc-snb",
 ])
 def test_imported_dataset_preview_and_chat(loading_browser, database_server, dataset):
     """Opt in after the large benchmark import has completed."""
     if os.environ.get("GRAPHMINE_TEST_BENCHMARK_INTEGRATION") != "1":
         pytest.skip("requires the completed local benchmark graph import")
     browser = loading_browser
-    open_source(browser, database_server)
-    Select(browser.find_element(By.ID, "database-dataset")).select_by_value(dataset)
+    open_benchmark(browser, database_server, dataset)
     wait(browser, "document.getElementById('preview-cypher').disabled === false")
     wait(browser, "document.getElementById('benchmark-schema-image')?.naturalWidth > 0")
+    assert browser.find_element(By.CSS_SELECTOR, "a.benchmark-attribution[href*='/workloads/']").is_displayed()
     editor = browser.find_element(By.ID, "cypher-editor")
     query = editor.get_attribute("value").replace("LIMIT 1000", "LIMIT 10")
     editor.clear()
@@ -198,20 +211,18 @@ def test_imported_dataset_preview_and_chat(loading_browser, database_server, dat
     ) == dataset
     assert browser.execute_script("return GraphMineWorkspace.state.session.domain_id") == "general"
     file = browser.execute_script("return GraphMineWorkspace.state.files.find(f=>f.id===GraphMineWorkspace.state.active)")
-    links = file["provenance"]["source"]["lineage"]["vertices"]
-    assert links, "Imported benchmark nodes must retain SQL lineage"
-    first = next(iter(links.values()))
+    provenance = file["provenance"]["source"]
+    assert provenance["lineage"] == {"vertices": {}, "edges": {}}
+    assert provenance["database_dataset"]["script_hashes"]
+    assert provenance["database_source"]["capabilities"]["enrichment"] is False
     with httpx.Client(base_url=database_server.url, headers={"Authorization": "Bearer test-secret"}, timeout=60) as client:
         response = client.get(f"/api/files/{file['id']}/source-schema")
         assert response.status_code == 200, response.text
-        mapping = next(m for m in response.json()["entities"] if m["id"] == first["mapping"])
-        entity_id = next(v["id"] for v in json.loads(database_server.app.state.runtime.graph_store.execution_path(file["id"], file["session_id"]).read_text())["vertices"]
-                         if file["provenance"]["source"]["lineage"]["vertices"].get(json.dumps(v["id"], separators=(",", ":"))) == first)
+        assert response.json()["entities"] == []
         response = client.post(f"/api/files/{file['id']}/enrichments", json={
-            "mapping": mapping["id"], "kind": "vertices", "ids": [entity_id], "fields": mapping["attributes"][:1],
+            "mapping": "unavailable", "kind": "vertices", "fields": ["name"],
         })
-        assert response.status_code == 201, response.text
-        assert response.json()["updates"] and not response.json()["missing"]
+        assert response.status_code == 409 and response.json()["error"]["code"] == "sql_unavailable"
 
 
 def test_successive_attribute_fetches_save_the_union_in_one_version(loading_browser, database_server):
@@ -244,44 +255,31 @@ def test_successive_attribute_fetches_save_the_union_in_one_version(loading_brow
     wait(browser, f"GraphMineWorkspace.state.active === {json.dumps(file['id'])} && !document.getElementById('enrichment-dialog')")
 
 
-def test_benchmark_relationship_expansion_preserves_query_identities(database_server):
+def test_benchmark_expansion_is_unavailable_and_query_identity_is_stable(database_server):
     if os.environ.get("GRAPHMINE_TEST_BENCHMARK_INTEGRATION") != "1":
-        pytest.skip("requires the completed local benchmark graph import")
+        pytest.skip("requires verified local benchmark instances")
     with httpx.Client(base_url=database_server.url, headers={"Authorization": "Bearer test-secret"}, timeout=60) as client:
-        endpoint = "/api/database-sources/local-transfers/queries"
-        query = client.post(endpoint, json={
-            "dataset_id": "movielens-genome",
-            "statement": "MATCH (n:GM_MovieLensGenome:Director)-[:DIRECTED]->(:GM_MovieLensGenome:Movie) RETURN n LIMIT 1",
-        })
+        endpoint = "/api/database-sources/benchmark-movielens-genome/queries"
+        query = client.post(endpoint, json={"dataset_id": "movielens-genome",
+            "statement": "MATCH (n:Director)-[:DIRECTED]->(:Movie) RETURN n LIMIT 1"})
         assert query.status_code == 201, query.text
-        name = query.json()["graph"]["vertices"][0]["attributes"]["name"]
+        node = query.json()["graph"]["vertices"][0]
         opened = client.post(f"/api/database-query-snapshots/{query.json()['dataset']['id']}/chat", json={})
         assert opened.status_code == 201, opened.text
-        file = opened.json()["file"]
-        response = client.post(f"/api/files/{file['id']}/expansions", json={
-            "mapping": "movielens_genome_directed",
-        })
-        assert response.status_code == 201, response.text
-        assert response.json()["added"]["edges"] > 0
-        child = response.json()["file"]
-        expanded = json.loads(database_server.app.state.runtime.graph_store.execution_path(child["id"], child["session_id"]).read_text())
-        queried = client.post(endpoint, json={
-            "dataset_id": "movielens-genome", "parameters": {"name": name},
-            "statement": "MATCH p=(n:GM_MovieLensGenome:Director {name:$name})-[:DIRECTED]->(:GM_MovieLensGenome:Movie) RETURN p LIMIT 3",
-        })
+        response = client.post(f"/api/files/{opened.json()['file']['id']}/expansions", json={"mapping": "directed"})
+        assert response.status_code == 409 and response.json()["error"]["code"] == "sql_unavailable"
+        queried = client.post(endpoint, json={"dataset_id": "movielens-genome", "parameters": {"name": node["attributes"]["name"]},
+            "statement": "MATCH p=(n:Director {name:$name})-[:DIRECTED]->(:Movie) RETURN p LIMIT 3"})
         assert queried.status_code == 201, queried.text
-        assert {e["id"] for e in queried.json()["graph"]["edges"]}.issubset({e["id"] for e in expanded["edges"]})
-        vertices = {v["id"] for v in expanded["vertices"]}
-        assert all(e["source"] in vertices and e["target"] in vertices for e in expanded["edges"])
+        assert node["id"] in {v["id"] for v in queried.json()["graph"]["vertices"]}
+
 
 def test_published_schemas_change_with_dataset_and_platform(loading_browser, database_server):
     browser = loading_browser
-    open_source(browser, database_server)
-    wait(browser, "document.querySelectorAll('#database-dataset option').length>=7")
+    open_benchmark(browser, database_server, "yelp")
     assert not browser.find_elements(By.ID, "source-datasets-tab")
-    choice = Select(browser.find_element(By.ID, "database-dataset"))
     for identifier, title in [("yelp", "Yelp"), ("movielens-32m", "MovieLens 32M"), ("ldbc-snb", "LDBC SNB")]:
-        choice.select_by_value(identifier)
+        Select(browser.find_element(By.ID, "database-source")).select_by_value("benchmark-" + identifier)
         wait(browser, f"document.getElementById('benchmark-schema-image').alt.startsWith({json.dumps(title)}) && document.getElementById('benchmark-schema-image').naturalWidth>0")
         assert browser.find_element(By.ID, "download-benchmark-schema").is_enabled()
         screenshot(browser, f"schema-{identifier}.png")

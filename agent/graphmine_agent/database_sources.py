@@ -63,6 +63,7 @@ class DatabaseSource(Strict):
     _catalog: dict = PrivateAttr(default_factory=dict)
     _config_stamp: tuple | None = PrivateAttr(default=None)
     _managed: bool = PrivateAttr(default=False)
+    _registry_password_file: Path | None = PrivateAttr(default=None)
     id: str = Field(pattern=r"^[A-Za-z0-9_-]{1,64}$")
     name: str = Field(min_length=1, max_length=160)
     users: list[str] = Field(min_length=1)
@@ -254,13 +255,14 @@ def configured(settings):
 
 def available(settings):
     from .database_connections import managed_sources
+    from .neo4j_registry import sources as registry_sources
 
     principal = current_principal.get()
     return [
         s
         for s in configured(settings)
         if "*" in s.users or principal and principal.username in s.users
-    ] + managed_sources(settings)
+    ] + registry_sources(settings) + managed_sources(settings)
 
 
 def get_source(settings, identifier):
@@ -524,19 +526,8 @@ def validate_cypher(statement):
         r"'(?:\\.|''|[^'\\])*'|\"(?:\\.|\"\"|[^\"\\])*\"|`(?:``|[^`])*`|//[^\n]*|/\*[\s\S]*?\*/|[A-Za-z_][A-Za-z0-9_]*|;|[^\s]",
         re.MULTILINE,
     )
-    words, semicolons = [], 0
-    for match in token.finditer(statement):
-        value = match.group()
-        if value.startswith(("'", '"', "`", "//", "/*")):
-            continue
-        if value == ";":
-            semicolons += 1
-            if statement[match.end() :].strip():
-                raise AnalyticsError(
-                    "Run one Cypher statement at a time.", "cypher_read_only"
-                )
-        elif re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value):
-            words.append(value.upper())
+    tokens = [match.group() for match in token.finditer(statement)
+              if not match.group().startswith(("//", "/*"))]
     forbidden = {
         "CREATE",
         "MERGE",
@@ -559,20 +550,49 @@ def validate_cypher(statement):
         "START",
         "STOP",
     }
-    if (
-        not words
-        or words[0] not in {"MATCH", "OPTIONAL", "WITH", "UNWIND", "RETURN"}
-        or forbidden.intersection(words)
-        or semicolons > 1
-    ):
+    def reject():
         raise AnalyticsError(
             "Use one read Cypher query returning nodes, relationships or paths. Write clauses, procedures and database switching are unavailable in this editor.",
             "cypher_read_only",
         )
+    if not tokens or tokens[0].upper() not in {"MATCH", "OPTIONAL", "WITH", "UNWIND", "RETURN"}:
+        reject()
+    if ";" in tokens[:-1] or tokens.count(";") > 1:
+        raise AnalyticsError("Run one Cypher statement at a time.", "cypher_read_only")
+    # Delimiters distinguish pattern/expression identifiers from clauses.
+    # A query block starts a fresh clause scope even inside an expression.
+    stack = []
+    expression_prefixes = {"RETURN", "WITH", "UNWIND", "WHERE", "AND", "OR", "XOR", "NOT", "IN",
+                           "WHEN", "THEN", "ELSE", "BY", "DISTINCT", "AS", "IS", "CONTAINS",
+                           ",", ".", ":", "$", "=", "<", ">", "+", "-", "*", "/", "%", "^", "|"}
+    for index, value in enumerate(tokens):
+        previous = tokens[index - 1].upper() if index else ""
+        if value in {"(", "["}:
+            stack.append((value, "expression"))
+        elif value == "{":
+            # EXISTS/COUNT/COLLECT subqueries can contain nested MATCH clauses.
+            following = tokens[index + 1].upper() if index + 1 < len(tokens) else ""
+            next_symbol = tokens[index + 2] if index + 2 < len(tokens) else ""
+            query = (previous in {"EXISTS", "COUNT", "COLLECT", "CALL"}
+                     and following in {"MATCH", "OPTIONAL", "WITH", "UNWIND", "RETURN", "CALL"}
+                     and next_symbol != ":")
+            stack.append((value, "query" if query else "expression"))
+        elif value in {")", "]", "}"}:
+            if not stack or stack[-1][0] != {")": "(", "]": "[", "}": "{"}[value]:
+                reject()
+            stack.pop()
+        elif re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value) and value.upper() in forbidden:
+            scope = max((i + 1 for i, (_, kind) in enumerate(stack) if kind == "query"), default=0)
+            if not stack[scope:] and previous not in expression_prefixes:
+                reject()
+    if stack:
+        reject()
 
 
 @contextmanager
 def neo4j_session(source, *, write=False):
+    if write and source._catalog.get("registry"):
+        raise AnalyticsError("Benchmark connections allow read queries only.", "cypher_read_only", 409)
     try:
         from neo4j import READ_ACCESS, WRITE_ACCESS, GraphDatabase
     except ImportError as exc:
@@ -594,7 +614,11 @@ def neo4j_session(source, *, write=False):
     from .database_pools import current_database_pools, resource
     from .identity import identity_scope
 
-    credential = source._neo4j_password or secret(password)
+    if source._registry_password_file is not None:
+        from .neo4j_registry import password as registry_password
+        credential = registry_password(source._registry_password_file, password)
+    else:
+        credential = source._neo4j_password or secret(password)
     options, address_key = {}, None
     if source._network_settings is not None:
         from .database_connections import network_address

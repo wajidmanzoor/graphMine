@@ -1,0 +1,307 @@
+{
+  "nodes": {
+    "Message": 249524693,
+    "Comment": 185495476,
+    "Post": 64029217,
+    "Forum": 4611436,
+    "Person": 473001,
+    "Tag": 16080,
+    "Organisation": 7955,
+    "University": 6380,
+    "Company": 1575,
+    "Place": 1460,
+    "City": 1343,
+    "Country": 111,
+    "Continent": 6,
+    "TagClass": 71
+  },
+  "relationships": {
+    "IS_PART_OF": 1454,
+    "IS_SUBCLASS_OF": 70,
+    "IS_LOCATED_IN": 250005649,
+    "HAS_TYPE": 16080,
+    "HAS_CREATOR": 249524693,
+    "REPLY_OF": 185495476,
+    "CONTAINER_OF": 64029217,
+    "HAS_MEMBER": 303838931,
+    "HAS_MODERATOR": 4611436,
+    "HAS_TAG": 331650324,
+    "HAS_INTEREST": 11057039,
+    "KNOWS": 18655515,
+    "LIKES": 282748986,
+    "STUDY_AT": 378582,
+    "WORK_AT": 1029492
+  },
+  "relationship_rows": [
+    {
+      "pattern": "(:Place)-[:IS_PART_OF]->(:Place)",
+      "type": "IS_PART_OF",
+      "count": 1454
+    },
+    {
+      "pattern": "(:TagClass)-[:IS_SUBCLASS_OF]->(:TagClass)",
+      "type": "IS_SUBCLASS_OF",
+      "count": 70
+    },
+    {
+      "pattern": "(:Organisation)-[:IS_LOCATED_IN]->(:Place)",
+      "type": "IS_LOCATED_IN",
+      "count": 7955
+    },
+    {
+      "pattern": "(:Tag)-[:HAS_TYPE]->(:TagClass)",
+      "type": "HAS_TYPE",
+      "count": 16080
+    },
+    {
+      "pattern": "(:Comment)-[:HAS_CREATOR]->(:Person)",
+      "type": "HAS_CREATOR",
+      "count": 185495476
+    },
+    {
+      "pattern": "(:Comment)-[:IS_LOCATED_IN]->(:Country)",
+      "type": "IS_LOCATED_IN",
+      "count": 185495476
+    },
+    {
+      "pattern": "(:Comment)-[:REPLY_OF]->(:Comment)",
+      "type": "REPLY_OF",
+      "count": 85829276
+    },
+    {
+      "pattern": "(:Comment)-[:REPLY_OF]->(:Post)",
+      "type": "REPLY_OF",
+      "count": 99666200
+    },
+    {
+      "pattern": "(:Forum)-[:CONTAINER_OF]->(:Post)",
+      "type": "CONTAINER_OF",
+      "count": 64029217
+    },
+    {
+      "pattern": "(:Forum)-[:HAS_MEMBER]->(:Person)",
+      "type": "HAS_MEMBER",
+      "count": 303838931
+    },
+    {
+      "pattern": "(:Forum)-[:HAS_MODERATOR]->(:Person)",
+      "type": "HAS_MODERATOR",
+      "count": 4611436
+    },
+    {
+      "pattern": "(:Forum)-[:HAS_TAG]->(:Tag)",
+      "type": "HAS_TAG",
+      "count": 15195472
+    },
+    {
+      "pattern": "(:Person)-[:HAS_INTEREST]->(:Tag)",
+      "type": "HAS_INTEREST",
+      "count": 11057039
+    },
+    {
+      "pattern": "(:Person)-[:IS_LOCATED_IN]->(:City)",
+      "type": "IS_LOCATED_IN",
+      "count": 473001
+    },
+    {
+      "pattern": "(:Person)-[:KNOWS]->(:Person)",
+      "type": "KNOWS",
+      "count": 18655515
+    },
+    {
+      "pattern": "(:Person)-[:LIKES]->(:Comment)",
+      "type": "LIKES",
+      "count": 184325690
+    },
+    {
+      "pattern": "(:Person)-[:LIKES]->(:Post)",
+      "type": "LIKES",
+      "count": 98423296
+    },
+    {
+      "pattern": "(:Post)-[:HAS_CREATOR]->(:Person)",
+      "type": "HAS_CREATOR",
+      "count": 64029217
+    },
+    {
+      "pattern": "(:Comment)-[:HAS_TAG]->(:Tag)",
+      "type": "HAS_TAG",
+      "count": 238074593
+    },
+    {
+      "pattern": "(:Post)-[:HAS_TAG]->(:Tag)",
+      "type": "HAS_TAG",
+      "count": 78380259
+    },
+    {
+      "pattern": "(:Post)-[:IS_LOCATED_IN]->(:Country)",
+      "type": "IS_LOCATED_IN",
+      "count": 64029217
+    },
+    {
+      "pattern": "(:Person)-[:STUDY_AT]->(:University)",
+      "type": "STUDY_AT",
+      "count": 378582
+    },
+    {
+      "pattern": "(:Person)-[:WORK_AT]->(:Company)",
+      "type": "WORK_AT",
+      "count": 1029492
+    }
+  ],
+  "published_totals": {},
+  "published_tables": [
+    [
+      [
+        "Message",
+        "249,524,693"
+      ],
+      [
+        "Comment",
+        "185,495,476"
+      ],
+      [
+        "Post",
+        "64,029,217"
+      ],
+      [
+        "Forum",
+        "4,611,436"
+      ],
+      [
+        "Person",
+        "473,001"
+      ],
+      [
+        "Tag",
+        "16,080"
+      ],
+      [
+        "Organisation",
+        "7,955"
+      ],
+      [
+        "University",
+        "6,380"
+      ],
+      [
+        "Company",
+        "1,575"
+      ],
+      [
+        "Place",
+        "1,460"
+      ],
+      [
+        "City",
+        "1,343"
+      ],
+      [
+        "Country",
+        "111"
+      ],
+      [
+        "Continent",
+        "6"
+      ],
+      [
+        "TagClass",
+        "71"
+      ]
+    ],
+    [
+      [
+        "(:Place)-[:IS_PART_OF]->(:Place)",
+        "1,454"
+      ],
+      [
+        "(:TagClass)-[:IS_SUBCLASS_OF]->(:TagClass)",
+        "70"
+      ],
+      [
+        "(:Organisation)-[:IS_LOCATED_IN]->(:Place)",
+        "7,955"
+      ],
+      [
+        "(:Tag)-[:HAS_TYPE]->(:TagClass)",
+        "16,080"
+      ],
+      [
+        "(:Comment)-[:HAS_CREATOR]->(:Person)",
+        "185,495,476"
+      ],
+      [
+        "(:Comment)-[:IS_LOCATED_IN]->(:Country)",
+        "185,495,476"
+      ],
+      [
+        "(:Comment)-[:REPLY_OF]->(:Comment)",
+        "85,829,276"
+      ],
+      [
+        "(:Comment)-[:REPLY_OF]->(:Post)",
+        "99,666,200"
+      ],
+      [
+        "(:Forum)-[:CONTAINER_OF]->(:Post)",
+        "64,029,217"
+      ],
+      [
+        "(:Forum)-[:HAS_MEMBER]->(:Person)",
+        "303,838,931"
+      ],
+      [
+        "(:Forum)-[:HAS_MODERATOR]->(:Person)",
+        "4,611,436"
+      ],
+      [
+        "(:Forum)-[:HAS_TAG]->(:Tag)",
+        "15,195,472"
+      ],
+      [
+        "(:Person)-[:HAS_INTEREST]->(:Tag)",
+        "11,057,039"
+      ],
+      [
+        "(:Person)-[:IS_LOCATED_IN]->(:City)",
+        "473,001"
+      ],
+      [
+        "(:Person)-[:KNOWS]->(:Person)",
+        "18,655,515"
+      ],
+      [
+        "(:Person)-[:LIKES]->(:Comment)",
+        "184,325,690"
+      ],
+      [
+        "(:Person)-[:LIKES]->(:Post)",
+        "98,423,296"
+      ],
+      [
+        "(:Post)-[:HAS_CREATOR]->(:Person)",
+        "64,029,217"
+      ],
+      [
+        "(:Comment)-[:HAS_TAG]->(:Tag)",
+        "238,074,593"
+      ],
+      [
+        "(:Post)-[:HAS_TAG]->(:Tag)",
+        "78,380,259"
+      ],
+      [
+        "(:Post)-[:IS_LOCATED_IN]->(:Country)",
+        "64,029,217"
+      ],
+      [
+        "(:Person)-[:STUDY_AT]->(:University)",
+        "378,582"
+      ],
+      [
+        "(:Person)-[:WORK_AT]->(:Company)",
+        "1,029,492"
+      ]
+    ]
+  ]
+}

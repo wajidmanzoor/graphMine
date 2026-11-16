@@ -296,6 +296,8 @@ def canonical_records(source, nodes, edges):
 
 def expand(runtime, file_id, body):
     file, source, provenance = source_context(runtime, file_id)
+    if source.sql_type is None or not source.relationships:
+        raise AnalyticsError("SQL relationship expansion is not configured for this connection. The saved graph remains available for analysis.", "sql_unavailable", 409)
     if body.kind != "vertices":
         raise AnalyticsError(
             "Choose vertices before expanding relationships.", "invalid_selection"

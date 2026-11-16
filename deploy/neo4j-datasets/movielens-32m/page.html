@@ -1,0 +1,1779 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Neo4j MovieLens 32M Implementation | Workloads</title>
+        <link href="../style.css" rel="stylesheet" />
+        <style>
+            /* Main Tab Navigation Styles */
+            .tab-container {
+                display: flex;
+                gap: 5px;
+                margin: 20px 0 0 0;
+                border-bottom: 2px solid #f41c40;
+            }
+
+            .tab-link {
+                background: #f1f1f1;
+                border: none;
+                outline: none;
+                padding: 12px 25px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: bold;
+                transition: 0.3s;
+                border-radius: 8px 8px 0 0;
+                color: #555;
+            }
+
+            .tab-link:hover {
+                background-color: #ddd;
+            }
+
+            .tab-link.active {
+                background-color: #990000;
+                color: white;
+            }
+
+            /* Nested (Sub-sub) Tab Styles for Queries */
+            .sub-tab-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 15px;
+                margin: 15px 0;
+                background: #f8fafc;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            .query-category-group {
+                background: white;
+                padding: 12px;
+                border-radius: 6px;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .query-category-title {
+                font-size: 13px;
+                font-weight: bold;
+                color: #1e293b;
+                border-bottom: 2px solid #e2e8f0;
+                padding-bottom: 5px;
+                margin-bottom: 5px;
+            }
+
+            .query-category-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .no-queries-msg {
+                font-size: 12px;
+                color: #64748b;
+                font-style: italic;
+                padding: 5px 0;
+            }
+
+            .sub-tab-link {
+                background: white;
+                border: 1px solid #e2e8f0;
+                padding: 6px 12px;
+                cursor: pointer;
+                font-size: 13px;
+                border-radius: 6px;
+                transition: all 0.2s;
+                min-width: 40px;
+                text-align: center;
+            }
+
+            .sub-tab-link:hover {
+                border-color: #f41c40;
+                color: #990000;
+            }
+
+            .sub-tab-link.active {
+                background: #fff1f2;
+                border-color: #f41c40;
+                color: #990000;
+                font-weight: bold;
+            }
+
+            .query-subcategory {
+                font-size: 13px;
+                color: #475569;
+                margin: 8px 0 15px 0;
+                background: #f1f5f9;
+                padding: 6px 12px;
+                border-radius: 4px;
+                display: inline-block;
+                border-left: 3px solid #f41c40;
+            }
+
+            .gql-unsupported-note {
+                background: #fef2f2;
+                border-left: 3px solid #ef4444;
+                color: #991b1b;
+                padding: 10px 12px;
+                border-radius: 4px;
+                font-size: 13px;
+                margin-top: 10px;
+            }
+
+            /* Content Visibility */
+            .tab-content,
+            .sub-tab-content {
+                display: none;
+                animation: fadeIn 0.3s;
+            }
+
+            .active-content {
+                display: block;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+            #schema-section {
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            h4 {
+                scroll-margin-top: 80px;
+            }
+
+            #data-loading-header {
+                scroll-margin-top: 80px;
+            }
+
+            .tab-container,
+            #loading-tab-header {
+                scroll-margin-top: 80px;
+            }
+
+            .back-to-code-nav {
+                position: fixed;
+                right: 24px;
+                bottom: 24px;
+                z-index: 1000;
+                padding: 10px 16px;
+                border: none;
+                border-radius: 999px;
+                background: #990000;
+                color: white;
+                box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition:
+                    background-color 0.2s,
+                    transform 0.2s,
+                    opacity 0.2s,
+                    visibility 0.2s;
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .back-to-code-nav.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .back-to-code-nav:hover {
+                background: #6d0808;
+                transform: translateY(-2px);
+            }
+
+            @media (max-width: 600px) {
+                .back-to-code-nav {
+                    right: 12px;
+                    bottom: 12px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav>
+            <div class="container">
+                <a class="site-title" href="../index.html">
+                    <h1>PropG<span>Bench</span></h1>
+                </a>
+                <ul>
+                    <li class="dropdown">
+                        <a class="dropbtn" href="../datasets.html">Datasets ▾</a>
+                        <div class="dropdown-content">
+                            <a href="../datasets/yelp.html">Yelp</a>
+                            <a href="../datasets/ml32m.html">MovieLens 32M</a>
+                            <a href="../datasets/mlgenome.html">MovieLens Tag Genome</a>
+                            <a href="../datasets/amazon.html">Amazon</a>
+                            <a href="../datasets/stackoverflow.html">Stack Overflow</a>
+                            <a href="../datasets/ontime.html">OnTime</a>
+                            <a href="../datasets/fars.html">FARS</a>
+                            <a href="../datasets/snb.html">LDBC SNB</a>
+                        </div>
+                    </li>
+                    <li><a href="../download.html">Download</a></li>
+                    <li><a href="../documentation.html">Documentation</a></li>
+                    <li><a href="../publications.html">Publications</a></li>
+                    <li><a href="../team.html">Team</a></li>
+                </ul>
+            </div>
+        </nav>
+        <header>
+            <div class="container">
+                <a class="btn-secondary" href="../datasets/ml32m.html">← Back to MovieLens 32M Dataset</a>
+                <h2>Neo4j Implementation</h2>
+                <p>Deployment and Query logic for Neo4j Community 5.26.0.</p>
+            </div>
+        </header>
+        <main class="container">
+            <section>
+                <h3>Schema Diagram and Graph Statistics</h3>
+
+                <div class="chart-container">
+                    <img alt="Yelp Neo4j Schema" class="result-chart" src="../imgs/ml32mneo4jschema.png" />
+                </div>
+                <div class="dataset-stats-grid">
+                    <div class="dataset-stat-group">
+                        <h4>Node Statistics</h4>
+                        <div class="table-wrapper">
+                            <table class="dataset-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Node Label</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Genre</td>
+                                        <td>20</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Movie</td>
+                                        <td>87,585</td>
+                                    </tr>
+                                    <tr>
+                                        <td>User</td>
+                                        <td>200,948</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="dataset-stat-group">
+                        <h4>Edge Statistics</h4>
+                        <div class="table-wrapper">
+                            <table class="dataset-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Relationship</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>(:Movie)-[:HAS_GENRE]-(:Genre)</td>
+                                        <td>154,170</td>
+                                    </tr>
+                                    <tr>
+                                        <td>(:User)-[:RATED]-(:Movie)</td>
+                                        <td>32,000,204</td>
+                                    </tr>
+                                    <tr>
+                                        <td>(:User)-[:TAGGED]-(:Movie)</td>
+                                        <td>2,000,072</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <p>Disk space: 5.93 GiB</p>
+                <p>Total import time: 1246.41 Seconds</p>
+            </section>
+            <div id="loading-tab-header" class="tab-container">
+                <button class="back-to-code-nav" type="button" onclick="scrollToId('loading-tab-header')">
+                    Code block menu
+                </button>
+
+                <button class="tab-link active" onclick="openTab(event, 'loading-tab')">Data Loading</button>
+                <button class="tab-link" onclick="openTab(event, 'query-tab')">Queries</button>
+            </div>
+            <div class="tab-content active-content" id="loading-tab">
+                <section>
+                    <h3>Data Loading</h3>
+                    <div class="sub-tab-container">
+                        <button class="sub-tab-link" onclick="scrollToId('loading-intro')">Overview</button>
+                        <button class="sub-tab-link" onclick="scrollToId('step1')">
+                            Movie Nodes, Genre Nodes, and HAS_GENRE Edges
+                        </button>
+                        <button class="sub-tab-link" onclick="scrollToId('step2')">User Nodes and RATED Edges</button>
+                        <button class="sub-tab-link" onclick="scrollToId('step3')">TAGGED Edges</button>
+                    </div>
+                    <h4 id="loading-intro">Overview</h4>
+                    <p>
+                        Data import is handled in two stages: node creation followed by sequential edge ingestion. We
+                        put all the csv files under the data import directory of Neo4j. This directory can be set in the
+                        neo4j.conf file using the parameter 'dbms.directories.import'.
+                    </p>
+                    <p>
+                        For the implementation of MovieLens 32M on Neo4j, we used the original files downloaded from
+                        their website. We will read the CSV files unpacked from the downloaded file to complete node and
+                        edge imports.
+                    </p>
+                    <p>
+                        To speed up the import process and future queries, we create B+-tree indices for some node
+                        labels.
+                    </p>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre class="code-block cypher-ui"><span class="sh-cmt">// Unique User IDs</span>
+<span class="cy-kw">CREATE CONSTRAINT IF NOT EXISTS FOR</span> (u<span class="cy-lab">:User</span>) <span class="cy-kw">REQUIRE</span> u.<span class="cy-prop">userId</span> <span class="cy-kw">IS UNIQUE</span>;
+<span class="sh-cmt">// Unique Movie IDs</span>
+<span class="cy-kw">CREATE CONSTRAINT IF NOT EXISTS FOR</span> (m<span class="cy-lab">:Movie</span>) <span class="cy-kw">REQUIRE</span> m.<span class="cy-prop">movieId</span> <span class="cy-kw">IS UNIQUE</span>;
+<span class="sh-cmt">// Unique Genre Names</span>
+<span class="cy-kw">CREATE CONSTRAINT IF NOT EXISTS FOR</span> (g<span class="cy-lab">:Genre</span>) <span class="cy-kw">REQUIRE</span> g.<span class="cy-prop">name</span> <span class="cy-kw">IS UNIQUE</span>;</pre>
+                    </div>
+                    <h4 id="step1">Movie Nodes, Genre Nodes, and HAS_GENRE Edges</h4>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre
+                            class="code-block cypher-ui"
+                        ><span class="cy-kw">CALL</span> <span class="cy-func">apoc.periodic.iterate</span>(
+    <span class="cy-call-str">"LOAD CSV WITH HEADERS FROM 'file:///movielens/ml-32m/movies.csv' AS row RETURN row"</span>,
+    <span class="cy-call-str">"</span><span class="cy-kw">CREATE</span><span class="cy-call-str"> (m</span><span class="cy-lab">:Movie</span><span class="cy-call-str"> {</span><span class="cy-prop">movieId</span><span class="cy-call-str">: </span><span class="cy-func">toInteger</span><span class="cy-call-str">(row.movieId)})
+    </span><span class="cy-kw">SET</span><span class="cy-call-str"> m.</span><span class="cy-prop">title</span><span class="cy-call-str"> = row.title
+    </span><span class="cy-kw">WITH</span><span class="cy-call-str"> m, row
+    </span><span class="cy-kw">UNWIND</span><span class="cy-call-str"> </span><span class="cy-func">split</span><span class="cy-call-str">(row.genres, </span><span class="cy-call-str">'|'</span><span class="cy-call-str">) </span><span class="cy-kw">AS</span><span class="cy-call-str"> genreName
+    </span><span class="cy-kw">WITH</span><span class="cy-call-str"> m, genreName </span><span class="cy-kw">WHERE</span><span class="cy-call-str"> genreName </span><span class="cy-kw">IS NOT NULL AND</span><span class="cy-call-str"> </span><span class="cy-func">trim</span><span class="cy-call-str">(genreName) &lt;&gt; </span><span class="cy-call-str">''</span><span class="cy-call-str">
+    </span><span class="cy-kw">MERGE</span><span class="cy-call-str"> (g</span><span class="cy-lab">:Genre</span><span class="cy-call-str"> {</span><span class="cy-prop">name</span><span class="cy-call-str">: genreName})
+    </span><span class="cy-kw">MERGE</span><span class="cy-call-str"> (m)-[</span><span class="cy-rel">:HAS_GENRE</span><span class="cy-call-str">]-&gt;(g)"</span>,
+    {<span class="cy-prop">batchSize</span>: <span class="cy-num">10000</span>, <span class="cy-prop">parallel</span>: <span class="cy-kw">false</span>}
+)</pre>
+                    </div>
+                    <h4 id="step2">User Nodes and RATED Edges</h4>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre
+                            class="code-block cypher-ui"
+                        ><span class="cy-kw">CALL</span> <span class="cy-func">apoc.periodic.iterate</span>(
+    <span class="cy-call-str">"LOAD CSV WITH HEADERS FROM 'file:///movielens/ml-32m/ratings.csv' AS row RETURN row"</span>,
+    <span class="cy-call-str">"
+    MERGE (u</span><span class="cy-lab">:User</span><span class="cy-call-str"> {</span><span class="cy-prop">userId</span><span class="cy-call-str">: </span><span class="cy-func">toInteger</span><span class="cy-call-str">(row.userId)})
+    WITH u, row
+    MATCH (m</span><span class="cy-lab">:Movie</span><span class="cy-call-str"> {</span><span class="cy-prop">movieId</span><span class="cy-call-str">: </span><span class="cy-func">toInteger</span><span class="cy-call-str">(row.movieId)})
+    MERGE (u)-[r</span><span class="cy-rel">:RATED</span><span class="cy-call-str">]-&gt;(m)
+    SET r.</span><span class="cy-prop">rating</span><span class="cy-call-str"> = </span><span class="cy-func">toFloat</span><span class="cy-call-str">(row.rating),
+    r.</span><span class="cy-prop">timestamp</span><span class="cy-call-str"> = </span><span class="cy-func">apoc.date.format</span><span class="cy-func">(toInteger</span><span class="cy-call-str">(row.timestamp), </span><span class="cy-call-str">'s'</span><span class="cy-call-str">, </span><span class="cy-call-str">'yyyy-MM-dd HH:mm:ss'</span><span class="cy-call-str">)
+    "</span>,
+    {<span class="cy-prop">batchSize</span>: <span class="cy-num">1000</span>, <span class="cy-prop">parallel</span>: <span class="cy-kw">false</span>}
+)</pre>
+                    </div>
+                    <h4 id="step3">TAGGED Edges</h4>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre
+                            class="code-block cypher-ui"
+                        ><span class="cy-kw">CALL</span> <span class="cy-func">apoc.periodic.iterate</span>(
+    <span class="cy-call-str">"LOAD CSV WITH HEADERS FROM 'file:///movielens/ml-32m/tags.csv' AS row RETURN row"</span>,
+    <span class="cy-call-str">"
+    MERGE (u</span><span class="cy-lab">:User</span><span class="cy-call-str"> {userId: </span><span class="cy-func">toInteger</span><span class="cy-call-str">(row.userId)})
+    WITH u, row
+    MATCH (m</span><span class="cy-lab">:Movie</span><span class="cy-call-str"> {movieId: </span><span class="cy-func">toInteger</span><span class="cy-call-str">(row.movieId)})
+    CREATE (u)-[t</span><span class="cy-rel">:TAGGED</span><span class="cy-call-str">]-&gt;(m)
+    SET t.</span><span class="cy-prop">tag</span><span class="cy-call-str"> = row.tag,
+    t.</span><span class="cy-prop">timestamp</span><span class="cy-call-str"> = </span><span class="cy-func">apoc.date.format</span><span class="cy-func">(toInteger</span><span class="cy-call-str">(row.timestamp), </span><span class="cy-call-str">'s'</span><span class="cy-call-str">, </span><span class="cy-call-str">'yyyy-MM-dd HH:mm:ss'</span><span class="cy-call-str">)
+    "</span>,
+    {<span class="cy-prop">batchSize</span>: <span class="cy-num">1000</span>, <span class="cy-prop">parallel</span>: <span class="cy-kw">false</span>}
+)</pre>
+                    </div>
+                </section>
+            </div>
+            <div class="tab-content" id="query-tab">
+                <section>
+                    <h3>Queries</h3>
+                    <p>Select a query below to view its logic and description.</p>
+                    <div class="sub-tab-container">
+                        <div class="query-category-group">
+                            <div class="query-category-title">1. Neighborhood</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link active" onclick="openSubTab(event, 'q1-content')">
+                                    Q1
+                                </button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q2-content')">Q2</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q3-content')">Q3</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q4-content')">Q4</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">2. Path</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q5-content')">Q5</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q6-content')">Q6</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q7-content')">Q7</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q8-content')">Q8</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q9-content')">Q9</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q10-content')">Q10</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">3. Pattern</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q11-content')">Q11</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q12-content')">Q12</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q13-content')">Q13</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q14-content')">Q14</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q15-content')">Q15</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q16-content')">Q16</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">4. Aggregation</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q17-content')">Q17</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q18-content')">Q18</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q19-content')">Q19</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q20-content')">Q20</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q21-content')">Q21</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q22-content')">Q22</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q23-content')">Q23</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q24-content')">Q24</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q25-content')">Q25</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">5. Analytics</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q26-content')">Q26</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q27-content')">Q27</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q28-content')">Q28</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q29-content')">Q29</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q30-content')">Q30</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">6. Hybrid</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q31-content')">Q31</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">7. Others</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q32-content')">Q32</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q33-content')">Q33</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content active-content" id="q1-content">
+                        <h4>Q1. Movies Rated by a User</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.1 One-Hop Neighbors</div>
+                        <p>
+                            This query lists the movies directly connected to a selected user by outgoing RATED
+                            relationships.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">User</span> {<span class="cy-var">userId</span>: <span class="cy-num">33</span>})-[<span class="cy-var">r</span>:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-var">m</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AS</span> <span class="cy-var">movieId</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>, <span class="cy-var">r</span>.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>, <span class="cy-var">r</span>.<span class="cy-prop">timestamp</span> <span class="cy-kw">AS</span> <span class="cy-var">ratingTime</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">rating</span> <span class="cy-kw">DESC</span>, <span class="cy-var">title</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">ml32m_user</span> {<span class="cy-prop">userId</span>: <span class="cy-param">$userId</span>})-[<span class="cy-var">r</span>:<span class="cy-rel">ml32m_rated</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-var">m</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AS</span> <span class="cy-var">movieId</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>, <span class="cy-var">r</span>.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>, <span class="cy-var">r</span>.<span class="cy-prop">timestamp</span> <span class="cy-kw">AS</span> <span class="cy-var">ratingTime</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">rating</span> <span class="cy-kw">DESC</span>, <span class="cy-var">title</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q2-content">
+                        <h4>Q2. Genres within Two Hops of a User</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.2 k-Hop Neighborhood</div>
+                        <p>
+                            This query follows a selected user to rated movies and then to their genres, returning
+                            distinct genres within two hops.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (:<span class="cy-lab">User</span> {<span class="cy-var">userId</span>: <span class="cy-num">33</span>})-[:<span class="cy-rel">RATED</span>]-&gt;(:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(<span class="cy-var">g</span>:<span class="cy-lab">Genre</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-kw">DISTINCT</span> <span class="cy-var">g</span>.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> <span class="cy-var">genre</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">genre</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (:<span class="cy-lab">ml32m_user</span> {<span class="cy-prop">userId</span>: <span class="cy-param">$userId</span>})-[:<span class="cy-rel">ml32m_rated</span>]-&gt;(:<span class="cy-lab">ml32m_movie</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(<span class="cy-var">g</span>:<span class="cy-lab">ml32m_genre</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">g</span>.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> <span class="cy-var">genre</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">genre</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q3-content">
+                        <h4>Q3. Users Exactly Two Rating Hops Away</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.3 Exact kth-Hop Neighbors</div>
+                        <p>
+                            This query finds users exactly two RATED hops away through movies co-rated with a selected
+                            user.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (:<span class="cy-lab">User</span> {<span class="cy-var">userId</span>: <span class="cy-num">33</span>})-[:<span class="cy-rel">RATED</span>]-&gt;(:<span class="cy-lab">Movie</span>)&lt;-[:<span class="cy-rel">RATED</span>]-(<span class="cy-var">other</span>:<span class="cy-lab">User</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">other</span>.<span class="cy-prop">userId</span> &lt;&gt; <span class="cy-num">33</span>
+<span class="cy-kw">RETURN</span> <span class="cy-kw">DISTINCT</span> <span class="cy-var">other</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">userId</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (:<span class="cy-lab">ml32m_user</span> {<span class="cy-prop">userId</span>: <span class="cy-param">$userId</span>})-[:<span class="cy-rel">ml32m_rated</span>]-&gt;(:<span class="cy-lab">ml32m_movie</span>)&lt;-[:<span class="cy-rel">ml32m_rated</span>]-(<span class="cy-var">other</span>:<span class="cy-lab">ml32m_user</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">other</span>.<span class="cy-prop">userId</span> &lt;&gt; <span class="cy-param">$userId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">other</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">userId</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q4-content">
+                        <h4>Q4. Highly Rated One-Hop Movies</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T1.4 Neighborhood with Property Filter
+                        </div>
+                        <p>
+                            This query filters a selected user's one-hop movie neighborhood to movies with ratings at or
+                            above a threshold.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">User</span> {<span class="cy-var">userId</span>: <span class="cy-num">33</span>})-[<span class="cy-var">r</span>:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">r</span>.<span class="cy-prop">rating</span> &gt;= <span class="cy-num">4.0</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">m</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AS</span> <span class="cy-var">movieId</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>, <span class="cy-var">r</span>.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">rating</span> <span class="cy-kw">DESC</span>, <span class="cy-var">title</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">ml32m_user</span> {<span class="cy-prop">userId</span>: <span class="cy-param">$userId</span>})-[<span class="cy-var">r</span>:<span class="cy-rel">ml32m_rated</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">r</span>.<span class="cy-prop">rating</span> &gt;= <span class="cy-param">$minRating</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">m</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AS</span> <span class="cy-var">movieId</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>, <span class="cy-var">r</span>.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">rating</span> <span class="cy-kw">DESC</span>, <span class="cy-var">title</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q5-content">
+                        <h4>Q5. Filter Movies by Title Text</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.1 Node Filtering (Single Node Paths)
+                        </div>
+                        <p>
+                            This query filters Movie nodes by title text and movie ID without traversing relationships.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">CONTAINS</span> <span class="cy-call-str">&quot;Love&quot;</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">m</span>.<span class="cy-prop">movieId</span> &gt;= <span class="cy-num">99</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">m</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AS</span> <span class="cy-var">movieId</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">m</span>.<span class="cy-prop">movieId</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">m</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-var">CONTAINS</span> <span class="cy-param">$titleText</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">m</span>.<span class="cy-prop">movieId</span> &gt;= <span class="cy-param">$minMovieId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">m</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AS</span> <span class="cy-var">movieId</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">m</span>.<span class="cy-prop">movieId</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q6-content">
+                        <h4>Q6. Filter High-Rating Edges</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T2.2 Edge Filtering</div>
+                        <p>
+                            This query filters RATED relationships by numeric rating and returns their endpoint user and
+                            movie.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">User</span>)-[<span class="cy-var">r</span>:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">r</span>.<span class="cy-prop">rating</span> &gt;= <span class="cy-num">4.0</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">u</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>, <span class="cy-var">m</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AS</span> <span class="cy-var">movieId</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>, <span class="cy-var">r</span>.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">rating</span> <span class="cy-kw">DESC</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">ml32m_user</span>)-[<span class="cy-var">r</span>:<span class="cy-rel">ml32m_rated</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">r</span>.<span class="cy-prop">rating</span> &gt;= <span class="cy-param">$minRating</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">u</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>, <span class="cy-var">m</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AS</span> <span class="cy-var">movieId</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>, <span class="cy-var">r</span>.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">rating</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q7-content">
+                        <h4>Q7. Check Whether a User Can Reach a Movie</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.3 Reachability between Two Nodes
+                        </div>
+                        <p>
+                            This query tests whether a selected user can reach a selected movie within three undirected
+                            RATED hops.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">RETURN</span> <span class="cy-kw">EXISTS</span> {
+  <span class="cy-kw">MATCH</span> (:<span class="cy-lab">User</span> {<span class="cy-var">userId</span>: <span class="cy-num">33</span>})-[:<span class="cy-rel">RATED</span>*<span class="cy-num">1</span>..<span class="cy-num">3</span>]-(:<span class="cy-lab">Movie</span> {<span class="cy-var">movieId</span>: <span class="cy-num">66</span>})
+} <span class="cy-kw">AS</span> <span class="cy-var">reachable</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = <span class="cy-kw">ANY</span> (:<span class="cy-lab">ml32m_user</span> {<span class="cy-prop">userId</span>: <span class="cy-param">$userId</span>})-[:<span class="cy-rel">ml32m_rated</span>]-{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(:<span class="cy-lab">ml32m_movie</span> {<span class="cy-prop">movieId</span>: <span class="cy-param">$movieId</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-kw">true</span> <span class="cy-kw">AS</span> <span class="cy-var">reachable</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q8-content">
+                        <h4>Q8. Shortest Co-Rating Path to a Movie</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T2.4 Shortest Path</div>
+                        <p>This query finds the shortest undirected RATED path between a selected user and movie.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">User</span> {<span class="cy-var">userId</span>: <span class="cy-num">33</span>})
+<span class="cy-kw">MATCH</span> (<span class="cy-var">m</span>:<span class="cy-lab">Movie</span> {<span class="cy-var">movieId</span>: <span class="cy-num">66</span>})
+<span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = <span class="cy-func">shortestPath</span>((<span class="cy-var">u</span>)-[:<span class="cy-rel">RATED</span>*<span class="cy-num">1</span>..<span class="cy-num">4</span>]-(<span class="cy-var">m</span>))
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hopCount</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = <span class="cy-kw">SHORTEST</span> (:<span class="cy-lab">ml32m_user</span> {<span class="cy-prop">userId</span>: <span class="cy-param">$userId</span>})-[:<span class="cy-rel">ml32m_rated</span>]-{<span class="cy-num">1</span>,<span class="cy-num">4</span>}(:<span class="cy-lab">ml32m_movie</span> {<span class="cy-prop">movieId</span>: <span class="cy-param">$movieId</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hopCount</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q9-content">
+                        <h4>Q9. Simple Co-Rating Paths up to Three Hops</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.5 All Simple Paths up to Length k
+                        </div>
+                        <p>
+                            This query enumerates acyclic RATED paths between a selected user and movie up to three
+                            hops.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">User</span> {<span class="cy-var">userId</span>: <span class="cy-num">33</span>})-[:<span class="cy-rel">RATED</span>*<span class="cy-num">1</span>..<span class="cy-num">3</span>]-(:<span class="cy-lab">Movie</span> {<span class="cy-var">movieId</span>: <span class="cy-num">66</span>})
+<span class="cy-kw">WHERE</span> <span class="cy-kw">all</span>(<span class="cy-var">n</span> <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(<span class="cy-var">p</span>) <span class="cy-kw">WHERE</span> <span class="cy-kw">single</span>(<span class="cy-var">m</span> <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(<span class="cy-var">p</span>) <span class="cy-kw">WHERE</span> <span class="cy-var">m</span> = <span class="cy-var">n</span>))
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hopCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">hopCount</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = <span class="cy-kw">ACYCLIC</span> (:<span class="cy-lab">ml32m_user</span> {<span class="cy-prop">userId</span>: <span class="cy-param">$userId</span>})-[:<span class="cy-rel">ml32m_rated</span>]-{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(:<span class="cy-lab">ml32m_movie</span> {<span class="cy-prop">movieId</span>: <span class="cy-param">$movieId</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hopCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">hopCount</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q10-content">
+                        <h4>Q10. Top Weighted Co-Rating Paths</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T2.6 top-K Weighted Paths</div>
+                        <p>This query ranks bounded RATED paths by the sum of rating values along each path.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">User</span> {<span class="cy-var">userId</span>: <span class="cy-num">33</span>})-[<span class="cy-var">rels</span>:<span class="cy-rel">RATED</span>*<span class="cy-num">1</span>..<span class="cy-num">3</span>]-(:<span class="cy-lab">Movie</span> {<span class="cy-var">movieId</span>: <span class="cy-num">66</span>})
+<span class="cy-kw">WHERE</span> <span class="cy-kw">all</span>(<span class="cy-var">n</span> <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(<span class="cy-var">p</span>) <span class="cy-kw">WHERE</span> <span class="cy-kw">single</span>(<span class="cy-var">m</span> <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(<span class="cy-var">p</span>) <span class="cy-kw">WHERE</span> <span class="cy-var">m</span> = <span class="cy-var">n</span>))
+<span class="cy-kw">WITH</span> <span class="cy-var">p</span>, <span class="cy-func">reduce</span>(<span class="cy-var">total</span> = <span class="cy-num">0.0</span>, <span class="cy-var">r</span> <span class="cy-kw">IN</span> <span class="cy-func">relationships</span>(<span class="cy-var">p</span>) | <span class="cy-var">total</span> + <span class="cy-func">coalesce</span>(<span class="cy-var">r</span>.<span class="cy-prop">rating</span>, <span class="cy-num">0.0</span>)) <span class="cy-kw">AS</span> <span class="cy-var">ratingWeight</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hopCount</span>, <span class="cy-var">ratingWeight</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">ratingWeight</span> <span class="cy-kw">DESC</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = <span class="cy-kw">ACYCLIC</span> (:<span class="cy-lab">ml32m_user</span> {<span class="cy-prop">userId</span>: <span class="cy-param">$userId</span>})-[:<span class="cy-rel">ml32m_rated</span>]-{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(:<span class="cy-lab">ml32m_movie</span> {<span class="cy-prop">movieId</span>: <span class="cy-param">$movieId</span>})
+<span class="cy-kw">WITH</span> <span class="cy-var">p</span>, <span class="cy-func">reduce</span>(<span class="cy-var">total</span> = <span class="cy-num">0.0</span>, <span class="cy-var">r</span> <span class="cy-kw">IN</span> <span class="cy-func">relationships</span>(<span class="cy-var">p</span>) | <span class="cy-var">total</span> + <span class="cy-func">coalesce</span>(<span class="cy-var">r</span>.<span class="cy-prop">rating</span>, <span class="cy-num">0.0</span>)) <span class="cy-kw">AS</span> <span class="cy-var">ratingWeight</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hopCount</span>, <span class="cy-var">ratingWeight</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">ratingWeight</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q11-content">
+                        <h4>Q11. Three-Movie Triangle by Shared Genres</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.1 Triangle Detection</div>
+                        <p>
+                            This query finds three movies where every pair shares at least one genre through HAS_GENRE
+                            relationships.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">b</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">b</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">c</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">c</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">a</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">b</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">c</span>.<span class="cy-prop">movieId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-kw">DISTINCT</span> <span class="cy-var">a</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieA</span>, <span class="cy-var">b</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieB</span>, <span class="cy-var">c</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieC</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">ml32m_movie</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">b</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">b</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">c</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">c</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">a</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">b</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">c</span>.<span class="cy-prop">movieId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">a</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieA</span>, <span class="cy-var">b</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieB</span>, <span class="cy-var">c</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q12-content">
+                        <h4>Q12. Four-Movie Square by Shared Genres</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.2 Square Detection</div>
+                        <p>
+                            This query finds four movies connected in a cycle where each adjacent pair shares a genre.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">b</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">b</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">c</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">c</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">d</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">d</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">a</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">b</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">c</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">d</span>.<span class="cy-prop">movieId</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">c</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">d</span> <span class="cy-kw">AND</span> <span class="cy-var">c</span> &lt;&gt; <span class="cy-var">d</span>
+<span class="cy-kw">RETURN</span> <span class="cy-kw">DISTINCT</span> <span class="cy-var">a</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieA</span>, <span class="cy-var">b</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieB</span>, <span class="cy-var">c</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieC</span>, <span class="cy-var">d</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieD</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">ml32m_movie</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">b</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">b</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">c</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">c</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">d</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">d</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">a</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">b</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">c</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">d</span>.<span class="cy-prop">movieId</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">c</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">d</span> <span class="cy-kw">AND</span> <span class="cy-var">c</span> &lt;&gt; <span class="cy-var">d</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">a</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieA</span>, <span class="cy-var">b</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieB</span>, <span class="cy-var">c</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieC</span>, <span class="cy-var">d</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieD</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q13-content">
+                        <h4>Q13. Users with Many Rated Movies</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.3 Star Pattern Query</div>
+                        <p>
+                            This query finds user-centered stars by counting how many distinct movies each user rated.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">User</span>)-[:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">u</span>, <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">m</span>) <span class="cy-kw">AS</span> <span class="cy-var">ratedMovieCount</span>
+<span class="cy-kw">WHERE</span> <span class="cy-var">ratedMovieCount</span> &gt;= <span class="cy-num">10</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">u</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>, <span class="cy-var">ratedMovieCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">ratedMovieCount</span> <span class="cy-kw">DESC</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">ml32m_user</span>)-[:<span class="cy-rel">ml32m_rated</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">u</span>, <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">m</span>) <span class="cy-kw">AS</span> <span class="cy-var">ratedMovieCount</span>
+<span class="cy-kw">WHERE</span> <span class="cy-var">ratedMovieCount</span> &gt;= <span class="cy-param">$minDegree</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">u</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>, <span class="cy-var">ratedMovieCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">ratedMovieCount</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q14-content">
+                        <h4>Q14. Four-Movie Clique by Shared Genres</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.4 4-Clique</div>
+                        <p>
+                            This query finds four movies where every pair shares at least one genre, forming a clique in
+                            the derived movie-genre similarity graph.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">b</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">c</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">d</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">b</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">c</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">b</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">d</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">c</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(:<span class="cy-lab">Genre</span>)&lt;-[:<span class="cy-rel">HAS_GENRE</span>]-(<span class="cy-var">d</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">b</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">c</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AND</span> <span class="cy-var">c</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">d</span>.<span class="cy-prop">movieId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-kw">DISTINCT</span> <span class="cy-var">a</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieA</span>, <span class="cy-var">b</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieB</span>, <span class="cy-var">c</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieC</span>, <span class="cy-var">d</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieD</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">ml32m_movie</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">b</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">c</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">d</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">b</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">c</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">b</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">d</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">c</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(:<span class="cy-lab">ml32m_genre</span>)&lt;-[:<span class="cy-rel">ml32m_has_genre</span>]-(<span class="cy-var">d</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">b</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">c</span>.<span class="cy-prop">movieId</span> <span class="cy-kw">AND</span> <span class="cy-var">c</span>.<span class="cy-prop">movieId</span> &lt; <span class="cy-var">d</span>.<span class="cy-prop">movieId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">a</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieA</span>, <span class="cy-var">b</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieB</span>, <span class="cy-var">c</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieC</span>, <span class="cy-var">d</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieD</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q15-content">
+                        <h4>Q15. Users Who Rated the Same Movie</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.5 Two-hop Join Pattern</div>
+                        <p>This query finds pairs of users connected through a commonly rated movie.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u1</span>:<span class="cy-lab">User</span>)-[:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)&lt;-[:<span class="cy-rel">RATED</span>]-(<span class="cy-var">u2</span>:<span class="cy-lab">User</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">u1</span>.<span class="cy-prop">userId</span> &lt; <span class="cy-var">u2</span>.<span class="cy-prop">userId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">u1</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userA</span>, <span class="cy-var">u2</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userB</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">sharedMovie</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u1</span>:<span class="cy-lab">ml32m_user</span>)-[:<span class="cy-rel">ml32m_rated</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">ml32m_movie</span>)&lt;-[:<span class="cy-rel">ml32m_rated</span>]-(<span class="cy-var">u2</span>:<span class="cy-lab">ml32m_user</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">u1</span>.<span class="cy-prop">userId</span> &lt; <span class="cy-var">u2</span>.<span class="cy-prop">userId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">u1</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userA</span>, <span class="cy-var">u2</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userB</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">sharedMovie</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q16-content">
+                        <h4>
+                            Q16. List users and the movies they rated that belong to the specific genre "Comedy", find
+                            top-20 results in descending order of ratings
+                        </h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.6 Line Pattern</div>
+                        <p>
+                            This query retrieves users and their comedy movie ratings, returning the top 20
+                            highest-rated user-movie pairs.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">User</span>)-[<span class="cy-var">r</span>:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(<span class="cy-var">g</span>:<span class="cy-lab">Genre</span> {<span class="cy-var">name</span>: <span class="cy-call-str">&quot;Comedy&quot;</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-var">u</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieTitle</span>, <span class="cy-var">g</span>.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> <span class="cy-var">genre</span>, <span class="cy-var">r</span>.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">r</span>.<span class="cy-prop">rating</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (u<span class="cy-lab">:ml32m_user</span>)-[r<span class="cy-rel">:ml32m_rated</span>]-&gt;(m<span class="cy-lab">:ml32m_movie</span>)-[<span class="cy-rel">:ml32m_has_genre</span>]-&gt;(g<span class="cy-lab">:ml32m_genre</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"Comedy"</span>})
+<span class="cy-kw">RETURN</span> u.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>, m.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieTitle</span>, g.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> <span class="cy-var">genre</span>, r.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>
+<span class="cy-kw">ORDER BY</span> r.<span class="cy-prop">rating</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q17-content">
+                        <h4>Q17. Movie Rating Degree Summary</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.1 Ungrouped Node Degree Statistics by Label
+                        </div>
+                        <p>
+                            This query computes global statistics over the number of RATED edges incident to each movie.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">OPTIONAL</span> <span class="cy-kw">MATCH</span> (:<span class="cy-lab">User</span>)-[<span class="cy-var">r</span>:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">m</span>, <span class="cy-func">count</span>(<span class="cy-var">r</span>) <span class="cy-kw">AS</span> <span class="cy-var">ratingDegree</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-var">m</span>) <span class="cy-kw">AS</span> <span class="cy-var">movieCount</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">ratingDegree</span>) <span class="cy-kw">AS</span> <span class="cy-var">avgRatingDegree</span>,
+       <span class="cy-func">min</span>(<span class="cy-var">ratingDegree</span>) <span class="cy-kw">AS</span> <span class="cy-var">minRatingDegree</span>,
+       <span class="cy-func">max</span>(<span class="cy-var">ratingDegree</span>) <span class="cy-kw">AS</span> <span class="cy-var">maxRatingDegree</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">m</span>:<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">OPTIONAL</span> <span class="cy-kw">MATCH</span> (:<span class="cy-lab">ml32m_user</span>)-[<span class="cy-var">r</span>:<span class="cy-rel">ml32m_rated</span>]-&gt;(<span class="cy-var">m</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">m</span>, <span class="cy-func">count</span>(<span class="cy-var">r</span>) <span class="cy-kw">AS</span> <span class="cy-var">ratingDegree</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-var">m</span>) <span class="cy-kw">AS</span> <span class="cy-var">movieCount</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">ratingDegree</span>) <span class="cy-kw">AS</span> <span class="cy-var">avgRatingDegree</span>,
+       <span class="cy-func">min</span>(<span class="cy-var">ratingDegree</span>) <span class="cy-kw">AS</span> <span class="cy-var">minRatingDegree</span>,
+       <span class="cy-func">max</span>(<span class="cy-var">ratingDegree</span>) <span class="cy-kw">AS</span> <span class="cy-var">maxRatingDegree</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q18-content">
+                        <h4>
+                            Q18. Find users who have rated movies from at least 3 distinct genres, list the top-10 in
+                            descending order of the genre count
+                        </h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.2 Grouped Node Degree Statistics by Label
+                        </div>
+                        <p>
+                            This query identifies the top 10 users who have rated movies spanning the most distinct
+                            genres (with a minimum of 3 genres).
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">User</span>)-[:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(<span class="cy-var">g</span>:<span class="cy-lab">Genre</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">u</span>, <span class="cy-func">COUNT</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">g</span>.<span class="cy-prop">name</span>) <span class="cy-kw">AS</span> <span class="cy-var">genreCount</span>
+<span class="cy-kw">WHERE</span> <span class="cy-var">genreCount</span> &gt;= <span class="cy-num">3</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">u</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>, <span class="cy-var">genreCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">genreCount</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (u<span class="cy-lab">:ml32m_user</span>)-[r<span class="cy-rel">:ml32m_rated</span>]-&gt;(m<span class="cy-lab">:ml32m_movie</span>)-[<span class="cy-rel">:ml32m_has_genre</span>]-&gt;(g<span class="cy-lab">:ml32m_genre</span>)
+<span class="cy-kw">WITH</span> u, <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> g.<span class="cy-prop">name</span>) <span class="cy-kw">AS</span> <span class="cy-var">genreCount</span>
+<span class="cy-kw">WHERE</span> <span class="cy-var">genreCount</span> &gt;= <span class="cy-num">3</span>
+<span class="cy-kw">RETURN</span> u.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>, <span class="cy-var">genreCount</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">genreCount</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q19-content">
+                        <h4>
+                            Q19. Find top-20 movies with the highest number of 5-ratings, return the movies and this
+                            rating number
+                        </h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.2 Grouped Node Degree Statistics by Label
+                        </div>
+                        <p>
+                            This query identifies and lists the top 20 movies that have received the highest count of
+                            perfect 5.0 ratings.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (:<span class="cy-lab">User</span>)-[<span class="cy-var">r</span>:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">r</span>.<span class="cy-prop">rating</span> = <span class="cy-num">5.0</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieTitle</span>, <span class="cy-func">COUNT</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">fiveStarCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">fiveStarCount</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-lab">:ml32m_user</span>)-[r<span class="cy-rel">:ml32m_rated</span>]-&gt;(m<span class="cy-lab">:ml32m_movie</span>)
+<span class="cy-kw">WHERE</span> r.<span class="cy-prop">rating</span> = <span class="cy-num">5.0</span>
+<span class="cy-kw">RETURN</span> m.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieTitle</span>, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">fiveStarCount</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">fiveStarCount</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q20-content">
+                        <h4>Q20. Check different rating values and their occurrence frequencies</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.4 Grouped Edge Count and Property Statistics
+                        </div>
+                        <p>
+                            This query aggregates all ratings in the dataset and returns each rating value along with
+                            its total occurrence frequency, sorted by rating value.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (:<span class="cy-lab">User</span>)-[<span class="cy-var">r</span>:<span class="cy-rel">RATED</span>]-&gt;(:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-var">r</span>.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>, <span class="cy-func">COUNT</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">frequency</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">rating</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-lab">:ml32m_user</span>)-[r<span class="cy-rel">:ml32m_rated</span>]-&gt;(<span class="cy-lab">:ml32m_movie</span>)
+<span class="cy-kw">RETURN</span> r.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">frequency</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">rating</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q21-content">
+                        <h4>Q21. Find the top-50 most frequent tags, return the tags along with their frequencies</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.4 Grouped Edge Count and Property Statistics
+                        </div>
+                        <p>
+                            This query ranks and returns the top 50 most frequently used movie tags in descending order
+                            of their frequency.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (:<span class="cy-lab">User</span>)-[<span class="cy-var">t</span>:<span class="cy-rel">TAGGED</span>]-&gt;(:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">t</span>.<span class="cy-prop">tag</span> <span class="cy-kw">IS</span> <span class="cy-kw">NOT</span> <span class="cy-kw">NULL</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">t</span>.<span class="cy-prop">tag</span> <span class="cy-kw">AS</span> <span class="cy-var">tag</span>, <span class="cy-func">COUNT</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">frequency</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">frequency</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">50</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (:User)-[t<span class="cy-rel">:ml32m_tagged</span>]-&gt;(:Movie)
+<span class="cy-kw">WHERE</span> t.<span class="cy-prop">tag</span> <span class="cy-kw">IS NOT NULL</span>
+<span class="cy-kw">RETURN</span> t.<span class="cy-prop">tag</span> <span class="cy-kw">AS</span> <span class="cy-var">tag</span>, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">frequency</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">frequency</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">50</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q22-content">
+                        <h4>Q22. User Rating Path Counts by Length</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T4.5 Path Counts by Length</div>
+                        <p>This query counts bounded RATED paths from a selected user grouped by path length.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">User</span> {<span class="cy-var">userId</span>: <span class="cy-num">33</span>})-[:<span class="cy-rel">RATED</span>*<span class="cy-num">1</span>..<span class="cy-num">3</span>]-(<span class="cy-var">target</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">pathLength</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">pathCount</span>,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">target</span>) <span class="cy-kw">AS</span> <span class="cy-var">distinctTargetCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">pathLength</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">ml32m_user</span> {<span class="cy-prop">userId</span>: <span class="cy-param">$userId</span>})-[:<span class="cy-rel">ml32m_rated</span>]-{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(<span class="cy-var">target</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">pathLength</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">pathCount</span>,
+       <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">target</span>) <span class="cy-kw">AS</span> <span class="cy-var">distinctTargetCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">pathLength</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q23-content">
+                        <h4>Q23. User Rating Path Counts by Length and Genre</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.6 Grouped Path Counts by Length and Endpoint Type
+                        </div>
+                        <p>
+                            This query groups bounded paths from a selected user by path length and by genre of reached
+                            movie endpoints.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">User</span> {<span class="cy-var">userId</span>: <span class="cy-num">33</span>})-[:<span class="cy-rel">RATED</span>*<span class="cy-num">1</span>..<span class="cy-num">3</span>]-(<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(<span class="cy-var">g</span>:<span class="cy-lab">Genre</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(<span class="cy-var">p</span>) - <span class="cy-num">1</span> <span class="cy-kw">AS</span> <span class="cy-var">pathLength</span>,
+       <span class="cy-var">g</span>.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> <span class="cy-var">genre</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">pathCount</span>,
+       <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">m</span>) <span class="cy-kw">AS</span> <span class="cy-var">distinctMovieCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">pathLength</span>, <span class="cy-var">pathCount</span> <span class="cy-kw">DESC</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">ml32m_user</span> {<span class="cy-prop">userId</span>: <span class="cy-param">$userId</span>})-[:<span class="cy-rel">ml32m_rated</span>]-{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(<span class="cy-var">m</span>:<span class="cy-lab">ml32m_movie</span>)-[:<span class="cy-rel">ml32m_has_genre</span>]-&gt;(<span class="cy-var">g</span>:<span class="cy-lab">ml32m_genre</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">pathLength</span>,
+       <span class="cy-var">g</span>.<span class="cy-prop">name</span> <span class="cy-kw">AS</span> <span class="cy-var">genre</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">pathCount</span>,
+       <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">m</span>) <span class="cy-kw">AS</span> <span class="cy-var">distinctMovieCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">pathLength</span>, <span class="cy-var">pathCount</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q24-content">
+                        <h4>
+                            Q24. Find the title of the movies that belong to multiple genres, e.g., "Comedy" and
+                            "Romance"
+                        </h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T4.7 Union and Intersection</div>
+                        <p>
+                            This query finds and lists the titles of the first 10 movies that are classified under both
+                            the Comedy and Romance genres.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(<span class="cy-var">g1</span>:<span class="cy-lab">Genre</span> {<span class="cy-var">name</span>: <span class="cy-call-str">&quot;Comedy&quot;</span>})
+<span class="cy-kw">MATCH</span> (<span class="cy-var">m</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(<span class="cy-var">g2</span>:<span class="cy-lab">Genre</span> {<span class="cy-var">name</span>: <span class="cy-call-str">&quot;Romance&quot;</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieTitle</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (m<span class="cy-lab">:ml32m_movie</span>)-[<span class="cy-rel">:ml32m_has_genre</span>]-&gt;(g1<span class="cy-lab">:ml32m_genre</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"Comedy"</span>})
+<span class="cy-kw">MATCH</span> (m)-[<span class="cy-rel">:ml32m_has_genre</span>]-&gt;(g2<span class="cy-lab">:ml32m_genre</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"Romance"</span>})
+<span class="cy-kw">RETURN</span> m.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieTitle</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q25-content">
+                        <h4>
+                            Q25. Find users who have rated movies in both "Action" and "Romance" genres, list 10 userIds
+                        </h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T4.7 Union and Intersection</div>
+                        <p>
+                            This query identifies and lists up to 10 unique user IDs who have rated at least one Action
+                            movie and at least one Romance movie.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">User</span>)-[:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m1</span>:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(<span class="cy-var">g1</span>:<span class="cy-lab">Genre</span> {<span class="cy-var">name</span>: <span class="cy-call-str">&quot;Action&quot;</span>})
+<span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>)-[:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m2</span>:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(<span class="cy-var">g2</span>:<span class="cy-lab">Genre</span> {<span class="cy-var">name</span>: <span class="cy-call-str">&quot;Romance&quot;</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-kw">DISTINCT</span> <span class="cy-var">u</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (u<span class="cy-lab">:ml32m_user</span>)-[r<span class="cy-rel">:ml32m_rated</span>]-&gt;(m1<span class="cy-lab">:ml32m_movie</span>)-[<span class="cy-rel">:ml32m_has_genre</span>]-&gt;(g1<span class="cy-lab">:ml32m_genre</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"Action"</span>})
+<span class="cy-kw">MATCH</span> (u)-[r<span class="cy-rel">:ml32m_rated</span>]-&gt;(m2<span class="cy-lab">:ml32m_movie</span>)-[<span class="cy-rel">:ml32m_has_genre</span>]-&gt;(g2<span class="cy-lab">:ml32m_genre</span> {<span class="cy-prop">name</span>: <span class="cy-call-str">"Romance"</span>})
+<span class="cy-kw">RETURN DISTINCT</span> u.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q26-content">
+                        <h4>Q26. Degree Centrality on the User-Movie Rating Graph</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.1 Degree Centrality</div>
+                        <p>
+                            This query projects the bipartite User-Movie rating graph and ranks nodes by degree
+                            centrality.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">&#39;ML32MRatingGraph&#39;</span>,
+  [<span class="cy-call-str">&#39;User&#39;</span>, <span class="cy-call-str">&#39;Movie&#39;</span>],
+  {<span class="cy-var">RATED</span>: {<span class="cy-var">type</span>: <span class="cy-call-str">&#39;RATED&#39;</span>, <span class="cy-var">orientation</span>: <span class="cy-call-str">&#39;UNDIRECTED&#39;</span>}}
+);
+
+<span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">degree</span>.<span class="cy-prop">stream</span>(<span class="cy-call-str">&#39;ML32MRatingGraph&#39;</span>)
+<span class="cy-kw">YIELD</span> <span class="cy-var">nodeId</span>, <span class="cy-var">score</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">labels</span>(<span class="cy-var">gds</span>.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(<span class="cy-var">nodeId</span>)) <span class="cy-kw">AS</span> <span class="cy-var">labels</span>,
+       <span class="cy-func">coalesce</span>(<span class="cy-var">gds</span>.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(<span class="cy-var">nodeId</span>).<span class="cy-prop">userId</span>, <span class="cy-var">gds</span>.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(<span class="cy-var">nodeId</span>).<span class="cy-prop">movieId</span>) <span class="cy-kw">AS</span> <span class="cy-var">id</span>,
+       <span class="cy-var">gds</span>.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(<span class="cy-var">nodeId</span>).<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>,
+       <span class="cy-var">score</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">score</span> <span class="cy-kw">DESC</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">n</span>:<span class="cy-lab">ml32m_user</span>|<span class="cy-lab">ml32m_movie</span>)
+<span class="cy-kw">OPTIONAL</span> <span class="cy-kw">MATCH</span> (<span class="cy-var">n</span>)-[<span class="cy-var">r</span>:<span class="cy-rel">ml32m_rated</span>]-()
+<span class="cy-kw">WITH</span> <span class="cy-var">n</span>, <span class="cy-func">count</span>(<span class="cy-var">r</span>) <span class="cy-kw">AS</span> <span class="cy-var">score</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">coalesce</span>(<span class="cy-var">n</span>.<span class="cy-prop">userId</span>, <span class="cy-var">n</span>.<span class="cy-prop">movieId</span>) <span class="cy-kw">AS</span> <span class="cy-var">id</span>,
+       <span class="cy-var">n</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>,
+       <span class="cy-var">score</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">score</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q27-content">
+                        <h4>Q27. PageRank on the User-Movie Rating Graph</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.2 PageRank</div>
+                        <p>
+                            This query runs PageRank over the projected User-Movie rating graph and returns the highest
+                            scoring nodes.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">&#39;ML32MRatingGraphPageRank&#39;</span>,
+  [<span class="cy-call-str">&#39;User&#39;</span>, <span class="cy-call-str">&#39;Movie&#39;</span>],
+  {<span class="cy-var">RATED</span>: {<span class="cy-var">type</span>: <span class="cy-call-str">&#39;RATED&#39;</span>, <span class="cy-var">orientation</span>: <span class="cy-call-str">&#39;UNDIRECTED&#39;</span>}}
+);
+
+<span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">pageRank</span>.<span class="cy-prop">stream</span>(<span class="cy-call-str">&#39;ML32MRatingGraphPageRank&#39;</span>)
+<span class="cy-kw">YIELD</span> <span class="cy-var">nodeId</span>, <span class="cy-var">score</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">labels</span>(<span class="cy-var">gds</span>.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(<span class="cy-var">nodeId</span>)) <span class="cy-kw">AS</span> <span class="cy-var">labels</span>,
+       <span class="cy-func">coalesce</span>(<span class="cy-var">gds</span>.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(<span class="cy-var">nodeId</span>).<span class="cy-prop">userId</span>, <span class="cy-var">gds</span>.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(<span class="cy-var">nodeId</span>).<span class="cy-prop">movieId</span>) <span class="cy-kw">AS</span> <span class="cy-var">id</span>,
+       <span class="cy-var">gds</span>.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(<span class="cy-var">nodeId</span>).<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">title</span>,
+       <span class="cy-var">score</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">score</span> <span class="cy-kw">DESC</span>;</pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because the GQL standard covers
+                            graph pattern matching and data manipulation only; it defines no graph algorithm procedures
+                            such as PageRank.
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q28-content">
+                        <h4>Q28. Weakly Connected Components of Ratings</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T5.3 Connected Components / Weakly Connected Components
+                        </div>
+                        <p>This query finds weakly connected components in the undirected User-Movie rating graph.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">&#39;ML32MRatingGraphWcc&#39;</span>,
+  [<span class="cy-call-str">&#39;User&#39;</span>, <span class="cy-call-str">&#39;Movie&#39;</span>],
+  {<span class="cy-var">RATED</span>: {<span class="cy-var">type</span>: <span class="cy-call-str">&#39;RATED&#39;</span>, <span class="cy-var">orientation</span>: <span class="cy-call-str">&#39;UNDIRECTED&#39;</span>}}
+);
+
+<span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">wcc</span>.<span class="cy-prop">stream</span>(<span class="cy-call-str">&#39;ML32MRatingGraphWcc&#39;</span>)
+<span class="cy-kw">YIELD</span> <span class="cy-var">nodeId</span>, <span class="cy-var">componentId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">componentId</span>, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">componentSize</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">componentSize</span> <span class="cy-kw">DESC</span>;</pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because the GQL standard covers
+                            graph pattern matching and data manipulation only; it defines no graph algorithm procedures
+                            such as connected components.
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q29-content">
+                        <h4>Q29. Strongly Connected Components of Directed Ratings</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T5.4 Strongly Connected Components
+                        </div>
+                        <p>
+                            This query treats RATED edges as directed from users to movies and reports strongly
+                            connected components.
+                        </p>
+                        <div class="gql-unsupported-note">
+                            <strong>Skipped:</strong> The schema contains no undirected edges, so SCC is not meaningful
+                            for this workload. Therefore, Q29 is skipped.
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q30-content">
+                        <h4>Q30. Louvain Communities in the Rating Graph</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.5 Community Detection</div>
+                        <p>This query detects communities in the undirected User-Movie rating graph using Louvain.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">&#39;ML32MRatingGraphLouvain&#39;</span>,
+  [<span class="cy-call-str">&#39;User&#39;</span>, <span class="cy-call-str">&#39;Movie&#39;</span>],
+  {<span class="cy-var">RATED</span>: {<span class="cy-var">type</span>: <span class="cy-call-str">&#39;RATED&#39;</span>, <span class="cy-var">orientation</span>: <span class="cy-call-str">&#39;UNDIRECTED&#39;</span>}}
+);
+
+<span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">louvain</span>.<span class="cy-prop">stream</span>(<span class="cy-call-str">&#39;ML32MRatingGraphLouvain&#39;</span>)
+<span class="cy-kw">YIELD</span> <span class="cy-var">nodeId</span>, <span class="cy-var">communityId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">communityId</span>, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">communitySize</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">communitySize</span> <span class="cy-kw">DESC</span>;</pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because the GQL standard covers
+                            graph pattern matching and data manipulation only; it defines no graph algorithm procedures
+                            such as community detection (Louvain).
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q31-content">
+                        <h4>
+                            Q31. Find movies that span at least 3 genres and have at least 50 user ratings, return
+                            top-10 movies in descending order of their rating count, along with the list of genres and
+                            the rating count
+                        </h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.2 Grouped Node Degree Statistics by Label; T4.3 Ungrouped
+                            Edge Count and Property Statistics
+                        </div>
+                        <p>
+                            This query retrieves the top 10 most rated movies that belong to at least 3 genres and have
+                            received at least 50 user ratings, showing their titles, genres, and rating counts.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(<span class="cy-var">g</span>:<span class="cy-lab">Genre</span>)
+<span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">User</span>)-[<span class="cy-var">r</span>:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">m</span>, <span class="cy-func">collect</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">g</span>.<span class="cy-prop">name</span>) <span class="cy-kw">AS</span> <span class="cy-var">genres</span>, <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">r</span>) <span class="cy-kw">AS</span> <span class="cy-var">ratingCount</span>
+<span class="cy-kw">WHERE</span> <span class="cy-func">size</span>(<span class="cy-var">genres</span>) &gt;= <span class="cy-num">3</span> <span class="cy-kw">AND</span> <span class="cy-var">ratingCount</span> &gt;= <span class="cy-num">50</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movie</span>, <span class="cy-var">genres</span>, <span class="cy-var">ratingCount</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">ratingCount</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (m<span class="cy-lab">:ml32m_movie</span>)-[<span class="cy-rel">:ml32m_has_genre</span>]-&gt;(g<span class="cy-lab">:ml32m_genre</span>)
+<span class="cy-kw">MATCH</span> (u<span class="cy-lab">:ml32m_user</span>)-[r<span class="cy-rel">:ml32m_rated</span>]-&gt;(m)
+<span class="cy-kw">WITH</span> m, <span class="cy-func">collect</span>(<span class="cy-kw">DISTINCT</span> g.<span class="cy-prop">name</span>) <span class="cy-kw">AS</span> <span class="cy-var">genres</span>, <span class="cy-func">count</span>(r) <span class="cy-kw">AS</span> <span class="cy-var">ratingCount</span>
+<span class="cy-kw">WHERE</span> <span class="cy-func">size</span>(<span class="cy-var">genres</span>) &gt;= <span class="cy-num">3</span> <span class="cy-kw">AND</span> <span class="cy-var">ratingCount</span> &gt;= <span class="cy-num">50</span>
+<span class="cy-kw">RETURN</span> m.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movie</span>, <span class="cy-var">genres</span>, <span class="cy-var">ratingCount</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">ratingCount</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q32-content">
+                        <h4>
+                            Q32. Find top-20 movies with the highest number of genres + tags, return this number, list
+                            of their genres, and list of their tags
+                        </h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            This query finds the top 20 movies with the largest combined count of unique genres and
+                            tags, returning the total count along with their genre and tag lists.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)
+<span class="cy-kw">OPTIONAL</span> <span class="cy-kw">MATCH</span> (<span class="cy-var">m</span>)-[:<span class="cy-rel">HAS_GENRE</span>]-&gt;(<span class="cy-var">g</span>:<span class="cy-lab">Genre</span>)
+<span class="cy-kw">OPTIONAL</span> <span class="cy-kw">MATCH</span> (:<span class="cy-lab">User</span>)-[<span class="cy-var">t</span>:<span class="cy-rel">TAGGED</span>]-&gt;(<span class="cy-var">m</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">m</span>,
+<span class="cy-func">COLLECT</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">g</span>.<span class="cy-prop">name</span>) <span class="cy-kw">AS</span> <span class="cy-var">genres</span>,
+<span class="cy-func">COLLECT</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">t</span>.<span class="cy-prop">tag</span>) <span class="cy-kw">AS</span> <span class="cy-var">tags</span>,
+<span class="cy-func">SIZE</span>(<span class="cy-func">COLLECT</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">g</span>.<span class="cy-prop">name</span>)) + <span class="cy-func">SIZE</span>(<span class="cy-func">COLLECT</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">t</span>.<span class="cy-prop">tag</span>)) <span class="cy-kw">AS</span> <span class="cy-var">total</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">total</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieTitle</span>, <span class="cy-var">total</span>, <span class="cy-var">genres</span>, <span class="cy-var">tags</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (m<span class="cy-lab">:ml32m_movie</span>)
+<span class="cy-kw">OPTIONAL MATCH</span> (m)-[<span class="cy-rel">:ml32m_has_genre</span>]-&gt;(g<span class="cy-lab">:ml32m_genre</span>)
+<span class="cy-kw">OPTIONAL MATCH</span> (<span class="cy-lab">:ml32m_user</span>)-[t<span class="cy-rel">:ml32m_tagged</span>]-&gt;(m)
+<span class="cy-kw">WITH</span> m,
+     <span class="cy-func">collect</span>(<span class="cy-kw">DISTINCT</span> g.<span class="cy-prop">name</span>) <span class="cy-kw">AS</span> <span class="cy-var">genres</span>,
+     <span class="cy-func">collect</span>(<span class="cy-kw">DISTINCT</span> t.<span class="cy-prop">tag</span>) <span class="cy-kw">AS</span> <span class="cy-var">tags</span>,
+     <span class="cy-func">size</span>(<span class="cy-func">collect</span>(<span class="cy-kw">DISTINCT</span> g.<span class="cy-prop">name</span>)) + <span class="cy-func">size</span>(<span class="cy-func">collect</span>(<span class="cy-kw">DISTINCT</span> t.<span class="cy-prop">tag</span>)) <span class="cy-kw">AS</span> <span class="cy-var">total</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">total</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">20</span>
+<span class="cy-kw">RETURN</span> m.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieTitle</span>, <span class="cy-var">total</span>, <span class="cy-var">genres</span>, <span class="cy-var">tags</span></pre>
+                        </div>
+                    </div>
+
+                    <div class="sub-tab-content" id="q33-content">
+                        <h4>
+                            Q33. Find (user, movie) pairs where the movie is first rated by the user, and then tagged by
+                            the user, return 10 such user-movie pairs with the latest timestamps, along with the rating
+                            and the list of tags (tagged after the rating)
+                        </h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            This query retrieves the top 10 user-movie pairs where the user rated a movie before tagging
+                            it, sorted by the rating timestamp.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">u</span>:<span class="cy-lab">User</span>)-[<span class="cy-var">r</span>:<span class="cy-rel">RATED</span>]-&gt;(<span class="cy-var">m</span>:<span class="cy-lab">Movie</span>)&lt;-[<span class="cy-var">t</span>:<span class="cy-rel">TAGGED</span>]-(<span class="cy-var">u</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">r</span>.<span class="cy-prop">timestamp</span> &lt; <span class="cy-var">t</span>.<span class="cy-prop">timestamp</span>
+<span class="cy-kw">WITH</span> <span class="cy-var">u</span>.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>, <span class="cy-var">m</span>.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieTitle</span>, <span class="cy-var">r</span>.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>, <span class="cy-var">r</span>.<span class="cy-prop">timestamp</span> <span class="cy-kw">AS</span> <span class="cy-var">ratingTime</span>,
+<span class="cy-func">COLLECT</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">t</span>.<span class="cy-prop">tag</span>) <span class="cy-kw">AS</span> <span class="cy-var">tags</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">userId</span>, <span class="cy-var">movieTitle</span>, <span class="cy-var">rating</span>, <span class="cy-var">tags</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">ratingTime</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (u<span class="cy-lab">:ml32m_user</span>)-[r<span class="cy-rel">:ml32m_rated</span>]-&gt;(m<span class="cy-lab">:ml32m_movie</span>)&lt;-[t<span class="cy-rel">:ml32m_tagged</span>]-(u)
+<span class="cy-kw">WHERE</span> r.<span class="cy-prop">timestamp</span> &lt; t.<span class="cy-prop">timestamp</span>
+<span class="cy-kw">WITH</span> u.<span class="cy-prop">userId</span> <span class="cy-kw">AS</span> <span class="cy-var">userId</span>, m.<span class="cy-prop">title</span> <span class="cy-kw">AS</span> <span class="cy-var">movieTitle</span>, r.<span class="cy-prop">rating</span> <span class="cy-kw">AS</span> <span class="cy-var">rating</span>, r.<span class="cy-prop">timestamp</span> <span class="cy-kw">AS</span> <span class="cy-var">ratingTime</span>,
+     <span class="cy-func">collect</span>(<span class="cy-kw">DISTINCT</span> t.<span class="cy-prop">tag</span>) <span class="cy-kw">AS</span> <span class="cy-var">tags</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">userId</span>, <span class="cy-var">movieTitle</span>, <span class="cy-var">rating</span>, <span class="cy-var">tags</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">ratingTime</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span></pre>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+        <script>
+            function copyCode(button) {
+                const wrapper = button.closest(".code-wrapper");
+                const codeElement = wrapper.querySelector(".code-block");
+                const text = codeElement.innerText;
+                navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+                        const originalText = button.innerText;
+                        button.innerText = "Copied!";
+                        button.style.borderColor = "#A6E22E";
+                        button.style.color = "#A6E22E";
+                        setTimeout(() => {
+                            button.innerText = originalText;
+                            button.style.borderColor = "";
+                            button.style.color = "";
+                        }, 2000);
+                    })
+                    .catch((err) => {
+                        console.error("Failed to copy text: ", err);
+                        alert("Failed to copy code. Please check console for errors.");
+                    });
+            }
+            function openSubTab(evt, subTabName) {
+                var i, subcontent, sublinks;
+                subcontent = document.getElementsByClassName("sub-tab-content");
+                for (i = 0; i < subcontent.length; i++) {
+                    subcontent[i].classList.remove("active-content");
+                }
+                sublinks = document.getElementsByClassName("sub-tab-link");
+                for (i = 0; i < sublinks.length; i++) {
+                    sublinks[i].classList.remove("active");
+                }
+                document.getElementById(subTabName).classList.add("active-content");
+                evt.currentTarget.classList.add("active");
+            }
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tab-content");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].classList.remove("active-content");
+                }
+                tablinks = document.getElementsByClassName("tab-link");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].classList.remove("active");
+                }
+                document.getElementById(tabName).classList.add("active-content");
+                evt.currentTarget.classList.add("active");
+                handleScroll();
+            }
+            function scrollToId(id) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            }
+
+            function handleScroll() {
+                const menuSection = document.getElementById("loading-tab-header");
+                const btn = document.querySelector(".back-to-code-nav");
+                if (menuSection && btn) {
+                    const rect = menuSection.getBoundingClientRect();
+                    if (rect.bottom < 0) {
+                        btn.classList.add("visible");
+                    } else {
+                        btn.classList.remove("visible");
+                    }
+                }
+            }
+            window.addEventListener("scroll", handleScroll);
+            window.addEventListener("resize", handleScroll);
+            handleScroll();
+        </script>
+        <footer>
+            <div class="container">
+                <a class="btn-secondary" href="../datasets/ml32m.html">← Back to MovieLens 32M Dataset</a>
+            </div>
+            <div class="container">
+                <p>© 2026 Property Graph Benchmark Project.</p>
+            </div>
+        </footer>
+    </body>
+</html>

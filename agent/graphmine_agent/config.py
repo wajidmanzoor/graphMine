@@ -129,6 +129,9 @@ class Settings:
     database_pool_wait_seconds: int = 10
     database_pool_idle_seconds: int = 300
     benchmark_datasets_root: Path | None = None
+    neo4j_datasets_registry: Path | None = None
+    neo4j_instances_root: Path | None = None
+    neo4j_datasets_password_file: Path | None = None
 
     @property
     def dual_adapters_active(self) -> bool:
@@ -299,6 +302,12 @@ class Settings:
         )
         token = os.getenv("GRAPHMINE_API_TOKEN", "").strip() or None
         return cls(
+            neo4j_datasets_registry=Path(os.environ["GRAPHMINE_NEO4J_DATASETS_REGISTRY"]).expanduser().resolve()
+            if os.getenv("GRAPHMINE_NEO4J_DATASETS_REGISTRY") else None,
+            neo4j_instances_root=Path(os.environ["GRAPHMINE_NEO4J_INSTANCES_ROOT"]).expanduser().resolve()
+            if os.getenv("GRAPHMINE_NEO4J_INSTANCES_ROOT") else None,
+            neo4j_datasets_password_file=Path(os.environ["GRAPHMINE_NEO4J_DATASETS_PASSWORD_FILE"]).expanduser().absolute()
+            if os.getenv("GRAPHMINE_NEO4J_DATASETS_PASSWORD_FILE") else None,
             benchmark_datasets_root=Path(os.environ["GRAPHMINE_BENCHMARK_DATASETS_ROOT"])
             .expanduser().resolve()
             if os.getenv("GRAPHMINE_BENCHMARK_DATASETS_ROOT") else None,

@@ -1,0 +1,3286 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Neo4j LDBC SNB BI Implementation | Workloads</title>
+        <link href="../style.css" rel="stylesheet" />
+        <style>
+            /* Main Tab Navigation Styles */
+            .tab-container {
+                display: flex;
+                gap: 5px;
+                margin: 20px 0 0 0;
+                border-bottom: 2px solid #f41c40;
+            }
+
+            .tab-link {
+                background: #f1f1f1;
+                border: none;
+                outline: none;
+                padding: 12px 25px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: bold;
+                transition: 0.3s;
+                border-radius: 8px 8px 0 0;
+                color: #555;
+            }
+
+            .tab-link:hover {
+                background-color: #ddd;
+            }
+
+            .tab-link.active {
+                background-color: #990000;
+                color: white;
+            }
+
+            /* Nested (Sub-sub) Tab Styles for Queries */
+            .sub-tab-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 15px;
+                margin: 15px 0;
+                background: #f8fafc;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            .query-category-group {
+                background: white;
+                padding: 12px;
+                border-radius: 6px;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .query-category-title {
+                font-size: 13px;
+                font-weight: bold;
+                color: #1e293b;
+                border-bottom: 2px solid #e2e8f0;
+                padding-bottom: 5px;
+                margin-bottom: 5px;
+            }
+
+            .query-category-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .no-queries-msg {
+                font-size: 12px;
+                color: #64748b;
+                font-style: italic;
+                padding: 5px 0;
+            }
+
+            .sub-tab-link {
+                background: white;
+                border: 1px solid #e2e8f0;
+                padding: 6px 12px;
+                cursor: pointer;
+                font-size: 13px;
+                border-radius: 6px;
+                transition: all 0.2s;
+                min-width: 40px;
+                text-align: center;
+            }
+
+            .sub-tab-link:hover {
+                border-color: #f41c40;
+                color: #990000;
+            }
+
+            .sub-tab-link.active {
+                background: #fff1f2;
+                border-color: #f41c40;
+                color: #990000;
+                font-weight: bold;
+            }
+
+            .query-subcategory {
+                font-size: 13px;
+                color: #475569;
+                margin: 8px 0 15px 0;
+                background: #f1f5f9;
+                padding: 6px 12px;
+                border-radius: 4px;
+                display: inline-block;
+                border-left: 3px solid #f41c40;
+            }
+
+            .gql-unsupported-note {
+                background: #fef2f2;
+                border-left: 3px solid #ef4444;
+                color: #991b1b;
+                padding: 10px 12px;
+                border-radius: 4px;
+                font-size: 13px;
+                margin-top: 10px;
+            }
+
+            /* Content Visibility */
+            .tab-content,
+            .sub-tab-content {
+                display: none;
+                animation: fadeIn 0.3s;
+            }
+
+            .active-content {
+                display: block;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+            #schema-section {
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            h4 {
+                scroll-margin-top: 80px;
+            }
+
+            #data-loading-header {
+                scroll-margin-top: 80px;
+            }
+
+            .tab-container,
+            #loading-tab-header {
+                scroll-margin-top: 80px;
+            }
+
+            .back-to-code-nav {
+                position: fixed;
+                right: 24px;
+                bottom: 24px;
+                z-index: 1000;
+                padding: 10px 16px;
+                border: none;
+                border-radius: 999px;
+                background: #990000;
+                color: white;
+                box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition:
+                    background-color 0.2s,
+                    transform 0.2s,
+                    opacity 0.2s,
+                    visibility 0.2s;
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .back-to-code-nav.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .back-to-code-nav:hover {
+                background: #6d0808;
+                transform: translateY(-2px);
+            }
+
+            @media (max-width: 600px) {
+                .back-to-code-nav {
+                    right: 12px;
+                    bottom: 12px;
+                }
+            }
+
+            /* Plugin-dependency note (queries needing GDS or APOC).
+           Same shape as .gql-unsupported-note, but informational rather than an error. */
+            .requires-note {
+                background: #eff6ff;
+                border-left: 3px solid #3b82f6;
+                color: #1e3a8a;
+                padding: 10px 12px;
+                border-radius: 4px;
+                font-size: 13px;
+                margin-top: 10px;
+            }
+
+            /* Statistics not yet filled in */
+            .stat-pending {
+                color: #94a3b8;
+                font-style: italic;
+            }
+
+            /* Placeholder box for the schema screenshot */
+            .schema-placeholder {
+                border: 2px dashed #cbd5e1;
+                border-radius: 8px;
+                padding: 48px 24px;
+                text-align: center;
+                color: #64748b;
+                font-size: 14px;
+                background: #f8fafc;
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav>
+            <div class="container">
+                <a class="site-title" href="../index.html">
+                    <h1>PropG<span>Bench</span></h1>
+                </a>
+                <ul>
+                    <li class="dropdown">
+                        <a class="dropbtn" href="../datasets.html">Datasets &#9662;</a>
+                        <div class="dropdown-content">
+                            <a href="../datasets/yelp.html">Yelp</a>
+                            <a href="../datasets/ml32m.html">MovieLens 32M</a>
+                            <a href="../datasets/mlgenome.html">MovieLens Tag Genome</a>
+                            <a href="../datasets/amazon.html">Amazon</a>
+                            <a href="../datasets/stackoverflow.html">Stack Overflow</a>
+                            <a href="../datasets/ontime.html">OnTime</a>
+                            <a href="../datasets/fars.html">FARS</a>
+                            <a href="../datasets/snb.html">LDBC SNB</a>
+                        </div>
+                    </li>
+                    <li><a href="../download.html">Download</a></li>
+                    <li><a href="../documentation.html">Documentation</a></li>
+                    <li><a href="../publications.html">Publications</a></li>
+                    <li><a href="../team.html">Team</a></li>
+                </ul>
+            </div>
+        </nav>
+        <header>
+            <div class="container">
+                <a class="btn-secondary" href="../datasets/snb.html">&#8592; Back to LDBC SNB Dataset</a>
+                <h2>Neo4j Implementation</h2>
+                <p>
+                    Deployment and query logic for Neo4j Enterprise 2026.05.0, with Graph Data Science 2026.05.0 and
+                    APOC 2026.05.0.
+                </p>
+            </div>
+        </header>
+        <main class="container">
+            <section id="schema-section">
+                <h3>Schema Diagram and Graph Statistics</h3>
+
+                <div class="chart-container">
+                    <img src="../imgs/snbneo4jschema.png" alt="LDBC SNB Neo4j Schema" class="result-chart" />
+                </div>
+                <p>
+                    Scale factor 100 of the LDBC Social Network Benchmark, Business Intelligence workload. Only the
+                    <code>initial_snapshot</code> is loaded; the <code>inserts</code> and <code>deletes</code> update
+                    streams are not applied, because this implementation runs read-only queries. The graph is therefore
+                    a fixed snapshot whose latest <code>creationDate</code> is
+                    <code>2012-11-29T02:52:42.849+00:00</code>.
+                </p>
+                <p>
+                    Several labels in the table below describe the same nodes, so the node total is the sum of the eight
+                    base labels only. <code>Comment</code> and <code>Post</code> both carry the
+                    <code>Message</code> label, which is what lets the queries match <code>(:Message)</code> across the
+                    two, so the <code>Message</code> row is the sum of those two rather than an additional set of nodes.
+                    <code>Place</code> and <code>Organisation</code> take a concrete second label from a
+                    <code>:LABEL</code> column in the source CSV, so <code>City</code> + <code>Country</code> +
+                    <code>Continent</code> are the <code>Place</code> nodes and <code>University</code> +
+                    <code>Company</code> are the <code>Organisation</code> nodes.
+                </p>
+                <div class="dataset-stats-grid">
+                    <div class="dataset-stat-group">
+                        <h4>Node Statistics</h4>
+                        <div class="table-wrapper">
+                            <table class="dataset-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Node Label</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Message</code></td>
+                                        <td>249,524,693</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Comment</code></td>
+                                        <td>185,495,476</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Post</code></td>
+                                        <td>64,029,217</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Forum</code></td>
+                                        <td>4,611,436</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Person</code></td>
+                                        <td>473,001</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Tag</code></td>
+                                        <td>16,080</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Organisation</code></td>
+                                        <td>7,955</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>University</code></td>
+                                        <td>6,380</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Company</code></td>
+                                        <td>1,575</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Place</code></td>
+                                        <td>1,460</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>City</code></td>
+                                        <td>1,343</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Country</code></td>
+                                        <td>111</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Continent</code></td>
+                                        <td>6</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>TagClass</code></td>
+                                        <td>71</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="dataset-stat-group">
+                        <h4>Edge Statistics</h4>
+                        <div class="table-wrapper">
+                            <table class="dataset-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Relationship</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>(:Place)-[:IS_PART_OF]-&gt;(:Place)</code></td>
+                                        <td>1,454</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:TagClass)-[:IS_SUBCLASS_OF]-&gt;(:TagClass)</code></td>
+                                        <td>70</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Organisation)-[:IS_LOCATED_IN]-&gt;(:Place)</code></td>
+                                        <td>7,955</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Tag)-[:HAS_TYPE]-&gt;(:TagClass)</code></td>
+                                        <td>16,080</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Comment)-[:HAS_CREATOR]-&gt;(:Person)</code></td>
+                                        <td>185,495,476</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Comment)-[:IS_LOCATED_IN]-&gt;(:Country)</code></td>
+                                        <td>185,495,476</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Comment)-[:REPLY_OF]-&gt;(:Comment)</code></td>
+                                        <td>85,829,276</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Comment)-[:REPLY_OF]-&gt;(:Post)</code></td>
+                                        <td>99,666,200</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Forum)-[:CONTAINER_OF]-&gt;(:Post)</code></td>
+                                        <td>64,029,217</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Forum)-[:HAS_MEMBER]-&gt;(:Person)</code></td>
+                                        <td>303,838,931</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Forum)-[:HAS_MODERATOR]-&gt;(:Person)</code></td>
+                                        <td>4,611,436</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Forum)-[:HAS_TAG]-&gt;(:Tag)</code></td>
+                                        <td>15,195,472</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Person)-[:HAS_INTEREST]-&gt;(:Tag)</code></td>
+                                        <td>11,057,039</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Person)-[:IS_LOCATED_IN]-&gt;(:City)</code></td>
+                                        <td>473,001</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Person)-[:KNOWS]-&gt;(:Person)</code></td>
+                                        <td>18,655,515</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Person)-[:LIKES]-&gt;(:Comment)</code></td>
+                                        <td>184,325,690</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Person)-[:LIKES]-&gt;(:Post)</code></td>
+                                        <td>98,423,296</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Post)-[:HAS_CREATOR]-&gt;(:Person)</code></td>
+                                        <td>64,029,217</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Comment)-[:HAS_TAG]-&gt;(:Tag)</code></td>
+                                        <td>238,074,593</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Post)-[:HAS_TAG]-&gt;(:Tag)</code></td>
+                                        <td>78,380,259</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Post)-[:IS_LOCATED_IN]-&gt;(:Country)</code></td>
+                                        <td>64,029,217</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Person)-[:STUDY_AT]-&gt;(:University)</code></td>
+                                        <td>378,582</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>(:Person)-[:WORK_AT]-&gt;(:Company)</code></td>
+                                        <td>1,029,492</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <p>Total nodes: 254,634,696 &nbsp;&middot;&nbsp; Total relationships: 1,703,042,944</p>
+                <p>Disk space: 201G</p>
+                <p>Total import time: 3,967 seconds (1h 6m 7s)</p>
+            </section>
+            <div id="loading-tab-header" class="tab-container">
+                <button class="back-to-code-nav" type="button" onclick="scrollToId('loading-tab-header')">
+                    Code block menu
+                </button>
+
+                <button class="tab-link active" onclick="openTab(event, 'loading-tab')">Data Loading</button>
+                <button class="tab-link" onclick="openTab(event, 'query-tab')">Queries</button>
+            </div>
+            <div class="tab-content active-content" id="loading-tab">
+                <section>
+                    <h3>Data Loading</h3>
+                    <div class="sub-tab-container">
+                        <button class="sub-tab-link" onclick="scrollToId('loading-intro')">Overview</button>
+                        <button class="sub-tab-link" onclick="scrollToId('create-schema')">Create Indices</button>
+                        <button class="sub-tab-link" onclick="scrollToId('import-script')">Import Script</button>
+                    </div>
+
+                    <h4 id="loading-intro">Overview</h4>
+                    <p>
+                        At 254.6 million nodes and 1.71 billion relationships, SF100 is loaded in a single offline pass
+                        with <code>neo4j-admin database import full</code>, which writes store files directly, rather
+                        than with incremental Cypher statements.
+                    </p>
+                    <p>
+                        The generated CSV files carry <strong>no header row</strong>: they are <code>|</code>-delimited
+                        data only, and the column definitions live in a parallel tree of header files, one per entity.
+                        Each entity is a directory of Spark output shards named <code>part-*.csv</code>, some of which
+                        are legitimately empty, so every <code>--nodes</code> and <code>--relationships</code> argument
+                        lists the header file first and then all the data shards.
+                    </p>
+                    <p>
+                        Only <code>initial_snapshot</code> is imported. The <code>inserts</code> and
+                        <code>deletes</code> update streams that ship with the dataset are not applied, because this
+                        implementation runs the read-only BI queries rather than the full BI workload with batch
+                        updates. The result is a fixed snapshot whose latest <code>creationDate</code> is
+                        <code>2012-11-29T02:52:42.849+00:00</code>.
+                    </p>
+
+                    <h4 id="create-schema">Create Indices</h4>
+                    <p>
+                        Uniqueness constraints and secondary indices are built <strong>during</strong> the import by
+                        passing this file to <code>--schema</code>, not afterwards. Creating the
+                        <code>Message(id)</code> uniqueness constraint after the fact would mean populating an index
+                        over 249.5 million nodes as a separate pass.
+                    </p>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre class="code-block">
+// uniqueness constrains (implying an index)
+CREATE CONSTRAINT FOR (n:City)         REQUIRE n.id IS UNIQUE;
+CREATE CONSTRAINT FOR (n:Comment)      REQUIRE n.id IS UNIQUE;
+CREATE CONSTRAINT FOR (n:Country)      REQUIRE n.id IS UNIQUE;
+CREATE CONSTRAINT FOR (n:Forum)        REQUIRE n.id IS UNIQUE;
+CREATE CONSTRAINT FOR (n:Message)      REQUIRE n.id IS UNIQUE;
+CREATE CONSTRAINT FOR (n:Organisation) REQUIRE n.id IS UNIQUE;
+CREATE CONSTRAINT FOR (n:Person)       REQUIRE n.id IS UNIQUE;
+CREATE CONSTRAINT FOR (n:Post)         REQUIRE n.id IS UNIQUE;
+CREATE CONSTRAINT FOR (n:Tag)          REQUIRE n.id IS UNIQUE;
+
+// name/firstName
+CREATE INDEX FOR (n:Country)   ON n.name;
+CREATE INDEX FOR (n:Person)    ON n.firstName;
+CREATE INDEX FOR (n:Tag)       ON n.name;
+CREATE INDEX FOR (n:TagClass)  ON n.name;
+
+// creationDate of nodes
+CREATE INDEX FOR (n:Message)   ON n.creationDate;
+CREATE INDEX FOR (n:Post)      ON n.creationDate;
+CREATE INDEX FOR (n:Forum)     ON n.creationDate;
+
+// creationDate of edges
+CREATE INDEX FOR ()-[e:KNOWS]-() ON e.creationDate;</pre
+                        >
+                    </div>
+
+                    <p>
+                        The <code>City</code> and <code>Country</code> constraints and the
+                        <code>Country(name)</code> index are included because five queries (Q13, Q18, Q20, Q38 and Q39)
+                        look up a country by name and Q11 looks up cities by id.
+                    </p>
+
+                    <h4 id="import-script">Import Script</h4>
+                    <p>
+                        The script below is the whole import, end to end: preflight, dropping the target database,
+                        assembling the 8 node groups and 23 relationship groups, running the importer, registering the
+                        resulting store as a database, and verifying the counts. The <code>add_nodes</code> and
+                        <code>add_rels</code> calls are where the schema mapping lives &mdash; <code>Comment</code> and
+                        <code>Post</code> both get the <code>Message</code> label there, and <code>Place</code> and
+                        <code>Organisation</code> take their concrete label from a <code>:LABEL</code> column in the
+                        source CSV.
+                    </p>
+                    <p>
+                        Two details are easy to get wrong. The database name is a positional argument and must come
+                        <strong>before</strong> <code>--nodes</code> and <code>--relationships</code>, which are
+                        declared variadic and would otherwise swallow it as one more data file. And the importer runs as
+                        the <code>neo4j</code> user, so its temporary directory and report file have to live somewhere
+                        that user can write.
+                    </p>
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>bash</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre class="code-block lang-bash">
+#!/usr/bin/env bash
+#
+# Bulk-import the LDBC SNB BI SF100 initial snapshot into the Neo4j database "snb100".
+#
+# Usage:
+#   MODE=offline ./import_snb100.sh   # stop Neo4j during the import; the importer gets the
+#                                     # whole machine and runs much faster
+#   MODE=online  ./import_snb100.sh   # keep the other databases online; the importer runs
+#                                     # with a capped memory budget and takes far longer
+#   SCHEMA_FILE= ./import_snb100.sh   # skip building indices during the import
+#
+# Only the target database is ever touched. This host's data directory also holds several
+# unrelated benchmark databases and the "system" registry, so the databases directory is
+# never cleared as a whole.
+
+set -euo pipefail
+
+# ----- Configuration ---------------------------------------------------------
+DB_NAME=snb100
+CSV_DIR=/datasets/prop_datasets/ldbc_100/csv
+HEADER_DIR=/datasets/prop_datasets/ldbc_snb_bi/neo4j/headers
+BOLT=bolt://localhost:7689
+OUT_DIR=/datasets/prop_datasets/ldbc_100/scripts
+TIMING_FILE=${OUT_DIR}/import-timing.tsv
+
+# The importer runs as the "neo4j" user and cannot write into scripts/ (owned by exouser,
+# mode 775). Its own outputs -- temporary files and the bad-entries report -- therefore go
+# to a directory it owns on local disk, which is also faster than NFS.
+WORK_DIR=/media/volume/sdb/neo4j-import
+TEMP_PATH=${WORK_DIR}/tmp
+REPORT_FILE=${WORK_DIR}/import-report.txt
+
+# Indices and constraints are built during the import rather than afterwards: populating
+# the Message(id) uniqueness constraint over 249.5 million nodes as a separate pass would
+SCHEMA_FILE=${SCHEMA_FILE-${OUT_DIR}/indices.cypher}
+
+MODE=${MODE:-online}
+if [[ "${MODE}" == "offline" ]]; then
+    # The off-heap cap cannot be sized against the whole machine: the importer's JVM heap
+    # (10g, from server.memory.heap.max_size in neo4j.conf) sits on top of it, plus roughly
+    # 5g for the id mapper and other structures. A 40g cap drove anon-rss to 52.5 GiB during
+    # the relationship phase and systemd-oomd killed the process on this 58 GiB host.
+    # 24g + 10g heap + overhead is about 40g, leaving 18g of headroom.
+    MAX_OFF_HEAP=24g
+    THREADS=16
+else
+    # The running server already holds 10g of heap and 16g of page cache
+    MAX_OFF_HEAP=8g
+    THREADS=14                                     # leave 2 of 16 cores to the server
+fi
+
+# The system default JVM is Java 17; neo4j-admin needs 21. The importer's own heap comes
+# from neo4j.conf -- the 2026.05.0 NeoAdminBoot launcher no longer reads HEAP_SIZE -- so
+# --max-off-heap-memory below is the only memory knob available here. It covers the page
+# cache and the id-mapping structures.
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+
+# The safety net that matters for an unattended run: whatever makes this script exit -- an
+# OOM during the import, a full disk, a bad argument, a failed preflight -- the Neo4j service
+# must come back. On the previous attempt set -e terminated the script at the import and the
+# systemctl start at the end never ran, leaving nine other databases offline for an hour.
+restore_service () {
+    local rc=$?
+    if [[ "${MODE}" == "offline" ]] &amp;&amp; ! systemctl is-active --quiet neo4j; then
+        echo "== Exit code ${rc}: restoring the Neo4j service =="
+        sudo systemctl start neo4j || true
+    fi
+    if [[ ${rc} -ne 0 ]]; then
+        echo "== Script exited with code ${rc} (import did not complete) =="
+    fi
+    return ${rc}
+}
+trap restore_service EXIT
+
+# ----- Guard rail -------------------------------------------------------------
+if [[ -z "${DB_NAME}" || "${DB_NAME}" == "system" || "${DB_NAME}" == "neo4j" ]]; then
+    echo "Refusing to run: DB_NAME is empty or points at system/neo4j." &gt;&amp;2
+    exit 1
+fi
+
+echo "== Configuration =="
+echo "  database    ${DB_NAME}"
+echo "  mode        ${MODE}"
+echo "  off-heap    ${MAX_OFF_HEAP}   threads ${THREADS}"
+echo "  CSV         ${CSV_DIR}"
+echo "  headers     ${HEADER_DIR}"
+echo "  temp dir    ${TEMP_PATH}"
+echo "  schema      ${SCHEMA_FILE:-(skipped)}"
+
+# ----- Preflight: all 31 entity directories present and non-empty -------------
+echo "== Checking data directories =="
+missing=0
+for sub in static dynamic; do
+    while read -r h; do
+        entity=$(basename "${h}" .csv)
+        d="${CSV_DIR}/initial_snapshot/${sub}/${entity}"
+        if [[ ! -d "${d}" ]]; then
+            echo "  missing directory: ${d}" &gt;&amp;2; missing=1
+        elif ! find "${d}" -maxdepth 1 -name 'part-*.csv*' -type f -print -quit | grep -q .; then
+            echo "  no part files: ${d}" &gt;&amp;2; missing=1
+        fi
+    done &lt; &lt;(find "${HEADER_DIR}/${sub}" -name '*.csv')
+done
+[[ ${missing} -eq 0 ]] || { echo "Preflight failed, aborting." &gt;&amp;2; exit 1; }
+echo "  all 31 entity directories present"
+
+# ----- Take the target database offline and drop it (repeatable) --------------
+# Drop and re-create rather than overwrite in place: dropping also clears the database's
+# transaction logs and its system-database entry, so no stale metadata survives.
+if cypher-shell -a "${BOLT}" -d system "RETURN 1" &gt;/dev/null 2&gt;&amp;1; then
+    echo "== Stopping and dropping ${DB_NAME} (other databases unaffected) =="
+    cypher-shell -a "${BOLT}" -d system "STOP DATABASE ${DB_NAME} IF EXISTS WAIT" || true
+    cypher-shell -a "${BOLT}" -d system "DROP DATABASE ${DB_NAME} IF EXISTS WAIT"
+    cypher-shell -a "${BOLT}" -d system "SHOW DATABASES YIELD name, currentStatus"
+else
+    echo "== Server not running, skipping STOP/DROP (re-run case) =="
+fi
+
+# Clear any temporary files left by a previous run. The cleanup at the end of this script
+# does not run if the process is killed (an OOM, for instance), and the leftover temp-&lt;db&gt;
+# directory can be tens of gigabytes.
+sudo rm -rf "${TEMP_PATH}"
+# The directory must be owned by neo4j or the importer cannot write into it
+sudo mkdir -p "${TEMP_PATH}"
+sudo chown -R neo4j:neo4j "${WORK_DIR}"
+if ! sudo -u neo4j touch "${WORK_DIR}/.probe" 2&gt;/dev/null; then
+    echo "Preflight failed: the neo4j user cannot write to ${WORK_DIR}" &gt;&amp;2; exit 1
+fi
+sudo -u neo4j rm -f "${WORK_DIR}/.probe"
+echo "  neo4j can write to ${WORK_DIR}"
+
+if [[ -n "${SCHEMA_FILE}" ]] &amp;&amp; ! sudo -u neo4j test -r "${SCHEMA_FILE}"; then
+    echo "Preflight failed: the neo4j user cannot read ${SCHEMA_FILE}" &gt;&amp;2
+    exit 1
+fi
+
+if [[ "${MODE}" == "offline" ]]; then
+    if systemctl is-active --quiet neo4j; then
+        echo "== MODE=offline: stopping Neo4j (data untouched, restarted afterwards) =="
+        sudo systemctl stop neo4j
+    else
+        echo "== Server already stopped =="
+    fi
+fi
+
+# ----- Assemble the --nodes / --relationships arguments -----------------------
+PART='part-*.csv*'
+args=()
+declare -A GROUP_BYTES=()      # input bytes per group, for throughput afterwards
+add_nodes () {   # $1=labels  $2=static|dynamic  $3=entity
+    args+=( "--nodes=$1=${HEADER_DIR}/$2/$3.csv$(find "${CSV_DIR}/initial_snapshot/$2/$3" -type f -name "${PART}" -printf ',%p')" )
+    GROUP_BYTES["node/$1/$3"]=$(find "${CSV_DIR}/initial_snapshot/$2/$3" -type f -name "${PART}" -printf '%s\n' | awk '{s+=$1} END{print s+0}')
+}
+add_rels () {    # $1=RELTYPE  $2=static|dynamic  $3=entity
+    args+=( "--relationships=$1=${HEADER_DIR}/$2/$3.csv$(find "${CSV_DIR}/initial_snapshot/$2/$3" -type f -name "${PART}" -printf ',%p')" )
+    GROUP_BYTES["rel/$1/$3"]=$(find "${CSV_DIR}/initial_snapshot/$2/$3" -type f -name "${PART}" -printf '%s\n' | awk '{s+=$1} END{print s+0}')
+}
+
+# Eight node groups. Comment and Post both carry the Message label, which is what lets
+# the queries match (:Message) across the two. The Place and Organisation headers end in a
+# :LABEL column, so a city arrives as (:Place:City), a university as (:Organisation:University).
+add_nodes Place            static  Place
+add_nodes Organisation     static  Organisation
+add_nodes TagClass         static  TagClass
+add_nodes Tag              static  Tag
+add_nodes Forum            dynamic Forum
+add_nodes Person           dynamic Person
+add_nodes Message:Comment  dynamic Comment      # Comment and Post both get :Message
+add_nodes Message:Post     dynamic Post
+
+# Twenty-three relationship groups, collapsing into eleven relationship types
+add_rels IS_PART_OF      static  Place_isPartOf_Place
+add_rels IS_SUBCLASS_OF  static  TagClass_isSubclassOf_TagClass
+add_rels IS_LOCATED_IN   static  Organisation_isLocatedIn_Place
+add_rels HAS_TYPE        static  Tag_hasType_TagClass
+add_rels HAS_CREATOR     dynamic Comment_hasCreator_Person
+add_rels IS_LOCATED_IN   dynamic Comment_isLocatedIn_Country
+add_rels REPLY_OF        dynamic Comment_replyOf_Comment
+add_rels REPLY_OF        dynamic Comment_replyOf_Post
+add_rels CONTAINER_OF    dynamic Forum_containerOf_Post
+add_rels HAS_MEMBER      dynamic Forum_hasMember_Person
+add_rels HAS_MODERATOR   dynamic Forum_hasModerator_Person
+add_rels HAS_TAG         dynamic Forum_hasTag_Tag
+add_rels HAS_INTEREST    dynamic Person_hasInterest_Tag
+add_rels IS_LOCATED_IN   dynamic Person_isLocatedIn_City
+add_rels KNOWS           dynamic Person_knows_Person
+add_rels LIKES           dynamic Person_likes_Comment
+add_rels LIKES           dynamic Person_likes_Post
+add_rels HAS_CREATOR     dynamic Post_hasCreator_Person
+add_rels HAS_TAG         dynamic Comment_hasTag_Tag
+add_rels HAS_TAG         dynamic Post_hasTag_Tag
+add_rels IS_LOCATED_IN   dynamic Post_isLocatedIn_Country
+add_rels STUDY_AT        dynamic Person_studyAt_University
+add_rels WORK_AT         dynamic Person_workAt_Company
+
+echo "== Argument groups: ${#args[@]} (expected 8 nodes + 23 relationships = 31) =="
+
+# Persist the per-group input sizes so throughput can be derived later
+{ echo -e "group\tbytes"; for k in "${!GROUP_BYTES[@]}"; do echo -e "${k}\t${GROUP_BYTES[$k]}"; done | sort; } &gt; "${OUT_DIR}/import-input-bytes.tsv"
+
+# ----- Import -----------------------------------------------------------------
+# Argument order matters: ${DB_NAME} must precede --nodes/--relationships, which are
+# declared variadic (&lt;files&gt;...) and would swallow a trailing database name as one more
+# data file, failing with "NoSuchFileException: snb100".
+# --id-type=INTEGER  integer ids map far more cheaply than strings over 254.6M nodes
+echo "== Starting the import; expect hours (source and target both on NFS) =="
+T0=$(date +%s); date
+sudo -u neo4j --preserve-env=JAVA_HOME \
+    neo4j-admin database import full \
+    "${DB_NAME}" \
+    --id-type=INTEGER \
+    --ignore-empty-strings=true \
+    --bad-tolerance=0 \
+    --delimiter='|' \
+    --array-delimiter=';' \
+    --threads="${THREADS}" \
+    --max-off-heap-memory="${MAX_OFF_HEAP}" \
+    --temp-path="${TEMP_PATH}" \
+    --report-file="${REPORT_FILE}" \
+    ${SCHEMA_FILE:+--schema="${SCHEMA_FILE}"} \
+    --overwrite-destination \
+    --verbose \
+    "${args[@]}"
+T1=$(date +%s); date
+echo "== Import finished in $(( (T1-T0)/3600 ))h $(( (T1-T0)%3600/60 ))m $(( (T1-T0)%60 ))s =="
+# The report is written by neo4j on local disk; copy it back for convenience
+sudo cp "${REPORT_FILE}" "${OUT_DIR}/import-report.txt" 2&gt;/dev/null &amp;&amp; sudo chown exouser:exouser "${OUT_DIR}/import-report.txt" || true
+
+echo -e "phase\tseconds" &gt; "${TIMING_FILE}"
+echo -e "total_wall_clock\t$((T1-T0))" &gt;&gt; "${TIMING_FILE}"
+
+if [[ "${MODE}" == "offline" ]]; then
+    echo "== Restarting Neo4j =="
+    sudo systemctl start neo4j
+    for i in $(seq 1 120); do
+        cypher-shell -a "${BOLT}" -d system "RETURN 1" &gt;/dev/null 2&gt;&amp;1 &amp;&amp; break
+        sleep 5
+    done
+fi
+
+# ----- Register the store as a database and bring it online -------------------
+echo "== Creating and starting ${DB_NAME} =="
+T2=$(date +%s)
+cypher-shell -a "${BOLT}" -d system "CREATE DATABASE ${DB_NAME} WAIT"
+T3=$(date +%s)
+echo -e "create_database_online\t$((T3-T2))" &gt;&gt; "${TIMING_FILE}"
+cypher-shell -a "${BOLT}" -d system "SHOW DATABASES YIELD name, currentStatus"
+
+# ----- Verify -----------------------------------------------------------------
+echo "== Node count per label =="
+cypher-shell -a "${BOLT}" -d "${DB_NAME}" \
+    "MATCH (n) UNWIND labels(n) AS l RETURN l AS label, count(*) AS cnt ORDER BY cnt DESC" \
+    | tee "${OUT_DIR}/count-nodes.txt"
+
+echo "== Relationship count per type =="
+cypher-shell -a "${BOLT}" -d "${DB_NAME}" \
+    "MATCH ()-[r]-&gt;() RETURN type(r) AS relType, count(*) AS cnt ORDER BY cnt DESC" \
+    | tee "${OUT_DIR}/count-rels.txt"
+
+echo "== Index and constraint state =="
+cypher-shell -a "${BOLT}" -d "${DB_NAME}" "SHOW INDEXES YIELD name, state, owningConstraint"
+
+sudo rm -rf "${TEMP_PATH}" 2&gt;/dev/null || true
+echo
+echo "Done. Output files:"
+echo "  ${OUT_DIR}/import-report.txt        importer bad-entries report"
+echo "  ${TIMING_FILE}                  timings"
+echo "  ${OUT_DIR}/import-input-bytes.tsv  input bytes per group"
+echo "  ${OUT_DIR}/count-nodes.txt         node count per label"
+echo "  ${OUT_DIR}/count-rels.txt          relationship count per type"</pre
+                        >
+                    </div>
+                </section>
+            </div>
+            <div class="tab-content" id="query-tab">
+                <section>
+                    <h3>Queries</h3>
+                    <p>
+                        Queries are numbered in workload order, so the numbering does not match the LDBC BI query
+                        numbers. Every query states its origin under its description. Because the BI queries are shown
+                        exactly as the LDBC reference implementation ships them, their first comment line still carries
+                        the LDBC number &mdash; Q11 below, for instance, opens with <code>// Q19.</code> because it is
+                        <code>bi-19.cypher</code>.
+                    </p>
+                    <p>
+                        <strong>20 of the 41 come from the LDBC SNB Business Intelligence workload.</strong>
+                        Their Cypher is the LDBC reference implementation unmodified, and each names the
+                        <code>bi-N.cypher</code> file it came from. Their parameters come from the official
+                        <code>parameters-sf100</code> set; queries whose parameter set has <code>a</code> and
+                        <code>b</code> variants are run once per variant against the same Cypher.
+                    </p>
+                    <p>
+                        <strong>The other 21 were written for this benchmark</strong> and are not part of the LDBC BI
+                        workload. The BI workload exercises only 7 of the 28 PropGBench query types, so these fill the
+                        remaining ones: each adapts the GQL template given on that type&rsquo;s workload-description
+                        page to the SNB schema, and each was run against the SF100 instance.
+                    </p>
+                    <p>
+                        These queries have no official parameter files. The values used to validate them on SF100 were
+                        <code>personId = 100316</code>, <code>person1Id = 10006</code> with
+                        <code>person2Id = 2199023261649</code> (a connected pair),
+                        <code>language = &#39;en&#39;</code> or <code>&#39;es&#39;</code>,
+                        <code>tagA = &#39;Thomas_More&#39;</code> with <code>tagB = &#39;Michelangelo&#39;</code>, and
+                        date ranges inside 2010&ndash;2012.
+                    </p>
+                    <p>
+                        The PropGBench query types are single primitives &mdash; a degree statistic, a triangle, a
+                        shortest path &mdash; whereas an SNB BI query is a complete analytical question that usually
+                        composes several of them. 1 query sits under <strong>Hybrid</strong> because it falls squarely
+                        on two defined types at once, and 9 sit under <strong>Others</strong> because their
+                        distinguishing work &mdash; summarising a node property, comparing two time windows, deriving a
+                        subpopulation and then measuring within it &mdash; matches no single defined type. Each of those
+                        queries states in its description why it does not fit.
+                    </p>
+
+                    <p>Select a query below to view its logic and description.</p>
+                    <div class="sub-tab-container">
+                        <div class="query-category-group">
+                            <div class="query-category-title">1. Neighborhood</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link active" onclick="openSubTab(event, 'q1-content')">
+                                    Q1
+                                </button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q2-content')">Q2</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q3-content')">Q3</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q4-content')">Q4</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">2. Path</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q5-content')">Q5</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q6-content')">Q6</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q7-content')">Q7</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q8-content')">Q8</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q9-content')">Q9</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q10-content')">Q10</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q11-content')">Q11</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q12-content')">Q12</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">3. Pattern</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q13-content')">Q13</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q14-content')">Q14</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q15-content')">Q15</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q16-content')">Q16</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q17-content')">Q17</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q18-content')">Q18</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q19-content')">Q19</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q20-content')">Q20</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">4. Aggregation</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q21-content')">Q21</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q22-content')">Q22</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q23-content')">Q23</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q24-content')">Q24</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q25-content')">Q25</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q26-content')">Q26</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">5. Analytics</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q27-content')">Q27</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q28-content')">Q28</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q29-content')">Q29</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q30-content')">Q30</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q31-content')">Q31</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">6. Hybrid</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q32-content')">Q32</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">7. Others</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q33-content')">Q33</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q34-content')">Q34</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q35-content')">Q35</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q36-content')">Q36</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q37-content')">Q37</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q38-content')">Q38</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q39-content')">Q39</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q40-content')">Q40</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q41-content')">Q41</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sub-tab-content active-content" id="q1-content">
+                        <h4>Q1. One-hop friends of a given person</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.1 One-Hop Neighbors</div>
+                        <p>
+                            Return the direct KNOWS neighbours of one person. This is the baseline local traversal: a
+                            single indexed node lookup followed by one adjacency expansion.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T1.1 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>personId</code>: ID &nbsp;&middot;&nbsp;
+                            <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T1.1. One-hop friends of a given person
+MATCH (:Person {id: $personId})-[:KNOWS]-(friend:Person)
+RETURN friend.id AS personId, friend.firstName AS firstName, friend.lastName AS lastName
+ORDER BY personId
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q2-content">
+                        <h4>Q2. Persons within three friendship hops</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.2 k-Hop Neighborhood</div>
+                        <p>
+                            Return every distinct person reachable within one to three KNOWS hops of a start person. The
+                            frontier grows quickly on a social graph, so this measures expansion cost and duplicate
+                            elimination across overlapping paths.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T1.2 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>personId</code>: ID &nbsp;&middot;&nbsp;
+                            <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T1.2. Persons within three friendship hops of a given person
+MATCH (start:Person {id: $personId})-[:KNOWS*1..3]-(neighbor:Person)
+WHERE neighbor &lt;&gt; start
+RETURN DISTINCT neighbor.id AS personId, neighbor.firstName AS firstName, neighbor.lastName AS lastName
+ORDER BY personId
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q3-content">
+                        <h4>Q3. Persons exactly three friendship hops away</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.3 Exact kth-Hop Neighbors</div>
+                        <p>
+                            Return the persons reached by paths of length exactly three, rather than everything within
+                            three hops. Only the start person is excluded, so a person who is also reachable in fewer
+                            hops still appears if a three-hop path to them exists.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T1.3 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>personId</code>: ID &nbsp;&middot;&nbsp;
+                            <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T1.3. Persons exactly three friendship hops away
+MATCH (start:Person {id: $personId})-[:KNOWS*3]-(neighbor:Person)
+WHERE neighbor &lt;&gt; start
+RETURN DISTINCT neighbor.id AS personId, neighbor.firstName AS firstName, neighbor.lastName AS lastName
+ORDER BY personId
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q4-content">
+                        <h4>Q4. Persons within two hops speaking a given language</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T1.4 Neighborhood with Property Filter
+                        </div>
+                        <p>
+                            Expand one to two KNOWS hops and keep only the persons who speak a given language and were
+                            born on or after a given date. The <code>speaks</code> property is an array, so the filter
+                            is a list membership test. It measures whether the planner pushes the predicate into the
+                            expansion or filters the fully expanded frontier afterwards.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T1.4 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>personId</code>: ID &nbsp;&middot;&nbsp;
+                            <code>language</code>: STRING &nbsp;&middot;&nbsp; <code>birthday</code>: DATE
+                            &nbsp;&middot;&nbsp; <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T1.4. Persons within two friendship hops who speak a given language
+MATCH (start:Person {id: $personId})-[:KNOWS*1..2]-(neighbor:Person)
+WHERE neighbor &lt;&gt; start
+  AND $language IN neighbor.speaks
+  AND neighbor.birthday &gt;= $birthday
+RETURN DISTINCT neighbor.id AS personId,
+       neighbor.firstName AS firstName,
+       neighbor.lastName AS lastName,
+       neighbor.birthday AS birthday
+ORDER BY birthday DESC, personId
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q5-content">
+                        <h4>Q5. Persons speaking a given language who registered in a period</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.1 Node Filtering (Single Node Paths)
+                        </div>
+                        <p>
+                            Filter <code>Person</code> nodes on an array property and a <code>creationDate</code> range
+                            with no traversal at all. This is the single-node path case, measuring predicate evaluation
+                            and label-scan or index-lookup performance in isolation.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T2.1 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>language</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>startDate</code>: DATETIME &nbsp;&middot;&nbsp; <code>endDate</code>: DATETIME
+                            &nbsp;&middot;&nbsp; <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T2.1. Persons who speak a given language and registered in a given period
+MATCH (person:Person)
+WHERE $language IN person.speaks
+  AND person.creationDate &gt;= $startDate
+  AND person.creationDate &lt;= $endDate
+RETURN person.id AS personId,
+       person.firstName AS firstName,
+       person.lastName AS lastName,
+       person.creationDate AS creationDate
+ORDER BY creationDate DESC, personId
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q6-content">
+                        <h4>Q6. Friendship edges created within a given window</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T2.2 Edge Filtering</div>
+                        <p>
+                            Filter KNOWS relationships by their <code>creationDate</code> and return both endpoints. A
+                            relationship-property index on <code>KNOWS(creationDate)</code> is created during the
+                            import, so this exercises relationship index lookup rather than a full relationship scan.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T2.2 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>startDate</code>: DATETIME &nbsp;&middot;&nbsp;
+                            <code>endDate</code>: DATETIME &nbsp;&middot;&nbsp; <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T2.2. Friendship edges created within a given window
+MATCH (person1:Person)-[knows:KNOWS]-&gt;(person2:Person)
+WHERE knows.creationDate &gt;= $startDate
+  AND knows.creationDate &lt;= $endDate
+RETURN person1.id AS person1Id,
+       person2.id AS person2Id,
+       knows.creationDate AS creationDate
+ORDER BY creationDate, person1Id
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q7-content">
+                        <h4>Q7. Whether two persons are connected within four friendship hops</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.3 Reachability between Two Nodes
+                        </div>
+                        <p>
+                            Return a single boolean saying whether a bounded KNOWS path exists between two persons. The
+                            <code>EXISTS</code> subquery lets the engine stop at the first matching path, so this
+                            measures short-circuiting rather than full path enumeration.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T2.3 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>person1Id</code>: ID &nbsp;&middot;&nbsp;
+                            <code>person2Id</code>: ID
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T2.3. Whether two persons are connected within four friendship hops
+MATCH (source:Person {id: $person1Id}),
+      (target:Person {id: $person2Id})
+RETURN EXISTS {
+  MATCH (source)-[:KNOWS*1..4]-(target)
+} AS reachable</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q8-content">
+                        <h4>Q8. Shortest friendship path between two persons</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T2.4 Shortest Path</div>
+                        <p>
+                            Return the shortest KNOWS path between two persons, bounded at six hops, as the list of
+                            person ids along it. Neo4j&rsquo;s <code>shortestPath</code> runs a bidirectional search and
+                            stops at the first shortest match, so unlike the simple-path enumeration it prunes
+                            aggressively. The weighted variants of this problem are Q10, Q11 and Q12.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T2.4 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>person1Id</code>: ID &nbsp;&middot;&nbsp;
+                            <code>person2Id</code>: ID
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T2.4. Shortest friendship path between two persons
+MATCH p = shortestPath(
+  (:Person {id: $person1Id})-[:KNOWS*1..6]-(:Person {id: $person2Id})
+)
+RETURN [n IN nodes(p) | n.id] AS personIds, length(p) AS hopCount</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q9-content">
+                        <h4>Q9. All simple friendship paths between two persons up to length three</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.5 All Simple Paths up to Length k
+                        </div>
+                        <p>
+                            Enumerate every path between two persons up to three hops, keeping only simple paths.
+                            Cypher’s variable-length matching already forbids repeating a relationship but permits
+                            revisiting a node, so the <code>all(... single(...))</code> predicate removes the paths that
+                            do. Unlike reachability or shortest path this materialises every result, so it is the most
+                            resource-intensive of the path queries.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T2.5 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>person1Id</code>: ID &nbsp;&middot;&nbsp;
+                            <code>person2Id</code>: ID &nbsp;&middot;&nbsp; <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T2.5. All simple friendship paths between two persons up to length three
+MATCH p = (:Person {id: $person1Id})-[:KNOWS*1..3]-(:Person {id: $person2Id})
+WHERE all(i IN range(0, size(nodes(p)) - 1)
+          WHERE single(n IN nodes(p) WHERE n = nodes(p)[i]))
+RETURN [n IN nodes(p) | n.id] AS personIds, length(p) AS hopCount
+ORDER BY hopCount ASC
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q10-content">
+                        <h4>Q10. Weighted interaction paths</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.6 top-K Weighted Paths (Optional)
+                        </div>
+                        <p>
+                            Find the most trusted path between two persons. Edge weight is derived from how strongly the
+                            two interacted inside forums created in a given window (a reply counts 1.0 or 0.5, and the
+                            weight is 1/(w+1)), then Dijkstra is run over that weighting. The weights are not stored on
+                            the edges but computed into a GDS projection, which is what makes a weighted-path query
+                            meaningful on an otherwise unweighted social graph. The query drops and rebuilds its own
+                            projection inline, so it needs no separate precomputation step.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-15.cypher</code>, used unmodified.
+                        </p>
+                        <p><strong>Also exercises:</strong> <code>T2.4 Shortest Path</code></p>
+                        <p>
+                            <strong>Parameters:</strong> <code>person1Id</code>: ID &nbsp;&middot;&nbsp;
+                            <code>person2Id</code>: ID &nbsp;&middot;&nbsp; <code>startDate</code>: DATE
+                            &nbsp;&middot;&nbsp; <code>endDate</code>: DATE
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q15. Weighted interaction paths
+// Requires the Neo4j Graph Data Science library
+CALL gds.graph.drop('bi15', false)
+YIELD graphName
+
+// ----------------------------------------------------------------------------------------------------
+WITH count(*) AS dummy
+// ----------------------------------------------------------------------------------------------------
+
+CALL gds.graph.project.cypher(
+  'bi15',
+  'MATCH (p:Person) RETURN id(p) AS id',
+  'MATCH (pA:Person)-[knows:KNOWS]-(pB:Person)
+      OPTIONAL MATCH (pA)&lt;-[:HAS_CREATOR]-(m1:Message)-[r:REPLY_OF]-(m2:Message)-[:HAS_CREATOR]-&gt;(pB)
+      OPTIONAL MATCH (m1)-[:REPLY_OF*0..]-&gt;(:Post)&lt;-[:CONTAINER_OF]-(forum:Forum)
+              WHERE forum.creationDate &gt;= datetime({epochmillis: ' + $startDate.epochMillis + '})
+                AND forum.creationDate &lt;= datetime({epochmillis: ' + $endDate.epochMillis   + '})
+      WITH pA, pB,
+          sum(CASE forum IS NOT NULL
+              WHEN true THEN
+                  CASE (m1:Post OR m2:Post) WHEN true THEN 1.0
+                  ELSE 0.5 END
+              ELSE 0.0 END
+          ) AS w
+      RETURN
+        id(pA) AS source,
+        id(pB) AS target,
+        1/(w+1) AS weight
+  '
+)
+YIELD graphName
+
+// ----------------------------------------------------------------------------------------------------
+WITH count(*) AS dummy
+// ----------------------------------------------------------------------------------------------------
+
+CALL {
+  MATCH (person1:Person {id: $person1Id}), (person2:Person {id: $person2Id})
+  CALL gds.shortestPath.dijkstra.stream('bi15', {
+    sourceNode: person1,
+    targetNode: person2,
+    relationshipWeightProperty: 'weight'
+  })
+  YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs, path
+  RETURN totalCost
+  UNION ALL
+  RETURN -1.0 AS totalCost
+}
+RETURN max(totalCost) AS totalCost</pre
+                            >
+                        </div>
+                        <div class="requires-note">
+                            This query requires the Neo4j Graph Data Science library. It runs against a named in-memory
+                            projection in <code>.stream</code> mode, so nothing is written back to the database.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q11-content">
+                        <h4>Q11. Interaction path between cities</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.6 top-K Weighted Paths (Optional)
+                        </div>
+                        <p>
+                            Find the cheapest weighted path between persons living in two given cities. Edge weight
+                            falls as reply interaction rises (<code>round(40-sqrt(numInteractions))</code>, floored at
+                            1), so heavily interacting pairs sit closer together. The projection carrying those weights
+                            must be built beforehand with <code>bi-19-create-graph.cypher</code>.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-19.cypher</code>, used unmodified.
+                        </p>
+                        <p><strong>Also exercises:</strong> <code>T2.4 Shortest Path</code></p>
+                        <p>
+                            <strong>Parameters:</strong> <code>city1Id</code>: ID &nbsp;&middot;&nbsp;
+                            <code>city2Id</code>: ID
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q19. Interaction path between cities
+// Requires the Neo4j Graph Data Science library
+MATCH
+  (person1:Person)-[:IS_LOCATED_IN]-&gt;(city1:City {id: $city1Id}),
+  (person2:Person)-[:IS_LOCATED_IN]-&gt;(city2:City {id: $city2Id})
+CALL gds.shortestPath.dijkstra.stream('bi19', {
+  sourceNode: person1,
+  targetNode: person2,
+  relationshipWeightProperty: 'weight'
+})
+YIELD totalCost
+WITH person1.id AS person1Id, person2.id AS person2Id, totalCost AS totalWeight
+ORDER BY totalWeight ASC, person1.id ASC, person2.id ASC
+WITH collect({person1Id: person1Id, person2Id: person2Id, totalWeight: totalWeight}) AS results
+UNWIND results AS result
+WITH result.person1Id AS person1Id, result.person2Id AS person2Id, result.totalWeight AS totalWeight
+WHERE totalWeight = results[0].totalWeight
+RETURN person1Id, person2Id, totalWeight
+ORDER BY person1Id, person2Id</pre
+                            >
+                        </div>
+                        <div class="requires-note">
+                            This query requires the Neo4j Graph Data Science library. It runs against a named in-memory
+                            projection in <code>.stream</code> mode, so nothing is written back to the database.
+                        </div>
+                        <p>Projection built before the query runs (<code>bi-19-create-graph.cypher</code>):</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.graph.project.cypher(
+    'bi19',
+    'MATCH (p:Person) RETURN id(p) AS id',
+    'MATCH
+      (personA:Person)-[:KNOWS]-(personB:Person),
+      (personA)&lt;-[:HAS_CREATOR]-(:Message)-[replyOf:REPLY_OF]-(:Message)-[:HAS_CREATOR]-&gt;(personB)
+    WITH
+      id(personA) AS source,
+      id(personB) AS target,
+      count(replyOf) AS numInteractions
+    RETURN
+      source,
+      target,
+      CASE WHEN round(40-sqrt(numInteractions)) &gt; 1 THEN round(40-sqrt(numInteractions)) ELSE 1 END AS weight'
+)</pre
+                            >
+                        </div>
+                        <p>Released afterwards (<code>bi-19-drop-graph.cypher</code>):</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">CALL gds.graph.drop('bi19', false)</pre>
+                        </div>
+                        <p>
+                            A variant that builds the weights inline instead of relying on a precomputed projection is
+                            also provided as <code>bi-19-without-precomputation.cypher</code>.
+                        </p>
+                    </div>
+                    <div class="sub-tab-content" id="q12-content">
+                        <h4>Q12. Recruitment</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.6 top-K Weighted Paths (Optional)
+                        </div>
+                        <p>
+                            From every current employee of a target company, find the cheapest weighted path to a given
+                            candidate. Edge weight is the smallest difference in enrolment year between two persons who
+                            studied at the same university (<code>min(abs(classYear difference)) + 1</code>). The
+                            projection must be built beforehand with <code>bi-20-create-graph.cypher</code>.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-20.cypher</code>, used unmodified.
+                        </p>
+                        <p><strong>Also exercises:</strong> <code>T2.4 Shortest Path</code></p>
+                        <p>
+                            <strong>Parameters:</strong> <code>company</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>person2Id</code>: ID
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q20. Recruitment
+// Requires the Neo4j Graph Data Science library
+MATCH
+  (company:Company {name: $company})&lt;-[:WORK_AT]-(person1:Person),
+  (person2:Person {id: $person2Id})
+CALL gds.shortestPath.dijkstra.stream('bi20', {
+  sourceNode: person1,
+  targetNode: person2,
+  relationshipWeightProperty: 'weight'
+})
+YIELD totalCost
+WHERE person1.id &lt;&gt; $person2Id
+WITH person1.id AS person1Id, totalCost AS totalWeight
+ORDER BY totalWeight ASC
+WITH collect({person1Id: person1Id, totalWeight: totalWeight}) AS results
+UNWIND results AS result
+WITH result.person1Id AS person1Id, result.totalWeight AS totalWeight
+WHERE totalWeight = results[0].totalWeight
+RETURN person1Id, totalWeight
+ORDER BY person1Id ASC
+LIMIT 20</pre
+                            >
+                        </div>
+                        <div class="requires-note">
+                            This query requires the Neo4j Graph Data Science library. It runs against a named in-memory
+                            projection in <code>.stream</code> mode, so nothing is written back to the database.
+                        </div>
+                        <p>Projection built before the query runs (<code>bi-20-create-graph.cypher</code>):</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.graph.project.cypher(
+    'bi20',
+    'MATCH (p:Person) RETURN id(p) AS id',
+    'MATCH
+      (personA:Person)-[:KNOWS]-(personB:Person),
+      (personA)-[saA:STUDY_AT]-&gt;(u:University)&lt;-[saB:STUDY_AT]-(personB)
+    RETURN
+      id(personA) AS source,
+      id(personB) AS target,
+      min(abs(saA.classYear - saB.classYear)) + 1 AS weight'
+)</pre
+                            >
+                        </div>
+                        <p>Released afterwards (<code>bi-20-drop-graph.cypher</code>):</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">CALL gds.graph.drop('bi20', false)</pre>
+                        </div>
+                        <p>
+                            A variant that builds the weights inline instead of relying on a precomputed projection is
+                            also provided as <code>bi-20-without-precomputation.cypher</code>.
+                        </p>
+                    </div>
+                    <div class="sub-tab-content" id="q13-content">
+                        <h4>Q13. Friend triangles</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.1 Triangle Detection</div>
+                        <p>
+                            Count friendship triangles inside one country where all three KNOWS edges were created
+                            within a given window. The <code>a.id &lt; b.id &lt; c.id</code> ordering deduplicates, so
+                            each triangle is counted once rather than six times.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-11.cypher</code>, used unmodified.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>country</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>startDate</code>: DATE &nbsp;&middot;&nbsp; <code>endDate</code>: DATE
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q11. Friend triangles
+MATCH (a:Person)-[:IS_LOCATED_IN]-&gt;(:City)-[:IS_PART_OF]-&gt;(country:Country {name: $country}),
+      (a)-[k1:KNOWS]-(b:Person)
+WHERE a.id &lt; b.id
+  AND $startDate &lt;= k1.creationDate AND k1.creationDate &lt;= $endDate
+WITH DISTINCT country, a, b
+MATCH (b)-[:IS_LOCATED_IN]-&gt;(:City)-[:IS_PART_OF]-&gt;(country)
+WITH DISTINCT country, a, b
+MATCH (b)-[k2:KNOWS]-(c:Person),
+      (c)-[:IS_LOCATED_IN]-&gt;(:City)-[:IS_PART_OF]-&gt;(country)
+WHERE b.id &lt; c.id
+  AND $startDate &lt;= k2.creationDate AND k2.creationDate &lt;= $endDate
+WITH DISTINCT a, b, c
+MATCH (c)-[k3:KNOWS]-(a)
+WHERE $startDate &lt;= k3.creationDate AND k3.creationDate &lt;= $endDate
+WITH DISTINCT a, b, c
+RETURN count(*) AS count</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q14-content">
+                        <h4>Q14. Friendship squares around a given person</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.2 Square Detection</div>
+                        <p>
+                            Find four-node cycles through a given person: the person, two of their friends, and a fourth
+                            person who knows both. All six inequality constraints are stated explicitly so that
+                            degenerate matches collapsing two roles onto one person are excluded.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T3.2 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>personId</code>: ID &nbsp;&middot;&nbsp;
+                            <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T3.2. Friendship squares around a given person
+MATCH (a:Person {id: $personId})-[:KNOWS]-(b:Person),
+      (b)-[:KNOWS]-(c:Person),
+      (c)-[:KNOWS]-(d:Person),
+      (d)-[:KNOWS]-(a)
+WHERE a &lt;&gt; b AND a &lt;&gt; c AND a &lt;&gt; d
+  AND b &lt;&gt; c AND b &lt;&gt; d AND c &lt;&gt; d
+RETURN DISTINCT b.id AS firstFriendId, c.id AS bridgeFriendId, d.id AS secondFriendId
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q15-content">
+                        <h4>Q15. Forums with the most members among those created after a date</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.3 Star Pattern Query</div>
+                        <p>
+                            Find hub forums: those created after a given date whose membership exceeds a threshold,
+                            ranked by member count. HAS_MEMBER is the largest relationship type in the graph at 303.8
+                            million edges and forum membership is heavily skewed, so this is the star pattern under a
+                            realistic degree distribution.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T3.3 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>date</code>: DATETIME &nbsp;&middot;&nbsp;
+                            <code>minDegree</code>: INT &nbsp;&middot;&nbsp; <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T3.3. Forums with the most members among those created after a given date
+MATCH (forum:Forum)-[:HAS_MEMBER]-&gt;(person:Person)
+WHERE forum.creationDate &gt; $date
+WITH forum, count(DISTINCT person) AS memberCount
+WHERE memberCount &gt;= $minDegree
+RETURN forum.id AS forumId, forum.title AS title, memberCount
+ORDER BY memberCount DESC, forumId
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q16-content">
+                        <h4>Q16. Groups of four mutually acquainted persons around a person</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.4 4-Clique</div>
+                        <p>
+                            Find 4-cliques containing a given person, where all six pairs among the four are connected
+                            by KNOWS. The <code>b.id &lt; c.id &lt; d.id</code> ordering reports each clique once
+                            instead of six times. It is the densest pattern in the set and the most demanding on join
+                            ordering.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T3.4 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>personId</code>: ID &nbsp;&middot;&nbsp;
+                            <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T3.4. Groups of four mutually acquainted persons around a given person
+MATCH (a:Person {id: $personId})-[:KNOWS]-(b:Person),
+      (a)-[:KNOWS]-(c:Person),
+      (a)-[:KNOWS]-(d:Person),
+      (b)-[:KNOWS]-(c),
+      (b)-[:KNOWS]-(d),
+      (c)-[:KNOWS]-(d)
+WHERE b.id &lt; c.id AND c.id &lt; d.id
+RETURN b.id AS person2Id, c.id AS person3Id, d.id AS person4Id
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q17-content">
+                        <h4>Q17. Friend recommendation</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.5 Two-hop Join Pattern</div>
+                        <p>
+                            For two persons who share an interest in a tag but are not yet connected by KNOWS, count
+                            their mutual friends and rank by that count. This is the common-neighbour join T3.5
+                            describes, combined with a negative pattern (<code>NOT (person1)-[:KNOWS]-(person2)</code>).
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-18.cypher</code>, used unmodified.
+                        </p>
+                        <p><strong>Parameters:</strong> <code>tag</code>: STRING</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q18. Friend recommendation
+MATCH (tag:Tag {name: $tag})&lt;-[:HAS_INTEREST]-(person1:Person)-[:KNOWS]-(mutualFriend:Person)-[:KNOWS]-(person2:Person)-[:HAS_INTEREST]-&gt;(tag)
+WHERE person1 &lt;&gt; person2
+  AND NOT (person1)-[:KNOWS]-(person2)
+RETURN person1.id AS person1Id, person2.id AS person2Id, count(DISTINCT mutualFriend) AS mutualFriendCount
+ORDER BY mutualFriendCount DESC, person1Id ASC, person2Id ASC
+LIMIT 20</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q18-content">
+                        <h4>Q18. Popular topics in a country</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.6 Line Pattern</div>
+                        <p>
+                            A long chain running Country &rarr; City &rarr; Person &rarr; Forum &rarr; Post &rarr;
+                            Message &rarr; Tag &rarr; TagClass, with a variable-length <code>REPLY_OF*0..</code> segment
+                            walking the reply tree in the middle, counting the messages per forum that hit a given
+                            TagClass.
+                        </p>
+                        <p><strong>Source:</strong> LDBC SNB BI workload, <code>bi-3.cypher</code>, used unmodified.</p>
+                        <p>
+                            <strong>Parameters:</strong> <code>tagClass</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>country</code>: STRING
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q3. Popular topics in a country
+MATCH
+  (:Country {name: $country})&lt;-[:IS_PART_OF]-(:City)&lt;-[:IS_LOCATED_IN]-
+  (person:Person)&lt;-[:HAS_MODERATOR]-(forum:Forum)-[:CONTAINER_OF]-&gt;
+  (post:Post)&lt;-[:REPLY_OF*0..]-(message:Message)-[:HAS_TAG]-&gt;(:Tag)-[:HAS_TYPE]-&gt;(:TagClass {name: $tagClass})
+RETURN
+  forum.id,
+  forum.title,
+  forum.creationDate,
+  person.id,
+  count(DISTINCT message) AS messageCount
+ORDER BY
+  messageCount DESC,
+  forum.id ASC
+LIMIT 20</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q19-content">
+                        <h4>Q19. Related Topics</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.6 Line Pattern</div>
+                        <p>
+                            Follow a three-hop line from a tag through its messages and their replies to the other tags
+                            those replies carry, excluding replies that are themselves tagged with the starting tag. The
+                            exclusion is a negative pattern over the same three-hop shape.
+                        </p>
+                        <p><strong>Source:</strong> LDBC SNB BI workload, <code>bi-7.cypher</code>, used unmodified.</p>
+                        <p><strong>Parameters:</strong> <code>tag</code>: STRING</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q7. Related Topics
+MATCH
+  (tag:Tag {name: $tag})&lt;-[:HAS_TAG]-(message:Message),
+  (message)&lt;-[:REPLY_OF]-(comment:Comment)-[:HAS_TAG]-&gt;(relatedTag:Tag)
+WHERE NOT (comment)-[:HAS_TAG]-&gt;(tag)
+RETURN
+  relatedTag.name,
+  count(DISTINCT comment) AS count
+ORDER BY
+  count DESC,
+  relatedTag.name ASC
+LIMIT 100</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q20-content">
+                        <h4>Q20. International dialog</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.6 Line Pattern</div>
+                        <p>
+                            For friend pairs split across two countries, score their interaction: a reply scores 4 or 1
+                            and a like scores 10 or 1. Each of the four <code>OPTIONAL MATCH</code> branches is a line
+                            running person1 &rarr; message &rarr; message &rarr; person2 or person1 &rarr; message
+                            &rarr; person2, so the pair is connected through chained multi-hop relations rather than a
+                            single shared neighbour. Only the highest-scoring pair per city is returned.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-14.cypher</code>, used unmodified.
+                        </p>
+                        <p><strong>Also exercises:</strong> <code>T3.5 Two-hop Join Pattern</code></p>
+                        <p>
+                            <strong>Parameters:</strong> <code>country1</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>country2</code>: STRING
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q14. International dialog
+MATCH
+  (country1:Country {name: $country1})&lt;-[:IS_PART_OF]-(city1:City)&lt;-[:IS_LOCATED_IN]-(person1:Person),
+  (country2:Country {name: $country2})&lt;-[:IS_PART_OF]-(city2:City)&lt;-[:IS_LOCATED_IN]-(person2:Person),
+  (person1)-[:KNOWS]-(person2)
+WITH person1, person2, city1, 0 AS score
+// case 1
+OPTIONAL MATCH (person1)&lt;-[:HAS_CREATOR]-(c:Comment)-[:REPLY_OF]-&gt;(:Message)-[:HAS_CREATOR]-&gt;(person2)
+WITH DISTINCT person1, person2, city1, score + (CASE WHEN c IS NULL THEN 0 ELSE  4 END) AS score
+// case 2
+OPTIONAL MATCH (person1)&lt;-[:HAS_CREATOR]-(m:Message)&lt;-[:REPLY_OF]-(:Comment)-[:HAS_CREATOR]-&gt;(person2)
+WITH DISTINCT person1, person2, city1, score + (CASE WHEN m IS NULL THEN 0 ELSE  1 END) AS score
+// case 3
+OPTIONAL MATCH (person1)-[:LIKES]-&gt;(m:Message)-[:HAS_CREATOR]-&gt;(person2)
+WITH DISTINCT person1, person2, city1, score + (CASE WHEN m IS NULL THEN 0 ELSE 10 END) AS score
+// case 4
+OPTIONAL MATCH (person1)&lt;-[:HAS_CREATOR]-(m:Message)&lt;-[:LIKES]-(person2)
+WITH DISTINCT person1, person2, city1, score + (CASE WHEN m IS NULL THEN 0 ELSE  1 END) AS score
+// preorder
+ORDER BY
+  city1.name ASC,
+  score DESC,
+  person1.id ASC,
+  person2.id ASC
+WITH city1, collect({score: score, person1Id: person1.id, person2Id: person2.id})[0] AS top
+RETURN
+  top.person1Id,
+  top.person2Id,
+  city1.name,
+  top.score
+ORDER BY
+  top.score DESC,
+  top.person1Id ASC,
+  top.person2Id ASC
+LIMIT 100</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q21-content">
+                        <h4>Q21. Most active Posters of a given Topic</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.2 Grouped Node Degree Statistics by Label
+                        </div>
+                        <p>
+                            For each person posting about a tag, aggregate three per-node degrees &mdash; messages
+                            created, replies received and likes received &mdash; with two
+                            <code>OPTIONAL MATCH</code> clauses collecting the latter two, then group by person and rank
+                            by 1&times;messages + 2&times;replies + 10&times;likes.
+                        </p>
+                        <p><strong>Source:</strong> LDBC SNB BI workload, <code>bi-5.cypher</code>, used unmodified.</p>
+                        <p><strong>Also exercises:</strong> <code>T5.1 Degree Centrality</code></p>
+                        <p><strong>Parameters:</strong> <code>tag</code>: STRING</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q5. Most active Posters of a given Topic
+MATCH (tag:Tag {name: $tag})&lt;-[:HAS_TAG]-(message:Message)-[:HAS_CREATOR]-&gt;(person:Person)
+OPTIONAL MATCH (message)&lt;-[likes:LIKES]-(:Person)
+WITH person, message, count(likes) AS likeCount
+OPTIONAL MATCH (message)&lt;-[:REPLY_OF]-(reply:Comment)
+WITH person, message, likeCount, count(reply) AS replyCount
+WITH person, count(message) AS messageCount, sum(likeCount) AS likeCount, sum(replyCount) AS replyCount
+RETURN
+  person.id,
+  replyCount,
+  likeCount,
+  messageCount,
+  1*messageCount + 2*replyCount + 10*likeCount AS score
+ORDER BY
+  score DESC,
+  person.id ASC
+LIMIT 100</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q22-content">
+                        <h4>Q22. How many persons have a given number of posts</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.2 Grouped Node Degree Statistics by Label
+                        </div>
+                        <p>
+                            Compute the distribution of how many persons created N qualifying messages, where a message
+                            must have content, be shorter than a threshold, be newer than a start date, and belong to a
+                            post in one of the given languages. This is a per-person degree histogram over HAS_CREATOR.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-12.cypher</code>, used unmodified.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>startDate</code>: DATE &nbsp;&middot;&nbsp;
+                            <code>lengthThreshold</code>: INT &nbsp;&middot;&nbsp; <code>languages</code>: STRING[]
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q12. How many persons have a given number of posts
+MATCH (person:Person)
+OPTIONAL MATCH (person)&lt;-[:HAS_CREATOR]-(message:Message)-[:REPLY_OF*0..]-&gt;(post:Post)
+WHERE message.content IS NOT NULL
+  AND message.length &lt; $lengthThreshold
+  AND message.creationDate &gt; $startDate
+  AND post.language IN $languages
+WITH
+  person,
+  count(message) AS messageCount
+RETURN
+  messageCount,
+  count(person) AS personCount
+ORDER BY
+  personCount DESC,
+  messageCount DESC</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q23-content">
+                        <h4>Q23. Enrolment-year statistics over all study relationships</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.3 Ungrouped Edge Count and Property Statistics (Optional)
+                        </div>
+                        <p>
+                            Count every STUDY_AT relationship and summarise its numeric <code>classYear</code> property
+                            with a global average, minimum and maximum. No grouping and no node properties are involved,
+                            so it isolates relationship scanning and aggregation.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T4.3 template from the
+                            workload description.
+                        </p>
+                        <p><strong>Parameters:</strong></p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T4.3. Enrolment-year statistics over all study relationships
+MATCH (:Person)-[studyAt:STUDY_AT]-&gt;(:University)
+RETURN count(studyAt) AS edgeCount,
+       avg(studyAt.classYear) AS avgClassYear,
+       min(studyAt.classYear) AS minClassYear,
+       max(studyAt.classYear) AS maxClassYear</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q24-content">
+                        <h4>Q24. Enrolment-year statistics by university and gender</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.4 Grouped Edge Count and Property Statistics (Optional)
+                        </div>
+                        <p>
+                            The grouped counterpart of the previous query: the same <code>classYear</code> statistics,
+                            grouped by a property of the target node (the university name) and one of the source node
+                            (the person’s gender), ordered by edge count. It measures multidimensional grouping and
+                            top-K materialisation.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T4.4 template from the
+                            workload description.
+                        </p>
+                        <p><strong>Parameters:</strong> <code>limit</code>: INT</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T4.4. Enrolment-year statistics grouped by university and gender
+MATCH (person:Person)-[studyAt:STUDY_AT]-&gt;(university:University)
+RETURN university.name AS universityName,
+       person.gender AS gender,
+       count(studyAt) AS edgeCount,
+       avg(studyAt.classYear) AS avgClassYear,
+       min(studyAt.classYear) AS minClassYear,
+       max(studyAt.classYear) AS maxClassYear
+ORDER BY edgeCount DESC, universityName, gender
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q25-content">
+                        <h4>Q25. Friendship path counts by length and gender reached</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.6 Grouped Path Counts by Length and Endpoint Type
+                        </div>
+                        <p>
+                            Enumerate KNOWS paths up to three hops from one person and report, for each combination of
+                            path length and the gender of the person reached, how many paths there are and how many
+                            distinct persons they reach. Grouping by an endpoint property on top of path length is what
+                            separates this from a plain path-count query.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T4.6 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>personId</code>: ID &nbsp;&middot;&nbsp;
+                            <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T4.6. Friendship path counts by length and by the gender reached
+MATCH p = (:Person {id: $personId})-[:KNOWS*1..3]-(neighbor:Person)
+RETURN length(p) AS pathLength,
+       neighbor.gender AS gender,
+       count(p) AS pathCount,
+       count(DISTINCT neighbor) AS distinctPersonCount
+ORDER BY pathLength ASC, pathCount DESC
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q26-content">
+                        <h4>Q26. Persons interested in both of two given tags</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T4.7 Union and Intersection</div>
+                        <p>
+                            Return the persons who have a HAS_INTEREST edge to each of two named tags. Two
+                            <code>MATCH</code> clauses over the same variable express the intersection; replacing the
+                            second with an <code>OPTIONAL MATCH</code> would give the union instead.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T4.7 template from the
+                            workload description.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>tagA</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>tagB</code>: STRING &nbsp;&middot;&nbsp; <code>limit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// T4.7. Persons interested in both of two given tags
+MATCH (person:Person)-[:HAS_INTEREST]-&gt;(:Tag {name: $tagA})
+MATCH (person)-[:HAS_INTEREST]-&gt;(:Tag {name: $tagB})
+RETURN DISTINCT person.id AS personId,
+       person.firstName AS firstName,
+       person.lastName AS lastName
+ORDER BY personId
+LIMIT $limit</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q27-content">
+                        <h4>Q27. Degree centrality over the friendship graph</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.1 Degree Centrality</div>
+                        <p>
+                            Rank persons by how many friends they have on the undirected KNOWS graph. It is the cheapest
+                            of the analytics queries &mdash; a single pass over the adjacency structure with no
+                            iteration &mdash; and gives a baseline against which PageRank&rsquo;s cost can be read.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T5.1 template from the
+                            workload description.
+                        </p>
+                        <p><strong>Parameters:</strong></p>
+                        <p>
+                            The queries in the Analytics category require an in-memory GDS graph to be projected first.
+                            Run the query below to do it.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.graph.project(
+  'KnowsGraph',
+  'Person',
+  {
+    KNOWS: {
+      type: 'KNOWS',
+      orientation: 'UNDIRECTED'
+    }
+  }
+)
+YIELD graphName, nodeCount, relationshipCount, projectMillis
+RETURN graphName, nodeCount, relationshipCount, projectMillis;</pre
+                            >
+                        </div>
+                        <p>Then run the following analytic query.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.degree.stream('KnowsGraph')
+YIELD nodeId, score
+WITH gds.util.asNode(nodeId) AS person, score
+RETURN person.id AS personId,
+       person.firstName AS firstName,
+       person.lastName AS lastName,
+       toInteger(score) AS degree
+ORDER BY degree DESC
+LIMIT 10;</pre
+                            >
+                        </div>
+                        <div class="requires-note">
+                            This query requires the Neo4j Graph Data Science library. It runs against a named in-memory
+                            projection in <code>.stream</code> mode, so nothing is written back to the database.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q28-content">
+                        <h4>Q28. PageRank over the friendship graph</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.2 PageRank</div>
+                        <p>
+                            Rank persons by PageRank on the undirected KNOWS graph to find the most structurally
+                            influential accounts. The algorithm iterates until the scores converge or the iteration
+                            limit is reached.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T5.2 template from the
+                            workload description.
+                        </p>
+                        <p><strong>Parameters:</strong></p>
+                        <p>
+                            The queries in the Analytics category require an in-memory GDS graph to be projected first.
+                            Run the query below to do it.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.graph.project(
+  'KnowsGraph',
+  'Person',
+  {
+    KNOWS: {
+      type: 'KNOWS',
+      orientation: 'UNDIRECTED'
+    }
+  }
+)
+YIELD graphName, nodeCount, relationshipCount, projectMillis
+RETURN graphName, nodeCount, relationshipCount, projectMillis;</pre
+                            >
+                        </div>
+                        <p>Then run the following analytic query.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.pageRank.stream('KnowsGraph')
+YIELD nodeId, score
+WITH gds.util.asNode(nodeId) AS person, score
+RETURN person.id AS personId,
+       person.firstName AS firstName,
+       person.lastName AS lastName,
+       score AS pagerank
+ORDER BY pagerank DESC
+LIMIT 10;</pre
+                            >
+                        </div>
+                        <div class="requires-note">
+                            This query requires the Neo4j Graph Data Science library. It runs against a named in-memory
+                            projection in <code>.stream</code> mode, so nothing is written back to the database.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q29-content">
+                        <h4>Q29. Weakly connected components of the friendship graph</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T5.3 Connected Components / Weakly Connected Components
+                        </div>
+                        <p>
+                            Find the connected regions of the undirected KNOWS graph and report the largest by size. On
+                            a generated social network almost every person falls in one giant component, so the result
+                            also shows how many isolated accounts the generator produced.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T5.3 template from the
+                            workload description.
+                        </p>
+                        <p><strong>Parameters:</strong></p>
+                        <p>
+                            The queries in the Analytics category require an in-memory GDS graph to be projected first.
+                            Run the query below to do it.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.graph.project(
+  'KnowsGraph',
+  'Person',
+  {
+    KNOWS: {
+      type: 'KNOWS',
+      orientation: 'UNDIRECTED'
+    }
+  }
+)
+YIELD graphName, nodeCount, relationshipCount, projectMillis
+RETURN graphName, nodeCount, relationshipCount, projectMillis;</pre
+                            >
+                        </div>
+                        <p>Then run the following analytic query.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.wcc.stream('KnowsGraph')
+YIELD nodeId, componentId
+RETURN componentId, count(*) AS componentSize
+ORDER BY componentSize DESC
+LIMIT 10;</pre
+                            >
+                        </div>
+                        <div class="requires-note">
+                            This query requires the Neo4j Graph Data Science library. It runs against a named in-memory
+                            projection in <code>.stream</code> mode, so nothing is written back to the database.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q30-content">
+                        <h4>Q30. Strongly connected components of the directed friendship graph</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T5.4 Strongly Connected Components
+                        </div>
+                        <p>
+                            Find the maximal sets of persons that can all reach each other following KNOWS edges in
+                            their stored direction. This needs a separate <code>NATURAL</code> projection rather than
+                            the undirected one. Note that SNB stores each friendship once, as a single directed edge, so
+                            mutual reachability is rare and the components are expected to be mostly singletons.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T5.4 template from the
+                            workload description.
+                        </p>
+                        <p><strong>Parameters:</strong></p>
+                        <p>
+                            The queries in the Analytics category require an in-memory GDS graph to be projected first.
+                            Run the query below to do it.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.graph.project(
+  'KnowsDirectedGraph',
+  'Person',
+  {
+    KNOWS: {
+      type: 'KNOWS',
+      orientation: 'NATURAL'
+    }
+  }
+)
+YIELD graphName, nodeCount, relationshipCount, projectMillis
+RETURN graphName, nodeCount, relationshipCount, projectMillis;</pre
+                            >
+                        </div>
+                        <p>Then run the following analytic query.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.scc.stream('KnowsDirectedGraph')
+YIELD nodeId, componentId
+RETURN componentId, count(*) AS componentSize
+ORDER BY componentSize DESC
+LIMIT 10;</pre
+                            >
+                        </div>
+                        <div class="requires-note">
+                            This query requires the Neo4j Graph Data Science library. It runs against a named in-memory
+                            projection in <code>.stream</code> mode, so nothing is written back to the database.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q31-content">
+                        <h4>Q31. Louvain communities of the friendship graph</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.5 Community Detection</div>
+                        <p>
+                            Partition the undirected KNOWS graph into densely connected communities with Louvain and
+                            report the largest. The generator correlates friendship with location and interests, so the
+                            communities it finds are not arbitrary.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> written for PropGBench, adapting the T5.5 template from the
+                            workload description.
+                        </p>
+                        <p><strong>Parameters:</strong></p>
+                        <p>
+                            The queries in the Analytics category require an in-memory GDS graph to be projected first.
+                            Run the query below to do it.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.graph.project(
+  'KnowsGraph',
+  'Person',
+  {
+    KNOWS: {
+      type: 'KNOWS',
+      orientation: 'UNDIRECTED'
+    }
+  }
+)
+YIELD graphName, nodeCount, relationshipCount, projectMillis
+RETURN graphName, nodeCount, relationshipCount, projectMillis;</pre
+                            >
+                        </div>
+                        <p>Then run the following analytic query.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+CALL gds.louvain.stream('KnowsGraph')
+YIELD nodeId, communityId
+RETURN communityId, count(*) AS communitySize
+ORDER BY communitySize DESC
+LIMIT 10;</pre
+                            >
+                        </div>
+                        <div class="requires-note">
+                            This query requires the Neo4j Graph Data Science library. It runs against a named in-memory
+                            projection in <code>.stream</code> mode, so nothing is written back to the database.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q32-content">
+                        <h4>Q32. Top thread initiators</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.1 Ungrouped Node Degree Statistics by Label and T4.5 Path
+                            Counts by Length
+                        </div>
+                        <p>
+                            Count the posts each person started within a window, together with the messages in the whole
+                            reply tree beneath them (<code>REPLY_OF*0..</code>) that also fall in the window. It
+                            combines two workloads: the bounded-length path enumeration of T4.5, and the ungrouped
+                            per-node count of T4.1 applied to the thread initiator, since the result is a count of
+                            distinct posts and distinct replies per person rather than a breakdown by path length.
+                        </p>
+                        <p><strong>Source:</strong> LDBC SNB BI workload, <code>bi-9.cypher</code>, used unmodified.</p>
+                        <p>
+                            <strong>Parameters:</strong> <code>startDate</code>: DATE &nbsp;&middot;&nbsp;
+                            <code>endDate</code>: DATE
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q9. Top thread initiators
+MATCH (person:Person)&lt;-[:HAS_CREATOR]-(post:Post)&lt;-[:REPLY_OF*0..]-(reply:Message)
+WHERE  post.creationDate &gt;= $startDate
+  AND  post.creationDate &lt;= $endDate
+  AND reply.creationDate &gt;= $startDate
+  AND reply.creationDate &lt;= $endDate
+RETURN
+  person.id,
+  person.firstName,
+  person.lastName,
+  count(DISTINCT post) AS threadCount,
+  count(DISTINCT reply) AS messageCount
+ORDER BY
+  messageCount DESC,
+  person.id ASC
+LIMIT 100</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q33-content">
+                        <h4>Q33. Posting summary</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            Build a histogram over every message created before a given instant, grouped by year, by
+                            whether the message is a comment, and by length bucket (&lt;40, &lt;80, &lt;160, rest),
+                            reporting count, average length, total length and share of all messages. It does not match a
+                            defined type because it summarises a <em>node property</em> (<code>length</code>) with no
+                            traversal at all, whereas the aggregation types cover degree statistics, edge-property
+                            statistics and path counts.
+                        </p>
+                        <p><strong>Source:</strong> LDBC SNB BI workload, <code>bi-1.cypher</code>, used unmodified.</p>
+                        <p><strong>Parameters:</strong> <code>datetime</code>: DATETIME</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q1. Posting summary
+MATCH (message:Message)
+WHERE message.creationDate &lt; $datetime
+WITH count(message) AS totalMessageCountInt // this should be a subquery once Cypher supports it
+WITH toFloat(totalMessageCountInt) AS totalMessageCount
+MATCH (message:Message)
+WHERE message.creationDate &lt; $datetime
+  AND message.content IS NOT NULL
+WITH
+  totalMessageCount,
+  message,
+  message.creationDate.year AS year
+WITH
+  totalMessageCount,
+  year,
+  message:Comment AS isComment,
+  CASE
+    WHEN message.length &lt;  40 THEN 0
+    WHEN message.length &lt;  80 THEN 1
+    WHEN message.length &lt; 160 THEN 2
+    ELSE                           3
+  END AS lengthCategory,
+  count(message) AS messageCount,
+  sum(message.length) / toFloat(count(message)) AS averageMessageLength,
+  sum(message.length) AS sumMessageLength
+RETURN
+  year,
+  isComment,
+  lengthCategory,
+  messageCount,
+  averageMessageLength,
+  sumMessageLength,
+  messageCount / totalMessageCount AS percentageOfMessages
+ORDER BY
+  year DESC,
+  isComment ASC,
+  lengthCategory ASC</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q34-content">
+                        <h4>Q34. Tag evolution</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            For every tag of a given TagClass, compare how many messages referenced it in two adjacent
+                            100-day windows and rank by the difference. The distinguishing work is the comparison of two
+                            independent time windows and the arithmetic between them, which no defined type covers.
+                        </p>
+                        <p><strong>Source:</strong> LDBC SNB BI workload, <code>bi-2.cypher</code>, used unmodified.</p>
+                        <p>
+                            <strong>Parameters:</strong> <code>date</code>: DATE &nbsp;&middot;&nbsp;
+                            <code>tagClass</code>: STRING
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q2. Tag evolution
+MATCH (tag:Tag)-[:HAS_TYPE]-&gt;(:TagClass {name: $tagClass})
+// window 1
+OPTIONAL MATCH (message1:Message)-[:HAS_TAG]-&gt;(tag)
+  WHERE $date &lt;= message1.creationDate
+    AND message1.creationDate &lt; $date + duration({days: 100})
+WITH tag, count(message1) AS countWindow1
+// window 2
+OPTIONAL MATCH (message2:Message)-[:HAS_TAG]-&gt;(tag)
+  WHERE $date + duration({days: 100}) &lt;= message2.creationDate
+    AND message2.creationDate &lt; $date + duration({days: 200})
+WITH
+  tag,
+  countWindow1,
+  count(message2) AS countWindow2
+RETURN
+  tag.name,
+  countWindow1,
+  countWindow2,
+  abs(countWindow1 - countWindow2) AS diff
+ORDER BY
+  diff DESC,
+  tag.name ASC
+LIMIT 100</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q35-content">
+                        <h4>Q35. Top message creators in a country</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            First pick the 100 forums with the most members, then aggregate the message output of those
+                            forums&rsquo; members, using <code>UNION ALL</code> to keep members with zero messages in
+                            the result. It is a two-phase query whose second phase consumes the top-K output of the
+                            first, so neither phase alone characterises it.
+                        </p>
+                        <p><strong>Source:</strong> LDBC SNB BI workload, <code>bi-4.cypher</code>, used unmodified.</p>
+                        <p><strong>Parameters:</strong> <code>date</code>: DATE</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q4. Top message creators in a country
+MATCH (country:Country)&lt;-[:IS_PART_OF]-(:City)&lt;-[:IS_LOCATED_IN]-(person:Person)&lt;-[:HAS_MEMBER]-(forum:Forum)
+WHERE forum.creationDate &gt; $date
+WITH country, forum, count(person) AS numberOfMembers
+ORDER BY numberOfMembers DESC, forum.id ASC, country.id
+WITH DISTINCT forum AS topForum
+LIMIT 100
+
+WITH collect(topForum) AS topForums
+
+CALL {
+  WITH topForums
+  UNWIND topForums AS topForum1
+  MATCH (topForum1)-[:CONTAINER_OF]-&gt;(post:Post)&lt;-[:REPLY_OF*0..]-(message:Message)-[:HAS_CREATOR]-&gt;(person:Person)&lt;-[:HAS_MEMBER]-(topForum2:Forum)
+  WITH person, message, topForum2
+  WHERE topForum2 IN topForums
+  RETURN person, count(DISTINCT message) AS messageCount
+UNION ALL
+  // Ensure that people who are members of top forums but have 0 messages are also returned.
+  // To this end, we return each person with a 0 messageCount
+  WITH topForums
+  UNWIND topForums AS topForum1
+  MATCH (person:Person)&lt;-[:HAS_MEMBER]-(topForum1:Forum)
+  RETURN person, 0 AS messageCount
+}
+RETURN
+  person.id AS personId,
+  person.firstName AS personFirstName,
+  person.lastName AS personLastName,
+  person.creationDate AS personCreationDate,
+  sum(messageCount) AS messageCount
+ORDER BY
+  messageCount DESC,
+  person.id ASC
+LIMIT 100</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q36-content">
+                        <h4>Q36. Most authoritative users on a given topic</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            A two-level authority score: person1&rsquo;s score comes from the person2 who liked their
+                            message, and person2&rsquo;s weight in turn depends on how many likes person2&rsquo;s own
+                            messages received. <code>count(DISTINCT like)</code> ensures each person2&rsquo;s popularity
+                            is added only once per person1. It propagates score through the graph like PageRank but at a
+                            fixed depth of two rather than iterating to convergence, so it is neither a degree statistic
+                            nor an iterative algorithm.
+                        </p>
+                        <p><strong>Source:</strong> LDBC SNB BI workload, <code>bi-6.cypher</code>, used unmodified.</p>
+                        <p><strong>Parameters:</strong> <code>tag</code>: STRING</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q6. Most authoritative users on a given topic
+MATCH (tag:Tag {name: $tag})&lt;-[:HAS_TAG]-(message1:Message)-[:HAS_CREATOR]-&gt;(person1:Person)
+OPTIONAL MATCH (message1)&lt;-[:LIKES]-(person2:Person)
+OPTIONAL MATCH (person2)&lt;-[:HAS_CREATOR]-(message2:Message)&lt;-[like:LIKES]-(person3:Person)
+RETURN
+  person1.id,
+  // Using 'DISTINCT like' here ensures that each person2's popularity score is only added once for each person1
+  count(DISTINCT like) AS authorityScore
+ORDER BY
+  authorityScore DESC,
+  person1.id ASC
+LIMIT 100
+
+// We need to use a redundant computation due to the lack of composable graph queries in the currently supported Cypher version.
+// This might change in the future with new Cypher versions and GQL.</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q37-content">
+                        <h4>Q37. Central Person for a Tag</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            Score the followers and posters of a tag (100 points for an interest edge, 1 point per
+                            message in the window), then add up the same score across each person&rsquo;s friends and
+                            return the highest combined total. The score is a weighted mix of two edge types that is
+                            then aggregated over a one-hop neighbourhood, which does not reduce to any single defined
+                            type.
+                        </p>
+                        <p><strong>Source:</strong> LDBC SNB BI workload, <code>bi-8.cypher</code>, used unmodified.</p>
+                        <p>
+                            <strong>Parameters:</strong> <code>tag</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>startDate</code>: DATE &nbsp;&middot;&nbsp; <code>endDate</code>: DATE
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q8. Central Person for a Tag
+MATCH (tag:Tag {name: $tag})
+// score
+OPTIONAL MATCH (tag)&lt;-[interest:HAS_INTEREST]-(person:Person)
+WITH tag, collect(person) AS interestedPersons
+OPTIONAL MATCH (tag)&lt;-[:HAS_TAG]-(message:Message)-[:HAS_CREATOR]-&gt;(person:Person)
+         WHERE $startDate &lt; message.creationDate
+           AND message.creationDate &lt; $endDate
+WITH tag, interestedPersons, interestedPersons + collect(person) AS persons
+UNWIND persons AS person
+WITH DISTINCT tag, person
+WITH
+  tag,
+  person,
+  100 * size([(tag)&lt;-[interest:HAS_INTEREST]-(person) | interest]) + size([(tag)&lt;-[:HAS_TAG]-(message:Message)-[:HAS_CREATOR]-&gt;(person) WHERE $startDate &lt; message.creationDate AND message.creationDate &lt; $endDate | message])
+  AS score
+OPTIONAL MATCH (person)-[:KNOWS]-(friend)
+// We need to use a redundant computation due to the lack of composable graph queries in the currently supported Cypher version.
+// This might change in the future with new Cypher versions and GQL.
+WITH
+  person,
+  score,
+  100 * size([(tag)&lt;-[interest:HAS_INTEREST]-(friend) | interest]) + size([(tag)&lt;-[:HAS_TAG]-(message:Message)-[:HAS_CREATOR]-&gt;(friend) WHERE $startDate &lt; message.creationDate AND message.creationDate &lt; $endDate | message])
+  AS friendScore
+RETURN
+  person.id,
+  score,
+  sum(friendScore) AS friendsScore
+ORDER BY
+  score + friendsScore DESC,
+  person.id ASC
+LIMIT 100</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q38-content">
+                        <h4>Q38. Experts in social circle</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            Among the persons whose KNOWS distance from a start person falls in the ring
+                            [minPathDistance, maxPathDistance], find those who live in a given country and have posted
+                            about a given TagClass. The ring is obtained by taking two reachable sets with
+                            <code>apoc.path.subgraphNodes</code> and subtracting the nearer one. It goes beyond a
+                            neighbourhood query because the ring is then joined against a location pattern and a
+                            TagClass pattern and aggregated per tag.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-10.cypher</code>, used unmodified.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>personId</code>: ID &nbsp;&middot;&nbsp;
+                            <code>country</code>: STRING &nbsp;&middot;&nbsp; <code>tagClass</code>: STRING
+                            &nbsp;&middot;&nbsp; <code>minPathDistance</code>: INT &nbsp;&middot;&nbsp;
+                            <code>maxPathDistance</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q10. Experts in social circle
+// Requires the Neo4j APOC library
+MATCH (startPerson:Person {id: $personId})
+CALL apoc.path.subgraphNodes(startPerson, {
+	relationshipFilter: "KNOWS",
+    minLevel: 1,
+    maxLevel: $minPathDistance-1
+})
+YIELD node
+WITH startPerson, collect(DISTINCT node) AS nodesCloserThanMinPathDistance
+CALL apoc.path.subgraphNodes(startPerson, {
+	relationshipFilter: "KNOWS",
+    minLevel: 1,
+    maxLevel: $maxPathDistance
+})
+YIELD node
+WITH nodesCloserThanMinPathDistance, collect(DISTINCT node) AS nodesCloserThanMaxPathDistance
+// compute the difference of sets: nodesCloserThanMaxPathDistance - nodesCloserThanMinPathDistance
+WITH [n IN nodesCloserThanMaxPathDistance WHERE NOT n IN nodesCloserThanMinPathDistance] AS expertCandidatePersons
+UNWIND expertCandidatePersons AS expertCandidatePerson
+MATCH
+  (expertCandidatePerson)-[:IS_LOCATED_IN]-&gt;(:City)-[:IS_PART_OF]-&gt;(:Country {name: $country}),
+  (expertCandidatePerson)&lt;-[:HAS_CREATOR]-(message:Message)-[:HAS_TAG]-&gt;(:Tag)-[:HAS_TYPE]-&gt;
+  (:TagClass {name: $tagClass})
+MATCH
+  (message)-[:HAS_TAG]-&gt;(tag:Tag)
+RETURN
+  expertCandidatePerson.id,
+  tag.name,
+  count(DISTINCT message) AS messageCount
+ORDER BY
+  messageCount DESC,
+  tag.name ASC,
+  expertCandidatePerson.id ASC
+LIMIT 100</pre
+                            >
+                        </div>
+                        <div class="requires-note">
+                            This query requires the Neo4j APOC library. It calls
+                            <code>apoc.path.subgraphNodes</code> twice and takes the set difference to isolate the ring
+                            of persons at a given KNOWS distance.
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q39-content">
+                        <h4>Q39. Zombies in a country</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            Select the zombie accounts of a country by a rate test (fewer than one message per month
+                            over the account&rsquo;s lifetime), then compute for each zombie the share of its likes that
+                            came from other zombies. The query first derives a subpopulation and then measures a ratio
+                            within it, which no defined type describes.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-13.cypher</code>, used unmodified.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>country</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>endDate</code>: DATE
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q13. Zombies in a country
+MATCH (country:Country {name: $country})&lt;-[:IS_PART_OF]-(:City)&lt;-[:IS_LOCATED_IN]-(zombie:Person)
+WHERE zombie.creationDate &lt; $endDate
+WITH country, zombie
+OPTIONAL MATCH (zombie)&lt;-[:HAS_CREATOR]-(message:Message)
+WHERE message.creationDate &lt; $endDate
+WITH
+  country,
+  zombie,
+  count(message) AS messageCount
+WITH
+  country,
+  zombie,
+  12 * ($endDate.year  - zombie.creationDate.year )
+     + ($endDate.month - zombie.creationDate.month)
+     + 1 AS months,
+  messageCount
+WHERE messageCount / months &lt; 1
+WITH
+  country,
+  collect(zombie) AS zombies
+UNWIND zombies AS zombie
+OPTIONAL MATCH
+  (zombie)&lt;-[:HAS_CREATOR]-(message:Message)&lt;-[:LIKES]-(likerZombie:Person)
+WHERE likerZombie IN zombies
+WITH
+  zombie,
+  count(likerZombie) AS zombieLikeCount
+OPTIONAL MATCH
+  (zombie)&lt;-[:HAS_CREATOR]-(message:Message)&lt;-[:LIKES]-(likerPerson:Person)
+WHERE likerPerson.creationDate &lt; $endDate
+WITH
+  zombie,
+  zombieLikeCount,
+  count(likerPerson) AS totalLikeCount
+RETURN
+  zombie.id,
+  zombieLikeCount,
+  totalLikeCount,
+  CASE totalLikeCount
+    WHEN 0 THEN 0.0
+    ELSE zombieLikeCount / toFloat(totalLikeCount)
+  END AS zombieScore
+ORDER BY
+  zombieScore DESC,
+  zombie.id ASC
+LIMIT 100</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q40-content">
+                        <h4>Q40. Fake news detection</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            For each of two (tag, date) combinations, find the persons who posted about that tag on that
+                            day and who have at most maxKnowsLimit friends doing the same, then keep only the persons
+                            present in both. <code>UNWIND</code> plus a <code>CALL</code> subquery runs the same
+                            correlated pattern twice and the results are intersected, so the query is a parameterised
+                            self-join rather than a plain set operation over two label values.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-16.cypher</code>, used unmodified.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>tagA</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>dateA</code>: DATE &nbsp;&middot;&nbsp; <code>tagB</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>dateB</code>: DATE &nbsp;&middot;&nbsp; <code>maxKnowsLimit</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q16. Fake news detection
+// These parameters return a 'false positive' as the maxKnowsLimit is set too high.
+UNWIND [
+    {letter: 'A', tag: $tagA, date: $dateA},
+    {letter: 'B', tag: $tagB, date: $dateB}
+  ] AS param
+WITH param.letter AS paramLetter, param.tag AS paramTagX, param.date AS paramDateX
+CALL {
+  WITH paramTagX, paramDateX
+  MATCH (person1:Person)&lt;-[:HAS_CREATOR]-(message1:Message)-[:HAS_TAG]-&gt;(tag:Tag {name: paramTagX})
+  WHERE date(message1.creationDate) = date(paramDateX)
+  // filter out Persons with more than $maxKnowsLimit friends who created the same kind of Message
+  OPTIONAL MATCH (person1)-[:KNOWS]-(person2:Person)&lt;-[:HAS_CREATOR]-(message2:Message)-[:HAS_TAG]-&gt;(tag)
+  WHERE date(message2.creationDate) = date(paramDateX)
+  WITH person1, count(DISTINCT message1) AS cm, count(DISTINCT person2) AS cp2
+  WHERE cp2 &lt;= $maxKnowsLimit
+  // return count
+  RETURN person1, cm
+}
+WITH person1, collect({letter: paramLetter, messageCount: cm}) AS results
+WHERE size(results) = 2
+RETURN
+  person1.id,
+  [r IN results WHERE r.letter = 'A' | r.messageCount][0] AS messageCountA,
+  [r IN results WHERE r.letter = 'B' | r.messageCount][0] AS messageCountB
+ORDER BY messageCountA + messageCountB DESC, person1.id ASC
+LIMIT 20</pre
+                            >
+                        </div>
+                    </div>
+                    <div class="sub-tab-content" id="q41-content">
+                        <h4>Q41. Information propagation analysis</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> Other</div>
+                        <p>
+                            Structurally the heaviest query in the set: one <code>MATCH</code> co-joins six patterns
+                            spanning two distinct forums, three persons and two variable-length
+                            <code>REPLY_OF*0..</code> segments, then requires message2 to be more than delta hours later
+                            than message1 and negates person1&rsquo;s membership of forum2. It is a branched multi-way
+                            join with a temporal predicate, not a line, a cycle or a clique.
+                        </p>
+                        <p>
+                            <strong>Source:</strong> LDBC SNB BI workload, <code>bi-17.cypher</code>, used unmodified.
+                        </p>
+                        <p>
+                            <strong>Parameters:</strong> <code>tag</code>: STRING &nbsp;&middot;&nbsp;
+                            <code>delta</code>: INT
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block">
+// Q17. Information propagation analysis
+MATCH
+  (tag:Tag {name: $tag}),
+  (person1:Person)&lt;-[:HAS_CREATOR]-(message1:Message)-[:REPLY_OF*0..]-&gt;(post1:Post)&lt;-[:CONTAINER_OF]-(forum1:Forum),
+  (message1)-[:HAS_TAG]-&gt;(tag),
+// Having two HAS_MEMBER edges in the same MATCH clause ensures that person2 and person3 are different
+// as Cypher's edge-isomorphic matching does not allow for such a match in a single MATCH clause.
+  (forum1)&lt;-[:HAS_MEMBER]-&gt;(person2:Person)&lt;-[:HAS_CREATOR]-(comment:Comment)-[:HAS_TAG]-&gt;(tag),
+  (forum1)&lt;-[:HAS_MEMBER]-&gt;(person3:Person)&lt;-[:HAS_CREATOR]-(message2:Message),
+  (comment)-[:REPLY_OF]-&gt;(message2)-[:REPLY_OF*0..]-&gt;(post2:Post)&lt;-[:CONTAINER_OF]-(forum2:Forum)
+// The query allows message2 = post2. If this is the case, their HAS_TAG edges to tag overlap,
+// and Cypher's edge-isomorphic matching does not allow for such a match in a single MATCH clause.
+// To work around this, we add them in separate MATCH clauses.
+MATCH (comment)-[:HAS_TAG]-&gt;(tag)
+MATCH (message2)-[:HAS_TAG]-&gt;(tag)
+WHERE forum1 &lt;&gt; forum2
+  AND message2.creationDate &gt; message1.creationDate + duration({hours: $delta})
+  AND NOT (forum2)-[:HAS_MEMBER]-&gt;(person1)
+RETURN person1.id, count(DISTINCT message2) AS messageCount
+ORDER BY messageCount DESC, person1.id ASC
+LIMIT 10</pre
+                            >
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <script>
+            (function () {
+                function escapeHtml(text) {
+                    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                }
+                function span(className, text) {
+                    return '<span class="' + className + '">' + escapeHtml(text) + "</span>";
+                }
+                function readQuoted(text, start) {
+                    const quote = text[start];
+                    let end = start + 1;
+                    while (end < text.length) {
+                        if (text[end] === "\\" && end + 1 < text.length) {
+                            end += 2;
+                            continue;
+                        }
+                        if (text[end] === quote) {
+                            end++;
+                            break;
+                        }
+                        end++;
+                    }
+                    return text.slice(start, end);
+                }
+
+                const identifierPattern = /^[A-Za-z_][A-Za-z0-9_]*/;
+                const numberPattern = /^-?\d+(\.\d+)?/;
+                const functionPattern = /^([A-Za-z_][A-Za-z0-9_.]*)\s*(?=\()/;
+
+                /* ---------------- Cypher ---------------- */
+                const cyMultiKeyword =
+                    /^(ORDER\s+BY|IS\s+NOT\s+NULL|IS\s+NULL|OPTIONAL\s+MATCH|RETURN\s+DISTINCT|WITH\s+DISTINCT|UNION\s+ALL|CREATE\s+INDEX|CREATE\s+CONSTRAINT|IS\s+UNIQUE|CREATE\s+POINT\s+INDEX)\b/i;
+                const cyKeywords = new Set([
+                    "MATCH",
+                    "WHERE",
+                    "RETURN",
+                    "WITH",
+                    "CALL",
+                    "YIELD",
+                    "LIMIT",
+                    "ORDER",
+                    "BY",
+                    "DESC",
+                    "ASC",
+                    "AND",
+                    "OR",
+                    "NOT",
+                    "AS",
+                    "IN",
+                    "CASE",
+                    "WHEN",
+                    "THEN",
+                    "ELSE",
+                    "END",
+                    "DISTINCT",
+                    "UNION",
+                    "CREATE",
+                    "SET",
+                    "EXISTS",
+                    "TRUE",
+                    "FALSE",
+                    "ALL",
+                    "SINGLE",
+                    "ANY",
+                    "SHORTEST",
+                    "ACYCLIC",
+                    "UNWIND",
+                    "OPTIONAL",
+                    "CONTAINS",
+                    "FOR",
+                    "REQUIRE",
+                    "UNIQUE",
+                    "INDEX",
+                    "CONSTRAINT",
+                    "ON",
+                    "IF",
+                    "DROP",
+                    "STARTS",
+                    "ENDS",
+                    "NULL",
+                    "COLLECT",
+                ]);
+
+                function highlightCypher(text) {
+                    let html = "",
+                        i = 0;
+                    while (i < text.length) {
+                        const rest = text.slice(i);
+
+                        if (rest.startsWith("/*")) {
+                            // block comment
+                            const close = text.indexOf("*/", i + 2);
+                            const c = close === -1 ? text.slice(i) : text.slice(i, close + 2);
+                            html += span("cy-comment", c);
+                            i += c.length;
+                            continue;
+                        }
+                        if (rest.startsWith("//")) {
+                            // line comment
+                            const lineEnd = text.indexOf("\n", i);
+                            const c = lineEnd === -1 ? text.slice(i) : text.slice(i, lineEnd);
+                            html += span("cy-comment", c);
+                            i += c.length;
+                            continue;
+                        }
+                        if (text[i] === '"' || text[i] === "'") {
+                            const q = readQuoted(text, i);
+                            html += span("cy-call-str", q);
+                            i += q.length;
+                            continue;
+                        }
+                        if (text[i] === "$") {
+                            // Cypher parameter
+                            const nm = rest.slice(1).match(identifierPattern);
+                            if (nm) {
+                                html += span("cy-param", "$" + nm[0]);
+                                i += nm[0].length + 1;
+                                continue;
+                            }
+                        }
+                        const mk = rest.match(cyMultiKeyword);
+                        if (mk) {
+                            html += span("cy-kw", mk[0]);
+                            i += mk[0].length;
+                            continue;
+                        }
+
+                        const nu = rest.match(numberPattern);
+                        if (nu) {
+                            html += span("cy-num", nu[0]);
+                            i += nu[0].length;
+                            continue;
+                        }
+
+                        if (text[i] === ":" && /[A-Za-z_]/.test(text[i + 1] || "")) {
+                            const lb = text.slice(i + 1).match(identifierPattern);
+                            html += span("cy-lab", ":" + lb[0]);
+                            i += lb[0].length + 1;
+                            continue;
+                        }
+                        if (text[i] === "." && /[A-Za-z_]/.test(text[i + 1] || "")) {
+                            const pr = text.slice(i + 1).match(identifierPattern);
+                            html += "." + span("cy-prop", pr[0]);
+                            i += pr[0].length + 1;
+                            continue;
+                        }
+                        const mapKey = rest.match(/^([A-Za-z_][A-Za-z0-9_]*)(\s*:\s+)/);
+                        if (mapKey) {
+                            html += span("cy-prop", mapKey[1]) + escapeHtml(mapKey[2]);
+                            i += mapKey[0].length;
+                            continue;
+                        }
+                        const id = rest.match(identifierPattern);
+                        if (id) {
+                            const tok = id[0];
+                            const fn = rest.match(functionPattern);
+                            if (cyKeywords.has(tok.toUpperCase())) {
+                                html += span("cy-kw", tok);
+                                i += tok.length;
+                                continue;
+                            }
+                            // Dotted calls are highlighted whole: gds.shortestPath.dijkstra.stream,
+                            // apoc.path.subgraphNodes and so on. Comparing fn[1] === tok alone fails
+                            // for these, leaving the first segment uncoloured and the rest read as
+                            // property accesses.
+                            if (fn && (fn[1] === tok || fn[1].startsWith(tok + "."))) {
+                                html += span("cy-func", fn[1]);
+                                i += fn[1].length;
+                                continue;
+                            }
+                            html += escapeHtml(tok);
+                            i += tok.length;
+                            continue;
+                        }
+                        html += escapeHtml(text[i]);
+                        i++;
+                    }
+                    return html;
+                }
+
+                /* ---------------- Bash ---------------- */
+                const shKeywords = new Set([
+                    "if",
+                    "then",
+                    "else",
+                    "elif",
+                    "fi",
+                    "for",
+                    "in",
+                    "do",
+                    "done",
+                    "while",
+                    "until",
+                    "case",
+                    "esac",
+                    "function",
+                    "return",
+                    "export",
+                    "local",
+                    "set",
+                    "source",
+                    "exit",
+                ]);
+
+                function highlightBash(text) {
+                    let html = "",
+                        i = 0,
+                        atLineStart = true;
+                    while (i < text.length) {
+                        const rest = text.slice(i);
+
+                        if (text[i] === "#") {
+                            const lineEnd = text.indexOf("\n", i);
+                            const c = lineEnd === -1 ? text.slice(i) : text.slice(i, lineEnd);
+                            html += span("sh-cmt", c);
+                            i += c.length;
+                            atLineStart = false;
+                            continue;
+                        }
+                        if (text[i] === "\n") {
+                            html += "\n";
+                            i++;
+                            atLineStart = true;
+                            continue;
+                        }
+                        if (text[i] === " " || text[i] === "\t") {
+                            html += text[i];
+                            i++;
+                            continue;
+                        }
+
+                        if (text[i] === "$") {
+                            // $VAR and ${VAR}
+                            const braced = rest.match(/^\$\{[^}]*\}/);
+                            if (braced) {
+                                html += span("sh-var", braced[0]);
+                                i += braced[0].length;
+                                atLineStart = false;
+                                continue;
+                            }
+                            const plain = rest.match(/^\$[A-Za-z_][A-Za-z0-9_]*/);
+                            if (plain) {
+                                html += span("sh-var", plain[0]);
+                                i += plain[0].length;
+                                atLineStart = false;
+                                continue;
+                            }
+                        }
+                        if (text[i] === '"' || text[i] === "'") {
+                            const q = readQuoted(text, i);
+                            html += span("sh-str", q);
+                            i += q.length;
+                            atLineStart = false;
+                            continue;
+                        }
+                        const nu = rest.match(numberPattern);
+                        if (nu) {
+                            html += escapeHtml(nu[0]);
+                            i += nu[0].length;
+                            atLineStart = false;
+                            continue;
+                        }
+
+                        const id = rest.match(/^[A-Za-z_][A-Za-z0-9_-]*/);
+                        if (id) {
+                            const tok = id[0];
+                            if (shKeywords.has(tok)) html += span("sh-kw", tok);
+                            else if (atLineStart) html += span("sh-cmd", tok);
+                            else html += escapeHtml(tok);
+                            i += tok.length;
+                            atLineStart = false;
+                            continue;
+                        }
+                        // treat --flag as part of the command
+                        const flag = rest.match(/^--?[A-Za-z][A-Za-z0-9-]*/);
+                        if (flag) {
+                            html += span("sh-kw", flag[0]);
+                            i += flag[0].length;
+                            atLineStart = false;
+                            continue;
+                        }
+
+                        html += escapeHtml(text[i]);
+                        i++;
+                        atLineStart = false;
+                    }
+                    return html;
+                }
+
+                function highlightRawCodeBlocks() {
+                    document.querySelectorAll("pre.code-block").forEach(function (block) {
+                        const src = block.textContent;
+                        let out;
+                        if (block.classList.contains("lang-bash")) out = highlightBash(src);
+                        else out = highlightCypher(src);
+                        block.innerHTML = out;
+                    });
+                }
+                highlightRawCodeBlocks();
+            })();
+
+            function copyCode(button) {
+                const wrapper = button.closest(".code-wrapper");
+                const codeElement = wrapper.querySelector(".code-block");
+                const text = codeElement.innerText;
+                navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+                        const originalText = button.innerText;
+                        button.innerText = "Copied!";
+                        button.style.borderColor = "#A6E22E";
+                        button.style.color = "#A6E22E";
+                        setTimeout(() => {
+                            button.innerText = originalText;
+                            button.style.borderColor = "";
+                            button.style.color = "";
+                        }, 2000);
+                    })
+                    .catch((err) => {
+                        console.error("Failed to copy text: ", err);
+                        alert("Failed to copy code. Please check console for errors.");
+                    });
+            }
+            function openSubTab(evt, subTabName) {
+                var i, subcontent, sublinks;
+                subcontent = document.getElementsByClassName("sub-tab-content");
+                for (i = 0; i < subcontent.length; i++) {
+                    subcontent[i].classList.remove("active-content");
+                }
+                sublinks = document.getElementsByClassName("sub-tab-link");
+                for (i = 0; i < sublinks.length; i++) {
+                    sublinks[i].classList.remove("active");
+                }
+                document.getElementById(subTabName).classList.add("active-content");
+                evt.currentTarget.classList.add("active");
+            }
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tab-content");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].classList.remove("active-content");
+                }
+                tablinks = document.getElementsByClassName("tab-link");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].classList.remove("active");
+                }
+                document.getElementById(tabName).classList.add("active-content");
+                evt.currentTarget.classList.add("active");
+                handleScroll();
+            }
+            function scrollToId(id) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            }
+            function handleScroll() {
+                const menuSection = document.getElementById("loading-tab-header");
+                const btn = document.querySelector(".back-to-code-nav");
+                if (menuSection && btn) {
+                    const rect = menuSection.getBoundingClientRect();
+                    if (rect.bottom < 0) {
+                        btn.classList.add("visible");
+                    } else {
+                        btn.classList.remove("visible");
+                    }
+                }
+            }
+            window.addEventListener("scroll", handleScroll);
+            window.addEventListener("resize", handleScroll);
+            handleScroll();
+        </script>
+        <footer>
+            <div class="container">
+                <a class="btn-secondary" href="../datasets/snb.html">&#8592; Back to LDBC SNB Dataset</a>
+            </div>
+            <div class="container">
+                <p>&copy; 2026 Property Graph Benchmark Project.</p>
+            </div>
+        </footer>
+    </body>
+</html>

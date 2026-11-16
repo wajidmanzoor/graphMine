@@ -1,0 +1,1804 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Neo4j OnTime Implementation | Workloads</title>
+        <link rel="stylesheet" href="../style.css" />
+        <style>
+            /* Main Tab Navigation Styles */
+            .tab-container {
+                display: flex;
+                gap: 5px;
+                margin: 20px 0 0 0;
+                border-bottom: 2px solid #f41c40;
+            }
+
+            .tab-link {
+                background: #f1f1f1;
+                border: none;
+                outline: none;
+                padding: 12px 25px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: bold;
+                transition: 0.3s;
+                border-radius: 8px 8px 0 0;
+                color: #555;
+            }
+
+            .tab-link:hover {
+                background-color: #ddd;
+            }
+
+            .tab-link.active {
+                background-color: #990000;
+                color: white;
+            }
+
+            /* Nested (Sub-sub) Tab Styles for Queries */
+            .sub-tab-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 15px;
+                margin: 15px 0;
+                background: #f8fafc;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            .query-category-group {
+                background: white;
+                padding: 12px;
+                border-radius: 6px;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .query-category-title {
+                font-size: 13px;
+                font-weight: bold;
+                color: #1e293b;
+                border-bottom: 2px solid #e2e8f0;
+                padding-bottom: 5px;
+                margin-bottom: 5px;
+            }
+
+            .query-category-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .no-queries-msg {
+                font-size: 12px;
+                color: #64748b;
+                font-style: italic;
+                padding: 5px 0;
+            }
+
+            .sub-tab-link {
+                background: white;
+                border: 1px solid #e2e8f0;
+                padding: 6px 12px;
+                cursor: pointer;
+                font-size: 13px;
+                border-radius: 6px;
+                transition: all 0.2s;
+                min-width: 40px;
+                text-align: center;
+            }
+
+            .sub-tab-link:hover {
+                border-color: #f41c40;
+                color: #990000;
+            }
+
+            .sub-tab-link.active {
+                background: #fff1f2;
+                border-color: #f41c40;
+                color: #990000;
+                font-weight: bold;
+            }
+
+            .query-subcategory {
+                font-size: 13px;
+                color: #475569;
+                margin: 8px 0 15px 0;
+                background: #f1f5f9;
+                padding: 6px 12px;
+                border-radius: 4px;
+                display: inline-block;
+                border-left: 3px solid #f41c40;
+            }
+
+            .gql-unsupported-note {
+                background: #fef2f2;
+                border-left: 3px solid #ef4444;
+                color: #991b1b;
+                padding: 10px 12px;
+                border-radius: 4px;
+                font-size: 13px;
+                margin-top: 10px;
+            }
+
+            /* Content Visibility */
+            .tab-content,
+            .sub-tab-content {
+                display: none;
+                animation: fadeIn 0.3s;
+            }
+
+            .active-content {
+                display: block;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+            #schema-section {
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            h4 {
+                scroll-margin-top: 80px;
+            }
+
+            #data-loading-header {
+                scroll-margin-top: 80px;
+            }
+
+            .tab-container,
+            #loading-tab-header {
+                scroll-margin-top: 80px;
+            }
+
+            .back-to-code-nav {
+                position: fixed;
+                right: 24px;
+                bottom: 24px;
+                z-index: 1000;
+                padding: 10px 16px;
+                border: none;
+                border-radius: 999px;
+                background: #990000;
+                color: white;
+                box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition:
+                    background-color 0.2s,
+                    transform 0.2s,
+                    opacity 0.2s,
+                    visibility 0.2s;
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .back-to-code-nav.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .back-to-code-nav:hover {
+                background: #6d0808;
+                transform: translateY(-2px);
+            }
+
+            @media (max-width: 600px) {
+                .back-to-code-nav {
+                    right: 12px;
+                    bottom: 12px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav>
+            <div class="container">
+                <a href="../index.html" class="site-title">
+                    <h1>PropG<span>Bench</span></h1>
+                </a>
+                <ul>
+                    <li class="dropdown">
+                        <a href="../datasets.html" class="dropbtn">Datasets ▾</a>
+                        <div class="dropdown-content">
+                            <a href="../datasets/yelp.html">Yelp</a>
+                            <a href="../datasets/ml32m.html">MovieLens 32M</a>
+                            <a href="../datasets/mlgenome.html">MovieLens Tag Genome</a>
+                            <a href="../datasets/amazon.html">Amazon</a>
+                            <a href="../datasets/stackoverflow.html">Stack Overflow</a>
+                            <a href="../datasets/ontime.html">OnTime</a>
+                            <a href="../datasets/fars.html">FARS</a>
+                            <a href="../datasets/snb.html">LDBC SNB</a>
+                        </div>
+                    </li>
+                    <li><a href="../download.html">Download</a></li>
+                    <li><a href="../documentation.html">Documentation</a></li>
+                    <li><a href="../publications.html">Publications</a></li>
+                    <li><a href="../team.html">Team</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <header>
+            <div class="container">
+                <a href="../datasets/ontime.html" class="btn-secondary">&larr; Back to OnTime Dataset</a>
+                <h2>Neo4j Implementation</h2>
+                <p>Deployment and Query logic for Neo4j Community 5.26.0.</p>
+            </div>
+        </header>
+
+        <main class="container">
+            <section>
+                <h3>Schema Diagram and Graph Statistics</h3>
+
+                <div class="chart-container">
+                    <img src="../imgs/ontimeneo4jschema.png" alt="OnTime Neo4j Schema" class="result-chart" />
+                </div>
+                <div class="dataset-stats-grid">
+                    <div class="dataset-stat-group">
+                        <h4>Node Statistics</h4>
+                        <div class="table-wrapper">
+                            <table class="dataset-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Node Label</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Airport</td>
+                                        <td>379</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="dataset-stat-group">
+                        <h4>Edge Statistics</h4>
+                        <div class="table-wrapper">
+                            <table class="dataset-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Relationship</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>FLIGHT</td>
+                                        <td>17,412,876</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <p>Disk space: 22.07 GiB</p>
+                <p>Total node import time: 150.82 seconds</p>
+                <p>Total edge import time: 3230.86 seconds</p>
+            </section>
+
+            <div id="loading-tab-header" class="tab-container">
+                <button class="back-to-code-nav" type="button" onclick="scrollToId('loading-tab-header')">
+                    Code block menu
+                </button>
+
+                <button class="tab-link active" onclick="openTab(event, 'loading-tab')">Data Loading</button>
+                <button class="tab-link" onclick="openTab(event, 'query-tab')">Queries</button>
+            </div>
+
+            <div id="loading-tab" class="tab-content active-content">
+                <section>
+                    <h3>Data Loading</h3>
+
+                    <div class="sub-tab-container">
+                        <button class="sub-tab-link" onclick="scrollToId('loading-intro')">Overview</button>
+                        <button class="sub-tab-link" onclick="scrollToId('node-import')">Node Import</button>
+                        <button class="sub-tab-link" onclick="scrollToId('edge-import')">Edge Import</button>
+                    </div>
+
+                    <h4 id="loading-intro">Overview</h4>
+
+                    <p>
+                        Data import is handled in two stages: node creation followed by sequential edge ingestion. We
+                        put all the csv files under the data import directory of Neo4j. This directory can be set in the
+                        <code>neo4j.conf</code> file using the parameter '<code>dbms.directories.import</code>'.
+                    </p>
+
+                    <h4 id="node-import">Node Import (150.82s)</h4>
+                    <p>
+                        Nodes are imported by iterating over all CSV files and extracting unique airport information to
+                        create <code>Airport</code> nodes. We call a periodic
+                        <code>apoc.periodic.iterate</code> procedure to handle this efficiently. This script handles all
+                        36 months' worth of airport data from 2020-2022 together, no per month loading time is
+                        available.
+                    </p>
+
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>cypher</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre
+                            class="code-block cypher-ui"
+                        ><span class="cy-kw">CALL</span> <span class="cy-func">apoc.periodic.iterate</span>(
+<span class="cy-call-str">"
+  UNWIND [
+    'file:///ontime20-22/2020_1.csv',
+    'file:///ontime20-22/2020_2.csv',
+    'file:///ontime20-22/2020_3.csv',
+    'file:///ontime20-22/2020_4.csv',
+    'file:///ontime20-22/2020_5.csv',
+    'file:///ontime20-22/2020_6.csv',
+    'file:///ontime20-22/2020_7.csv',
+    'file:///ontime20-22/2020_8.csv',
+    'file:///ontime20-22/2020_9.csv',
+    'file:///ontime20-22/2020_10.csv',
+    'file:///ontime20-22/2020_11.csv',
+    'file:///ontime20-22/2020_12.csv',
+    'file:///ontime20-22/2021_1.csv',
+    'file:///ontime20-22/2021_2.csv',
+    'file:///ontime20-22/2021_3.csv',
+    'file:///ontime20-22/2021_4.csv',
+    'file:///ontime20-22/2021_5.csv',
+    'file:///ontime20-22/2021_6.csv',
+    'file:///ontime20-22/2021_7.csv',
+    'file:///ontime20-22/2021_8.csv',
+    'file:///ontime20-22/2021_9.csv',
+    'file:///ontime20-22/2021_10.csv',
+    'file:///ontime20-22/2021_11.csv',
+    'file:///ontime20-22/2021_12.csv',
+    'file:///ontime20-22/2022_1.csv',
+    'file:///ontime20-22/2022_2.csv',
+    'file:///ontime20-22/2022_3.csv',
+    'file:///ontime20-22/2022_4.csv',
+    'file:///ontime20-22/2022_5.csv',
+    'file:///ontime20-22/2022_6.csv',
+    'file:///ontime20-22/2022_7.csv',
+    'file:///ontime20-22/2022_8.csv',
+    'file:///ontime20-22/2022_9.csv',
+    'file:///ontime20-22/2022_10.csv',
+    'file:///ontime20-22/2022_11.csv',
+    'file:///ontime20-22/2022_12.csv'
+  ] AS file
+  LOAD CSV WITH HEADERS FROM file AS row
+  WITH [
+    {
+      id: toInteger(row.OriginAirportID),
+      code: row.Origin,
+      city: row.OriginCityName,
+      state: row.OriginState,
+      stateName: row.OriginStateName
+    },
+    {
+      id: toInteger(row.DestAirportID),
+      code: row.Dest,
+      city: row.DestCityName,
+      state: row.DestState,
+      stateName: row.DestStateName
+    }
+  ] AS airports
+  UNWIND airports AS a
+  WITH DISTINCT a.id AS airport_id, a.code AS code, a.city AS city, a.state AS state, a.stateName AS stateName
+  RETURN airport_id, code, city, state, stateName
+  ",
+  "
+  MERGE (ap:Airport {airport_id: airport_id})
+  SET ap.code = code,
+      ap.city = city,
+      ap.state = state,
+      ap.stateName = stateName
+  ",</span>
+  {<span class="cy-prop">batchSize</span>:<span class="cy-num">1000</span>, <span class="cy-prop">parallel</span>:<span class="cy-num">false</span>}
+);</pre>
+                    </div>
+
+                    <h4 id="edge-import">Edge Import</h4>
+                    <p>
+                        For edge imports, since processing all files can take a lot of time, we use a sequential bash
+                        script to execute periodic iterates for each monthly CSV file.
+                    </p>
+
+                    <div class="code-wrapper">
+                        <div class="code-header">
+                            <span>bash</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre class="code-block"><span class="sh-comment">#!/bin/bash</span>
+<span class="sh-var">YEARS</span>=(2020 2021 2022)
+<span class="sh-var">MONTHS</span>=(1 2 3 4 5 6 7 8 9 10 11 12)
+<span class="sh-kw">for</span> year <span class="sh-kw">in</span> <span class="sh-str">"${YEARS[@]}"</span>; <span class="sh-kw">do</span>
+  <span class="sh-kw">for</span> month <span class="sh-kw">in</span> <span class="sh-str">"${MONTHS[@]}"</span>; <span class="sh-kw">do</span>
+    <span class="sh-var">FILE</span>=<span class="sh-str">"${year}_${month}.csv"</span>    
+    <span class="sh-cmd">cypher-shell</span> -u neo4j <span class="sh-kw">&lt;&lt; CYPHER</span>
+<span class="cy-call-str">CALL apoc.periodic.iterate(
+  "
+  LOAD CSV WITH HEADERS FROM 'file:///ontime20-22/${FILE}' AS row
+  RETURN row
+  ",
+  "
+  MATCH (origin:Airport {airport_id: toInteger(row.OriginAirportID)})
+  MATCH (dest:Airport {airport_id: toInteger(row.DestAirportID)})
+  MERGE (origin)-[f:FLIGHT {
+      flightDate: date(row.FlightDate),
+      airline: row.IATA_CODE_Reporting_Airline,
+      flightNumber: row.Flight_Number_Reporting_Airline
+  }]->(dest)
+  SET f.Year = toInteger(row.Year),
+      f.Quarter = toInteger(row.Quarter),
+      f.Month = toInteger(row.Month),
+      f.DayofMonth = toInteger(row.DayofMonth),
+      f.DayOfWeek = toInteger(row.DayOfWeek),
+      f.FlightDate = date(row.FlightDate),
+      f.Reporting_Airline = row.Reporting_Airline,
+      f.DOT_ID_Reporting_Airline = toInteger(row.DOT_ID_Reporting_Airline),
+      f.IATA_CODE_Reporting_Airline = row.IATA_CODE_Reporting_Airline,
+      f.Tail_Number = row.Tail_Number,
+      f.Flight_Number_Reporting_Airline = row.Flight_Number_Reporting_Airline,
+      f.OriginAirportID = toInteger(row.OriginAirportID),
+      f.OriginAirportSeqID = toInteger(row.OriginAirportSeqID),
+      f.OriginCityMarketID = toInteger(row.OriginCityMarketID),
+      f.Origin = row.Origin,
+      f.OriginCityName = row.OriginCityName,
+      f.OriginState = row.OriginState,
+      f.OriginStateFips = row.OriginStateFips,
+      f.OriginStateName = row.OriginStateName,
+      f.OriginWac = toInteger(row.OriginWac),
+      f.DestAirportID = toInteger(row.DestAirportID),
+      f.DestAirportSeqID = toInteger(row.DestAirportSeqID),
+      f.DestCityMarketID = toInteger(row.DestCityMarketID),
+      f.Dest = row.Dest,
+      f.DestCityName = row.DestCityName,
+      f.DestState = row.DestState,
+      f.DestStateFips = row.DestStateFips,
+      f.DestStateName = row.DestStateName,
+      f.DestWac = toInteger(row.DestWac),
+      f.CRSDepTime = toInteger(row.CRSDepTime),
+      f.DepTime = toInteger(row.DepTime),
+      f.DepDelay = toInteger(row.DepDelay),
+      f.DepDelayMinutes = toInteger(row.DepDelayMinutes),
+      f.DepDel15 = toInteger(row.DepDel15),
+      f.DepartureDelayGroups = row.DepartureDelayGroups,
+      f.DepTimeBlk = row.DepTimeBlk,
+      f.TaxiOut = toInteger(row.TaxiOut),
+      f.WheelsOff = row.WheelsOff,
+      f.WheelsOn = row.WheelsOn,
+      f.TaxiIn = toInteger(row.TaxiIn),
+      f.CRSArrTime = toInteger(row.CRSArrTime),
+      f.ArrTime = toInteger(row.ArrTime),
+      f.ArrDelay = toInteger(row.ArrDelay),
+      f.ArrDelayMinutes = toInteger(row.ArrDelayMinutes),
+      f.ArrDel15 = toInteger(row.ArrDel15),
+      f.ArrivalDelayGroups = row.ArrivalDelayGroups,
+      f.ArrTimeBlk = row.ArrTimeBlk,
+      f.Cancelled = toInteger(row.Cancelled),
+      f.CancellationCode = row.CancellationCode,
+      f.Diverted = toInteger(row.Diverted),
+      f.CRSElapsedTime = toInteger(row.CRSElapsedTime),
+      f.ActualElapsedTime = toInteger(row.ActualElapsedTime),
+      f.AirTime = toInteger(row.AirTime),
+      f.Flights = toInteger(row.Flights),
+      f.Distance = toInteger(row.Distance),
+      f.DistanceGroup = toInteger(row.DistanceGroup),
+      f.CarrierDelay = toInteger(row.CarrierDelay),
+      f.WeatherDelay = toInteger(row.WeatherDelay),
+      f.NASDelay = toInteger(row.NASDelay),
+      f.SecurityDelay = toInteger(row.SecurityDelay),
+      f.LateAircraftDelay = toInteger(row.LateAircraftDelay),
+      f.FirstDepTime = toInteger(row.FirstDepTime),
+      f.TotalAddGTime = toInteger(row.TotalAddGTime),
+      f.LongestAddGTime = toInteger(row.LongestAddGTime)
+  ",
+  {batchSize:1000, parallel:false}
+) YIELD batches, total, timeTaken, committedOperations, failedOperations
+RETURN batches, total, timeTaken/1000.0 AS seconds, committedOperations, failedOperations;</span>
+<span class="sh-kw">CYPHER</span>
+    <span class="sh-cmd">echo</span> <span class="sh-str">"Completed: ${FILE}"</span>
+  <span class="sh-kw">done</span>
+<span class="sh-kw">done</span></pre>
+                    </div>
+                </section>
+            </div>
+
+            <div id="query-tab" class="tab-content">
+                <section>
+                    <h3>Queries</h3>
+
+                    <p>Select a query below to view its logic and description.</p>
+                    <div class="sub-tab-container">
+                        <div class="query-category-group">
+                            <div class="query-category-title">1. Neighborhood</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link active" onclick="openSubTab(event, 'q1-content')">
+                                    Q1
+                                </button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q2-content')">Q2</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q3-content')">Q3</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q4-content')">Q4</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">2. Path</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q5-content')">Q5</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q6-content')">Q6</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q7-content')">Q7</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q8-content')">Q8</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q9-content')">Q9</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q10-content')">Q10</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">3. Pattern</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q11-content')">Q11</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q12-content')">Q12</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q13-content')">Q13</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q14-content')">Q14</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q15-content')">Q15</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q16-content')">Q16</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">4. Aggregation</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q17-content')">Q17</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q18-content')">Q18</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q19-content')">Q19</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q20-content')">Q20</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q21-content')">Q21</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q22-content')">Q22</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q23-content')">Q23</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">5. Analytics</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q24-content')">Q24</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q25-content')">Q25</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q26-content')">Q26</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">6. Hybrid</div>
+                            <div class="query-category-buttons">
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q27-content')">Q27</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q28-content')">Q28</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q29-content')">Q29</button>
+                                <button class="sub-tab-link" onclick="openSubTab(event, 'q30-content')">Q30</button>
+                            </div>
+                        </div>
+                        <div class="query-category-group">
+                            <div class="query-category-title">7. Others</div>
+                            <div class="query-category-buttons">
+                                <span class="no-queries-msg">No queries in this category.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="q1-content" class="sub-tab-content active-content">
+                        <h4>Q1. Direct Destinations from an Airport</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.1 One-Hop Neighbors</div>
+                        <p>
+                            This query lists airports directly reachable from a selected origin airport by one outgoing
+                            FLIGHT relationship during a selected year.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$originAirportId</span>})-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">dest</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">dest</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>, <span class="cy-var">dest</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">state</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">code</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$originAirportId</span>})-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">dest</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">dest</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>, <span class="cy-var">dest</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">state</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">code</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q2-content" class="sub-tab-content">
+                        <h4>Q2. Airports Reachable within K Hops</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.2 k-Hop Neighborhood</div>
+                        <p>
+                            This query returns airports reachable from a selected airport within three directed flight
+                            legs.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$originAirportId</span>})-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>*<span class="cy-num">1..3</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-func">all</span>(<span class="cy-var">flight</span> <span class="cy-kw">IN</span> <span class="cy-var">f</span> <span class="cy-kw">WHERE</span> <span class="cy-var">flight</span>.<span class="cy-prop">year</span> = <span class="cy-param">$Year</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span>
+    <span class="cy-var">dest</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>,
+    <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>,
+    <span class="cy-var">dest</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>,
+    <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hop_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">hop_count</span>, <span class="cy-var">code</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$originAirportId</span>})-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-func">all</span>(<span class="cy-var">flight</span> <span class="cy-kw">IN</span> <span class="cy-var">f</span> <span class="cy-kw">WHERE</span> <span class="cy-var">flight</span>.<span class="cy-prop">year</span> = <span class="cy-param">$Year</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span>
+    <span class="cy-var">dest</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>,
+    <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>,
+    <span class="cy-var">dest</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>,
+    <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hop_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">hop_count</span>, <span class="cy-var">code</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q3-content" class="sub-tab-content">
+                        <h4>Q3. Airports Exactly Three Flights Away</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T1.3 Exact kth-Hop Neighbors</div>
+                        <p>
+                            This query finds airports exactly three outgoing flight legs away from a selected origin
+                            airport.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$originAirportId</span>})-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>*<span class="cy-num">3</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-func">all</span>(<span class="cy-var">flight</span> <span class="cy-kw">IN</span> <span class="cy-var">f</span> <span class="cy-kw">WHERE</span> <span class="cy-var">flight</span>.<span class="cy-prop">year</span> = <span class="cy-param">$Year</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">dest</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">dest</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hop_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">code</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$originAirportId</span>})-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;{<span class="cy-num">3</span>,<span class="cy-num">3</span>}(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-func">all</span>(<span class="cy-var">flight</span> <span class="cy-kw">IN</span> <span class="cy-var">f</span> <span class="cy-kw">WHERE</span> <span class="cy-var">flight</span>.<span class="cy-prop">year</span> = <span class="cy-param">$Year</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">dest</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">dest</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hop_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">code</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q4-content" class="sub-tab-content">
+                        <h4>Q4. Delayed One-Hop Destinations</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T1.4 Neighborhood with Property Filter
+                        </div>
+                        <p>This query filters one-hop destinations by departure delay on the FLIGHT relationship.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$originAirportId</span>})-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">f</span>.<span class="cy-prop">DepDelayMinutes</span> &gt;= <span class="cy-param">$minDelayMinutes</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">dest</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">f</span>.<span class="cy-prop">FlightDate</span> <span class="cy-kw">AS</span> <span class="cy-var">flight_date</span>,
+       <span class="cy-var">f</span>.<span class="cy-prop">IATA_CODE_Reporting_Airline</span> <span class="cy-kw">AS</span> <span class="cy-var">airline</span>, <span class="cy-var">f</span>.<span class="cy-prop">DepDelayMinutes</span> <span class="cy-kw">AS</span> <span class="cy-var">departure_delay</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">departure_delay</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$originAirportId</span>})-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">f</span>.<span class="cy-prop">DepDelayMinutes</span> &gt;= <span class="cy-param">$minDelayMinutes</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">dest</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">f</span>.<span class="cy-prop">FlightDate</span> <span class="cy-kw">AS</span> <span class="cy-var">flight_date</span>,
+       <span class="cy-var">f</span>.<span class="cy-prop">IATA_CODE_Reporting_Airline</span> <span class="cy-kw">AS</span> <span class="cy-var">airline</span>, <span class="cy-var">f</span>.<span class="cy-prop">DepDelayMinutes</span> <span class="cy-kw">AS</span> <span class="cy-var">departure_delay</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">departure_delay</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q5-content" class="sub-tab-content">
+                        <h4>Q5. Airports by State and Code Prefix</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.1 Node Filtering (Single Node Paths)
+                        </div>
+                        <p>
+                            This query filters Airport nodes by imported node properties without traversing
+                            relationships.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">airport</span>.<span class="cy-prop">state</span> = <span class="cy-param">$state</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">airport</span>.<span class="cy-prop">code</span> <span class="cy-kw">STARTS</span> <span class="cy-kw">WITH</span> <span class="cy-param">$codePrefix</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">airport</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">airport</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">airport</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>, <span class="cy-var">airport</span>.<span class="cy-prop">stateName</span> <span class="cy-kw">AS</span> <span class="cy-var">state_name</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">code</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">airport</span>.<span class="cy-prop">state</span> = <span class="cy-param">$state</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">airport</span>.<span class="cy-prop">code</span> <span class="cy-kw">STARTS</span> <span class="cy-kw">WITH</span> <span class="cy-param">$codePrefix</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">airport</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">airport</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">airport</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>, <span class="cy-var">airport</span>.<span class="cy-prop">stateName</span> <span class="cy-kw">AS</span> <span class="cy-var">state_name</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">code</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q6-content" class="sub-tab-content">
+                        <h4>Q6. Long Non-Cancelled Flights</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T2.2 Edge Filtering</div>
+                        <p>
+                            This query filters FLIGHT relationships by relationship properties loaded from the OnTime
+                            CSV files.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">f</span>.<span class="cy-prop">Cancelled</span> = <span class="cy-num">0</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">f</span>.<span class="cy-prop">Distance</span> &gt;= <span class="cy-param">$minDistance</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">origin</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">origin</span>, <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">dest</span>, <span class="cy-var">f</span>.<span class="cy-prop">FlightDate</span> <span class="cy-kw">AS</span> <span class="cy-var">flight_date</span>,
+       <span class="cy-var">f</span>.<span class="cy-prop">IATA_CODE_Reporting_Airline</span> <span class="cy-kw">AS</span> <span class="cy-var">airline</span>, <span class="cy-var">f</span>.<span class="cy-prop">Distance</span> <span class="cy-kw">AS</span> <span class="cy-var">distance</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">distance</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">f</span>.<span class="cy-prop">Cancelled</span> = <span class="cy-num">0</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">f</span>.<span class="cy-prop">Distance</span> &gt;= <span class="cy-param">$minDistance</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">origin</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">origin</span>, <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">dest</span>, <span class="cy-var">f</span>.<span class="cy-prop">FlightDate</span> <span class="cy-kw">AS</span> <span class="cy-var">flight_date</span>,
+       <span class="cy-var">f</span>.<span class="cy-prop">IATA_CODE_Reporting_Airline</span> <span class="cy-kw">AS</span> <span class="cy-var">airline</span>, <span class="cy-var">f</span>.<span class="cy-prop">Distance</span> <span class="cy-kw">AS</span> <span class="cy-var">distance</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">distance</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q7-content" class="sub-tab-content">
+                        <h4>Q7. Reachability between Two Airports</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.3 Reachability between Two Nodes
+                        </div>
+                        <p>
+                            This query checks whether a destination airport is reachable from a source airport within
+                            three directed flight legs.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>*<span class="cy-num">1..3</span>]-&gt;(:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$targetAirportId</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-var">p</span>) &gt; <span class="cy-num">0</span> <span class="cy-kw">AS</span> <span class="cy-var">reachable</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">1</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = <span class="cy-kw">ANY</span> (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>]-&gt;{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$targetAirportId</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-kw">true</span> <span class="cy-kw">AS</span> <span class="cy-var">reachable</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q8-content" class="sub-tab-content">
+                        <h4>Q8. Shortest Airport Route</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T2.4 Shortest Path</div>
+                        <p>This query finds the shortest directed airport-to-airport route up to four flight legs.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">source</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})
+<span class="cy-kw">MATCH</span> (<span class="cy-var">target</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$targetAirportId</span>})
+<span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = <span class="cy-func">shortestPath</span>((<span class="cy-var">source</span>)-[:<span class="cy-rel">FLIGHT</span>*<span class="cy-num">1..4</span>]-&gt;(<span class="cy-var">target</span>))
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hop_count</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = <span class="cy-kw">SHORTEST</span> (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>]-&gt;{<span class="cy-num">1</span>,<span class="cy-num">4</span>}(:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$targetAirportId</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hop_count</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q9-content" class="sub-tab-content">
+                        <h4>Q9. Simple Routes up to Three Legs</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.5 All Simple Paths up to Length k
+                        </div>
+                        <p>
+                            This query enumerates simple directed routes between two airports up to three flight legs.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>*<span class="cy-num">1..3</span>]-&gt;(:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$targetAirportId</span>})
+<span class="cy-kw">WHERE</span> <span class="cy-func">all</span>(<span class="cy-var">n</span> <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(<span class="cy-var">p</span>) <span class="cy-kw">WHERE</span> <span class="cy-func">single</span>(<span class="cy-var">m</span> <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(<span class="cy-var">p</span>) <span class="cy-kw">WHERE</span> <span class="cy-var">m</span> = <span class="cy-var">n</span>))
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hop_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">hop_count</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = <span class="cy-kw">ACYCLIC</span> (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>]-&gt;{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$targetAirportId</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hop_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">hop_count</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q10-content" class="sub-tab-content">
+                        <h4>Q10. Top Weighted Routes by Distance</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T2.6 top-K Weighted Paths</div>
+                        <p>This query ranks bounded airport routes by cumulative flight distance.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>*<span class="cy-num">1..3</span>]-&gt;(:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$targetAirportId</span>})
+<span class="cy-kw">WHERE</span> <span class="cy-func">all</span>(<span class="cy-var">n</span> <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(<span class="cy-var">p</span>) <span class="cy-kw">WHERE</span> <span class="cy-func">single</span>(<span class="cy-var">m</span> <span class="cy-kw">IN</span> <span class="cy-func">nodes</span>(<span class="cy-var">p</span>) <span class="cy-kw">WHERE</span> <span class="cy-var">m</span> = <span class="cy-var">n</span>))
+<span class="cy-kw">WITH</span> <span class="cy-var">p</span>, <span class="cy-func">reduce</span>(<span class="cy-var">total</span> = <span class="cy-num">0</span>, <span class="cy-var">f</span> <span class="cy-kw">IN</span> <span class="cy-func">relationships</span>(<span class="cy-var">p</span>) | <span class="cy-var">total</span> + <span class="cy-func">coalesce</span>(<span class="cy-var">f</span>.<span class="cy-prop">Distance</span>, <span class="cy-num">0</span>)) <span class="cy-kw">AS</span> <span class="cy-var">total_distance</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hop_count</span>, <span class="cy-var">total_distance</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">total_distance</span> <span class="cy-kw">ASC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = <span class="cy-kw">ACYCLIC</span> (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>]-&gt;{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$targetAirportId</span>})
+<span class="cy-kw">WITH</span> <span class="cy-var">p</span>, <span class="cy-func">reduce</span>(<span class="cy-var">total</span> = <span class="cy-num">0</span>, <span class="cy-var">f</span> <span class="cy-kw">IN</span> <span class="cy-func">relationships</span>(<span class="cy-var">p</span>) | <span class="cy-var">total</span> + <span class="cy-func">coalesce</span>(<span class="cy-var">f</span>.<span class="cy-prop">Distance</span>, <span class="cy-num">0</span>)) <span class="cy-kw">AS</span> <span class="cy-var">total_distance</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">p</span>, <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">hop_count</span>, <span class="cy-var">total_distance</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">total_distance</span> <span class="cy-kw">ASC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q11-content" class="sub-tab-content">
+                        <h4>Q11. Directed Triangle of Airports</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.1 Triangle Detection</div>
+                        <p>This query detects directed three-airport cycles in the flight graph.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">b</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">c</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">a</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span>.<span class="cy-prop">airport_id</span> &lt; <span class="cy-var">b</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span>.<span class="cy-prop">airport_id</span> &lt; <span class="cy-var">c</span>.<span class="cy-prop">airport_id</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">a</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_a</span>, <span class="cy-var">b</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_b</span>, <span class="cy-var">c</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_c</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">b</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">c</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">a</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span>.<span class="cy-prop">airport_id</span> &lt; <span class="cy-var">b</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span>.<span class="cy-prop">airport_id</span> &lt; <span class="cy-var">c</span>.<span class="cy-prop">airport_id</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">a</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_a</span>, <span class="cy-var">b</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_b</span>, <span class="cy-var">c</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_c</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q12-content" class="sub-tab-content">
+                        <h4>Q12. Four-Airport Cycle</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.2 Square Detection</div>
+                        <p>This query detects directed four-airport cycles in the flight graph.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">b</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">c</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">d</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">a</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">b</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">c</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">d</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">c</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">d</span> <span class="cy-kw">AND</span> <span class="cy-var">c</span> &lt;&gt; <span class="cy-var">d</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">a</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_a</span>, <span class="cy-var">b</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_b</span>, <span class="cy-var">c</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_c</span>, <span class="cy-var">d</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_d</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">b</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">c</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">d</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">a</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">b</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">c</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">d</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">c</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">d</span> <span class="cy-kw">AND</span> <span class="cy-var">c</span> &lt;&gt; <span class="cy-var">d</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">a</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_a</span>, <span class="cy-var">b</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_b</span>, <span class="cy-var">c</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_c</span>, <span class="cy-var">d</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_d</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q13-content" class="sub-tab-content">
+                        <h4>Q13. Hub Airports by Distinct Destinations</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.3 Star Pattern Query</div>
+                        <p>This query identifies hub airports with many distinct outgoing destination neighbors.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">center</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+<span class="cy-kw">WITH</span> <span class="cy-var">center</span>, <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">dest</span>) <span class="cy-kw">AS</span> <span class="cy-var">destination_count</span>
+<span class="cy-kw">WHERE</span> <span class="cy-var">destination_count</span> &gt;= <span class="cy-param">$minDegree</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">center</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">center</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">center</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>, <span class="cy-var">destination_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">destination_count</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">center</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+<span class="cy-kw">WITH</span> <span class="cy-var">center</span>, <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">dest</span>) <span class="cy-kw">AS</span> <span class="cy-var">destination_count</span>
+<span class="cy-kw">WHERE</span> <span class="cy-var">destination_count</span> &gt;= <span class="cy-param">$minDegree</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">center</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">center</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">center</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>, <span class="cy-var">destination_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">destination_count</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q14-content" class="sub-tab-content">
+                        <h4>Q14. Four-Airport Clique</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.4 4-Clique</div>
+                        <p>
+                            This query finds sets of four airports where every pair has at least one flight relationship
+                            in either direction.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">b</span>:<span class="cy-lab">Airport</span>),
+      (<span class="cy-var">a</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">c</span>:<span class="cy-lab">Airport</span>),
+      (<span class="cy-var">a</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">d</span>:<span class="cy-lab">Airport</span>),
+      (<span class="cy-var">b</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">c</span>),
+      (<span class="cy-var">b</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">d</span>),
+      (<span class="cy-var">c</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">d</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span>.<span class="cy-prop">airport_id</span> &lt; <span class="cy-var">b</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span>.<span class="cy-prop">airport_id</span> &lt; <span class="cy-var">c</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AND</span> <span class="cy-var">c</span>.<span class="cy-prop">airport_id</span> &lt; <span class="cy-var">d</span>.<span class="cy-prop">airport_id</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">a</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_a</span>, <span class="cy-var">b</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_b</span>, <span class="cy-var">c</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_c</span>, <span class="cy-var">d</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_d</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">a</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">b</span>:<span class="cy-lab">Airport</span>),
+      (<span class="cy-var">a</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">c</span>:<span class="cy-lab">Airport</span>),
+      (<span class="cy-var">a</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">d</span>:<span class="cy-lab">Airport</span>),
+      (<span class="cy-var">b</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">c</span>),
+      (<span class="cy-var">b</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">d</span>),
+      (<span class="cy-var">c</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">d</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span>.<span class="cy-prop">airport_id</span> &lt; <span class="cy-var">b</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span>.<span class="cy-prop">airport_id</span> &lt; <span class="cy-var">c</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AND</span> <span class="cy-var">c</span>.<span class="cy-prop">airport_id</span> &lt; <span class="cy-var">d</span>.<span class="cy-prop">airport_id</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">a</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_a</span>, <span class="cy-var">b</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_b</span>, <span class="cy-var">c</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_c</span>, <span class="cy-var">d</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_d</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q15-content" class="sub-tab-content">
+                        <h4>Q15. Two-Hop Airport Connections</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.5 Two-hop Join Pattern</div>
+                        <p>
+                            This query finds two-leg connections through an intermediate airport for a selected source
+                            airport.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">source</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[<span class="cy-var">first</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">middle</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">second</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">first</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">second</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">source</span> &lt;&gt; <span class="cy-var">dest</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">middle</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">connection_airport</span>, <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">destination</span>, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">connection_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">connection_count</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">source</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[<span class="cy-var">first</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">middle</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">second</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">first</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">second</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">source</span> &lt;&gt; <span class="cy-var">dest</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">middle</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">connection_airport</span>, <span class="cy-var">dest</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">destination</span>, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">connection_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">connection_count</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q16-content" class="sub-tab-content">
+                        <h4>Q16. Three-Hop Line Pattern</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T3.6 Line Pattern</div>
+                        <p>
+                            This query matches a four-airport line connected by three consecutive FLIGHT relationships.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (<span class="cy-var">a</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">b</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">c</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">d</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">b</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">c</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">d</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">c</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">d</span> <span class="cy-kw">AND</span> <span class="cy-var">c</span> &lt;&gt; <span class="cy-var">d</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">a</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_a</span>, <span class="cy-var">b</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_b</span>, <span class="cy-var">c</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_c</span>, <span class="cy-var">d</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_d</span>, <span class="cy-var">p</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (<span class="cy-var">a</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">b</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">c</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">d</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">b</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">c</span> <span class="cy-kw">AND</span> <span class="cy-var">a</span> &lt;&gt; <span class="cy-var">d</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">c</span> <span class="cy-kw">AND</span> <span class="cy-var">b</span> &lt;&gt; <span class="cy-var">d</span> <span class="cy-kw">AND</span> <span class="cy-var">c</span> &lt;&gt; <span class="cy-var">d</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">a</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_a</span>, <span class="cy-var">b</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_b</span>, <span class="cy-var">c</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_c</span>, <span class="cy-var">d</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_d</span>, <span class="cy-var">p</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q17-content" class="sub-tab-content">
+                        <h4>Q17. Airport Degree Summary</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.1 Ungrouped Node Degree Statistics by Label
+                        </div>
+                        <p>
+                            This query computes global statistics over each airport's distinct outgoing destination
+                            count.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">OPTIONAL</span> <span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">airport</span>, <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">dest</span>) <span class="cy-kw">AS</span> <span class="cy-var">out_degree</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-var">airport</span>) <span class="cy-kw">AS</span> <span class="cy-var">airport_count</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_out_degree</span>,
+       <span class="cy-func">min</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">min_out_degree</span>,
+       <span class="cy-func">max</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">max_out_degree</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">OPTIONAL</span> <span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">airport</span>, <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">dest</span>) <span class="cy-kw">AS</span> <span class="cy-var">out_degree</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-var">airport</span>) <span class="cy-kw">AS</span> <span class="cy-var">airport_count</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_out_degree</span>,
+       <span class="cy-func">min</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">min_out_degree</span>,
+       <span class="cy-func">max</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">max_out_degree</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q18-content" class="sub-tab-content">
+                        <h4>Q18. State-Level Degree Summary</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.2 Grouped Node Degree Statistics by Label
+                        </div>
+                        <p>This query groups airport degree statistics by the airport state loaded on Airport nodes.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">OPTIONAL</span> <span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">airport</span>, <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">dest</span>) <span class="cy-kw">AS</span> <span class="cy-var">out_degree</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">airport</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">state</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">airport</span>) <span class="cy-kw">AS</span> <span class="cy-var">airport_count</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_out_degree</span>,
+       <span class="cy-func">min</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">min_out_degree</span>,
+       <span class="cy-func">max</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">max_out_degree</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">avg_out_degree</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">OPTIONAL</span> <span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">airport</span>, <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">dest</span>) <span class="cy-kw">AS</span> <span class="cy-var">out_degree</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">airport</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">state</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">airport</span>) <span class="cy-kw">AS</span> <span class="cy-var">airport_count</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_out_degree</span>,
+       <span class="cy-func">min</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">min_out_degree</span>,
+       <span class="cy-func">max</span>(<span class="cy-var">out_degree</span>) <span class="cy-kw">AS</span> <span class="cy-var">max_out_degree</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">avg_out_degree</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q19-content" class="sub-tab-content">
+                        <h4>Q19. Flight Edge Distance Summary</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.3 Ungrouped Edge Count and Property Statistics
+                        </div>
+                        <p>This query summarizes numeric properties over all matching FLIGHT relationships.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (:<span class="cy-lab">Airport</span>)-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-var">f</span>) <span class="cy-kw">AS</span> <span class="cy-var">flight_count</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">f</span>.<span class="cy-prop">Distance</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_distance</span>,
+       <span class="cy-func">min</span>(<span class="cy-var">f</span>.<span class="cy-prop">Distance</span>) <span class="cy-kw">AS</span> <span class="cy-var">min_distance</span>,
+       <span class="cy-func">max</span>(<span class="cy-var">f</span>.<span class="cy-prop">Distance</span>) <span class="cy-kw">AS</span> <span class="cy-var">max_distance</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">f</span>.<span class="cy-prop">ArrDelayMinutes</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_arrival_delay</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (:<span class="cy-lab">Airport</span>)-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-var">f</span>) <span class="cy-kw">AS</span> <span class="cy-var">flight_count</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">f</span>.<span class="cy-prop">Distance</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_distance</span>,
+       <span class="cy-func">min</span>(<span class="cy-var">f</span>.<span class="cy-prop">Distance</span>) <span class="cy-kw">AS</span> <span class="cy-var">min_distance</span>,
+       <span class="cy-func">max</span>(<span class="cy-var">f</span>.<span class="cy-prop">Distance</span>) <span class="cy-kw">AS</span> <span class="cy-var">max_distance</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">f</span>.<span class="cy-prop">ArrDelayMinutes</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_arrival_delay</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q20-content" class="sub-tab-content">
+                        <h4>Q20. State Pair Flight Statistics</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.4 Grouped Edge Count and Property Statistics
+                        </div>
+                        <p>This query groups FLIGHT relationship statistics by origin and destination state.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">origin</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">origin_state</span>,
+       <span class="cy-var">dest</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">dest_state</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">f</span>) <span class="cy-kw">AS</span> <span class="cy-var">flight_count</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">f</span>.<span class="cy-prop">Distance</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_distance</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">f</span>.<span class="cy-prop">ArrDelayMinutes</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_arrival_delay</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">flight_count</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">f</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">dest</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">f</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">origin</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">origin_state</span>,
+       <span class="cy-var">dest</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">dest_state</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">f</span>) <span class="cy-kw">AS</span> <span class="cy-var">flight_count</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">f</span>.<span class="cy-prop">Distance</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_distance</span>,
+       <span class="cy-func">avg</span>(<span class="cy-var">f</span>.<span class="cy-prop">ArrDelayMinutes</span>) <span class="cy-kw">AS</span> <span class="cy-var">avg_arrival_delay</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">flight_count</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q21-content" class="sub-tab-content">
+                        <h4>Q21. Route Counts by Path Length</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T4.5 Path Counts by Length</div>
+                        <p>This query counts bounded paths from a selected airport grouped by path length.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>*<span class="cy-num">1..3</span>]-&gt;(<span class="cy-var">target</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">path_length</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">path_count</span>,
+       <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">target</span>) <span class="cy-kw">AS</span> <span class="cy-var">distinct_target_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">path_length</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>]-&gt;{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(<span class="cy-var">target</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">path_length</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">path_count</span>,
+       <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">target</span>) <span class="cy-kw">AS</span> <span class="cy-var">distinct_target_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">path_length</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q22-content" class="sub-tab-content">
+                        <h4>Q22. Route Counts by Length and Target State</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T4.6 Grouped Path Counts by Length and Endpoint Type
+                        </div>
+                        <p>
+                            This query extends path-length counts by also grouping endpoints by destination airport
+                            state.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>*<span class="cy-num">1..3</span>]-&gt;(<span class="cy-var">target</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">path_length</span>,
+       <span class="cy-var">target</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">target_state</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">path_count</span>,
+       <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">target</span>) <span class="cy-kw">AS</span> <span class="cy-var">distinct_target_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">path_length</span>, <span class="cy-var">path_count</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (:<span class="cy-lab">Airport</span> {<span class="cy-prop">airport_id</span>: <span class="cy-param">$sourceAirportId</span>})-[:<span class="cy-rel">FLIGHT</span>]-&gt;{<span class="cy-num">1</span>,<span class="cy-num">3</span>}(<span class="cy-var">target</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">length</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">path_length</span>,
+       <span class="cy-var">target</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">target_state</span>,
+       <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">path_count</span>,
+       <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">target</span>) <span class="cy-kw">AS</span> <span class="cy-var">distinct_target_count</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">path_length</span>, <span class="cy-var">path_count</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q23-content" class="sub-tab-content">
+                        <h4>Q23. Airports Serving Two Destination States</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T4.7 Union and Intersection</div>
+                        <p>This query finds origin airports that serve both of two selected destination states.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">destA</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">state</span>: <span class="cy-param">$stateA</span>})
+<span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">destB</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">state</span>: <span class="cy-param">$stateB</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">origin</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">origin</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">origin</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>, <span class="cy-var">origin</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">state</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">code</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">destA</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">state</span>: <span class="cy-param">$stateA</span>})
+<span class="cy-kw">MATCH</span> (<span class="cy-var">origin</span>)-[:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">destB</span>:<span class="cy-lab">Airport</span> {<span class="cy-prop">state</span>: <span class="cy-param">$stateB</span>})
+<span class="cy-kw">RETURN</span> <span class="cy-func">DISTINCT</span> <span class="cy-var">origin</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">origin</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">origin</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>, <span class="cy-var">origin</span>.<span class="cy-prop">state</span> <span class="cy-kw">AS</span> <span class="cy-var">state</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">code</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q24-content" class="sub-tab-content">
+                        <h4>Q24. Top Airports by Degree Centrality</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.1 Degree Centrality</div>
+                        <p>
+                            This query ranks airports by the number of distinct airports they connect to in either
+                            direction.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-var">airport</span>:<span class="cy-lab">Airport</span>)-[:<span class="cy-rel">FLIGHT</span>]-(<span class="cy-var">neighbor</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-var">airport</span>.<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>, <span class="cy-var">airport</span>.<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>, <span class="cy-var">airport</span>.<span class="cy-prop">city</span> <span class="cy-kw">AS</span> <span class="cy-var">city</span>,
+       <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">neighbor</span>) <span class="cy-kw">AS</span> <span class="cy-var">degree</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">degree</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q25-content" class="sub-tab-content">
+                        <h4>Q25. Airport PageRank</h4>
+                        <div class="query-subcategory"><strong>Subcategory:</strong> T5.2 PageRank</div>
+                        <p>This query runs PageRank on the airport flight graph using Neo4j Graph Data Science.</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">'OnTimeAirportGraph'</span>,
+  <span class="cy-call-str">'Airport'</span>,
+  {<span class="cy-prop">FLIGHT</span>: {<span class="cy-prop">type</span>: <span class="cy-call-str">'FLIGHT'</span>, <span class="cy-prop">orientation</span>: <span class="cy-call-str">'NATURAL'</span>}}
+);
+
+<span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">pageRank</span>.<span class="cy-prop">stream</span>(<span class="cy-call-str">'OnTimeAirportGraph'</span>)
+<span class="cy-kw">YIELD</span> <span class="cy-var">nodeId</span>, <span class="cy-var">score</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">gds</span>.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(<span class="cy-var">nodeId</span>).<span class="cy-prop">airport_id</span> <span class="cy-kw">AS</span> <span class="cy-var">airport_id</span>,
+       <span class="cy-var">gds</span>.<span class="cy-prop">util</span>.<span class="cy-prop">asNode</span>(<span class="cy-var">nodeId</span>).<span class="cy-prop">code</span> <span class="cy-kw">AS</span> <span class="cy-var">code</span>,
+       <span class="cy-var">score</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">score</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because Graph Data Science
+                            procedures are not part of standard GQL.
+                        </div>
+                    </div>
+
+                    <div id="q26-content" class="sub-tab-content">
+                        <h4>Q26. Weakly Connected Airport Components</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T5.3 Connected Components / Weakly Connected Components
+                        </div>
+                        <p>
+                            This query finds weakly connected components after treating flight direction as undirected.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span><button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">graph</span>.<span class="cy-prop">project</span>(
+  <span class="cy-call-str">'OnTimeAirportUndirectedGraph'</span>,
+  <span class="cy-call-str">'Airport'</span>,
+  {<span class="cy-prop">FLIGHT</span>: {<span class="cy-prop">type</span>: <span class="cy-call-str">'FLIGHT'</span>, <span class="cy-prop">orientation</span>: <span class="cy-call-str">'UNDIRECTED'</span>}}
+);
+
+<span class="cy-kw">CALL</span> <span class="cy-var">gds</span>.<span class="cy-prop">wcc</span>.<span class="cy-prop">stream</span>(<span class="cy-call-str">'OnTimeAirportUndirectedGraph'</span>)
+<span class="cy-kw">YIELD</span> <span class="cy-var">nodeId</span>, <span class="cy-var">componentId</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">componentId</span>, <span class="cy-func">count</span>(*) <span class="cy-kw">AS</span> <span class="cy-var">component_size</span>
+<span class="cy-kw">ORDER</span> <span class="cy-kw">BY</span> <span class="cy-var">component_size</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-param">$limit</span>;</pre>
+                        </div>
+                        <div class="gql-unsupported-note">
+                            <strong>Note:</strong> Cannot be expressed in standard GQL because Graph Data Science
+                            procedures are not part of standard GQL.
+                        </div>
+                    </div>
+
+                    <div id="q27-content" class="sub-tab-content">
+                        <h4>Q27. Same-day Connections</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.2 Edge Filtering; T4.3 Ungrouped Edge Count and Property
+                            Statistics
+                        </div>
+                        <p>
+                            This query finds same-day two-leg flight connections from LAX to LGA through an intermediate
+                            airport, keeps only connections with at least a scheduled one-hour layover, and returns the
+                            monthly count for the selected year.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (<span class="cy-var">a</span>)-[<span class="cy-var">r1</span>]->(<span class="cy-var">b</span>)-[<span class="cy-var">r2</span>]->(<span class="cy-var">c</span>)
+<span class="cy-kw">WHERE</span> (<span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-var">r2</span>.<span class="cy-prop">FlightDate</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">CRSArrTime</span> + <span class="cy-num">100</span> <= <span class="cy-var">r2</span>.<span class="cy-prop">CRSDepTime</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">a</span>.<span class="cy-prop">airport_id</span> = <span class="cy-num">12892</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">c</span>.<span class="cy-prop">airport_id</span> = <span class="cy-num">12953</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">r1</span>.<span class="cy-prop">Month</span> <span class="cy-kw">as</span> <span class="cy-var">month</span>, <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">as</span> <span class="cy-var">path_count</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">month</span>, <span class="cy-var">path_count</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">month</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (<span class="cy-var">a</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">r1</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">b</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">r2</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">c</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-var">r2</span>.<span class="cy-prop">FlightDate</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">CRSArrTime</span> + <span class="cy-num">100</span> &lt;= <span class="cy-var">r2</span>.<span class="cy-prop">CRSDepTime</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">a</span>.<span class="cy-prop">airport_id</span> = <span class="cy-num">12892</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">c</span>.<span class="cy-prop">airport_id</span> = <span class="cy-num">12953</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+<span class="cy-kw">WITH</span> <span class="cy-var">r1</span>.<span class="cy-prop">Month</span> <span class="cy-kw">AS</span> <span class="cy-var">month</span>, <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">path_count</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">month</span>, <span class="cy-var">path_count</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">month</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q28-content" class="sub-tab-content">
+                        <h4>Q28. Missed Connecting Flights</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.2 Edge Filtering; T4.3 Ungrouped Edge Count and Property
+                            Statistics
+                        </div>
+                        <p>
+                            This query finds scheduled two-leg LAX-to-LGA connections through an intermediate airport,
+                            filters to cases where the first actual arrival is at or after the second actual departure,
+                            and returns the monthly missed-connection count for the selected year.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (<span class="cy-var">a</span>)-[<span class="cy-var">r1</span>]->(<span class="cy-var">b</span>)-[<span class="cy-var">r2</span>]->(<span class="cy-var">c</span>)
+<span class="cy-kw">WHERE</span> (<span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-var">r2</span>.<span class="cy-prop">FlightDate</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">CRSArrTime</span> + <span class="cy-num">100</span> <= <span class="cy-var">r2</span>.<span class="cy-prop">CRSDepTime</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">ArrTime</span> >= <span class="cy-var">r2</span>.<span class="cy-prop">DepTime</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">a</span>.<span class="cy-prop">airport_id</span> = <span class="cy-num">12892</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">c</span>.<span class="cy-prop">airport_id</span> = <span class="cy-num">12953</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>) 
+<span class="cy-kw">WITH</span> <span class="cy-var">r1</span>.<span class="cy-prop">Month</span> <span class="cy-kw">as</span> <span class="cy-var">month</span>, <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">as</span> <span class="cy-var">path_count</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">month</span>, <span class="cy-var">path_count</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">month</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> <span class="cy-var">p</span> = (<span class="cy-var">a</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">r1</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">b</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">r2</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">c</span>:<span class="cy-lab">Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-var">r2</span>.<span class="cy-prop">FlightDate</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">CRSArrTime</span> + <span class="cy-num">100</span> &lt;= <span class="cy-var">r2</span>.<span class="cy-prop">CRSDepTime</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">ArrTime</span> &gt;= <span class="cy-var">r2</span>.<span class="cy-prop">DepTime</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">a</span>.<span class="cy-prop">airport_id</span> = <span class="cy-num">12892</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">c</span>.<span class="cy-prop">airport_id</span> = <span class="cy-num">12953</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">Year</span> = <span class="cy-param">$year</span>
+<span class="cy-kw">WITH</span> <span class="cy-var">r1</span>.<span class="cy-prop">Month</span> <span class="cy-kw">AS</span> <span class="cy-var">month</span>, <span class="cy-func">count</span>(<span class="cy-var">p</span>) <span class="cy-kw">AS</span> <span class="cy-var">path_count</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">month</span>, <span class="cy-var">path_count</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">month</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q29-content" class="sub-tab-content">
+                        <h4>Q29. Top 10 Aircraft Turnarounds</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T3.5 Two-hop Join Pattern; T4.3 Ungrouped Edge Count and
+                            Property Statistics
+                        </div>
+                        <p>
+                            This query finds airports where the same aircraft arrives and then departs on the same date,
+                            counts distinct tail numbers that form valid scheduled turnarounds, and returns the top 10
+                            airports for the selected date.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> ()-[<span class="cy-var">r1</span>]->(<span class="cy-var">n</span>)-[<span class="cy-var">r2</span>]->()
+<span class="cy-kw">WHERE</span> (<span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-func">date</span>(<span class="cy-param">$date</span>))
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-var">r2</span>.<span class="cy-prop">FlightDate</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> = <span class="cy-var">r2</span>.<span class="cy-prop">Tail_Number</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> <span class="cy-func">IS NOT NULL</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> <> <span class="cy-var">""</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">CRSArrTime</span> < <span class="cy-var">r2</span>.<span class="cy-prop">CRSDepTime</span>)
+<span class="cy-kw">WITH</span> <span class="cy-var">n</span>, <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span>) <span class="cy-kw">AS</span> <span class="cy-var">cnt</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">n</span>, <span class="cy-var">cnt</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">cnt</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-lab">:Airport</span>)-[<span class="cy-var">r1</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-var">n</span>:<span class="cy-lab">Airport</span>)-[<span class="cy-var">r2</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-lab">:Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-func">date</span>(<span class="cy-param">$date</span>)
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-var">r2</span>.<span class="cy-prop">FlightDate</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> = <span class="cy-var">r2</span>.<span class="cy-prop">Tail_Number</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> <span class="cy-kw">IS NOT NULL</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> &lt;&gt; <span class="cy-call-str">""</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">CRSArrTime</span> &lt; <span class="cy-var">r2</span>.<span class="cy-prop">CRSDepTime</span>
+<span class="cy-kw">WITH</span> <span class="cy-var">n</span>, <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span>) <span class="cy-kw">AS</span> <span class="cy-var">cnt</span>
+<span class="cy-kw">RETURN</span> <span class="cy-var">n</span>, <span class="cy-var">cnt</span>
+<span class="cy-kw">ORDER BY</span> <span class="cy-var">cnt</span> <span class="cy-kw">DESC</span>
+<span class="cy-kw">LIMIT</span> <span class="cy-num">10</span>;</pre>
+                        </div>
+                    </div>
+
+                    <div id="q30-content" class="sub-tab-content">
+                        <h4>Q30. Three-Leg Flight Sequences</h4>
+                        <div class="query-subcategory">
+                            <strong>Subcategory:</strong> T2.2 Edge Filtering; T4.3 Ungrouped Edge Count and Property
+                            Statistics
+                        </div>
+                        <p>
+                            This query follows three consecutive flight legs on the same date for the same aircraft,
+                            enforces scheduled arrival-before-departure ordering between legs, and counts distinct tail
+                            numbers that complete the sequence.
+                        </p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>cypher</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre class="code-block cypher-ui">
+<span class="cy-kw">MATCH</span> ()-[<span class="cy-var">r1</span>]->()-[<span class="cy-var">r2</span>]->()-[<span class="cy-var">r3</span>]->()
+<span class="cy-kw">WHERE</span> (<span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-func">date</span>(<span class="cy-param">$date</span>))
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-var">r2</span>.<span class="cy-prop">FlightDate</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-var">r3</span>.<span class="cy-prop">FlightDate</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> = <span class="cy-var">r2</span>.<span class="cy-prop">Tail_Number</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> = <span class="cy-var">r3</span>.<span class="cy-prop">Tail_Number</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> <span class="cy-func">IS NOT NULL</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> <> <span class="cy-var">""</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r1</span>.<span class="cy-prop">CRSArrTime</span> < <span class="cy-var">r2</span>.<span class="cy-prop">CRSDepTime</span>)
+<span class="cy-kw">AND</span> (<span class="cy-var">r2</span>.<span class="cy-prop">CRSArrTime</span> < <span class="cy-var">r3</span>.<span class="cy-prop">CRSDepTime</span>)
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-func">DISTINCT</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span>) <span class="cy-kw">AS</span> <span class="cy-var">cnt</span></pre>
+                        </div>
+                        <p>Equivalent query in GQL standard:</p>
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span>gql</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre
+                                class="code-block cypher-ui"
+                            ><span class="cy-kw">MATCH</span> (<span class="cy-lab">:Airport</span>)-[<span class="cy-var">r1</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-lab">:Airport</span>)-[<span class="cy-var">r2</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-lab">:Airport</span>)-[<span class="cy-var">r3</span>:<span class="cy-rel">FLIGHT</span>]-&gt;(<span class="cy-lab">:Airport</span>)
+<span class="cy-kw">WHERE</span> <span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-func">date</span>(<span class="cy-param">$date</span>)
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-var">r2</span>.<span class="cy-prop">FlightDate</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">FlightDate</span> = <span class="cy-var">r3</span>.<span class="cy-prop">FlightDate</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> = <span class="cy-var">r2</span>.<span class="cy-prop">Tail_Number</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> = <span class="cy-var">r3</span>.<span class="cy-prop">Tail_Number</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> <span class="cy-kw">IS NOT NULL</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span> &lt;&gt; <span class="cy-call-str">""</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r1</span>.<span class="cy-prop">CRSArrTime</span> &lt; <span class="cy-var">r2</span>.<span class="cy-prop">CRSDepTime</span>
+  <span class="cy-kw">AND</span> <span class="cy-var">r2</span>.<span class="cy-prop">CRSArrTime</span> &lt; <span class="cy-var">r3</span>.<span class="cy-prop">CRSDepTime</span>
+<span class="cy-kw">RETURN</span> <span class="cy-func">count</span>(<span class="cy-kw">DISTINCT</span> <span class="cy-var">r1</span>.<span class="cy-prop">Tail_Number</span>) <span class="cy-kw">AS</span> <span class="cy-var">cnt</span>;</pre>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- <section>
+            <h3>Runtime Results</h3>
+            <p>Here we display the runtime results for each query in Neo4j. For Q1 and Q2, we selected the years 2020, 
+              2021, and 2022. For Q3 and Q4, we selected the same 20 dates used in the previous queries. These dates are 2020-11-03, 2021-01-28, 2020-01-25, 2021-01-15, 2022-09-22, 
+              2022-11-16, 2021-12-09, 2022-01-31, 2021-07-06, 2020-06-19, 2021-08-31, 2022-01-25, 2022-06-03, 2021-08-23, 2021-05-05, 2020-07-16, 2021-07-30, 2021-09-20, 2020-12-09, and 2022-01-05.
+</p>
+            <h4>Q27 Same-day Connections</h4>
+                <div class="chart-container">
+                    <img src="../imgs/otn4q1.png" alt="Q1 Runtime Chart" class="result-chart">
+                </div>
+            <h4>Q28 Missed Connecting Flights</h4>
+                <div class="chart-container">
+                    <img src="../imgs/otn4q2.png" alt="Q2 Runtime Chart" class="result-chart">
+                </div>
+            <h4>Q29 Top 10 Aircraft Turnarounds</h4>
+                <div class="chart-container">
+                    <img src="../imgs/otn4q3.png" alt="Q3 Runtime Chart" class="result-chart">
+                </div>
+            <h4>Q30 Three-Leg Flight Sequences</h4>
+                <div class="chart-container">
+                    <img src="../imgs/otn4q4.png" alt="Q4 Runtime Chart" class="result-chart">
+                </div>
+        </section>   -->
+        </main>
+        <script>
+            function copyCode(button) {
+                const wrapper = button.closest(".code-wrapper");
+                const codeElement = wrapper.querySelector(".code-block");
+                const text = codeElement.innerText;
+                navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+                        const originalText = button.innerText;
+                        button.innerText = "Copied!";
+                        button.style.borderColor = "#A6E22E";
+                        button.style.color = "#A6E22E";
+                        setTimeout(() => {
+                            button.innerText = originalText;
+                            button.style.borderColor = "";
+                            button.style.color = "";
+                        }, 2000);
+                    })
+                    .catch((err) => {
+                        console.error("Failed to copy text: ", err);
+                        alert("Failed to copy code. Please check console for errors.");
+                    });
+            }
+            function openSubTab(evt, subTabName) {
+                var i, subcontent, sublinks;
+                subcontent = document.getElementsByClassName("sub-tab-content");
+                for (i = 0; i < subcontent.length; i++) {
+                    subcontent[i].classList.remove("active-content");
+                }
+                sublinks = document.getElementsByClassName("sub-tab-link");
+                for (i = 0; i < sublinks.length; i++) {
+                    sublinks[i].classList.remove("active");
+                }
+                document.getElementById(subTabName).classList.add("active-content");
+                evt.currentTarget.classList.add("active");
+            }
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tab-content");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].classList.remove("active-content");
+                }
+                tablinks = document.getElementsByClassName("tab-link");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].classList.remove("active");
+                }
+                document.getElementById(tabName).classList.add("active-content");
+                evt.currentTarget.classList.add("active");
+                handleScroll();
+            }
+            function scrollToId(id) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            }
+
+            function handleScroll() {
+                const menuSection = document.getElementById("loading-tab-header");
+                const btn = document.querySelector(".back-to-code-nav");
+                if (menuSection && btn) {
+                    const rect = menuSection.getBoundingClientRect();
+                    if (rect.bottom < 0) {
+                        btn.classList.add("visible");
+                    } else {
+                        btn.classList.remove("visible");
+                    }
+                }
+            }
+            window.addEventListener("scroll", handleScroll);
+            window.addEventListener("resize", handleScroll);
+            handleScroll();
+        </script>
+
+        <footer>
+            <div class="container">
+                <a href="../datasets/ontime.html" class="btn-secondary">&larr; Back to OnTime Dataset</a>
+            </div>
+            <div class="container">
+                <p>&copy; 2026 Property Graph Benchmark Project.</p>
+            </div>
+        </footer>
+    </body>
+</html>

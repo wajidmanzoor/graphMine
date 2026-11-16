@@ -60,27 +60,27 @@ def test_builder_rejects_invalid_choices(workspace, fields):
     assert response.json()["error"]["code"] == "graph_builder"
 
 
-def catalog_schema():
-    return {"source_id": "catalog", "graph_label": "GM_Sample", "max_rows": 100,
+def benchmark_schema():
+    return {"source_id": "benchmark-sample", "graph_label": None, "max_rows": 100,
             "entities": [{"id": "users", "label": "User", "properties": [{"name": "odd`property"}]},
                          {"id": "movies", "label": "Movie", "properties": []}],
             "relationships": [{"id": "ratings", "label": "RATED", "source_entity": "users", "target_entity": "movies", "properties": []}]}
 
 
-def test_catalog_builder_scopes_both_endpoints_and_quotes_properties():
-    query = compile_query(catalog_schema(), GraphBuild(dataset_id="sample", source_entity="movies", relationship="ratings", target_entity="users", match_direction="incoming", limit=50,
+def test_benchmark_builder_uses_published_labels_and_quotes_properties():
+    query = compile_query(benchmark_schema(), GraphBuild(dataset_id="sample", source_entity="movies", relationship="ratings", target_entity="users", match_direction="incoming", limit=50,
         filters=[{"scope": "target", "property": "odd`property", "operator": "not_null"}]))
-    assert "(a:`GM_Sample`:`Movie`)<-[r:`RATED`]-(b:`GM_Sample`:`User`)" in query["statement"]
+    assert "(a:`Movie`)<-[r:`RATED`]-(b:`User`)" in query["statement"]
     assert "b.`odd``property` IS NOT NULL" in query["statement"]
     assert query["parameters"] == {"row_limit": 50}
     with pytest.raises(AnalyticsError, match="direction"):
-        compile_query(catalog_schema(), GraphBuild(source_entity="movies", relationship="ratings", target_entity="users", limit=50))
+        compile_query(benchmark_schema(), GraphBuild(source_entity="movies", relationship="ratings", target_entity="users", limit=50))
     with pytest.raises(AnalyticsError, match="row limit"):
-        compile_query(catalog_schema(), GraphBuild(source_entity="users", limit=101))
+        compile_query(benchmark_schema(), GraphBuild(source_entity="users", limit=101))
 
 
 def test_either_direction_returns_each_relationship_once():
-    query = compile_query(catalog_schema(), GraphBuild(source_entity="users", relationship="ratings", target_entity="movies", match_direction="either", limit=50))
+    query = compile_query(benchmark_schema(), GraphBuild(source_entity="users", relationship="ratings", target_entity="movies", match_direction="either", limit=50))
     assert "RETURN DISTINCT r" in query["statement"]
 
 

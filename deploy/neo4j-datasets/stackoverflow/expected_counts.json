@@ -1,0 +1,255 @@
+{
+  "nodes": {
+    "Comment": 86754111,
+    "Vote": 236452885,
+    "User": 18712212,
+    "Post_question": 23020127,
+    "Post_tag_wiki_excerpt": 55115,
+    "Tag": 63653,
+    "Badge": 46135386,
+    "Post_answer": 34024119,
+    "Post_tag_wiki": 55113
+  },
+  "relationships": {
+    "HAS_WIKI": 44959,
+    "TAG_TO": 68338336,
+    "LINK_TO": 6128365,
+    "ON_ANSWER": 41046017,
+    "HAS_WIKI_EXCERPT": 44961,
+    "ON_QUESTION": 45700093,
+    "LAST_EDITED_BY": 22880948,
+    "EARNED": 46135068,
+    "COMMENTED_BY": 85362385,
+    "CREATED_BY": 109349,
+    "ANSWERS_TO": 34024119,
+    "ANSWERS_BY": 33661702,
+    "OWNED_BY": 22562260,
+    "ACCEPTS": 11755050,
+    "VOTE_ON": 205323546
+  },
+  "relationship_rows": [
+    {
+      "pattern": "(:Tag)-[:HAS_WIKI]->(:Post_tag_wiki)",
+      "type": "HAS_WIKI",
+      "count": 44959
+    },
+    {
+      "pattern": "(:Tag)-[:TAG_TO]->(:Post_question)",
+      "type": "TAG_TO",
+      "count": 68338336
+    },
+    {
+      "pattern": "(:Post_question)-[:LINK_TO]->(:Post_question)",
+      "type": "LINK_TO",
+      "count": 6128365
+    },
+    {
+      "pattern": "(:Comment)-[:ON_ANSWER]->(:Post_answer)",
+      "type": "ON_ANSWER",
+      "count": 41046017
+    },
+    {
+      "pattern": "(:Tag)-[:HAS_WIKI_EXCERPT]->(:Post_tag_wiki_excerpt)",
+      "type": "HAS_WIKI_EXCERPT",
+      "count": 44961
+    },
+    {
+      "pattern": "(:Comment)-[:ON_QUESTION]->(:Post_question)",
+      "type": "ON_QUESTION",
+      "count": 45700093
+    },
+    {
+      "pattern": "(:Post_tag_wiki_excerpt)-[:LAST_EDITED_BY]->(:User)",
+      "type": "LAST_EDITED_BY",
+      "count": 54582
+    },
+    {
+      "pattern": "(:Post_tag_wiki)-[:LAST_EDITED_BY]->(:User)",
+      "type": "LAST_EDITED_BY",
+      "count": 54633
+    },
+    {
+      "pattern": "(:User)-[:EARNED]->(:Badge)",
+      "type": "EARNED",
+      "count": 46135068
+    },
+    {
+      "pattern": "(:Comment)-[:COMMENTED_BY]->(:User)",
+      "type": "COMMENTED_BY",
+      "count": 85362385
+    },
+    {
+      "pattern": "(:Post_tag_wiki)-[:CREATED_BY]->(:User)",
+      "type": "CREATED_BY",
+      "count": 54721
+    },
+    {
+      "pattern": "(:Post_tag_wiki_excerpt)-[:CREATED_BY]->(:User)",
+      "type": "CREATED_BY",
+      "count": 54628
+    },
+    {
+      "pattern": "(:Post_answer)-[:ANSWERS_TO]->(:Post_question)",
+      "type": "ANSWERS_TO",
+      "count": 34024119
+    },
+    {
+      "pattern": "(:Post_answer)-[:ANSWERS_BY]->(:User)",
+      "type": "ANSWERS_BY",
+      "count": 33661702
+    },
+    {
+      "pattern": "(:Post_question)-[:OWNED_BY]->(:User)",
+      "type": "OWNED_BY",
+      "count": 22562260
+    },
+    {
+      "pattern": "(:Post_answer)-[:LAST_EDITED_BY]->(:User)",
+      "type": "LAST_EDITED_BY",
+      "count": 10410156
+    },
+    {
+      "pattern": "(:Post_question)-[:ACCEPTS]->(:Post_answer)",
+      "type": "ACCEPTS",
+      "count": 11755050
+    },
+    {
+      "pattern": "(:Vote)-[:VOTE_ON]->(:Post_answer)",
+      "type": "VOTE_ON",
+      "count": 125908676
+    },
+    {
+      "pattern": "(:Post_question)-[:LAST_EDITED_BY]->(:User)",
+      "type": "LAST_EDITED_BY",
+      "count": 12361577
+    },
+    {
+      "pattern": "(:Vote)-[:VOTE_ON]->(:Post_question)",
+      "type": "VOTE_ON",
+      "count": 79414870
+    }
+  ],
+  "published_totals": {},
+  "published_tables": [
+    [
+      [
+        "Comment",
+        "86,754,111"
+      ],
+      [
+        "Vote",
+        "236,452,885"
+      ],
+      [
+        "User",
+        "18,712,212"
+      ],
+      [
+        "Post_question",
+        "23,020,127"
+      ],
+      [
+        "Post_tag_wiki_excerpt",
+        "55,115"
+      ],
+      [
+        "Tag",
+        "63,653"
+      ],
+      [
+        "Badge",
+        "46,135,386"
+      ],
+      [
+        "Post_answer",
+        "34,024,119"
+      ],
+      [
+        "Post_tag_wiki",
+        "55,113"
+      ]
+    ],
+    [
+      [
+        "(:Tag)-[:HAS_WIKI]->(:Post_tag_wiki)",
+        "44,959"
+      ],
+      [
+        "(:Tag)-[:TAG_TO]->(:Post_question)",
+        "68,338,336"
+      ],
+      [
+        "(:Post_question)-[:LINK_TO]->(:Post_question)",
+        "6,128,365"
+      ],
+      [
+        "(:Comment)-[:ON_ANSWER]->(:Post_answer)",
+        "41,046,017"
+      ],
+      [
+        "(:Tag)-[:HAS_WIKI_EXCERPT]->(:Post_tag_wiki_excerpt)",
+        "44,961"
+      ],
+      [
+        "(:Comment)-[:ON_QUESTION]->(:Post_question)",
+        "45,700,093"
+      ],
+      [
+        "(:Post_tag_wiki_excerpt)-[:LAST_EDITED_BY]->(:User)",
+        "54,582"
+      ],
+      [
+        "(:Post_tag_wiki)-[:LAST_EDITED_BY]->(:User)",
+        "54,633"
+      ],
+      [
+        "(:User)-[:EARNED]->(:Badge)",
+        "46,135,068"
+      ],
+      [
+        "(:Comment)-[:COMMENTED_BY]->(:User)",
+        "85,362,385"
+      ],
+      [
+        "(:Post_tag_wiki)-[:CREATED_BY]->(:User)",
+        "54,721"
+      ],
+      [
+        "(:Post_tag_wiki_excerpt)-[:CREATED_BY]->(:User)",
+        "54,628"
+      ],
+      [
+        "(:Post_answer)-[:ANSWERS_TO]->(:Post_question)",
+        "34,024,119"
+      ],
+      [
+        "(:Post_answer)-[:ANSWERS_BY]->(:User)",
+        "33,661,702"
+      ],
+      [
+        "(:Post_question)-[:OWNED_BY]->(:User)",
+        "22,562,260"
+      ],
+      [
+        "(:Post_answer)-[:LAST_EDITED_BY]->(:User)",
+        "10,410,156"
+      ],
+      [
+        "(:Post_question)-[:ACCEPTS]->(:Post_answer)",
+        "11,755,050"
+      ],
+      [
+        "(:Vote)-[:VOTE_ON]->(:Post_answer)",
+        "125,908,676"
+      ],
+      [
+        "(:Post_question)-[:LAST_EDITED_BY]->(:User)",
+        "12,361,577"
+      ],
+      [
+        "(:Vote)-[:VOTE_ON]->(:Post_question)",
+        "79,414,870"
+      ]
+    ]
+  ]
+}

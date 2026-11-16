@@ -1,6 +1,7 @@
 """Connection-scoped datasets and the preview/domain/chat boundary."""
 
 from test_database_workspace import source as source, workspace as workspace
+from test_benchmark_mappings import registry_setup
 
 
 def test_dataset_list_requires_a_visible_connection(workspace):
@@ -22,20 +23,19 @@ def test_foreign_dataset_is_rejected_before_running_query(workspace):
     assert len(workspace.calls) == before
 
 
-def test_query_cannot_save_nodes_from_a_different_dataset(workspace, monkeypatch):
-    monkeypatch.setattr("graphmine_agent.database_datasets.datasets", lambda *_: [{
-        "id": "yelp", "name": "Yelp", "status": "ready", "graph_label": "GM_Yelp",
-    }])
-    response = workspace.client.post("/api/database-sources/demo/queries", json={
-        "statement": "MATCH p=()-[]->() RETURN p", "dataset_id": "yelp",
+def test_query_cannot_select_another_instances_dataset(workspace, tmp_path):
+    workspace.runtime.settings = registry_setup(workspace.runtime.settings, tmp_path / "registry")
+    before = len(workspace.calls)
+    response = workspace.client.post("/api/database-sources/benchmark-yelp/queries", json={
+        "statement": "MATCH p=()-[]->() RETURN p", "dataset_id": "movielens-32m",
     })
-    assert response.status_code == 422
-    assert response.json()["error"]["code"] == "dataset_scope"
+    assert response.status_code == 404
+    assert len(workspace.calls) == before
 
 
 def test_importing_dataset_cannot_run_queries(workspace, monkeypatch):
     monkeypatch.setattr("graphmine_agent.database_datasets.datasets", lambda *_: [{
-        "id": "yelp", "name": "Yelp", "status": "preparing_graph", "graph_label": "GM_Yelp",
+        "id": "yelp", "name": "Yelp", "status": "loading", "graph_label": None,
     }])
     before = len(workspace.calls)
     response = workspace.client.post("/api/database-sources/demo/queries", json={

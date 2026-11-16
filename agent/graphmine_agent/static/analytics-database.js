@@ -115,11 +115,13 @@ window.GraphMineDatabaseWorkspace = argumentsForSource => {
   function decorate() {
     const overlay = overlays.get(viewKey()); tableBox.hidden = styles.hidden = !overlay;
     const file = sourceFile(), capabilities = file?.provenance?.source?.database_source?.capabilities;
+    const benchmark = Boolean(file?.provenance?.source?.database_dataset?.registry);
+    attributes.hidden = relationships.hidden = benchmark;
     const unavailable = !file || Boolean(state.resultView && !state.resultView.enrichable);
     attributes.disabled = unavailable || capabilities?.enrichment === false;
     relationships.disabled = unavailable || capabilities?.expansion === false;
     const optionalSqlNote = "This graph comes directly from Neo4j. SQL enrichment is optional and is not configured.";
-    if (!overlay && capabilities?.sql === false) enrichedNote.textContent = optionalSqlNote;
+    if (!overlay && capabilities?.sql === false && !benchmark) enrichedNote.textContent = optionalSqlNote;
     else if (enrichedNote.textContent === optionalSqlNote) enrichedNote.textContent = "";
     attributeTable.replaceChildren(); if (!overlay) { legend.replaceChildren(); return; }
     refreshStyles([...overlay.fields]);

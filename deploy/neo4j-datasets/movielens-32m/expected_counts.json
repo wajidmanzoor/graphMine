@@ -1,0 +1,60 @@
+{
+  "nodes": {
+    "Genre": 20,
+    "Movie": 87585,
+    "User": 200948
+  },
+  "relationships": {
+    "HAS_GENRE": 154170,
+    "RATED": 32000204,
+    "TAGGED": 2000072
+  },
+  "relationship_rows": [
+    {
+      "pattern": "(:Movie)-[:HAS_GENRE]-(:Genre)",
+      "type": "HAS_GENRE",
+      "count": 154170
+    },
+    {
+      "pattern": "(:User)-[:RATED]-(:Movie)",
+      "type": "RATED",
+      "count": 32000204
+    },
+    {
+      "pattern": "(:User)-[:TAGGED]-(:Movie)",
+      "type": "TAGGED",
+      "count": 2000072
+    }
+  ],
+  "published_totals": {},
+  "published_tables": [
+    [
+      [
+        "Genre",
+        "20"
+      ],
+      [
+        "Movie",
+        "87,585"
+      ],
+      [
+        "User",
+        "200,948"
+      ]
+    ],
+    [
+      [
+        "(:Movie)-[:HAS_GENRE]-(:Genre)",
+        "154,170"
+      ],
+      [
+        "(:User)-[:RATED]-(:Movie)",
+        "32,000,204"
+      ],
+      [
+        "(:User)-[:TAGGED]-(:Movie)",
+        "2,000,072"
+      ]
+    ]
+  ]
+}
