@@ -1,0 +1,84 @@
+-- GLOB mismatch!
+-- Found the following ICU libraries:
+--   uc (required): /usr/lib/x86_64-linux-gnu/libicuuc.so
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/build/native-views-step3
+[  7%] Built target graphmine_runtime_core
+[  9%] Built target graphmine_core_view_test
+[ 10%] Building CXX object CMakeFiles/graphmine_runtime.dir/runtime.cpp.o
+[ 11%] Building CXX object CMakeFiles/graphmine_runtime.dir/registry.cpp.o
+[ 12%] Building CXX object CMakeFiles/graphmine_runtime.dir/representation_cache.cpp.o
+[ 13%] Building CXX object CMakeFiles/graphmine_runtime.dir/view_profiles.cpp.o
+[ 14%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/common.cpp.o
+[ 15%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/graphlets.cpp.o
+[ 16%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/anomalies.cpp.o
+[ 17%] Linking CXX shared library libgraphmine_runtime.so
+[ 69%] Built target graphmine_runtime
+[ 70%] Linking CXX executable graphmine-native
+[ 71%] Linking CXX executable graphmine_views_test
+[ 72%] Linking CXX executable graphmine_selection_test
+[ 73%] Building CXX object CMakeFiles/graphmine_cpu_views_golden.dir/tests/cpu_views_golden.cpp.o
+[ 74%] Building CXX object CMakeFiles/graphmine_normalizer_golden.dir/tests/normalizer_golden.cpp.o
+[ 75%] Building CXX object CMakeFiles/graphmine_normalizer_audit.dir/tests/normalizer_audit.cpp.o
+[ 77%] Built target graphmine_native_cli
+[ 79%] Built target graphmine_views_test
+[ 80%] Built target graphmine_selection_test
+[ 81%] Linking CXX executable graphmine_flow_test
+[ 82%] Linking CXX executable graphmine_matching_test
+[ 83%] Linking CXX executable graphmine_runtime_test
+[ 84%] Built target graphmine_flow_test
+[ 86%] Built target graphmine_matching_test
+[ 88%] Built target graphmine_runtime_test
+[ 89%] Linking CXX executable graphmine_reference_test
+[ 90%] Linking CXX executable graphmine_structure_test
+[ 90%] Linking CXX executable graphmine_mining_test
+[ 92%] Built target graphmine_structure_test
+[ 93%] Built target graphmine_reference_test
+[ 95%] Built target graphmine_mining_test
+[ 96%] Linking CXX executable graphmine_centrality_test
+[ 97%] Built target graphmine_centrality_test
+In file included from /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/normalizer_golden.cpp:1:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp: In constructor ‘graphmine::legacy_test::AnomalyInput::AnomalyInput(const graphmine::Graph&, graphmine::runtime::Work&)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp:344:26: error: call of overloaded ‘adjacency(const graphmine::Graph&, graphmine::runtime::Work&)’ is ambiguous
+  344 |     neighbors = adjacency(graph,work);
+      |                 ~~~~~~~~~^~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp:267:46: note: candidate: ‘std::vector<std::vector<unsigned int> > graphmine::legacy_test::adjacency(const graphmine::Graph&, graphmine::runtime::Work&)’
+  267 | inline std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work& work) {
+      |                                              ^~~~~~~~~
+In file included from /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp:7:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/../internal.hpp:74:39: note: candidate: ‘std::vector<std::vector<unsigned int> > graphmine::runtime::adjacency(const graphmine::Graph&, Work&)’
+   74 | std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work& work);
+      |                                       ^~~~~~~~~
+In file included from /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/normalizer_audit.cpp:3:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp: In constructor ‘graphmine::legacy_test::AnomalyInput::AnomalyInput(const graphmine::Graph&, graphmine::runtime::Work&)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp:344:26: error: call of overloaded ‘adjacency(const graphmine::Graph&, graphmine::runtime::Work&)’ is ambiguous
+  344 |     neighbors = adjacency(graph,work);
+      |                 ~~~~~~~~~^~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp:267:46: note: candidate: ‘std::vector<std::vector<unsigned int> > graphmine::legacy_test::adjacency(const graphmine::Graph&, graphmine::runtime::Work&)’
+  267 | inline std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work& work) {
+      |                                              ^~~~~~~~~
+In file included from /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp:7:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/../internal.hpp:74:39: note: candidate: ‘std::vector<std::vector<unsigned int> > graphmine::runtime::adjacency(const graphmine::Graph&, Work&)’
+   74 | std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work& work);
+      |                                       ^~~~~~~~~
+In file included from /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/cpu_views_golden.cpp:1:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp: In constructor ‘graphmine::legacy_test::AnomalyInput::AnomalyInput(const graphmine::Graph&, graphmine::runtime::Work&)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp:344:26: error: call of overloaded ‘adjacency(const graphmine::Graph&, graphmine::runtime::Work&)’ is ambiguous
+  344 |     neighbors = adjacency(graph,work);
+      |                 ~~~~~~~~~^~~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp:267:46: note: candidate: ‘std::vector<std::vector<unsigned int> > graphmine::legacy_test::adjacency(const graphmine::Graph&, graphmine::runtime::Work&)’
+  267 | inline std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work& work) {
+      |                                              ^~~~~~~~~
+In file included from /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/legacy_normalizers.hpp:7:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/../internal.hpp:74:39: note: candidate: ‘std::vector<std::vector<unsigned int> > graphmine::runtime::adjacency(const graphmine::Graph&, Work&)’
+   74 | std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work& work);
+      |                                       ^~~~~~~~~
+gmake[2]: *** [CMakeFiles/graphmine_normalizer_audit.dir/build.make:76: CMakeFiles/graphmine_normalizer_audit.dir/tests/normalizer_audit.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:999: CMakeFiles/graphmine_normalizer_audit.dir/all] Error 2
+gmake[1]: *** Waiting for unfinished jobs....
+gmake[2]: *** [CMakeFiles/graphmine_normalizer_golden.dir/build.make:76: CMakeFiles/graphmine_normalizer_golden.dir/tests/normalizer_golden.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:1025: CMakeFiles/graphmine_normalizer_golden.dir/all] Error 2
+gmake[2]: *** [CMakeFiles/graphmine_cpu_views_golden.dir/build.make:76: CMakeFiles/graphmine_cpu_views_golden.dir/tests/cpu_views_golden.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:947: CMakeFiles/graphmine_cpu_views_golden.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

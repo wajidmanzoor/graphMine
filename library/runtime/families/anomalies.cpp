@@ -1,7 +1,36 @@
 #include "numeric.hpp"
 #include "pattern_match.hpp"
+#include "anomaly_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile anomaly_simple{"graph-anomalies:cpp:simple", {"graph-anomalies"},
+  R"({"kind":"coo","self_loops":"keep","parallel_edges":"collapse:first","weights":"rational_exact","weight_source":"unit","edge_ids":true})"};
+const ViewProfile anomaly_weighted{"graph-anomalies:cpp:weighted", {"graph-anomalies"},
+  R"({"kind":"coo","self_loops":"keep","parallel_edges":"collapse:sum","weights":"rational_exact","edge_ids":true})"};
+const ViewProfile anomaly_neighbors{"graph-anomalies:cpp:neighbors", {"graph-anomalies"},
+  R"({"kind":"csr","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile anomaly_originals{"graph-anomalies:cpp:records", {"graph-anomalies"},
+  R"({"kind":"coo","coo_layout":"records","weights":"rational_exact","edge_ids":true})"};
+}
+AnomalyInput anomaly_input(const Graph& graph, Work& work) {
+  AnomalyInput result;
+  result.simple = family_util::edges(graph,anomaly_simple,work);
+  result.weighted = family_util::edges(graph,anomaly_weighted,work);
+  const auto neighbors = consume_view(graph,anomaly_neighbors,work,ViewBudget::original_edges);
+  result.adjacency = adjacency_layout(std::get<CsrView>(neighbors->view));
+  const auto records = consume_view(graph,anomaly_originals,work,ViewBudget::algorithm_owned);
+  result.records = family_util::edge_layout(std::get<CooView>(records->view));
+  return result;
+}
+std::vector<json::object> anomaly_records(const Graph& graph, bool vertices, Work& work) {
+  const auto built = consume_view(graph,anomaly_originals,work,ViewBudget::algorithm_owned);
+  const auto& view = std::get<CooView>(built->view);
+  std::vector<json::object> result;
+  if (vertices) for (const auto v : view.vertices.to_original) result.push_back(vertex_record_json(graph.canonical().vertices[v],work));
+  else for (const auto e : *view.edge_ids) result.push_back(edge_record_json(graph.canonical().edges[e],work));
+  return result;
+}
 namespace {
 using namespace family_util;
 struct AnomalyPopulation {
@@ -15,12 +44,7 @@ AnomalyPopulation population(const Graph& graph, const std::string& target,
   AnomalyPopulation result;
   if (target != "subgraph") {
     require(subgraphs.is_null(), "subgraphs applies only to subgraph anomalies");
-    if (target == "vertex")
-      for (const auto& row : graph.canonical().vertices)
-        result.records.push_back(vertex_record_json(row, work));
-    else
-      for (const auto& row : graph.canonical().edges)
-        result.records.push_back(edge_record_json(row, work));
+    result.records = anomaly_records(graph,target == "vertex",work);
   } else {
     require(subgraphs.is_array(), "Subgraph anomalies need a subgraphs array");
     for (const auto& raw : subgraphs.as_array()) {
@@ -107,9 +131,10 @@ numeric::Matrix anomaly_features(const Graph& graph, const std::string& target,
                                  const std::vector<Definition>& definitions, Work& work) {
   using namespace numeric;
   const auto n = graph.vertex_count();
-  const auto simple = edges(graph, false, work, false, true),
-             weighted = edges(graph, true, work, false, true);
-  const auto adj = adjacency(graph, work);
+  const auto prepared = anomaly_input(graph,work);
+  const auto& simple = prepared.simple;
+  const auto& weighted = prepared.weighted;
+  const auto& adj = prepared.adjacency;
   std::vector<Exact> degree(n, 0), in_degree(n, 0), out_degree(n, 0), strength(n, 0),
       in_strength(n, 0), out_strength(n, 0), events(n, 0), in_events(n, 0), out_events(n, 0);
   for (const auto& edge : simple) {
@@ -124,8 +149,8 @@ numeric::Matrix anomaly_features(const Graph& graph, const std::string& target,
     out_strength[edge.u] += edge.weight;
     in_strength[edge.v] += edge.weight;
   }
-  for (const auto& edge : graph.canonical().edges) {
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+  for (const auto& edge : prepared.records) {
+    const auto u = edge.u, v = edge.v;
     ++events[u];
     if (u != v) ++events[v];
     ++out_events[u];
@@ -211,11 +236,10 @@ numeric::Matrix anomaly_features(const Graph& graph, const std::string& target,
             value /= Exact(members.size()) * (members.size() - 1);
           }
         } else
-          for (const auto& edge : graph.canonical().edges) {
+          for (const auto& edge : prepared.records) {
             work.tick();
-            if (members.count(graph.dense_index(edge.source)) &&
-                members.count(graph.dense_index(edge.target)))
-              value += measure == "edge_count" ? Exact(1) : Exact(edge.weight.value_or(1));
+            if (members.count(edge.u) && members.count(edge.v))
+              value += measure == "edge_count" ? Exact(1) : edge.weight;
           }
       }
       result(i, j) = finite(value.convert_to<long double>());

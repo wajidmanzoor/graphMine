@@ -335,6 +335,25 @@ inline std::vector<ExactEdge> exact_edges(const Graph& graph, bool weighted, Wor
   for (auto& entry : normalized) output.push_back(std::move(entry.second));
   return output;
 }
+struct AnomalyInput {
+  std::vector<ExactEdge> simple,weighted,records;
+  MiningGraph neighbors;
+  AnomalyInput(const Graph& graph, Work& work) {
+    simple = exact_edges(graph,false,work,false,true);
+    weighted = exact_edges(graph,true,work,false,true);
+    neighbors = graphmine::legacy_test::adjacency(graph,work);
+    for (std::size_t i=0; i<graph.edge_count(); ++i) {
+      const auto& edge = graph.canonical().edges[i];
+      records.push_back({graph.dense_index(edge.source),graph.dense_index(edge.target),Exact(edge.weight.value_or(1)),i});
+    }
+  }
+};
+inline std::vector<json::object> anomaly_records(const Graph& graph, bool vertices, Work& work) {
+  std::vector<json::object> result;
+  if (vertices) for (const auto& row : graph.canonical().vertices) result.push_back(vertex_record_json(row,work));
+  else for (const auto& row : graph.canonical().edges) result.push_back(edge_record_json(row,work));
+  return result;
+}
 inline numeric::Matrix structural_features(const Graph& graph, Work& work) {
   numeric::Matrix features(graph.vertex_count(),3,work);
   for (std::size_t v=0; v<features.rows; ++v) features(v,0) = 1;

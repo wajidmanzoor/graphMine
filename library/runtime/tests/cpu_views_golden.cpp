@@ -22,6 +22,7 @@
 #include "../embedding_input.hpp"
 #include "../sparsification_input.hpp"
 #include "../flow_input.hpp"
+#include "../anomaly_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -132,6 +133,54 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+template<class Edges> std::string exact_edge_bytes(const Edges& edges) {
+  rt::json::array result;
+  for (const auto& edge : edges) result.push_back(rt::json::array{edge.u,edge.v,rt::fraction_json(edge.weight),edge.original});
+  return rt::json::serialize(result);
+}
+bool anomaly_input(const gm::Graph& graph, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::AnomalyInput> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,old_work); } catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::AnomalyInput> actual;
+    std::string new_failure;
+    try { actual = rt::anomaly_input(graph,work); } catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Anomaly input rejection differs");
+    if (!expected) continue;
+    for (std::size_t i=0; i<4; ++i) cache_pass(work,repeat,i);
+    if (exact_edge_bytes(expected->simple) != exact_edge_bytes(actual->simple) ||
+        exact_edge_bytes(expected->weighted) != exact_edge_bytes(actual->weighted) ||
+        exact_edge_bytes(expected->records) != exact_edge_bytes(actual->records) ||
+        expected->neighbors.size() != actual->adjacency.size() || old_work.candidates != work.candidates)
+      throw std::runtime_error("Anomaly exact edges/records/cost differ");
+    for (std::size_t v=0; v<expected->neighbors.size(); ++v) equal(expected->neighbors[v],actual->adjacency[v]);
+  }
+  return !expected;
+}
+bool anomaly_records(const gm::Graph& graph, bool vertices, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<std::vector<rt::json::object>> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::anomaly_records(graph,vertices,old_work); } catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<std::vector<rt::json::object>> actual;
+    std::string new_failure;
+    try { actual = rt::anomaly_records(graph,vertices,work); } catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Anomaly population rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->size() != actual->size() || old_work.candidates != work.candidates) throw std::runtime_error("Anomaly population shape/cost differs");
+    for (std::size_t i=0; i<expected->size(); ++i)
+      if (rt::json::serialize(expected->at(i)) != rt::json::serialize(actual->at(i))) throw std::runtime_error("Anomaly population record bytes differ");
   }
   return !expected;
 }
@@ -1049,6 +1098,24 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  anomaly_input(graph);
+  for (std::uint64_t budget=0; budget<16; ++budget) anomaly_input(graph,budget);
+  for (bool vertices : {false,true}) {
+    anomaly_records(graph,vertices);
+    for (std::uint64_t budget=0; budget<12; ++budget) anomaly_records(graph,vertices,budget);
+  }
+  for (const auto* target : {"vertex","edge","subgraph"}) {
+    rt::json::array definitions;
+    const std::vector<const char*> measures = std::string(target)=="vertex" ? std::vector<const char*>{"degree","strength","event_count"} :
+      std::string(target)=="edge" ? std::vector<const char*>{"edge_weight","source_degree"} : std::vector<const char*>{"vertex_count","edge_count","weight_sum","density"};
+    for (const auto* measure : measures) definitions.push_back(rt::json::object{{"name",measure},{"measure",measure}});
+    rt::json::object parameters{{"anomaly_target",target},{"feature_definitions",definitions},
+      {"normality_reference",{{"kind","population"}}},{"scoring_definition",{{"method","standardized_l2"},{"minimum_scale",1}}},{"top_k",1}};
+    if (std::string(target)=="subgraph") parameters["subgraphs"] = rt::json::array{
+      rt::json::object{{"id","s"},{"vertices",{0,1}}},rt::json::object{{"id","t"},{"vertices",{1,2}}}};
+    for (const auto* profile : {"graph-anomalies:cpp:simple","graph-anomalies:cpp:weighted","graph-anomalies:cpp:neighbors","graph-anomalies:cpp:records"})
+      declared_request(profile,raw,parameters);
+  }
   for (bool directed : {false,true}) for (bool unit : {false,true}) {
     auto capacity_graph = raw; capacity_graph.as_object().at("graph").as_object()["directed"] = directed;
     flow_input(rt::parse_graph(capacity_graph),unit);
@@ -1716,6 +1783,7 @@ int main(int argc, char** argv) {
     const bool embeddings = argc > 1 && std::string(argv[1]) == "--embeddings";
     const bool sparsification = argc > 1 && std::string(argv[1]) == "--sparsification";
     const bool flow = argc > 1 && std::string(argv[1]) == "--flow";
+    const bool anomalies = argc > 1 && std::string(argv[1]) == "--anomalies";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1741,7 +1809,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1749,6 +1817,16 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (anomalies) {
+          const bool rejected = anomaly_input(graph);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile","graph-anomalies:cpp:simple+weighted+neighbors+records"},{"equal",true},{"rejected",rejected}}) << '\n';
+          for (bool vertices : {false,true}) {
+            const bool rejected = anomaly_records(graph,vertices);
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile","graph-anomalies:cpp:records"},{"vertices",vertices},{"equal",true},{"rejected",rejected}}) << '\n';
+          }
+        }
         if (flow) for (bool unit : {false,true}) {
           const bool rejected = flow_input(graph,unit);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

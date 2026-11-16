@@ -615,3 +615,19 @@ contributors, loops, initial residual positions and total capacities, including
 candidate costs and rejections on builds/hits. Requests verify both consumed
 views with directed/undirected parallels, fractional capacities, explicit
 vertex limits, zero capacities and missing loop weights.
+
+## Graph anomalies
+
+Anomaly features now declare simple/weighted COO, neighbor CSR and original
+record COO inputs. Population records are selected through the view's original
+ID maps; event counts and subgraph totals use its original orientation/order
+and exact per-record weights. Feature definitions, reference statistics and
+anomaly scoring remain unchanged.
+
+Checkpoint `41-anomalies` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. All 19,713 corpus cases match normalized exact edges, adjacency,
+original records, complete vertex/edge JSON bytes, costs and rejections on
+builds/hits. Requests verify every declaration for vertex, edge and subgraph
+targets, and existing independent feature/score oracles pass. An ambiguous
+unqualified call in the frozen test reference was corrected before validation;
+its initial build diagnostic is retained.
