@@ -233,7 +233,8 @@ ViewVertexMap vertex_map(const Graph& graph, const ViewSpec& spec, std::uint32_t
 
 struct Arc { VertexIndex src, dst; Weight weight; EdgeIndex original; };
 CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary& summary,
-                  std::uint32_t& left_count, const std::function<void(std::uint64_t)>& charge) {
+                  std::uint32_t& left_count, const std::function<void(std::uint64_t)>& charge,
+                  const std::function<void(std::uint64_t)>& charge_original_edges) {
   charge(graph.vertex_count());
   validate_view_counts(spec, graph.vertex_count(), graph.edge_count());
   CooView result;
@@ -248,6 +249,7 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
   std::vector<Arc> edges;
   std::map<std::pair<VertexIndex, VertexIndex>, std::size_t> unique;
   for (EdgeIndex i = 0; i < graph.edge_count(); ++i) {
+    charge_original_edges(1);
     charge(1);
     const auto& edge = graph.canonical().edges[i];
     if (spec.nonnegative_edge_weights)
@@ -547,7 +549,11 @@ ViewResult build_graph(const Graph& graph, const ViewSpec& spec, const ViewBuild
     if (options.charge) options.charge(amount);
     result.build_work = add_count(result.build_work, amount);
   };
-  auto input = normalize(graph, spec, result.normalization, left_count, charge);
+  auto charge_original_edges = [&](std::uint64_t amount) {
+    if (options.charge_original_edges) options.charge_original_edges(amount);
+    result.original_edge_work = add_count(result.original_edge_work, amount);
+  };
+  auto input = normalize(graph, spec, result.normalization, left_count, charge, charge_original_edges);
   if (spec.kind == "coo") result.view = std::move(input);
   else if (spec.kind == "csr") result.view = csr(std::move(input), spec);
   else if (spec.kind == "bipartite") result.view = BipartiteView{csr(std::move(input), spec), left_count};

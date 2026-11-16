@@ -5,6 +5,7 @@
 #include <map>
 #include <set>
 #include "../internal.hpp"
+#include "../exact_number.hpp"
 namespace graphmine::legacy_test {
 using namespace graphmine::runtime;
 inline UndirectedGraphView simple(const Graph& graph, UndirectedProjectionOptions options = {}) {
@@ -100,5 +101,26 @@ inline std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work&
     row.erase(std::unique(row.begin(), row.end()), row.end());
   }
   return result;
+}
+// Frozen exact edge-list normalizer from 0d4986de. Keep independent of the new
+// factory and layout decoder so a policy/rounding change cannot bless itself.
+struct ExactEdge { VertexIndex u, v; Exact weight; std::size_t original; };
+inline std::vector<ExactEdge> exact_edges(const Graph& graph, bool weighted, Work& work,
+                                         bool nonnegative = true, bool loops = false) {
+  std::map<std::pair<VertexIndex, VertexIndex>, ExactEdge> normalized;
+  for (std::size_t i = 0; i < graph.edge_count(); ++i) {
+    work.tick();
+    const auto& raw = graph.canonical().edges[i];
+    auto u = graph.dense_index(raw.source), v = graph.dense_index(raw.target);
+    Exact weight = weighted ? Exact(raw.weight.value_or(1)) : Exact(1);
+    require(!nonnegative || weight >= 0, "Weights must be nonnegative");
+    if (u == v && !loops) continue;
+    if (!graph.directed() && u > v) std::swap(u, v);
+    auto [it, inserted] = normalized.emplace(std::make_pair(u, v), ExactEdge{u, v, weight, i});
+    if (!inserted && weighted) it->second.weight += weight;
+  }
+  std::vector<ExactEdge> output;
+  for (auto& entry : normalized) output.push_back(std::move(entry.second));
+  return output;
 }
 }  // namespace graphmine::legacy_test

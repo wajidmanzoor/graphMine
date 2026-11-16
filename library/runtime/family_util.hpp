@@ -7,6 +7,7 @@
 #include <set>
 
 #include "exact_number.hpp"
+#include "view_profiles.hpp"
 
 namespace graphmine::runtime::family_util {
 using Vertices = std::vector<VertexIndex>;
@@ -201,6 +202,30 @@ struct Edge {
   Exact weight;
   std::size_t original;
 };
+// Layout-only rational COO decoding. A symmetric undirected view represents
+// each off-diagonal edge twice; the edge-list layout stores its upper half.
+inline std::vector<Edge> edge_layout(const CooView& view) {
+  const auto& weights = std::get<std::vector<RationalWeight>>(view.weights);
+  const auto& original = view.edge_ids.value();
+  std::vector<Edge> output;
+  for (std::size_t i = 0; i < view.src.size(); ++i) {
+    if (view.symmetric && view.src[i] > view.dst[i]) continue;
+    output.push_back({view.src[i], view.dst[i],
+                      Exact(Integer(weights[i].numerator)) / Integer(weights[i].denominator),
+                      static_cast<std::size_t>(original[i])});
+  }
+  return output;
+}
+inline std::vector<Edge> edges(const Graph& graph, const ViewProfile& profile, Work& work) {
+  try {
+    const auto input = consume_view(graph, profile, work, ViewBudget::record_edges);
+    return edge_layout(std::get<CooView>(input->view));
+  } catch (const Failure& error) {
+    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+      throw Failure("invalid_input", "Weights must be nonnegative");
+    throw;
+  }
+}
 inline std::vector<Edge> edges(const Graph& graph, bool weighted, Work& work,
                                bool nonnegative = true, bool loops = false) {
   std::map<std::pair<VertexIndex, VertexIndex>, Edge> normalized;

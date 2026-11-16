@@ -44,6 +44,8 @@ std::shared_ptr<const ViewResult> consume_view(const Graph& graph, const ViewPro
   // Preserve each old adapter's candidate cost, including on cache hits.
   if (budget == ViewBudget::original_edges) work.tick(graph.edge_count());
   ViewBuildOptions options;
+  if (budget == ViewBudget::record_edges)
+    options.charge_original_edges = [&](std::uint64_t amount) { work.tick(amount); };
   options.charge = [&](std::uint64_t amount) {
     work.tick(budget == ViewBudget::weighted_adjacency ? amount : 0);
   };

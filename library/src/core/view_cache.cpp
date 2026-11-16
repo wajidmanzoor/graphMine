@@ -9,6 +9,7 @@ std::shared_ptr<const ViewResult> cached_view(const std::string& snapshot,
   const auto key = snapshot + ":standard-view-v2:" + canonical;
   if (const auto found = representation_store::lookup(key)) {
     auto result = std::static_pointer_cast<const ViewResult>(found->value);
+    if (options.charge_original_edges) options.charge_original_edges(result->original_edge_work);
     if (options.charge) options.charge(result->build_work);
     if (options.observe) options.observe(*result, true, true);
     return result;

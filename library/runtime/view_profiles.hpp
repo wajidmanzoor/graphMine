@@ -15,7 +15,7 @@ struct ViewProfile {
 const ViewProfile& cpu_view_profile(const std::string&);
 json::array cpu_view_declarations();
 
-enum class ViewBudget { algorithm_owned, original_edges, weighted_adjacency };
+enum class ViewBudget { algorithm_owned, original_edges, weighted_adjacency, record_edges };
 std::shared_ptr<const ViewResult> consume_view(const Graph&, const ViewProfile&, Work&, ViewBudget);
 // Layout-only copy for algorithms that retain vector rows internally.
 MiningGraph adjacency_layout(const CsrView&);

@@ -104,3 +104,24 @@ admissions. Both input profiles pass 13,142 cold/warm corpus cases against the
 frozen adjacency builder, including row bytes and candidate costs. Declaration
 checks cover full/count-only closure, single/batch pairs, and clique-percolation
 options. Their algorithm results remain covered by the existing CPU tests.
+
+## Density
+
+Densest subgraph and fixed-size densest subgraph now obtain their exact edge
+lists from rational COO views. A layout decoder reconstructs numerator and
+denominator integers without a floating-point round trip and stores each
+symmetric undirected edge once. Weighted profiles sum parallel weights exactly;
+unweighted profiles retain one unit edge. Higher-order clique terms and
+quasi-cliques consume separate declared adjacency views.
+
+The factory offers an original-record budget callback so the exact adapters
+retain validation/resource-limit ordering, including negative weights on loops.
+Successful cache hits pay the same record cost. Existing f64 defaults and other
+adapters' budgets remain unchanged.
+
+Checkpoint `06-density` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Six profiles pass 39,426 corpus cases, checking endpoint and original
+edge-index bytes, canonical rational numerator/denominator bytes, candidate
+costs and matching rejections. Contract tests include sums beyond f64 precision
+and range, weighted/unweighted modes, small candidate budgets and declarations
+consumed by real density requests.

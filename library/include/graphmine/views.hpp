@@ -132,6 +132,7 @@ struct ViewResult {
   NormalizationSummary normalization;
   std::string snapshot_hash, canonical_spec;
   std::uint64_t build_work = 0;
+  std::uint64_t original_edge_work = 0;
   [[nodiscard]] std::size_t accounted_bytes() const;
   [[nodiscard]] std::string normalization_json() const;
 };
@@ -140,6 +141,9 @@ struct ViewBuildOptions {
   // Cache hits pay the same candidate cost as a successful fresh build.
   std::function<void(std::uint64_t)> charge;
   std::function<void(const ViewResult&, bool hit, bool retained)> observe;
+  // Optional original-record budget, charged before that record's validation.
+  // A cache hit charges the count from the successful original build.
+  std::function<void(std::uint64_t)> charge_original_edges;
 };
 
 // Immutable, process-local cached results.

@@ -4,6 +4,19 @@
 namespace graphmine::runtime {
 namespace {
 using namespace family_util;
+constexpr const char* weighted_spec = R"({"kind":"coo","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:sum","weights":"rational_exact","nonnegative_weights":true,"edge_ids":true})";
+constexpr const char* unweighted_spec = R"({"kind":"coo","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"rational_exact","weight_source":"unit",
+  "nonnegative_weights":true,"edge_ids":true})";
+constexpr const char* adjacency_spec = R"({"kind":"csr","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"none","sorted_neighbors":true})";
+const ViewProfile density_weighted{"densest-subgraph:cpp:edge_weight", {"densest-subgraph"}, weighted_spec};
+const ViewProfile density_unweighted{"densest-subgraph:cpp:unweighted", {"densest-subgraph"}, unweighted_spec};
+const ViewProfile fixed_weighted{"densest-k-subgraph:cpp:edge_weight", {"densest-k-subgraph"}, weighted_spec};
+const ViewProfile fixed_unweighted{"densest-k-subgraph:cpp:unweighted", {"densest-k-subgraph"}, unweighted_spec};
+const ViewProfile clique_profile{"densest-subgraph:cpp:clique_terms", {"densest-subgraph"}, adjacency_spec};
+const ViewProfile quasi_profile{"quasi-cliques:cpp:default", {"quasi-cliques"}, adjacency_spec};
 struct Term {
   Vertices vertices;
   Exact weight;
@@ -15,7 +28,8 @@ std::vector<Term> terms(const Graph& graph, const std::vector<Edge>& edges, std:
     for (const auto& edge : edges) result.push_back({{edge.u, edge.v}, edge.weight});
     return result;
   }
-  const auto adj = adjacency(graph, work);
+  const auto input = consume_view(graph, clique_profile, work, ViewBudget::original_edges);
+  const auto adj = adjacency_layout(std::get<CsrView>(input->view));
   if (order <= graph.vertex_count())
     each_clique(adj, order, order, work, [&](const Vertices& selected) {
       work.tick(selected.size());
@@ -81,7 +95,9 @@ json::object density(const Graph& graph, const json::object& args, Work& work, b
   require(order == 2 || weight == "unweighted",
           "Weighted density is defined only for clique_order=2");
   require(minimum <= graph.vertex_count(), "No feasible nonempty vertex set at the requested size");
-  const auto normalized = edges(graph, weight == "edge_weight", work);
+  const auto& profile = fixed ? (weight == "edge_weight" ? fixed_weighted : fixed_unweighted)
+                             : (weight == "edge_weight" ? density_weighted : density_unweighted);
+  const auto normalized = edges(graph, profile, work);
   const auto objective = terms(graph, normalized, order, work);
   Vertices best;
   Exact best_ratio = -1;
@@ -157,7 +173,8 @@ json::object quasi_cliques(const Graph& graph, const json::object& args, const s
   require(!args.contains("maximum_size") || args.at("maximum_size").is_null() || upper >= minimum,
           "maximum_size is below minimum_size");
   const bool maximal_only = boolean(args, "maximal_only", true);
-  const auto adj = adjacency(graph, work);
+  const auto input = consume_view(graph, quasi_profile, work, ViewBudget::original_edges);
+  const auto adj = adjacency_layout(std::get<CsrView>(input->view));
   std::vector<Vertices> accepted;
   json::array rows;
   std::uint64_t output_items = 0;

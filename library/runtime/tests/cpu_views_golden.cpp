@@ -1,5 +1,6 @@
 #include "legacy_normalizers.hpp"
 #include "../view_profiles.hpp"
+#include "../family_util.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -40,6 +41,43 @@ const char* clique_profiles[] = {
   "k-core:cpp:default", "maximum-independent-set:cpp:default", "minimum-vertex-cover:cpp:default"
 };
 const char* reachability_profiles[] = {"transitive-closure:cpp:default", "overlapping-communities:cpp:default"};
+const char* density_profiles[] = {"densest-subgraph:cpp:clique_terms", "quasi-cliques:cpp:default"};
+struct ExactCase { const char* profile; bool weighted, nonnegative = true, loops = false; };
+const ExactCase density_exact_cases[] = {
+  {"densest-subgraph:cpp:edge_weight",true}, {"densest-subgraph:cpp:unweighted",false},
+  {"densest-k-subgraph:cpp:edge_weight",true}, {"densest-k-subgraph:cpp:unweighted",false}
+};
+bool exact_edges(const gm::Graph& graph, const ExactCase& test, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<std::vector<gm::legacy_test::ExactEdge>> expected;
+  std::string expected_failure;
+  try { expected = gm::legacy_test::exact_edges(graph,test.weighted,old_work,test.nonnegative,test.loops); }
+  catch (const std::exception& e) { expected_failure = e.what(); }
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<std::vector<rt::family_util::Edge>> actual;
+    std::string actual_failure;
+    try { actual = rt::family_util::edges(graph,rt::cpu_view_profile(test.profile),work); }
+    catch (const std::exception& e) { actual_failure = e.what(); }
+    if (expected_failure != actual_failure) throw std::runtime_error(std::string(test.profile)+": exact edge rejection differs");
+    if (!expected) continue;
+    if (expected->size() != actual->size() || work.candidates != old_work.candidates)
+      throw std::runtime_error(std::string(test.profile)+": exact edge count/cost differs");
+    std::vector<gm::VertexIndex> old_endpoints, new_endpoints;
+    std::vector<std::size_t> old_ids, new_ids;
+    for (std::size_t i=0; i<expected->size(); ++i) {
+      const auto& a = expected->at(i); const auto& b = actual->at(i);
+      old_endpoints.insert(old_endpoints.end(),{a.u,a.v}); new_endpoints.insert(new_endpoints.end(),{b.u,b.v});
+      old_ids.push_back(a.original); new_ids.push_back(b.original);
+      // Compare canonical numerator/denominator bytes, never cpp_rational object
+      // storage (which contains pointers), and never a rounded display value.
+      if (rt::json::serialize(rt::fraction_json(a.weight)) != rt::json::serialize(rt::fraction_json(b.weight)))
+        throw std::runtime_error(std::string(test.profile)+": exact rational weight bytes differ");
+    }
+    equal(old_endpoints,new_endpoints); equal(old_ids,new_ids);
+  }
+  return !expected;
+}
 void declared_request(const char* id, const rt::json::value& graph, const rt::json::object& parameters) {
   const auto& profile = rt::cpu_view_profile(id);
   const rt::json::object request{{"command","run"},{"operation",profile.operations.front()},
@@ -132,6 +170,9 @@ void contracts() {
   declared_request("transitive-closure:cpp:default",raw,{{"query_mode","batch_pairs"},{"query_pairs",{{0,2},{2,0}}}});
   declared_request("overlapping-communities:cpp:default",undirected,{{"k",2}});
   declared_request("overlapping-communities:cpp:default",undirected,{{"k",3},{"include_unassigned_vertices",false}});
+  for (const auto* profile : density_profiles) traversal(graph,profile);
+  for (const auto& test : density_exact_cases)
+    for (std::uint64_t budget=0; budget<7; ++budget) exact_edges(graph,test,budget);
   for (const auto* mode : {"independent", "nearest_source"}) {
     const rt::json::object request{{"command","run"},{"operation","breadth-first-search"},
       {"device","cpu"},{"graph",raw},{"parameters",{{"sources",{0,1}},{"source_mode",mode}}}};
@@ -146,6 +187,21 @@ void contracts() {
   auto positive = raw;
   for (auto& edge : positive.as_object().at("edges").as_array())
     edge.as_object()["weight"] = std::abs(edge.as_object().at("weight").to_number<double>());
+  auto density_input = positive;
+  density_input.as_object().at("graph").as_object()["directed"] = false;
+  density_input.as_object().at("edges").as_array()[0].as_object()["weight"] = 1e16;
+  density_input.as_object().at("edges").as_array()[1].as_object()["weight"] = 1;
+  for (const auto& test : density_exact_cases) {
+    exact_edges(rt::parse_graph(density_input),test);
+    rt::json::object parameters{{"weight_mode",test.weighted ? "edge_weight" : "unweighted"}};
+    if (std::string(test.profile).find("densest-k-") == 0) parameters["k"] = 2;
+    declared_request(test.profile,density_input,parameters);
+  }
+  declared_request("densest-subgraph:cpp:clique_terms",density_input,{{"clique_order",3}});
+  declared_request("quasi-cliques:cpp:default",density_input,{{"gamma",0.5},{"minimum_size",2}});
+  density_input.as_object().at("edges").as_array()[0].as_object()["weight"] = 1e308;
+  density_input.as_object().at("edges").as_array()[1].as_object()["weight"] = 1e308;
+  for (const auto& test : density_exact_cases) exact_edges(rt::parse_graph(density_input),test);
   std::vector<WeightedCase> operation_cases(std::begin(weighted_cases),std::end(weighted_cases));
   operation_cases.insert(operation_cases.end(),std::begin(connectivity_cases),std::end(connectivity_cases));
   operation_cases.push_back({"topological-sort:cpp:default","collapse",false,false});
@@ -189,14 +245,21 @@ int main(int argc, char** argv) {
     const bool connectivity = argc > 1 && std::string(argv[1]) == "--connectivity";
     const bool cliques = argc > 1 && std::string(argv[1]) == "--cliques";
     const bool reachability = argc > 1 && std::string(argv[1]) == "--reachability";
+    const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
     if (reachability) simple_profiles.assign(std::begin(reachability_profiles),std::end(reachability_profiles));
+    if (density) simple_profiles.assign(std::begin(density_profiles),std::end(density_profiles));
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (density) for (const auto& test : density_exact_cases) {
+          const bool rejected = exact_edges(graph,test);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",test.profile},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (weighted) {
           for (const auto& test : weighted_cases) {
             const bool rejected = weighted_path(graph,test);
@@ -224,7 +287,7 @@ int main(int argc, char** argv) {
       if (!weighted && !connectivity && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }
