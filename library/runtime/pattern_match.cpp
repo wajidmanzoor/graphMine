@@ -155,29 +155,43 @@ bool AttributePredicates::match(const json::object& data, const json::object& pa
   return true;
 }
 
+PatternRecords::PatternRecords(const Graph& graph, Work& work, const ViewProfile* profile) {
+  for (const auto& v : graph.canonical().vertices)
+    vertices.push_back(vertex_record_json(v,work));
+  if (profile) {
+    const auto input = consume_view(graph,*profile,work,ViewBudget::algorithm_owned);
+    const auto& view = std::get<CooView>(input->view);
+    // Each undirected record has a canonical arc and its mirror. Copy only
+    // the canonical half; neither parallel records nor self-loops are removed.
+    for (std::size_t i=0; i<view.src.size(); ++i) {
+      if (view.symmetric && view.src[i] > view.dst[i]) continue;
+      work.tick();
+      bundles[{view.src[i],view.dst[i]}].push_back(edges.size());
+      edges.push_back(edge_record_json(graph.canonical().edges.at(view.edge_ids->at(i)),work));
+    }
+  } else {
+    // Unmigrated temporal/frequent-pattern callers retain their legacy input
+    // path until their own family evidence and corpus comparisons are ready.
+    for (const auto& edge : graph.canonical().edges) {
+      work.tick();
+      auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+      if (!graph.directed() && u > v) std::swap(u,v);
+      bundles[{u,v}].push_back(edges.size());
+      edges.push_back(edge_record_json(edge,work));
+    }
+  }
+}
 bool pattern_mappings(const Graph& graph, const Graph& query, bool induced,
                       const json::array& vertex_specs, const json::array& edge_specs,
                       const std::function<bool(const std::vector<VertexIndex>&)>& emit,
-                      Work& work) {
+                      Work& work, const ViewProfile* profile) {
   require(graph.directed() == query.directed(), "Query and data graph direction must match");
   const AttributePredicates vertex_match(vertex_specs, query, false),
       edge_match(edge_specs, query, true);
-  using Pair = std::pair<VertexIndex, VertexIndex>;
-  std::vector<json::object> data_vertices, query_vertices, data_edges, query_edges;
-  std::map<Pair, std::vector<std::size_t>> data_bundles, query_bundles;
-  auto collect = [&](const Graph& input, auto& vertices, auto& edges, auto& bundles) {
-    for (const auto& v : input.canonical().vertices)
-      vertices.push_back(vertex_record_json(v, work));
-    for (const auto& edge : input.canonical().edges) {
-      work.tick();
-      auto u = input.dense_index(edge.source), v = input.dense_index(edge.target);
-      if (!input.directed() && u > v) std::swap(u, v);
-      bundles[{u, v}].push_back(edges.size());
-      edges.push_back(edge_record_json(edge, work));
-    }
-  };
-  collect(graph, data_vertices, data_edges, data_bundles);
-  collect(query, query_vertices, query_edges, query_bundles);
+  const PatternRecords data(graph,work,profile), pattern(query,work,profile);
+  const auto& data_vertices = data.vertices; const auto& query_vertices = pattern.vertices;
+  const auto& data_edges = data.edges; const auto& query_edges = pattern.edges;
+  const auto& data_bundles = data.bundles; const auto& query_bundles = pattern.bundles;
   const std::vector<std::size_t> empty;
   auto bundle = [&](VertexIndex a, VertexIndex b, VertexIndex u, VertexIndex v) {
     if (!graph.directed()) {

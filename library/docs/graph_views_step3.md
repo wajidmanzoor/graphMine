@@ -291,3 +291,18 @@ large inputs reproduce the old rejection before allocating a dense matrix.
 Boundary tests cover a demonstrated one-bit arithmetic difference, signed zero,
 sequential rounding, reciprocal edges, missing and negative loop weights,
 overflow, and budget-error precedence. Real requests verify both declarations.
+
+## Subgraph isomorphism
+
+Both data and query graphs now use a declared COO view that retains loops,
+parallel edges and original identities. Its canonical undirected half is copied
+into the existing edge bundles. Complete typed property records still come from
+the common front. Predicate evaluation and the assignment search are unchanged.
+Other callers of the shared matcher keep their legacy constructor until their
+own family migration.
+
+Checkpoint `19-subgraph-matching` passes 53 CTests, 238 Python tests and all 82
+CPU admissions. All 6,571 corpus cases match vertex/edge JSON bytes, ordered
+bundle endpoints, original-edge index arrays and costs, on fresh and cached
+views. Budget tests and real induced/non-induced requests with parallel-weight
+predicates and result limits pass and verify the consumed declaration.

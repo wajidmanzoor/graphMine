@@ -184,4 +184,21 @@ inline ForceLayoutInput force_layout_input(const Graph& graph, bool weighted,
   }
   return input;
 }
+// Frozen pattern_mappings::collect from ed2fcfb8. Arbitrary property conversion
+// stays in the unchanged common front; endpoint grouping is frozen here.
+struct PatternRecords {
+  std::vector<json::object> vertices, edges;
+  std::map<std::pair<VertexIndex,VertexIndex>,std::vector<std::size_t>> bundles;
+  PatternRecords(const Graph& graph, Work& work) {
+    for (const auto& v : graph.canonical().vertices)
+      vertices.push_back(vertex_record_json(v,work));
+    for (const auto& edge : graph.canonical().edges) {
+      work.tick();
+      auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+      if (!graph.directed() && u > v) std::swap(u,v);
+      bundles[{u,v}].push_back(edges.size());
+      edges.push_back(edge_record_json(edge,work));
+    }
+  }
+};
 }  // namespace graphmine::legacy_test

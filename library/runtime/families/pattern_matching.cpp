@@ -2,6 +2,9 @@
 
 namespace graphmine::runtime {
 namespace {
+const ViewProfile subgraph_profile{"subgraph-isomorphism:cpp:bundles", {"subgraph-isomorphism"},
+  R"({"kind":"coo","direction":"keep","self_loops":"keep","parallel_edges":"keep",
+       "weights":"none","edge_ids":true,"sorted_neighbors":false})"};
 const ViewProfile motif_input{"motif-counting:cpp:input", {"motif-counting"},
   R"({"kind":"csr","direction":"keep","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
 const ViewProfile motif_query{"motif-counting:cpp:motif", {"motif-counting"},
@@ -33,7 +36,7 @@ json::object subgraph_isomorphism(const Graph& graph, const json::object& args, 
         matches.push_back(mapping_rows(graph, query, mapping));
         return true;
       },
-      work);
+      work, &subgraph_profile);
   auto port = result_port("vertex_mappings", matches, complete);
   port["query_graph_fingerprint"] = input_fingerprint(args.at("query_graph"));
   return output({{"query_graph", args.at("query_graph")},

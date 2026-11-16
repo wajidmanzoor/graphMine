@@ -116,6 +116,40 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
   }
   return !expected;
 }
+bool pattern_records(const gm::Graph& graph, const char* profile, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::PatternRecords> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::PatternRecords> actual;
+    std::string new_failure;
+    try { actual.emplace(graph,work,&rt::cpu_view_profile(profile)); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Pattern bundle rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->vertices.size() != actual->vertices.size() || expected->edges.size() != actual->edges.size() ||
+        expected->bundles.size() != actual->bundles.size() || old_work.candidates != work.candidates)
+      throw std::runtime_error("Pattern bundle shape/cost differs");
+    for (std::size_t v=0; v<expected->vertices.size(); ++v)
+      if (rt::json::serialize(expected->vertices[v]) != rt::json::serialize(actual->vertices[v]))
+        throw std::runtime_error("Pattern vertex record bytes differ");
+    for (std::size_t e=0; e<expected->edges.size(); ++e)
+      if (rt::json::serialize(expected->edges[e]) != rt::json::serialize(actual->edges[e]))
+        throw std::runtime_error("Pattern edge record bytes differ");
+    auto old_bundle = expected->bundles.begin(); auto new_bundle = actual->bundles.begin();
+    for (; old_bundle != expected->bundles.end(); ++old_bundle,++new_bundle) {
+      equal(std::vector<gm::VertexIndex>{old_bundle->first.first,old_bundle->first.second},
+            std::vector<gm::VertexIndex>{new_bundle->first.first,new_bundle->first.second});
+      equal(old_bundle->second,new_bundle->second);
+    }
+  }
+  return !expected;
+}
 bool force_layout_input(const gm::Graph& graph, bool weighted, std::size_t dimensions,
                         std::uint64_t budget = rt::Work{}.max_candidates) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
@@ -312,6 +346,19 @@ void contracts() {
   traversal(graph,"topological-sort:cpp:default");
   auto undirected = raw;
   undirected.as_object().at("graph").as_object()["directed"] = false;
+  for (const auto& pattern_graph : {raw,undirected}) {
+    const auto parsed = rt::parse_graph(pattern_graph);
+    pattern_records(parsed,"subgraph-isomorphism:cpp:bundles");
+    for (std::uint64_t budget=0; budget<35; ++budget)
+      pattern_records(parsed,"subgraph-isomorphism:cpp:bundles",budget);
+    for (bool induced : {false,true}) {
+      declared_request("subgraph-isomorphism:cpp:bundles",pattern_graph,
+        {{"query_graph",pattern_graph},{"induced",induced}});
+      declared_request("subgraph-isomorphism:cpp:bundles",pattern_graph,
+        {{"query_graph",pattern_graph},{"induced",induced},{"result_limit",1},
+         {"edge_predicates",{rt::json::object{{"field","weight"},{"operator","eq_query"}}}}});
+    }
+  }
   for (const auto* profile : record_profiles) {
     record_index(graph,profile);
     record_index(rt::parse_graph(undirected),profile);
@@ -577,6 +624,7 @@ int main(int argc, char** argv) {
     const bool condensation = argc > 1 && std::string(argv[1]) == "--condensation";
     const bool records = argc > 1 && std::string(argv[1]) == "--records";
     const bool layout = argc > 1 && std::string(argv[1]) == "--layout";
+    const bool subgraph_matching = argc > 1 && std::string(argv[1]) == "--subgraph-matching";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -597,13 +645,19 @@ int main(int argc, char** argv) {
     if (local_community) selected_exact.push_back(local_community_case);
     if (geolocation) selected_exact.push_back(geolocation_case);
     if (condensation) selected_exact.push_back(condensation_case);
-    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout)
+    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (subgraph_matching) {
+          const auto* profile = "subgraph-isomorphism:cpp:bundles";
+          const bool rejected = pattern_records(graph,profile);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",profile},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (layout) for (bool weighted : {false,true}) for (std::size_t dimensions : {2,3}) {
           const bool rejected = force_layout_input(graph,weighted,dimensions);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
@@ -643,10 +697,10 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
           }
-        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout) traversal(graph);
+        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout && !subgraph_matching) traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
     std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1] : "traversal")
