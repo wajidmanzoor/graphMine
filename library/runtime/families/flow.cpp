@@ -4,8 +4,56 @@
 
 #include "exact_flow.hpp"
 #include "internal.hpp"
+#include "flow_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile flow_weight_records{"max-flow-min-cut:cpp:weight_records", {"max-flow-min-cut"},
+  R"({"kind":"coo","self_loops":"keep","parallel_edges":"keep","weights":"rational_exact",
+       "require_edge_weights":true,"nonnegative_weights":true,"edge_ids":true,"sorted_neighbors":false})"};
+const ViewProfile flow_unit_records{"max-flow-min-cut:cpp:unit_records", {"max-flow-min-cut"},
+  R"({"kind":"coo","self_loops":"keep","parallel_edges":"keep","weights":"rational_exact",
+       "weight_source":"unit","edge_ids":true,"sorted_neighbors":false})"};
+const ViewProfile flow_weight_sum{"max-flow-min-cut:cpp:weight_sum", {"max-flow-min-cut"},
+  R"({"kind":"coo","self_loops":"drop","parallel_edges":"collapse:sum","weights":"rational_exact",
+       "require_edge_weights":true,"nonnegative_weights":true})"};
+const ViewProfile flow_unit_sum{"max-flow-min-cut:cpp:unit_sum", {"max-flow-min-cut"},
+  R"({"kind":"coo","self_loops":"drop","parallel_edges":"collapse:sum","weights":"rational_exact","weight_source":"unit"})"};
+}
+FlowInput flow_input(const Graph& graph, bool unit, Work& work) {
+  std::shared_ptr<const ViewResult> records;
+  try {
+    records = consume_view(graph,unit ? flow_unit_records : flow_weight_records,work,ViewBudget::record_edges);
+  } catch (const Failure& error) {
+    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+      throw Failure("invalid_input","Edge capacities must be nonnegative");
+    throw;
+  } catch (const std::invalid_argument& error) {
+    if (std::string(error.what()) == "Graph view: This view requires explicit edge weights")
+      throw Failure("invalid_input","Edge-weight capacity mode requires every edge weight");
+    throw;
+  }
+  const auto summed = consume_view(graph,unit ? flow_unit_sum : flow_weight_sum,work,ViewBudget::algorithm_owned);
+  const auto& normalized = std::get<CooView>(summed->view);
+  const auto& weights = std::get<std::vector<RationalWeight>>(normalized.weights);
+  auto exact = [](const RationalWeight& weight) -> Exact { return Exact(Integer(weight.numerator))/Integer(weight.denominator); };
+  FlowInput result;
+  for (std::size_t i=0; i<normalized.src.size(); ++i) {
+    const auto capacity = exact(weights[i]);
+    result.arcs[{normalized.vertices.to_original[normalized.src[i]],normalized.vertices.to_original[normalized.dst[i]]}].capacity = capacity;
+    result.capacity_sum += capacity;
+  }
+  const auto& original = std::get<CooView>(records->view);
+  const auto& capacities = std::get<std::vector<RationalWeight>>(original.weights);
+  for (std::size_t i=0; i<original.src.size(); ++i) {
+    const auto u=original.vertices.to_original[original.src[i]],v=original.vertices.to_original[original.dst[i]];
+    const auto capacity = exact(capacities[i]);
+    const auto edge = original.edge_ids->at(i);
+    if (u==v) result.loops.push_back({edge,u,capacity});
+    else result.arcs.at({u,v}).originals.push_back({edge,capacity});
+  }
+  return result;
+}
 json::object max_flow(const Graph& graph, const json::object& args, const std::string& backend,
                       int device, Work& work) {
   fields(args,
@@ -44,16 +92,7 @@ json::object max_flow(const Graph& graph, const json::object& args, const std::s
       resolved_capacities.push_back(row);
     }
   }
-  struct Original {
-    std::size_t edge;
-    Exact capacity;
-  };
-  struct Arc {
-    Exact capacity = 0;
-    std::vector<Original> originals;
-    std::size_t position = 0;
-  };
-  std::map<std::pair<VertexIndex, VertexIndex>, Arc> arcs;
+  std::map<std::pair<VertexIndex, VertexIndex>, FlowInput::Arc> arcs;
   Exact capacity_sum = 0;
   json::array flows;
   auto add = [&](VertexIndex u, VertexIndex v, std::size_t edge, const Exact& capacity) {
@@ -71,7 +110,11 @@ json::object max_flow(const Graph& graph, const json::object& args, const std::s
     exact_field(row, "flow", amount);
     return row;
   };
-  for (std::size_t i = 0; i < graph.edge_count(); ++i) {
+  if (backend == "cpp") {
+    auto prepared = flow_input(graph,mode == "unit_capacity",work);
+    arcs = std::move(prepared.arcs); capacity_sum = std::move(prepared.capacity_sum);
+    for (const auto& loop : prepared.loops) flows.push_back(flow_row(loop.edge,loop.vertex,loop.vertex,loop.capacity,0));
+  } else for (std::size_t i = 0; i < graph.edge_count(); ++i) {
     work.tick();
     const auto& edge = graph.canonical().edges[i];
     require(mode == "unit_capacity" || edge.weight.has_value(),

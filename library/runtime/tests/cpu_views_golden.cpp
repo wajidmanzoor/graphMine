@@ -21,6 +21,7 @@
 #include "../dynamic_input.hpp"
 #include "../embedding_input.hpp"
 #include "../sparsification_input.hpp"
+#include "../flow_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -131,6 +132,35 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+template<class Input> rt::json::value flow_bytes(const Input& input) {
+  rt::json::array arcs,loops;
+  for (const auto& [ends,arc] : input.arcs) {
+    rt::json::array originals;
+    for (const auto& edge : arc.originals) originals.push_back(rt::json::array{edge.edge,rt::fraction_json(edge.capacity)});
+    arcs.push_back(rt::json::array{ends.first,ends.second,rt::fraction_json(arc.capacity),originals,arc.position});
+  }
+  for (const auto& loop : input.loops) loops.push_back(rt::json::array{loop.edge,loop.vertex,rt::fraction_json(loop.capacity)});
+  return rt::json::array{arcs,loops,rt::fraction_json(input.capacity_sum)};
+}
+bool flow_input(const gm::Graph& graph, bool unit, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::FlowInput> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,unit,old_work); } catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::FlowInput> actual;
+    std::string new_failure;
+    try { actual = rt::flow_input(graph,unit,work); } catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Flow input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat,0); cache_pass(work,repeat,1);
+    if (rt::json::serialize(flow_bytes(*expected)) != rt::json::serialize(flow_bytes(*actual)) || old_work.candidates != work.candidates)
+      throw std::runtime_error("Flow exact capacity/contributor/loop bytes or cost differ");
   }
   return !expected;
 }
@@ -1019,6 +1049,20 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  for (bool directed : {false,true}) for (bool unit : {false,true}) {
+    auto capacity_graph = raw; capacity_graph.as_object().at("graph").as_object()["directed"] = directed;
+    flow_input(rt::parse_graph(capacity_graph),unit);
+    for (std::size_t e=0; e<4; ++e) capacity_graph.as_object().at("edges").as_array()[e].as_object()["weight"] = e==2 ? 0.0 : 0.1*(e+1);
+    flow_input(rt::parse_graph(capacity_graph),unit);
+    for (std::uint64_t budget=0; budget<7; ++budget) flow_input(rt::parse_graph(capacity_graph),unit,budget);
+    for (const auto* suffix : {"records","sum"}) {
+      const std::string profile = std::string("max-flow-min-cut:cpp:")+(unit ? "unit_" : "weight_")+suffix;
+      declared_request(profile.c_str(),capacity_graph,{{"source",0},{"sink",2},{"capacity_mode",unit ? "unit_capacity" : "edge_weight"},
+        {"vertex_capacities",{rt::json::object{{"vertex",1},{"capacity",0.25}}}}});
+    }
+    capacity_graph.as_object().at("edges").as_array()[3].as_object().erase("weight");
+    flow_input(rt::parse_graph(capacity_graph),unit);
+  }
   const auto sparse = rt::strict_json(R"({"graph":{"id":"sparse","directed":false,"allows_self_loops":true,"allows_parallel_edges":true},
     "vertices":[{"id":0},{"id":1},{"id":2},{"id":3},{"id":4}],"edges":[
     {"id":0,"source":2,"target":0,"weight":0.5},{"id":1,"source":1,"target":0,"weight":0.1},
@@ -1671,6 +1715,7 @@ int main(int argc, char** argv) {
     const bool dynamic_triangles = argc > 1 && std::string(argv[1]) == "--dynamic-triangles";
     const bool embeddings = argc > 1 && std::string(argv[1]) == "--embeddings";
     const bool sparsification = argc > 1 && std::string(argv[1]) == "--sparsification";
+    const bool flow = argc > 1 && std::string(argv[1]) == "--flow";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1696,7 +1741,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1704,6 +1749,12 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (flow) for (bool unit : {false,true}) {
+          const bool rejected = flow_input(graph,unit);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",unit ? "max-flow-min-cut:cpp:unit_records+unit_sum" : "max-flow-min-cut:cpp:weight_records+weight_sum"},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (sparsification) for (bool fixture : {false,true}) {
           const bool rejected = sparsification_input(fixture ? corpus_sparsification(graph) : graph);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

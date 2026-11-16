@@ -91,6 +91,29 @@ struct HypergraphInput {
     }
   }
 };
+struct FlowInput {
+  struct Original { std::size_t edge; Exact capacity; };
+  struct Arc { Exact capacity = 0; std::vector<Original> originals; std::size_t position = 0; };
+  struct Loop { std::size_t edge; VertexIndex vertex; Exact capacity; };
+  std::map<std::pair<VertexIndex,VertexIndex>,Arc> arcs;
+  std::vector<Loop> loops;
+  Exact capacity_sum = 0;
+  FlowInput(const Graph& graph, bool unit, Work& work) {
+    auto add = [&](VertexIndex u,VertexIndex v,std::size_t edge,const Exact& capacity) {
+      auto& arc = arcs[{u,v}]; arc.capacity += capacity;
+      arc.originals.push_back({edge,capacity}); capacity_sum += capacity;
+    };
+    for (std::size_t i=0; i<graph.edge_count(); ++i) {
+      work.tick(); const auto& edge = graph.canonical().edges[i];
+      require(unit || edge.weight.has_value(),"Edge-weight capacity mode requires every edge weight");
+      const Exact capacity = unit ? Exact(1) : Exact(*edge.weight);
+      require(capacity >= 0,"Edge capacities must be nonnegative");
+      const auto u=graph.dense_index(edge.source),v=graph.dense_index(edge.target);
+      if (u==v) { loops.push_back({i,u,capacity}); continue; }
+      add(u,v,i,capacity); if (!graph.directed()) add(v,u,i,capacity);
+    }
+  }
+};
 struct SparsificationInput {
   struct Edge { VertexIndex u,v; double weight; std::size_t original; };
   std::vector<Edge> edges;

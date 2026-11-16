@@ -600,3 +600,18 @@ cases comparing endpoint/weight/ID bytes, neighbor order, costs and rejections
 on fresh/cached views. Factory tests cover all numeric types, cancellation after
 parallel sums, signed zero, unchanged defaults, cache separation and invalid
 structured uses. Requests exercise zero, sampled and identity edge budgets.
+
+## Maximum flow and minimum cut
+
+CPU flow now declares expanded original-arc and collapsed-capacity COO views
+for weighted and unit capacity modes. Exact capacity sums, per-arc contributor
+order and original loop records come from those views. Vertex splitting,
+residual solving, original-edge flow allocation and cut certification remain
+unchanged; the original GPU preparation remains for its exporter migration.
+
+Checkpoint `40-flow` passes 53 CTests, 238 Python tests and all 82 CPU admissions.
+Both modes pass 13,142 corpus cases comparing canonical exact capacities,
+contributors, loops, initial residual positions and total capacities, including
+candidate costs and rejections on builds/hits. Requests verify both consumed
+views with directed/undirected parallels, fractional capacities, explicit
+vertex limits, zero capacities and missing loop weights.

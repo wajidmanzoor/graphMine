@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "60c5990fa65280cfcde2a227760a32d5567e71e55e6c2e28040c064fff7fef15"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "60c5990fa65280cfcde2a227760a32d5567e71e55e6c2e28040c064fff7fef15"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "60c5990fa65280cfcde2a227760a32d5567e71e55e6c2e28040c064fff7fef15"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "60c5990fa65280cfcde2a227760a32d5567e71e55e6c2e28040c064fff7fef15"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "60c5990fa65280cfcde2a227760a32d5567e71e55e6c2e28040c064fff7fef15"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "60c5990fa65280cfcde2a227760a32d5567e71e55e6c2e28040c064fff7fef15"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "60c5990fa65280cfcde2a227760a32d5567e71e55e6c2e28040c064fff7fef15"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "60c5990fa65280cfcde2a227760a32d5567e71e55e6c2e28040c064fff7fef15"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "60c5990fa65280cfcde2a227760a32d5567e71e55e6c2e28040c064fff7fef15"
+  }
+]
