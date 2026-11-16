@@ -399,3 +399,17 @@ admissions. All 6,571 corpus cases match canonical endpoints, exact minimum
 weights, candidate costs and input rejections. Fresh/cache-hit comparisons,
 parallel-weight and budget boundaries, and real requests across three field
 primes and homology dimensions pass with the declared profile.
+
+## Signed balance
+
+Weighted/unit signed graphs now come from exact COO views and aligned edge-label
+columns. The adapter retains its validation of positive/negative types,
+nonnegative costs and contradictory parallel signs. Projection, dropped loops,
+casts and weighted parallel sums occur in the factory. Parity traversal and
+frustration optimization remain unchanged.
+
+Checkpoint `27-signed-balance` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Both profiles pass 13,142 corpus cases comparing endpoint and sign
+arrays, exact costs, ordering, budgets and rejections. Request tests verify both
+tasks and quality settings, and boundary cases cover contradictory parallel
+signs, fractional sums, missing types and negative loop costs.

@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "414a78b02357a8913cf660401a554e7b82d05d7c485088c2dfacf6601c2e7bf4"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "414a78b02357a8913cf660401a554e7b82d05d7c485088c2dfacf6601c2e7bf4"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "414a78b02357a8913cf660401a554e7b82d05d7c485088c2dfacf6601c2e7bf4"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "414a78b02357a8913cf660401a554e7b82d05d7c485088c2dfacf6601c2e7bf4"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "414a78b02357a8913cf660401a554e7b82d05d7c485088c2dfacf6601c2e7bf4"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "414a78b02357a8913cf660401a554e7b82d05d7c485088c2dfacf6601c2e7bf4"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "414a78b02357a8913cf660401a554e7b82d05d7c485088c2dfacf6601c2e7bf4"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "414a78b02357a8913cf660401a554e7b82d05d7c485088c2dfacf6601c2e7bf4"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "414a78b02357a8913cf660401a554e7b82d05d7c485088c2dfacf6601c2e7bf4"
+  }
+]

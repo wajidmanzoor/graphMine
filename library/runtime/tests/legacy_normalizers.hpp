@@ -323,4 +323,26 @@ inline std::map<std::pair<VertexIndex,VertexIndex>,Exact> filtration_input(const
   }
   return weights;
 }
+// Frozen signed-balance normalization, including contradictory parallel signs.
+struct SignedEdge { VertexIndex u, v; bool negative; Exact weight; };
+inline std::map<std::pair<VertexIndex,VertexIndex>,SignedEdge> signed_input(const Graph& graph, bool weighted, Work& work) {
+  std::map<std::pair<VertexIndex,VertexIndex>,SignedEdge> result;
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    require(edge.type && (*edge.type == "positive" || *edge.type == "negative"),
+            "Every edge requires type positive or negative");
+    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    const Exact weight = weighted ? Exact(edge.weight.value_or(1)) : Exact(1);
+    require(weight >= 0,"Frustration costs must be nonnegative");
+    if (u == v) continue;
+    if (u > v) std::swap(u,v);
+    auto [it,inserted] = result.emplace(std::make_pair(u,v),SignedEdge{u,v,*edge.type == "negative",weight});
+    if (!inserted) {
+      require(it->second.negative == (*edge.type == "negative"),
+              "Contradictory parallel signed edges require a resolution policy");
+      if (weighted) it->second.weight += weight;
+    }
+  }
+  return result;
+}
 }  // namespace graphmine::legacy_test

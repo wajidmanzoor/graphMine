@@ -2,6 +2,7 @@
 
 #include "family_util.hpp"
 #include "native_random.hpp"
+#include "signed_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
@@ -15,6 +16,12 @@ const ViewProfile community_weighted{"community-detection:cpp:edge_weight", {"co
 const ViewProfile community_unweighted{"community-detection:cpp:unweighted", {"community-detection"}, unweighted_spec};
 const ViewProfile partition_weighted{"balanced-partitioning:cpp:edge_weight", {"balanced-partitioning"}, weighted_spec};
 const ViewProfile partition_unweighted{"balanced-partitioning:cpp:unweighted", {"balanced-partitioning"}, unweighted_spec};
+const ViewProfile signed_weighted{"signed-balance:cpp:edge_weight", {"signed-balance"},
+  R"({"kind":"coo","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:sum",
+       "weights":"rational_exact","nonnegative_weights":true,"labels":["edge_label"]})"};
+const ViewProfile signed_unweighted{"signed-balance:cpp:unweighted", {"signed-balance"},
+  R"({"kind":"coo","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:first",
+       "weights":"rational_exact","weight_source":"unit","nonnegative_weights":true,"labels":["edge_label"]})"};
 json::object assignment_output(const Graph& graph, const std::vector<std::size_t>& assignment,
                                json::object args, json::object data, Work& work,
                                const char* quality = "exact") {
@@ -40,6 +47,34 @@ json::object assignment_output(const Graph& graph, const std::vector<std::size_t
                 true, quality);
 }
 }  // namespace
+SignedInput signed_input(const Graph& graph, bool weighted, Work& work) {
+  // These keys only validate sign consistency; no graph input is built here.
+  // The factory owns projection, loop removal, weight casts and aggregation.
+  std::map<std::pair<VertexIndex,VertexIndex>,bool> signs;
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    require(edge.type && (*edge.type == "positive" || *edge.type == "negative"),
+            "Every edge requires type positive or negative");
+    require(!weighted || edge.weight.value_or(1) >= 0,"Frustration costs must be nonnegative");
+    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (u == v) continue;
+    const auto [it,inserted] = signs.emplace(std::minmax(u,v),*edge.type == "negative");
+    require(inserted || it->second == (*edge.type == "negative"),
+            "Contradictory parallel signed edges require a resolution policy");
+  }
+  const auto input = consume_view(graph,weighted ? signed_weighted : signed_unweighted,
+                                  work,ViewBudget::algorithm_owned);
+  const auto& view = std::get<CooView>(input->view);
+  const auto& weights = std::get<std::vector<RationalWeight>>(view.weights);
+  SignedInput result;
+  for (std::size_t i=0; i<view.src.size(); ++i) {
+    if (view.src[i] > view.dst[i]) continue;
+    const bool negative = view.side_tables.edge_label_dictionary.at(view.side_tables.edge_label->at(i)) == "negative";
+    result.emplace(std::make_pair(view.src[i],view.dst[i]),SignedInputEdge{view.src[i],view.dst[i],negative,
+      Exact(Integer(weights[i].numerator))/Integer(weights[i].denominator)});
+  }
+  return result;
+}
 json::object community_detection(const Graph& graph, const json::object& args, const std::string& backend,
                                  int device, Work& work) {
   using namespace family_util;
@@ -294,29 +329,7 @@ json::object signed_balance(const Graph& graph, const json::object& args, const 
       choice(args, "task", "balance_check", {"balance_check", "frustration_minimization"});
   const auto weight_mode = choice(args, "weight_mode", "unweighted", {"unweighted", "edge_weight"});
   const auto quality = choice(args, "solution_quality", "exact", {"exact", "approximate"});
-  struct SignedEdge {
-    VertexIndex u, v;
-    bool negative;
-    Exact weight;
-  };
-  std::map<std::pair<VertexIndex, VertexIndex>, SignedEdge> edges;
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    require(edge.type && (*edge.type == "positive" || *edge.type == "negative"),
-            "Every edge requires type positive or negative");
-    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    const Exact weight = weight_mode == "unweighted" ? Exact(1) : Exact(edge.weight.value_or(1));
-    require(weight >= 0, "Frustration costs must be nonnegative");
-    if (u == v) continue;
-    if (u > v) std::swap(u, v);
-    auto [it, inserted] =
-        edges.emplace(std::make_pair(u, v), SignedEdge{u, v, *edge.type == "negative", weight});
-    if (!inserted) {
-      require(it->second.negative == (*edge.type == "negative"),
-              "Contradictory parallel signed edges require a resolution policy");
-      if (weight_mode == "edge_weight") it->second.weight += weight;
-    }
-  }
+  const auto edges = signed_input(graph,weight_mode == "edge_weight",work);
   const auto n = graph.vertex_count();
   std::vector<std::vector<std::pair<VertexIndex, bool>>> adj(n);
   for (const auto& [_, edge] : edges) {

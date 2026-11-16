@@ -9,6 +9,7 @@
 #include "../walk_input.hpp"
 #include "../edge_set_input.hpp"
 #include "../filtration_input.hpp"
+#include "../signed_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -119,6 +120,35 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool signed_input(const gm::Graph& graph, bool weighted, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<std::map<std::pair<gm::VertexIndex,gm::VertexIndex>,gm::legacy_test::SignedEdge>> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::signed_input(graph,weighted,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::SignedInput> actual;
+    std::string new_failure;
+    try { actual = rt::signed_input(graph,weighted,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Signed input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->size() != actual->size() || old_work.candidates != work.candidates)
+      throw std::runtime_error("Signed input size/cost differs");
+    auto a = expected->begin(); auto b = actual->begin();
+    for (; a != expected->end(); ++a,++b) {
+      equal(std::vector<gm::VertexIndex>{a->first.first,a->first.second,a->second.u,a->second.v},
+            std::vector<gm::VertexIndex>{b->first.first,b->first.second,b->second.u,b->second.v});
+      equal(std::vector<std::uint8_t>{a->second.negative},std::vector<std::uint8_t>{b->second.negative});
+      if (rt::json::serialize(rt::fraction_json(a->second.weight)) != rt::json::serialize(rt::fraction_json(b->second.weight)))
+        throw std::runtime_error("Signed exact cost bytes differ");
+    }
   }
   return !expected;
 }
@@ -643,6 +673,28 @@ void contracts() {
   auto positive = raw;
   for (auto& edge : positive.as_object().at("edges").as_array())
     edge.as_object()["weight"] = std::abs(edge.as_object().at("weight").to_number<double>());
+  auto signed_graph = positive;
+  signed_graph.as_object().at("graph").as_object()["directed"] = false;
+  for (auto& edge : signed_graph.as_object().at("edges").as_array()) edge.as_object()["type"] = "positive";
+  signed_graph.as_object().at("edges").as_array()[2].as_object()["type"] = "negative";
+  for (bool weighted : {false,true}) {
+    const auto* profile = weighted ? "signed-balance:cpp:edge_weight" : "signed-balance:cpp:unweighted";
+    signed_input(graph,weighted); signed_input(rt::parse_graph(signed_graph),weighted);
+    for (std::uint64_t budget=0; budget<7; ++budget) signed_input(rt::parse_graph(signed_graph),weighted,budget);
+    for (const auto* task : {"balance_check","frustration_minimization"})
+      for (const auto* quality : {"exact","approximate"})
+        declared_request(profile,signed_graph,{{"task",task},{"weight_mode",weighted ? "edge_weight" : "unweighted"},
+          {"solution_quality",quality}});
+    auto contradictory = signed_graph;
+    contradictory.as_object().at("edges").as_array()[1].as_object()["type"] = "negative";
+    signed_input(rt::parse_graph(contradictory),weighted);
+    auto costs = signed_graph;
+    costs.as_object().at("edges").as_array()[0].as_object()["weight"] = 0.1;
+    costs.as_object().at("edges").as_array()[1].as_object()["weight"] = 0.2;
+    signed_input(rt::parse_graph(costs),weighted);
+    costs.as_object().at("edges").as_array().back().as_object()["weight"] = -1;
+    signed_input(rt::parse_graph(costs),weighted);
+  }
   for (bool uniform : {false,true}) {
     walk_input(graph,uniform); walk_input(rt::parse_graph(undirected),uniform);
     for (std::uint64_t budget=0; budget<10; ++budget) walk_input(graph,uniform,budget);
@@ -917,6 +969,7 @@ int main(int argc, char** argv) {
     const bool walks = argc > 1 && std::string(argv[1]) == "--walks";
     const bool null_models = argc > 1 && std::string(argv[1]) == "--null-models";
     const bool topology = argc > 1 && std::string(argv[1]) == "--topology";
+    const bool signed_balance = argc > 1 && std::string(argv[1]) == "--signed-balance";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -941,7 +994,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -949,6 +1002,12 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (signed_balance) for (bool weighted : {false,true}) {
+          const bool rejected = signed_input(graph,weighted);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",weighted ? "signed-balance:cpp:edge_weight" : "signed-balance:cpp:unweighted"},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (topology) {
           const bool rejected = filtration_input(graph);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
