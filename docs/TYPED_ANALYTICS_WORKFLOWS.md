@@ -356,7 +356,10 @@ The current analytics queue is serial; memory-aware two-GPU admission remains
 open. No new LLM/GPU sharing policy is introduced by these endpoints.
 
 Plans contain at most 64 steps. Combined input snapshots default to 64 MiB,
-configurable with `GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES`. Existing job timeout,
+configurable with `GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES`. Complete database-query
+graphs are exempt from that input byte cap, including their saved input snapshots
+and worker transport. Ownership, account storage, and hardware memory admission
+still apply. Existing analytics job timeout,
 result byte and pending-job limits also apply. Each step retains its declared
 candidate, output and cooperative time budgets. Exceeding a budget produces a
 failure or explicitly incomplete output, according to the operation contract.

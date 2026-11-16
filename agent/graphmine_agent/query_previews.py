@@ -11,6 +11,7 @@ from .analytics import AnalyticsError, _json
 from .datasets import DatasetLibrary, _owner
 from .identity import AccountError, current_principal
 from .models import new_id
+from .query_results import is_database_query
 
 PREVIEW_SECONDS = 24 * 3600
 
@@ -56,7 +57,8 @@ class QueryPreviews:
 
             validate_table(value)
         raw = _json(value).encode()
-        if len(raw) > self.runtime.settings.analytics_max_input_bytes:
+        unlimited = kind == "graph" and is_database_query(source)
+        if not unlimited and len(raw) > self.runtime.settings.analytics_max_input_bytes:
             raise AnalyticsError("Preview exceeds the input byte budget", "resource_limit")
         now = self.clock()
         expire_previews(self.database, now)

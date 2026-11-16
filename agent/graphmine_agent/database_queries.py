@@ -28,6 +28,7 @@ from .datasets import DatasetLibrary
 from .benchmark_mappings import resolve_source
 from .models import SessionRecord, utc_now
 from .query_previews import QueryPreviews
+from .query_results import graph_preview
 from .database_job_context import begin_commit, checkpoint
 
 
@@ -111,9 +112,10 @@ class GraphCollector:
             self.used -= len(_json(collection[key]).encode())
         self.used += len(_json(document).encode())
         if (
-            self.used > self.byte_limit
-            or key not in collection
-            and len(self.vertices) + len(self.edges) >= self.source.max_rows
+            self.byte_limit is not None
+            and (self.used > self.byte_limit
+                 or key not in collection
+                 and len(self.vertices) + len(self.edges) >= self.source.max_rows)
         ):
             raise AnalyticsError(
                 "Query graph exceeds the input limit. Narrow the Cypher query.",
@@ -306,7 +308,9 @@ class RowGraphCollector(GraphCollector):
         return {"source": {"node": source}, "target": {"node": target}, **properties}
 
 
-def execute_query(source, body, byte_limit):
+def execute_query(source, body, byte_limit=None):
+    # Source limits still govern SQL synchronization/enrichment. Interactive
+    # Cypher retains the whole result unless a caller explicitly supplies a cap.
     checkpoint("validating")
     validate_cypher(body.statement)
     if body.weight_property and body.projection == "rows":
@@ -319,14 +323,16 @@ def execute_query(source, body, byte_limit):
         raise AnalyticsError(
             "Query parameters exceed the byte limit.", "resource_limit"
         )
-    byte_limit = min(byte_limit, source.max_bytes)
+    if byte_limit is not None:
+        byte_limit = min(byte_limit, source.max_bytes)
     collector_class = RowGraphCollector if body.projection == "rows" else GraphCollector
     collector, sample_records, rows, used = collector_class(source, byte_limit, body.weight_property), [], 0, 0
     scalar_rows = []
     try:
         with (
             neo4j_session(source) as session,
-            session.begin_transaction(timeout=source.timeout_seconds) as transaction,
+            # Zero disables the transaction timeout; None inherits the server's.
+            session.begin_transaction(timeout=0) as transaction,
         ):
             explanation = transaction.run(
                 "EXPLAIN " + body.statement, body.parameters
@@ -347,14 +353,22 @@ def execute_query(source, body, byte_limit):
             for record in response:
                 rows += 1
                 checkpoint("reading", rows)
-                if rows > source.max_rows:
+                if byte_limit is not None and rows > source.max_rows:
                     raise AnalyticsError(
                         "Query exceeds the row limit. Add a filter or an explicit LIMIT.",
                         "resource_limit",
                     )
                 item = collector.record(record, rows)
-                used += len(_json(item).encode())
-                if used > byte_limit:
+                if byte_limit is None and not (collector.vertices or collector.edges):
+                    # Scalar tables retain their separate row/byte budgets.
+                    if rows > source.max_rows:
+                        raise AnalyticsError("Query exceeds the row limit. Add a filter or an explicit LIMIT.", "resource_limit")
+                    used += len(_json(item).encode())
+                    if used > source.max_bytes:
+                        raise AnalyticsError("Query exceeds the result byte limit.", "resource_limit")
+                if byte_limit is not None:
+                    used += len(_json(item).encode())
+                if byte_limit is not None and used > byte_limit:
                     raise AnalyticsError(
                         "Query exceeds the result byte limit.", "resource_limit"
                     )
@@ -403,7 +417,7 @@ def execute_query(source, body, byte_limit):
         from .table_artifacts import make_table
 
         table = make_table(columns, scalar_rows)
-        if len(_json(table).encode()) > byte_limit:
+        if len(_json(table).encode()) > (source.max_bytes if byte_limit is None else byte_limit):
             raise AnalyticsError("Query table exceeds the result byte limit.", "resource_limit")
     return graph, collector.lineage, sample, rows, table
 
@@ -417,11 +431,7 @@ def run_query(runtime, source_id, body):
 
         dataset = selected_dataset(runtime.settings, source, body.dataset_id or source._catalog["id"])
         source = resolve_source(runtime.settings, source, dataset["id"])
-    limit = min(
-        runtime.settings.analytics_max_input_bytes,
-        runtime.settings.account_upload_bytes,
-    )
-    graph, lineage, sample, rows, table = execute_query(source, body, limit)
+    graph, lineage, sample, rows, table = execute_query(source, body, None)
     checkpoint("validating", rows)
     if source.fingerprint() != resolve_source(runtime.settings, get_source(runtime.settings, source_id), body.dataset_id).fingerprint():
         raise AnalyticsError(
@@ -450,24 +460,18 @@ def run_query(runtime, source_id, body):
         )
     elif table is not None:
         table_metadata = QueryPreviews(runtime).store(table, name=name, kind="table", complete=True, source=provenance)
-    shown = graph["vertices"][:100]
-    keys = {_key(v["id"]) for v in shown}
-    edges = [
-        e
-        for e in graph["edges"]
-        if _key(e["source"]) in keys and _key(e["target"]) in keys
-    ][:300]
+    preview = graph_preview(graph)
     return {
         "dataset": metadata,
         "table": table_metadata,
         "row_count": rows,
         "rows": sample,
         "rows_truncated": rows > len(sample),
-        "graph": {**graph, "vertices": shown, "edges": edges},
+        "graph": preview,
         "vertex_count": len(graph["vertices"]),
         "edge_count": len(graph["edges"]),
         "elapsed_ms": round((perf_counter() - started) * 1000),
-        "message": "Graph preview ready. Save it or use it in chat within 24 hours."
+        "message": (preview["preview_message"] or "Graph preview ready. Save it or use it in chat within 24 hours.")
         if metadata
         else (
             (f"{rows:,} rows saved in a temporary table. Browse, export, save, or map its columns for analysis." if rows else "No rows matched. The empty table retains the query's column names for inspection and export.")

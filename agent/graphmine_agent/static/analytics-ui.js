@@ -1166,6 +1166,14 @@
     data = databaseWorkspace?.overlayGraph(data) || data;
     state.graph = data;
     if (!data) { state.cy?.destroy(); state.cy = null; $("network").replaceChildren(); }
+    if (data?.preview_skipped) {
+      state.cy?.destroy(); state.cy = null;
+      $("network").textContent = "Graph preview skipped";
+      state.previewScope = data.preview_message;
+      $("preview-scope").textContent = data.preview_message;
+      exploration?.afterGraph({hidden: true});
+      return;
+    }
     if (state.view !== "results") {
       $("preview-scope").textContent = "";
       exploration?.afterGraph({hidden: true});

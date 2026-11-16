@@ -5,12 +5,12 @@ from selenium.webdriver.common.by import By
 from test_workspace_loading import loading_browser, loading_server, wait_for
 
 
-def open_source_fixture(browser, server, *, multiple=False):
+def open_source_fixture(browser, server, *, multiple=False, node_count=1):
     server.responses[0].release.set()
     browser.get(server.url)
     wait_for(browser, "window.GraphMineWorkspace?.state.caps && !GraphMineWorkspace.state.busy")
     browser.execute_script(r"""
-      const original = window.fetch, multiple = arguments[0];
+      const original = window.fetch, multiple = arguments[0], nodeCount = arguments[1];
       const reply = data => Promise.resolve(new Response(JSON.stringify(data), {headers:{'Content-Type':'application/json'}}));
       window.previewActions = []; window.previewCounter = 0;
       window.fetch = (path, options={}) => {
@@ -20,8 +20,10 @@ def open_source_fixture(browser, server, *, multiple=False):
         if (path.endsWith('/preview-db/queries')) {
           previewActions.push('query');
           return reply({dataset:{id:'preview-'+(++window.previewCounter),temporary:true},
-            row_count:1, rows:[], vertex_count:1, edge_count:0,
-            graph:{graph:{directed:true},vertices:[{id:'a',label:'Ada'}],edges:[]}});
+            row_count:nodeCount, rows:[], vertex_count:nodeCount, edge_count:0,
+            graph:{graph:{directed:true},vertices:nodeCount > 500 ? [] : Array.from({length:nodeCount}, (_, id) => ({id,label:`Node ${id}`})),edges:[],
+              preview_skipped:nodeCount > 500,
+              preview_message:nodeCount > 500 ? `Graph preview skipped: ${nodeCount} nodes exceeds the 500-node display threshold. The full graph is available for conversation and analysis.` : null}});
         }
         if (path.startsWith('/api/database-query-snapshots/')) {
           previewActions.push(options.method === 'DELETE' ? 'discard' : 'save');
@@ -29,7 +31,7 @@ def open_source_fixture(browser, server, *, multiple=False):
         }
         return original(path, options);
       };
-    """, multiple)
+    """, multiple, node_count)
     browser.find_element(By.ID, "open-database-workspace").click()
     wait_for(browser, "document.getElementById('preview-cypher')?.disabled === false")
     if browser.find_element(By.ID, "data-step-query").is_displayed():
@@ -61,3 +63,37 @@ def test_preview_is_saved_only_when_requested_and_can_be_discarded(loading_brows
     assert not browser.find_element(By.ID, "source-continue").is_displayed()
     assert browser.find_element(By.ID, "cypher-editor").get_attribute("value") == "MATCH (n) RETURN n LIMIT 10"
     assert browser.execute_script("return document.getElementById('database-workspace').scrollWidth <= document.getElementById('database-workspace').clientWidth")
+
+
+def test_large_graph_skips_drawing_and_keeps_chat_and_save_available(loading_browser, loading_server):
+    browser = loading_browser
+    open_source_fixture(browser, loading_server, node_count=501)
+    browser.execute_script("window.queryPreviewDraws = 0; window.cytoscape = () => { window.queryPreviewDraws++; return {destroy(){}}; };")
+    browser.find_element(By.ID, "preview-cypher").click()
+    wait_for(browser, "document.getElementById('save-query-snapshot').disabled === false")
+    status = browser.find_element(By.ID, "database-query-status").text
+    assert "501" in status and "500-node display threshold" in status
+    assert "full graph is available" in status
+    assert "Table results" not in browser.find_element(By.ID, "database-workspace").text
+    assert browser.execute_script("return queryPreviewDraws") == 0
+    assert browser.find_element(By.ID, "run-cypher-chat").is_enabled()
+    assert browser.find_element(By.ID, "source-continue").is_displayed()
+
+
+def test_large_conversation_input_shows_skip_message_and_stays_selected(loading_browser, loading_server):
+    browser, server = loading_browser, loading_server
+    server.files = [{"id": "large-input", "original_name": "large-query.json", "role": "graph",
+                     "metadata": {"vertex_count": 501, "edge_count": 500}}]
+    server.graph = {"graph": {"directed": True}, "vertices": [], "edges": [],
+                    "vertex_count": 501, "edge_count": 500, "preview_skipped": True,
+                    "preview_message": "Graph preview skipped for 501 nodes. The full graph is available for conversation and analysis."}
+    server.responses[0].release.set()
+    browser.get(server.url + "#workspace/saved-session/results")
+    wait_for(browser, "GraphMineWorkspace?.state.graph?.preview_skipped && !GraphMineWorkspace.state.busy")
+    assert "Graph preview skipped" in browser.find_element(By.ID, "network").text
+    assert "full graph is available" in browser.find_element(By.ID, "preview-scope").text
+    assert browser.execute_script("return GraphMineWorkspace.state.cy") is None
+    browser.execute_script("location.hash = '#workspace/saved-session/chat'")
+    wait_for(browser, "GraphMineWorkspace.state.view === 'chat' && !GraphMineWorkspace.state.busy")
+    assert browser.execute_script("return GraphMineWorkspace.state.active") == "large-input"
+    assert browser.find_element(By.ID, "question").is_enabled()

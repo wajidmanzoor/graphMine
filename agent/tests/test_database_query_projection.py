@@ -41,7 +41,11 @@ def read_transaction(monkeypatch, records, columns=None, error=None):
 
     @contextmanager
     def session(_):
-        yield SimpleNamespace(begin_transaction=lambda **_: transaction)
+        def begin(**options):
+            transaction.options = options
+            return transaction
+
+        yield SimpleNamespace(begin_transaction=begin)
 
     monkeypatch.setattr("graphmine_agent.database_queries.neo4j_session", session)
     return transaction

@@ -50,6 +50,7 @@ class GraphStore:
         target_column: str | None = None,
         timestamp_unit: str | None = None,
         provenance: dict[str, Any] | None = None,
+        unlimited: bool = False,
     ) -> StoredFile:
         return self.ingest_stream(
             session_id=session_id,
@@ -62,6 +63,7 @@ class GraphStore:
             target_column=target_column,
             timestamp_unit=timestamp_unit,
             provenance=provenance,
+            unlimited=unlimited,
         )
 
     def ingest_stream(
@@ -77,6 +79,7 @@ class GraphStore:
         target_column: str | None = None,
         timestamp_unit: str | None = None,
         provenance: dict[str, Any] | None = None,
+        unlimited: bool = False,
     ) -> StoredFile:
         """Consume a caller-owned stream in bounded chunks; graphs remain in memory.
 
@@ -85,9 +88,11 @@ class GraphStore:
         """
         self.database.get_session(session_id)
         principal = current_principal.get()
-        upload_limit = self.settings.max_upload_bytes
+        # Server-side graph query imports bypass per-file size caps. Account
+        # storage allowances still apply; HTTP uploads cannot set this option.
+        upload_limit = None if unlimited else self.settings.max_upload_bytes
         if principal:
-            upload_limit = min(
+            upload_limit = principal.accounts.upload_remaining(principal.user_id) if unlimited else min(
                 upload_limit,
                 self.settings.account_upload_bytes,
                 principal.accounts.upload_remaining(principal.user_id),
@@ -112,9 +117,9 @@ class GraphStore:
             source_directory.mkdir()
             source_path = source_directory / safe_name
             with source_path.open("xb") as destination:
-                while chunk := stream.read(min(1024 * 1024, upload_limit - size + 1)):
+                while chunk := stream.read(1024 * 1024 if upload_limit is None else min(1024 * 1024, upload_limit - size + 1)):
                     size += len(chunk)
-                    if size > upload_limit:
+                    if upload_limit is not None and size > upload_limit:
                         raise UploadError(
                             f"upload exceeds {upload_limit} byte file/storage allowance"
                         )
@@ -355,23 +360,15 @@ class GraphStore:
         record = self.database.get_file(file_id)
         if record.role not in {FileRole.graph, FileRole.query_graph, FileRole.motif}:
             raise UploadError("this file role does not contain a graph")
+        from .query_results import GRAPH_PREVIEW_NODES, graph_preview, skipped_graph_preview
+
+        metadata = record.metadata.model_dump() if isinstance(record.metadata, GraphMetadata) else record.metadata or {}
+        if metadata.get("vertex_count", 0) > GRAPH_PREVIEW_NODES:
+            # The full input stays on disk; opening a conversation must not read
+            # and parse a large graph just to decide against drawing it.
+            return skipped_graph_preview(metadata["vertex_count"], metadata["edge_count"],
+                                         graph={"directed": metadata.get("directed", False)})
         path = self.execution_path(file_id, record.session_id)
         graph = self._read_json(path.read_bytes())
         self._validate_graph(graph)
-        vertices = graph["vertices"][:vertex_limit]
-        vertex_ids = {json.dumps(vertex["id"], sort_keys=True) for vertex in vertices}
-        edges = [
-            edge
-            for edge in graph["edges"]
-            if json.dumps(edge["source"], sort_keys=True) in vertex_ids
-            and json.dumps(edge["target"], sort_keys=True) in vertex_ids
-        ][:edge_limit]
-        return {
-            "graph": graph["graph"],
-            "vertex_count": len(graph["vertices"]),
-            "edge_count": len(graph["edges"]),
-            "vertices": vertices,
-            "edges": edges,
-            "vertices_truncated": len(vertices) < len(graph["vertices"]),
-            "edges_truncated": len(edges) < len(graph["edges"]),
-        }
+        return graph_preview(graph, vertex_limit=vertex_limit, edge_limit=edge_limit)

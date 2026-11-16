@@ -37,6 +37,14 @@ flowchart LR
    A sentence below the selector explains the selected mode. Choose directed
    analysis, or an undirected projection for algorithms such as density and clique mining.
    **Preview query** retains the exact returned graph temporarily for 24 hours.
+   Cypher disables the Neo4j transaction timeout. Graph results have no fixed
+   query-row, node/edge, or per-result byte ceiling. Graphs with more than 500
+   nodes skip drawing in the query workspace and conversation input preview;
+   counts and the complete saved input remain available for chat and analysis.
+   Smaller previews draw up to 500 nodes and 2,000 relationships. Display bounds
+   never truncate the saved graph. Account storage allowances still apply, and
+   available server memory and disk determine the practical capacity. Scalar
+   tables, uploads, and SQL synchronization retain their separate size budgets.
    Identical preview content is stored once per owner; each query keeps its own
    timestamp and provenance. **Save graph to datasets** keeps it in the library;
    **Discard preview** releases an unused preview. **Use graph in chat** keeps and reuses
@@ -131,8 +139,8 @@ Saved analyses retain their original inputs. Preview a new query to use refreshe
 data. To retry a failed request, review it and submit it again explicitly.
 
 **Cancel query** or **Cancel refresh** stops queued work immediately and requests
-cooperative cancellation of running work. A blocked driver call must return or
-reach its configured timeout before rollback completes. Cancellation closes before
+cooperative cancellation of running work. A blocked driver call must return
+before rollback completes; Cypher has no automatic timeout. Cancellation closes before
 committing graph changes or publishing a snapshot; uncommitted writes roll back.
 
 Only queued/running/cancelling work is stored in the metadata database. Finishing
@@ -326,8 +334,10 @@ The Cypher validator accepts identifiers such as `start` and `stop` in patterns,
 properties and aliases while rejecting administrative and writing clauses.
 `CALL`, including GDS calls, remains disabled in the app. EXPLAIN must classify
 each statement as read-only before execution; reads use READ_ACCESS and rollback.
-The existing app limits remain 30 seconds, 100,000 rows and 64 MiB per registry
-connection. Administrative verification separately consumes every result from four
+Interactive Cypher disables the transaction timeout and keeps complete graph
+results without fixed query-row, node/edge, or per-result byte caps. Account
+storage allowances still apply; scalar tables and SQL operations retain their
+separate budgets. Administrative verification separately consumes every result from four
 representative published queries without changing their text. The user approved
 this scope after long Yelp traversals. Remaining queries are explicitly untested;
 `--all-queries` is available for a separate exhaustive run.

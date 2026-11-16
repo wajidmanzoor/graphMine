@@ -338,20 +338,26 @@ class DatabaseJobs:
             return result
         result = dict(result)
         identifier = result.pop("snapshot_id")
-        metadata, raw = QueryPreviews(self.runtime).get(identifier, content=True) if identifier else (None, None)
+        skipped = result["graph_metadata"].get("preview_skipped", False)
+        if identifier and skipped:
+            metadata, raw = QueryPreviews(self.runtime).get(identifier), None
+        else:
+            metadata, raw = QueryPreviews(self.runtime).get(identifier, content=True) if identifier else (None, None)
         graph = {**result.pop("graph_metadata"), "vertices": [], "edges": []}
         result.update(dataset=None, table=None, graph=graph)
         if metadata:
+            result["table" if metadata["kind"] == "table" else "dataset"] = metadata
+            if skipped:
+                return result
             if len(raw) != metadata["size_bytes"] or hashlib.sha256(raw).hexdigest() != metadata["sha256"]:
                 raise AnalyticsError("The query snapshot failed its integrity check.", "data_integrity", 409)
             value = json.loads(raw)
-            result["table" if metadata["kind"] == "table" else "dataset"] = metadata
             if metadata["kind"] == "table":
                 result["rows"] = value["rows"][:50]
             else:
-                vertices = value["vertices"][:100]
-                keys = {_key(vertex["id"]) for vertex in vertices}
-                result["graph"] = {**value, "vertices": vertices, "edges": [edge for edge in value["edges"] if _key(edge["source"]) in keys and _key(edge["target"]) in keys][:300]}
+                from .query_results import graph_preview
+
+                result["graph"] = graph_preview(value)
         return result
 
     async def wait(self, identifier):

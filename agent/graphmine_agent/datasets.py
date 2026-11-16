@@ -121,10 +121,12 @@ class DatasetLibrary:
         raise AnalyticsError("The selected result has no reusable graph input")
 
     def _source(self, body):
+        from .query_results import is_database_query
+
         if body.file_id:
             file = self.database.get_file(body.file_id)
             path = self.runtime.graph_store.execution_path(file.id, file.session_id)
-            if path.stat().st_size > self.runtime.settings.analytics_max_input_bytes:
+            if not (body.kind == "graph" and is_database_query(file.provenance.get("source"))) and path.stat().st_size > self.runtime.settings.analytics_max_input_bytes:
                 raise AnalyticsError(
                     "Dataset exceeds the input byte budget", "resource_limit"
                 )
@@ -218,6 +220,8 @@ class DatasetLibrary:
 
     def store(self, value, *, name, kind, source, complete, dataset_id=None):
         """Persist a server-validated snapshot from an upload, result or connector."""
+        from .query_results import is_database_query
+
         if kind == "graph":
             self.runtime.graph_store._validate_graph(value)
         elif kind == "table":
@@ -227,7 +231,7 @@ class DatasetLibrary:
         elif not isinstance(value, (list, dict)):
             raise AnalyticsError("Reusable inputs must be structured JSON")
         raw = _json(value).encode()
-        if len(raw) > self.runtime.settings.analytics_max_input_bytes:
+        if not (kind == "graph" and is_database_query(source)) and len(raw) > self.runtime.settings.analytics_max_input_bytes:
             raise AnalyticsError(
                 "Dataset exceeds the input byte budget", "resource_limit"
             )
@@ -282,6 +286,8 @@ class DatasetLibrary:
         )
 
     def import_into(self, version_id, session_id):
+        from .query_results import is_database_query
+
         self.database.get_session(session_id)
         try:
             metadata, raw = self.get(version_id, content=True)
@@ -304,6 +310,7 @@ class DatasetLibrary:
             filename=f"{metadata['name']}-v{metadata['version']}.json",
             content=raw,
             media_type="application/json",
+            unlimited=metadata["kind"] == "graph" and is_database_query(metadata.get("source")),
             provenance={
                 "dataset_id": metadata["dataset_id"],
                 "version_id": version_id,

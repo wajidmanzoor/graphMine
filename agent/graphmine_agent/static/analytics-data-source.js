@@ -477,13 +477,14 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       tableView.setSnapshot(response.table || null);
       const graph = response.graph;
       placeholder.hidden = Boolean(graph.vertices.length);
-      emptyTitle.textContent = response.row_count ? "Table results" : "No matches";
-      emptyDescription.textContent = response.row_count
+      emptyTitle.textContent = graph.preview_skipped ? "Graph preview skipped" : response.row_count ? "Table results" : "No matches";
+      emptyDescription.textContent = graph.preview_skipped ? graph.preview_message : response.row_count
         ? `${response.row_count.toLocaleString()} rows returned. View them below, or return graph elements to build a graph.`
         : "Check the connection, labels, filters and parameter values.";
       if (!databasePanel.hidden) layout.select("preview");
-      drawPreview(graph);
-      if (graph.vertices.length < response.vertex_count || graph.edges.length < response.edge_count) status.textContent += ` Visible preview: ${graph.vertices.length} nodes and ${graph.edges.length} relationships. Chat uses the full query result.`;
+      if (!graph.preview_skipped) drawPreview(graph);
+      if (graph.preview_skipped) status.textContent += ` ${graph.preview_message}`;
+      else if (graph.vertices.length < response.vertex_count || graph.edges.length < response.edge_count) status.textContent += ` Visible preview: ${graph.vertices.length} nodes and ${graph.edges.length} relationships. Chat uses the full query result.`;
       return response;
     }
     function drawPreview(graph) {
