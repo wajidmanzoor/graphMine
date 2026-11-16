@@ -340,7 +340,9 @@ names that dataset; switching clears the old preview and restores that dataset's
 own draft. Connection administration and synchronization controls are hidden.
 The API applies `GRAPHMINE_DATABASE_DATASET_ALLOWLIST` too, so hidden legacy,
 managed, paused and deferred sources cannot be queried through a direct request.
-The benchmark schema catalog exposes only the selected verified datasets.
+The benchmark schema catalog exposes only the selected verified datasets and
+their Neo4j diagrams and loading/query references. Other platforms are omitted
+from the interface and their reference downloads return 404.
 An empty allowlist retains the general connection workspace for other installs.
 
 Transfers demo now has its own instance at `bolt://127.0.0.1:17700`. Exactly

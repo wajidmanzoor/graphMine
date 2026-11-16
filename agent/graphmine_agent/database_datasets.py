@@ -61,7 +61,6 @@ def register_dataset_routes(router):
     async def list_datasets(source_id: str, request: Request):
         runtime = request.app.state.runtime
         source = get_source(runtime.settings, source_id)
-        if runtime.upload_slots.locked():
-            raise AnalyticsError("Database reads are busy. Retry shortly.", "busy", 429)
-        async with runtime.upload_slots:
-            return await run_in_threadpool(datasets, runtime.settings, source)
+        # This reads bounded local registry/schema metadata only. A connection
+        # health check or graph query must not prevent selecting its dataset.
+        return await run_in_threadpool(datasets, runtime.settings, source)

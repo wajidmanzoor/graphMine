@@ -1,5 +1,7 @@
 """Connection-scoped datasets and the preview/domain/chat boundary."""
 
+import asyncio
+
 from test_database_workspace import source as source, workspace as workspace
 from test_benchmark_mappings import registry_setup
 
@@ -12,6 +14,14 @@ def test_dataset_list_requires_a_visible_connection(workspace):
     assert response.json()[0]["tables"][0]["name"] == "accounts"
     assert client.get("/api/database-sources/another-connection/datasets").status_code == 404
     assert client.get("/api/database-sources/demo/datasets", headers={"Authorization": ""}).status_code == 401
+
+
+def test_dataset_metadata_remains_available_when_database_reads_are_busy(workspace, tmp_path, monkeypatch):
+    workspace.runtime.settings = registry_setup(workspace.runtime.settings, tmp_path / "registry")
+    monkeypatch.setattr(workspace.runtime, "upload_slots", asyncio.Semaphore(0))
+    response = workspace.client.get("/api/database-sources/benchmark-yelp/datasets")
+    assert response.status_code == 200, response.text
+    assert response.json()[0]["id"] == "yelp"
 
 
 def test_foreign_dataset_is_rejected_before_running_query(workspace):

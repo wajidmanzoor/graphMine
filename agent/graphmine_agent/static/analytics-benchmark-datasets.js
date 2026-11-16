@@ -1,8 +1,7 @@
 "use strict";
 window.GraphMineBenchmarkDatasets = ({api, node, container, dataset}) => {
   let generation = 0, blobUrl = null, currentSchema = null;
-  const schemas = dataset?.schemas || [];
-  const platformNames = {neo4j: "Neo4j", tigergraph: "TigerGraph", puppygraph: "PuppyGraph", graphframes: "GraphFrames"};
+  const schemas = (dataset?.schemas || []).filter(schema => schema.platform === "neo4j");
   const clean = () => { if (blobUrl) URL.revokeObjectURL(blobUrl); blobUrl = null; };
   container.replaceChildren();
   if (dataset?.workload_url) {
@@ -45,19 +44,19 @@ window.GraphMineBenchmarkDatasets = ({api, node, container, dataset}) => {
     sourceNotes();
     return {destroy() {}};
   }
-  const platforms = node("select", {id: "benchmark-schema-platform", "aria-label": "Schema platform"});
-  platforms.append(...schemas.map((s, i) => node("option", {value: i}, platformNames[s.platform] || s.platform)));
+  const diagrams = node("select", {id: "benchmark-schema-diagram", "aria-label": "Neo4j schema diagram", hidden: schemas.length === 1});
+  diagrams.append(...schemas.map((s, i) => node("option", {value: i}, `Diagram ${i + 1}`)));
   const image = node("img", {id: "benchmark-schema-image", hidden: true});
   const imageBox = node("div", {class: "benchmark-schema-view", tabindex: "0", role: "region", "aria-label": "Dataset schema diagram"}); imageBox.append(image);
   const download = node("button", {type: "button", class: "quiet", id: "download-benchmark-schema"}, "Download schema");
-  const definitions = node("button", {type: "button", class: "quiet", id: "download-benchmark-definitions"}, "Loading commands & queries");
+  const definitions = node("button", {type: "button", class: "quiet", id: "download-benchmark-definitions"}, "Neo4j loading commands & queries");
   const zoom = node("button", {type: "button", class: "quiet", id: "zoom-benchmark-schema", "aria-pressed": "false"}, "View full size");
   const attribution = node("a", {target: "_blank", rel: "noopener noreferrer", class: "benchmark-attribution"}, "PropGBench ↗");
-  const toolbar = node("div", {class: "benchmark-toolbar"}); toolbar.append(platforms, download, zoom, attribution);
+  const toolbar = node("div", {class: "benchmark-toolbar"}); toolbar.append(node("span", {class: "source-badge"}, "Neo4j"), diagrams, download, zoom, attribution);
   const status = node("p", {class: "source-hint", role: "status"});
   container.append(toolbar, imageBox, definitions, status); sourceNotes();
   async function showSchema() {
-    const selected = schemas[Number(platforms.value)], current = ++generation;
+    const selected = schemas[Number(diagrams.value)], current = ++generation;
     currentSchema = selected; clean(); image.hidden = true; image.removeAttribute("src");
     download.disabled = definitions.disabled = zoom.disabled = true;
     imageBox.classList.remove("schema-full-size"); zoom.textContent = "View full size"; zoom.setAttribute("aria-pressed", "false");
@@ -66,12 +65,12 @@ window.GraphMineBenchmarkDatasets = ({api, node, container, dataset}) => {
       const blob = await api(selected.image_url, {asBlob: true});
       if (current !== generation || !container.isConnected) return;
       blobUrl = URL.createObjectURL(blob); image.src = blobUrl;
-      image.alt = `${dataset.name} — ${platformNames[selected.platform] || selected.platform} schema, from PropGBench`;
+      image.alt = `${dataset.name} — Neo4j schema, from PropGBench`;
       image.hidden = false; download.disabled = zoom.disabled = false; definitions.disabled = !selected.definition_url;
       status.textContent = "The diagram shows the publisher’s graph structure.";
     } catch (error) { if (current === generation && container.isConnected) status.textContent = error.message; }
   }
-  platforms.onchange = showSchema;
+  diagrams.onchange = showSchema;
   zoom.onclick = () => { const full = imageBox.classList.toggle("schema-full-size"); zoom.textContent = full ? "Fit to view" : "View full size"; zoom.setAttribute("aria-pressed", String(full)); };
   download.onclick = () => { if (blobUrl && currentSchema) node("a", {href: blobUrl, download: `${dataset.id}-${currentSchema.file}`}).click(); };
   definitions.onclick = async () => {

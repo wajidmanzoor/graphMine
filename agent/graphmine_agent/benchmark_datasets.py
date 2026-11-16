@@ -51,6 +51,8 @@ def describe(settings, identifier):
     manifest = read_json(path / "schemas" / "manifest.json", {})
     schemas = []
     for schema in manifest.get("schemas", []):
+        if schema.get("platform") != "neo4j":
+            continue
         filename = schema.get("file", "")
         if Path(filename).name != filename or not (path / "schemas" / filename).is_file():
             continue
@@ -97,8 +99,9 @@ def register_benchmark_routes(router):
     def schema(identifier: str, filename: str, request: Request):
         path = directory(request.app.state.runtime.settings, identifier) / "schemas"
         manifest = read_json(path / "manifest.json", {})
-        permitted = {item["file"] for item in manifest.get("schemas", [])}
-        permitted.update(f"{item['platform']}-loading-and-queries.txt" for item in manifest.get("schemas", []))
+        schemas = [item for item in manifest.get("schemas", []) if item.get("platform") == "neo4j"]
+        permitted = {item["file"] for item in schemas}
+        permitted.update("neo4j-loading-and-queries.txt" for _ in schemas)
         if filename not in permitted or Path(filename).name != filename:
             raise RecordNotFound("Dataset schema not found")
         asset = path / filename
