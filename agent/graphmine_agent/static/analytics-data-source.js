@@ -186,7 +186,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     };
     const invalidate = () => { resetPreview(); draftDirty = true; remember(); status.textContent = "Query changed. Preview it to update the graph."; };
     const queryTools = window.GraphMineQueryEditor({api, node, W, editor, parameters, parameterBox, onChange: invalidate});
-    const jobs = window.GraphMineDatabaseJobs({api, W, node, container: jobsBox, onResume: resumeJob, onError: error => { status.textContent = error.message; status.classList.add("source-error"); }});
+    const jobs = window.GraphMineQueryProgress({api, W, node, container: jobsBox});
     const finish = () => {
       if (!dialog.isConnected) return;
       if (source.value) remember();
@@ -249,7 +249,6 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       discardPreview.disabled = value;
       discardDraft.disabled = value || !draftPresent;
       queryTools.setBusy(value);
-      jobs.setBusy(value);
       dataset.disabled = reloadDatasets.disabled = value;
       source.disabled = edit.disabled = value;
       add.disabled = value;
@@ -524,21 +523,6 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       selection.dataset = metadata;
       status.textContent = `Saved ${metadata.name}, version ${metadata.version}. This exact snapshot is available in the Dataset library.`;
       return metadata;
-    }
-    async function resumeJob(job) {
-      if (busy || !dialog.isConnected || job.source_id !== source.value) return;
-      if (job.kind === "query") {
-        const id = job.query.dataset_id || "default";
-        if (!datasets.some(item => item.id === id)) throw new Error("This job's dataset is no longer listed. Review the connection before retrying.");
-        dataset.value = id; describeDataset(); applyQuery(job.query);
-      }
-      await action(async () => {
-        resetPreview(); const current = generation, signature = job.kind === "query" ? source.value + W.stringify(readQuery()) : "";
-        const result = await jobs.watch(job);
-        if (current !== generation || !dialog.isConnected) return;
-        if (job.kind === "query") renderQuery(result, signature);
-        else status.textContent = `Graph refreshed: ${jobs.synchronizationSummary(result)}. Preview your query to see the updated graph.`;
-      });
     }
     const action = async fn => {
       if (busy) return;

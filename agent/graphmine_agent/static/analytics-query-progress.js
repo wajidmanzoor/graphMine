@@ -1,27 +1,19 @@
 "use strict";
-window.GraphMineDatabaseJobs = ({api, W, node, container, onResume, onError}) => {
+window.GraphMineQueryProgress = ({api, W, node, container}) => {
   const request = window.GraphMineClient(api, W);
-  const section = node("section", {class: "database-jobs", "aria-label": "Database jobs"});
+  const section = node("section", {class: "query-progress", "aria-label": "Query progress", hidden: true});
   const monitor = node("div", {class: "database-job-monitor", hidden: true});
   const status = node("p", {id: "database-job-status", role: "status"});
-  const progress = node("progress", {"aria-label": "Database job progress"});
-  const hint = node("p", {class: "source-hint"}, "You can close this dialog. Work continues on the server; reopen Database jobs to recover it.");
-  const cancel = node("button", {id: "cancel-database-job", type: "button", class: "quiet"}, "Cancel job");
+  const progress = node("progress", {"aria-label": "Query progress"});
+  const hint = node("p", {class: "source-hint"}, "Keep this view open to receive the result.");
+  const cancel = node("button", {id: "cancel-database-job", type: "button", class: "quiet"}, "Cancel query");
   const refresh = node("button", {id: "refresh-database-job", type: "button", class: "quiet"}, "Refresh status");
   const actions = node("div", {class: "database-job-actions"}); actions.append(cancel, refresh);
   const synchronization = node("section", {id: "database-sync-summary", class: "database-sync-summary", hidden: true, "aria-label": "Synchronization changes"});
   monitor.append(status, progress, actions, hint, synchronization);
-  const history = node("details", {id: "database-job-history"});
-  history.append(node("summary", {}, "Database jobs"));
-  const historyStatus = node("p", {class: "source-hint", role: "status"});
-  const reload = node("button", {type: "button", class: "quiet", id: "reload-database-jobs"}, "Refresh jobs");
-  const list = node("div", {class: "database-job-list"});
-  const historyKind = node("select", {id: "database-job-kind", "aria-label": "Job history type"});
-  for (const [value, label] of [["", "All database jobs"], ["query", "Queries"], ["sync", "Graph synchronization"]]) historyKind.append(node("option", {value}, label));
-  const more = node("button", {type: "button", class: "quiet", hidden: true}, "More jobs");
-  history.append(historyStatus, historyKind, reload, list, more); section.append(monitor, history); container.append(section);
-  let source = null, listGeneration = 0, generation = 0, controller = null, listController = null, timer = null;
-  let active = null, pending = null, failures = 0, inFlight = false, locked = false, destroyed = false, offset = 0;
+  section.append(monitor); container.append(section);
+  let source = null, generation = 0, controller = null, timer = null;
+  let active = null, pending = null, failures = 0, inFlight = false, destroyed = false;
   const stages = {queued: "Waiting for a database worker", connecting: "Connecting", validating: "Validating the query", reading: "Reading query rows", hydrating: "Loading relationship endpoints", reading_tables: "Reading source tables", comparing: "Comparing the managed graph", writing: "Applying graph changes", committing: "Committing graph changes", saving: "Saving the query snapshot", completed: "Completed"};
   const changeActions = [["created", "Added"], ["updated", "Updated"], ["deleted", "Removed"], ["unchanged", "Unchanged"]];
   function synchronizationSummary(result) {
@@ -59,7 +51,7 @@ window.GraphMineDatabaseJobs = ({api, W, node, container, onResume, onError}) =>
   const requestKey = () => Array.from(window.crypto.getRandomValues(new Uint8Array(16)), value => value.toString(16).padStart(2, "0")).join("");
   function render(job) {
     renderSynchronization(job.kind === "sync" ? job.synchronization : null);
-    active = job; monitor.hidden = false;
+    active = job; monitor.hidden = section.hidden = false;
     const stage = job.progress || {};
     status.textContent = job.status === "cancelling" ? "Cancellation requested. Waiting for the current database operation to return and roll back."
       : ["failed", "interrupted", "cancelled"].includes(job.status) ? errorFrom(job).message
@@ -67,11 +59,14 @@ window.GraphMineDatabaseJobs = ({api, W, node, container, onResume, onError}) =>
     if (stage.total > 0 && stage.completed != null) { progress.max = stage.total; progress.value = stage.completed; }
     else progress.removeAttribute("value");
     progress.hidden = !["queued", "running", "cancelling"].includes(job.status);
-    cancel.hidden = !["queued", "running", "cancelling"].includes(job.status);
+    cancel.hidden = refresh.hidden = !["queued", "running", "cancelling"].includes(job.status);
+    cancel.textContent = job.kind === "sync" ? "Cancel refresh" : "Cancel query";
     cancel.disabled = !job.cancellable;
     hint.textContent = ["committing", "saving"].includes(stage.stage) && job.status === "running"
-      ? "This job is committing its result and can no longer be cancelled. You can still close this dialog."
-      : "You can close this dialog. Work continues on the server; reopen Database jobs to recover it.";
+      ? "Saving the result; cancellation is no longer available."
+      : job.status === "completed" ? "Result ready."
+      : ["failed", "cancelled", "interrupted"].includes(job.status) ? "Review the request before running it again."
+      : "Keep this view open to receive the result.";
   }
   function stopObservation() {
     generation++; clearTimeout(timer); controller?.abort(); inFlight = false;
@@ -80,7 +75,6 @@ window.GraphMineDatabaseJobs = ({api, W, node, container, onResume, onError}) =>
   function finish(current, result, error) {
     if (current !== generation || !pending) return;
     const waiter = pending; pending = null; clearTimeout(timer);
-    loadList();
     if (error) waiter.reject(error); else waiter.resolve(result);
   }
   function schedule(current, delay) {
@@ -107,7 +101,7 @@ window.GraphMineDatabaseJobs = ({api, W, node, container, onResume, onError}) =>
         status.textContent = error.message; finish(current, null, error); return;
       }
       failures++;
-      status.textContent = "Status connection interrupted. Your job remains on the server; reconnecting…";
+      status.textContent = "Status connection interrupted; reconnecting…";
       schedule(current, window.GraphMineAsync.backoff(failures, error.retryAfter || 0, 750));
     } finally { if (current === generation) inFlight = false; }
   }
@@ -129,64 +123,15 @@ window.GraphMineDatabaseJobs = ({api, W, node, container, onResume, onError}) =>
   const reconcile = () => { if (!document.hidden && pending) schedule(generation, 0); };
   refresh.onclick = reconcile;
   window.addEventListener("online", reconcile); document.addEventListener("visibilitychange", reconcile);
-  function updateButtons() {
-    list.querySelectorAll("button").forEach(button => { button.disabled = locked; });
-  }
-  async function resume(id, retry = false) {
-    if (locked || destroyed) return;
-    const current = listGeneration;
-    locked = true; updateButtons();
-    try {
-      const response = await api(`/api/database-jobs/${encodeURIComponent(id)}${retry ? "/retry" : ""}`, retry ? {method: "POST", headers: {"Idempotency-Key": requestKey()}} : {});
-      if (destroyed || current !== listGeneration) return;
-      locked = false;
-      await onResume(response.job || response);
-    } catch (error) { if (!destroyed && current === listGeneration) onError(error); }
-    finally { if (!destroyed && current === listGeneration) { locked = false; updateButtons(); } }
-  }
-  async function loadList(append = false) {
-    if (!source || destroyed) return;
-    listController?.abort(); listController = new AbortController();
-    const current = ++listGeneration;
-    if (!append) { offset = 0; list.replaceChildren(); }
-    historyStatus.textContent = "Loading jobs…"; more.disabled = true;
-    try {
-      const query = {source_id: source, offset, limit: 10, ...(historyKind.value ? {kind: historyKind.value} : {})};
-      const result = await request("get", "/api/database-jobs", {query, signal: listController.signal});
-      if (current !== listGeneration || destroyed) return;
-      for (const job of result.items || []) {
-        const row = node("div", {class: "database-job-row", "data-job-id": job.id});
-        row.append(node("span", {}, `${job.kind === "sync" ? "Graph refresh" : "Query"} · ${job.status} · ${new Date(job.created_at).toLocaleString()}`));
-        if (job.error?.message) row.append(node("span", {class: "source-hint"}, job.error.message));
-        if (job.synchronization) row.append(node("span", {class: "source-hint"}, synchronizationSummary(job.synchronization)));
-        const button = node("button", {type: "button", class: "quiet", "data-job-action": "open"}, job.status === "completed" ? job.kind === "sync" ? "View changes" : "View result" : ["queued", "running", "cancelling"].includes(job.status) ? "Follow job" : "View details");
-        button.onclick = () => resume(job.id); row.append(button);
-        if (["failed", "cancelled", "interrupted"].includes(job.status)) {
-          const retry = node("button", {type: "button", class: "quiet", "data-job-action": "retry"}, "Retry job");
-          retry.onclick = () => resume(job.id, true); row.append(retry);
-        }
-        list.append(row);
-      }
-      offset += result.items?.length || 0;
-      more.hidden = !result.has_more; historyStatus.textContent = offset ? "View a saved result or follow work already on the server. Retry creates a new job." : "No database jobs yet.";
-      updateButtons();
-    } catch (error) {
-      if (current === listGeneration && !destroyed && error.name !== "AbortError") historyStatus.textContent = `Job history unavailable. ${error.message}`;
-    } finally { if (current === listGeneration) more.disabled = false; }
-  }
-  reload.onclick = () => loadList(); more.onclick = () => loadList(true);
-  historyKind.onchange = () => loadList();
   return {
     async execute(path, body) {
       const response = await api(path, {method: "POST", headers: {Prefer: "respond-async", "Idempotency-Key": requestKey()}, ...(body ? {body: W.stringify(body)} : {})});
       if (destroyed) throw new DOMException("Dialog closed.", "AbortError");
-      if (!response.job) { if (response.changes) { monitor.hidden = false; renderSynchronization(response); } return response; }
-      loadList(); return watch(response.job);
+      if (!response.job) { if (response.changes) { monitor.hidden = section.hidden = false; renderSynchronization(response); } return response; }
+      return watch(response.job);
     },
-    watch,
     synchronizationSummary,
-    setBusy(value) { locked = value; updateButtons(); },
-    setContext(value) { if (value !== source) { stopObservation(); active = null; monitor.hidden = true; renderSynchronization(null); source = value; listGeneration++; listController?.abort(); list.replaceChildren(); if (source) loadList(); } },
-    destroy() { destroyed = true; stopObservation(); listGeneration++; listController?.abort(); window.removeEventListener("online", reconcile); document.removeEventListener("visibilitychange", reconcile); section.remove(); },
+    setContext(value) { if (value !== source) { stopObservation(); active = null; monitor.hidden = section.hidden = true; renderSynchronization(null); source = value; } },
+    destroy() { destroyed = true; stopObservation(); window.removeEventListener("online", reconcile); document.removeEventListener("visibilitychange", reconcile); section.remove(); },
   };
 };

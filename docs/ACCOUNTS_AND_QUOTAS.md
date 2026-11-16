@@ -120,13 +120,13 @@ algorithms have very different costs. Monitor CPU, GPU memory, execution time
 and disk use before raising them. The storage allowance counts raw uploads, including
 projected files, plus each conversation's saved analysis inputs and results. It
 also includes private datasets, previews, shared project records,
-connections, saved exploration settings, and durable database job metadata.
+connections, saved exploration settings, and active database work reservations.
 Exploration settings retain up to 32 views and 512 KiB per conversation and are
 deleted with that conversation. Database query/synchronization
 jobs have a separate bounded queue: eight pending jobs per owner and
 `GRAPHMINE_MAX_PENDING_JOBS` across that queue. Each pending database job reserves
-768 KiB of metadata storage, released down to actual record bytes on completion;
-the latest 200 finished records are retained. These database operations use the
+768 KiB of metadata storage, released fully when the queue record is removed on
+completion; finished jobs are not retained as history. These database operations use the
 source's read/write budgets, independently of the graph-calculation job quota. It
 does not cap history archives, model weights or all disk use. **Settings → Usage**
 shows the storage breakdown. Deleting a conversation or an uploaded file frees its space. The existing model server must

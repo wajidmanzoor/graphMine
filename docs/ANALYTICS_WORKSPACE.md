@@ -894,7 +894,7 @@ page routing (`analytics-navigation.js`), conversation/workflow observation
 (`analytics-polling.js`) and DOM primitives/domain rendering
 (`analytics-rendering.js`). `analytics-ui.js` coordinates conversation state and
 the specialized graph, result and input views. Database-job reads, results,
-cancellation and history use the shared route client. Account authentication
+cancellation use the shared route client. Account authentication
 continues to wrap fetch for cookie/CSRF handling.
 
 Reads retain both an AbortSignal and a scope check, so a completed or
@@ -979,13 +979,15 @@ arguments. Upload files and configure connections through the HTTP API or browse
 `query_database` requires a unique `request_key` and returns the API's durable job
 immediately. Reuse that key with identical arguments after a lost acknowledgement;
 different work with the same retained key returns a conflict. Poll `database_job`
-until terminal, then fetch `database_job_result`. Jobs survive bridge disconnects.
+until terminal, then fetch `database_job_result` within five minutes. Active jobs
+survive bridge disconnects; finished delivery records are bounded, memory-only,
+and expire rather than accumulating as history.
 Save or open temporary graph/table snapshots before expiry. List/search saved
 datasets through bounded pages, then inspect provenance or copy the exact version
 into a conversation. Query, import, enrichment and expansion tools do not start
 an analysis. Interactive analysis still requires separate approval of the exact
-reviewed workflow hash and revision. Database history can also show existing sync
-summaries; this catalog does not submit graph synchronization.
+reviewed workflow hash and revision. `list_database_jobs` lists active work only;
+this catalog does not submit graph synchronization.
 
 Exports preserve complete stored content without rerunning a query or algorithm.
 Workflow exports require `expected_revision`. Up to 4 MiB can be embedded as an

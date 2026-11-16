@@ -1,5 +1,12 @@
 # Workspace improvements
 
+Current development removes the Database jobs history browser and persistent
+finished-job records. Only active work is stored; results have bounded temporary
+memory delivery. Earlier verification notes below describe their historical
+implementations. The schema toolbar no longer repeats the Neo4j badge, download,
+full-size control, or PropGBench link; diagrams and the existing workload link remain.
+
+
 Implementation follows the October 2026 application review of
 `graphMine-database-cypher`. Each item is complete only when its behavior has
 been verified. Existing ownership checks, typed identifiers, immutable analysis

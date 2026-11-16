@@ -281,12 +281,13 @@ def test_published_neo4j_schemas_change_with_dataset(loading_browser, database_s
     for identifier, title in [("yelp", "Yelp"), ("movielens-32m", "MovieLens 32M"), ("movielens-genome", "MovieLens Tag Genome"), ("ldbc-snb", "LDBC SNB")]:
         Select(browser.find_element(By.ID, "database-source")).select_by_value("benchmark-" + identifier)
         wait(browser, f"document.getElementById('benchmark-schema-image').alt.startsWith({json.dumps(title)}) && document.getElementById('benchmark-schema-image').naturalWidth>0")
-        assert browser.find_element(By.ID, "download-benchmark-schema").is_enabled()
+        assert browser.find_elements(By.ID, "download-benchmark-schema") == []
+        assert browser.find_elements(By.ID, "zoom-benchmark-schema") == []
+        assert browser.find_elements(By.CSS_SELECTOR, ".benchmark-toolbar") == []
+        assert browser.find_element(By.CSS_SELECTOR, ".source-dataset-schema").find_elements(By.LINK_TEXT, "PropGBench ↗") == []
         assert browser.find_element(By.ID, "download-benchmark-definitions").is_enabled()
         assert not browser.find_elements(By.ID, "benchmark-schema-platform")
         assert "Neo4j schema" in browser.find_element(By.ID, "benchmark-schema-image").get_attribute("alt")
         assert not any(platform in browser.find_element(By.CSS_SELECTOR, '.source-dataset-schema').text
                        for platform in ("TigerGraph", "PuppyGraph", "GraphFrames"))
         screenshot(browser, f"schema-{identifier}.png")
-    click(browser, "zoom-benchmark-schema")
-    assert browser.find_element(By.ID, "zoom-benchmark-schema").get_attribute("aria-pressed") == "true"

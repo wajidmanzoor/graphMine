@@ -8,6 +8,7 @@ import json
 import logging
 import re
 import time
+from collections import OrderedDict
 from threading import Event
 from typing import Literal
 
@@ -28,7 +29,10 @@ from .query_previews import QueryPreviews
 PENDING = ("queued", "running", "cancelling")
 TERMINAL = ("completed", "failed", "cancelled", "interrupted")
 MAX_OWNER_PENDING = 8
-MAX_HISTORY = 200
+# Finished work exists only in memory while clients collect its result.
+RESULT_TTL_SECONDS = 5 * 60
+MAX_RESULT_BYTES = 64 * 1024 * 1024
+MAX_RESULTS = 256
 # Reserve enough for a bounded request, sampled rows and terminal diagnostics.
 MAX_DOCUMENT_BYTES = 768 * 1024
 MAX_SAMPLE_BYTES = 256 * 1024
@@ -88,13 +92,36 @@ class DatabaseJobs:
         self._ready = asyncio.Event()
         self._stopping = False
         self._loop = None
+        self._finished = OrderedDict()
+
+    def _prune_finished(self):
+        now = time.monotonic()
+        for identifier, entry in list(self._finished.items()):
+            if entry[0] <= now:
+                del self._finished[identifier]
+
+    def _remember_finished(self, job, receipt):
+        self._prune_finished()
+        previous = self._finished.pop(job["id"], None)
+        expires = previous[0] if previous else time.monotonic() + RESULT_TTL_SECONDS
+        document = _json(job).encode()
+        self._finished[job["id"]] = (expires, document, receipt, len(document))
+        size = sum(entry[3] for entry in self._finished.values())
+        while len(self._finished) > MAX_RESULTS or size > MAX_RESULT_BYTES:
+            _, removed = self._finished.popitem(last=False)
+            size -= removed[3]
 
     def _row(self, db, identifier, *, owned=True):
         row = db.execute("SELECT document FROM database_jobs WHERE id=?" + (" AND owner_id=?" if owned else ""),
                          (identifier, _owner() or "") if owned else (identifier,)).fetchone()
-        if row is None:
-            raise RecordNotFound("Database job not found")
-        return json.loads(row[0])
+        if row is not None:
+            return json.loads(row[0])
+        self._prune_finished()
+        entry = self._finished.get(identifier)
+        job = json.loads(entry[1]) if entry else None
+        if job is None or owned and job["owner_id"] != (_owner() or ""):
+            raise RecordNotFound("Database job not found or its temporary result has expired")
+        return job
 
     @staticmethod
     def _save(db, job):
@@ -102,17 +129,24 @@ class DatabaseJobs:
         document = _json(job)
         if len(document.encode()) > MAX_DOCUMENT_BYTES:
             raise AnalyticsError("Database job metadata exceeds its budget.", "resource_limit")
-        db.execute("UPDATE database_jobs SET status=?,document=?,reserved_bytes=?,updated_at=? WHERE id=?",
-                   (job["status"], document, MAX_DOCUMENT_BYTES if job["status"] in PENDING else 0, job["updated_at"], job["id"]))
         if job["status"] in TERMINAL:
-            db.execute("DELETE FROM database_jobs WHERE id IN (SELECT id FROM database_jobs WHERE owner_id=? AND status IN ('completed','failed','cancelled','interrupted') ORDER BY updated_at DESC,id DESC LIMIT -1 OFFSET ?)", (job["owner_id"], MAX_HISTORY))
+            db.execute("DELETE FROM database_jobs WHERE id=?", (job["id"],))
+        else:
+            db.execute("UPDATE database_jobs SET status=?,document=?,reserved_bytes=?,updated_at=? WHERE id=?",
+                       (job["status"], document, MAX_DOCUMENT_BYTES, job["updated_at"], job["id"]))
 
     def _change(self, identifier, update, *, owned=False):
-        with self.database._lock, self.database._connect() as db:
-            db.execute("BEGIN IMMEDIATE")
-            job = self._row(db, identifier, owned=owned)
-            update(job)
-            self._save(db, job)
+        with self.database._lock:
+            with self.database._connect() as db:
+                db.execute("BEGIN IMMEDIATE")
+                job = self._row(db, identifier, owned=owned)
+                row = db.execute("SELECT request_key,request_hash FROM database_jobs WHERE id=?", (identifier,)).fetchone()
+                receipt = tuple(row) if row else self._finished[identifier][2]
+                update(job)
+                self._save(db, job)
+            # Publish the memory-only receipt after the persistent deletion commits.
+            if job["status"] in TERMINAL:
+                self._remember_finished(job, receipt)
         return job
 
     @staticmethod
@@ -126,11 +160,11 @@ class DatabaseJobs:
         return result
 
     def get(self, identifier):
-        with self.database._connect() as db:
+        with self.database._lock, self.database._connect() as db:
             return self.public(self._row(db, identifier))
 
     def list(self, *, source_id=None, kind=None, offset=0, limit=20):
-        clauses, values = ["owner_id=?"], [_owner() or ""]
+        clauses, values = ["owner_id=?", "status IN ('queued','running','cancelling')"], [_owner() or ""]
         if source_id is not None:
             clauses.append("source_id=?"); values.append(source_id)
         if kind is not None:
@@ -164,7 +198,16 @@ class DatabaseJobs:
                "cancellable": True, "created_at": now, "updated_at": now, "error": None, "result": None}
         with self.database._lock, self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
+            self._prune_finished()
             if request_key:
+                for entry in self._finished.values():
+                    if entry[2][0] == request_key:
+                        previous = json.loads(entry[1])
+                        if previous["owner_id"] != owner:
+                            continue
+                        if entry[2][1] != request_hash:
+                            raise AnalyticsError("This request key was already used for different work.", "idempotency_conflict", 409)
+                        return self.public(previous)
                 existing = db.execute("SELECT document,request_hash FROM database_jobs WHERE owner_id=? AND request_key=?", (owner, request_key)).fetchone()
                 if existing:
                     if existing["request_hash"] != request_hash:
@@ -181,7 +224,6 @@ class DatabaseJobs:
                 raise AnalyticsError("Database request exceeds its metadata budget.", "resource_limit")
             db.execute("INSERT INTO database_jobs VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                        (job["id"], owner, source_id, kind, "queued", document, request_key, request_hash, MAX_DOCUMENT_BYTES, now, now))
-            db.execute("DELETE FROM database_jobs WHERE id IN (SELECT id FROM database_jobs WHERE owner_id=? AND status IN ('completed','failed','cancelled','interrupted') ORDER BY updated_at DESC,id DESC LIMIT -1 OFFSET ?)", (owner, MAX_HISTORY))
         if self._loop and not self._loop.is_closed():
             self._loop.call_soon_threadsafe(self._ready.set)
         return self.public(job)
@@ -205,7 +247,7 @@ class DatabaseJobs:
     def retry(self, identifier, *, request_key=None):
         from .database_queries import CypherRequest
 
-        with self.database._connect() as db:
+        with self.database._lock, self.database._connect() as db:
             job = self._row(db, identifier)
         if job["status"] not in {"failed", "cancelled", "interrupted"}:
             raise AnalyticsError("Only stopped or failed work can be retried.", "database_job_state", 409)
@@ -232,20 +274,27 @@ class DatabaseJobs:
         return Principal(owner, row["username"], self.runtime.accounts, is_admin=row["role"] == "admin")
 
     def recover(self):
-        # A transaction might have committed just before a process died. Never
-        # replay running work automatically, particularly synchronization writes.
-        with self.database._lock, self.database._connect() as db:
-            db.execute("BEGIN IMMEDIATE")
-            rows = db.execute("SELECT document FROM database_jobs WHERE status IN ('running','cancelling')").fetchall()
-            for row in rows:
-                job = json.loads(row[0])
-                job.update(status="interrupted", cancellable=False, finished_at=utc_now().isoformat(),
-                           error={"code": "database_interrupted", "message": "The server restarted during this job. " +
-                                  ("The graph may already have been committed. Inspect it before explicitly retrying." if job["kind"] == "sync" else "Retry to create a new query snapshot.")})
-                self._save(db, job)
+        # Keep queued work, but never replay a write that may have committed.
+        # Old completed-job history is no longer retained by this application.
+        with self.database._lock:
+            recovered = []
+            with self.database._connect() as db:
+                db.execute("BEGIN IMMEDIATE")
+                db.execute("DELETE FROM database_jobs WHERE status IN ('completed','failed','cancelled','interrupted')")
+                rows = db.execute("SELECT document,request_key,request_hash FROM database_jobs WHERE status IN ('running','cancelling')").fetchall()
+                for row in rows:
+                    job = json.loads(row[0])
+                    job.update(status="interrupted", cancellable=False, finished_at=utc_now().isoformat(),
+                               error={"code": "database_interrupted", "message": "The server restarted during this job. " +
+                                      ("The graph may already have been committed. Inspect it before explicitly retrying." if job["kind"] == "sync" else "Retry to create a new query snapshot.")})
+                    self._save(db, job)
+                    recovered.append((job, (row[1], row[2])))
+            for job, receipt in recovered:
+                self._remember_finished(job, receipt)
 
     def _claim(self):
         with self.database._lock, self.database._connect() as db:
+            self._prune_finished()
             db.execute("BEGIN IMMEDIATE")
             # Serialize work against each source; refresh cannot overlap its own
             # reads or another refresh, even when submitted by different users.
@@ -267,7 +316,7 @@ class DatabaseJobs:
             result["rows"] = []
             return result
         # Large graph row values must not duplicate the full snapshot in the
-        # durable queue. The original artifact still retains all graph values.
+        # temporary result. The original artifact still retains all graph values.
         rows, size = [], 0
         for row in response["rows"]:
             size += len(_json(row).encode())
@@ -280,7 +329,7 @@ class DatabaseJobs:
         return result
 
     def result(self, identifier):
-        with self.database._connect() as db:
+        with self.database._lock, self.database._connect() as db:
             job = self._row(db, identifier)
         if job["status"] != "completed":
             raise AnalyticsError("This database job has no completed result.", "database_job_state", 409)
@@ -315,7 +364,7 @@ class DatabaseJobs:
                 error = job.get("error") or {}
                 details = error.get("details")
                 details = details if isinstance(details, dict) else {"cause": details} if details is not None else {}
-                raise AnalyticsError(error.get("message", "Synchronization did not complete. Inspect its history before retrying."),
+                raise AnalyticsError(error.get("message", "Synchronization did not complete. Inspect the graph before retrying."),
                                      error.get("code", "database_sync"), error.get("status", 409), details={**details, "job_id": identifier})
             await asyncio.sleep(0.1)
 

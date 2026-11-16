@@ -95,8 +95,14 @@ def test_async_admission_returns_before_query_and_duplicate_request_runs_once(wo
         release.set()
     wait_job(workspace.client, job["id"])
     assert len(workspace.calls) == initial + 1
-    # Result loading is immutable even through a fresh service instance.
-    result = DatabaseJobs(workspace.runtime).result(job["id"])
+    # Finished work is delivered from memory, without a persistent history row.
+    result = workspace.runtime.database_jobs.result(job["id"])
+    with pytest.raises(RecordNotFound):
+        DatabaseJobs(workspace.runtime).result(job["id"])
+    assert submit(workspace)["id"] == job["id"]
+    with workspace.runtime.database._connect() as db:
+        assert db.execute("SELECT count(*) FROM database_jobs").fetchone()[0] == 0
+    assert workspace.client.get("/api/database-jobs").json()["items"] == []
     assert result["dataset"]["temporary"] and result["vertex_count"] == 2
     assert len(result["graph"]["vertices"]) == 2
     assert result["dataset"]["source"]["query"] == QUERY["statement"]
@@ -314,7 +320,9 @@ def test_failure_details_survive_job_polling_for_inline_query_errors(workspace, 
     job = submit(workspace)
     failed = wait_job(workspace.client, job["id"], "failed")
     assert failed["error"]["details"]["offset"] == 9
-    assert workspace.client.get("/api/database-jobs?limit=1").json()["items"][0]["id"] == job["id"]
+    assert workspace.client.get("/api/database-jobs?limit=1").json()["items"] == []
+    with workspace.runtime.database._connect() as db:
+        assert db.execute("SELECT count(*) FROM database_jobs").fetchone()[0] == 0
 
 
 def test_account_queue_resumes_with_fresh_owner_identity_and_rejects_disabled_owner(account_settings, source, tmp_path, monkeypatch):
@@ -346,7 +354,7 @@ def test_account_queue_resumes_with_fresh_owner_identity_and_rejects_disabled_ow
         result = client.get(f"/api/database-jobs/{identifier}/result")
         assert result.status_code == 200 and result.json()["vertex_count"] == 3
         assert executions == [alice["id"]]
-        assert 0 < runtime.accounts.storage_usage(alice["id"])["database_jobs"] < pending_usage
+        assert runtime.accounts.storage_usage(alice["id"])["database_jobs"] == 0
         client.headers.update(login(client, "bob"))
         assert client.get(f"/api/database-jobs/{identifier}").status_code == 404
         assert client.get(f"/api/database-jobs/{identifier}/result").status_code == 404
@@ -360,9 +368,8 @@ def test_account_queue_resumes_with_fresh_owner_identity_and_rejects_disabled_ow
         runtime = client.app.state.runtime
         deadline = time.monotonic() + 5
         while time.monotonic() < deadline:
-            with runtime.database._connect() as db:
-                row = db.execute("SELECT document FROM database_jobs WHERE id=?", (blocked,)).fetchone()
-            value = json.loads(row[0])
+            with identity_scope(Principal(alice["id"], "alice", runtime.accounts)):
+                value = runtime.database_jobs.get(blocked)
             if value["status"] == "failed":
                 break
             time.sleep(0.02)
@@ -370,7 +377,7 @@ def test_account_queue_resumes_with_fresh_owner_identity_and_rejects_disabled_ow
         assert executions == [alice["id"]]
 
 
-def test_online_backup_preserves_job_and_immutable_result(workspace, tmp_path):
+def test_online_backup_preserves_snapshot_without_finished_job_history(workspace, tmp_path):
     from graphmine_agent.database import Database
 
     job = submit(workspace)
@@ -385,10 +392,12 @@ def test_online_backup_preserves_job_and_immutable_result(workspace, tmp_path):
     data_root = Path(report["data_root"])
     runtime = SimpleNamespace(settings=replace(workspace.runtime.settings, data_root=data_root), database=Database(data_root / "agent.sqlite3"))
     service = DatabaseJobs(runtime)
-    assert service.get(job["id"])["status"] == "completed"
-    assert service.result(job["id"]) == before
-    assert service.get(pending["id"])["status"] == "cancelled"
-    assert service.get(pending["id"])["error"]["code"] == "restored_not_resumed"
+    from graphmine_agent.query_previews import QueryPreviews
+    assert QueryPreviews(runtime).get(before["dataset"]["id"])["sha256"] == before["dataset"]["sha256"]
+    service.recover()
+    for identifier in (job["id"], pending["id"]):
+        with pytest.raises(RecordNotFound):
+            service.get(identifier)
     assert report["cancelled_database_job_ids"] == [pending["id"]]
 
 
@@ -453,3 +462,64 @@ def test_async_table_result_reloads_exact_typed_snapshot(workspace, monkeypatch)
     assert result["table"]["kind"] == "table" and result["dataset"] is None
     assert result["rows"] == [{"id": 9007199254740993, "key": "001"}]
     assert not result["rows_truncated"]
+
+
+def test_finished_delivery_expires_without_removing_the_snapshot(workspace, monkeypatch):
+    from graphmine_agent import database_jobs
+    from graphmine_agent.query_previews import QueryPreviews
+    job = submit(workspace)
+    wait_job(workspace.client, job["id"])
+    service = workspace.runtime.database_jobs
+    metadata = service.result(job["id"])["dataset"]
+    deadline = service._finished[job["id"]][0]
+    service.cancel(job["id"])
+    assert service._finished[job["id"]][0] == deadline
+    expired = time.monotonic() + database_jobs.RESULT_TTL_SECONDS + 1
+    monkeypatch.setattr(database_jobs, "time", SimpleNamespace(monotonic=lambda: expired))
+    assert workspace.client.get(f"/api/database-jobs/{job['id']}").status_code == 404
+    assert workspace.client.get(f"/api/database-jobs/{job['id']}/result").status_code == 404
+    assert not service._finished
+    assert QueryPreviews(workspace.runtime).get(metadata["id"])["sha256"] == metadata["sha256"]
+
+
+@pytest.mark.parametrize("budget", ["count", "bytes"])
+def test_temporary_delivery_memory_is_bounded(workspace, monkeypatch, budget):
+    from graphmine_agent import database_jobs
+    from graphmine_agent.database import Database
+    runtime = SimpleNamespace(settings=workspace.runtime.settings, database=Database(workspace.runtime.settings.data_root / "delivery.sqlite3"))
+    service = DatabaseJobs(runtime)
+    first = service.enqueue("query", "demo", CypherRequest(**QUERY))
+    service.cancel(first["id"])
+    if budget == "count":
+        monkeypatch.setattr(database_jobs, "MAX_RESULTS", 1)
+    else:
+        monkeypatch.setattr(database_jobs, "MAX_RESULT_BYTES", service._finished[first["id"]][3] + 100)
+    second = service.enqueue("query", "demo", CypherRequest(**QUERY))
+    service.cancel(second["id"])
+    with pytest.raises(RecordNotFound):
+        service.get(first["id"])
+    assert service.get(second["id"])["status"] == "cancelled"
+    with runtime.database._connect() as db:
+        assert db.execute("SELECT count(*) FROM database_jobs").fetchone()[0] == 0
+
+
+def test_startup_removes_legacy_history_but_keeps_queued_work(workspace):
+    from graphmine_agent.database import Database
+    runtime = SimpleNamespace(settings=workspace.runtime.settings, database=Database(workspace.runtime.settings.data_root / "legacy.sqlite3"))
+    service = DatabaseJobs(runtime)
+    old = []
+    for status in ("completed", "failed", "cancelled", "interrupted"):
+        job = service.enqueue("query", "demo", CypherRequest(**QUERY))
+        old.append(job["id"])
+        with runtime.database._connect() as db:
+            value = json.loads(db.execute("SELECT document FROM database_jobs WHERE id=?", (job["id"],)).fetchone()[0])
+            value["status"] = status
+            db.execute("UPDATE database_jobs SET status=?,document=? WHERE id=?", (status, json.dumps(value), job["id"]))
+    queued = service.enqueue("query", "demo", CypherRequest(**QUERY))
+    service.recover()
+    assert [job["id"] for job in service.list()["items"]] == [queued["id"]]
+    for identifier in old:
+        with pytest.raises(RecordNotFound):
+            service.get(identifier)
+    with runtime.database._connect() as db:
+        assert db.execute("SELECT count(*) FROM database_jobs").fetchone()[0] == 1

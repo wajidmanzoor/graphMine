@@ -92,7 +92,7 @@ conversation action stays visible below it. Errors return to Query.
 
 The page's Back control returns to the originating conversation or result;
 browser Back/Forward and reload also work. A reload restores the scoped draft
-without submitting it. Background query jobs can be resumed from their history.
+without submitting it. The current query shows progress and cancellation while this view stays open.
 Connection discovery does not hold navigation or file uploads. A response that
 finishes after leaving the workspace cannot replace the new page; uploads remain
 attached to the conversation that accepted them.
@@ -119,58 +119,44 @@ conversation inputs do not expire with previews.
 
 ### Background queries and synchronization
 
-**Preview query** and **Refresh graph from tables** submit durable jobs. The
-status panel shows the current phase and counts when available; it does not
-invent a percentage while the database is still discovering rows. Closing the
-workspace or reloading the page leaves server work running. Reopen the same
-connection's **Database jobs** panel and choose **Follow job** or **View result**.
-Viewing a completed job reads its immutable snapshot without executing Cypher.
-Preview expiry still applies; save or use the snapshot to retain it.
+**Preview query** and **Refresh graph from tables** use a bounded background
+queue. The current request shows its phase and available counts, with cancellation
+until the commit boundary. Keep the view open to collect the result. The
+**Database jobs** history panel and its recovery/retry browser have been removed;
+reopening the page does not recover previous requests automatically.
 
-Filter the history to **Graph synchronization** and choose **View changes** to
-inspect a completed refresh. The summary separates added, updated, removed and
-unchanged nodes and relationships, identifies relationship endpoint/type changes
-within the updated count, and reports mapping revisions. Its synchronization
-record contains the completion time and mapped-content SHA-256. A successful
-no-change refresh shows zero writes; a failed refresh retains its error instead
-of showing a successful empty summary. Saved analyses retain their original
-inputs; preview a new query to use the refreshed source graph.
+Successful synchronization shows added, updated, removed and unchanged nodes and
+relationships, mapping revisions, and a completion record for the current request.
+Saved analyses retain their original inputs. Preview a new query to use refreshed
+data. To retry a failed request, review it and submit it again explicitly.
 
-**Cancel job** immediately stops queued work and requests cooperative cancellation
-of running work. Running reads check cancellation between rows, and graph writes
-check it between batches. A blocked driver call must return or reach the source's
-configured timeout before rollback completes; the panel says **Cancellation
-requested** until that happens. Cancellation closes atomically before committing
-graph changes or publishing a snapshot, and the panel explains when it is too
-late. Uncommitted graph writes roll back on cancellation.
+**Cancel query** or **Cancel refresh** stops queued work immediately and requests
+cooperative cancellation of running work. A blocked driver call must return or
+reach its configured timeout before rollback completes. Cancellation closes before
+committing graph changes or publishing a snapshot; uncommitted writes roll back.
 
-Queued work resumes after an ordinary server restart with a fresh account check
-and the original connection/mapping fingerprint. Work interrupted while running
-is never replayed automatically. **Retry job** explicitly creates a new job;
-changed connection settings require reviewing and submitting new work instead.
-An interrupted synchronization may have committed, so its details direct users
-to inspect the source graph before retrying. A staged backup restore stops all
-pending database jobs and requires explicit retry, even when they were queued.
+Only queued/running/cancelling work is stored in the metadata database. Finishing
+work deletes its queue record and releases its 768 KiB storage reservation. Old
+completed, failed, cancelled and interrupted history is removed at startup.
+Completed results and errors remain in memory for up to five minutes solely for
+polling, result delivery, and duplicate-request detection; the cache is capped at
+256 entries and 64 MiB per application process. It does not survive process restart.
+Query snapshots retain their separate preview/saved-input lifecycle.
 
-Jobs, requests and results are private to their owner and included in online
-backups. The queue admits at most eight pending jobs per account and
-`GRAPHMINE_MAX_PENDING_JOBS` across the database queue (default 64). Workers share
-the bounded upload/read slots, with at most four workers, and serialize queued
-work for each source within the application's metadata database. Each pending job reserves 768 KiB for its bounded metadata;
-finished records use their actual bytes, with the latest 200 retained per owner.
-Query snapshots retain complete data; graph row samples in the job record have
-a separate 256 KiB limit, disclosed when reached.
+Queued work resumes after an ordinary restart with a fresh account check and the
+original connection fingerprint. Interrupted running work is never replayed:
+its temporary status advises inspecting the graph before retrying an uncertain
+synchronization. Backup restores cancel pending work before application startup.
+The queue admits eight pending jobs per owner and `GRAPHMINE_MAX_PENDING_JOBS`
+globally (default 64), shares read/upload slots, and serializes work per source.
 
-API clients request an immediate response on the query/sync endpoints with
-`Prefer: respond-async`. They receive HTTP 202, `{job: ...}` and a `Location`
-header. Supplying an `Idempotency-Key` returns the same retained job for identical
-requests; reusing the key for different work returns 409. Synchronization always
-uses the durable queue. Without this preference, its endpoint waits for the job
-and returns HTTP 200 with the existing totals, change summary and `job_id`.
-Disconnecting the waiting client does not cancel the job. Failures retain their
-HTTP status and include `job_id` in the error details. Synchronous queries keep
-their existing response contract. Polling reconnects with backoff after transient
-errors; it never retries a submission implicitly.
+API clients request HTTP 202 with `Prefer: respond-async`; the returned `Location`
+identifies status and result endpoints. `GET /api/database-jobs` lists active work
+only. Fetch finished results promptly before their temporary delivery record
+expires. An `Idempotency-Key` reuses the same pending or cached request and rejects
+conflicting arguments; it is not a permanent execution ledger. Polling retries
+transient connection failures without resubmitting work. Synchronous sync waits
+on the same queue; synchronous query responses keep their existing contract.
 
 ### Cypher query editor
 
@@ -868,7 +854,7 @@ GRAPHMINE_TEST_SYNC_NEO4J=1 \
 These checks cover no-op write counters, keyed changes, empty-source deletion,
 legacy adoption, mapping migration, null properties, schema/read-budget failures,
 foreign relationships, concurrent edits, cancellation and mapping-change rollback,
-durable history and immutable saved snapshots. Local sync contracts and history
+current-request delivery and immutable saved snapshots. Local sync contracts and progress
 UI checks live in `agent/tests/test_database_sync.py` and
 `agent/browser_tests/test_database_jobs.py`. They are part of the local release
 selection; the live suite requires the explicit database integration selection.

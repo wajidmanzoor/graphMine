@@ -106,7 +106,7 @@ async def test_graph_query_job_is_idempotent_and_snapshots_can_be_retained_and_r
         page = await value(bridge, "list_datasets", limit=1, latest=True, kind=None)
         assert len(page["items"]) == 1
         jobs = await value(bridge, "list_database_jobs", source_id="demo", kind="query")
-        assert len(jobs["items"]) == 1
+        assert jobs["items"] == []
         detail = await value(bridge, "database_job", identifier=first["job"]["id"])
         assert detail["query"]["parameters"]["exact"] == 9007199254740993
         conflict = await call(bridge, "query_database", **{**arguments, "statement": "MATCH (m) RETURN m"})

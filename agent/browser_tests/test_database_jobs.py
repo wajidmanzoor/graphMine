@@ -1,4 +1,4 @@
-"""Database work stays recoverable when its workspace or browser is closed."""
+"""Current-request progress and cancellation work without a job-history panel."""
 
 import copy
 import json
@@ -96,20 +96,15 @@ def open_source(browser, server):
 
 
 @pytest.mark.parametrize("width", [1440, 320])
-def test_query_recovers_after_page_reload_without_executing_again(loading_browser, loading_server, database_jobs, width):
+def test_query_delivers_result_without_a_history_panel(loading_browser, loading_server, database_jobs, width):
     browser = loading_browser
     browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": width, "height": 1000})
     open_source(browser, loading_server)
     click(browser, "#preview-cypher")
     wait_for(browser, "document.getElementById('database-job-status').textContent.includes('12')")
     assert len(database_jobs.submissions) == 1 and database_jobs.submissions[0]["key"]
-    click(browser, "#close-data-source")
-    browser.refresh()
-    open_source(browser, loading_server)
-    click(browser, "#database-job-history > summary")
-    wait_for(browser, "document.querySelector('[data-job-id=job-1]') !== null")
-    click(browser, "[data-job-id=job-1] [data-job-action=open]")
-    wait_for(browser, "document.getElementById('database-job-status').textContent.includes('12')")
+    assert browser.find_elements(By.ID, "database-job-history") == []
+    assert database_jobs.history_filters == []
     database_jobs.jobs["job-1"].update(status="completed", cancellable=False, progress={"stage": "completed"})
     wait_for(browser, "document.getElementById('save-query-snapshot').disabled === false")
     assert "1 nodes" in browser.find_element(By.ID, "database-preview-count").text
@@ -127,9 +122,7 @@ def test_cancel_waits_for_rollback_and_retry_is_explicit(loading_browser, loadin
     database_jobs.jobs["job-1"].update(status="cancelled")
     wait_for(browser, "document.getElementById('preview-cypher').disabled === false")
     assert database_jobs.result_reads == 0 and len(database_jobs.submissions) == 1
-    click(browser, "#database-job-history > summary")
-    wait_for(browser, "document.querySelector('[data-job-action=retry]') !== null")
-    click(browser, "[data-job-action=retry]")
+    click(browser, "#preview-cypher")
     wait_for(browser, "document.getElementById('database-job-status').textContent.includes('Reading')")
     assert len(database_jobs.submissions) == 2
     assert database_jobs.submissions[0]["key"] != database_jobs.submissions[1]["key"]
@@ -222,7 +215,7 @@ def sync_summary(*, unchanged=False):
 
 
 @pytest.mark.parametrize("width", [1440, 320])
-def test_sync_change_summary_and_history_survive_reload_without_new_work(loading_browser, loading_server, database_jobs, width):
+def test_sync_change_summary_is_current_only(loading_browser, loading_server, database_jobs, width):
     browser = loading_browser
     browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": width, "height": 1000})
     open_source(browser, loading_server); click(browser, "#sync-database")
@@ -240,19 +233,14 @@ def test_sync_change_summary_and_history_survive_reload_without_new_work(loading
     assert browser.execute_script("return document.getElementById('database-workspace').scrollWidth <= document.getElementById('database-workspace').clientWidth")
     browser.execute_script("arguments[0].scrollIntoView({block:'center'})", summary)
     browser.save_screenshot(f"/tmp/graphmine-sync-summary-{width}.png")
-    database_jobs.jobs["query-history"] = {**database_jobs.jobs["job-1"], "id": "query-history", "kind": "query", "synchronization": None}
-    browser.refresh(); open_source(browser, loading_server); click(browser, "#database-job-history > summary")
-    browser.execute_script("const filter=document.getElementById('database-job-kind'); filter.value='sync'; filter.dispatchEvent(new Event('change')); ")
-    wait_for(browser, "document.querySelectorAll('[data-job-id]').length === 1 && document.querySelector('[data-job-id=job-1]') !== null")
-    assert database_jobs.history_filters[-1] == "sync"
-    assert browser.find_element(By.CSS_SELECTOR, "[data-job-id=job-1] [data-job-action=open]").text == "View changes"
-    click(browser, "[data-job-id=job-1] [data-job-action=open]")
-    wait_for(browser, "document.getElementById('database-query-status').textContent.includes('2 added')")
-    assert not browser.find_element(By.ID, "database-sync-summary").get_attribute("hidden")
-    assert len(database_jobs.submissions) == 1 and database_jobs.result_reads == 2
+    browser.refresh(); open_source(browser, loading_server)
+    assert browser.find_elements(By.ID, "database-job-history") == []
+    assert not browser.find_element(By.ID, "database-sync-summary").is_displayed()
+    assert len(database_jobs.submissions) == 1 and database_jobs.result_reads == 1
+    assert database_jobs.history_filters == []
 
 
-def test_no_change_sync_and_schema_failure_are_distinct_in_history(loading_browser, loading_server, database_jobs):
+def test_no_change_sync_and_schema_failure_have_current_feedback(loading_browser, loading_server, database_jobs):
     browser = loading_browser
     open_source(browser, loading_server); click(browser, "#sync-database")
     wait_for(browser, "document.getElementById('database-job-status').textContent.includes('Graph refresh')")
@@ -267,7 +255,5 @@ def test_no_change_sync_and_schema_failure_are_distinct_in_history(loading_brows
     click(browser, "#refresh-database-job")
     wait_for(browser, "document.getElementById('database-query-status').textContent.includes('Mapped SQL columns changed')")
     assert browser.find_element(By.ID, "database-sync-summary").get_attribute("hidden")
-    click(browser, "#database-job-history > summary")
-    wait_for(browser, "document.querySelector('[data-job-id=job-2] [data-job-action=retry]') !== null")
-    assert "Mapped SQL columns changed" in browser.find_element(By.CSS_SELECTOR, "[data-job-id=job-2]").text
+    assert browser.find_elements(By.ID, "database-job-history") == []
     assert len(database_jobs.submissions) == 2 and database_jobs.result_reads == 1

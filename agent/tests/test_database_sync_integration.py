@@ -232,7 +232,7 @@ def test_real_synchronization_history_preserves_saved_graphs_across_data_and_map
         value = opened.json(); graph = client.app.state.runtime.graph_store.read_graph(value['file']['id'], value['session']['id'])
         assert graph == json.loads(original)
         history = client.get('/api/database-jobs', params={'source_id': f.source.id, 'kind': 'sync'}).json()['items']
-        assert len(history) == 3 and all(row['status'] == 'completed' and row['synchronization']['mapped_content_sha256'] for row in history)
+        assert history == []
 
 
 def test_real_mapping_change_during_sync_rolls_back_before_commit(live_sync, settings, tmp_path, monkeypatch):

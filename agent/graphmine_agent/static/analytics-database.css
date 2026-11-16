@@ -68,7 +68,6 @@
 .source-dataset-schema .benchmark-toolbar > select { width: 140px; margin-right: auto; }
 .source-dataset-schema .benchmark-schema-view { margin: 10px 0; min-height: 0; padding: 10px; }
 .source-dataset-schema .benchmark-schema-view img { max-height: 220px; }
-.source-dataset-schema .benchmark-schema-view.schema-full-size img { max-height: none; }
 .source-continue { display: flex; align-items: flex-end; gap: 16px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
 .source-continue label { flex: 1; margin: 0; }
 .source-continue select { display: block; width: 100%; margin-top: 8px; }
@@ -151,13 +150,8 @@
 .connection-mappings summary { font-size: var(--text-small); color: var(--muted); }
 .paired-connection-form .source-status { margin: 0; }
 .source-datasets-panel { padding: 26px 30px; }
-.benchmark-toolbar { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 25px; }
-.benchmark-toolbar label { flex: 1; min-width: 0; margin: 0; }
-.benchmark-toolbar select { width: 100%; margin-top: 7px; }
-.benchmark-toolbar button { margin-bottom: 2px; }
 .benchmark-schema-view { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: #fff; overflow: auto; max-height: 520px; min-height: 180px; margin: 18px 0; }
 .benchmark-schema-view img { display: block; max-width: 100%; max-height: 470px; object-fit: contain; margin: 0 auto; }
-.benchmark-schema-view.schema-full-size img { max-width: none; max-height: none; }
 .benchmark-attribution { margin-left: auto; font-size: var(--text-small); color: var(--muted); }
 .source-datasets-panel > .source-hint { overflow-wrap: anywhere; margin: 20px 0 12px; }
 .benchmark-files summary { font-size: var(--text-small); }
@@ -216,21 +210,17 @@
   .source-section-heading { align-items: flex-start; }
   .source-section-heading > .source-hint { text-align: right; max-width: 170px; }
   .source-files-panel, .source-connection-editor, .source-datasets-panel { padding: 22px 18px; }
-  .benchmark-toolbar { flex-wrap: wrap; gap: 12px; }
-  .benchmark-toolbar label { flex-basis: calc(50% - 12px); }
   .benchmark-schema-view { padding: 8px; }
   .benchmark-attribution { width: 100%; margin-top: 10px; }
   .connection-fields { grid-template-columns: 1fr; }
   .database-start > div { min-width: 160px; }
   .database-start > button { margin-left: 48px; }
 }
-.database-jobs { margin-block: 0.75rem; min-width: 0; }
+.query-progress { margin-block: 0.75rem; min-width: 0; }
 .database-job-monitor { padding: 0.75rem; border: 1px solid #bacbc0; border-radius: 0.5rem; }
 .database-job-monitor p { overflow-wrap: anywhere; }
 .database-job-monitor progress { width: 100%; }
-.database-job-actions, .database-job-row { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
-.database-job-row { padding-block: 0.5rem; border-bottom: 1px solid #dce4df; }
-.database-job-row > span { flex: 1 1 15rem; overflow-wrap: anywhere; }
+.database-job-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
 .exploration-status { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-block: 0.75rem; color: var(--muted); font-size: var(--text-small); }
 .exploration-status > span { flex: 1 1 16rem; overflow-wrap: anywhere; }
 .exploration-status.save-error { color: #793321; }
