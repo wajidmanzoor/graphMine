@@ -7,6 +7,8 @@
 
 #include "graphmine/graph.hpp"
 
+namespace boost::json { class value; }
+
 namespace graphmine {
 
 struct ViewSpec {
@@ -157,5 +159,9 @@ std::shared_ptr<const ViewResult> make_view(const Graph&, const ViewSpec&);
 std::shared_ptr<const ViewResult> make_view(const Graph&, const ViewSpec&, const ViewBuildOptions&);
 std::shared_ptr<const ViewResult> make_view(std::string_view input_json, const ViewSpec&);
 std::shared_ptr<const ViewResult> make_view(std::string_view input_json, const ViewSpec&, const ViewBuildOptions&);
+// Common-front JSON that is already parsed must not pass through text again:
+// a second decimal-to-binary conversion can change existing numeric values.
+struct ParsedViewInput { const boost::json::value& value; };
+std::shared_ptr<const ViewResult> make_view(ParsedViewInput, const ViewSpec&, const ViewBuildOptions& = {});
 
 }  // namespace graphmine

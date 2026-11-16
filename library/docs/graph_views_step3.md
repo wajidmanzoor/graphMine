@@ -517,3 +517,22 @@ arrays, structural features, propagated binary64 values, costs and rejections.
 Multi-member requests cover empty members, both feature sources and both
 readouts. Structured cache tests check one observation per build/hit and equal
 charges for collections, feature matrices and hypergraphs.
+
+## Nearest-neighbor graph construction
+
+k-NN now consumes a declared V4 feature matrix, copying its row-major cells into
+the existing column-major layout. The structured common front keeps its original
+validation, allocation budget and dataset metadata. Distance arithmetic, tie
+order, neighbor selection and output symmetrization remain unchanged.
+
+Checkpoint `35-knn` passes 53 CTests, 238 Python tests and all 82 CPU admissions.
+The 6,571 corpus graphs are deterministically lifted to feature rows using their
+vertex order and degrees; every feature byte, ID map, shape and cost matches the
+frozen parser on builds/hits. Existing tests independently check distances on
+native feature datasets; new requests cover all distance/symmetry options.
+
+The first corpus run caught a one-bit difference in `1/11` caused by an extra JSON
+text round trip. `ParsedViewInput` now passes already-parsed values into the same
+factory without that conversion. The failing diagnostic is retained; the fixed
+run has zero mismatches. All 26,284 graph-learning comparisons also pass again
+through the corrected structured entry point, before the final evidence refresh.

@@ -1,8 +1,11 @@
 #include "pattern_match.hpp"
 #include "structured_input.hpp"
+#include "feature_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
+const ViewProfile knn_features{"knn-graph:cpp:features", {"knn-graph"},
+  R"({"kind":"dense","weights":"f64"})"};
 const ViewProfile coarsening_matching{"graph-coarsening:cpp:matching", {"graph-coarsening"},
   R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:sum",
        "weights":"rational_exact","edge_ids":true,"nonnegative_weights":true})"};
@@ -147,7 +150,7 @@ json::object knn_graph(const json::value& input, const json::object& args, Work&
   using namespace family_util;
   using namespace numeric;
   fields(args, {"k", "distance", "search_mode", "symmetrization"}, {"k"});
-  const FeatureInput data(input, work);
+  const auto data = feature_view_input(input, knn_features, work);
   const auto n = data.ids.size(), k = natural(args, "k", 0);
   require(k < n, "k must be smaller than the number of vectors");
   const auto distance =

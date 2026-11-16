@@ -11,6 +11,34 @@
 #include "../native_time.hpp"
 namespace graphmine::legacy_test {
 using namespace graphmine::runtime;
+// Frozen feature common front; independent of the dense view and its repacker.
+struct FeatureInput {
+  std::vector<ExternalId> ids;
+  std::map<ExternalId,VertexIndex> indices;
+  std::string dataset_id;
+  numeric::Matrix vectors;
+  FeatureInput(const json::value& input, Work& work) {
+    const auto data = object(input,"feature_vectors");
+    fields(data,{"dataset_id","dimension","vectors"},{"dataset_id","dimension","vectors"});
+    dataset_id = string(data.at("dataset_id"),"dataset_id");
+    require(!dataset_id.empty(),"dataset_id must not be empty");
+    const auto dimension = uint(data.at("dimension"),"dimension");
+    require(dimension > 0,"Feature dimension must be positive");
+    require(data.at("vectors").is_array(),"vectors must be an array");
+    const auto& records = data.at("vectors").as_array();
+    vectors = numeric::Matrix(records.size(),dimension,work);
+    for (std::size_t i=0; i<records.size(); ++i) {
+      const auto row = object(records[i],"vector");
+      fields(row,{"id","values"},{"id","values"});
+      require(ids.size() < UINT32_MAX,"Too many structured-input vertices");
+      const auto id = external_id(row.at("id"));
+      require(indices.emplace(id,ids.size()).second,"Duplicate structured-input vertex ID");
+      ids.push_back(id);
+      require(row.at("values").is_array() && row.at("values").as_array().size() == dimension,"Feature width must match dimension");
+      for (std::size_t j=0; j<dimension; ++j) vectors(i,j) = numeric::float64(row.at("values").as_array()[j],"feature");
+    }
+  }
+};
 inline UndirectedGraphView simple(const Graph& graph, UndirectedProjectionOptions options = {}) {
   if (graph.canonical().graph.directed && !options.allow_directed_projection) {
     throw std::invalid_argument(

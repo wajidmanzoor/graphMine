@@ -1,0 +1,3 @@
+{"dataset":"validation/algorithm_repairs/cuda_ms/fixtures/audit-9.json#","profile":"knn-graph:cpp:features","input_conversion":"vertex_order_degree_features","equal":true,"rejected":false}
+{"dataset":"validation/algorithm_repairs/cuda_ms/manifest.json#/cases/0","profile":"knn-graph:cpp:features","input_conversion":"vertex_order_degree_features","equal":true,"rejected":false}
+{"dataset":"validation/algorithm_repairs/cuda_ms/manifest.json#/cases/1","profile":"knn-graph:cpp:features","input_conversion":"vertex_order_degree_features","equal":true,"rejected":false}

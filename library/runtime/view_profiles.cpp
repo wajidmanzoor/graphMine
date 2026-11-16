@@ -84,6 +84,6 @@ std::shared_ptr<const ViewResult> consume_view(const json::value& input, const V
   options.observe = [&](const ViewResult& view, bool hit, bool retained) {
     observe(profile,work,view,hit,retained);
   };
-  return make_view(json::serialize(input),profile.spec,options);
+  return make_view(ParsedViewInput{input},profile.spec,options);
 }
 }  // namespace graphmine::runtime

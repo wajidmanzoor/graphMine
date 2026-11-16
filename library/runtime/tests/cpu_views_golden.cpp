@@ -16,6 +16,7 @@
 #include "../graph_output_view.hpp"
 #include "../enumeration_input.hpp"
 #include "../learning.hpp"
+#include "../feature_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -128,6 +129,37 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
     equal(old_endpoints,new_endpoints);
   }
   return !expected;
+}
+bool feature_input(const rt::json::value& input, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::FeatureInput> expected;
+  std::string old_failure;
+  try { expected.emplace(input,old_work); } catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::FeatureInput> actual;
+    std::string new_failure;
+    try { actual = rt::feature_view_input(input,rt::cpu_view_profile("knn-graph:cpp:features"),work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Feature matrix rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->ids != actual->ids || expected->indices != actual->indices || expected->dataset_id != actual->dataset_id ||
+        expected->vectors.rows != actual->vectors.rows || expected->vectors.cols != actual->vectors.cols ||
+        old_work.candidates != work.candidates) throw std::runtime_error("Feature matrix map/shape/cost differs");
+    equal(expected->vectors.values,actual->vectors.values);
+  }
+  return !expected;
+}
+rt::json::object corpus_features(const gm::Graph& graph) {
+  rt::json::array rows;
+  std::vector<std::uint64_t> degrees(graph.vertex_count());
+  for (const auto& edge : graph.canonical().edges) { ++degrees[graph.dense_index(edge.source)]; ++degrees[graph.dense_index(edge.target)]; }
+  for (gm::VertexIndex v=0; v<graph.vertex_count(); ++v)
+    rows.push_back(rt::json::object{{"id",rt::id_json(graph.external_id(v))},
+      {"values",{static_cast<double>(v%5)-2.0,0.25*degrees[v],v==0 ? -0.0 : 1.0/(v+1.0)}}});
+  return {{"dataset_id",graph.canonical().graph.id},{"dimension",3},{"vectors",rows}};
 }
 bool graph_learning_input(const rt::json::value& input, const std::string& direction, std::uint64_t budget = UINT64_MAX) {
   const bool structural = direction == "structural_features";
@@ -821,6 +853,23 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  const auto features = corpus_features(graph);
+  feature_input(features);
+  for (std::uint64_t budget=0; budget<12; ++budget) feature_input(features,budget);
+  for (const auto* distance : {"squared_euclidean","euclidean","cosine"})
+    for (const auto* symmetry : {"directed","union","mutual"})
+      declared_request("knn-graph:cpp:features",features,{{"k",1},{"distance",distance},{"symmetrization",symmetry}});
+  for (int change=0; change<6; ++change) {
+    auto invalid_features = features;
+    auto& first = invalid_features.at("vectors").as_array()[0].as_object();
+    if (change==0) invalid_features["dimension"] = 4;
+    if (change==1) invalid_features["dimension"] = 0;
+    if (change==2) first["id"] = 1;
+    if (change==3) first.at("values").as_array()[0] = 9007199254740993ULL;
+    if (change==4) first.at("values").as_array()[0] = "bad";
+    if (change==5) invalid_features["vectors"] = rt::json::array{};
+    feature_input(invalid_features);
+  }
   traversal(graph);
   for (const auto& test : weighted_cases) weighted_path(graph,test);
   for (const auto& test : connectivity_cases) weighted_path(graph,test);
@@ -1372,6 +1421,7 @@ int main(int argc, char** argv) {
     const bool enumeration = argc > 1 && std::string(argv[1]) == "--enumeration";
     const bool node_learning = argc > 1 && std::string(argv[1]) == "--node-learning";
     const bool graph_learning = argc > 1 && std::string(argv[1]) == "--graph-learning";
+    const bool knn = argc > 1 && std::string(argv[1]) == "--knn";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1397,7 +1447,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1405,6 +1455,12 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (knn) {
+          const bool rejected = feature_input(corpus_features(graph));
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile","knn-graph:cpp:features"},{"input_conversion","vertex_order_degree_features"},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (graph_learning) for (const auto* direction : {"incoming","outgoing","undirected_projection","structural_features"}) {
           const rt::json::object collection{{"dataset_id","corpus"},{"graphs",{input.at("graph")}}};
           const bool rejected = graph_learning_input(collection,direction);

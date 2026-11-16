@@ -518,6 +518,13 @@ json::object hypergraph() {
 }
 void structured_tests() {
   ViewSpec spec; spec.kind = "dense";
+  auto precise = features();
+  precise.at("vectors").as_array()[0].as_object()["values"] = json::array{1.0/11.0,-0.0};
+  const json::value parsed_precise = precise;
+  const auto precise_view = make_view(ParsedViewInput{parsed_precise},spec);
+  const auto& precise_values = std::get<std::vector<double>>(std::get<DenseView>(precise_view->view).values);
+  check(precise_values[0] == 1.0/11.0 && std::signbit(precise_values[1]),
+        "parsed structured numbers changed binary64 value");
   auto result = view(features(),spec); const auto& dense = std::get<DenseView>(result->view);
   check(std::get<std::vector<double>>(dense.values) == std::vector<double>({1,2,3,4}), "features must be row-major");
   check(dense.row_ids == std::vector<ExternalId>({ExternalId(0),ExternalId("0")}), "feature ID types");

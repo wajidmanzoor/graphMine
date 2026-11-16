@@ -169,8 +169,13 @@ std::shared_ptr<const ViewResult> make_view(std::string_view input_json, const V
 }
 std::shared_ptr<const ViewResult> make_view(std::string_view input_json, const ViewSpec& spec,
                                           const ViewBuildOptions& options) {
-  const auto canonical = spec.canonical_json();
   const auto input = rt::strict_json(input_json);
+  return make_view(ParsedViewInput{input},spec,options);
+}
+std::shared_ptr<const ViewResult> make_view(ParsedViewInput parsed, const ViewSpec& spec,
+                                          const ViewBuildOptions& options) {
+  const auto canonical = spec.canonical_json();
+  const auto& input = parsed.value;
   if (one_of(spec.kind, {"csr", "coo", "bipartite"}) ||
       (spec.kind == "dense" && (!input.is_object() || !input.as_object().contains("vectors"))))
     return make_view(rt::parse_graph(input, spec.weights == "int64_exact"), spec, options);

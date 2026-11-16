@@ -144,6 +144,11 @@ synthetic self-connections have no original edge identity. Removed-loop counts
 refer to original records; output counts include the inserted self arcs.
 The default remains `keep`.
 
+For already-parsed structured input, `make_view(ParsedViewInput{value}, spec)`
+preserves the common front's numeric tokens. Adapters use this overload rather
+than serializing and parsing again: the latter can change a binary64 value by
+one bit. The text overload still validates and parses external JSON once.
+
 u32 limits vertex counts to `UINT32_MAX`. i32 limits vertex and entry counts to
 `INT32_MAX`; CSR storage itself remains u64/u32. Limits are checked on ordinary
 input and expanded output, dense cell counts and hypergraph incidence counts.
