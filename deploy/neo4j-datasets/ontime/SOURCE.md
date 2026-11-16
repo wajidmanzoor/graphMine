@@ -53,7 +53,8 @@ with every substitution recorded in that script's header.
 
 ## Verification and count differences
 
-No database has been loaded or verified yet. Published counts are unchanged.
+Loading is in progress. This dataset has not yet passed verification or entered
+the registry. Published counts are unchanged.
 
 ## Host compatibility and memory (2026-11-15)
 
@@ -105,3 +106,16 @@ empty store, the same verified inputs and unchanged published Cypher, with
 16 GiB heap, 12 GiB page cache and a 30 GiB service cap. The six-instance plan
 still leaves at least 64 GiB for other services. The retry receipt is
 `neo4j-instances/ontime/retry-receipt.json`.
+
+## Published year-property inconsistency
+
+Q02 and Q03 filter `flight.year`, while the published loader writes `f.Year`.
+A bounded read of one loaded flight returned `Year=2020` and `year=null`;
+Neo4j also reported that the lower-case property key does not exist. These
+predicates therefore do not read the year property populated by the loader.
+
+The probe and source hashes are recorded in
+`neo4j-instances/ontime/source-notes/year-property-check.json`. Q02 and Q03 were
+not executed as benchmark checks. They are outside the approved representative
+scope, and their published text is preserved. No extra property or mapping
+change was introduced to compensate for this publisher inconsistency.
