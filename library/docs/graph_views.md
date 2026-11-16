@@ -67,6 +67,11 @@ omits the column. `attribute:a.b` resolves numeric nested object attributes.
   row. COO with sorting disabled preserves the normalized edge-stream order.
 - The `simple` flag means no loops or parallel arcs remain. `symmetric` guarantees
   both orientations; `directed` records the declared interpretation.
+- The approved `coo_layout: records` extension preserves each original edge's
+  orientation, identity and order, including undirected records. It requires
+  COO, `direction: keep`, `parallel_edges: keep` and unsorted neighbors. JSON
+  parsing defaults sorting to false for this mode. The ordinary `arcs` layout
+  remains the default. Records can explicitly drop self-loops.
 - Requested vertex labels come from `VertexRecord.label`; edge labels come from
   `EdgeRecord.type`. Dictionaries use sorted strings. Missing labels are
   `UINT32_MAX`, distinct from empty strings. Requested timestamps require int64
@@ -108,6 +113,14 @@ Fractional or out-of-range values and integer sum overflow fail. The user
 approved an exact-weight graph parser mode used only by new `int64_exact` views.
 Existing operation parsing keeps its binary64 precision checks. f64 feature matrices also retain their
 existing rejection of integers that lose precision.
+
+The approved `rational_exact` mode preserves exact CPU arithmetic when parallel
+weights are summed. It stores reduced numerator/denominator strings in
+`RationalWeight`, avoiding binary64 rounding and integer overflow. Binary64
+inputs retain their exact binary fractions; they are not reinterpreted as decimal
+fractions. Casting and min/max/sum aggregation occur in the shared factory.
+This mode does not bypass existing canonical graph parsing precision checks:
+only `int64_exact` opts into the previously approved exact-integer parser.
 
 u32 limits vertex counts to `UINT32_MAX`. i32 limits vertex and entry counts to
 `INT32_MAX`; CSR storage itself remains u64/u32. Limits are checked on ordinary
@@ -164,3 +177,6 @@ of fresh uncached builds, and cache eviction/concurrency. See
 status. See [`graph_views_step2.md`](graph_views_step2.md) for byte-equivalence
 coverage, work-budget checks, standalone installation checks and current
 admission. Worker-file goldens belong to step 6.
+
+CPU migration progress and its individual commit checkpoints are recorded in
+[`graph_views_step3.md`](graph_views_step3.md).

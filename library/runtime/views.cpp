@@ -114,22 +114,43 @@ Weight cast_weight(const Number& number, const ViewSpec& spec, NormalizationSumm
   } else if (spec.weights == "int64_exact") {
     result.integer = exact_integer(number);
     summary.weights_cast += !std::holds_alternative<std::int64_t>(number);
+  } else if (spec.weights == "rational_exact") {
+    result.rational = std::visit([](const auto& value) {
+      if constexpr (std::is_same_v<std::decay_t<decltype(value)>, double>)
+        check(std::isfinite(value), "rational_exact weight must be finite");
+      return std::make_shared<const Rational>(value);
+    }, number);
+    ++summary.weights_cast;
   }
   return result;
 }
 ViewWeights weight_column(const ViewSpec& spec) {
   if (spec.weights == "f64") return std::vector<double>{};
   if (spec.weights == "int64_exact") return std::vector<std::int64_t>{};
+  if (spec.weights == "rational_exact") return std::vector<RationalWeight>{};
   return std::monostate{};
 }
 void append_weight(ViewWeights& column, const Weight& value) {
   if (auto* data = std::get_if<std::vector<double>>(&column)) data->push_back(value.f64);
   if (auto* data = std::get_if<std::vector<std::int64_t>>(&column)) data->push_back(value.integer);
+  if (auto* data = std::get_if<std::vector<RationalWeight>>(&column))
+    data->push_back({numerator(*value.rational).convert_to<std::string>(),
+                     denominator(*value.rational).convert_to<std::string>()});
 }
 void merge_weight(Weight& stored, const Weight& next, const ViewSpec& spec, EdgeIndex& original,
                   EdgeIndex next_original) {
   if (spec.weights == "none" || spec.parallel_edges == "collapse:first") return;
   const bool integer = spec.weights == "int64_exact";
+  if (spec.weights == "rational_exact") {
+    if (spec.parallel_edges == "collapse:sum")
+      stored.rational = std::make_shared<const Rational>(*stored.rational + *next.rational);
+    else if ((spec.parallel_edges == "collapse:min" && *next.rational < *stored.rational) ||
+             (spec.parallel_edges == "collapse:max" && *next.rational > *stored.rational)) {
+      stored = next;
+      original = next_original;
+    }
+    return;
+  }
   if (spec.parallel_edges == "collapse:sum") {
     if (integer) {
       const auto a = stored.integer, b = next.integer;
@@ -218,7 +239,9 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
   CooView result;
   result.vertices = vertex_map(graph, spec, left_count);
   result.directed = graph.directed() && spec.direction != "symmetrize";
-  result.symmetric = !result.directed;
+  const bool records = spec.coo_layout == "records";
+  const bool expand = !result.directed && !records;
+  result.symmetric = expand;
   result.sorted = spec.sorted_neighbors;
   summary.projection_applied = graph.directed() && spec.direction == "symmetrize";
   summary.directed_projection_applied = summary.projection_applied;
@@ -229,14 +252,15 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
     const auto& edge = graph.canonical().edges[i];
     const auto weight = spec.weights == "none" ? Weight{} : cast_weight(edge_number(edge, spec), spec, summary);
     if (spec.nonnegative_weights)
-      check(spec.weights == "int64_exact" ? weight.integer >= 0 : weight.f64 >= 0,
+      check(spec.weights == "rational_exact" ? *weight.rational >= 0 :
+                spec.weights == "int64_exact" ? weight.integer >= 0 : weight.f64 >= 0,
             "This operation requires nonnegative edge weights");
     auto u = result.vertices.from_original[graph.dense_index(edge.source)];
     auto v = result.vertices.from_original[graph.dense_index(edge.target)];
     if (u == v && spec.self_loops == "drop") { ++summary.self_loops_removed; continue; }
     if (spec.bipartite_sides != "none")
       check((u < left_count) != (v < left_count), "edge must cross the bipartite sides");
-    if (!result.directed && v < u) std::swap(u, v);
+    if (!result.directed && !records && v < u) std::swap(u, v);
     if (result.directed && spec.direction == "reverse") std::swap(u, v);
     charge(1);
     const auto pair = std::make_pair(u, v);
@@ -246,19 +270,19 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
         auto& previous = edges[found->second];
         merge_weight(previous.weight, weight, spec, previous.original, i);
         ++summary.parallel_edges_collapsed;
-        if (!result.directed && u != v) charge(1);
+        if (expand && u != v) charge(1);
         continue;
       }
     }
     edges.push_back({u, v, weight, i});
-    if (!result.directed && u != v) charge(1);
+    if (expand && u != v) charge(1);
   }
   std::uint64_t count = edges.size();
-  if (!result.directed)
+  if (expand)
     for (const auto& edge : edges) count = add_count(count, edge.src != edge.dst);
   validate_view_counts(spec, graph.vertex_count(), count);
   const auto original_count = edges.size();
-  if (!result.directed) {
+  if (expand) {
     edges.reserve(count);
     for (std::size_t i = 0; i < original_count; ++i) {
       const auto edge = edges[i];
@@ -280,7 +304,9 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
     result.dst.push_back(edge.dst);
     append_weight(result.weights, edge.weight);
     if (result.edge_ids) result.edge_ids->push_back(edge.original);
-    result.simple &= edge.src != edge.dst && seen.emplace(edge.src, edge.dst).second;
+    const auto pair = !result.directed && records ? std::minmax(edge.src, edge.dst) :
+                                                   std::pair<const VertexIndex&, const VertexIndex&>{edge.src, edge.dst};
+    result.simple &= edge.src != edge.dst && seen.emplace(pair.first, pair.second).second;
     const auto& original = graph.canonical().edges[edge.original];
     if (wants(spec, "edge_label")) edge_labels.push_back(original.type);
     if (result.side_tables.timestamp) {
@@ -356,11 +382,15 @@ using namespace view_detail;
 
 void ViewSpec::validate() const {
   check(one_of(kind, {"csr", "coo", "bipartite", "dense", "hypergraph", "collection"}), "unknown kind");
+  check(one_of(coo_layout, {"arcs", "records"}), "unknown COO layout");
+  check(coo_layout != "records" || (kind == "coo" && direction == "keep" &&
+            parallel_edges == "keep" && !sorted_neighbors),
+        "COO records require kind=coo, direction=keep, parallel_edges=keep and sorted_neighbors=false");
   check(one_of(direction, {"keep", "symmetrize", "reverse", "both"}), "unknown direction");
   check(one_of(self_loops, {"keep", "drop"}), "unknown self_loops policy");
   check(one_of(parallel_edges, {"keep", "collapse:sum", "collapse:min", "collapse:max", "collapse:first"}),
         "unknown parallel_edges policy");
-  check(one_of(weights, {"none", "f64", "int64_exact"}), "unknown weight type");
+  check(one_of(weights, {"none", "f64", "int64_exact", "rational_exact"}), "unknown weight type");
   check(weight_source == "edge.weight" || weight_source == "unit" ||
             (weight_source.rfind("attribute:", 0) == 0 && weight_source.size() > 10),
         "unknown weight source");
@@ -400,16 +430,17 @@ void validate_view_counts(const ViewSpec& spec, std::uint64_t vertices, std::uin
 }
 ViewSpec ViewSpec::from_json(std::string_view input) {
   const auto value = rt::object(rt::strict_json(input), "view spec");
-  rt::fields(value, {"kind", "direction", "self_loops", "parallel_edges", "weights", "weight_source",
+  rt::fields(value, {"kind", "coo_layout", "direction", "self_loops", "parallel_edges", "weights", "weight_source",
                     "edge_ids", "labels", "bipartite_sides", "sorted_neighbors", "index_width",
                     "limits", "parameters", "nonnegative_weights"});
   ViewSpec spec;
   for (auto [key, target] : std::initializer_list<std::pair<const char*, std::string*>>{
-           {"kind", &spec.kind}, {"direction", &spec.direction}, {"self_loops", &spec.self_loops},
+           {"kind", &spec.kind}, {"coo_layout", &spec.coo_layout}, {"direction", &spec.direction}, {"self_loops", &spec.self_loops},
            {"parallel_edges", &spec.parallel_edges}, {"weights", &spec.weights},
            {"weight_source", &spec.weight_source}, {"bipartite_sides", &spec.bipartite_sides},
            {"index_width", &spec.index_width}})
     if (value.contains(key)) *target = rt::string(value.at(key), key);
+  if (spec.coo_layout == "records" && !value.contains("sorted_neighbors")) spec.sorted_neighbors = false;
   for (auto [key, target] : {std::pair{"edge_ids", &spec.edge_ids}, {"sorted_neighbors", &spec.sorted_neighbors}, {"nonnegative_weights", &spec.nonnegative_weights}})
     if (value.contains(key)) {
       check(value.at(key).is_bool(), std::string(key) + " must be boolean");
@@ -444,7 +475,7 @@ std::string ViewSpec::canonical_json() const {
   std::sort(sorted_labels.begin(), sorted_labels.end());
   json::array columns;
   for (const auto& name : sorted_labels) columns.push_back(json::value(name));
-  json::object result{{"kind", kind}, {"direction", direction}, {"self_loops", self_loops},
+  json::object result{{"kind", kind}, {"coo_layout", coo_layout}, {"direction", direction}, {"self_loops", self_loops},
                       {"parallel_edges", parallel_edges}, {"weights", weights}, {"weight_source", weight_source},
                       {"nonnegative_weights", nonnegative_weights}, {"edge_ids", edge_ids}, {"labels", columns}, {"bipartite_sides", bipartite_sides},
                       {"sorted_neighbors", sorted_neighbors}, {"index_width", index_width},
@@ -466,7 +497,7 @@ DenseView dense_graph(CooView input, const ViewSpec& spec, std::uint32_t left_co
   const auto count = cells(result.rows, result.columns, spec);
   result.values = weight_column(spec);
   std::visit([&](auto& values) {
-    if constexpr (!std::is_same_v<std::decay_t<decltype(values)>, std::monostate>) values.resize(count, 0);
+    if constexpr (!std::is_same_v<std::decay_t<decltype(values)>, std::monostate>) values.resize(count);
   }, result.values);
   result.present.assign(count, 0);
   if (input.edge_ids) result.edge_ids.emplace(count, UINT64_MAX);
@@ -564,6 +595,8 @@ struct Accounting {
   void weights(const ViewWeights& w) {
     std::visit([&](const auto& values) {
       if constexpr (!std::is_same_v<std::decay_t<decltype(values)>, std::monostate>) column(values);
+      if constexpr (std::is_same_v<std::decay_t<decltype(values)>, std::vector<RationalWeight>>)
+        for (const auto& weight : values) add(weight.numerator.capacity() + weight.denominator.capacity() + 64);
     }, w);
   }
   void tables(const ViewSideTables& t) {

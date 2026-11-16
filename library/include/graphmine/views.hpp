@@ -11,6 +11,8 @@ namespace graphmine {
 
 struct ViewSpec {
   std::string kind = "csr";
+  // COO records retain each original edge's orientation and input order.
+  std::string coo_layout = "arcs";
   std::string direction = "keep";
   std::string self_loops = "keep";
   std::string parallel_edges = "keep";
@@ -41,8 +43,15 @@ struct ViewSpec {
 // Also usable before allocating arrays, including for i32 boundary checks.
 void validate_view_counts(const ViewSpec&, std::uint64_t vertices, std::uint64_t edges);
 
-using ViewWeights =
-    std::variant<std::monostate, std::vector<double>, std::vector<std::int64_t>>;
+struct RationalWeight {
+  // Reduced decimal integers, positive denominator. No binary64 round-trip.
+  std::string numerator = "0", denominator = "1";
+  friend bool operator==(const RationalWeight& a, const RationalWeight& b) {
+    return a.numerator == b.numerator && a.denominator == b.denominator;
+  }
+};
+using ViewWeights = std::variant<std::monostate, std::vector<double>,
+                                 std::vector<std::int64_t>, std::vector<RationalWeight>>;
 
 struct ViewVertexMap {
   std::vector<VertexIndex> to_original, from_original;

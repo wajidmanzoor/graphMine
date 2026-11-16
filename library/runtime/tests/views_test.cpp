@@ -88,7 +88,10 @@ struct Bytes {
   void weights(const ViewWeights& value) {
     scalar(value.index());
     std::visit([&](const auto& values) {
-      if constexpr (!std::is_same_v<std::decay_t<decltype(values)>, std::monostate>) column(values);
+      if constexpr (std::is_same_v<std::decay_t<decltype(values)>, std::vector<RationalWeight>>) {
+        scalar(values.size());
+        for (const auto& weight : values) { string(weight.numerator); string(weight.denominator); }
+      } else if constexpr (!std::is_same_v<std::decay_t<decltype(values)>, std::monostate>) column(values);
     }, value);
   }
   void mapping(const ViewVertexMap& value) {
@@ -294,6 +297,58 @@ void weight_tests() {
   input.at("edges").as_array()[0].as_object()["timestamp"] = "2026-01-01T00:00:00Z";
   rejects([&] { view(input,spec); }, "timestamp converted without a declared unit");
 }
+void records_exact_tests() {
+  auto input = graph(false);
+  edge(input, 2, 0, 1); edge(input, 0, 2, 2); edge(input, 1, 1, 3);
+  auto spec = ViewSpec::from_json(R"({"kind":"coo","coo_layout":"records","edge_ids":true})");
+  const auto result = view(input, spec);
+  const auto& records = std::get<CooView>(result->view);
+  check(records.src == std::vector<VertexIndex>({2,0,1}) &&
+        records.dst == std::vector<VertexIndex>({0,2,1}), "record COO changed orientation/order/count");
+  check(*records.edge_ids == std::vector<EdgeIndex>({0,1,2}), "record COO changed edge identity");
+  check(!records.symmetric && !records.directed && !records.simple, "record COO flags");
+  check(result->normalization.edges == 3 && result->normalization.parallel_edges_collapsed == 0,
+        "record COO collapsed parallel undirected records");
+  spec.self_loops = "drop";
+  const auto dropped = view(input,spec);
+  check(dropped->normalization.self_loops_removed == 1 && dropped->normalization.edges == 2,
+        "record COO loop policy");
+  auto incompatible = spec; incompatible.direction = "symmetrize";
+  rejects([&] { view(input,incompatible); }, "record COO accepted expansion");
+  incompatible = spec; incompatible.sorted_neighbors = true;
+  rejects([&] { view(input,incompatible); }, "record COO accepted reordering");
+  spec = {}; spec.weights = "rational_exact"; spec.parallel_edges = "collapse:sum";
+  input = graph(true); edge(input,0,1,1e16); edge(input,0,1,1); edge(input,0,1,-1e16);
+  auto exact = view(input,spec);
+  check(std::get<std::vector<RationalWeight>>(std::get<CsrView>(exact->view).weights) ==
+        std::vector<RationalWeight>({{"1","1"}}), "rational sum rounded through f64");
+  input = graph(true); edge(input,0,1,0.1); edge(input,0,1,0.2);
+  exact = view(input,spec);
+  check(std::get<std::vector<RationalWeight>>(std::get<CsrView>(exact->view).weights) ==
+        std::vector<RationalWeight>({{"10808639105689191","36028797018963968"}}),
+        "rational sum changed native binary64 interpretation");
+  spec.parallel_edges = "collapse:min";
+  const auto minimum = view(input,spec);
+  check(std::get<std::vector<RationalWeight>>(std::get<CsrView>(minimum->view).weights)[0] ==
+        RationalWeight{"3602879701896397","36028797018963968"}, "rational min changed");
+  spec.parallel_edges = "collapse:max";
+  const auto maximum = view(input,spec);
+  check(std::get<std::vector<RationalWeight>>(std::get<CsrView>(maximum->view).weights)[0] ==
+        RationalWeight{"3602879701896397","18014398509481984"}, "rational max changed");
+  spec.parallel_edges = "collapse:sum";
+  input = graph(true); edge(input,0,1,std::numeric_limits<double>::max());
+  edge(input,0,1,std::numeric_limits<double>::max());
+  exact = view(input,spec);
+  check(std::get<std::vector<RationalWeight>>(std::get<CsrView>(exact->view).weights)[0].numerator.size() > 300,
+        "rational sum overflowed float64");
+  const auto expected = bytes(*exact);
+  for (int i=0; i<4; ++i) { cache("clear"); check(bytes(*view(input,spec)) == expected, "rational arrays nondeterministic"); }
+  spec.nonnegative_weights = true;
+  input = graph(true); edge(input,0,0,-1); spec.self_loops = "drop";
+  rejects([&] { view(input,spec); }, "negative rational loop escaped validation");
+  input = graph(true); edge(input,0,1,9007199254740993ULL);
+  rejects([&] { view(input,spec); }, "rational mode bypassed existing graph parser precision validation");
+}
 json::object bipartite_graph() {
   auto input = graph(false);
   input["vertices"] = json::array{
@@ -455,6 +510,7 @@ int main(int argc, char** argv) {
     if (suite == "spec") spec_tests();
     else if (suite == "normalization") normalization_tests();
     else if (suite == "weights") weight_tests();
+    else if (suite == "records_exact") records_exact_tests();
     else if (suite == "bipartite") bipartite_tests();
     else if (suite == "structured") structured_tests();
     else if (suite == "determinism") determinism_tests();

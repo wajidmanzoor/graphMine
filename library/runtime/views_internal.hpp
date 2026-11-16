@@ -1,9 +1,15 @@
 #pragma once
 #include "graphmine/views.hpp"
 #include <boost/json.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
 namespace graphmine::view_detail {
 using Number = HypergraphView::SourceNumber;
-struct Weight { double f64 = 0; std::int64_t integer = 0; };
+using Rational = boost::multiprecision::cpp_rational;
+struct Weight {
+  double f64 = 0;
+  std::int64_t integer = 0;
+  std::shared_ptr<const Rational> rational;
+};
 void check(bool, const std::string&);
 bool one_of(const std::string&, std::initializer_list<const char*>);
 std::uint64_t add_count(std::uint64_t, std::uint64_t);
