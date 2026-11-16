@@ -549,6 +549,26 @@ void structured_tests() {
   check(c.members.size() == 2 && c.member_indices == std::vector<std::uint64_t>({0,1}) && c.member_ids[1] == "second", "collection identities");
   check(c.members[1].indices == std::vector<VertexIndex>({0}) && combined->normalization.vertices == 8,
         "collection member/summary");
+  for (const auto& test : std::vector<std::pair<json::object,ViewSpec>>{
+         {collection,spec},{features(),ViewSpec::from_json(R"({"kind":"dense"})")},
+         {hypergraph(),ViewSpec::from_json(R"({"kind":"hypergraph","weights":"rational_exact"})")}}) {
+    cache("clear");
+    std::uint64_t first_work=0,first_edges=0;
+    for (int repeat=0; repeat<2; ++repeat) {
+      std::uint64_t charged=0,edge_charged=0,observations=0;
+      ViewBuildOptions options;
+      options.charge = [&](std::uint64_t amount) { charged += amount; };
+      options.charge_original_edges = [&](std::uint64_t amount) { edge_charged += amount; };
+      options.observe = [&](const ViewResult&,bool hit,bool retained) {
+        ++observations; check(hit == (repeat != 0) && retained,"structured cache observation differs");
+      };
+      const auto value = make_view(json::serialize(test.first),test.second,options);
+      check(observations == 1 && charged == value->build_work && edge_charged == value->original_edge_work,
+            "structured view charge/observation differs");
+      if (!repeat) { first_work=charged; first_edges=edge_charged; }
+      else check(charged == first_work && edge_charged == first_edges,"structured cache-hit charge differs");
+    }
+  }
   collection.at("graphs").as_array()[1] = g1;
   rejects([&] { view(collection,spec); }, "duplicate member IDs accepted");
   spec = {}; spec.kind = "dense";

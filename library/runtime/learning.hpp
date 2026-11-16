@@ -28,8 +28,10 @@ json::array array(const std::vector<double>&);
 json::array matrix(const Matrix&);
 json::object summary(const Fit&, const Training&, const std::string&);
 Matrix feature_rows(const std::vector<json::value>&, Work&);
-Matrix propagate(const Graph&, Matrix, std::size_t, const std::string&, Work&);
 std::shared_ptr<const ViewResult> node_propagation_view(const Graph&, const std::string&, Work&);
+std::shared_ptr<const ViewResult> graph_propagation_view(const json::value&, const std::string&, Work&);
+std::shared_ptr<const ViewResult> graph_structural_view(const json::value&, Work&);
+Matrix structural_features(const CsrView&, std::uint64_t original_edges, Work&);
 Matrix propagate(const CsrView&, Matrix, std::size_t, Work&);
 struct Dataset {
   std::vector<ExternalId> ids;

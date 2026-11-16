@@ -44,6 +44,7 @@ ViewResult build_features(const json::value& input, const ViewSpec& spec) {
           "feature width must match dimension");
   }
   ViewResult result;
+  result.build_work = count;
   DenseView matrix;
   matrix.rows = rows.size();
   matrix.columns = dimension;
@@ -73,6 +74,7 @@ ViewResult build_hypergraph(const json::value& input, const ViewSpec& spec) {
   const rt::HypergraphInput parsed(input, work);
   validate_view_counts(spec, parsed.ids.size(), parsed.edges.size());
   ViewResult result;
+  result.build_work = work.candidates;
   HypergraphView view;
   view.vertices = identity_map(parsed.ids);
   view.he_offsets.push_back(0);
@@ -128,15 +130,19 @@ ViewResult build_hypergraph(const json::value& input, const ViewSpec& spec) {
   result.view = std::move(view);
   return result;
 }
-ViewResult build_collection(const json::value& input, const ViewSpec& spec) {
+ViewResult build_collection(const json::value& input, const ViewSpec& spec, const ViewBuildOptions& options) {
   auto work = input_work();
   const auto graphs = rt::graph_collection(input, work, spec.weights == "int64_exact");
   ViewResult result;
+  result.build_work = work.candidates;
+  if (options.charge) options.charge(result.build_work);
   CollectionView collection;
   auto member_spec = spec;
   member_spec.kind = "csr";
   for (const auto& graph : graphs) {
-    auto member = build_graph(graph, member_spec, {});
+    auto member = build_graph(graph, member_spec, options);
+    result.build_work = add_count(result.build_work, member.build_work);
+    result.original_edge_work = add_count(result.original_edge_work, member.original_edge_work);
     const auto& summary = member.normalization;
     auto& total = result.normalization;
     total.projection_applied |= summary.projection_applied;
@@ -159,16 +165,22 @@ ViewResult build_collection(const json::value& input, const ViewSpec& spec) {
 
 }  // namespace
 std::shared_ptr<const ViewResult> make_view(std::string_view input_json, const ViewSpec& spec) {
+  return make_view(input_json, spec, {});
+}
+std::shared_ptr<const ViewResult> make_view(std::string_view input_json, const ViewSpec& spec,
+                                          const ViewBuildOptions& options) {
   const auto canonical = spec.canonical_json();
   const auto input = rt::strict_json(input_json);
   if (one_of(spec.kind, {"csr", "coo", "bipartite"}) ||
       (spec.kind == "dense" && (!input.is_object() || !input.as_object().contains("vectors"))))
-    return make_view(rt::parse_graph(input, spec.weights == "int64_exact"), spec);
+    return make_view(rt::parse_graph(input, spec.weights == "int64_exact"), spec, options);
   const auto snapshot = rt::input_fingerprint(input);
-  return view_detail::cached_view(snapshot, canonical, {}, [&] {
+  return view_detail::cached_view(snapshot, canonical, options, [&] {
+    if (options.charge) options.charge(0);
     auto result = spec.kind == "hypergraph" ? build_hypergraph(input, spec)
-                : spec.kind == "collection" ? build_collection(input, spec)
+                : spec.kind == "collection" ? build_collection(input, spec, options)
                                               : build_features(input, spec);
+    if (spec.kind != "collection" && options.charge) options.charge(result.build_work);
     result.snapshot_hash = snapshot;
     result.canonical_spec = canonical;
     return result;

@@ -129,6 +129,67 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
   }
   return !expected;
 }
+bool graph_learning_input(const rt::json::value& input, const std::string& direction, std::uint64_t budget = UINT64_MAX) {
+  const bool structural = direction == "structural_features";
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::vector<rt::MiningGraph> neighbors;
+  std::vector<rt::numeric::Matrix> features;
+  std::vector<gm::Graph> graphs;
+  std::string old_failure;
+  try {
+    graphs = rt::graph_collection(input,old_work);
+    for (const auto& graph : graphs) {
+      if (structural) features.push_back(gm::legacy_test::structural_features(graph,old_work));
+      else neighbors.push_back(gm::legacy_test::propagation_neighbors(graph,direction,old_work));
+    }
+  } catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::shared_ptr<const gm::ViewResult> actual;
+    std::vector<rt::numeric::Matrix> actual_features;
+    std::string new_failure;
+    try {
+      const auto parsed = rt::graph_collection(input,work);
+      actual = structural ? rt::learning::graph_structural_view(input,work) :
+                            rt::learning::graph_propagation_view(input,direction,work);
+      const auto& collection = std::get<gm::CollectionView>(actual->view);
+      for (std::size_t m=0; m<parsed.size(); ++m) {
+        if (structural) actual_features.push_back(rt::learning::structural_features(collection.members[m],parsed[m].edge_count(),work));
+        else work.tick(parsed[m].edge_count());
+      }
+    } catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Collection learning rejection differs");
+    if (!old_failure.empty()) continue;
+    cache_pass(work,repeat);
+    const auto& collection = std::get<gm::CollectionView>(actual->view);
+    if (collection.members.size() != graphs.size() || collection.member_indices.size() != graphs.size() ||
+        collection.member_ids.size() != graphs.size() || work.candidates != old_work.candidates)
+      throw std::runtime_error("Collection learning members/cost differ");
+    for (std::size_t m=0; m<graphs.size(); ++m) {
+      const auto& view = collection.members[m]; const auto& graph = graphs[m];
+      if (collection.member_indices[m] != m || collection.member_ids[m] != graph.canonical().graph.id)
+        throw std::runtime_error("Collection learning member identity differs");
+      for (gm::VertexIndex v=0; v<graph.vertex_count(); ++v)
+        if (view.vertices.to_original[v] != v || view.vertices.external_ids[v] != graph.external_id(v))
+          throw std::runtime_error("Collection learning vertex map differs");
+      if (structural) { equal(features[m].values,actual_features[m].values); continue; }
+      std::vector<std::uint64_t> offsets{0}; std::vector<gm::VertexIndex> indices;
+      for (const auto& row : neighbors[m]) { indices.insert(indices.end(),row.begin(),row.end()); offsets.push_back(indices.size()); }
+      equal(offsets,view.offsets); equal(indices,view.indices);
+      if (budget == UINT64_MAX) {
+        auto previous_work = unlimited(), next_work = unlimited();
+        rt::numeric::Matrix values(graph.vertex_count(),2,previous_work);
+        for (std::size_t v=0; v<values.rows; ++v) { values(v,0)=v%3 ? 0x1p-53 : 1; values(v,1)=static_cast<double>(v%7)-3.25; }
+        previous_work.candidates = 0;
+        equal(gm::legacy_test::propagate(neighbors[m],values,2,previous_work).values,
+              rt::learning::propagate(view,values,2,next_work).values);
+        if (previous_work.candidates != next_work.candidates) throw std::runtime_error("Collection propagation cost differs");
+      }
+    }
+  }
+  return !old_failure.empty();
+}
 bool node_learning_input(const gm::Graph& graph, const std::string& direction, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
   std::optional<rt::MiningGraph> expected;
@@ -766,6 +827,26 @@ void contracts() {
   traversal(graph,"topological-sort:cpp:default");
   auto undirected = raw;
   undirected.as_object().at("graph").as_object()["directed"] = false;
+  auto other_graph = raw; other_graph.as_object().at("graph").as_object()["id"] = "other";
+  auto empty_graph = raw; empty_graph.as_object().at("graph").as_object()["id"] = "empty";
+  empty_graph.as_object()["vertices"] = rt::json::array{}; empty_graph.as_object()["edges"] = rt::json::array{};
+  rt::json::object learning_collection{{"dataset_id","learning"},{"graphs",{raw,other_graph,empty_graph}}};
+  for (auto& member : learning_collection.at("graphs").as_array())
+    for (auto& vertex : member.as_object().at("vertices").as_array())
+      vertex.as_object()["attributes"] = rt::json::object{{"features",{1.0,2.5}}};
+  for (const auto* direction : {"incoming","outgoing","undirected_projection","structural_features"}) {
+    graph_learning_input(learning_collection,direction);
+    for (std::uint64_t budget : {0,1,8,16,24,32,40,80}) graph_learning_input(learning_collection,direction,budget);
+    for (const auto* source : {"structural","attributes"}) for (const auto* readout : {"mean","sum"}) {
+      if (std::string(direction)=="structural_features" && std::string(source)!="structural") continue;
+      const std::string profile = std::string("graph-learning:cpp:")+direction;
+      declared_request(profile.c_str(),learning_collection,{{"task","regression"},
+        {"graph_labels",{{"rows",{rt::json::object{{"graph","profile"},{"value",1}},rt::json::object{{"graph","other"},{"value",2}}}}}},
+        {"split",{{"train",{"profile","other"}}}},
+        {"model_definition",{{"architecture","mean_graph_convolution"},{"direction",std::string(direction)=="structural_features" ? "incoming" : direction},
+          {"feature_source",source},{"readout",readout},{"layers",2},{"epochs",2}}}});
+    }
+  }
   for (const auto* direction : {"incoming","outgoing","undirected_projection"}) {
     node_learning_input(graph,direction);
     node_learning_input(rt::parse_graph(undirected),direction);
@@ -1290,6 +1371,7 @@ int main(int argc, char** argv) {
     const bool induced_subgraph = argc > 1 && std::string(argv[1]) == "--induced-subgraph";
     const bool enumeration = argc > 1 && std::string(argv[1]) == "--enumeration";
     const bool node_learning = argc > 1 && std::string(argv[1]) == "--node-learning";
+    const bool graph_learning = argc > 1 && std::string(argv[1]) == "--graph-learning";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1315,7 +1397,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1323,6 +1405,12 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (graph_learning) for (const auto* direction : {"incoming","outgoing","undirected_projection","structural_features"}) {
+          const rt::json::object collection{{"dataset_id","corpus"},{"graphs",{input.at("graph")}}};
+          const bool rejected = graph_learning_input(collection,direction);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",std::string("graph-learning:cpp:")+direction},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (node_learning) for (const auto* direction : {"incoming","outgoing","undirected_projection"}) {
           const bool rejected = node_learning_input(graph,direction);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

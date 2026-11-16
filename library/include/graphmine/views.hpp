@@ -156,5 +156,6 @@ struct ViewBuildOptions {
 std::shared_ptr<const ViewResult> make_view(const Graph&, const ViewSpec&);
 std::shared_ptr<const ViewResult> make_view(const Graph&, const ViewSpec&, const ViewBuildOptions&);
 std::shared_ptr<const ViewResult> make_view(std::string_view input_json, const ViewSpec&);
+std::shared_ptr<const ViewResult> make_view(std::string_view input_json, const ViewSpec&, const ViewBuildOptions&);
 
 }  // namespace graphmine

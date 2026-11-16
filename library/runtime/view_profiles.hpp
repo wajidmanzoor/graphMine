@@ -17,6 +17,8 @@ json::array cpu_view_declarations();
 
 enum class ViewBudget { algorithm_owned, original_edges, weighted_adjacency, record_edges };
 std::shared_ptr<const ViewResult> consume_view(const Graph&, const ViewProfile&, Work&, ViewBudget);
+// Structured common-front parsing retains its operation-owned validation/costs.
+std::shared_ptr<const ViewResult> consume_view(const json::value&, const ViewProfile&, Work&);
 // Layout-only copy for algorithms that retain vector rows internally.
 MiningGraph adjacency_layout(const CsrView&);
 WeightedGraph weighted_layout(const CsrView&);

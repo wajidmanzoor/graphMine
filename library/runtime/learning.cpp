@@ -13,6 +13,18 @@ const ViewProfile outgoing{"node-learning:cpp:outgoing", {"node-learning"}, R"({
 const ViewProfile projection{"node-learning:cpp:undirected_projection", {"node-learning"}, R"({
   "kind":"csr","direction":"symmetrize","self_loops":"one_per_vertex",
   "parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile graph_incoming{"graph-learning:cpp:incoming", {"graph-learning"}, R"({
+  "kind":"collection","direction":"reverse","self_loops":"one_per_vertex",
+  "parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile graph_outgoing{"graph-learning:cpp:outgoing", {"graph-learning"}, R"({
+  "kind":"collection","direction":"keep","self_loops":"one_per_vertex",
+  "parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile graph_projection{"graph-learning:cpp:undirected_projection", {"graph-learning"}, R"({
+  "kind":"collection","direction":"symmetrize","self_loops":"one_per_vertex",
+  "parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile graph_structure{"graph-learning:cpp:structural_features", {"graph-learning"}, R"({
+  "kind":"collection","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"none"})"};
 template<class Rows>
 Matrix propagate_rows(const Rows& neighbors, Matrix features, std::size_t layers, Work& work) {
   for (std::size_t layer = 0; layer < layers; ++layer) {
@@ -39,6 +51,27 @@ std::shared_ptr<const ViewResult> node_propagation_view(const Graph& graph, cons
 }
 Matrix propagate(const CsrView& view, Matrix features, std::size_t layers, Work& work) {
   return propagate_rows(CsrRows{view}, std::move(features), layers, work);
+}
+std::shared_ptr<const ViewResult> graph_propagation_view(const json::value& input, const std::string& direction, Work& work) {
+  require(direction == "incoming" || direction == "outgoing" || direction == "undirected_projection",
+          "Invalid propagation direction");
+  const auto& profile = direction == "incoming" ? graph_incoming : direction == "outgoing" ? graph_outgoing : graph_projection;
+  return consume_view(input,profile,work);
+}
+std::shared_ptr<const ViewResult> graph_structural_view(const json::value& input, Work& work) {
+  return consume_view(input,graph_structure,work);
+}
+Matrix structural_features(const CsrView& view, std::uint64_t original_edges, Work& work) {
+  const CsrRows rows{view};
+  Matrix features(rows.size(),3,work);
+  for (std::size_t v=0; v<features.rows; ++v) features(v,0) = 1;
+  work.tick(original_edges);
+  for (VertexIndex u=0; u<rows.size(); ++u) for (const auto v : rows[u]) {
+    if (!view.directed && v < u) continue; // Decode one logical edge from symmetric CSR.
+    ++features(u,2); ++features(v,1);
+    if (!view.directed) { ++features(v,2); ++features(u,1); }
+  }
+  return features;
 }
 Training training(const json::object& args) {
   Training result;
@@ -171,31 +204,6 @@ Matrix feature_rows(const std::vector<json::value>& rows, Work& work) {
       result(i, j) = numeric::float64(rows[i].as_array()[j], "feature");
   }
   return result;
-}
-Matrix propagate(const Graph& graph, Matrix features, std::size_t layers,
-                 const std::string& direction, Work& work) {
-  require(
-      direction == "incoming" || direction == "outgoing" || direction == "undirected_projection",
-      "Invalid propagation direction");
-  MiningGraph neighbors(graph.vertex_count());
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    if (u == v) continue;
-    if (!graph.directed() || direction == "undirected_projection") {
-      neighbors[u].push_back(v);
-      neighbors[v].push_back(u);
-    } else if (direction == "incoming")
-      neighbors[v].push_back(u);
-    else
-      neighbors[u].push_back(v);
-  }
-  for (VertexIndex v = 0; v < neighbors.size(); ++v) {
-    neighbors[v].push_back(v);
-    std::sort(neighbors[v].begin(), neighbors[v].end());
-    neighbors[v].erase(std::unique(neighbors[v].begin(), neighbors[v].end()), neighbors[v].end());
-  }
-  return propagate_rows(neighbors, std::move(features), layers, work);
 }
 void split(Dataset& data, const json::object& specification, const json::object& training_labels,
            Work& work) {

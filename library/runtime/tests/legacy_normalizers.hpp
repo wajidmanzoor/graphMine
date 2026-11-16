@@ -160,6 +160,15 @@ inline std::vector<ExactEdge> exact_edges(const Graph& graph, bool weighted, Wor
   for (auto& entry : normalized) output.push_back(std::move(entry.second));
   return output;
 }
+inline numeric::Matrix structural_features(const Graph& graph, Work& work) {
+  numeric::Matrix features(graph.vertex_count(),3,work);
+  for (std::size_t v=0; v<features.rows; ++v) features(v,0) = 1;
+  for (const auto& edge : exact_edges(graph,false,work,false,false)) {
+    ++features(edge.u,2); ++features(edge.v,1);
+    if (!graph.directed()) { ++features(edge.v,2); ++features(edge.u,1); }
+  }
+  return features;
+}
 // Frozen SimRank incoming-neighbor builder from 0d4986de.
 inline MiningGraph simrank(const Graph& graph, bool project, Work& work) {
   MiningGraph neighbors(graph.vertex_count());

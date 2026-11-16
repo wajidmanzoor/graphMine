@@ -119,27 +119,26 @@ json::object graph_learning(const json::value& input, const json::object& args, 
       }
   require(dimension.has_value(),
           "Attribute feature dimension cannot be inferred from only empty graphs");
-  for (const auto& graph : graphs) {
+  const auto propagation = graph_propagation_view(input,direction,work);
+  const auto& propagation_members = std::get<CollectionView>(propagation->view).members;
+  const auto structural = source == "structural" ? graph_structural_view(input,work) : nullptr;
+  for (std::size_t member=0; member<graphs.size(); ++member) {
+    const auto& graph = graphs[member];
     data.ids.emplace_back(graph.canonical().graph.id);
-    numeric::Matrix features(graph.vertex_count(), *dimension, work);
+    numeric::Matrix features;
     if (source == "structural") {
-      for (std::size_t v = 0; v < features.rows; ++v) features(v, 0) = 1;
-      for (const auto& edge : edges(graph, false, work, false, false)) {
-        ++features(edge.u, 2);
-        ++features(edge.v, 1);
-        if (!graph.directed()) {
-          ++features(edge.v, 2);
-          ++features(edge.u, 1);
-        }
-      }
-    } else
+      features = structural_features(std::get<CollectionView>(structural->view).members[member],graph.edge_count(),work);
+    } else {
+      features = numeric::Matrix(graph.vertex_count(), *dimension, work);
       for (std::size_t v = 0; v < features.rows; ++v) {
         const auto record = vertex_record_json(graph.canonical().vertices[v], work);
         const auto* value = record_field(record, "attributes." + key);
         for (std::size_t c = 0; c < *dimension; ++c)
           features(v, c) = numeric::float64(value->as_array()[c], "feature");
       }
-    features = propagate(graph, std::move(features), layers, direction, work);
+    }
+    work.tick(graph.edge_count());
+    features = propagate(propagation_members[member], std::move(features), layers, work);
     json::array row;
     for (std::size_t c = 0; c < *dimension; ++c) {
       long double sum = 0;

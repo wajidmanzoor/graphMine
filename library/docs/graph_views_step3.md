@@ -501,3 +501,19 @@ synthetic-arc limits, empty/isolated vertices, direction, determinism and invali
 metadata combinations; request checks cover regression and classification. An
 initial missing `<set>` test include was corrected before the passing run; its
 build diagnostic is retained with the checkpoint.
+
+## Graph learning
+
+Graph learning now consumes declared V5 collection views for all three
+propagation directions and for structural degree features. Member order and ID
+maps remain unchanged, and the former per-graph loop/duplicate builder is
+removed. Attribute features, pooling, training splits and fitting are unchanged.
+The structured factory overload accepts the same observation/charge hooks as
+ordinary graph views and records successful-build costs consistently on hits.
+
+Checkpoint `34-graph-learning` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Four profiles pass 26,284 corpus comparisons of member maps, CSR
+arrays, structural features, propagated binary64 values, costs and rejections.
+Multi-member requests cover empty members, both feature sources and both
+readouts. Structured cache tests check one observation per build/hit and equal
+charges for collections, feature matrices and hypergraphs.

@@ -11,6 +11,15 @@ std::map<std::string, ViewProfile>& profiles() {
 std::vector<std::string> names(std::initializer_list<const char*> values) {
   return {values.begin(), values.end()};
 }
+void observe(const ViewProfile& profile, Work& work, const ViewResult& view, bool hit, bool retained) {
+  if (work.representations.size() >= 32) return;
+  const auto key = work.input_fingerprint + ":" + implementation_sha256 + ":" +
+                   view.snapshot_hash + ":standard-view-v2:" + view.canonical_spec;
+  work.representations.push_back(json::object{
+      {"kind", profile.spec.kind}, {"key", key}, {"hit", hit}, {"retained", retained},
+      {"view_profile", profile.id}, {"view", json::parse(view.canonical_spec)},
+      {"normalization", json::parse(view.normalization_json())}});
+}
 }
 ViewProfile::ViewProfile(const char* name, std::initializer_list<const char*> operations,
                          const char* spec_json)
@@ -57,13 +66,7 @@ std::shared_ptr<const ViewResult> consume_view(const Graph& graph, const ViewPro
     work.tick(budget == ViewBudget::weighted_adjacency ? amount : 0);
   };
   options.observe = [&](const ViewResult& view, bool hit, bool retained) {
-    if (work.representations.size() >= 32) return;
-    const auto key = work.input_fingerprint + ":" + implementation_sha256 + ":" +
-                     view.snapshot_hash + ":standard-view-v2:" + view.canonical_spec;
-    work.representations.push_back(json::object{
-        {"kind", profile.spec.kind}, {"key", key}, {"hit", hit}, {"retained", retained},
-        {"view_profile", profile.id}, {"view", json::parse(view.canonical_spec)},
-        {"normalization", json::parse(view.normalization_json())}});
+    observe(profile,work,view,hit,retained);
   };
   try { return make_view(graph, profile.spec, options); }
   catch (const std::invalid_argument& error) {
@@ -74,5 +77,13 @@ std::shared_ptr<const ViewResult> consume_view(const Graph& graph, const ViewPro
       throw Failure("invalid_input", "This operation requires nonnegative edge weights");
     throw;
   }
+}
+std::shared_ptr<const ViewResult> consume_view(const json::value& input, const ViewProfile& profile, Work& work) {
+  ViewBuildOptions options;
+  options.charge = [&](std::uint64_t) { work.tick(0); };
+  options.observe = [&](const ViewResult& view, bool hit, bool retained) {
+    observe(profile,work,view,hit,retained);
+  };
+  return make_view(json::serialize(input),profile.spec,options);
 }
 }  // namespace graphmine::runtime
