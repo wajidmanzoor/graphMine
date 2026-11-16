@@ -91,6 +91,26 @@ struct HypergraphInput {
     }
   }
 };
+struct SamplingInput {
+  struct Neighbor { VertexIndex vertex; std::size_t edge; Exact weight; };
+  std::vector<std::vector<Neighbor>> adjacency;
+  std::vector<std::optional<std::string>> types;
+  SamplingInput(const Graph& graph, bool weighted, bool typed, const std::optional<Exact>& cutoff, Work& work) {
+    work.tick(graph.vertex_count()); adjacency.resize(graph.vertex_count());
+    if (typed) types.resize(graph.edge_count());
+    for (std::size_t i=0; i<graph.edge_count(); ++i) {
+      work.tick(); const auto& edge = graph.canonical().edges[i];
+      require(!typed || (edge.type && !edge.type->empty()),"Typed sampling requires every edge to have a nonempty type");
+      if (typed) types[i] = edge.type;
+      const Exact weight = weighted ? Exact(edge.weight.value_or(1)) : Exact(1);
+      require(weight >= 0,"Sampling weights must be nonnegative");
+      if (cutoff && timestamp_seconds(edge.timestamp,work) > *cutoff) continue;
+      const auto u=graph.dense_index(edge.source),v=graph.dense_index(edge.target);
+      adjacency[u].push_back({v,i,weight});
+      if (!graph.directed() && u != v) adjacency[v].push_back({u,i,weight});
+    }
+  }
+};
 struct FlowInput {
   struct Original { std::size_t edge; Exact capacity; };
   struct Arc { Exact capacity = 0; std::vector<Original> originals; std::size_t position = 0; };

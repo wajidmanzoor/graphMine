@@ -631,3 +631,20 @@ builds/hits. Requests verify every declaration for vertex, edge and subgraph
 targets, and existing independent feature/score oracles pass. An ambiguous
 unqualified call in the frozen test reference was corrected before validation;
 its initial build diagnostic is retained.
+
+## Neighborhood sampling
+
+Neighborhood sampling now declares uniform/weighted CSR profiles, with label
+columns for typed fanouts. The adapter restores each row's original-edge order;
+exact weights, edge identity and directions come from the view. Original
+type/sign validation and exact timestamp parsing precede time-window selection.
+Fanout grouping, replacement, zero-mass handling and seeded draws are unchanged.
+
+Checkpoint `42-sampling` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Eight parameter combinations plus an explicitly typed/timed fixture
+pass 59,139 corpus cases comparing target/edge-ID arrays, exact weights, labels,
+costs and rejections on builds/hits. Requests cover typed overrides, replacement,
+full-neighbor fanouts and cutoffs; boundary checks include fractional RFC3339
+times, offsets and invalid future records. An initial test used unsigned
+in-memory timestamp tokens; it now follows the unchanged signed-epoch contract,
+with the diagnostic retained.

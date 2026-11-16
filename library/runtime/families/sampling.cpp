@@ -7,9 +7,16 @@
 #include "native_random.hpp"
 #include "native_time.hpp"
 #include "walk_input.hpp"
+#include "sampling_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
+const ViewProfile sampling_views[] = {
+  {"neighborhood-sampling:cpp:uniform", {"neighborhood-sampling"}, R"({"kind":"csr","self_loops":"keep","parallel_edges":"keep","weights":"rational_exact","weight_source":"unit","edge_ids":true,"sorted_neighbors":false})"},
+  {"neighborhood-sampling:cpp:uniform_typed", {"neighborhood-sampling"}, R"({"kind":"csr","self_loops":"keep","parallel_edges":"keep","weights":"rational_exact","weight_source":"unit","edge_ids":true,"sorted_neighbors":false,"labels":["edge_label"]})"},
+  {"neighborhood-sampling:cpp:weighted", {"neighborhood-sampling"}, R"({"kind":"csr","self_loops":"keep","parallel_edges":"keep","weights":"rational_exact","nonnegative_weights":true,"edge_ids":true,"sorted_neighbors":false})"},
+  {"neighborhood-sampling:cpp:weighted_typed", {"neighborhood-sampling"}, R"({"kind":"csr","self_loops":"keep","parallel_edges":"keep","weights":"rational_exact","nonnegative_weights":true,"edge_ids":true,"sorted_neighbors":false,"labels":["edge_label"]})"}
+};
 const ViewProfile uniform_walk{"random-walks:cpp:uniform", {"random-walks"},
   R"({"kind":"csr","direction":"keep","self_loops":"keep","parallel_edges":"collapse:first",
        "weights":"rational_exact","weight_source":"unit","nonnegative_weights":true})"};
@@ -37,12 +44,37 @@ std::int64_t fanout(const json::value& value) {
   require(count >= -1, "Fanouts must be -1 or nonnegative");
   return count;
 }
-struct Neighbor {
-  VertexIndex vertex;
-  std::size_t edge;
-  Exact weight;
-};
+using Neighbor = SamplingNeighbor;
 }  // namespace
+SamplingInput sampling_input(const Graph& graph, bool weighted, bool typed, const std::optional<Exact>& cutoff, Work& work) {
+  work.tick(graph.vertex_count());
+  std::vector<bool> eligible(graph.edge_count());
+  for (std::size_t i=0; i<graph.edge_count(); ++i) {
+    work.tick();
+    const auto& edge = graph.canonical().edges[i];
+    require(!typed || (edge.type && !edge.type->empty()),"Typed sampling requires every edge to have a nonempty type");
+    require(!weighted || edge.weight.value_or(1) >= 0,"Sampling weights must be nonnegative");
+    eligible[i] = !cutoff || timestamp_seconds(edge.timestamp,work) <= *cutoff;
+  }
+  const auto built = consume_view(graph,sampling_views[(weighted ? 2 : 0)+(typed ? 1 : 0)],work,ViewBudget::algorithm_owned);
+  const auto& view = std::get<CsrView>(built->view);
+  const auto& weights = std::get<std::vector<RationalWeight>>(view.weights);
+  SamplingInput result; result.adjacency.resize(graph.vertex_count());
+  if (typed) result.types.resize(graph.edge_count());
+  for (VertexIndex u=0; u<result.adjacency.size(); ++u) {
+    std::vector<EdgeIndex> order(view.offsets[u+1]-view.offsets[u]);
+    std::iota(order.begin(),order.end(),view.offsets[u]);
+    std::sort(order.begin(),order.end(),[&](auto a,auto b) { return view.edge_ids->at(a) < view.edge_ids->at(b); });
+    for (const auto e : order) {
+      const auto original = view.edge_ids->at(e);
+      if (typed) result.types[original] = view.side_tables.edge_label_dictionary[view.side_tables.edge_label->at(e)];
+      if (!eligible[original]) continue; // Apply the operation's time-window selection.
+      result.adjacency[view.vertices.to_original[u]].push_back({view.vertices.to_original[view.indices[e]],original,
+        Exact(Integer(weights[e].numerator))/Integer(weights[e].denominator)});
+    }
+  }
+  return result;
+}
 WalkAdjacency walk_adjacency(const Graph& graph, bool uniform, Work& work) {
   work.tick(graph.vertex_count());
   std::shared_ptr<const ViewResult> input;
@@ -228,20 +260,8 @@ json::object neighborhood_sampling(const Graph& graph, const json::object& args,
           ? std::optional<Exact>(exact_number(args.at("time_cutoff"), "time_cutoff"))
           : std::nullopt;
   NativeRandom rng(args);
-  work.tick(graph.vertex_count());
-  std::vector<std::vector<Neighbor>> adj(graph.vertex_count());
-  for (std::size_t i = 0; i < graph.edge_count(); ++i) {
-    work.tick();
-    const auto& edge = graph.canonical().edges[i];
-    require(!typed || (edge.type && !edge.type->empty()),
-            "Typed sampling requires every edge to have a nonempty type");
-    const Exact weight = weighted ? Exact(edge.weight.value_or(1)) : Exact(1);
-    require(weight >= 0, "Sampling weights must be nonnegative");
-    if (cutoff && timestamp_seconds(edge.timestamp, work) > *cutoff) continue;
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    adj[u].push_back({v, i, weight});
-    if (!graph.directed() && u != v) adj[v].push_back({u, i, weight});
-  }
+  const auto prepared = sampling_input(graph,weighted,typed,cutoff,work);
+  const auto& adj = prepared.adjacency;
   require(backend == "cpp", "GPU neighborhood sampling adapter is not available");
   std::vector<bool> selected(graph.vertex_count(), false);
   for (const auto v : seeds) selected[v] = true;
@@ -254,7 +274,7 @@ json::object neighborhood_sampling(const Graph& graph, const json::object& args,
         std::map<std::string, std::vector<Neighbor>> grouped;
         for (const auto& neighbor : adj[u]) {
           work.tick();
-          grouped[typed ? *graph.canonical().edges[neighbor.edge].type : ""].push_back(neighbor);
+          grouped[typed ? *prepared.types[neighbor.edge] : ""].push_back(neighbor);
         }
         for (const auto& [kind, candidates] : grouped) {
           const auto count = overrides.count(kind) ? overrides.at(kind)[hop] : fanouts[hop];

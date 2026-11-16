@@ -23,6 +23,7 @@
 #include "../sparsification_input.hpp"
 #include "../flow_input.hpp"
 #include "../anomaly_input.hpp"
+#include "../sampling_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -135,6 +136,42 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
     equal(old_endpoints,new_endpoints);
   }
   return !expected;
+}
+bool sampling_input(const gm::Graph& graph, bool weighted, bool typed, const std::optional<rt::Exact>& cutoff,
+                    std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::SamplingInput> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,weighted,typed,cutoff,old_work); } catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::SamplingInput> actual;
+    std::string new_failure;
+    try { actual = rt::sampling_input(graph,weighted,typed,cutoff,work); } catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Sampling input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->adjacency.size() != actual->adjacency.size() || expected->types != actual->types || old_work.candidates != work.candidates)
+      throw std::runtime_error("Sampling adjacency shape/labels/cost differ");
+    for (std::size_t v=0; v<expected->adjacency.size(); ++v) {
+      std::vector<gm::VertexIndex> old_targets,new_targets; std::vector<std::size_t> old_ids,new_ids;
+      rt::json::array old_weights,new_weights;
+      for (const auto& edge : expected->adjacency[v]) { old_targets.push_back(edge.vertex); old_ids.push_back(edge.edge); old_weights.push_back(rt::fraction_json(edge.weight)); }
+      for (const auto& edge : actual->adjacency[v]) { new_targets.push_back(edge.vertex); new_ids.push_back(edge.edge); new_weights.push_back(rt::fraction_json(edge.weight)); }
+      equal(old_targets,new_targets); equal(old_ids,new_ids);
+      if (rt::json::serialize(old_weights) != rt::json::serialize(new_weights)) throw std::runtime_error("Sampling exact weight bytes differ");
+    }
+  }
+  return !expected;
+}
+gm::Graph corpus_sampling(const gm::Graph& graph) {
+  auto data = graph.canonical();
+  for (std::size_t i=0; i<data.edges.size(); ++i) {
+    auto& edge=data.edges[i]; edge.type="r"+std::to_string(i%2); edge.timestamp=static_cast<std::int64_t>(i%3);
+    edge.weight=std::abs(edge.weight.value_or(1)); edge.original_weight.reset();
+  }
+  return gm::Graph(std::move(data));
 }
 template<class Edges> std::string exact_edge_bytes(const Edges& edges) {
   rt::json::array result;
@@ -1098,6 +1135,34 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  auto sample_graph = raw;
+  for (std::size_t i=0; i<4; ++i) {
+    auto& edge = sample_graph.as_object().at("edges").as_array()[i].as_object();
+    edge["type"] = "r"+std::to_string(i%2); edge["weight"] = i==2 ? 0.0 : 0.1*(i+1);
+    edge["timestamp"] = i==0 ? rt::json::value("1970-01-01T00:00:00.25Z") : i==1 ?
+      rt::json::value("1970-01-01T01:00:00.75+01:00") : rt::json::value(static_cast<std::int64_t>(i)-1);
+  }
+  for (bool weighted : {false,true}) for (bool typed : {false,true}) for (bool timed : {false,true}) {
+    const std::optional<rt::Exact> cutoff = timed ? std::optional<rt::Exact>(1) : std::nullopt;
+    sampling_input(graph,weighted,typed,cutoff);
+    sampling_input(rt::parse_graph(sample_graph),weighted,typed,cutoff);
+    for (std::uint64_t budget : {0,2,3,4,7,12,20,40,80}) sampling_input(rt::parse_graph(sample_graph),weighted,typed,cutoff,budget);
+    const std::string profile = std::string("neighborhood-sampling:cpp:")+(weighted ? "weighted" : "uniform")+(typed ? "_typed" : "");
+    for (bool replacement : {false,true}) {
+      rt::json::object options{{"seeds",{0,1}},{"fanouts",{-1,2}},{"sampling_model",weighted ? "weighted" : "uniform"},
+        {"replacement",replacement},{"random_seed",77}};
+      if (timed) options["time_cutoff"] = 1;
+      if (typed) options["edge_type_fanouts"] = rt::json::object{{"r0",{1,-1}}};
+      declared_request(profile.c_str(),sample_graph,options);
+    }
+  }
+  for (int change=0; change<3; ++change) {
+    auto invalid=sample_graph; auto& last=invalid.as_object().at("edges").as_array().back().as_object();
+    if (change==0) last.erase("type");
+    if (change==1) last["weight"] = -1;
+    if (change==2) last["timestamp"] = "invalid timestamp";
+    sampling_input(rt::parse_graph(invalid),true,true,rt::Exact(1));
+  }
   anomaly_input(graph);
   for (std::uint64_t budget=0; budget<16; ++budget) anomaly_input(graph,budget);
   for (bool vertices : {false,true}) {
@@ -1784,6 +1849,7 @@ int main(int argc, char** argv) {
     const bool sparsification = argc > 1 && std::string(argv[1]) == "--sparsification";
     const bool flow = argc > 1 && std::string(argv[1]) == "--flow";
     const bool anomalies = argc > 1 && std::string(argv[1]) == "--anomalies";
+    const bool sampling = argc > 1 && std::string(argv[1]) == "--sampling";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1809,7 +1875,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1817,6 +1883,18 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (sampling) {
+          for (bool weighted : {false,true}) for (bool typed : {false,true}) for (bool timed : {false,true}) {
+            const bool rejected = sampling_input(graph,weighted,typed,timed ? std::optional<rt::Exact>(1) : std::nullopt);
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile",std::string("neighborhood-sampling:cpp:")+(weighted ? "weighted" : "uniform")+(typed ? "_typed" : "")},
+              {"time_cutoff",timed},{"equal",true},{"rejected",rejected}}) << '\n';
+          }
+          const bool rejected = sampling_input(corpus_sampling(graph),true,true,rt::Exact(1));
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile","neighborhood-sampling:cpp:weighted_typed"},{"timed_typed_fixture",true},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (anomalies) {
           const bool rejected = anomaly_input(graph);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
