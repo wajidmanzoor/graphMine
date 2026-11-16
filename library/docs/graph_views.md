@@ -1,10 +1,11 @@
-# Graph views — foundation (step 1)
+# Graph views
 
 The public C++ API in `graphmine/views.hpp` builds immutable standard views in
-the native runtime. This is the foundation for the migration specified in
-[`GRAPH_VIEW_FORMATS.md`](../../GRAPH_VIEW_FORMATS.md). Existing algorithms still
-use their current adapters. Steps 2–9, per-backend golden comparisons, exporters
-and registry declarations have not been implemented yet.
+the native library. Steps 1 and 2 of
+[`GRAPH_VIEW_FORMATS.md`](../../GRAPH_VIEW_FORMATS.md) are implemented.
+`Graph::simple_undirected()` and the runtime `weighted_graph()` helper now
+delegate normalization to `make_view`. Direct per-family/backend declarations,
+worker exporters and registry integration remain in steps 3–9.
 
 ## API and ownership
 
@@ -22,8 +23,9 @@ auto result = graphmine::make_view(graph, spec);
 const auto& csr = std::get<graphmine::CsrView>(result->view);
 ```
 
-Link against `GraphMine::runtime`. `make_view(const Graph&, const ViewSpec&)`
-supports ordinary graphs. The `std::string_view` overload accepts the existing
+Link against `GraphMine::core` for `ViewSpec` and the Graph-based factory, or
+`GraphMine::runtime` for the complete API. `make_view(const Graph&, const ViewSpec&)`
+supports ordinary graphs. The runtime's `std::string_view` overload accepts the existing
 canonical graph, feature-vector, hypergraph and collection JSON formats. It
 selects the input format from `kind` (`dense` accepts a graph or feature vectors).
 Both overloads return `shared_ptr<const ViewResult>`; returned arrays and ID maps
@@ -104,8 +106,7 @@ Collection members use the same CSR spec; member order and IDs are preserved.
 `int64_exact` uses original numeric tokens, never a rounded intermediate double.
 Fractional or out-of-range values and integer sum overflow fail. The user
 approved an exact-weight graph parser mode used only by new `int64_exact` views.
-Existing operation parsing, C ABI, CLI, operation parameters and result JSON keep
-their current binary64 precision checks. f64 feature matrices also retain their
+Existing operation parsing keeps its binary64 precision checks. f64 feature matrices also retain their
 existing rejection of integers that lose precision.
 
 u32 limits vertex counts to `UINT32_MAX`. i32 limits vertex and entry counts to
@@ -119,15 +120,26 @@ The summary contains projection status, removed original loops/collapsed edges,
 the number of input numeric type conversions, and output sizes. Graph views count
 arcs, dense graph views count present cells, feature matrices count cells, and
 hypergraphs count hyperedges. `normalization_json()` exposes the requested six
-fields. Attaching this summary to algorithm provenance belongs to the adapter
-migration; no existing result fields are changed in step 1.
+fields. The user approved extending existing `representations` metadata while
+preserving algorithm result fields. Weighted-adjacency records now include
+`view` (the resolved spec) and `normalization`; cache hits retain the same summary.
+The C++ simple-undirected return also exposes that summary. The C ABI, CLI,
+operation IDs, parameters and algorithm result fields are unchanged.
+
+`nonnegative_weights` defaults to false. The equivalent weighted adapter enables
+it when the existing operation requires nonnegative input, including weights on
+self-loops that will be dropped. This validation belongs to the shared builder
+and participates in cache identity.
 
 ## Cache
 
 Views share the existing process-local representation cache (128 MiB default,
 configurable through the existing `representation_cache` command). Keys include
-the content hash, canonical resolved spec, implementation hash and view format
-version. Source numeric storage is included in graph identity to prevent exact
+the content hash, canonical resolved spec and view format version. The shared
+store belongs to one compiled implementation in one process; runtime provenance
+also includes its implementation hash and the request fingerprint. Graph hashing
+uses length-delimited, type-tagged records and floating-point bits, independent
+of runtime JSON/result construction. Source numeric storage prevents exact
 integer collisions. The cache accounts for owned arrays, mappings, dictionaries,
 key strings and allocation overhead; oversize views are returned without retention.
 
@@ -136,6 +148,12 @@ eviction does not invalidate active owners. Failed builds are not retained.
 There is no disk cache. The user approved this storage choice and the extension
 to existing structured input types.
 
+`ViewBuildOptions` supplies optional budget and observation callbacks without
+making the core depend on runtime `Work`. Fresh builds charge vertices, original
+edges and original retained arcs in legacy order. Cache hits pay the same total
+candidate cost. The adapter only repacks CSR rows into the legacy `WeightedGraph`
+layout; it no longer has a separate adjacency cache or normalization path.
+
 ## Validation
 
 The seven `graphmine_views_*` CTest suites cover spec validation, all collapse
@@ -143,5 +161,6 @@ rules, seeded symmetry/count properties, exact integer/overflow boundaries, i32
 count checks, both bipartite side sources, dense/structured inputs, byte comparison
 of fresh uncached builds, and cache eviction/concurrency. See
 [`graph_views_step1.md`](graph_views_step1.md) for the recorded run and admission
-status. No backend-equivalence or worker-file golden result is claimed at this
-foundation stage.
+status. See [`graph_views_step2.md`](graph_views_step2.md) for byte-equivalence
+coverage, work-budget checks, standalone installation checks and current
+admission. Worker-file goldens belong to step 6.

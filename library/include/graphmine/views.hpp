@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include <functional>
 #include <memory>
 #include <string_view>
 
@@ -15,6 +16,8 @@ struct ViewSpec {
   std::string parallel_edges = "keep";
   std::string weights = "f64";
   std::string weight_source = "edge.weight";
+  // Validate all selected input weights, including edges subsequently dropped.
+  bool nonnegative_weights = false;
   bool edge_ids = false;
   std::vector<std::string> labels;
   std::string bipartite_sides = "none";
@@ -117,14 +120,22 @@ struct ViewResult {
   View view;
   NormalizationSummary normalization;
   std::string snapshot_hash, canonical_spec;
+  std::uint64_t build_work = 0;
   [[nodiscard]] std::size_t accounted_bytes() const;
   [[nodiscard]] std::string normalization_json() const;
 };
 
-// Immutable, process-local cached results. No backend is migrated by this API.
+struct ViewBuildOptions {
+  // Cache hits pay the same candidate cost as a successful fresh build.
+  std::function<void(std::uint64_t)> charge;
+  std::function<void(const ViewResult&, bool hit, bool retained)> observe;
+};
+
+// Immutable, process-local cached results.
 // The JSON overload accepts the existing graph, feature_vectors, hypergraph and
 // graph_collection input formats, selected by the declared kind.
 std::shared_ptr<const ViewResult> make_view(const Graph&, const ViewSpec&);
+std::shared_ptr<const ViewResult> make_view(const Graph&, const ViewSpec&, const ViewBuildOptions&);
 std::shared_ptr<const ViewResult> make_view(std::string_view input_json, const ViewSpec&);
 
 }  // namespace graphmine

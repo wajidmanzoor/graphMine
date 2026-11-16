@@ -6,17 +6,17 @@
 #include <set>
 #include <type_traits>
 
-#include "representation_cache.hpp"
-#include "structured_input.hpp"
+#include "views_internal.hpp"
+#include "../src/core/view_json.hpp"
 
 namespace graphmine {
-namespace {
-namespace rt = runtime;
+namespace view_detail {
+namespace rt = view_json;
 namespace json = boost::json;
 using Number = HypergraphView::SourceNumber;
 
 void check(bool condition, const std::string& message) {
-  rt::require(condition, "Graph view: " + message);
+  if (!condition) throw std::invalid_argument("Graph view: " + message);
 }
 bool one_of(const std::string& value, std::initializer_list<const char*> choices) {
   return std::any_of(choices.begin(), choices.end(),
@@ -24,12 +24,6 @@ bool one_of(const std::string& value, std::initializer_list<const char*> choices
 }
 bool wants(const ViewSpec& spec, const char* label) {
   return std::find(spec.labels.begin(), spec.labels.end(), label) != spec.labels.end();
-}
-rt::Work input_work() {
-  rt::Work work;
-  work.max_candidates = work.max_output_items = UINT64_MAX;
-  work.timeout_seconds = std::numeric_limits<double>::infinity();
-  return work;
 }
 json::value sorted_json(const json::value& value) {
   if (value.is_object()) {
@@ -111,10 +105,6 @@ std::int64_t exact_integer(const Number& number) {
     return static_cast<std::int64_t>(value);
   }, number);
 }
-struct Weight {
-  double f64 = 0;
-  std::int64_t integer = 0;
-};
 Weight cast_weight(const Number& number, const ViewSpec& spec, NormalizationSummary& summary) {
   Weight result;
   if (spec.weights == "f64") {
@@ -222,7 +212,8 @@ ViewVertexMap vertex_map(const Graph& graph, const ViewSpec& spec, std::uint32_t
 
 struct Arc { VertexIndex src, dst; Weight weight; EdgeIndex original; };
 CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary& summary,
-                  std::uint32_t& left_count) {
+                  std::uint32_t& left_count, const std::function<void(std::uint64_t)>& charge) {
+  charge(graph.vertex_count());
   validate_view_counts(spec, graph.vertex_count(), graph.edge_count());
   CooView result;
   result.vertices = vertex_map(graph, spec, left_count);
@@ -234,8 +225,12 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
   std::vector<Arc> edges;
   std::map<std::pair<VertexIndex, VertexIndex>, std::size_t> unique;
   for (EdgeIndex i = 0; i < graph.edge_count(); ++i) {
+    charge(1);
     const auto& edge = graph.canonical().edges[i];
     const auto weight = spec.weights == "none" ? Weight{} : cast_weight(edge_number(edge, spec), spec, summary);
+    if (spec.nonnegative_weights)
+      check(spec.weights == "int64_exact" ? weight.integer >= 0 : weight.f64 >= 0,
+            "This operation requires nonnegative edge weights");
     auto u = result.vertices.from_original[graph.dense_index(edge.source)];
     auto v = result.vertices.from_original[graph.dense_index(edge.target)];
     if (u == v && spec.self_loops == "drop") { ++summary.self_loops_removed; continue; }
@@ -243,6 +238,7 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
       check((u < left_count) != (v < left_count), "edge must cross the bipartite sides");
     if (!result.directed && v < u) std::swap(u, v);
     if (result.directed && spec.direction == "reverse") std::swap(u, v);
+    charge(1);
     const auto pair = std::make_pair(u, v);
     if (spec.parallel_edges != "keep") {
       const auto [found, inserted] = unique.emplace(pair, edges.size());
@@ -250,10 +246,12 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
         auto& previous = edges[found->second];
         merge_weight(previous.weight, weight, spec, previous.original, i);
         ++summary.parallel_edges_collapsed;
+        if (!result.directed && u != v) charge(1);
         continue;
       }
     }
     edges.push_back({u, v, weight, i});
+    if (!result.directed && u != v) charge(1);
   }
   std::uint64_t count = edges.size();
   if (!result.directed)
@@ -353,7 +351,8 @@ CsrView csr(CooView input, const ViewSpec& spec) {
   result.sorted = input.sorted;
   return result;
 }
-}  // namespace
+}  // namespace view_detail
+using namespace view_detail;
 
 void ViewSpec::validate() const {
   check(one_of(kind, {"csr", "coo", "bipartite", "dense", "hypergraph", "collection"}), "unknown kind");
@@ -403,7 +402,7 @@ ViewSpec ViewSpec::from_json(std::string_view input) {
   const auto value = rt::object(rt::strict_json(input), "view spec");
   rt::fields(value, {"kind", "direction", "self_loops", "parallel_edges", "weights", "weight_source",
                     "edge_ids", "labels", "bipartite_sides", "sorted_neighbors", "index_width",
-                    "limits", "parameters"});
+                    "limits", "parameters", "nonnegative_weights"});
   ViewSpec spec;
   for (auto [key, target] : std::initializer_list<std::pair<const char*, std::string*>>{
            {"kind", &spec.kind}, {"direction", &spec.direction}, {"self_loops", &spec.self_loops},
@@ -411,7 +410,7 @@ ViewSpec ViewSpec::from_json(std::string_view input) {
            {"weight_source", &spec.weight_source}, {"bipartite_sides", &spec.bipartite_sides},
            {"index_width", &spec.index_width}})
     if (value.contains(key)) *target = rt::string(value.at(key), key);
-  for (auto [key, target] : {std::pair{"edge_ids", &spec.edge_ids}, {"sorted_neighbors", &spec.sorted_neighbors}})
+  for (auto [key, target] : {std::pair{"edge_ids", &spec.edge_ids}, {"sorted_neighbors", &spec.sorted_neighbors}, {"nonnegative_weights", &spec.nonnegative_weights}})
     if (value.contains(key)) {
       check(value.at(key).is_bool(), std::string(key) + " must be boolean");
       *target = value.at(key).as_bool();
@@ -447,7 +446,7 @@ std::string ViewSpec::canonical_json() const {
   for (const auto& name : sorted_labels) columns.push_back(json::value(name));
   json::object result{{"kind", kind}, {"direction", direction}, {"self_loops", self_loops},
                       {"parallel_edges", parallel_edges}, {"weights", weights}, {"weight_source", weight_source},
-                      {"edge_ids", edge_ids}, {"labels", columns}, {"bipartite_sides", bipartite_sides},
+                      {"nonnegative_weights", nonnegative_weights}, {"edge_ids", edge_ids}, {"labels", columns}, {"bipartite_sides", bipartite_sides},
                       {"sorted_neighbors", sorted_neighbors}, {"index_width", index_width},
                       {"limits", {{"max_vertices", limits.max_vertices}, {"max_edges", limits.max_edges}}}};
   if (parameters)
@@ -456,7 +455,7 @@ std::string ViewSpec::canonical_json() const {
   return json::serialize(sorted_json(result));
 }
 
-namespace {
+namespace view_detail {
 DenseView dense_graph(CooView input, const ViewSpec& spec, std::uint32_t left_count,
                       NormalizationSummary& summary) {
   DenseView result;
@@ -505,195 +504,33 @@ DenseView dense_graph(CooView input, const ViewSpec& spec, std::uint32_t left_co
   }
   return result;
 }
-ViewResult build_graph(const Graph& graph, const ViewSpec& spec) {
+ViewResult build_graph(const Graph& graph, const ViewSpec& spec, const ViewBuildOptions& options) {
   check(one_of(spec.kind, {"csr", "coo", "bipartite", "dense"}), "this kind requires a structured input");
   ViewResult result;
   std::uint32_t left_count = 0;
-  auto input = normalize(graph, spec, result.normalization, left_count);
+  auto charge = [&](std::uint64_t amount) {
+    if (options.charge) options.charge(amount);
+    result.build_work = add_count(result.build_work, amount);
+  };
+  auto input = normalize(graph, spec, result.normalization, left_count, charge);
   if (spec.kind == "coo") result.view = std::move(input);
   else if (spec.kind == "csr") result.view = csr(std::move(input), spec);
   else if (spec.kind == "bipartite") result.view = BipartiteView{csr(std::move(input), spec), left_count};
   else result.view = dense_graph(std::move(input), spec, left_count, result.normalization);
   return result;
 }
-ViewVertexMap identity_map(const std::vector<ExternalId>& ids) {
-  ViewVertexMap result;
-  result.external_ids = ids;
-  result.to_original.resize(ids.size());
-  std::iota(result.to_original.begin(), result.to_original.end(), 0);
-  result.from_original = result.to_original;
-  return result;
-}
-ViewResult build_features(const json::value& input, const ViewSpec& spec) {
-  check(spec.direction == "keep" && spec.self_loops == "keep" && spec.parallel_edges == "keep" &&
-            spec.weight_source == "edge.weight" && spec.bipartite_sides == "none" &&
-            !spec.edge_ids && spec.labels.empty(), "feature matrix cannot apply graph-edge policies");
-  const auto data = rt::object(input, "feature_vectors");
-  rt::fields(data, {"dataset_id", "dimension", "vectors"}, {"dataset_id", "dimension", "vectors"});
-  check(!rt::string(data.at("dataset_id"), "dataset_id").empty(), "dataset_id must not be empty");
-  const auto dimension = rt::uint(data.at("dimension"), "dimension");
-  check(dimension > 0 && data.at("vectors").is_array(), "features need positive dimension and a vectors array");
-  const auto& rows = data.at("vectors").as_array();
-  // Check shape/limits before allocation. The int64 path must not pass through
-  // FeatureInput's binary64 matrix; it uses the same IDs and row contract.
-  const auto count = cells(rows.size(), dimension, spec);
-  rt::StructuredVertices parsed;
-  for (const auto& raw : rows) {
-    const auto row = rt::object(raw, "vector");
-    rt::fields(row, {"id", "values"}, {"id", "values"});
-    parsed.add(row.at("id"));
-    check(row.at("values").is_array() && row.at("values").as_array().size() == dimension,
-          "feature width must match dimension");
-  }
-  ViewResult result;
-  DenseView matrix;
-  matrix.rows = rows.size();
-  matrix.columns = dimension;
-  for (std::uint64_t c = 0; c < matrix.columns; ++c) {
-    matrix.column_ids.emplace_back(static_cast<std::int64_t>(c));
-    matrix.column_original.push_back(c);
-  }
-  matrix.values = weight_column(spec);
-  matrix.present.assign(count, 1);
-  // Read the original tokens for int64_exact, not the parser's rounded doubles.
-  for (const auto& raw : rows) {
-    const auto row = rt::object(raw, "vector");
-    for (const auto& value : row.at("values").as_array()) {
-      if (spec.weights == "f64") (void)rt::numeric::float64(value, "feature");
-      append_weight(matrix.values, cast_weight(numeric(value), spec, result.normalization));
-    }
-  }
-  matrix.row_ids = parsed.ids;
-  matrix.row_original = identity_map(parsed.ids).to_original;
-  result.normalization.vertices = matrix.rows;
-  result.normalization.edges = count;
-  result.view = std::move(matrix);
-  return result;
-}
-ViewResult build_hypergraph(const json::value& input, const ViewSpec& spec) {
-  auto work = input_work();
-  const rt::HypergraphInput parsed(input, work);
-  validate_view_counts(spec, parsed.ids.size(), parsed.edges.size());
-  ViewResult result;
-  HypergraphView view;
-  view.vertices = identity_map(parsed.ids);
-  view.he_offsets.push_back(0);
-  view.v_offsets.assign(parsed.ids.size() + 1, 0);
-  std::uint64_t incidence_count = 0;
-  for (const auto& edge : parsed.edges) incidence_count = add_count(incidence_count, edge.vertices.size());
-  validate_view_counts(spec, parsed.ids.size(), incidence_count);
-  for (const auto& edge : parsed.edges) {
-    view.hyperedge_ids.push_back(edge.id);
-    auto vertices = edge.vertices;
-    if (spec.sorted_neighbors) std::sort(vertices.begin(), vertices.end());
-    for (auto v : vertices) { view.he_vertices.push_back(v); ++view.v_offsets[v + 1]; }
-    view.he_offsets.push_back(view.he_vertices.size());
-  }
-  std::partial_sum(view.v_offsets.begin(), view.v_offsets.end(), view.v_offsets.begin());
-  auto next = view.v_offsets;
-  view.v_hyperedges.resize(incidence_count);
-  for (EdgeIndex e = 0; e < parsed.edges.size(); ++e)
-    for (auto i = view.he_offsets[e]; i < view.he_offsets[e + 1]; ++i)
-      view.v_hyperedges[next[view.he_vertices[i]]++] = e;
-  auto weights = [&](const char* key, ViewWeights& values, std::vector<Number>& source) {
-    values = weight_column(spec);
-    for (const auto& raw : input.as_object().at(key).as_array()) {
-      const auto& row = raw.as_object();
-      const auto number = row.contains("weight") ? numeric(row.at("weight")) : Number(std::int64_t(1));
-      source.push_back(number);
-      if (spec.weights == "none") continue;
-      Number selected = number;
-      if (spec.weight_source == "unit") selected = 1.0;
-      else if (spec.weight_source.rfind("attribute:", 0) == 0) {
-        // Use the same typed property path resolver as ordinary edge records.
-        check(row.contains("attributes"), "missing weight attributes");
-        const auto path = spec.weight_source.substr(10);
-        const json::value* value = &row.at("attributes");
-        std::size_t begin = 0;
-        do {
-          const auto end = path.find('.', begin);
-          const auto part = path.substr(begin, end == std::string::npos ? end : end - begin);
-          check(value->is_object() && value->as_object().contains(part), "missing weight attribute: " + path);
-          value = &value->as_object().at(part);
-          if (end == std::string::npos) break;
-          begin = end + 1;
-        } while (true);
-        selected = numeric(*value);
-      }
-      append_weight(values, cast_weight(selected, spec, result.normalization));
-    }
-  };
-  weights("vertices", view.vertex_weights, view.source_vertex_weights);
-  weights("hyperedges", view.hyperedge_weights, view.source_hyperedge_weights);
-  result.normalization.vertices = parsed.ids.size();
-  result.normalization.edges = parsed.edges.size();
-  result.view = std::move(view);
-  return result;
-}
-ViewResult build_collection(const json::value& input, const ViewSpec& spec) {
-  auto work = input_work();
-  const auto graphs = rt::graph_collection(input, work, spec.weights == "int64_exact");
-  ViewResult result;
-  CollectionView collection;
-  auto member_spec = spec;
-  member_spec.kind = "csr";
-  for (const auto& graph : graphs) {
-    auto member = build_graph(graph, member_spec);
-    const auto& summary = member.normalization;
-    auto& total = result.normalization;
-    total.projection_applied |= summary.projection_applied;
-    total.directed_projection_applied |= summary.directed_projection_applied;
-    total.self_loops_removed = add_count(total.self_loops_removed, summary.self_loops_removed);
-    total.parallel_edges_collapsed = add_count(total.parallel_edges_collapsed, summary.parallel_edges_collapsed);
-    total.weights_cast = add_count(total.weights_cast, summary.weights_cast);
-    total.vertices = add_count(total.vertices, summary.vertices);
-    total.edges = add_count(total.edges, summary.edges);
-    check(total.vertices <= spec.limits.max_vertices && total.edges <= spec.limits.max_edges,
-          "collection aggregate exceeds view limits");
-    collection.member_indices.push_back(collection.members.size());
-    collection.member_ids.push_back(graph.canonical().graph.id);
-    collection.normalizations.push_back(summary);
-    collection.members.push_back(std::get<CsrView>(std::move(member.view)));
-  }
-  result.view = std::move(collection);
-  return result;
-}
-std::string graph_hash(const Graph& graph) {
-  auto work = input_work();
-  auto input = rt::selected_graph(graph, std::vector<bool>(graph.vertex_count(), true), work);
-  // Public C++ Graph also admits a binary64 weight without an original JSON
-  // token. Preserve both storage forms in the key (casting provenance differs).
-  json::array storage;
-  for (const auto& edge : graph.canonical().edges)
-    storage.push_back(json::array{edge.weight ? json::value(*edge.weight) : json::value(nullptr),
-                                  edge.original_weight ? json::value(edge.original_weight->index()) : json::value(nullptr)});
-  input["native_weight_storage"] = std::move(storage);
-  return rt::input_fingerprint(input);
-}
-}  // namespace
+ }  // namespace view_detail
 
 std::shared_ptr<const ViewResult> make_view(const Graph& graph, const ViewSpec& spec) {
+  return make_view(graph, spec, {});
+}
+std::shared_ptr<const ViewResult> make_view(const Graph& graph, const ViewSpec& spec,
+                                          const ViewBuildOptions& options) {
   const auto canonical = spec.canonical_json();
   validate_view_counts(spec, graph.vertex_count(), graph.edge_count());
-  const auto snapshot = graph_hash(graph);
-  return rt::cached_standard_view(snapshot, canonical, [&] {
-    auto result = build_graph(graph, spec);
-    result.snapshot_hash = snapshot;
-    result.canonical_spec = canonical;
-    return result;
-  });
-}
-std::shared_ptr<const ViewResult> make_view(std::string_view input_json, const ViewSpec& spec) {
-  const auto canonical = spec.canonical_json();
-  const auto input = rt::strict_json(input_json);
-  if (one_of(spec.kind, {"csr", "coo", "bipartite"}) ||
-      (spec.kind == "dense" && (!input.is_object() || !input.as_object().contains("vectors"))))
-    return make_view(rt::parse_graph(input, spec.weights == "int64_exact"), spec);
-  const auto snapshot = rt::input_fingerprint(input);
-  return rt::cached_standard_view(snapshot, canonical, [&] {
-    auto result = spec.kind == "hypergraph" ? build_hypergraph(input, spec)
-                : spec.kind == "collection" ? build_collection(input, spec)
-                                              : build_features(input, spec);
+  const auto snapshot = view_detail::graph_hash(graph);
+  return view_detail::cached_view(snapshot, canonical, options, [&] {
+    auto result = build_graph(graph, spec, options);
     result.snapshot_hash = snapshot;
     result.canonical_spec = canonical;
     return result;

@@ -55,6 +55,10 @@ def native_completion_evidence(request):
         )
     ]
     files += [Path(item.path) for item in request.session.items]
+    # The shared view builder now lives in the standalone core. Track the full
+    # compiled source inventory so an edit there also invalidates this evidence.
+    files += [ROOT / "library" / line.rsplit(":", 1)[0]
+              for line in (build / "native-source-hashes.txt").read_text().splitlines()]
 
     def snapshot():
         return {str(path.relative_to(ROOT)): sha(path) for path in sorted(set(files))}

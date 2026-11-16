@@ -1,4 +1,5 @@
 #include "graphmine/graph.hpp"
+#include "graphmine/views.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -131,41 +132,14 @@ UndirectedGraphView Graph::simple_undirected(
         "undirected algorithm received directed input without an explicit projection");
   }
 
-  UndirectedGraphView view;
-  view.normalization.directed_projection_applied = input_.graph.directed;
-
-  std::set<std::pair<VertexIndex, VertexIndex>> unique_edges;
-  for (const auto& edge : input_.edges) {
-    auto source = dense_index(edge.source);
-    auto target = dense_index(edge.target);
-    if (source == target) {
-      ++view.normalization.self_loops_removed;
-      continue;
-    }
-    if (target < source) {
-      std::swap(source, target);
-    }
-    if (!unique_edges.emplace(source, target).second) {
-      ++view.normalization.parallel_edges_collapsed;
-    }
-  }
-
-  std::vector<std::vector<VertexIndex>> adjacency(vertex_count());
-  for (const auto& [source, target] : unique_edges) {
-    adjacency[source].push_back(target);
-    adjacency[target].push_back(source);
-  }
-
-  view.csr.offsets.resize(vertex_count() + 1, 0);
-  for (std::size_t vertex = 0; vertex < adjacency.size(); ++vertex) {
-    std::sort(adjacency[vertex].begin(), adjacency[vertex].end());
-    view.csr.offsets[vertex + 1] =
-        view.csr.offsets[vertex] + adjacency[vertex].size();
-    view.csr.neighbors.insert(view.csr.neighbors.end(),
-                              adjacency[vertex].begin(),
-                              adjacency[vertex].end());
-  }
-  return view;
+  ViewSpec spec;
+  spec.direction = "symmetrize";
+  spec.self_loops = "drop";
+  spec.parallel_edges = "collapse:first";
+  spec.weights = "none";
+  const auto result = make_view(*this, spec);
+  const auto& csr = std::get<CsrView>(result->view);
+  return {{csr.offsets, csr.indices}, result->normalization};
 }
 
 }  // namespace graphmine

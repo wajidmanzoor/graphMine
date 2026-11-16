@@ -132,6 +132,16 @@ def test_cache_reuses_content_and_normalization_without_changing_budgets(native)
     assert stable(first) == stable(second)
     assert not any(row["hit"] for row in first["representations"])
     assert all(row["hit"] for row in second["representations"])
+    normalization = first["representations"][-1]["normalization"]
+    assert normalization == {
+        "projection_applied": False,
+        "self_loops_removed": 0,
+        "parallel_edges_collapsed": 1,
+        "weights_cast": 3,
+        "vertices": 3,
+        "edges": 2,
+    }
+    assert second["representations"][-1]["normalization"] == normalization
     assert first["ports"]["distances"]["value"][2]["distance"] == 3
     rank = native.run("pagerank", graph, device="cpu")
     assert rank["representations"][0]["hit"]

@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.24)
+project(GraphMineCoreViewConsumer LANGUAGES CXX)
+find_package(GraphMine REQUIRED COMPONENTS core)
+get_filename_component(repo "${CMAKE_CURRENT_LIST_DIR}/../../../.." ABSOLUTE)
+add_executable(core_view_consumer "${repo}/library/runtime/tests/core_view_test.cpp")
+target_link_libraries(core_view_consumer PRIVATE GraphMine::core)

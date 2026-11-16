@@ -1,0 +1,8 @@
+{
+  "commit": "a38d1dcb",
+  "implementation_sha256": "1b047e2e3e1d7c7007ec756547d1e9c2bf518e245d24ee09cd0d65473aabc7a7",
+  "library_sha256": "3988d25758ad26c849926b7626ab4cdaa050104bbc8dcfeb9b3cf40caf0c3d57",
+  "golden_executable_sha256": "8bedf4844cb3f6012138a7326a0ef27889e4ad6740cce7ba4cf963aaaffcde3a",
+  "frozen_legacy_source": "library/runtime/tests/legacy_normalizers.hpp",
+  "frozen_legacy_sha256": "b9cbd4b386be85134c9ec7bfb9658ccec3203293e020523fd0272887ce9df729"
+}

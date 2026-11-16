@@ -7,7 +7,8 @@
 
 #include "exact_number.hpp"
 #include "internal.hpp"
-#include "representation_cache.hpp"
+#include "graphmine/views.hpp"
+#include "catalog_data.hpp"
 
 namespace graphmine::runtime {
 double number(const json::value& value, const std::string& context) {
@@ -24,51 +25,49 @@ bool boolean(const json::object& values, const char* key, bool initial) {
 json::object result_port(const char* type, json::value value, bool complete) {
   return {{"type", type}, {"value", std::move(value)}, {"complete", complete}};
 }
-static WeightedGraph build_weighted_graph(const Graph& graph, bool weighted, bool nonnegative,
-                                          const std::string& aggregation,
-                                          const std::string& direction, Work& work) {
-  work.tick(graph.vertex_count());
-  std::vector<std::map<VertexIndex, double>> rows(graph.vertex_count());
-  const bool directed = graph.directed() && direction != "undirected_projection";
-  auto add = [&](VertexIndex u, VertexIndex v, double weight) {
-    work.tick();
-    const auto found = rows[u].emplace(v, weight);
-    if (found.second) return;
-    auto& previous = found.first->second;
-    if (aggregation == "min")
-      previous = std::min(previous, weight);
-    else if (aggregation == "max")
-      previous = std::max(previous, weight);
-    else if (aggregation == "sum")
-      previous += weight;
-    require(std::isfinite(previous), "Aggregated edge weight overflowed");
-  };
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    const double weight = weighted ? edge.weight.value_or(1) : 1;
-    require(!nonnegative || weight >= 0, "This operation requires nonnegative edge weights");
-    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    if (u == v) continue;
-    if (direction == "incoming" && directed) std::swap(u, v);
-    add(u, v, weight);
-    if (!directed) add(v, u, weight);
-  }
-  WeightedGraph result{std::vector<std::vector<Arc>>(rows.size()), directed};
-  for (VertexIndex u = 0; u < rows.size(); ++u)
-    for (const auto& [v, weight] : rows[u]) result.rows[u].push_back({v, weight});
-  return result;
-}
-
 WeightedGraph weighted_graph(const Graph& graph, bool weighted, bool nonnegative,
                              const std::string& aggregation, const std::string& direction,
                              Work& work) {
-  const auto build = [&] {
-    return build_weighted_graph(graph, weighted, nonnegative, aggregation, direction, work);
+  ViewSpec spec;
+  spec.self_loops = "drop";
+  spec.parallel_edges = aggregation == "min" || aggregation == "max" || aggregation == "sum"
+                            ? "collapse:" + aggregation : "collapse:first";
+  spec.direction = direction == "incoming" ? "reverse" :
+                   direction == "undirected_projection" ? "symmetrize" : "keep";
+  spec.weights = "f64";
+  spec.weight_source = weighted ? "edge.weight" : "unit";
+  spec.nonnegative_weights = nonnegative;
+  ViewBuildOptions options;
+  options.charge = [&](std::uint64_t amount) { work.tick(amount); };
+  options.observe = [&](const ViewResult& view, bool hit, bool retained) {
+    if (work.representations.size() >= 32) return;
+    // The request fingerprint and implementation identify provenance; the
+    // trailing native snapshot/spec is the actual shared-store identity.
+    const auto key = work.input_fingerprint + ":" + implementation_sha256 + ":" +
+                     view.snapshot_hash + ":standard-view-v2:" + view.canonical_spec;
+    work.representations.push_back(json::object{
+        {"kind", "weighted_adjacency"}, {"key", key}, {"hit", hit}, {"retained", retained},
+        {"view", json::parse(view.canonical_spec)}, {"normalization", json::parse(view.normalization_json())}});
   };
-  if (work.input_graph != &graph) return build();
-  const auto semantics = std::string(weighted ? "weighted:" : "unit:") +
-                         (nonnegative ? "nonnegative:" : "signed:") + aggregation + ":" + direction;
-  return cached_weighted_graph(semantics, work, build);
+  std::shared_ptr<const ViewResult> view;
+  try { view = make_view(graph, spec, options); }
+  catch (const std::invalid_argument& error) {
+    const std::string message = error.what();
+    if (message == "Graph view: f64 sum overflows")
+      throw Failure("invalid_input", "Aggregated edge weight overflowed");
+    if (message == "Graph view: This operation requires nonnegative edge weights")
+      throw Failure("invalid_input", "This operation requires nonnegative edge weights");
+    throw;
+  }
+  const auto& csr = std::get<CsrView>(view->view);
+  const auto& weights = std::get<std::vector<double>>(csr.weights);
+  WeightedGraph result{std::vector<std::vector<Arc>>(graph.vertex_count()), csr.directed};
+  for (VertexIndex u = 0; u < result.rows.size(); ++u) {
+    result.rows[u].reserve(csr.offsets[u + 1] - csr.offsets[u]);
+    for (auto i = csr.offsets[u]; i < csr.offsets[u + 1]; ++i)
+      result.rows[u].push_back({csr.indices[i], weights[i]});
+  }
+  return result;
 }
 
 std::string gpu_support_reason(const std::string& operation, const Graph& graph,

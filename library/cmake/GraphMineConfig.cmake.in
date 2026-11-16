@@ -1,6 +1,7 @@
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
+find_dependency(OpenSSL COMPONENTS Crypto)
 if(@GRAPHMINE_CONFIG_NEEDS_CUDA@)
   find_dependency(CUDAToolkit)
   if(NOT TARGET CUDA::cudadevrt)

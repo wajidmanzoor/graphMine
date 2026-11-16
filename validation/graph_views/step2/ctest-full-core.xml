@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="19"
+	failures="0"
+	disabled="16"
+	skipped="0"
+	hostname=""
+	time="0"
+	timestamp="2026-11-16T02:40:38"
+	>
+	<testcase name="graphmine_repaired_algorithms_test" classname="graphmine_repaired_algorithms_test" time="0.00431446" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_validated_expansion_test" classname="graphmine_validated_expansion_test" time="0.00324021" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_graph_test" classname="graphmine_graph_test" time="0.00355422" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_maximal_cliques_test" classname="graphmine_maximal_cliques_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_k_core_test" classname="graphmine_k_core_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_maximum_clique_test" classname="graphmine_maximum_clique_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_triangle_counting_test" classname="graphmine_triangle_counting_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_dynamic_triangle_counting_test" classname="graphmine_dynamic_triangle_counting_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_k_cliques_test" classname="graphmine_k_cliques_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_betweenness_centrality_test" classname="graphmine_betweenness_centrality_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_maximal_bicliques_test" classname="graphmine_maximal_bicliques_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_quasi_cliques_test" classname="graphmine_quasi_cliques_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_subgraph_isomorphism_test" classname="graphmine_subgraph_isomorphism_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_graph_motifs_test" classname="graphmine_graph_motifs_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_temporal_motif_mining_test" classname="graphmine_temporal_motif_mining_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_community_detection_gleiden_test" classname="graphmine_community_detection_gleiden_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_community_detection_parallel_louvain_test" classname="graphmine_community_detection_parallel_louvain_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_community_detection_parallel_leiden_test" classname="graphmine_community_detection_parallel_leiden_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+	<testcase name="graphmine_community_detection_parallel_leiden_plus_test" classname="graphmine_community_detection_parallel_leiden_plus_test" time="0" status="disabled">
+		<properties/>
+		<system-out>Disabled</system-out>
+	</testcase>
+</testsuite>

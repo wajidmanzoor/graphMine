@@ -1,0 +1,20 @@
+{
+  "calls": 32205,
+  "snapshots": 4964,
+  "snapshot_profile_pairs": 11247,
+  "profiles": {
+    "weighted:nonnegative:min:outgoing": 10225,
+    "weighted:nonnegative:sum:outgoing": 261,
+    "unit:nonnegative:sum:outgoing": 71,
+    "unit:signed:collapse:undirected_projection": 4586,
+    "unit:signed:collapse:outgoing": 8154,
+    "weighted:signed:max:outgoing": 731,
+    "unit:signed:collapse:incoming": 4393,
+    "weighted:signed:min:outgoing": 732,
+    "weighted:nonnegative:sum:incoming": 192,
+    "weighted:nonnegative:sum:undirected_projection": 192,
+    "unit:nonnegative:min:outgoing": 2668
+  },
+  "mismatches": 0,
+  "auditor_sha256": "61a978bae1b1ecec4c00169c9b6ffdaad3a39d043ecdec7456472466bab7f818"
+}

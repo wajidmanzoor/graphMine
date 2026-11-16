@@ -1,0 +1,108 @@
+Internal ctest changing into directory: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/build/native-views-step2
+Test project /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/build/native-views-step2
+      Start  1: graphmine_core_views
+      Start  2: graphmine_normalizer_edge_cases
+      Start  3: graphmine_views_spec
+      Start  4: graphmine_views_normalization
+ 1/51 Test  #1: graphmine_core_views ...................   Passed    0.00 sec
+      Start  5: graphmine_views_weights
+ 2/51 Test  #3: graphmine_views_spec ...................   Passed    0.00 sec
+      Start  6: graphmine_views_bipartite
+ 3/51 Test  #5: graphmine_views_weights ................   Passed    0.01 sec
+      Start  7: graphmine_views_structured
+ 4/51 Test  #4: graphmine_views_normalization ..........   Passed    0.01 sec
+      Start  8: graphmine_views_determinism
+ 5/51 Test  #6: graphmine_views_bipartite ..............   Passed    0.01 sec
+      Start  9: graphmine_views_cache
+ 6/51 Test  #7: graphmine_views_structured .............   Passed    0.00 sec
+      Start 10: graphmine_selection_contracts_cpu
+ 7/51 Test  #8: graphmine_views_determinism ............   Passed    0.01 sec
+      Start 11: graphmine_selection_independent_cpu
+ 8/51 Test  #9: graphmine_views_cache ..................   Passed    0.01 sec
+      Start 12: graphmine_selection_coloring_cpu
+ 9/51 Test #10: graphmine_selection_contracts_cpu ......   Passed    0.01 sec
+      Start 13: graphmine_selection_subgraphs_cpu
+10/51 Test  #2: graphmine_normalizer_edge_cases ........   Passed    0.10 sec
+      Start 14: graphmine_selection_walks_cpu
+11/51 Test #11: graphmine_selection_independent_cpu ....   Passed    0.18 sec
+      Start 15: graphmine_selection_sampling_cpu
+12/51 Test #12: graphmine_selection_coloring_cpu .......   Passed    0.19 sec
+      Start 16: graphmine_selection_probability_cpu
+13/51 Test #14: graphmine_selection_walks_cpu ..........   Passed    0.15 sec
+      Start 17: graphmine_selection_boundaries_cpu
+14/51 Test #17: graphmine_selection_boundaries_cpu .....   Passed    0.01 sec
+      Start 18: graphmine_selection_large_cpu
+15/51 Test #18: graphmine_selection_large_cpu ..........   Passed    0.02 sec
+      Start 19: graphmine_flow_contracts_cpu
+16/51 Test #19: graphmine_flow_contracts_cpu ...........   Passed    0.01 sec
+      Start 20: graphmine_flow_edges_cpu
+17/51 Test #16: graphmine_selection_probability_cpu ....   Passed    0.11 sec
+      Start 21: graphmine_flow_vertices_cpu
+18/51 Test #15: graphmine_selection_sampling_cpu .......   Passed    0.23 sec
+      Start 22: graphmine_flow_boundaries_cpu
+19/51 Test #21: graphmine_flow_vertices_cpu ............   Passed    0.74 sec
+      Start 23: graphmine_matching_contracts_cpu
+20/51 Test #23: graphmine_matching_contracts_cpu .......   Passed    0.01 sec
+      Start 24: graphmine_matching_general_cpu
+21/51 Test #22: graphmine_flow_boundaries_cpu ..........   Passed    0.85 sec
+      Start 25: graphmine_matching_bipartite_cpu
+22/51 Test #24: graphmine_matching_general_cpu .........   Passed    0.35 sec
+      Start 26: graphmine_matching_boundaries_cpu
+23/51 Test #26: graphmine_matching_boundaries_cpu ......   Passed    0.05 sec
+      Start 27: graphmine_runtime_contracts
+24/51 Test #27: graphmine_runtime_contracts ............   Passed    0.01 sec
+      Start 28: graphmine_runtime_bfs_cpu
+25/51 Test #13: graphmine_selection_subgraphs_cpu ......   Passed    1.53 sec
+      Start 29: graphmine_runtime_triangles_cpu
+26/51 Test #29: graphmine_runtime_triangles_cpu ........   Passed    0.08 sec
+      Start 30: graphmine_reference_contracts_cpu
+27/51 Test #30: graphmine_reference_contracts_cpu ......   Passed    0.01 sec
+      Start 31: graphmine_reference_paths_cpu
+28/51 Test #28: graphmine_runtime_bfs_cpu ..............   Passed    0.16 sec
+      Start 32: graphmine_reference_forests_cpu
+29/51 Test #32: graphmine_reference_forests_cpu ........   Passed    0.10 sec
+      Start 33: graphmine_reference_connectivity_cpu
+30/51 Test #25: graphmine_matching_bipartite_cpu .......   Passed    0.48 sec
+      Start 34: graphmine_reference_rank_cpu
+31/51 Test #33: graphmine_reference_connectivity_cpu ...   Passed    0.02 sec
+      Start 35: graphmine_reference_similarity_cpu
+32/51 Test #34: graphmine_reference_rank_cpu ...........   Passed    0.05 sec
+      Start 36: graphmine_structure_contracts_cpu
+33/51 Test #35: graphmine_reference_similarity_cpu .....   Passed    0.05 sec
+      Start 37: graphmine_structure_truss_cpu
+34/51 Test #36: graphmine_structure_contracts_cpu ......   Passed    0.01 sec
+      Start 38: graphmine_structure_blocks_cpu
+35/51 Test #31: graphmine_reference_paths_cpu ..........   Passed    0.22 sec
+      Start 39: graphmine_structure_boundaries_cpu
+36/51 Test #38: graphmine_structure_blocks_cpu .........   Passed    0.09 sec
+      Start 40: graphmine_centrality_contracts_cpu
+37/51 Test #40: graphmine_centrality_contracts_cpu .....   Passed    0.01 sec
+      Start 41: graphmine_centrality_degree_cpu
+38/51 Test #37: graphmine_structure_truss_cpu ..........   Passed    0.28 sec
+      Start 42: graphmine_centrality_betweenness_cpu
+39/51 Test #42: graphmine_centrality_betweenness_cpu ...   Passed    0.27 sec
+      Start 43: graphmine_centrality_weighted_cpu
+40/51 Test #39: graphmine_structure_boundaries_cpu .....   Passed    0.67 sec
+      Start 44: graphmine_centrality_boundaries_cpu
+41/51 Test #44: graphmine_centrality_boundaries_cpu ....   Passed    0.07 sec
+      Start 45: graphmine_mining_contracts_cpu
+42/51 Test #45: graphmine_mining_contracts_cpu .........   Passed    0.01 sec
+      Start 46: graphmine_mining_maximal_cpu
+43/51 Test #43: graphmine_centrality_weighted_cpu ......   Passed    0.27 sec
+      Start 47: graphmine_mining_maximum_cpu
+44/51 Test #41: graphmine_centrality_degree_cpu ........   Passed    0.81 sec
+      Start 48: graphmine_mining_fixed_cpu
+45/51 Test #47: graphmine_mining_maximum_cpu ...........   Passed    0.10 sec
+      Start 49: graphmine_mining_core_cpu
+46/51 Test #20: graphmine_flow_edges_cpu ...............   Passed    2.48 sec
+      Start 50: graphmine_mining_optimization_cpu
+47/51 Test #46: graphmine_mining_maximal_cpu ...........   Passed    0.17 sec
+      Start 51: graphmine_mining_boundaries_cpu
+48/51 Test #51: graphmine_mining_boundaries_cpu ........   Passed    0.05 sec
+49/51 Test #50: graphmine_mining_optimization_cpu ......   Passed    0.13 sec
+50/51 Test #49: graphmine_mining_core_cpu ..............   Passed    0.17 sec
+51/51 Test #48: graphmine_mining_fixed_cpu .............   Passed    0.61 sec
+
+100% tests passed, 0 tests failed out of 51
+
+Total Test time (real) =   3.34 sec
