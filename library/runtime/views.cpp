@@ -271,7 +271,7 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
             "This operation requires nonnegative edge weights");
     auto u = result.vertices.from_original[graph.dense_index(edge.source)];
     auto v = result.vertices.from_original[graph.dense_index(edge.target)];
-    if (u == v && spec.self_loops == "drop") { ++summary.self_loops_removed; continue; }
+    if (u == v && spec.self_loops != "keep") { ++summary.self_loops_removed; continue; }
     if (spec.bipartite_sides != "none")
       check((u < left_count) != (v < left_count), "edge must cross the bipartite sides");
     if (!result.directed && !records && v < u) std::swap(u, v);
@@ -291,6 +291,11 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
     edges.push_back({u, v, weight, i});
     if (expand && u != v) charge(1);
   }
+  if (spec.self_loops == "one_per_vertex")
+    for (VertexIndex v = 0; v < graph.vertex_count(); ++v) {
+      charge(1);
+      edges.push_back({v, v, Weight{}, UINT64_MAX});
+    }
   std::uint64_t count = edges.size();
   if (expand)
     for (const auto& edge : edges) count = add_count(count, edge.src != edge.dst);
@@ -321,9 +326,9 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
     const auto pair = !result.directed && records ? std::minmax(edge.src, edge.dst) :
                                                    std::pair<const VertexIndex&, const VertexIndex&>{edge.src, edge.dst};
     result.simple &= edge.src != edge.dst && seen.emplace(pair.first, pair.second).second;
-    const auto& original = graph.canonical().edges[edge.original];
-    if (wants(spec, "edge_label")) edge_labels.push_back(original.type);
+    if (wants(spec, "edge_label")) edge_labels.push_back(graph.canonical().edges[edge.original].type);
     if (result.side_tables.timestamp) {
+      const auto& original = graph.canonical().edges[edge.original];
       check(original.timestamp && std::holds_alternative<std::int64_t>(*original.timestamp),
             "timestamp column requires an explicit int64 timestamp on each retained edge");
       result.side_tables.timestamp->push_back(std::get<std::int64_t>(*original.timestamp));
@@ -401,7 +406,11 @@ void ViewSpec::validate() const {
             parallel_edges == "keep" && !sorted_neighbors),
         "COO records require kind=coo, direction=keep, parallel_edges=keep and sorted_neighbors=false");
   check(one_of(direction, {"keep", "symmetrize", "reverse", "both"}), "unknown direction");
-  check(one_of(self_loops, {"keep", "drop"}), "unknown self_loops policy");
+  check(one_of(self_loops, {"keep", "drop", "one_per_vertex"}), "unknown self_loops policy");
+  check(self_loops != "one_per_vertex" || (coo_layout == "arcs" && weights == "none" &&
+            !edge_ids && !wants(*this, "edge_label") && !wants(*this, "timestamp") &&
+            bipartite_sides == "none"),
+        "one_per_vertex requires unweighted arcs without original-edge IDs, edge side tables or bipartite sides");
   check(one_of(parallel_edges, {"keep", "collapse:sum", "collapse:min", "collapse:max", "collapse:first",
                                "collapse:probability_union"}),
         "unknown parallel_edges policy");

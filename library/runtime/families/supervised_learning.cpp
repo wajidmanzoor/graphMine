@@ -73,7 +73,8 @@ json::object node_learning(const Graph& graph, const json::object& args, const s
   const auto layers = natural(model, "layers", 2, 1);
   const auto direction =
       choice(model, "direction", "incoming", {"incoming", "outgoing", "undirected_projection"});
-  data.features = propagate(graph, std::move(data.features), layers, direction, work);
+  const auto propagation = node_propagation_view(graph, direction, work);
+  data.features = propagate(std::get<CsrView>(propagation->view), std::move(data.features), layers, work);
   auto learned = supervised(std::move(data), task, optimizer_parameters(model), work);
   learned.at("model_state").as_object()["graph_model"] = json::object{
       {"architecture", "sgc"},        {"layers", layers},

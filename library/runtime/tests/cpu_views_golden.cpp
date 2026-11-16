@@ -15,6 +15,7 @@
 #include "../path_input.hpp"
 #include "../graph_output_view.hpp"
 #include "../enumeration_input.hpp"
+#include "../learning.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -125,6 +126,44 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool node_learning_input(const gm::Graph& graph, const std::string& direction, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<rt::MiningGraph> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::propagation_neighbors(graph,direction,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::shared_ptr<const gm::ViewResult> actual;
+    std::string new_failure;
+    try { actual = rt::learning::node_propagation_view(graph,direction,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Learning adjacency rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    const auto& view = std::get<gm::CsrView>(actual->view);
+    std::vector<std::uint64_t> offsets{0}; std::vector<gm::VertexIndex> indices;
+    for (const auto& row : *expected) { indices.insert(indices.end(),row.begin(),row.end()); offsets.push_back(indices.size()); }
+    equal(offsets,view.offsets); equal(indices,view.indices);
+    if (old_work.candidates != work.candidates) throw std::runtime_error("Learning adjacency cost differs");
+    // Compare propagated binary64 features too, including mean order and rounding.
+    if (budget == UINT64_MAX) {
+      auto previous_work = unlimited(), next_work = unlimited();
+      rt::numeric::Matrix features(graph.vertex_count(),2,previous_work);
+      for (std::size_t v=0; v<features.rows; ++v) {
+        features(v,0) = v%3 ? 0x1p-53 : 1.0;
+        features(v,1) = static_cast<double>(v%7)-3.25;
+      }
+      previous_work.candidates = 0;
+      const auto previous = gm::legacy_test::propagate(*expected,features,2,previous_work);
+      const auto next = rt::learning::propagate(view,features,2,next_work);
+      equal(previous.values,next.values);
+      if (previous_work.candidates != next_work.candidates) throw std::runtime_error("Learning propagation cost differs");
+    }
   }
   return !expected;
 }
@@ -727,6 +766,19 @@ void contracts() {
   traversal(graph,"topological-sort:cpp:default");
   auto undirected = raw;
   undirected.as_object().at("graph").as_object()["directed"] = false;
+  for (const auto* direction : {"incoming","outgoing","undirected_projection"}) {
+    node_learning_input(graph,direction);
+    node_learning_input(rt::parse_graph(undirected),direction);
+    for (std::uint64_t budget=0; budget<8; ++budget) node_learning_input(graph,direction,budget);
+    const std::string profile = std::string("node-learning:cpp:")+direction;
+    for (const auto* task : {"regression","classification"})
+      declared_request(profile.c_str(),raw,{{"task",task},
+        {"vertex_features",{{"rows",{rt::json::object{{"vertex",0},{"value",{1.0,0.5}}},
+           rt::json::object{{"vertex",1},{"value",{2.0,1.5}}},rt::json::object{{"vertex",2},{"value",{-1.0,3.0}}}}}}},
+        {"training_labels",{{"rows",{rt::json::object{{"vertex",0},{"value",1}},rt::json::object{{"vertex",1},{"value",0}}}}}},
+        {"split",{{"train",{0,1}}}},
+        {"model_definition",{{"architecture","sgc"},{"direction",direction},{"layers",2},{"epochs",2}}}});
+  }
   auto event_graph = raw;
   for (std::size_t e=0; e<event_graph.as_object().at("edges").as_array().size(); ++e)
     event_graph.as_object().at("edges").as_array()[e].as_object()["timestamp"] =
@@ -1237,6 +1289,7 @@ int main(int argc, char** argv) {
     const bool path_profiles = argc > 1 && std::string(argv[1]) == "--path-profiles";
     const bool induced_subgraph = argc > 1 && std::string(argv[1]) == "--induced-subgraph";
     const bool enumeration = argc > 1 && std::string(argv[1]) == "--enumeration";
+    const bool node_learning = argc > 1 && std::string(argv[1]) == "--node-learning";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1262,7 +1315,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1270,6 +1323,11 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (node_learning) for (const auto* direction : {"incoming","outgoing","undirected_projection"}) {
+          const bool rejected = node_learning_input(graph,direction);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",std::string("node-learning:cpp:")+direction},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (enumeration) for (bool preserve : {false,true}) for (bool chronological : {false,true}) {
           const bool rejected = enumeration_input(graph,preserve,chronological);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

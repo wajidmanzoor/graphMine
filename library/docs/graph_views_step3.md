@@ -485,3 +485,19 @@ pass 26,284 corpus cases comparing original-edge adjacency, endpoint arrays,
 exact timestamps, costs and input rejections. Fresh/cache-hit checks and real
 requests cover all four tasks, anchor failures, invalid discarded timestamps,
 RFC3339 fractions, time zones and candidate/output limits.
+
+## Node learning
+
+Node propagation now reads declared incoming, outgoing and undirected-projection
+CSR views. The approved `one_per_vertex` loop policy replaces input loops with
+one self-connection per vertex in the factory. Synthetic arcs cannot request
+original-edge IDs or edge side tables. Feature preparation, split handling,
+mean accumulation and the fitting objective remain unchanged.
+
+Checkpoint `33-node-learning` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. All 19,713 corpus cases match CSR arrays, two-layer propagated feature
+bytes and candidate costs on fresh and cached views. Property tests cover
+synthetic-arc limits, empty/isolated vertices, direction, determinism and invalid
+metadata combinations; request checks cover regression and classification. An
+initial missing `<set>` test include was corrected before the passing run; its
+build diagnostic is retained with the checkpoint.

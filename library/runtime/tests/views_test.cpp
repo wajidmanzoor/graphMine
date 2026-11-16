@@ -4,6 +4,7 @@
 #include <future>
 #include <iostream>
 #include <random>
+#include <set>
 #include <type_traits>
 
 #include "graphmine/runtime.hpp"
@@ -173,7 +174,62 @@ void spec_tests() {
   auto input = graph(false); edge(input, 0, 1);
   rejects([&] { view(input, spec); }, "expanded edge count limit ignored");
 }
+void self_connection_tests() {
+  auto spec = ViewSpec::from_json(R"({"kind":"csr","direction":"symmetrize",
+    "self_loops":"one_per_vertex","parallel_edges":"collapse:first","weights":"none",
+    "labels":["vertex_label"]})");
+  auto input = multigraph(); edge(input,1,1); edge(input,3,3);
+  const auto built = view(input,spec);
+  const auto& csr = std::get<CsrView>(built->view);
+  check(csr.offsets == std::vector<std::uint64_t>({0,3,5,7,8}) &&
+        csr.indices == std::vector<VertexIndex>({0,1,2,0,1,0,2,3}), "self connection rows differ");
+  check(built->normalization.self_loops_removed == 3 && built->normalization.parallel_edges_collapsed == 2 &&
+        built->normalization.edges == 8, "self connection summary differs");
+  check(!csr.simple && csr.symmetric && csr.sorted && csr.side_tables.vertex_label.has_value(),
+        "self connection flags/vertex labels differ");
+  auto kept = spec; kept.self_loops = "keep";
+  check(view(input,kept).get() != built.get(), "self connection policy cache collision");
+  cache("clear");
+  Bytes before,after; before.add(csr); after.add(std::get<CsrView>(view(input,spec)->view));
+  check(before.data == after.data, "self connections are not deterministic");
+  const auto isolated = view(graph(),spec);
+  check(std::get<CsrView>(isolated->view).indices == std::vector<VertexIndex>({0,1,2,3}),
+        "isolated vertices did not receive a self connection");
+  spec.limits.max_edges = 3;
+  rejects([&] { view(graph(),spec); }, "synthetic self connections exceeded edge limit");
+  spec.limits.max_edges = UINT64_MAX;
+  auto empty = graph(); empty.at("vertices") = json::array{};
+  check(std::get<CsrView>(view(empty,spec)->view).offsets == std::vector<std::uint64_t>({0}),
+        "empty self connection graph changed shape");
+  for (const auto* invalid : {
+    R"({"self_loops":"one_per_vertex"})",
+    R"({"self_loops":"one_per_vertex","weights":"none","edge_ids":true})",
+    R"({"self_loops":"one_per_vertex","weights":"none","labels":["edge_label"]})",
+    R"({"self_loops":"one_per_vertex","weights":"none","labels":["timestamp"]})",
+    R"({"self_loops":"one_per_vertex","weights":"none","kind":"coo","coo_layout":"records"})",
+    R"({"self_loops":"one_per_vertex","weights":"none","kind":"bipartite","bipartite_sides":"attribute:side"})"})
+    rejects([&] { ViewSpec::from_json(invalid); }, "ambiguous synthetic-edge metadata accepted");
+  std::mt19937 random(7123);
+  for (bool directed : {false,true}) for (const auto* direction : {"keep","reverse","symmetrize","both"})
+    for (int repeat=0; repeat<16; ++repeat) {
+      auto g = graph(directed); std::vector<std::set<VertexIndex>> expected(4);
+      for (VertexIndex v=0; v<4; ++v) expected[v].insert(v);
+      for (int e=0; e<12; ++e) {
+        auto u = static_cast<VertexIndex>(random()%4), v = static_cast<VertexIndex>(random()%4);
+        edge(g,u,v);
+        if (directed && std::string(direction)=="reverse") std::swap(u,v);
+        expected[u].insert(v);
+        if (!directed || std::string(direction)=="symmetrize") expected[v].insert(u);
+      }
+      spec.direction = direction;
+      const auto value = view(g,spec); const auto& actual = std::get<CsrView>(value->view);
+      for (VertexIndex v=0; v<4; ++v)
+        check(std::vector<VertexIndex>(actual.indices.begin()+actual.offsets[v],actual.indices.begin()+actual.offsets[v+1]) ==
+              std::vector<VertexIndex>(expected[v].begin(),expected[v].end()), "self connection property differs");
+    }
+}
 void normalization_tests() {
+  self_connection_tests();
   ViewSpec spec;
   spec.direction = "symmetrize"; spec.self_loops = "drop"; spec.parallel_edges = "collapse:min";
   spec.edge_ids = true; spec.labels = {"vertex_label", "edge_label", "timestamp"};

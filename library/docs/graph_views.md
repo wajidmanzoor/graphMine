@@ -136,6 +136,14 @@ diffusion model's parallel-edge probabilities. Every input probability must lie
 in `[0,1]`, including dropped loops; ordinary sum/min/max/first defaults are
 unchanged. The linear-threshold model continues to use exact parallel sums.
 
+The approved `self_loops: one_per_vertex` policy replaces all original loops
+with one unweighted self arc per vertex, including isolated vertices. It
+preserves the existing learning propagation inputs. It is opt-in and requires
+arc layout, no edge IDs, no edge label/timestamp columns and no bipartite sides:
+synthetic self-connections have no original edge identity. Removed-loop counts
+refer to original records; output counts include the inserted self arcs.
+The default remains `keep`.
+
 u32 limits vertex counts to `UINT32_MAX`. i32 limits vertex and entry counts to
 `INT32_MAX`; CSR storage itself remains u64/u32. Limits are checked on ordinary
 input and expanded output, dense cell counts and hypergraph incidence counts.

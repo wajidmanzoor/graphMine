@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "42b72f8bf3e72f12bc6acb5896d660b0eae4a751b6388835ca1e1c53668af12e"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "42b72f8bf3e72f12bc6acb5896d660b0eae4a751b6388835ca1e1c53668af12e"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "42b72f8bf3e72f12bc6acb5896d660b0eae4a751b6388835ca1e1c53668af12e"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "42b72f8bf3e72f12bc6acb5896d660b0eae4a751b6388835ca1e1c53668af12e"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "42b72f8bf3e72f12bc6acb5896d660b0eae4a751b6388835ca1e1c53668af12e"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "42b72f8bf3e72f12bc6acb5896d660b0eae4a751b6388835ca1e1c53668af12e"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "42b72f8bf3e72f12bc6acb5896d660b0eae4a751b6388835ca1e1c53668af12e"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "42b72f8bf3e72f12bc6acb5896d660b0eae4a751b6388835ca1e1c53668af12e"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "42b72f8bf3e72f12bc6acb5896d660b0eae4a751b6388835ca1e1c53668af12e"
+  }
+]

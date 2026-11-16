@@ -107,6 +107,40 @@ inline std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work&
 }
 // Frozen exact edge-list normalizer from 0d4986de. Keep independent of the new
 // factory and layout decoder so a policy/rounding change cannot bless itself.
+inline MiningGraph propagation_neighbors(const Graph& graph, const std::string& direction, Work& work) {
+  require(direction == "incoming" || direction == "outgoing" || direction == "undirected_projection",
+          "Invalid propagation direction");
+  MiningGraph neighbors(graph.vertex_count());
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (u == v) continue;
+    if (!graph.directed() || direction == "undirected_projection") {
+      neighbors[u].push_back(v);
+      neighbors[v].push_back(u);
+    } else if (direction == "incoming") neighbors[v].push_back(u);
+    else neighbors[u].push_back(v);
+  }
+  for (VertexIndex v = 0; v < neighbors.size(); ++v) {
+    neighbors[v].push_back(v);
+    std::sort(neighbors[v].begin(), neighbors[v].end());
+    neighbors[v].erase(std::unique(neighbors[v].begin(), neighbors[v].end()), neighbors[v].end());
+  }
+  return neighbors;
+}
+inline numeric::Matrix propagate(const MiningGraph& neighbors, numeric::Matrix features, std::size_t layers, Work& work) {
+  for (std::size_t layer = 0; layer < layers; ++layer) {
+    numeric::Matrix next(features.rows, features.cols, work);
+    for (std::size_t v = 0; v < features.rows; ++v)
+      for (std::size_t c = 0; c < features.cols; ++c) {
+        long double sum = 0;
+        for (const auto u : neighbors[v]) { work.tick(); sum += features(u, c); }
+        next(v, c) = numeric::finite(sum / neighbors[v].size());
+      }
+    features = std::move(next);
+  }
+  return features;
+}
 struct ExactEdge { VertexIndex u, v; Exact weight; std::size_t original; };
 inline std::vector<ExactEdge> exact_edges(const Graph& graph, bool weighted, Work& work,
                                          bool nonnegative = true, bool loops = false) {

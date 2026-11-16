@@ -1,0 +1,127 @@
+-- Found the following ICU libraries:
+--   uc (required): /usr/lib/x86_64-linux-gnu/libicuuc.so
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/build/native-views-step3
+[  1%] Building CXX object CMakeFiles/graphmine_runtime_core.dir/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/src/core/graph.cpp.o
+[  2%] Building CXX object CMakeFiles/graphmine_runtime_core.dir/views.cpp.o
+[  3%] Building CXX object CMakeFiles/graphmine_runtime_core.dir/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/src/core/graph_fingerprint.cpp.o
+[  3%] Building CXX object CMakeFiles/graphmine_runtime_core.dir/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/src/core/view_cache.cpp.o
+[  4%] Linking CXX static library libgraphmine_runtime_core.a
+[  7%] Built target graphmine_runtime_core
+[  8%] Building CXX object CMakeFiles/graphmine_core_view_test.dir/tests/core_view_test.cpp.o
+[  9%] Building CXX object CMakeFiles/graphmine_runtime.dir/runtime.cpp.o
+[ 10%] Building CXX object CMakeFiles/graphmine_runtime.dir/registry.cpp.o
+[ 11%] Building CXX object CMakeFiles/graphmine_runtime.dir/representation_cache.cpp.o
+[ 12%] Building CXX object CMakeFiles/graphmine_runtime.dir/validation.cpp.o
+[ 12%] Building CXX object CMakeFiles/graphmine_runtime.dir/views_input.cpp.o
+[ 13%] Linking CXX executable graphmine_core_view_test
+[ 13%] Built target graphmine_core_view_test
+[ 14%] Building CXX object CMakeFiles/graphmine_runtime.dir/view_profiles.cpp.o
+[ 15%] Building CXX object CMakeFiles/graphmine_runtime.dir/original_extensions.cpp.o
+[ 15%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/traversal.cpp.o
+[ 16%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/patterns.cpp.o
+[ 17%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/common.cpp.o
+[ 18%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/weighted_paths.cpp.o
+[ 19%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/connectivity.cpp.o
+[ 20%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/centrality.cpp.o
+[ 21%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/similarity.cpp.o
+[ 22%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/cliques.cpp.o
+[ 22%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/structure.cpp.o
+[ 23%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/centrality_measures.cpp.o
+[ 24%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/matching.cpp.o
+[ 25%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/coloring.cpp.o
+[ 26%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/subgraphs.cpp.o
+[ 27%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/sampling.cpp.o
+[ 27%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/density.cpp.o
+[ 28%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/bipartite.cpp.o
+[ 29%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/reachability.cpp.o
+[ 30%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/partitioning.cpp.o
+[ 31%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/path_profiles.cpp.o
+[ 32%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/enumeration.cpp.o
+[ 33%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/spectral.cpp.o
+[ 34%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/simrank.cpp.o
+[ 34%] Building CXX object CMakeFiles/graphmine_runtime.dir/numeric.cpp.o
+[ 35%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/topology.cpp.o
+[ 36%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/local_community.cpp.o
+[ 37%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/layout.cpp.o
+[ 38%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/influence.cpp.o
+[ 39%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/null_models.cpp.o
+[ 40%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/steiner.cpp.o
+[ 41%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/alignment.cpp.o
+[ 41%] Building CXX object CMakeFiles/graphmine_runtime.dir/pattern_match.cpp.o
+[ 42%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/pattern_matching.cpp.o
+[ 43%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/graphlets.cpp.o
+[ 44%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/temporal_motifs.cpp.o
+[ 45%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/frequent_patterns.cpp.o
+[ 46%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/construction.cpp.o
+[ 47%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/comparison.cpp.o
+[ 47%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/sparsification.cpp.o
+[ 48%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/entity_resolution.cpp.o
+[ 49%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/anomalies.cpp.o
+[ 50%] Building CXX object CMakeFiles/graphmine_runtime.dir/learning.cpp.o
+[ 51%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/supervised_learning.cpp.o
+[ 52%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/embeddings.cpp.o
+[ 53%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/geolocation.cpp.o
+[ 54%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/condensation.cpp.o
+[ 54%] Building CXX object CMakeFiles/graphmine_runtime.dir/record_query.cpp.o
+[ 55%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/queries.cpp.o
+[ 56%] Building CXX object CMakeFiles/graphmine_runtime.dir/graph_output.cpp.o
+[ 57%] Linking CXX shared library libgraphmine_runtime.so
+[ 69%] Built target graphmine_runtime
+[ 71%] Linking CXX executable graphmine_selection_test
+[ 71%] Building CXX object CMakeFiles/graphmine_views_test.dir/tests/views_test.cpp.o
+[ 72%] Linking CXX executable graphmine-native
+[ 73%] Building CXX object CMakeFiles/graphmine_cpu_views_golden.dir/tests/cpu_views_golden.cpp.o
+[ 74%] Building CXX object CMakeFiles/graphmine_normalizer_golden.dir/tests/normalizer_golden.cpp.o
+[ 75%] Building CXX object CMakeFiles/graphmine_normalizer_audit.dir/tests/normalizer_audit.cpp.o
+[ 77%] Built target graphmine_native_cli
+[ 78%] Built target graphmine_selection_test
+[ 79%] Linking CXX executable graphmine_flow_test
+[ 80%] Linking CXX executable graphmine_matching_test
+[ 81%] Built target graphmine_flow_test
+[ 83%] Built target graphmine_matching_test
+[ 84%] Linking CXX executable graphmine_reference_test
+[ 85%] Linking CXX executable graphmine_runtime_test
+[ 87%] Built target graphmine_runtime_test
+[ 88%] Built target graphmine_reference_test
+[ 89%] Linking CXX executable graphmine_structure_test
+[ 89%] Linking CXX executable graphmine_mining_test
+[ 91%] Built target graphmine_mining_test
+[ 93%] Built target graphmine_structure_test
+[ 94%] Linking CXX executable graphmine_centrality_test
+[ 95%] Built target graphmine_centrality_test
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/views_test.cpp: In function ‘void {anonymous}::self_connection_tests()’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/views_test.cpp:214:50: error: ‘set’ is not a member of ‘std’
+  214 |       auto g = graph(directed); std::vector<std::set<VertexIndex>> expected(4);
+      |                                                  ^~~
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/views_test.cpp:11:1: note: ‘std::set’ is defined in header ‘<set>’; did you forget to ‘#include <set>’?
+   10 | #include "graphmine/views.hpp"
+  +++ |+#include <set>
+   11 | 
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/views_test.cpp:214:54: error: template argument 1 is invalid
+  214 |       auto g = graph(directed); std::vector<std::set<VertexIndex>> expected(4);
+      |                                                      ^~~~~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/views_test.cpp:214:54: error: template argument 2 is invalid
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/views_test.cpp:214:65: error: expected unqualified-id before ‘>’ token
+  214 |       auto g = graph(directed); std::vector<std::set<VertexIndex>> expected(4);
+      |                                                                 ^~
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/views_test.cpp:215:39: error: ‘expected’ was not declared in this scope
+  215 |       for (VertexIndex v=0; v<4; ++v) expected[v].insert(v);
+      |                                       ^~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/views_test.cpp:220:9: error: ‘expected’ was not declared in this scope
+  220 |         expected[u].insert(v);
+      |         ^~~~~~~~
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/tests/views_test.cpp:227:40: error: ‘expected’ was not declared in this scope
+  227 |               std::vector<VertexIndex>(expected[v].begin(),expected[v].end()), "self connection property differs");
+      |                                        ^~~~~~~~
+gmake[2]: *** [CMakeFiles/graphmine_views_test.dir/build.make:76: CMakeFiles/graphmine_views_test.dir/tests/views_test.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:1051: CMakeFiles/graphmine_views_test.dir/all] Error 2
+gmake[1]: *** Waiting for unfinished jobs....
+[ 96%] Linking CXX shared library libgraphmine_normalizer_audit.so
+[ 96%] Built target graphmine_normalizer_audit
+[ 97%] Linking CXX executable graphmine_normalizer_golden
+[ 97%] Built target graphmine_normalizer_golden
+[ 98%] Linking CXX executable graphmine_cpu_views_golden
+[ 98%] Built target graphmine_cpu_views_golden
+gmake: *** [Makefile:146: all] Error 2

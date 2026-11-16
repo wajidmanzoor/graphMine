@@ -3,6 +3,43 @@
 #include <array>
 
 namespace graphmine::runtime::learning {
+namespace {
+const ViewProfile incoming{"node-learning:cpp:incoming", {"node-learning"}, R"({
+  "kind":"csr","direction":"reverse","self_loops":"one_per_vertex",
+  "parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile outgoing{"node-learning:cpp:outgoing", {"node-learning"}, R"({
+  "kind":"csr","direction":"keep","self_loops":"one_per_vertex",
+  "parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile projection{"node-learning:cpp:undirected_projection", {"node-learning"}, R"({
+  "kind":"csr","direction":"symmetrize","self_loops":"one_per_vertex",
+  "parallel_edges":"collapse:first","weights":"none"})"};
+template<class Rows>
+Matrix propagate_rows(const Rows& neighbors, Matrix features, std::size_t layers, Work& work) {
+  for (std::size_t layer = 0; layer < layers; ++layer) {
+    Matrix next(features.rows, features.cols, work);
+    for (std::size_t v = 0; v < features.rows; ++v)
+      for (std::size_t c = 0; c < features.cols; ++c) {
+        long double sum = 0;
+        for (const auto u : neighbors[v]) {
+          work.tick();
+          sum += features(u, c);
+        }
+        next(v, c) = numeric::finite(sum / neighbors[v].size());
+      }
+    features = std::move(next);
+  }
+  return features;
+}
+}
+std::shared_ptr<const ViewResult> node_propagation_view(const Graph& graph, const std::string& direction, Work& work) {
+  require(direction == "incoming" || direction == "outgoing" || direction == "undirected_projection",
+          "Invalid propagation direction");
+  const auto& profile = direction == "incoming" ? incoming : direction == "outgoing" ? outgoing : projection;
+  return consume_view(graph, profile, work, ViewBudget::record_edges);
+}
+Matrix propagate(const CsrView& view, Matrix features, std::size_t layers, Work& work) {
+  return propagate_rows(CsrRows{view}, std::move(features), layers, work);
+}
 Training training(const json::object& args) {
   Training result;
   family_util::choice(args, "optimizer", "gradient_descent", {"gradient_descent"});
@@ -158,20 +195,7 @@ Matrix propagate(const Graph& graph, Matrix features, std::size_t layers,
     std::sort(neighbors[v].begin(), neighbors[v].end());
     neighbors[v].erase(std::unique(neighbors[v].begin(), neighbors[v].end()), neighbors[v].end());
   }
-  for (std::size_t layer = 0; layer < layers; ++layer) {
-    Matrix next(features.rows, features.cols, work);
-    for (std::size_t v = 0; v < features.rows; ++v)
-      for (std::size_t c = 0; c < features.cols; ++c) {
-        long double sum = 0;
-        for (const auto u : neighbors[v]) {
-          work.tick();
-          sum += features(u, c);
-        }
-        next(v, c) = numeric::finite(sum / neighbors[v].size());
-      }
-    features = std::move(next);
-  }
-  return features;
+  return propagate_rows(neighbors, std::move(features), layers, work);
 }
 void split(Dataset& data, const json::object& specification, const json::object& training_labels,
            Work& work) {

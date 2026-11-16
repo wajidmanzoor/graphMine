@@ -14,6 +14,7 @@ struct ViewSpec {
   // COO records retain each original edge's orientation and input order.
   std::string coo_layout = "arcs";
   std::string direction = "keep";
+  // one_per_vertex replaces input loops with one unweighted self arc per vertex.
   std::string self_loops = "keep";
   std::string parallel_edges = "keep";
   std::string weights = "f64";

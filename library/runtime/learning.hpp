@@ -29,6 +29,8 @@ json::array matrix(const Matrix&);
 json::object summary(const Fit&, const Training&, const std::string&);
 Matrix feature_rows(const std::vector<json::value>&, Work&);
 Matrix propagate(const Graph&, Matrix, std::size_t, const std::string&, Work&);
+std::shared_ptr<const ViewResult> node_propagation_view(const Graph&, const std::string&, Work&);
+Matrix propagate(const CsrView&, Matrix, std::size_t, Work&);
 struct Dataset {
   std::vector<ExternalId> ids;
   Matrix features;
