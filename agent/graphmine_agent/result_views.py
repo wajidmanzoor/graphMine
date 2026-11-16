@@ -261,6 +261,14 @@ def source_files(record, step_id):
     return []
 
 
+def _bipartite_sides(row):
+    if isinstance(row, dict):
+        for left, right in (("left_vertices", "right_vertices"), ("left", "right")):
+            if isinstance(row.get(left), list) and isinstance(row.get(right), list):
+                return row[left], row[right]
+    return None
+
+
 def _members(row):
     if isinstance(row, list):
         return [
@@ -271,8 +279,9 @@ def _members(row):
     if isinstance(row, dict):
         if isinstance(row.get("vertices"), list):
             return _members(row["vertices"])
-        if "left" in row and "right" in row and isinstance(row["left"], list):
-            return row["left"] + row["right"]
+        sides = _bipartite_sides(row)
+        if sides is not None:
+            return _members(sides[0]) + _members(sides[1])
         if isinstance(row.get("mapping"), dict):
             return list(row["mapping"].values())
         return [row[key] for key in ("vertex", "source", "target") if key in row]
@@ -704,6 +713,13 @@ def result_view(
         len(metadata["selected_vertices"]) < len(selected)
         or len(metadata["selected_edges"]) < len(selected_edges)
     )
+    if metadata["profile"]["kind"] == "bipartite" and index is not None:
+        sides = _bipartite_sides(view_items(saved["ports"][port])[index])
+        if sides is not None:
+            # Resolve the selected item from the full saved output, not a UI page.
+            metadata["bipartite_sides"] = [
+                [v for v in side if _key(v) in shown] for side in sides
+            ]
     if metadata["profile"]["kind"] == "flow":
         by_id = {_key(e["id"]): e for e in (original or graph)["edges"]}
         flows = [

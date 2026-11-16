@@ -194,7 +194,11 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
     }
     if (view.profile.kind === "bipartite" && !view.context) {
       const row = state.port?.value?.[view.index ?? 0];
-      if (row) { for (const [side, ids] of [row.left, row.right].entries()) for (const [i, id] of ids.entries()) cy.getElementById(W.idKey(id)).position({x: side * 280, y: i * 65}); cy.fit(undefined, 40); }
+      const sides = view.bipartite_sides || [row?.left_vertices ?? row?.left, row?.right_vertices ?? row?.right];
+      if (sides.every(Array.isArray)) {
+        for (const [side, ids] of sides.entries()) for (const [i, id] of ids.entries()) cy.getElementById(W.idKey(id)).position({x: side * 280, y: i * 65});
+        cy.fit(undefined, 40);
+      }
     }
   }
   function context() { mode.value = "context"; return load(); }
