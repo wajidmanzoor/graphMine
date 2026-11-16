@@ -78,6 +78,19 @@ completeness and a dependent workflow example.
 
 ## Browser workspace
 
+For maximal bicliques on an undirected graph with two vertex types, the planner
+prepares complete partitions from the full input and checks that every edge
+crosses between them. The model selects compact references to the named types
+(for example Users and Businesses); the server resolves every vertex ID before
+native validation. Sampled vertices never stand in for a complete partition.
+References are restricted to their original input graph. Ambiguous or invalid
+type splits still need explicit partitions, and transformed graphs require
+partitions belonging to that transformed graph.
+Prepared biclique plans use a 20-million-candidate search budget because the
+two completed sides produce more candidates than the original edge count
+suggests. The native 60-second and 100,000-output-item defaults still apply;
+explicit execution budgets are preserved.
+
 Open `/`, configure the API token through **Connection** if required, and upload
 a canonical graph or relationship CSV. Upload settings also accept feature
 vector and hypergraph JSON with an explicit input kind. Choose **CPU only**,

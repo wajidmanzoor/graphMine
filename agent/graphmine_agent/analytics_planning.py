@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from .analytics import AnalyticsError, InputReference
 from .analytics_answers import build_facts, numberless_lead, suggested_questions
 from .analytics_context import matched_entities, resolve_selection, summarize_result
+from .analytics_partitions import partition_choices, prepare_bipartitions, resolve_partitions
 from .database import RecordNotFound
 from .identity import AccountError
 
@@ -582,7 +583,7 @@ def parameter_schema(spec):
     return value
 
 
-def plan_schema(cards, aliases, device):
+def plan_schema(cards, aliases, device, *, partitions=None):
     name = {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"}
     ports = sorted({port for card in cards for port in card["output_ports"]})
     selector = {
@@ -622,6 +623,17 @@ def plan_schema(cards, aliases, device):
         parameters = {
             key: parameter_schema(value) for key, value in card["parameters"].items()
         }
+        if card["id"] == "maximal-bicliques" and partitions:
+            selection = {
+                "oneOf": [
+                    _object({"input": {"const": alias}, "type": {"enum": list(groups)}})
+                    for alias, groups in partitions.items()
+                ]
+            }
+            for key in ("left_partition", "right_partition"):
+                parameters[key] = {
+                    "anyOf": [parameters[key], _object({"input_partition": selection})]
+                }
         variants.append(
             _object(
                 {
@@ -1222,6 +1234,7 @@ class AnalyticsPlanner:
         }:
             raise AnalyticsError("Unknown task family")
         inputs = await self.analytics.load_inputs(session_id, body.inputs)
+        partitions = await asyncio.to_thread(prepare_bipartitions, inputs)
         context = {}
         for alias, descriptor in inputs.items():
             data = descriptor["data"]
@@ -1269,6 +1282,8 @@ class AnalyticsPlanner:
                         sample if len(json.dumps(sample)) < 16000 else []
                     )
             context[alias]["samples_are_excerpts"] = True
+            if alias in partitions:
+                context[alias]["bipartite_partitions"] = partition_choices(partitions[alias], alias)
         payload = {
             "question": body.message,
             "device_policy": body.device,
@@ -1470,7 +1485,7 @@ class AnalyticsPlanner:
                     raise AnalyticsError(
                         "The planner selected an operation outside its task family"
                     )
-                schema = plan_schema(selected_cards, inputs, body.device)
+                schema = plan_schema(selected_cards, inputs, body.device, partitions=partitions)
                 examples = self.analytics.examples.search(
                     session_id,
                     body.message,
@@ -1502,6 +1517,18 @@ class AnalyticsPlanner:
                     "context_rules": "previous_results summarizes the earlier analysis, and current_selection is the item the user is looking at; 'this group' or 'the selected clique' means current_selection. To reuse an earlier group, repeat the earlier step in this plan and bind its port with the given binding_selection, or pass the listed vertex IDs as a literal vertex array. matched_entities are vertices from the full input whose ID or name appears in the question; use their exact id values.",
                     "binding_rules": "Graph ports and pattern_graph selections are graph inputs. Each canonical pattern has its own vertex namespace. Vertex selections retain their graph namespace. Every selected objective must be represented. Each argument has exactly one value: literal or binding. Never repeat an argument name. Omit optional literals unless needed; the native core supplies their declared defaults.",
                 }
+                if partitions and "maximal-bicliques" in decision["operations"]:
+                    planning["partition_rules"] = (
+                        "Each input's bipartite_partitions lists complete groups verified against the FULL graph, "
+                        "including vertices absent from samples. For maximal-bicliques, select the requested "
+                        "left and right types and use each group's value object as value.literal for "
+                        "left_partition and right_partition. The application expands these compact input_partition "
+                        "references into complete vertex ID arrays before native validation. Use these references "
+                        "instead of copying sampled IDs or listing IDs yourself. Preserve the user's side order "
+                        "and size constraints. Do not ask again for a partition already specified. These references "
+                        "apply only when the biclique step uses the same original input alias; never use them for "
+                        "an earlier step's transformed graph. Explicit vertex lists and result bindings remain valid."
+                    )
                 for attempt in range(2):
                     proposal = await self._generate("plan", planning, schema)
                     jsonschema.Draft202012Validator(schema).validate(proposal)
@@ -1549,7 +1576,7 @@ class AnalyticsPlanner:
                                     )
                             earlier.add(step["id"])
                         checked = await self.analytics.validate(
-                            session_id, body.inputs, proposal["plan"], inputs
+                            session_id, body.inputs, resolve_partitions(proposal["plan"], partitions), inputs
                         )
                         await remember(
                             "validation",
