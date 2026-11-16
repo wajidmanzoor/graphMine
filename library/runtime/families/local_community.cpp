@@ -2,6 +2,11 @@
 #include "numeric.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile local_profile{"seeded-local-community:cpp:default", {"seeded-local-community"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:sum",
+       "weights":"rational_exact","nonnegative_weights":true,"edge_ids":true})"};
+}
 json::object seeded_local_community(const Graph& graph, const json::object& args,
                                     const std::string&, int, Work& work) {
   using namespace family_util;
@@ -20,7 +25,7 @@ json::object seeded_local_community(const Graph& graph, const json::object& args
   const auto iterations = natural(methods, "max_iterations", 1000, 1);
   for (const auto& edge : graph.canonical().edges)
     require(edge.source != edge.target, "Local community rejects self-loops");
-  const auto normalized = edges(graph, true, work);
+  const auto normalized = edges(graph, local_profile, work);
   const auto n = graph.vertex_count();
   std::vector<Exact> degree(n, 0);
   Exact total = 0;

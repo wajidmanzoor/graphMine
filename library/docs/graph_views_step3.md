@@ -220,3 +220,15 @@ admissions. Two profiles pass 13,142 exact edge-input corpus cases, including
 direction, edge order, original identities and exact sums. Request checks cover
 directed/undirected input, both weight modes and node-similarity priors while
 verifying the declaration consumed for each graph.
+
+## Seeded local community
+
+The seed-first community sweep now consumes an exact COO edge view for its
+degree, volume and cut calculations. Its personalized PageRank subroutine uses
+the already-migrated CSR profile. Seed constraints, sweep order, conductance
+arithmetic and result fields remain unchanged.
+
+Checkpoint `14-local-community` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. The exact edge profile passes all 6,571 corpus cases. Request checks
+cover single/multiple seeds and an explicit volume bound, including the local
+profile alongside its nested PageRank view.

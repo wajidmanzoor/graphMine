@@ -80,6 +80,7 @@ const ExactCase spectral_exact_cases[] = {
 const ExactCase alignment_exact_cases[] = {
   {"network-alignment:cpp:edge_weight",true}, {"network-alignment:cpp:unweighted",false}
 };
+const ExactCase local_community_case{"seeded-local-community:cpp:default",true};
 bool exact_edges(const gm::Graph& graph, const ExactCase& test, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
   std::optional<std::vector<gm::legacy_test::ExactEdge>> expected;
@@ -310,6 +311,10 @@ void contracts() {
   density_input.as_object().at("graph").as_object()["directed"] = false;
   auto spectral_input = density_input;
   spectral_input.as_object().at("edges").as_array().pop_back();
+  exact_edges(graph,local_community_case);
+  exact_edges(rt::parse_graph(spectral_input),local_community_case);
+  declared_request(local_community_case.profile,spectral_input,{{"seeds",{0}}});
+  declared_request(local_community_case.profile,spectral_input,{{"seeds",{0,2}},{"maximum_volume",18}});
   for (const auto& test : spectral_exact_cases) {
     exact_edges(graph,test);
     exact_edges(rt::parse_graph(spectral_input),test);
@@ -412,6 +417,7 @@ int main(int argc, char** argv) {
     const bool partitioning = argc > 1 && std::string(argv[1]) == "--partitioning";
     const bool spectral = argc > 1 && std::string(argv[1]) == "--spectral";
     const bool alignment = argc > 1 && std::string(argv[1]) == "--alignment";
+    const bool local_community = argc > 1 && std::string(argv[1]) == "--local-community";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -429,6 +435,7 @@ int main(int argc, char** argv) {
     if (partitioning) selected_exact.assign(std::begin(partition_exact_cases),std::end(partition_exact_cases));
     if (spectral) selected_exact.assign(std::begin(spectral_exact_cases),std::end(spectral_exact_cases));
     if (alignment) selected_exact.assign(std::begin(alignment_exact_cases),std::end(alignment_exact_cases));
+    if (local_community) selected_exact.push_back(local_community_case);
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
@@ -467,7 +474,8 @@ int main(int argc, char** argv) {
       if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : coloring ? "coloring" : similarity ? "similarity" : patterns ? "patterns" : partitioning ? "partitioning" : spectral ? "spectral" : alignment ? "alignment" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1]+2 : "traversal")
+              << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }
