@@ -470,3 +470,18 @@ discovery directions plus empty/all/alternating vertex-selection masks. The
 latter compare full serialized graph bytes and costs. Tests cover candidate and
 output budgets, both graph directions, direct extraction and nonzero/zero-radius
 ego requests, with fresh/cache-hit and consumed-declaration assertions.
+
+## Bounded paths and cycles
+
+Bounded enumeration now consumes record and directed COO views. The record view
+preserves each original edge's endpoint and order; the retained view applies the
+existing loop removal and first-edge or parallel-preserving policy. Timestamp
+parsing, exact fractional time arithmetic, anchor validation and enumeration
+remain unchanged.
+
+Checkpoint `32-enumeration` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Both parallel policies, with and without chronological ordering,
+pass 26,284 corpus cases comparing original-edge adjacency, endpoint arrays,
+exact timestamps, costs and input rejections. Fresh/cache-hit checks and real
+requests cover all four tasks, anchor failures, invalid discarded timestamps,
+RFC3339 fractions, time zones and candidate/output limits.

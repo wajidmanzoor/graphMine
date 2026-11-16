@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80"
+  }
+]

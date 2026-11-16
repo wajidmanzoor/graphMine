@@ -14,6 +14,7 @@
 #include "../vertex_records_input.hpp"
 #include "../path_input.hpp"
 #include "../graph_output_view.hpp"
+#include "../enumeration_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -124,6 +125,33 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool enumeration_input(const gm::Graph& graph, bool preserve, bool chronological,
+                        std::optional<std::size_t> anchor = {}, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::EnumerationInput> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,preserve,chronological,anchor,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::EnumerationInput> actual;
+    std::string new_failure;
+    try { actual = rt::enumeration_input(graph,preserve,chronological,anchor,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Enumeration input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat,0); cache_pass(work,repeat,1);
+    if (expected->adjacency.size() != actual->adjacency.size() || expected->times.size() != actual->times.size() ||
+        old_work.candidates != work.candidates) throw std::runtime_error("Enumeration input size/cost differs");
+    equal(expected->ends,actual->ends);
+    for (std::size_t v=0; v<expected->adjacency.size(); ++v) equal(expected->adjacency[v],actual->adjacency[v]);
+    for (std::size_t e=0; e<expected->times.size(); ++e)
+      if (rt::json::serialize(rt::fraction_json(expected->times[e])) != rt::json::serialize(rt::fraction_json(actual->times[e])))
+        throw std::runtime_error("Enumeration exact time bytes differ");
   }
   return !expected;
 }
@@ -699,6 +727,35 @@ void contracts() {
   traversal(graph,"topological-sort:cpp:default");
   auto undirected = raw;
   undirected.as_object().at("graph").as_object()["directed"] = false;
+  auto event_graph = raw;
+  for (std::size_t e=0; e<event_graph.as_object().at("edges").as_array().size(); ++e)
+    event_graph.as_object().at("edges").as_array()[e].as_object()["timestamp"] =
+      rt::json::value(e==0 ? "2020-01-01T00:00:00.01Z" : e==1 ? "2020-01-01T01:00:00.02+01:00" :
+        e==2 ? "2020-01-01T00:00:01.001Z" : "ignored invalid loop timestamp");
+  for (bool preserve : {false,true}) for (bool chronological : {false,true}) {
+    enumeration_input(graph,preserve,chronological);
+    enumeration_input(rt::parse_graph(undirected),preserve,chronological);
+    enumeration_input(rt::parse_graph(event_graph),preserve,chronological);
+    for (std::size_t anchor=0; anchor<4; ++anchor)
+      enumeration_input(rt::parse_graph(event_graph),preserve,chronological,anchor);
+    for (std::uint64_t budget : {0,1,2,3,4,20,40,80})
+      enumeration_input(rt::parse_graph(event_graph),preserve,chronological,{},budget);
+    const auto* profile = preserve ? "bounded-paths-cycles:cpp:preserve" : "bounded-paths-cycles:cpp:collapse_first";
+    const rt::json::object params{{"task","s_t_path"},{"source",0},{"target",2},{"max_hops",3},
+      {"parallel_edge_policy",preserve ? "preserve" : "collapse_first"},{"chronological_order_required",chronological}};
+    declared_request(profile,event_graph,params);
+    declared_request("bounded-paths-cycles:cpp:records",event_graph,params);
+    for (const auto* task : {"all_cycles","cycle_through_vertex","cycle_through_edge"}) {
+      auto cycle = event_graph;
+      cycle.as_object().at("edges").as_array().back().as_object()["target"] = 0;
+      cycle.as_object().at("edges").as_array().back().as_object()["timestamp"] = "2020-01-01T00:00:02Z";
+      rt::json::object options{{"task",task},{"max_hops",3},{"parallel_edge_policy",preserve ? "preserve" : "collapse_first"},
+        {"chronological_order_required",chronological},{"result_limit",1}};
+      if (std::string(task)=="cycle_through_vertex") options["source"] = 0;
+      if (std::string(task)=="cycle_through_edge") options["anchor_edge"] = 0;
+      declared_request(profile,cycle,options);
+    }
+  }
   for (const auto& test : induced_cases) {
     weighted_path(graph,test);
     declared_request(test.profile,raw,{{"mode","ego"},{"vertices_or_seeds",{1}},{"radius",2},{"direction_mode",test.direction}});
@@ -1179,6 +1236,7 @@ int main(int argc, char** argv) {
     const bool entity_resolution = argc > 1 && std::string(argv[1]) == "--entity-resolution";
     const bool path_profiles = argc > 1 && std::string(argv[1]) == "--path-profiles";
     const bool induced_subgraph = argc > 1 && std::string(argv[1]) == "--induced-subgraph";
+    const bool enumeration = argc > 1 && std::string(argv[1]) == "--enumeration";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1204,7 +1262,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1212,6 +1270,12 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (enumeration) for (bool preserve : {false,true}) for (bool chronological : {false,true}) {
+          const bool rejected = enumeration_input(graph,preserve,chronological);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",preserve ? "bounded-paths-cycles:cpp:preserve+records" : "bounded-paths-cycles:cpp:collapse_first+records"},
+            {"chronological",chronological},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (induced_subgraph) for (int mask : {0,1,2}) {
           const bool rejected = selected_graph_input(graph,mask);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

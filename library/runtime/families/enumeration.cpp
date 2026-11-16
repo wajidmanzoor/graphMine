@@ -1,7 +1,47 @@
 #include "family_util.hpp"
 #include "native_time.hpp"
+#include "enumeration_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile enumeration_records{"bounded-paths-cycles:cpp:records", {"bounded-paths-cycles"},
+  R"({"kind":"coo","coo_layout":"records","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+const ViewProfile enumeration_first{"bounded-paths-cycles:cpp:collapse_first", {"bounded-paths-cycles"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:first",
+       "weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+const ViewProfile enumeration_parallel{"bounded-paths-cycles:cpp:preserve", {"bounded-paths-cycles"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"keep",
+       "weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+}
+EnumerationInput enumeration_input(const Graph& graph, bool preserve_parallel, bool chronological,
+                                   std::optional<std::size_t> anchor, Work& work) {
+  require(graph.directed(),"Bounded path and cycle enumeration requires directed input");
+  const auto records = consume_view(graph,enumeration_records,work,ViewBudget::algorithm_owned);
+  const auto retained = consume_view(graph,preserve_parallel ? enumeration_parallel : enumeration_first,
+                                     work,ViewBudget::algorithm_owned);
+  const auto& raw = std::get<CooView>(records->view);
+  const auto& kept = std::get<CooView>(retained->view);
+  std::vector<bool> present(graph.edge_count());
+  for (const auto e : *kept.edge_ids) present[e] = true;
+  EnumerationInput result;
+  result.adjacency.resize(graph.vertex_count());
+  result.times.resize(graph.edge_count()); result.ends.resize(graph.edge_count());
+  for (std::size_t i=0; i<raw.src.size(); ++i) {
+    work.tick();
+    const auto e = raw.edge_ids->at(i);
+    const auto u = raw.src[i], v = raw.dst[i];
+    result.ends[e] = v;
+    if (!present[e]) {
+      if (anchor && *anchor == e)
+        throw Failure("invalid_input",u == v ? "anchor_edge is a discarded self-loop" :
+          "anchor_edge was collapsed; select preserve parallel edges");
+      continue;
+    }
+    result.adjacency[u].push_back(e);
+    if (chronological) result.times[e] = timestamp_seconds(graph.canonical().edges[e].timestamp,work);
+  }
+  return result;
+}
 json::object bounded_paths_cycles(const Graph& graph, const json::object& args, const std::string&,
                                   int, Work& work) {
   using namespace family_util;
@@ -39,25 +79,8 @@ json::object bounded_paths_cycles(const Graph& graph, const json::object& args, 
       if (raw[i].id == id) anchor = i;
     require(anchor.has_value(), "Unknown anchor_edge");
   }
-  std::vector<std::vector<std::size_t>> adj(n);
-  std::set<std::pair<VertexIndex, VertexIndex>> seen;
-  std::vector<Exact> times(raw.size(), 0);
-  std::vector<VertexIndex> ends(raw.size());
-  for (std::size_t i = 0; i < raw.size(); ++i) {
-    work.tick();
-    const auto u = graph.dense_index(raw[i].source), v = graph.dense_index(raw[i].target);
-    ends[i] = v;
-    if (u == v) {
-      require(!anchor || *anchor != i, "anchor_edge is a discarded self-loop");
-      continue;
-    }
-    if (!seen.emplace(u, v).second && parallel == "collapse_first") {
-      require(!anchor || *anchor != i, "anchor_edge was collapsed; select preserve parallel edges");
-      continue;
-    }
-    adj[u].push_back(i);
-    if (chronological) times[i] = timestamp_seconds(raw[i].timestamp, work);
-  }
+  const auto input = enumeration_input(graph,parallel == "preserve",chronological,anchor,work);
+  const auto& adj = input.adjacency; const auto& times = input.times; const auto& ends = input.ends;
   using Sequence = std::vector<std::size_t>;
   const auto less = [](const Sequence& a, const Sequence& b) {
     return a.size() == b.size() ? a < b : a.size() < b.size();

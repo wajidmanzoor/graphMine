@@ -8,6 +8,7 @@
 #include "../exact_number.hpp"
 #include "../pattern_match.hpp"
 #include "../numeric.hpp"
+#include "../native_time.hpp"
 namespace graphmine::legacy_test {
 using namespace graphmine::runtime;
 inline UndirectedGraphView simple(const Graph& graph, UndirectedProjectionOptions options = {}) {
@@ -439,4 +440,32 @@ inline json::object selected_graph(const Graph& graph, const std::vector<bool>& 
   properties(metadata,data.graph.attributes,data.graph.attributes_present);
   return {{"graph",metadata},{"vertices",vertices},{"edges",edges}};
 }
+// Frozen bounded-path input construction, with its directed-operation guard.
+struct EnumerationInput {
+  std::vector<std::vector<std::size_t>> adjacency;
+  std::vector<Exact> times;
+  std::vector<VertexIndex> ends;
+  EnumerationInput(const Graph& graph, bool preserve, bool chronological,
+                     std::optional<std::size_t> anchor, Work& work) {
+    require(graph.directed(),"Bounded path and cycle enumeration requires directed input");
+    const auto& raw = graph.canonical().edges;
+    adjacency.resize(graph.vertex_count()); times.resize(raw.size()); ends.resize(raw.size());
+    std::set<std::pair<VertexIndex,VertexIndex>> seen;
+    for (std::size_t i=0; i<raw.size(); ++i) {
+      work.tick();
+      const auto u = graph.dense_index(raw[i].source), v = graph.dense_index(raw[i].target);
+      ends[i] = v;
+      if (u == v) {
+        require(!anchor || *anchor != i,"anchor_edge is a discarded self-loop");
+        continue;
+      }
+      if (!seen.emplace(u,v).second && !preserve) {
+        require(!anchor || *anchor != i,"anchor_edge was collapsed; select preserve parallel edges");
+        continue;
+      }
+      adjacency[u].push_back(i);
+      if (chronological) times[i] = timestamp_seconds(raw[i].timestamp,work);
+    }
+  }
+};
 }  // namespace graphmine::legacy_test

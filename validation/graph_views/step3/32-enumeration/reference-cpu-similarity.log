@@ -1,0 +1,3 @@
+Validated 500 native requests on cpu 0
+Validated 1000 native requests on cpu 0
+{"suite":"similarity","backend":"cpu","gpu_device":0,"passed_requests":1024,"failed":0,"implementation_sha256":"b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80"}
