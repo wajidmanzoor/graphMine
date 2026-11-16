@@ -94,9 +94,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const projection = node("select", {id: "query-graph-projection", "aria-label": "Graph mode", "aria-describedby": "cypher-hint"});
     projection.append(node("option", {value: "elements"}, "Existing Neo4j graph"), node("option", {value: "rows"}, "Connections from query rows"));
     const projectionField = label("Graph mode", projection); projectionField.append(hint);
-    const weightProperty = node("input", {id: "query-weight-property", type: "text", maxlength: "128", placeholder: "Use stored weights", "aria-label": "Edge weight property"});
     const describeProjection = () => {
-      weightProperty.disabled = projection.value === "rows";
       hint.textContent = projection.value === "rows"
         ? "Connect each row’s source and target nodes in the analysis graph, using its optional weight column."
         : "Use the Neo4j nodes and relationships returned by your query, including those in returned paths.";
@@ -107,7 +105,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const open = button("run-cypher-chat", state.session ? "Use graph in chat" : "Start conversation", "primary");
     const actions = node("div", {class: "source-query-actions"});
     const options = node("div", {class: "source-query-options"});
-    options.append(parameterBox, projectionField, label("Direction", direction), label("Edge weight property", weightProperty));
+    options.append(parameterBox, projectionField, label("Direction", direction));
     actions.append(node("span", {class: "source-hint"}, "⌘ / Ctrl + Enter to preview"), preview);
     const previewHeader = node("div", {class: "source-section-heading"});
     const count = node("span", {id: "database-preview-count", class: "source-hint"}, "No query run yet");
@@ -172,7 +170,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const provenance = currentFile?.provenance?.source;
     const remember = () => {
       if (!draftContext || !draftDirty) return;
-      const persisted = drafts.put(draftContext.source, draftContext.dataset, {query: editor.value, parameters: parameters.value, direction: direction.value, projection: projection.value, weight_property: weightProperty.value});
+      const persisted = drafts.put(draftContext.source, draftContext.dataset, {query: editor.value, parameters: parameters.value, direction: direction.value, projection: projection.value});
       draftDirty = false; draftPresent = true; discardDraft.disabled = busy;
       draftStatus.textContent = persisted ? "Draft saved in this browser." : "Draft saved for this tab only. Browser storage is unavailable or full.";
     };
@@ -218,7 +216,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
         next.click(); next.focus();
       }
     };
-    editor.oninput = parameters.oninput = weightProperty.oninput = direction.onchange = invalidate;
+    editor.oninput = parameters.oninput = direction.onchange = invalidate;
     projection.onchange = () => { describeProjection(); invalidate(); };
     sharedMovies.onclick = () => {
       editor.value = [
@@ -250,7 +248,6 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       saveSnapshot.textContent = canSave ? saved?.response?.table ? "Save table to datasets" : "Save graph to datasets" : "Saved in datasets";
       discardPreview.disabled = value;
       discardDraft.disabled = value || !draftPresent;
-      weightProperty.disabled = value || unavailable || projection.value === "rows";
       queryTools.setBusy(value);
       jobs.setBusy(value);
       dataset.disabled = reloadDatasets.disabled = value;
@@ -302,7 +299,6 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       parameters.value = draft?.parameters ?? W.stringify(sameInput ? provenance.parameters || {} : {}, true);
       direction.value = draft?.direction ?? (sameInput && currentFile?.metadata?.directed === false ? "undirected" : "directed");
       projection.value = draft?.projection ?? (sameInput ? provenance.projection : null) ?? "elements";
-      weightProperty.value = draft?.weight_property ?? (sameInput ? provenance.weight_property : null) ?? "";
       draftDirty = false; draftPresent = Boolean(draft);
       draftStatus.textContent = draft ? draft.persisted ? "Draft restored from this browser." : "Draft restored for this tab only. Browser storage is unavailable or full." : "Drafts are saved in this browser as you type.";
       if (draftContext) drafts.select(source.value, dataset.value);
@@ -450,7 +446,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
         if (!values || Array.isArray(values) || typeof values !== "object") throw new Error("Parameters must be a JSON object.");
         queryTools.validate();
       } catch (error) { error.code = "cypher_parameters"; throw error; }
-      const body = {statement: editor.value, parameters: values, directed: direction.value === "directed", dataset_id: dataset.value, projection: projection.value, weight_property: projection.value === "elements" ? weightProperty.value.trim() || null : null};
+      const body = {statement: editor.value, parameters: values, directed: direction.value === "directed", dataset_id: dataset.value, projection: projection.value};
       if (!body.statement.trim()) throw new Error("Write a Cypher query first.");
       return body;
     }

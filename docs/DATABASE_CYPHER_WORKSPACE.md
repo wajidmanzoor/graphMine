@@ -185,10 +185,11 @@ limits. Samples may omit graph structure. Discovery uses no administrative
 procedures, and its failure does not disable manual queries. SQL-only attributes
 remain available through enrichment.
 
-**Edge weight property** overrides the analysis weight while keeping original
-relationship identity and SQL lineage. Every returned relationship must contain
-a finite numeric value for the chosen property. Source/target projection uses
-its returned `weight` column.
+For custom edge weights, choose **Connections from query rows** and return a
+finite numeric `weight` column in Cypher, such as `r.amount AS weight`. The
+workspace has no separate weight field and does not restore custom property
+overrides from older drafts. **Existing Neo4j graph** uses the relationships'
+stored weights automatically.
 
 The parameter form detects `$parameters` outside comments and string literals,
 supports typed values and exact large integers, and preserves extra JSON keys.
