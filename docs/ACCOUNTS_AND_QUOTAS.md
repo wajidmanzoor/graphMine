@@ -119,7 +119,7 @@ These are starting limits, not a 100-concurrent-user capacity measurement. Graph
 algorithms have very different costs. Monitor CPU, GPU memory, execution time
 and disk use before raising them. The storage allowance counts raw uploads, including
 projected files, plus each conversation's saved analysis inputs and results. It
-also includes private datasets, previews, saved queries, shared project records,
+also includes private datasets, previews, shared project records,
 connections, saved exploration settings, and durable database job metadata.
 Exploration settings retain up to 32 views and 512 KiB per conversation and are
 deleted with that conversation. Database query/synchronization

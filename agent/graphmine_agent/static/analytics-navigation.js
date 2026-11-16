@@ -1,7 +1,7 @@
 /* Workspace routes and page selection; conversation loading is injected. */
 "use strict";
 window.GraphMineNavigation = ({state, $, openSession, openWorkflow, renderGraph, getHome, getDatabase, isSessionLoading, getWorkflowTarget}) => {
-  let routeGeneration = 0, dataReturnRoute = "#", dataQueryTarget = null;
+  let routeGeneration = 0, dataReturnRoute = "#";
   function route(page = "chat", workflow = "") {
     return state.session ? `#workspace/${encodeURIComponent(state.session.id)}/${page}${workflow ? `/${encodeURIComponent(workflow)}` : ""}` : page === "data" ? `#data${workflow ? `/${encodeURIComponent(workflow)}` : ""}` : "#";
   }
@@ -29,21 +29,19 @@ window.GraphMineNavigation = ({state, $, openSession, openWorkflow, renderGraph,
   }
   async function applyRoute() {
     const match = /^#workspace\/([^/]+)(?:\/(chat|results|data)(?:\/([^/]+))?)?$/.exec(location.hash);
-    const standaloneData = /^#data(?:\/(files|connection|query|preview)(?:\/([^/]+))?)?$/.exec(location.hash);
+    const standaloneData = /^#data(?:\/(files|connection|query|preview))?$/.exec(location.hash);
     const isData = Boolean(standaloneData || match?.[2] === "data");
     const dataPart = standaloneData?.[1] || (isData ? match?.[3] : null) || "connection";
     const id = match ? decodeURIComponent(match[1]) : "";
-    const queryTarget = standaloneData?.[2] ? decodeURIComponent(standaloneData[2]) : null;
     if (state.busy && !isSessionLoading() && id !== (state.session?.id || "")) { history.replaceState(null, "", route(state.view)); return; }
     const generation = ++routeGeneration, workflowId = !isData && match?.[3] ? decodeURIComponent(match[3]) : null;
     try {
-      if (!isData || id !== (state.session?.id || "") || queryTarget !== dataQueryTarget) getDatabase()?.close();
-      dataQueryTarget = queryTarget;
+      if (!isData || id !== (state.session?.id || "")) getDatabase()?.close();
       if (standaloneData) {
         if (state.session || isSessionLoading()) await openSession("");
         if (generation !== routeGeneration) return;
         if (state.view !== "data") dataReturnRoute = "#";
-        showPage("data"); await getDatabase().mount(dataPart, queryTarget); return;
+        showPage("data"); await getDatabase().mount(dataPart); return;
       }
       // A pending conversation has no state.session yet, but must still be
       // invalidated when the user goes home.
@@ -67,7 +65,5 @@ window.GraphMineNavigation = ({state, $, openSession, openWorkflow, renderGraph,
     }
   }
   return {route, showPage, go, applyRoute,
-    get returnRoute() { return dataReturnRoute; },
-    get queryTarget() { return dataQueryTarget; },
-    set queryTarget(value) { dataQueryTarget = value; }};
+    get returnRoute() { return dataReturnRoute; }};
 };

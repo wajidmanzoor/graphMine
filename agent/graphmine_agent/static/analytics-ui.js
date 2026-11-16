@@ -1803,12 +1803,7 @@
   resultViews = window.GraphMineResultViews({state, api, W, node, renderGraph, applySelection, renderSelectionChip, notice, onContext: () => resultContext.refresh(), savedSelection: (...args) => exploration?.selectionFor(...args)});
   databaseWorkspace = window.GraphMineDatabaseWorkspace({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, renderGraph, previewActive, upload, clearResults, viewScope,
     openData: part => go("data", part === "files" ? "files" : ""),
-    dataPartChanged: part => { if (state.view === "data") history.replaceState(null, "", navigation.queryTarget ? `#data/${part}/${encodeURIComponent(navigation.queryTarget)}` : route("data", part === "connection" ? "" : part)); },
-    savedQueryLoaded: (part = "query") => {
-      if (!navigation.queryTarget) return;
-      navigation.queryTarget = null;
-      if (state.view === "data") history.replaceState(null, "", route("data", part));
-    },
+    dataPartChanged: part => { if (state.view === "data") history.replaceState(null, "", route("data", part === "connection" ? "" : part)); },
     dataReturnLabel: () => /\/results(?:\/|$)/.test(navigation.returnRoute) ? "Back to results" : state.session ? "Back to conversation" : "Back to home",
     leaveData: () => { location.hash = navigation.returnRoute; }});
   exploration = window.GraphMineExploration({state, api, W, node, scope: viewScope, database: () => databaseWorkspace, applySelection, filterRows, reload: async () => { const id = state.session?.id, page = state.view; if (id) { await openSession(id); showPage(page); } }});

@@ -80,7 +80,7 @@ window.GraphMineResultContext = ({state, W, node, qualityDescriptions, title, pa
         if (source.fetched_at) line(section, "Snapshot captured", source.fetched_at);
         if (source.expansion) line(section, "Expanded input", "Relationships were added to the initial query graph. The query below describes the original selection.");
         if (source.enrichment) line(section, "Saved attributes", `Fetched at ${source.enrichment.fetched_at || "an unrecorded time"}.`);
-        const saved = node("details"); saved.append(node("summary", {}, "Saved query and parameters"));
+        const saved = node("details"); saved.append(node("summary", {}, "Source query and parameters"));
         if (source.query) saved.append(node("pre", {tabindex: "0"}, source.query));
         saved.append(node("pre", {tabindex: "0"}, W.stringify({parameters: source.parameters || {}, projection: source.projection || null, weight_property: source.weight_property || null, connection_revision: source.database_source.revision ?? null, mapping_hash: source.database_source.mapping_hash || null}, true)));
         section.append(saved); cards.scope.append(section);

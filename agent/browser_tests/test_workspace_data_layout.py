@@ -43,7 +43,7 @@ def data_page(loading_server):
                            "tables": [{"name": "accounts", "labels": ["Account"], "key": "id", "rows": 200,
                                        "columns": [{"name": "id", "type": "integer"}, {"name": "risk", "type": "integer"}]}],
                            "default_query": "MATCH (n) RETURN n LIMIT 10"}])
-        if path in {"/api/database-jobs", "/api/query-library"}:
+        if path == "/api/database-jobs":
             return reply({"items": [], "has_more": False})
         if method == "POST" and path.endswith("/workspace-db/queries"):
             body = json.loads(handler.rfile.read(int(handler.headers["Content-Length"])))

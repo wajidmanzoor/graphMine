@@ -12,7 +12,6 @@ window.GraphMineHome = ({state, api, W, node, runAction, onDataset}) => {
   for (const [key, title, empty] of [
     ["analyses", "Recent analyses", "Your saved plans and results will appear here."],
     ["datasets", "Recent datasets", "Save an input or query result to reuse it here."],
-    ["queries", "Saved queries", "Save a query in Data workspace to return to it here."],
   ]) {
     const section = node("section", {class: "home-recent-section", "aria-labelledby": `home-${key}-heading`});
     const list = node("ul", {id: `home-${key}`, class: "home-recent-list"});
@@ -62,9 +61,6 @@ window.GraphMineHome = ({state, api, W, node, runAction, onDataset}) => {
     if (section === "datasets") {
       action.type = "button"; action.onclick = () => chooseDataset(item);
       name = item.name; description = `${item.kind.replaceAll("_", " ")} · version ${item.version}${item.source_complete ? "" : " · incomplete source"}`;
-    } else if (section === "queries") {
-      action.href = `#data/query/${encodeURIComponent(item.id)}`;
-      name = item.name; description = `${item.source_id} · ${item.dataset_id} · Open saved query`;
     } else {
       const complete = item.status === "completed";
       action.href = `#workspace/${encodeURIComponent(item.session_id)}/${complete ? "results" : "chat"}/${encodeURIComponent(item.id)}`;

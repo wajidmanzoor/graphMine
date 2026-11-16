@@ -91,23 +91,7 @@
 #query-shared-movies { margin-bottom: 12px; text-align: left; }
 .source-query-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .source-preview-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.graph-builder { border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
-.graph-builder > summary { cursor: pointer; font-size: var(--text-small); font-weight: 550; }
-.builder-fields, .builder-filter { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap: 12px; }
-.builder-fields label, .builder-filter label { display: grid; gap: 6px; margin: 0; min-width: 0; }
-.builder-fields input, .builder-fields select, .builder-filter :is(input, select) { width: 100%; }
-.builder-filter { min-width: 0; border: 1px solid var(--line); padding: 12px; margin: 14px 0; border-radius: 8px; }
-.builder-filter legend { font-size: var(--text-small); padding-inline: 4px; }
-.builder-filter button { align-self: end; }
-.graph-builder .source-preview-actions { margin-block: 16px 0; }
-.builder-generated { margin-top: 16px; }
-.builder-generated pre { font-size: var(--text-small); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 220px; overflow: auto; }
-.query-library { margin-bottom: 16px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
-.query-library > summary { cursor: pointer; font-size: var(--text-small); }
-.query-library-controls, .query-editor-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block: 12px; }
-.query-library-controls label { flex: 1 1 180px; margin: 0; display: grid; gap: 5px; }
-#query-library-choices { flex: 1 1 240px; width: 100%; min-width: 0; }
-.query-library-controls input { width: 100%; }
+.query-editor-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block: 12px; }
 .query-editor-tools { margin-block: 6px; }
 .query-editor-tools button { padding-inline: 0; margin-right: 12px; }
 .query-suggestions { margin-bottom: 12px; }

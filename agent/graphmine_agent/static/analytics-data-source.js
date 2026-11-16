@@ -1,5 +1,5 @@
 "use strict";
-window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, previewActive, upload, clearResults, openData, leaveData, dataPartChanged, dataReturnLabel, savedQueryLoaded}) => {
+window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, previewActive, upload, clearResults, openData, leaveData, dataPartChanged, dataReturnLabel}) => {
   const $ = id => document.getElementById(id);
   const icon = name => {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -19,7 +19,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
   nav.append(icon("data"), node("span", {}, "Data workspace")); document.querySelector(".sidebar-navigation").append(nav);
   const show = (part = "connection") => openData(part);
   const closeWorkspace = () => { mounting++; opening = false; closeDialog?.(); };
-  async function mount(part = "connection", queryId = null) {
+  async function mount(part = "connection") {
     pendingPart = part;
     if ($("database-workspace")) { selectPart?.(part); return; }
     if (opening) return;
@@ -131,12 +131,11 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const continueBox = node("section", {class: "source-continue", id: "source-continue", hidden: true});
     continueBox.append(label("Conversation domain", domain), open);
     const footer = node("footer", {class: "source-footer"}), footerActions = node("div", {class: "data-footer-actions"});
-    const retrySaved = button("retry-saved-query", "Retry saved query", "quiet"); retrySaved.hidden = true;
-    footerActions.append(actions, continueBox); footer.append(status, retrySaved, footerActions);
+    footerActions.append(actions, continueBox); footer.append(status, footerActions);
     const sync = button("sync-database", "Refresh graph from tables", "quiet");
-    const builderBox = node("div"), queryLibraryBox = node("div"), jobsBox = node("div");
+    const jobsBox = node("div");
     const importDescription = node("p", {id: "source-import-description", class: "source-hint", hidden: true});
-    work.append(queryHeading, queryScope, queryLibraryBox, builderBox, sharedMovies, hint, editor, draftStatus, options, jobsBox);
+    work.append(queryHeading, queryScope, sharedMovies, hint, editor, draftStatus, options, jobsBox);
     work.append(importDescription);
     sidebar.append(sync, schemaBox);
     const previewPane = node("section", {class: "source-preview data-pane", id: "data-preview-pane", "data-heading": "data-preview-heading", tabindex: "0"});
@@ -167,7 +166,6 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const selectedSource = () => sources.find(item => item.id === source.value);
     const importing = () => selectedSource()?.source_kind === "connector";
     const readController = new AbortController();
-    let shortcutGeneration = 0, linkedQuery = queryId;
     const layout = window.GraphMineDataLayout({node, host: dialog, panes: [sidebar, work, previewPane], controls: stepControls, footer, queryAction: actions, onChange: dataPartChanged, onResize: () => cy?.resize()});
     let draftContext = null, draftPresent = false, draftDirty = false;
     const provenance = currentFile?.provenance?.source;
@@ -188,22 +186,13 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       continueBox.hidden = previewActions.hidden = true; discardPreview.hidden = true; open.disabled = true;
     };
     const invalidate = () => { resetPreview(); draftDirty = true; remember(); status.textContent = "Query changed. Preview it to update the graph."; };
-    const clearSavedTarget = () => { shortcutGeneration++; linkedQuery = null; retrySaved.hidden = true; savedQueryLoaded?.(layout.current()); };
-    const applyQuery = result => {
-      if (busy) return;
-      editor.value = result.statement; parameters.value = W.stringify(result.parameters, true);
-      projection.value = result.projection || "elements"; direction.value = result.directed !== false ? "directed" : "undirected";
-      weightProperty.value = result.weight_property || ""; parameterBox.open = true;
-      describeProjection(); invalidate(); queryTools.sync(); layout.select("query"); clearSavedTarget(); editor.focus();
-    };
-    const builder = window.GraphMineGraphBuilder({api, node, container: builderBox, onApply: applyQuery});
-    const queryTools = window.GraphMineQueryWorkspace({api, node, W, container: queryLibraryBox, editor, parameters, parameterBox, getQuery: readQuery, onApply: applyQuery, onChange: invalidate});
+    const queryTools = window.GraphMineQueryEditor({api, node, W, editor, parameters, parameterBox, onChange: invalidate});
     const jobs = window.GraphMineDatabaseJobs({api, W, node, container: jobsBox, onResume: resumeJob, onError: error => { status.textContent = error.message; status.classList.add("source-error"); }});
     const finish = () => {
       if (!dialog.isConnected) return;
       if (source.value) remember();
       window.removeEventListener("pagehide", remember);
-      generation++; healthGeneration++; datasetGeneration++; sourceGeneration++; readController.abort(); cy?.destroy(); benchmarks?.destroy(); builder.destroy(); queryTools.destroy(); tableView.destroy(); jobs.destroy(); layout.destroy();
+      generation++; healthGeneration++; datasetGeneration++; sourceGeneration++; readController.abort(); cy?.destroy(); benchmarks?.destroy(); queryTools.destroy(); tableView.destroy(); jobs.destroy(); layout.destroy();
       if (fileControls) { fileControls.hidden = true; controlsPlace.replaceWith(fileControls); }
       dialog.remove(); opening = false; closeDialog = null; selectPart = null;
     };
@@ -261,7 +250,6 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       discardPreview.disabled = value;
       discardDraft.disabled = value || !draftPresent;
       weightProperty.disabled = value || unavailable || projection.value === "rows";
-      builder.setBusy(value);
       queryTools.setBusy(value);
       jobs.setBusy(value);
       dataset.disabled = reloadDatasets.disabled = value;
@@ -329,7 +317,6 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       resetPreview(); benchmarks?.destroy();
       const selected = datasets.find(d => d.id === dataset.value);
       queryScope.textContent = selected?.status === "ready" ? `Queries run only on ${selected.name}.` : "Choose a ready dataset to run a query.";
-      builder.setContext(source.value, dataset.value, selected?.status === "ready");
       schemaView.replaceChildren();
       schemaBox.hidden = !selected;
       if (!preserve || draftContext?.source !== source.value || draftContext?.dataset !== dataset.value) restoreDraft();
@@ -351,13 +338,13 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
         : "Preview the graph, then choose a domain to start your conversation.";
       remember(); setBusy(false);
     }
-    async function describe(restore = false, preserve = false, requiredDataset = null) {
+    async function describe(restore = false, preserve = false) {
       resetPreview(); schema.replaceChildren();
       const selected = sources.find(s => s.id === source.value);
       const isImport = importing();
       queryTools.setVisible(!isImport);
       healthGeneration++; datasetGeneration++;
-      for (const element of [queryScope, queryLibraryBox, builderBox, hint, editor, draftStatus, options, jobsBox, discardDraft]) element.hidden = isImport;
+      for (const element of [queryScope, hint, editor, draftStatus, options, jobsBox, discardDraft]) element.hidden = isImport;
       importDescription.hidden = !isImport;
       queryHeading.querySelector("h2").textContent = isImport ? "Import" : "Query";
       queryHeading.querySelector(".source-badge").textContent = isImport ? selected.type === "sqlite" ? "SQLite" : selected.type === "rest" ? "REST API" : "HTTP export" : "Cypher";
@@ -369,7 +356,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       edit.hidden = datasetPickerOnly || !selected?.managed; setBusy(false);
       if (isImport) {
         draftContext = null; draftDirty = false; draftPresent = false;
-        builder.setContext(null, null, false); queryTools.setContext(null, null, false); benchmarks?.destroy();
+        queryTools.setContext(null, null, false); benchmarks?.destroy();
         schemaBox.hidden = true; sharedMovies.hidden = true;
         datasets = [{id: "import", name: "Source snapshot", status: "ready"}]; dataset.replaceChildren(node("option", {value: "import"}, "Source snapshot"));
         drafts.select(source.value, "import");
@@ -391,23 +378,20 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       try {
         const entries = await api(`/api/database-sources/${encodeURIComponent(selected.id)}/datasets`, {signal: readController.signal});
         if (current !== datasetGeneration || !dialog.isConnected || source.value !== selectedId) return;
-        const wanted = requiredDataset || (restore && draftSelection?.source === selected.id ? draftSelection.dataset : null)
+        const wanted = (restore && draftSelection?.source === selected.id ? draftSelection.dataset : null)
           || dataset.value || drafts.selection(selected.id)?.dataset
           || (provenance?.database_source?.id === selected.id ? provenance.database_dataset?.id : null) || "default";
         datasets = entries;
         dataset.replaceChildren(...datasets.map(d => node("option", {value: d.id}, d.name + (d.status === "ready" ? "" : d.status === "mapping_needed" ? " · mapping needed" : " · importing"))));
         if (datasets.some(d => d.id === wanted)) dataset.value = wanted;
-        else if (requiredDataset) dataset.value = "";
         describeDataset(preserve);
-        if (requiredDataset && !datasets.some(d => d.id === requiredDataset && d.status === "ready")) throw new Error("This saved query’s dataset is missing or not ready. Restore the dataset, then retry.");
         return true;
       } catch (error) {
         if (current === datasetGeneration && dialog.isConnected) { datasets = []; dataset.replaceChildren(); datasetStatus.textContent = error.message; setBusy(false); }
-        if (requiredDataset) throw error;
       }
     }
-    source.onchange = () => { clearSavedTarget(); remember(); dataset.replaceChildren(); describe(); };
-    dataset.onchange = () => { clearSavedTarget(); remember(); describeDataset(); };
+    source.onchange = () => { remember(); dataset.replaceChildren(); describe(); };
+    dataset.onchange = () => { remember(); describeDataset(); };
     reloadDatasets.onclick = async () => { try { if (await refresh(source.value)) await describe(false, true); } catch (error) { if (dialog.isConnected) datasetStatus.textContent = error.message; } };
     check.onclick = checkHealth;
     const refresh = async selected => {
@@ -480,7 +464,6 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       return renderQuery(response, signature);
     }
     function renderQuery(response, signature) {
-      queryTools.completed();
       saved = {signature, response};
       const snapshot = response.dataset || response.table;
       continueBox.hidden = !snapshot;
@@ -489,7 +472,6 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       count.textContent = response.table ? `Query: ${response.row_count.toLocaleString()} rows · ${response.table.table.columns.length} columns` : `Query: ${response.row_count.toLocaleString()} rows · ${response.vertex_count.toLocaleString()} nodes · ${response.edge_count.toLocaleString()} relationships`;
       status.textContent = response.dataset ? `${response.row_count.toLocaleString()} rows returned${response.elapsed_ms != null ? ` in ${(response.elapsed_ms / 1000).toFixed(2)}s` : ""}. Ready to use in chat.` : response.message;
       if (snapshot?.temporary) status.textContent += " This preview expires in 24 hours. Save it or use it in analysis to keep it.";
-      if (response.history_warning) status.textContent += " " + response.history_warning;
       if (response.row_sample_warning) status.textContent += " " + response.row_sample_warning;
       rows.textContent = W.stringify(response.rows, true);
       rowSummary.textContent = response.table ? `Complete query table · ${response.row_count.toLocaleString()} rows` : `Returned rows · ${response.row_count.toLocaleString()}${response.rows_truncated ? ` (showing first ${response.rows.length})` : ""}`;
@@ -564,7 +546,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const action = async fn => {
       if (busy) return;
       setBusy(true); status.classList.remove("source-error");
-      try { await fn(); } catch (error) { if (dialog.isConnected) { status.textContent = error.message; status.classList.add("source-error"); if (!databasePanel.hidden) layout.select("query"); queryTools.error(error); queryTools.completed(); } }
+      try { await fn(); } catch (error) { if (dialog.isConnected) { status.textContent = error.message; status.classList.add("source-error"); if (!databasePanel.hidden) layout.select("query"); queryTools.error(error); } }
       finally { if (dialog.isConnected) setBusy(false); }
     };
     preview.onclick = () => action(query);
@@ -640,28 +622,15 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     uploadZone.ondrop = event => { event.preventDefault(); uploadZone.classList.remove("drag-over"); importFile(event.dataTransfer.files[0]); };
     selectPart(pendingPart); setBusy(false); opening = false;
     $("data-source-title").focus({preventScroll: true});
-    // Selecting a shortcut never executes it or overwrites the current draft.
     async function discover() {
-      const current = ++shortcutGeneration, target = linkedQuery;
-      retrySaved.hidden = true; status.classList.remove("source-error"); remember();
       try {
-        const entry = target ? await api(`/api/query-library/${encodeURIComponent(target)}`, {signal: readController.signal}) : null;
-        if (current !== shortcutGeneration || !dialog.isConnected) return;
-        if (entry && entry.kind !== "saved") throw new Error("This link does not refer to a saved query.");
-        if (!await refresh(entry?.source_id || draftSelection?.source || provenance?.database_source?.id || (provenance?.connector_id ? `connector:${provenance.connector_id}` : null))) return;
-        if (current !== shortcutGeneration || !dialog.isConnected) return;
-        if (entry && source.value !== entry.source_id) {
-          source.value = ""; await describe();
-          throw new Error("This saved query’s connection is unavailable. Restore the connection, then retry.");
-        }
-        if (await describe(true, false, entry?.dataset_id) && current === shortcutGeneration && dialog.isConnected && entry) queryTools.showSaved(entry);
+        if (!await refresh(draftSelection?.source || provenance?.database_source?.id || (provenance?.connector_id ? `connector:${provenance.connector_id}` : null))) return;
+        if (dialog.isConnected) await describe(true);
       } catch (error) {
-        if (current !== shortcutGeneration || !dialog.isConnected || error.name === "AbortError") return;
+        if (!dialog.isConnected || error.name === "AbortError") return;
         status.textContent = error.message; status.classList.add("source-error"); setBusy(false);
-        retrySaved.hidden = !target;
       }
     }
-    retrySaved.onclick = discover;
     // Discovery belongs to this page; it must not hold the app's navigation.
     void discover();
   }

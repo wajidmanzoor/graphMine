@@ -13,7 +13,7 @@ Follow-ups receive bounded conversation context; evaluation requests exclude it.
 The task-family picker is removed from the UI; the planner's routing call sees
 operations grouped by family.
 
-Returning users see **Recent analyses**, **Recent datasets**, and **Saved queries**
+Returning users see **Recent analyses** and **Recent datasets**
 on home. Each section loads four private summaries independently, with **Show
 more**, refresh, and retry controls. Queued, running and awaiting-review analyses
 appear first; archived conversations stay in searchable history. Analysis links
@@ -627,7 +627,7 @@ through response completion and use no-store/no-referrer behavior.
   response format (graph JSON, scalar JSON records or CSV), and column mapping.
   Object-wrapped JSON arrays can name their top-level field.
 - **Neo4j:** provide a Bolt/Neo4j URI, database and username/password. Query the
-  graph directly using Cypher or the guided builder. PostgreSQL is optional;
+  graph directly using Cypher. PostgreSQL is optional;
   enable it for mapped table enrichment and synchronization. An unavailable SQL
   service does not block the default Neo4j graph. See
   [Database queries and result views](DATABASE_CYPHER_WORKSPACE.md).
@@ -968,7 +968,7 @@ arguments. Upload files and configure connections through the HTTP API or browse
 
 | Workflow | MCP tools |
 | --- | --- |
-| Discover and shape a query | `discover_sources`, `database_source`, `database_datasets`, `database_schema`, `build_graph_query` |
+| Discover a graph dataset | `discover_sources`, `database_source`, `database_datasets`, `database_schema` |
 | Run and follow a database query | `query_database`, `list_database_jobs`, `database_job`, `database_job_result`, `cancel_database_job` |
 | Retain and reuse query results | `save_query_snapshot`, `discard_query_snapshot`, `open_query_snapshot`, `query_table_page` |
 | Reuse immutable datasets | `list_datasets`, `dataset_provenance`, `save_dataset`, `import_dataset`, `open_dataset`, `delete_dataset` |

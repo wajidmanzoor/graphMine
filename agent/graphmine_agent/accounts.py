@@ -482,10 +482,6 @@ class Accounts:
                 "SELECT coalesce(sum(length(CAST(document AS BLOB))),0) FROM workflow_templates WHERE owner_id=?",
                 (user_id,),
             ).fetchone()[0]
-            queries = db.execute(
-                "SELECT coalesce(sum(length(CAST(document AS BLOB))),0) FROM query_library WHERE owner_id=?",
-                (user_id,),
-            ).fetchone()[0]
             database_jobs = db.execute(
                 "SELECT coalesce(sum(max(reserved_bytes,length(CAST(document AS BLOB)))),0) FROM database_jobs WHERE owner_id=?",
                 (user_id,),
@@ -541,10 +537,9 @@ class Accounts:
             "shared": shared,
             "connections": connections,
             "previews": previews,
-            "queries": queries,
             "database_jobs": database_jobs,
             "exploration": exploration,
-            "used": uploads + results + datasets + templates + shared + connections + previews + queries + database_jobs + exploration,
+            "used": uploads + results + datasets + templates + shared + connections + previews + database_jobs + exploration,
             "limit": self.settings.account_storage_bytes,
         }
 

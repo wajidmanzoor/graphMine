@@ -66,7 +66,8 @@ def test_catalog_validates_all_schemas_and_describes_mutations_and_revision_chec
     assert {"discover_sources", "database_schema", "query_database", "database_job", "save_query_snapshot", "query_table_page", "enrich_file", "expand_file", "export_query_table", "export_workflow_report", "import_connector"} <= catalog.keys()
     for name in ("cancel_database_job", "discard_query_snapshot", "delete_dataset"):
         assert catalog[name]["definition"]["annotations"]["destructiveHint"]
-    assert catalog["build_graph_query"]["definition"]["annotations"]["readOnlyHint"]
+    assert "build_graph_query" not in catalog
+    assert catalog["database_schema"]["definition"]["annotations"]["readOnlyHint"]
     assert not catalog["query_database"]["definition"]["annotations"]["readOnlyHint"]
     assert "request_key" in catalog["query_database"]["definition"]["inputSchema"]["required"]
     for name in ("export_workflow_result", "export_result_csv", "export_workflow_report"):
@@ -84,8 +85,7 @@ async def test_graph_query_job_is_idempotent_and_snapshots_can_be_retained_and_r
         assert (await value(bridge, "database_datasets", source_id="demo"))["items"][0]["id"] == "default"
         schema = await value(bridge, "database_schema", source_id="demo")
         assert schema["entities"]
-        built = await value(bridge, "build_graph_query", source_id="demo", source_entity="accounts")
-        assert built["statement"] and len(workspace.calls) == 1
+        assert len(workspace.calls) == 1
         arguments = {"source_id": "demo", "statement": "MATCH (n) RETURN n", "parameters": {"exact": 9007199254740993}, "request_key": "mcp-query-1"}
         first = await value(bridge, "query_database", **arguments)
         again = await value(bridge, "query_database", **arguments)

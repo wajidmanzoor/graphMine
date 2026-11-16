@@ -177,16 +177,6 @@ class Database:
                 );
                 CREATE INDEX IF NOT EXISTS query_previews_expiry ON query_previews(expires_at);
                 CREATE INDEX IF NOT EXISTS query_previews_blob ON query_previews(owner_id,sha256);
-                CREATE TABLE IF NOT EXISTS query_library (
-                  id TEXT PRIMARY KEY, owner_id TEXT NOT NULL,
-                  source_id TEXT NOT NULL, dataset_id TEXT NOT NULL,
-                  kind TEXT NOT NULL CHECK(kind IN ('saved','history')),
-                  document TEXT NOT NULL, updated_at TEXT NOT NULL
-                );
-                CREATE INDEX IF NOT EXISTS query_library_scope
-                  ON query_library(owner_id,source_id,dataset_id,kind,updated_at DESC,id DESC);
-                CREATE INDEX IF NOT EXISTS query_library_recent
-                  ON query_library(owner_id,kind,updated_at DESC,id DESC);
                 CREATE TABLE IF NOT EXISTS database_jobs (
                   id TEXT PRIMARY KEY, owner_id TEXT NOT NULL,
                   source_id TEXT NOT NULL, kind TEXT NOT NULL,

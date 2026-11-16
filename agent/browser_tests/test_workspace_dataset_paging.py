@@ -4,7 +4,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
-from test_database_graph_builder import click
+from workspace_browser_helpers import click
 from test_workspace_conversation_graph import open_saved, saved_network
 from test_workspace_loading import loading_browser, loading_server, wait_for
 

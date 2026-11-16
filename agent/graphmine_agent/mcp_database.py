@@ -11,7 +11,6 @@ from .database_enrichment import EnrichmentRequest
 from .database_queries import CypherRequest, OpenChat
 from .database_sources import Strict
 from .datasets import SaveDataset
-from .graph_builder import GraphBuild
 from .models import SessionCreate
 
 
@@ -34,7 +33,7 @@ class JobPage(Strict):
     limit: int = Field(default=20, ge=1, le=100)
 
 
-class BuilderSchema(Strict):
+class DatasetSchema(Strict):
     dataset_id: str = Field(default="default", min_length=1, max_length=128)
 
 
@@ -77,10 +76,8 @@ def database_tools():
              "Inspect one authorized graph connection's mappings, revision and available operations."),
         tool("database_datasets", "GET", "/api/database-sources/{source_id}/datasets", None,
              "Discover the default graph and available SQL catalog datasets for a connection.", open_world=True),
-        tool("database_schema", "GET", "/api/database-sources/{source_id}/graph-builder", BuilderSchema,
+        tool("database_schema", "GET", "/api/database-sources/{source_id}/schema", DatasetSchema,
              "Inspect mapped or sampled graph schema for a dataset. Sample limits and incompleteness remain explicit.", open_world=True),
-        tool("build_graph_query", "POST", "/api/database-sources/{source_id}/graph-builder", GraphBuild,
-             "Generate inspectable parameterized Cypher from graph entities, relationships and filters. Does not execute the query.", read_only=True, open_world=True),
         tool("query_database", "POST", "/api/database-sources/{source_id}/queries", QuerySnapshot,
              "Submit a read-only Cypher query as a durable job. Poll database_job, then read database_job_result for its immutable graph/table snapshot. Save or open temporary snapshots to retain them. Does not execute an analysis.",
              open_world=True, headers={"Prefer": "respond-async"}, header_arguments={"request_key": "Idempotency-Key"}),

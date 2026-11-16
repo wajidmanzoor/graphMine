@@ -15,7 +15,6 @@ from graphmine_agent.database_datasets import datasets, selected_dataset
 from graphmine_agent.database_queries import execute_query
 from graphmine_agent.database_sources import DatabaseSource, get_source, sql_connection
 from graphmine_agent.database_sync import sync_source
-from graphmine_agent.graph_builder import GraphBuild, compile_query
 from graphmine_agent.neo4j_schema import sample_schema
 from test_connectors import sources  # noqa: F401
 from test_database_connections import connected, pair  # noqa: F401
@@ -206,7 +205,7 @@ def test_connection_validation_does_not_echo_credentials(sources, method):
     assert 'never-return-this-token' not in response.text and 'input' not in response.json()['error']
 
 
-def test_neo4j_schema_is_bounded_read_only_and_compiles_without_sql_filters(monkeypatch):
+def test_neo4j_schema_is_bounded_read_only_and_excludes_private_properties(monkeypatch):
     source = graph_source(); calls = []; rolled_back = []
     class Transaction:
         def __enter__(self): return self
@@ -224,10 +223,9 @@ def test_neo4j_schema_is_bounded_read_only_and_compiles_without_sql_filters(monk
     assert len(calls) == 2 and all(params == {'limit': 500} for _, params in calls) and rolled_back
     assert schema['schema_scope']['complete'] is False and 'bounded' in schema['message']
     assert 'gm_private' not in str(schema)
-    query = compile_query(schema, GraphBuild(source_entity=schema['entities'][0]['id'], relationship=schema['relationships'][0]['id'],
-                          target_entity=schema['entities'][0]['id'], filters=[{'property': 'odd`property', 'value': 9007199254740993}]))
-    assert 'gm_source' not in query['statement'] and '`Person``X`' in query['statement']
-    assert query['parameters']['filter_0'] == 9007199254740993
+    assert schema['entities'][0]['label'] == 'Person`X'
+    assert 'odd`property' in {item['name'] for item in schema['entities'][0]['properties']}
+
 
 
 @pytest.mark.parametrize('failure', ['node_rows', 'relationship_rows', 'bytes', 'driver'])

@@ -10,7 +10,6 @@ from starlette.concurrency import run_in_threadpool
 from .analytics import AnalyticsError
 from .datasets import DatasetLibrary, _owner
 from .models import SessionRecord
-from .query_library import QueryLibrary
 
 
 class DatasetConversation(BaseModel):
@@ -19,8 +18,6 @@ class DatasetConversation(BaseModel):
 
 
 def recent_work(runtime, section, *, offset=0, limit=4):
-    if section == "queries":
-        return QueryLibrary(runtime).list(kind="saved", offset=offset, limit=limit)
     if section == "datasets":
         page = DatasetLibrary(runtime).page(offset=offset, limit=limit, latest=True)
         page["items"] = [{**{key: item[key] for key in ("id", "dataset_id", "version", "size_bytes", "name", "kind", "source_complete")},
@@ -67,7 +64,7 @@ def start_dataset_conversation(runtime, identifier, body):
 
 def register_recent_routes(router):
     @router.get("/workspace/recent/{section}")
-    def recent(section: Literal["datasets", "queries", "analyses"], request: Request,
+    def recent(section: Literal["datasets", "analyses"], request: Request,
                offset: int = Query(0, ge=0, le=100000), limit: int = Query(4, ge=1, le=12)):
         return recent_work(request.app.state.runtime, section, offset=offset, limit=limit)
 

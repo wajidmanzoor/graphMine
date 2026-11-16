@@ -20,13 +20,13 @@ def test_local_release_includes_database_and_query_contracts():
         "test_database_connections", "test_database_workspace", "test_database_datasets", "test_database_jobs", "test_database_pools", "test_database_independent_sources", "test_database_sync", "test_database_mcp",
         "test_database_query_projection", "test_benchmark_datasets", "test_benchmark_mappings",
         "test_result_views", "test_result_resources", "test_result_context", "test_result_index", "test_result_cache", "test_export_streams", "test_dataset_paging", "test_query_previews", "test_session_search",
-        "test_database_graph_builder", "test_query_library", "test_query_tables", "test_exploration", "test_workspace_recent", "test_conversation_timeline",
+        "test_database_schema", "test_database_query_editor", "test_query_tables", "test_exploration", "test_workspace_recent", "test_conversation_timeline",
         "test_domain_ingestion_reports", "test_history_and_terminal", "test_storage_recovery",
     } <= {Path(path).stem for path in plan["backend"]}
     assert {
         "test_connection_setup", "test_database_query_editor", "test_query_previews", "test_database_jobs",
         "test_query_drafts", "test_workspace_navigation", "test_workspace_polling", "test_workspace_history", "test_workspace_incremental",
-        "test_database_graph_builder", "test_query_workspace", "test_query_tables", "test_workspace_exploration", "test_workspace_data_layout", "test_workspace_accessibility", "test_workspace_home", "test_workspace_result_context",
+        "test_query_editor", "test_query_tables", "test_workspace_exploration", "test_workspace_data_layout", "test_workspace_accessibility", "test_workspace_home", "test_workspace_result_context",
         "test_result_exploration", "test_workspace_sources",
         "test_workspace_studio",
     } <= {Path(path).stem for path in plan["browser"]}

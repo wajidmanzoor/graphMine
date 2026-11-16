@@ -171,46 +171,23 @@ HTTP status and include `job_id` in the error details. Synchronous queries keep
 their existing response contract. Polling reconnects with backoff after transient
 errors; it never retries a submission implicitly.
 
-### Guided graph builder and query editor
+### Cypher query editor
 
-**Build a graph with guided choices** uses the selected dataset's declared
-entity and relationship mappings. Select node types, relationship direction,
-filters, row limits and analysis direction, then choose **Generate Cypher**.
-The generated statement and parameters are inspectable. **Use generated query**
-explicitly replaces the current editor contents; generation does not execute
-anything. For an unmapped Neo4j graph, including an isolated benchmark, the builder discovers label,
-relationship and property names from read-only samples of at most 500 nodes and
-500 relationships, also bounded by the connection's row and byte limits.
-Discovery uses no administrative procedures. The UI states that this sample
-may omit graph structure; the manual Cypher editor remains available. Discovery
-failure does not disable manual queries. Mapped SQL-only attributes are excluded
-from graph filters.
+Write Cypher against the selected dataset in the editor. Browser drafts retain
+unfinished work by account, connection, dataset, and conversation. The saved-query
+library, server execution history, guided query generator, and their home-page
+shortcuts have been removed.
 
-The builder scopes mapped elements to their source and mapping identifiers.
-Benchmark queries use the selected instance and its original published labels. Filter values are parameters, never query
-fragments. **Edge weight property** overrides the analysis weight while keeping
-original relationship identity and SQL lineage. Every returned relationship must
-contain a finite numeric value for the chosen property. Source/target projection
-continues to use its returned `weight` column.
+Schema suggestions use mapped graph properties or read-only samples of at most
+500 nodes and 500 relationships, also bounded by the connection's row and byte
+limits. Samples may omit graph structure. Discovery uses no administrative
+procedures, and its failure does not disable manual queries. SQL-only attributes
+remain available through enrichment.
 
-**Saved queries & history** stores private queries on the server independently
-of browser drafts and preview expiration. Queries retain the statement,
-parameters, direction, projection and weight selection. Loading never executes
-a query. Updates and deletion check revisions. Storage includes query documents;
-each account can keep 250 saved queries and its latest 200 execution records.
-List responses are paged summaries; full parameters load only on request.
-History preserves success/failure and snapshot references, not result payloads.
-A history-storage failure is reported without losing a successful query result.
-Online backups include saved queries and history in the metadata database.
-
-The home page's **Saved queries** cards open `#data/query/{query_id}`. The link
-selects its saved connection and dataset and highlights the query in the library,
-including queries outside the first library page. Existing browser drafts remain
-in the editor until **Load into editor** is selected. Loading never executes the
-query. On mobile, the shortcut survives connection/query/preview navigation and
-reloads until it is loaded or a different source is selected. Missing connections,
-datasets or queries show an inline error and retry action. A query moved to a
-different connection or dataset cannot be loaded into the old context.
+**Edge weight property** overrides the analysis weight while keeping original
+relationship identity and SQL lineage. Every returned relationship must contain
+a finite numeric value for the chosen property. Source/target projection uses
+its returned `weight` column.
 
 The parameter form detects `$parameters` outside comments and string literals,
 supports typed values and exact large integers, and preserves extra JSON keys.
@@ -220,11 +197,12 @@ supports typed values and exact large integers, and preserves extra JSON keys.
 keyboard selection. Cypher errors appear beside the editor; **Go to error**
 uses the server's position when available, including Unicode offsets.
 
-API additions: `GET/POST /database-sources/{id}/graph-builder`,
-`GET/POST /query-library`, and `GET/PUT/DELETE /query-library/{id}` (all under
-`/api`). Updating a saved query supplies `expected_revision`; deletion supplies
-the `revision` query parameter. Query execution accepts optional `weight_property`
-and returns `history_id`/`history_warning` alongside the existing preview fields.
+Read-only schema metadata is available at
+`GET /api/database-sources/{id}/schema?dataset_id={dataset_id}`. Direct query
+execution accepts optional `weight_property`; it no longer writes a query-library
+history record or returns `history_id`/`history_warning`. Durable execution jobs
+and snapshot provenance still support recovering and reusing query results.
+Existing legacy library rows are not modified; new stores do not create that table.
 
 ### Complete scalar query tables
 

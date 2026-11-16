@@ -27,10 +27,9 @@ inputs, execution evidence, approval rules, and result provenance remain require
 
 ## Functionality and interface
 
-8. **Complete — guided graph builder.** Select entities, relationships, filters,
-   direction, and weights with inspectable generated Cypher.
-9. **Complete — query workspace.** Provide saved queries, history, parameter forms,
-   schema completion, formatting, and inline query errors.
+8. **Removed — guided graph builder.** The data workspace uses direct Cypher.
+9. **Complete — query editor.** Provide parameter forms, schema completion,
+   formatting, and inline errors. Saved queries and server history are removed.
 10. **Complete — complete query tables.** Preserve scalar query results as table
     artifacts with paging, sorting, CSV export, and reuse as analysis inputs.
 11. **Complete — background database work.** Give queries and synchronization
@@ -41,7 +40,7 @@ inputs, execution evidence, approval rules, and result provenance remain require
     editor, and preview panes; make mobile connection/query/preview steps clear.
 14. **Complete — readability and accessibility.** Improve text and control sizing;
     verify contrast, keyboard access, zoom, and mobile layouts.
-15. **Complete — returning-user home.** Show recent datasets, saved queries, and
+15. **Complete — returning-user home.** Show recent datasets and
     resumable analyses prominently.
 16. **Complete — result context.** Present source/version, query scope, preview
     limits, and calculation quality together without conflating them.
@@ -98,19 +97,10 @@ inputs, execution evidence, approval rules, and result provenance remain require
   `library/build/runtime/libgraphmine_runtime.so` are absent. No live database
   or GPU work was run. Preflight also checks `GRAPHMINE_NATIVE_BINARY` (default
   `library/build/runtime/graphmine-native`), which is absent in this checkout.
-- Guided builder: 58 backend query/lineage checks and 13 Firefox checks passed.
-  Generated queries are scoped to the selected mapped/catalog graph, filters use
-  parameters, and weight selection preserves relationship IDs and SQL lineage.
-  The builder requires declared graph schema; unmapped connections retain the
-  Cypher editor. Live Neo4j execution is not covered by the local fixtures.
-- Query workspace: 78 final query/builder/release backend checks and eight new
-  Firefox editor checks passed; the 13 existing query/builder/draft browser cases
-  also passed. Another 69 checks covered accounts, query backups and schema
-  compatibility. Saved queries are owner-scoped, revision-checked and included
-  in quota accounting; history is bounded and does not retain result payloads.
-  Browser checks cover 320-pixel layouts, exact integer parameters, invalid
-  edits, formatter literal preservation, keyboard suggestions, Unicode error
-  positions, history loading and stale dataset responses.
+- The guided builder and saved-query library were removed in development.
+  Direct Cypher retains parameter forms, exact integers, schema suggestions,
+  formatting, and inline errors. Schema inspection is a separate read-only API.
+  Earlier builder/library verification is superseded by removal and editor checks.
 - Query tables: 72 backend checks and 19 Firefox checks passed for complete
   typed results, all-row sorted exports, owner isolation, expiry, corruption,
   backup, library reuse, mobile paging, and preserving the current graph.
@@ -296,7 +286,7 @@ inputs, execution evidence, approval rules, and result provenance remain require
   Default graph queries never open SQL, and SQL discovery failures leave them
   available with a warning. Unsupported enrichment and synchronization report
   explicit capability errors; invalid sync requests never enter the job queue.
-  The unmapped graph builder uses bounded read-only Neo4j schema samples, reports
+  Schema inspection uses bounded read-only Neo4j samples, reports
   their incompleteness and rejects row/byte overruns without partial choices.
   The unified inventory enforces ownership, namespaces source IDs and retains
   available providers when another provider fails. SQLite and REST can be added,
@@ -396,8 +386,9 @@ inputs, execution evidence, approval rules, and result provenance remain require
 Schema 11 adds indexed public conversation entries and stable question numbers
 to schema 10's transactional dataset summaries and table content change tokens,
 private conversation exploration settings, durable database
-jobs, reusable typed tables, temporary previews, saved queries and bounded
-history, and refuses older application versions. Each
+jobs, reusable typed tables, and temporary previews, and refuses older
+application versions. Legacy saved-query/history rows remain untouched after
+the removal of those features. Each
 conversation retains up to 32 view contexts within 512 KiB; settings are included
 in backups and deleted with the conversation. Existing saved
 dataset rows remain unchanged. Drafts live in the

@@ -6,8 +6,6 @@ import sqlite3
 import pytest
 
 from graphmine_agent.datasets import DatasetLibrary
-from graphmine_agent.identity import Principal, identity_scope
-from graphmine_agent.query_library import QueryLibrary
 from graphmine_agent.query_previews import QueryPreviews
 from graphmine_agent.table_artifacts import make_table
 from test_database_workspace import source, workspace  # noqa: F401
@@ -61,22 +59,6 @@ def test_analysis_ownership_archive_filter_and_priority_precede_paging(library, 
     assert all(item["id"].startswith("private-") for item in recent(client, "analyses", bob)["items"])
     with sqlite3.connect(runtime.analytics.path) as db:
         assert json.loads(db.execute("SELECT document FROM workflows WHERE id='active'").fetchone()[0])["status"] == "awaiting_review"
-
-
-def test_saved_queries_are_summaries_without_history_or_parameters(library):
-    client, runtime, alice, bob, sessions, _ = library
-    with runtime.database._connect() as db:
-        owner = db.execute("SELECT owner_id FROM sessions WHERE id=?", (sessions[0],)).fetchone()[0]
-    with identity_scope(Principal(owner, "alice", runtime.accounts)):
-        for index, kind in enumerate(["saved", "history", "saved"]):
-            QueryLibrary(runtime)._put({"id": f"query-{index}", "kind": kind, "source_id": "demo", "dataset_id": "default",
-                                       "name": f"Query {index}", "revision": 1, "updated_at": f"2026-10-{index+1:02d}",
-                                       "query": {"statement": "RETURN $secret", "parameters": {"secret": "sensitive"}}})
-    result = recent(client, "queries", alice, limit=1)
-    assert result["has_more"] and result["items"][0]["id"] == "query-2"
-    assert "sensitive" not in json.dumps(result) and "statement" not in json.dumps(result)
-    assert [item["id"] for item in recent(client, "queries", alice, offset=1)["items"]] == ["query-0"]
-    assert recent(client, "queries", bob)["items"] == []
 
 
 def test_preview_is_not_a_recent_dataset_or_conversation_input(workspace, monkeypatch):

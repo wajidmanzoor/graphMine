@@ -3,7 +3,7 @@
 import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
-from test_database_graph_builder import click
+from workspace_browser_helpers import click
 from test_query_previews import open_source_fixture
 from test_workspace_loading import loading_browser, loading_server, wait_for
 from test_workspace_navigation import navigate

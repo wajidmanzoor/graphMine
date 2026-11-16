@@ -409,22 +409,6 @@ def execute_query(source, body, byte_limit):
 
 
 def run_query(runtime, source_id, body):
-    from .query_library import QueryLibrary
-
-    # Do not retain attempts against connections the current owner cannot see.
-    get_source(runtime.settings, source_id)
-    library, started = QueryLibrary(runtime), perf_counter()
-    try:
-        result = _run_query(runtime, source_id, body)
-    except AnalyticsError as error:
-        library.record(source_id, body, error={"code": error.code, "message": str(error)}, elapsed_ms=round((perf_counter() - started) * 1000))
-        raise
-    identifier, warning = library.record(source_id, body, result=result, elapsed_ms=result["elapsed_ms"])
-    result.update(history_id=identifier, history_warning=warning)
-    return result
-
-
-def _run_query(runtime, source_id, body):
     started = perf_counter()
     source = get_source(runtime.settings, source_id)
     dataset = None
@@ -518,15 +502,13 @@ def register_database_query_routes(router):
     from .database_connections import register_connection_routes
     from .benchmark_datasets import register_benchmark_routes
     from .database_datasets import register_dataset_routes
-    from .graph_builder import register_builder_routes
-    from .query_library import register_query_library_routes
+    from .database_schema import register_schema_routes
     from .table_artifacts import register_table_routes
 
     register_connection_routes(router)
     register_benchmark_routes(router)
     register_dataset_routes(router)
-    register_builder_routes(router)
-    register_query_library_routes(router)
+    register_schema_routes(router)
     register_table_routes(router)
     @router.get("/database-sources")
     def sources(request: Request):
