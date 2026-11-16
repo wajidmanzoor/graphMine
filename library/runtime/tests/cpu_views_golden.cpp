@@ -17,6 +17,7 @@
 #include "../enumeration_input.hpp"
 #include "../learning.hpp"
 #include "../feature_input.hpp"
+#include "../hypergraph_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -129,6 +130,52 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
     equal(old_endpoints,new_endpoints);
   }
   return !expected;
+}
+bool hypergraph_input(const rt::json::value& input, const char* profile, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::HypergraphInput> expected;
+  std::string old_failure;
+  try { expected.emplace(input,old_work); } catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::HypergraphInput> actual;
+    std::string new_failure;
+    try { actual = rt::hypergraph_view_input(input,rt::cpu_view_profile(profile),work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Hypergraph incidence rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->ids != actual->ids || expected->indices != actual->indices || expected->weights.size() != actual->weights.size() ||
+        expected->edges.size() != actual->edges.size() || rt::json::serialize(expected->vertex_records) != rt::json::serialize(actual->vertex_records) ||
+        old_work.candidates != work.candidates) throw std::runtime_error("Hypergraph maps/attributes/cost differ");
+    auto compare_weight = [](const rt::Exact& a,const rt::Exact& b) {
+      if (rt::json::serialize(rt::fraction_json(a)) != rt::json::serialize(rt::fraction_json(b)))
+        throw std::runtime_error("Hypergraph exact weight bytes differ");
+    };
+    for (std::size_t v=0; v<expected->weights.size(); ++v) compare_weight(expected->weights[v],actual->weights[v]);
+    for (std::size_t e=0; e<expected->edges.size(); ++e) {
+      if (expected->edges[e].id != actual->edges[e].id) throw std::runtime_error("Hyperedge identity differs");
+      equal(expected->edges[e].vertices,actual->edges[e].vertices);
+      compare_weight(expected->edges[e].weight,actual->edges[e].weight);
+    }
+  }
+  return !expected;
+}
+rt::json::object corpus_hypergraph(const gm::Graph& graph) {
+  rt::json::array vertices,edges;
+  for (gm::VertexIndex v=0; v<graph.vertex_count(); ++v)
+    vertices.push_back(rt::json::object{{"id",rt::id_json(graph.external_id(v))},{"weight",v%5+0.25}});
+  for (const auto& edge : graph.canonical().edges) {
+    rt::json::array members{rt::id_json(edge.source)};
+    if (edge.source != edge.target) members.push_back(rt::id_json(edge.target));
+    edges.push_back(rt::json::object{{"id",edges.size()},{"vertices",members},{"weight",std::abs(edge.weight.value_or(1))}});
+  }
+  if (graph.vertex_count() >= 3)
+    edges.push_back(rt::json::object{{"id",edges.size()},
+      {"vertices",{rt::id_json(graph.external_id(2)),rt::id_json(graph.external_id(0)),rt::id_json(graph.external_id(1))}},
+      {"weight",1.0/11.0}});
+  return {{"graph",{{"id",graph.canonical().graph.id}}},{"vertices",vertices},{"hyperedges",edges}};
 }
 bool feature_input(const rt::json::value& input, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
@@ -853,6 +900,33 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  auto hyper = corpus_hypergraph(graph);
+  for (std::size_t v=0; v<3; ++v)
+    hyper.at("vertices").as_array()[v].as_object()["attributes"] =
+      rt::json::object{{"features",{1.0,static_cast<double>(v)}},{"target",static_cast<std::int64_t>(v)},
+        {"split",v<2 ? "train" : "test"}};
+  for (const auto* profile : {"hypergraph-partitioning:cpp:incidence","hypergraph-node-learning:cpp:incidence"}) {
+    hypergraph_input(hyper,profile);
+    for (std::uint64_t budget=0; budget<24; ++budget) hypergraph_input(hyper,profile,budget);
+    for (int change=0; change<8; ++change) {
+      auto changed = hyper;
+      auto& first = changed.at("hyperedges").as_array()[0].as_object();
+      if (change==0) first.at("vertices").as_array().push_back(0);
+      if (change==1) first.at("vertices").as_array()[0] = "unknown";
+      if (change==2) first["weight"] = -1;
+      if (change==3) changed.at("vertices").as_array()[0].as_object()["weight"] = -1;
+      if (change==4) first["weight"] = UINT64_MAX;
+      if (change==5) changed.at("vertices").as_array()[0].as_object()["weight"] = 9007199254740993LL;
+      if (change==6) changed.at("hyperedges").as_array()[1].as_object()["id"] = 0;
+      if (change==7) first["vertices"] = rt::json::array{};
+      hypergraph_input(changed,profile);
+    }
+  }
+  for (const auto* objective : {"cut_net","connectivity_minus_one"})
+    declared_request("hypergraph-partitioning:cpp:incidence",hyper,{{"num_parts",2},{"imbalance_tolerance",1.0},{"objective",objective}});
+  for (const auto* task : {"regression","classification"})
+    declared_request("hypergraph-node-learning:cpp:incidence",hyper,{{"model","hgnn-linear-v1"},{"task",task},
+      {"model_parameters",{{"layers",2},{"epochs",2}}}});
   const auto features = corpus_features(graph);
   feature_input(features);
   for (std::uint64_t budget=0; budget<12; ++budget) feature_input(features,budget);
@@ -1422,6 +1496,7 @@ int main(int argc, char** argv) {
     const bool node_learning = argc > 1 && std::string(argv[1]) == "--node-learning";
     const bool graph_learning = argc > 1 && std::string(argv[1]) == "--graph-learning";
     const bool knn = argc > 1 && std::string(argv[1]) == "--knn";
+    const bool hypergraphs = argc > 1 && std::string(argv[1]) == "--hypergraphs";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1447,7 +1522,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1455,6 +1530,12 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (hypergraphs) for (const auto* profile : {"hypergraph-partitioning:cpp:incidence","hypergraph-node-learning:cpp:incidence"}) {
+          const bool rejected = hypergraph_input(corpus_hypergraph(graph),profile);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",profile},{"input_conversion","edge_incidence_plus_ordered_three_vertex_hyperedge"},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (knn) {
           const bool rejected = feature_input(corpus_features(graph));
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

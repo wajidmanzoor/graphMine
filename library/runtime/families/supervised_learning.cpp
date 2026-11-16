@@ -1,7 +1,10 @@
 #include "learning.hpp"
+#include "hypergraph_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
+const ViewProfile hypergraph_incidence{"hypergraph-node-learning:cpp:incidence", {"hypergraph-node-learning"},
+  R"({"kind":"hypergraph","weights":"rational_exact","sorted_neighbors":false})"};
 using namespace family_util;
 using namespace learning;
 json::object optimizer_parameters(const json::object& model) {
@@ -179,7 +182,7 @@ json::object hypergraph_learning(const json::value& input, const json::object& a
          {"model"});
   choice(args, "model", "hgnn-linear-v1", {"hgnn-linear-v1"});
   const auto task = choice(args, "task", "classification", {"classification", "regression"});
-  const HypergraphInput graph(input, work);
+  const auto graph = hypergraph_view_input(input, hypergraph_incidence, work);
   auto key = [&](const char* field, const char* fallback) {
     const auto value = args.contains(field) ? string(args.at(field), field) : std::string(fallback);
     require(!value.empty(), std::string(field) + " must not be empty");

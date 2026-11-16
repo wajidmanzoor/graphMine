@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "b600557c0400fff084edec00f48e76e55f161e01b57f98c64d614ac1467f1f20"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "b600557c0400fff084edec00f48e76e55f161e01b57f98c64d614ac1467f1f20"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "b600557c0400fff084edec00f48e76e55f161e01b57f98c64d614ac1467f1f20"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "b600557c0400fff084edec00f48e76e55f161e01b57f98c64d614ac1467f1f20"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "b600557c0400fff084edec00f48e76e55f161e01b57f98c64d614ac1467f1f20"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "b600557c0400fff084edec00f48e76e55f161e01b57f98c64d614ac1467f1f20"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "b600557c0400fff084edec00f48e76e55f161e01b57f98c64d614ac1467f1f20"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "b600557c0400fff084edec00f48e76e55f161e01b57f98c64d614ac1467f1f20"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "b600557c0400fff084edec00f48e76e55f161e01b57f98c64d614ac1467f1f20"
+  }
+]

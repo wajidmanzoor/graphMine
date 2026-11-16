@@ -536,3 +536,21 @@ text round trip. `ParsedViewInput` now passes already-parsed values into the sam
 factory without that conversion. The failing diagnostic is retained; the fixed
 run has zero mismatches. All 26,284 graph-learning comparisons also pass again
 through the corrected structured entry point, before the final evidence refresh.
+
+## Hypergraph partitioning and learning
+
+Both CPU hypergraph operations now consume V5 incidence with exact rational
+vertex/hyperedge weights and unsorted member order. The layout decoder preserves
+original hyperedge identities and membership order. Structured validation,
+candidate budgets and typed vertex attributes stay in the common front;
+partition objectives and weighted propagation remain unchanged.
+
+Checkpoint `36-hypergraphs` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Both profiles pass 13,142 corpus cases comparing incidence arrays,
+maps, complete vertex records, exact fractions, costs and rejections on builds
+and hits. Corpus graphs are explicitly lifted to incidence sets with an ordered
+three-vertex hyperedge. Native hypergraph oracle tests remain in the full suite;
+boundary cases cover uint64 and wide integer weights, duplicate IDs/members,
+missing vertices and negative weights. An initial classification test used
+floating labels; the fixture now uses the existing integer-label contract,
+with its initial diagnostic retained.

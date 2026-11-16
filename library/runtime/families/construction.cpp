@@ -1,11 +1,14 @@
 #include "pattern_match.hpp"
 #include "structured_input.hpp"
 #include "feature_input.hpp"
+#include "hypergraph_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
 const ViewProfile knn_features{"knn-graph:cpp:features", {"knn-graph"},
   R"({"kind":"dense","weights":"f64"})"};
+const ViewProfile hypergraph_incidence{"hypergraph-partitioning:cpp:incidence", {"hypergraph-partitioning"},
+  R"({"kind":"hypergraph","weights":"rational_exact","sorted_neighbors":false})"};
 const ViewProfile coarsening_matching{"graph-coarsening:cpp:matching", {"graph-coarsening"},
   R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:sum",
        "weights":"rational_exact","edge_ids":true,"nonnegative_weights":true})"};
@@ -242,7 +245,7 @@ json::object hypergraph_partitioning(const json::value& input, const json::objec
                                      Work& work) {
   using namespace family_util;
   fields(args, {"num_parts", "imbalance_tolerance", "objective"}, {"num_parts"});
-  const HypergraphInput data(input, work);
+  const auto data = hypergraph_view_input(input, hypergraph_incidence, work);
   const auto n = data.ids.size(), k = natural(args, "num_parts", 1, 1);
   require(k <= n, "num_parts exceeds the number of vertices");
   const auto objective =
