@@ -2,8 +2,19 @@
 #include <queue>
 
 #include "internal.hpp"
+#include "graph_output_view.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile ego_outgoing{"induced-subgraph:cpp:outgoing", {"induced-subgraph"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop","parallel_edges":"collapse:first","weights":"f64","weight_source":"unit"})"};
+const ViewProfile ego_incoming{"induced-subgraph:cpp:incoming", {"induced-subgraph"},
+  R"({"kind":"csr","direction":"reverse","self_loops":"drop","parallel_edges":"collapse:first","weights":"f64","weight_source":"unit"})"};
+const ViewProfile ego_projection{"induced-subgraph:cpp:undirected_projection", {"induced-subgraph"},
+  R"({"kind":"csr","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:first","weights":"f64","weight_source":"unit"})"};
+const ViewProfile selected_records{"induced-subgraph:cpp:records", {"induced-subgraph"},
+  R"({"kind":"coo","coo_layout":"records","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+}
 json::object induced_subgraph(const Graph& graph, const json::object& args,
                               const std::string& backend, int device, Work& work) {
   fields(args, {"mode", "vertices_or_seeds", "radius", "direction_mode"},
@@ -32,7 +43,13 @@ json::object induced_subgraph(const Graph& graph, const json::object& args,
     }
   }
   if (mode == "ego" && radius && !seeds.empty()) {
-    const auto input = weighted_graph(graph, false, false, "collapse", direction, work);
+    WeightedGraph input;
+    if (backend == "cpp") {
+      const auto& profile = direction == "incoming" ? ego_incoming :
+                            direction == "undirected_projection" ? ego_projection : ego_outgoing;
+      const auto view = consume_view(graph,profile,work,ViewBudget::weighted_adjacency);
+      input = weighted_layout(std::get<CsrView>(view->view));
+    } else input = weighted_graph(graph,false,false,"collapse",direction,work);
     if (backend == "cpp") {
       std::queue<std::pair<VertexIndex, std::uint64_t>> queue;
       for (const auto v : seeds) queue.emplace(v, 0);
@@ -76,7 +93,8 @@ json::object induced_subgraph(const Graph& graph, const json::object& args,
         }
     }
   }
-  const auto output = selected_graph(graph, selected, work);
+  const auto output = backend == "cpp" ? selected_graph(graph,selected_records,selected,work)
+                                        : selected_graph(graph,selected,work);
   json::array vertices, mapping;
   for (VertexIndex v = 0; v < selected.size(); ++v)
     if (selected[v]) {

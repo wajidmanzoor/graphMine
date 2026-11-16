@@ -403,4 +403,40 @@ struct CriticalPathInput {
     }
   }
 };
+// Frozen graph_output.cpp selection/serialization before adding view inputs.
+inline json::object selected_graph(const Graph& graph, const std::vector<bool>& selected, Work& work) {
+  auto properties = [&](json::object& output,const Attributes& attrs,bool present) {
+    if (present || !attrs.empty()) output["attributes"] = property_json(PropertyValue(attrs),work);
+  };
+  const auto& data = graph.canonical();
+  json::array vertices,edges;
+  for (VertexIndex v=0; v<selected.size(); ++v) if (selected[v]) {
+    work.tick();
+    const auto& record = data.vertices[v];
+    json::object row{{"id",id_json(record.id)}};
+    if (record.label) row["label"] = *record.label;
+    if (record.type) row["type"] = *record.type;
+    properties(row,record.attributes,record.attributes_present);
+    vertices.push_back(row);
+  }
+  for (const auto& edge : data.edges) {
+    work.tick();
+    if (!selected[graph.dense_index(edge.source)] || !selected[graph.dense_index(edge.target)]) continue;
+    json::object row{{"id",id_json(edge.id)},{"source",id_json(edge.source)},{"target",id_json(edge.target)}};
+    if (edge.original_weight)
+      row["weight"] = std::visit([](const auto& value) { return json::value(value); },*edge.original_weight);
+    else if (edge.weight) row["weight"] = display_number(Exact(*edge.weight));
+    if (edge.timestamp)
+      row["timestamp"] = std::visit([](const auto& value) { return json::value(value); },*edge.timestamp);
+    if (edge.type) row["type"] = *edge.type;
+    properties(row,edge.attributes,edge.attributes_present);
+    edges.push_back(row);
+    work.output(vertices.size()+edges.size());
+  }
+  work.output(vertices.size()+edges.size());
+  json::object metadata{{"id",data.graph.id},{"directed",data.graph.directed},
+    {"allows_self_loops",data.graph.allows_self_loops},{"allows_parallel_edges",data.graph.allows_parallel_edges}};
+  properties(metadata,data.graph.attributes,data.graph.attributes_present);
+  return {{"graph",metadata},{"vertices",vertices},{"edges",edges}};
+}
 }  // namespace graphmine::legacy_test

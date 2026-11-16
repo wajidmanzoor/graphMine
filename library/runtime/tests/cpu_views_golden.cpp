@@ -13,6 +13,7 @@
 #include "../matching_input.hpp"
 #include "../vertex_records_input.hpp"
 #include "../path_input.hpp"
+#include "../graph_output_view.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -123,6 +124,30 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool selected_graph_input(const gm::Graph& graph, int mask, std::uint64_t budget = UINT64_MAX,
+                          std::uint64_t output_budget = UINT64_MAX) {
+  std::vector<bool> selected(graph.vertex_count());
+  for (std::size_t v=0; v<selected.size(); ++v) selected[v] = mask==1 || (mask==2 && v%2==0);
+  auto old_work = unlimited(); old_work.max_candidates = budget; old_work.max_output_items = output_budget;
+  std::optional<rt::json::object> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::selected_graph(graph,selected,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget; work.max_output_items = output_budget;
+    std::optional<rt::json::object> actual;
+    std::string new_failure;
+    try { actual = rt::selected_graph(graph,rt::cpu_view_profile("induced-subgraph:cpp:records"),selected,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Selected graph rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (old_work.candidates != work.candidates || rt::json::serialize(*expected) != rt::json::serialize(*actual))
+      throw std::runtime_error("Selected graph JSON bytes/cost differ");
   }
   return !expected;
 }
@@ -600,6 +625,11 @@ const WeightedCase centrality_cases[] = {
   {"degree-centrality:cpp:undirected_projection", "collapse", false, false, false, "undirected_projection"}
 };
 const WeightedCase similarity_case{"link-prediction:cpp:default","collapse",false,false,false,"outgoing",true};
+const WeightedCase induced_cases[] = {
+  {"induced-subgraph:cpp:outgoing","collapse",false,false,false,"outgoing"},
+  {"induced-subgraph:cpp:incoming","collapse",false,false,false,"incoming"},
+  {"induced-subgraph:cpp:undirected_projection","collapse",false,false,false,"undirected_projection"}
+};
 const std::pair<const char*,const char*> simrank_cases[] = {
   {"simrank:cpp:incoming","incoming"}, {"simrank:cpp:undirected_projection","undirected_projection"}
 };
@@ -669,6 +699,18 @@ void contracts() {
   traversal(graph,"topological-sort:cpp:default");
   auto undirected = raw;
   undirected.as_object().at("graph").as_object()["directed"] = false;
+  for (const auto& test : induced_cases) {
+    weighted_path(graph,test);
+    declared_request(test.profile,raw,{{"mode","ego"},{"vertices_or_seeds",{1}},{"radius",2},{"direction_mode",test.direction}});
+  }
+  for (const auto& selected_input : {raw,undirected}) {
+    for (int mask : {0,1,2}) selected_graph_input(rt::parse_graph(selected_input),mask);
+    declared_request("induced-subgraph:cpp:records",selected_input,{{"mode","induced"},{"vertices_or_seeds",{0,1}}});
+    declared_request("induced-subgraph:cpp:records",selected_input,{{"mode","ego"},{"vertices_or_seeds",{1}},{"radius",2}});
+    declared_request("induced-subgraph:cpp:records",selected_input,{{"mode","ego"},{"vertices_or_seeds",{1}},{"radius",0}});
+  }
+  for (std::uint64_t budget=0; budget<20; ++budget) selected_graph_input(graph,1,budget);
+  for (std::uint64_t budget=0; budget<8; ++budget) selected_graph_input(graph,1,UINT64_MAX,budget);
   auto entity_graph = raw;
   for (std::size_t v=0; v<3; ++v)
     entity_graph.as_object().at("vertices").as_array()[v].as_object()["attributes"] =
@@ -1136,6 +1178,7 @@ int main(int argc, char** argv) {
     const bool general_matching = argc > 1 && std::string(argv[1]) == "--general-matching";
     const bool entity_resolution = argc > 1 && std::string(argv[1]) == "--entity-resolution";
     const bool path_profiles = argc > 1 && std::string(argv[1]) == "--path-profiles";
+    const bool induced_subgraph = argc > 1 && std::string(argv[1]) == "--induced-subgraph";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1150,6 +1193,7 @@ int main(int argc, char** argv) {
     if (connectivity) selected_weighted.assign(std::begin(connectivity_cases),std::end(connectivity_cases));
     if (centrality) selected_weighted.assign(std::begin(centrality_cases),std::end(centrality_cases));
     if (similarity) selected_weighted.push_back(similarity_case);
+    if (induced_subgraph) selected_weighted.assign(std::begin(induced_cases),std::end(induced_cases));
     std::vector<ExactCase> selected_exact;
     if (density) selected_exact.assign(std::begin(density_exact_cases),std::end(density_exact_cases));
     if (partitioning) selected_exact.assign(std::begin(partition_exact_cases),std::end(partition_exact_cases));
@@ -1160,7 +1204,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1168,6 +1212,12 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (induced_subgraph) for (int mask : {0,1,2}) {
+          const bool rejected = selected_graph_input(graph,mask);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile","induced-subgraph:cpp:records"},{"selection_mask",mask},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (path_profiles) for (bool critical : {false,true}) {
           const bool rejected = critical ? critical_path_input(graph) : widest_path_input(graph);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

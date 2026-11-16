@@ -1,0 +1,42 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 14,
+    "failed": 0,
+    "implementation_sha256": "8da0fad6f63bd313e203c2ffd31553ea119db8a97ace84076940595979ba4149"
+  },
+  {
+    "suite": "degree",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 10632,
+    "failed": 0,
+    "implementation_sha256": "8da0fad6f63bd313e203c2ffd31553ea119db8a97ace84076940595979ba4149"
+  },
+  {
+    "suite": "betweenness",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2658,
+    "failed": 0,
+    "implementation_sha256": "8da0fad6f63bd313e203c2ffd31553ea119db8a97ace84076940595979ba4149"
+  },
+  {
+    "suite": "weighted",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2916,
+    "failed": 0,
+    "implementation_sha256": "8da0fad6f63bd313e203c2ffd31553ea119db8a97ace84076940595979ba4149"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 39,
+    "failed": 0,
+    "implementation_sha256": "8da0fad6f63bd313e203c2ffd31553ea119db8a97ace84076940595979ba4149"
+  }
+]

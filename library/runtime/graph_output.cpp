@@ -2,6 +2,7 @@
 
 #include "exact_number.hpp"
 #include "internal.hpp"
+#include "graph_output_view.hpp"
 
 namespace graphmine::runtime {
 json::value property_json(const PropertyValue& value, Work& work) {
@@ -28,23 +29,27 @@ void properties(json::object& output, const Attributes& attributes, Work& work,
   if (present || !attributes.empty())
     output["attributes"] = property_json(PropertyValue(attributes), work);
 }
-}  // namespace
-json::object selected_graph(const Graph& graph, const std::vector<bool>& selected, Work& work) {
+json::object selected_records(const Graph& graph, const std::vector<bool>& selected, Work& work,
+                              const CooView* view) {
   const auto& data = graph.canonical();
   json::array vertices, edges;
   for (VertexIndex v = 0; v < selected.size(); ++v)
     if (selected[v]) {
       work.tick();
-      const auto& record = data.vertices[v];
+      const auto& record = data.vertices[view ? view->vertices.to_original.at(v) : v];
       json::object row{{"id", id_json(record.id)}};
       if (record.label) row["label"] = *record.label;
       if (record.type) row["type"] = *record.type;
       properties(row, record.attributes, work, record.attributes_present);
       vertices.push_back(row);
     }
-  for (const auto& edge : data.edges) {
+  const auto count = view ? view->src.size() : data.edges.size();
+  for (std::size_t i=0; i<count; ++i) {
+    const auto& edge = data.edges[view ? view->edge_ids->at(i) : i];
     work.tick();
-    if (!selected[graph.dense_index(edge.source)] || !selected[graph.dense_index(edge.target)])
+    const auto u = view ? view->vertices.to_original.at(view->src[i]) : graph.dense_index(edge.source);
+    const auto v = view ? view->vertices.to_original.at(view->dst[i]) : graph.dense_index(edge.target);
+    if (!selected[u] || !selected[v])
       continue;
     json::object row{{"id", id_json(edge.id)},
                      {"source", id_json(edge.source)},
@@ -69,5 +74,14 @@ json::object selected_graph(const Graph& graph, const std::vector<bool>& selecte
                         {"allows_parallel_edges", data.graph.allows_parallel_edges}};
   properties(metadata, data.graph.attributes, work, data.graph.attributes_present);
   return {{"graph", metadata}, {"vertices", vertices}, {"edges", edges}};
+}
+}  // namespace
+json::object selected_graph(const Graph& graph, const std::vector<bool>& selected, Work& work) {
+  return selected_records(graph,selected,work,nullptr);
+}
+json::object selected_graph(const Graph& graph, const ViewProfile& profile,
+                             const std::vector<bool>& selected, Work& work) {
+  const auto input = consume_view(graph,profile,work,ViewBudget::algorithm_owned);
+  return selected_records(graph,selected,work,&std::get<CooView>(input->view));
 }
 }  // namespace graphmine::runtime

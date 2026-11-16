@@ -455,3 +455,18 @@ float64 capacity bytes, original-edge rows, indegrees, endpoints, exact weight
 fractions, costs and rejections. Tests cover signed zero, reciprocal/parallel
 records, missing weights, small budgets, negative DAG weights, explicit
 sources/sinks and limited top-k output, with fresh/cache-hit assertions.
+
+## Induced and ego subgraphs
+
+CPU ego discovery now declares outgoing, incoming and undirected-projection CSR
+profiles. Record extraction declares a record COO view and selects original
+records through its endpoints/IDs. Complete typed properties, record order,
+weights, timestamps and graph metadata remain unchanged. Existing non-CPU
+callers retain the original common-front serialization path.
+
+Checkpoint `31-induced-subgraph` passes 53 CTests, 238 Python tests and all 82
+CPU admissions. Four declarations pass 39,426 corpus comparisons: three
+discovery directions plus empty/all/alternating vertex-selection masks. The
+latter compare full serialized graph bytes and costs. Tests cover candidate and
+output budgets, both graph directions, direct extraction and nonzero/zero-radius
+ego requests, with fresh/cache-hit and consumed-declaration assertions.
