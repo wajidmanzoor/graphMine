@@ -153,3 +153,17 @@ Checkpoint `08-coloring` passes 53 CTests, 238 Python tests and all 82 CPU
 admissions. Both profiles pass 13,142 corpus cases comparing CSR and copied row
 bytes, with identical candidate costs. Real-operation checks verify declarations
 for maximal independent set and both supported coloring distances.
+
+## Similarity
+
+Link prediction now obtains its unit-weight and neighbor inputs from one
+declared CSR view while retaining the old combined preparation cost. SimRank
+declares reverse and symmetric CSR profiles for its incoming-neighbor and
+undirected-projection modes. Both retain their existing scoring algorithms.
+
+Checkpoint `09-similarity` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Three profiles pass 19,713 corpus cases, comparing arrays and copied
+rows with the frozen weighted, adjacency and SimRank builders. Link prediction
+checks both former input layouts and their combined candidate cost. Declaration
+checks cover all eight link scores and all three SimRank query modes in both
+directions. The cuGraph Jaccard path remains unchanged.

@@ -17,10 +17,13 @@ template<class T> void equal(const std::vector<T>& a, const std::vector<T>& b) {
   if (a.size() != b.size() || (!a.empty() && std::memcmp(a.data(), b.data(), a.size()*sizeof(T))))
     throw std::runtime_error("CPU view array bytes differ");
 }
-void traversal(const gm::Graph& graph, const char* id = "breadth-first-search:cpp:default") {
+void traversal(const gm::Graph& graph, const char* id = "breadth-first-search:cpp:default",
+               const char* simrank_direction = nullptr) {
   const auto& profile = rt::cpu_view_profile(id);
   auto old_work = unlimited();
-  const auto expected = gm::legacy_test::adjacency(graph, old_work);
+  const auto expected = simrank_direction
+    ? gm::legacy_test::simrank(graph,std::string(simrank_direction)=="undirected_projection",old_work)
+    : gm::legacy_test::adjacency(graph, old_work);
   std::vector<std::uint64_t> offsets{0}; std::vector<gm::VertexIndex> indices;
   for (const auto& row : expected) {
     indices.insert(indices.end(), row.begin(), row.end()); offsets.push_back(indices.size());
@@ -94,6 +97,7 @@ struct WeightedCase {
   const char* profile; const char* aggregation; bool nonnegative, unit;
   bool weighted = true;
   const char* direction = "outgoing";
+  bool extra_adjacency = false;
 };
 const WeightedCase weighted_cases[] = {
   {"single-source-shortest-paths:cpp:default", "min", true, false},
@@ -122,16 +126,25 @@ const WeightedCase centrality_cases[] = {
   {"degree-centrality:cpp:both", "collapse", false, false, false, "outgoing"},
   {"degree-centrality:cpp:undirected_projection", "collapse", false, false, false, "undirected_projection"}
 };
+const WeightedCase similarity_case{"link-prediction:cpp:default","collapse",false,false,false,"outgoing",true};
+const std::pair<const char*,const char*> simrank_cases[] = {
+  {"simrank:cpp:incoming","incoming"}, {"simrank:cpp:undirected_projection","undirected_projection"}
+};
 bool weighted_path(const gm::Graph& graph, const WeightedCase& test) {
   auto reference_work = unlimited(); std::optional<rt::WeightedGraph> expected; std::string failure;
   try { expected = gm::legacy_test::weighted(graph, test.weighted, test.nonnegative, test.aggregation, test.direction, reference_work); }
   catch (const std::exception& e) { failure = e.what(); }
+  std::optional<rt::MiningGraph> expected_adjacency;
+  if (expected && test.extra_adjacency) expected_adjacency = gm::legacy_test::adjacency(graph,reference_work);
   // Frozen many-source unweighted conversion from 201b2367; validates stored
   // lengths before using unit distances, including discarded self-loops.
   if (expected && test.unit) for (auto& row : expected->rows) for (auto& arc : row) arc.weight = 1;
   for (int repeat=0; repeat<2; ++repeat) {
     auto work = unlimited(); std::shared_ptr<const gm::ViewResult> input; std::string actual_failure;
-    try { input = rt::consume_view(graph, rt::cpu_view_profile(test.profile), work, rt::ViewBudget::weighted_adjacency); }
+    try {
+      input = rt::consume_view(graph, rt::cpu_view_profile(test.profile), work, rt::ViewBudget::weighted_adjacency);
+      if (test.extra_adjacency) work.tick(graph.edge_count());
+    }
     catch (const std::exception& e) { actual_failure = e.what(); }
     if (failure != actual_failure) throw std::runtime_error(std::string(test.profile)+": rejection differs");
     if (!expected) continue;
@@ -149,6 +162,11 @@ bool weighted_path(const gm::Graph& graph, const WeightedCase& test) {
     }
     equal(indices,packed_indices); equal(weights,packed_weights);
     if (packed.directed != expected->directed) throw std::runtime_error("Weighted row layout direction differs");
+    if (expected_adjacency) {
+      const auto adjacency = rt::adjacency_layout(view);
+      if (adjacency.size() != expected_adjacency->size()) throw std::runtime_error("Similarity adjacency size differs");
+      for (std::size_t v=0; v<adjacency.size(); ++v) equal(expected_adjacency->at(v),adjacency[v]);
+    }
     if (view.in_offsets) {
       std::vector<std::vector<gm::VertexIndex>> reverse(expected->rows.size());
       for (gm::VertexIndex u=0; u<expected->rows.size(); ++u)
@@ -192,6 +210,16 @@ void contracts() {
     declared_request(profile,undirected,{{"random_seed",42}});
   }
   declared_request("vertex-coloring:cpp:default",undirected,{{"random_seed",42},{"distance",2}});
+  weighted_path(graph,similarity_case);
+  for (const auto* measure : {"jaccard","common_neighbors","adamic_adar","resource_allocation",
+                              "preferential_attachment","sorensen","overlap","cosine"})
+    declared_request(similarity_case.profile,undirected,{{"scoring_measure",measure},{"candidate_pairs",{{0,2}}}});
+  for (const auto& [profile,direction] : simrank_cases) {
+    traversal(graph,profile,direction);
+    declared_request(profile,raw,{{"query_mode","single_pair"},{"source_vertex",0},{"target_vertex",2},{"direction_mode",direction}});
+    declared_request(profile,raw,{{"query_mode","single_source_all"},{"source_vertex",0},{"direction_mode",direction}});
+    declared_request(profile,raw,{{"query_mode","top_k_pairs"},{"direction_mode",direction}});
+  }
   for (const auto* profile : reachability_profiles) traversal(graph,profile);
   declared_request("transitive-closure:cpp:default",raw,{});
   declared_request("transitive-closure:cpp:default",raw,{{"enumerate_closure_edges",false}});
@@ -293,6 +321,7 @@ int main(int argc, char** argv) {
     const bool reachability = argc > 1 && std::string(argv[1]) == "--reachability";
     const bool centrality = argc > 1 && std::string(argv[1]) == "--centrality";
     const bool coloring = argc > 1 && std::string(argv[1]) == "--coloring";
+    const bool similarity = argc > 1 && std::string(argv[1]) == "--similarity";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -303,6 +332,7 @@ int main(int argc, char** argv) {
     if (weighted) selected_weighted.assign(std::begin(weighted_cases),std::end(weighted_cases));
     if (connectivity) selected_weighted.assign(std::begin(connectivity_cases),std::end(connectivity_cases));
     if (centrality) selected_weighted.assign(std::begin(centrality_cases),std::end(centrality_cases));
+    if (similarity) selected_weighted.push_back(similarity_case);
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
@@ -320,6 +350,11 @@ int main(int argc, char** argv) {
               {"profile",test.profile},{"equal",true},{"rejected",rejected}}) << '\n';
           }
         }
+        if (similarity) for (const auto& [profile,direction] : simrank_cases) {
+          traversal(graph,profile,direction);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
+        }
         if (connectivity) {
           traversal(graph,"topological-sort:cpp:default");
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
@@ -336,7 +371,7 @@ int main(int argc, char** argv) {
       if (selected_weighted.empty() && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : coloring ? "coloring" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : coloring ? "coloring" : similarity ? "similarity" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }

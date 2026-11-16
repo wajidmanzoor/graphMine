@@ -3,8 +3,14 @@
 #include <set>
 
 #include "internal.hpp"
+#include "view_profiles.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile link_profile{"link-prediction:cpp:default", {"link-prediction"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop","parallel_edges":"collapse:first",
+       "weights":"f64","weight_source":"unit"})"};
+}
 json::object link_prediction(const Graph& graph, const json::object& args,
                              const std::string& backend, int device, Work& work) {
   fields(args, {"scoring_measure", "candidate_pairs", "exclude_existing_edges", "top_k"});
@@ -27,8 +33,17 @@ json::object link_prediction(const Graph& graph, const json::object& args,
     top = uint(args.at("top_k"), "top_k");
     require(*top > 0, "top_k must be positive");
   }
-  const auto input = weighted_graph(graph, false, false, "collapse", "outgoing", work);
-  const auto adj = adjacency(graph, work);
+  std::optional<WeightedGraph> gpu_input;
+  MiningGraph adj;
+  if (backend == "cpp") {
+    const auto input = consume_view(graph, link_profile, work, ViewBudget::weighted_adjacency);
+    // Preserve the old second adjacency builder's record cost.
+    work.tick(graph.edge_count());
+    adj = adjacency_layout(std::get<CsrView>(input->view));
+  } else {
+    gpu_input = weighted_graph(graph, false, false, "collapse", "outgoing", work);
+    adj = adjacency(graph, work);
+  }
   using Pair = std::pair<VertexIndex, VertexIndex>;
   std::set<Pair> selected;
   auto add = [&](VertexIndex u, VertexIndex v) {
@@ -55,7 +70,7 @@ json::object link_prediction(const Graph& graph, const json::object& args,
   const std::vector<Pair> pairs(selected.begin(), selected.end());
   std::vector<double> scores;
   if (backend != "cpp")
-    scores = cugraph_jaccard(input, pairs, device, work);
+    scores = cugraph_jaccard(*gpu_input, pairs, device, work);
   else
     for (const auto [u, v] : pairs) {
       work.tick(adj[u].size() + adj[v].size());

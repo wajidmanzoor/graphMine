@@ -2,6 +2,12 @@
 #include "numeric.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile incoming_profile{"simrank:cpp:incoming", {"simrank"},
+  R"({"kind":"csr","direction":"reverse","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile projected_profile{"simrank:cpp:undirected_projection", {"simrank"},
+  R"({"kind":"csr","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
+}
 json::object simrank(const Graph& graph, const json::object& args, const std::string&, int,
                      Work& work) {
   using namespace family_util;
@@ -31,18 +37,9 @@ json::object simrank(const Graph& graph, const json::object& args, const std::st
           "target_vertex is required only for single_pair");
   require(mode != "single_pair" || !cap, "top_k does not apply to single_pair");
   const auto n = graph.vertex_count();
-  MiningGraph neighbors(n);
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    if (u == v) continue;
-    neighbors[v].push_back(u);
-    if (!graph.directed() || direction == "undirected_projection") neighbors[u].push_back(v);
-  }
-  for (auto& row : neighbors) {
-    std::sort(row.begin(), row.end());
-    row.erase(std::unique(row.begin(), row.end()), row.end());
-  }
+  const auto input = consume_view(graph, direction == "incoming" ? incoming_profile : projected_profile,
+                                  work, ViewBudget::original_edges);
+  const auto neighbors = adjacency_layout(std::get<CsrView>(input->view));
   auto values = numeric::identity(n, work);
   numeric::Matrix temporary(n, n, work), updated(n, n, work);
   double residual = 0;

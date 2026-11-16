@@ -123,4 +123,20 @@ inline std::vector<ExactEdge> exact_edges(const Graph& graph, bool weighted, Wor
   for (auto& entry : normalized) output.push_back(std::move(entry.second));
   return output;
 }
+// Frozen SimRank incoming-neighbor builder from 0d4986de.
+inline MiningGraph simrank(const Graph& graph, bool project, Work& work) {
+  MiningGraph neighbors(graph.vertex_count());
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (u == v) continue;
+    neighbors[v].push_back(u);
+    if (!graph.directed() || project) neighbors[u].push_back(v);
+  }
+  for (auto& row : neighbors) {
+    std::sort(row.begin(), row.end());
+    row.erase(std::unique(row.begin(), row.end()), row.end());
+  }
+  return neighbors;
+}
 }  // namespace graphmine::legacy_test
