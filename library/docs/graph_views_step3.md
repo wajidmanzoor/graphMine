@@ -182,3 +182,16 @@ counts, limited listings, graphlet orbits and directed/undirected motif modes,
 and verify both input and motif declarations. The first build found a type
 comparison error in the test helper; it was corrected before these successful
 gates, and the original build log is preserved in `diagnostics/`.
+
+## Community detection and balanced partitioning
+
+Both CPU operations now declare exact-rational COO profiles for weighted and
+unweighted input. Parallel sums, canonical edge order, original edge identities
+and rejection behavior match the frozen exact edge-list builder. Partition
+objectives, search order and the community heuristic remain unchanged.
+
+Checkpoint `11-partitioning` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Four profiles pass 26,284 corpus cases. Real-operation declaration
+checks cover both community quality functions, exact/heuristic search, both
+weight modes and both balanced-cut objectives. GPU adapters and the separate
+signed-balance operation retain their existing paths for subsequent migrations.

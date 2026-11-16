@@ -6,6 +6,15 @@
 namespace graphmine::runtime {
 namespace {
 using namespace family_util;
+constexpr const char* weighted_spec = R"({"kind":"coo","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:sum","weights":"rational_exact","nonnegative_weights":true,"edge_ids":true})";
+constexpr const char* unweighted_spec = R"({"kind":"coo","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"rational_exact","weight_source":"unit",
+  "nonnegative_weights":true,"edge_ids":true})";
+const ViewProfile community_weighted{"community-detection:cpp:edge_weight", {"community-detection"}, weighted_spec};
+const ViewProfile community_unweighted{"community-detection:cpp:unweighted", {"community-detection"}, unweighted_spec};
+const ViewProfile partition_weighted{"balanced-partitioning:cpp:edge_weight", {"balanced-partitioning"}, weighted_spec};
+const ViewProfile partition_unweighted{"balanced-partitioning:cpp:unweighted", {"balanced-partitioning"}, unweighted_spec};
 json::object assignment_output(const Graph& graph, const std::vector<std::size_t>& assignment,
                                json::object args, json::object data, Work& work,
                                const char* quality = "exact") {
@@ -45,7 +54,9 @@ json::object community_detection(const Graph& graph, const json::object& args, c
   require(resolution > 0, "resolution must be positive");
   const auto seed = natural(args, "seed", 0);
   const auto n = graph.vertex_count();
-  const auto normalized = edges(graph, weight_mode == "edge_weight", work);
+  const auto normalized = backend == "cpp"
+    ? edges(graph, weight_mode == "edge_weight" ? community_weighted : community_unweighted, work)
+    : edges(graph, weight_mode == "edge_weight", work);
   std::vector<Exact> degrees(n, 0);
   Exact total = 0;
   for (const auto& edge : normalized) {
@@ -167,7 +178,7 @@ json::object community_detection(const Graph& graph, const json::object& args, c
       {"arithmetic", "exact rational"}};
   return result;
 }
-json::object balanced_partitioning(const Graph& graph, const json::object& args, const std::string&,
+json::object balanced_partitioning(const Graph& graph, const json::object& args, const std::string& backend,
                                    int, Work& work) {
   using namespace family_util;
   fields(args,
@@ -204,7 +215,9 @@ json::object balanced_partitioning(const Graph& graph, const json::object& args,
   const Exact ideal = total / k;
   const Exact lower = std::max(Exact(0), Exact((1 - tolerance) * ideal)),
               upper = (1 + tolerance) * ideal;
-  const auto normalized = edges(graph, edge_mode == "edge_weight", work);
+  const auto normalized = backend == "cpp"
+    ? edges(graph, edge_mode == "edge_weight" ? partition_weighted : partition_unweighted, work)
+    : edges(graph, edge_mode == "edge_weight", work);
   std::optional<Exact> best;
   std::vector<std::size_t> selected;
   std::vector<Exact> best_sizes;

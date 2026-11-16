@@ -70,6 +70,10 @@ const ExactCase density_exact_cases[] = {
   {"densest-subgraph:cpp:edge_weight",true}, {"densest-subgraph:cpp:unweighted",false},
   {"densest-k-subgraph:cpp:edge_weight",true}, {"densest-k-subgraph:cpp:unweighted",false}
 };
+const ExactCase partition_exact_cases[] = {
+  {"community-detection:cpp:edge_weight",true}, {"community-detection:cpp:unweighted",false},
+  {"balanced-partitioning:cpp:edge_weight",true}, {"balanced-partitioning:cpp:unweighted",false}
+};
 bool exact_edges(const gm::Graph& graph, const ExactCase& test, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
   std::optional<std::vector<gm::legacy_test::ExactEdge>> expected;
@@ -300,6 +304,21 @@ void contracts() {
   density_input.as_object().at("graph").as_object()["directed"] = false;
   density_input.as_object().at("edges").as_array()[0].as_object()["weight"] = 1e16;
   density_input.as_object().at("edges").as_array()[1].as_object()["weight"] = 1;
+  for (const auto& test : partition_exact_cases) {
+    exact_edges(graph,test);
+    exact_edges(rt::parse_graph(density_input),test);
+    const auto& operation = rt::cpu_view_profile(test.profile).operations.front();
+    if (operation == "community-detection") {
+      for (const auto* objective : {"modularity","constant_potts_model"})
+        for (const auto* quality : {"exact","heuristic"})
+          declared_request(test.profile,density_input,{{"weight_mode",test.weighted ? "edge_weight" : "unweighted"},
+            {"quality_function",objective},{"solution_quality",quality}});
+    } else {
+      for (const auto* objective : {"edge_cut","normalized_cut"})
+        declared_request(test.profile,density_input,{{"num_parts",2},{"imbalance_tolerance",0.5},
+          {"edge_weight_mode",test.weighted ? "edge_weight" : "unweighted"},{"objective",objective}});
+    }
+  }
   for (const auto& test : density_exact_cases) {
     exact_edges(rt::parse_graph(density_input),test);
     rt::json::object parameters{{"weight_mode",test.weighted ? "edge_weight" : "unweighted"}};
@@ -358,6 +377,7 @@ int main(int argc, char** argv) {
     const bool coloring = argc > 1 && std::string(argv[1]) == "--coloring";
     const bool similarity = argc > 1 && std::string(argv[1]) == "--similarity";
     const bool patterns = argc > 1 && std::string(argv[1]) == "--patterns";
+    const bool partitioning = argc > 1 && std::string(argv[1]) == "--partitioning";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -370,12 +390,15 @@ int main(int argc, char** argv) {
     if (connectivity) selected_weighted.assign(std::begin(connectivity_cases),std::end(connectivity_cases));
     if (centrality) selected_weighted.assign(std::begin(centrality_cases),std::end(centrality_cases));
     if (similarity) selected_weighted.push_back(similarity_case);
+    std::vector<ExactCase> selected_exact;
+    if (density) selected_exact.assign(std::begin(density_exact_cases),std::end(density_exact_cases));
+    if (partitioning) selected_exact.assign(std::begin(partition_exact_cases),std::end(partition_exact_cases));
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
-        if (density) for (const auto& test : density_exact_cases) {
+        for (const auto& test : selected_exact) {
           const bool rejected = exact_edges(graph,test);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
             {"profile",test.profile},{"equal",true},{"rejected",rejected}}) << '\n';
@@ -402,13 +425,13 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
           }
-        } else if (selected_weighted.empty()) traversal(graph);
+        } else if (selected_weighted.empty() && selected_exact.empty()) traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (selected_weighted.empty() && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : coloring ? "coloring" : similarity ? "similarity" : patterns ? "patterns" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : coloring ? "coloring" : similarity ? "similarity" : patterns ? "patterns" : partitioning ? "partitioning" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }
