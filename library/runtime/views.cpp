@@ -291,6 +291,11 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
     edges.push_back({u, v, weight, i});
     if (expand && u != v) charge(1);
   }
+  if (spec.drop_zero_weights)
+    edges.erase(std::remove_if(edges.begin(),edges.end(),[&](const Arc& edge) {
+      return spec.weights == "rational_exact" ? *edge.weight.rational == 0 :
+             spec.weights == "int64_exact" ? edge.weight.integer == 0 : edge.weight.f64 == 0;
+    }),edges.end());
   if (spec.self_loops == "one_per_vertex")
     for (VertexIndex v = 0; v < graph.vertex_count(); ++v) {
       charge(1);
@@ -417,6 +422,8 @@ void ViewSpec::validate() const {
   check(parallel_edges != "collapse:probability_union" || weights == "rational_exact",
         "collapse:probability_union requires rational_exact weights");
   check(one_of(weights, {"none", "f64", "int64_exact", "rational_exact"}), "unknown weight type");
+  check(!drop_zero_weights || (weights != "none" && kind != "hypergraph"),
+        "drop_zero_weights requires numeric ordinary-graph edges");
   check(one_of(sum_arithmetic, {"standard", "long_double_round_each"}), "unknown sum arithmetic");
   check(sum_arithmetic == "standard" || (weights == "f64" && parallel_edges == "collapse:sum"),
         "long_double_round_each requires f64 collapse:sum");
@@ -465,7 +472,7 @@ ViewSpec ViewSpec::from_json(std::string_view input) {
   rt::fields(value, {"kind", "coo_layout", "direction", "self_loops", "parallel_edges", "weights", "weight_source",
                     "edge_ids", "labels", "bipartite_sides", "sorted_neighbors", "index_width",
                     "limits", "parameters", "nonnegative_weights", "nonnegative_edge_weights",
-                    "sum_arithmetic", "require_edge_weights"});
+                    "sum_arithmetic", "require_edge_weights", "drop_zero_weights"});
   ViewSpec spec;
   for (auto [key, target] : std::initializer_list<std::pair<const char*, std::string*>>{
            {"kind", &spec.kind}, {"coo_layout", &spec.coo_layout}, {"direction", &spec.direction}, {"self_loops", &spec.self_loops},
@@ -476,7 +483,7 @@ ViewSpec ViewSpec::from_json(std::string_view input) {
   if (spec.coo_layout == "records" && !value.contains("sorted_neighbors")) spec.sorted_neighbors = false;
   for (auto [key, target] : {std::pair{"edge_ids", &spec.edge_ids}, {"sorted_neighbors", &spec.sorted_neighbors},
                            {"nonnegative_weights", &spec.nonnegative_weights}, {"nonnegative_edge_weights", &spec.nonnegative_edge_weights},
-                           {"require_edge_weights", &spec.require_edge_weights}})
+                           {"require_edge_weights", &spec.require_edge_weights}, {"drop_zero_weights", &spec.drop_zero_weights}})
     if (value.contains(key)) {
       check(value.at(key).is_bool(), std::string(key) + " must be boolean");
       *target = value.at(key).as_bool();
@@ -514,6 +521,7 @@ std::string ViewSpec::canonical_json() const {
                       {"parallel_edges", parallel_edges}, {"weights", weights}, {"weight_source", weight_source},
                       {"nonnegative_weights", nonnegative_weights}, {"nonnegative_edge_weights", nonnegative_edge_weights},
                       {"sum_arithmetic", sum_arithmetic}, {"require_edge_weights", require_edge_weights},
+                      {"drop_zero_weights", drop_zero_weights},
                       {"edge_ids", edge_ids}, {"labels", columns}, {"bipartite_sides", bipartite_sides},
                       {"sorted_neighbors", sorted_neighbors}, {"index_width", index_width},
                       {"limits", {{"max_vertices", limits.max_vertices}, {"max_edges", limits.max_edges}}}};

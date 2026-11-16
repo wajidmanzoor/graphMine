@@ -91,6 +91,28 @@ struct HypergraphInput {
     }
   }
 };
+struct SparsificationInput {
+  struct Edge { VertexIndex u,v; double weight; std::size_t original; };
+  std::vector<Edge> edges;
+  MiningGraph adjacency;
+  SparsificationInput(const Graph& graph, Work& work) : adjacency(graph.vertex_count()) {
+    require(!graph.directed(),"Sparsification requires undirected input");
+    std::set<std::pair<VertexIndex,VertexIndex>> seen;
+    for (std::size_t i=0; i<graph.edge_count(); ++i) {
+      work.tick();
+      const auto& edge = graph.canonical().edges[i];
+      require(edge.weight.has_value() && *edge.weight >= 0,"Sparsification requires explicit nonnegative weights");
+      auto u=graph.dense_index(edge.source),v=graph.dense_index(edge.target);
+      require(u != v,"Sparsification rejects loops");
+      if (u>v) std::swap(u,v);
+      require(seen.emplace(u,v).second,"Sparsification rejects parallel edges");
+      if (*edge.weight > 0) {
+        edges.push_back({u,v,*edge.weight,i});
+        adjacency[u].push_back(v); adjacency[v].push_back(u);
+      }
+    }
+  }
+};
 inline std::vector<std::map<VertexIndex,Exact>> embedding_adjacency(const Graph& graph, const std::string& loops,
                                                                  const std::string& direction, Work& work) {
   std::vector<std::map<VertexIndex,Exact>> adjacency(graph.vertex_count());

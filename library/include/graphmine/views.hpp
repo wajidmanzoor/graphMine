@@ -24,6 +24,8 @@ struct ViewSpec {
   // Legacy f64 profiles may start at +0 and round an extended sum each time.
   std::string sum_arithmetic = "standard";
   bool require_edge_weights = false;
+  // Opt-in removal after casting and any parallel-edge collapse.
+  bool drop_zero_weights = false;
   // Validate all selected input weights, including edges subsequently dropped.
   bool nonnegative_weights = false;
   // Some existing hop-count profiles still validate stored edge lengths.

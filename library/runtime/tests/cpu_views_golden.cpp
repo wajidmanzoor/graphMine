@@ -20,6 +20,7 @@
 #include "../hypergraph_input.hpp"
 #include "../dynamic_input.hpp"
 #include "../embedding_input.hpp"
+#include "../sparsification_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -132,6 +133,42 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
     equal(old_endpoints,new_endpoints);
   }
   return !expected;
+}
+bool sparsification_input(const gm::Graph& graph, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::SparsificationInput> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,old_work); } catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::SparsificationInput> actual;
+    std::string new_failure;
+    try { actual = rt::sparsification_input(graph,work); } catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Sparsification input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->edges.size() != actual->edges.size() || expected->adjacency.size() != actual->adjacency.size() ||
+        old_work.candidates != work.candidates) throw std::runtime_error("Sparsification input shape/cost differs");
+    std::vector<gm::VertexIndex> old_ends,new_ends; std::vector<double> old_weights,new_weights;
+    std::vector<std::size_t> old_ids,new_ids;
+    for (const auto& edge : expected->edges) { old_ends.insert(old_ends.end(),{edge.u,edge.v}); old_weights.push_back(edge.weight); old_ids.push_back(edge.original); }
+    for (const auto& edge : actual->edges) { new_ends.insert(new_ends.end(),{edge.u,edge.v}); new_weights.push_back(edge.weight); new_ids.push_back(edge.original); }
+    equal(old_ends,new_ends); equal(old_weights,new_weights); equal(old_ids,new_ids);
+    for (std::size_t v=0; v<expected->adjacency.size(); ++v) equal(expected->adjacency[v],actual->adjacency[v]);
+  }
+  return !expected;
+}
+gm::Graph corpus_sparsification(const gm::Graph& graph) {
+  auto data = graph.canonical(); data.graph.directed = false; data.edges.clear();
+  std::set<std::pair<gm::VertexIndex,gm::VertexIndex>> seen;
+  for (auto edge : graph.canonical().edges) {
+    const auto u=graph.dense_index(edge.source),v=graph.dense_index(edge.target);
+    if (u==v || !seen.emplace(std::minmax(u,v)).second) continue;
+    edge.weight = data.edges.size()%4==0 ? 0.0 : data.edges.size()%4==1 ? 1.0/11.0 : 0.5;
+    edge.original_weight.reset(); data.edges.push_back(std::move(edge));
+  }
+  return gm::Graph(std::move(data));
 }
 bool embedding_input(const gm::Graph& graph, const std::string& loops, const std::string& direction, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
@@ -982,6 +1019,23 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  const auto sparse = rt::strict_json(R"({"graph":{"id":"sparse","directed":false,"allows_self_loops":true,"allows_parallel_edges":true},
+    "vertices":[{"id":0},{"id":1},{"id":2},{"id":3},{"id":4}],"edges":[
+    {"id":0,"source":2,"target":0,"weight":0.5},{"id":1,"source":1,"target":0,"weight":0.1},
+    {"id":2,"source":2,"target":1,"weight":0.75},{"id":3,"source":3,"target":1,"weight":-0.0},
+    {"id":4,"source":3,"target":2,"weight":0.25}]})");
+  sparsification_input(graph); sparsification_input(rt::parse_graph(sparse));
+  for (std::uint64_t budget=0; budget<8; ++budget) sparsification_input(rt::parse_graph(sparse),budget);
+  for (std::uint64_t budget : {0,1,2,4,10})
+    declared_request("spectral-sparsification:cpp:positive_edges",sparse,{{"edge_budget",budget},{"random_seed",7}});
+  for (int change=0; change<4; ++change) {
+    auto invalid = sparse; auto& first = invalid.as_object().at("edges").as_array()[0].as_object();
+    if (change==0) first["source"] = 0;
+    if (change==1) first["source"] = 1;
+    if (change==2) first["weight"] = -1;
+    if (change==3) first.erase("weight");
+    sparsification_input(rt::parse_graph(invalid));
+  }
   const auto knowledge = corpus_knowledge(raw);
   knowledge_input(graph); knowledge_input(rt::parse_graph(knowledge));
   knowledge_input(rt::parse_graph(knowledge),0);
@@ -1616,6 +1670,7 @@ int main(int argc, char** argv) {
     const bool hypergraphs = argc > 1 && std::string(argv[1]) == "--hypergraphs";
     const bool dynamic_triangles = argc > 1 && std::string(argv[1]) == "--dynamic-triangles";
     const bool embeddings = argc > 1 && std::string(argv[1]) == "--embeddings";
+    const bool sparsification = argc > 1 && std::string(argv[1]) == "--sparsification";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1641,7 +1696,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1649,6 +1704,12 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (sparsification) for (bool fixture : {false,true}) {
+          const bool rejected = sparsification_input(fixture ? corpus_sparsification(graph) : graph);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile","spectral-sparsification:cpp:positive_edges"},{"simple_weighted_fixture",fixture},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (embeddings) {
           for (const auto* loops : {"reject","drop","keep"}) for (const auto* direction : {"preserve","undirected_projection"}) {
             const bool rejected = embedding_input(graph,loops,direction);

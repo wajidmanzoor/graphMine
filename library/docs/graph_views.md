@@ -149,6 +149,13 @@ preserves the common front's numeric tokens. Adapters use this overload rather
 than serializing and parsing again: the latter can change a binary64 value by
 one bit. The text overload still validates and parses external JSON once.
 
+The approved `drop_zero_weights` option defaults to false. When enabled, it
+removes edges whose selected numeric weight is zero after casting and parallel
+collapse, before direction expansion. It preserves sparsification's existing
+positive-weight support. It applies to ordinary graph views and collection
+members, not feature cells or hyperedges. The resolved spec records the policy;
+the normalization summary's output count excludes the removed entries.
+
 u32 limits vertex counts to `UINT32_MAX`. i32 limits vertex and entry counts to
 `INT32_MAX`; CSR storage itself remains u64/u32. Limits are checked on ordinary
 input and expanded output, dense cell counts and hypergraph incidence counts.

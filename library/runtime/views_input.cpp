@@ -24,7 +24,7 @@ ViewVertexMap identity_map(const std::vector<ExternalId>& ids) {
 ViewResult build_features(const json::value& input, const ViewSpec& spec) {
   check(spec.direction == "keep" && spec.self_loops == "keep" && spec.parallel_edges == "keep" &&
             spec.weight_source == "edge.weight" && spec.bipartite_sides == "none" &&
-            !spec.edge_ids && spec.labels.empty() && !spec.require_edge_weights,
+            !spec.edge_ids && spec.labels.empty() && !spec.require_edge_weights && !spec.drop_zero_weights,
         "feature matrix cannot apply graph-edge policies");
   const auto data = rt::object(input, "feature_vectors");
   rt::fields(data, {"dataset_id", "dimension", "vectors"}, {"dataset_id", "dimension", "vectors"});

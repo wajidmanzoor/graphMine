@@ -584,3 +584,19 @@ knowledge fixtures pass 52,568 corpus cases. Checks compare exact adjacency
 fractions, endpoint bytes, relation strings, ID maps, ordering, costs and
 rejections on fresh and cached views. Requests cover LINE, DeepWalk, node2vec,
 DistMult, zero transition masses, loops and disjoint validation triples.
+
+## Spectral sparsification
+
+Sparsification now consumes a declared CSR view with the approved opt-in
+`drop_zero_weights` policy. The factory removes zero support after weight
+conversion and parallel collapse; the default keeps zero weights. The adapter
+preserves required-weight, loop and duplicate rejection, then repacks CSR rows
+and logical edges by original edge ID. Components, effective resistance,
+sampling and numerical certificates are unchanged.
+
+Checkpoint `39-sparsification` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Original and explicitly weighted/simple corpus fixtures pass 13,142
+cases comparing endpoint/weight/ID bytes, neighbor order, costs and rejections
+on fresh/cached views. Factory tests cover all numeric types, cancellation after
+parallel sums, signed zero, unchanged defaults, cache separation and invalid
+structured uses. Requests exercise zero, sampled and identity edge budgets.

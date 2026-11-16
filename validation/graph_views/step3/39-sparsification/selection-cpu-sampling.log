@@ -1,0 +1,5 @@
+Validated 500 selection requests
+Validated 1000 selection requests
+Validated 1500 selection requests
+Validated 2000 selection requests
+{"suite":"sampling","backend":"cpp","gpu_device":0,"passed_requests":2304,"failed":0,"implementation_sha256":"406ab66fe786c30ad64ae0258297b0f36dd1b97e2ed4144909c15a261c640af2"}

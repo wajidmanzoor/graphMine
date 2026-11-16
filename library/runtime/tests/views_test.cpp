@@ -174,6 +174,36 @@ void spec_tests() {
   auto input = graph(false); edge(input, 0, 1);
   rejects([&] { view(input, spec); }, "expanded edge count limit ignored");
 }
+void zero_weight_tests() {
+  auto input = graph(false);
+  edge(input,0,1,0); edge(input,1,2,2); edge(input,2,1,-2); edge(input,2,3,4);
+  for (const auto* weights : {"f64","int64_exact","rational_exact"}) {
+    auto spec = ViewSpec::from_json(R"({"kind":"coo","parallel_edges":"collapse:sum","edge_ids":true})");
+    spec.weights = weights;
+    const auto kept = view(input,spec);
+    spec.drop_zero_weights = true;
+    const auto dropped = view(input,spec);
+    const auto& coo = std::get<CooView>(dropped->view);
+    check(coo.src == std::vector<VertexIndex>({2,3}) && coo.dst == std::vector<VertexIndex>({3,2}) &&
+          *coo.edge_ids == std::vector<EdgeIndex>({3,3}), "zero weights were not removed after parallel collapse");
+    check(kept->normalization.edges == 6 && dropped->normalization.edges == 2 &&
+          dropped->normalization.parallel_edges_collapsed == 1 && kept.get() != dropped.get(),
+          "zero-weight default, count or cache policy changed");
+    const auto expected = bytes(*dropped); cache("clear");
+    check(bytes(*view(input,spec)) == expected,"zero-weight filtering is not deterministic");
+  }
+  auto signed_zero = graph(); edge(signed_zero,0,1,-0.0);
+  auto spec = ViewSpec::from_json(R"({"drop_zero_weights":true})");
+  check(std::get<CsrView>(view(signed_zero,spec)->view).indices.empty(),"negative zero edge survived filtering");
+  for (const auto* invalid : {R"({"drop_zero_weights":true,"weights":"none"})",
+                            R"({"drop_zero_weights":true,"kind":"hypergraph"})",
+                            R"({"drop_zero_weights":1})"})
+    rejects([&] { ViewSpec::from_json(invalid); },"invalid zero-weight policy accepted");
+  spec.kind = "dense";
+  json::object features{{"dataset_id","zero"},{"dimension",1},
+    {"vectors",json::array{json::object{{"id",0},{"values",json::array{0}}}}}};
+  rejects([&] { view(features,spec); },"zero-weight graph policy applied to feature cells");
+}
 void self_connection_tests() {
   auto spec = ViewSpec::from_json(R"({"kind":"csr","direction":"symmetrize",
     "self_loops":"one_per_vertex","parallel_edges":"collapse:first","weights":"none",
@@ -229,6 +259,7 @@ void self_connection_tests() {
     }
 }
 void normalization_tests() {
+  zero_weight_tests();
   self_connection_tests();
   ViewSpec spec;
   spec.direction = "symmetrize"; spec.self_loops = "drop"; spec.parallel_edges = "collapse:min";

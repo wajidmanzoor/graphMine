@@ -1,8 +1,42 @@
 #include "native_random.hpp"
 #include "numeric.hpp"
 #include "pattern_match.hpp"
+#include "sparsification_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile sparsification_view{"spectral-sparsification:cpp:positive_edges", {"spectral-sparsification"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop","parallel_edges":"keep","weights":"f64",
+       "require_edge_weights":true,"nonnegative_weights":true,"drop_zero_weights":true,
+       "edge_ids":true,"sorted_neighbors":false})"};
+}
+SparsificationInput sparsification_input(const Graph& graph, Work& work) {
+  require(!graph.directed(),"Sparsification requires undirected input");
+  std::set<std::pair<VertexIndex,VertexIndex>> seen;
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    require(edge.weight.has_value() && *edge.weight >= 0,"Sparsification requires explicit nonnegative weights");
+    const auto u = graph.dense_index(edge.source),v = graph.dense_index(edge.target);
+    require(u != v,"Sparsification rejects loops");
+    require(seen.emplace(std::minmax(u,v)).second,"Sparsification rejects parallel edges");
+  }
+  const auto built = consume_view(graph,sparsification_view,work,ViewBudget::algorithm_owned);
+  const auto& view = std::get<CsrView>(built->view);
+  const auto& weights = std::get<std::vector<double>>(view.weights);
+  SparsificationInput result; result.adjacency.resize(graph.vertex_count());
+  for (VertexIndex u=0; u<result.adjacency.size(); ++u) {
+    std::vector<EdgeIndex> order(view.offsets[u+1]-view.offsets[u]);
+    std::iota(order.begin(),order.end(),view.offsets[u]);
+    std::sort(order.begin(),order.end(),[&](auto a,auto b) { return view.edge_ids->at(a) < view.edge_ids->at(b); });
+    for (const auto e : order) {
+      const auto v = view.indices[e];
+      result.adjacency[u].push_back(v);
+      if (u < v) result.edges.push_back({u,v,weights[e],view.edge_ids->at(e)});
+    }
+  }
+  std::sort(result.edges.begin(),result.edges.end(),[](const auto& a,const auto& b) { return a.original < b.original; });
+  return result;
+}
 json::object spectral_sparsification(const Graph& graph, const json::object& args,
                                      const std::string&, int, Work& work) {
   using namespace family_util;
@@ -16,30 +50,10 @@ json::object spectral_sparsification(const Graph& graph, const json::object& arg
     epsilon = number(args.at("epsilon"), "epsilon");
     require(*epsilon > 0 && *epsilon < 1, "epsilon must lie strictly between zero and one");
   }
-  struct Edge {
-    VertexIndex u, v;
-    double weight;
-    std::size_t original;
-  };
-  std::vector<Edge> input;
-  std::set<std::pair<VertexIndex, VertexIndex>> seen;
   const auto n = graph.vertex_count();
-  MiningGraph adj(n);
-  for (std::size_t i = 0; i < graph.edge_count(); ++i) {
-    work.tick();
-    const auto& edge = graph.canonical().edges[i];
-    require(edge.weight.has_value() && *edge.weight >= 0,
-            "Sparsification requires explicit nonnegative weights");
-    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    require(u != v, "Sparsification rejects loops");
-    if (u > v) std::swap(u, v);
-    require(seen.emplace(u, v).second, "Sparsification rejects parallel edges");
-    if (*edge.weight > 0) {
-      input.push_back({u, v, *edge.weight, i});
-      adj[u].push_back(v);
-      adj[v].push_back(u);
-    }
-  }
+  const auto prepared = sparsification_input(graph,work);
+  const auto& input = prepared.edges;
+  const auto& adj = prepared.adjacency;
   std::vector<Vertices> components;
   std::vector<bool> visited(n, false);
   for (VertexIndex root = 0; root < n; ++root)
