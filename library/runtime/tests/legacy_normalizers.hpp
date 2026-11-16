@@ -224,4 +224,24 @@ struct StructureInput {
     for (auto& row : adjacency) std::sort(row.begin(),row.end());
   }
 };
+// Frozen influence-maximization input preparation before its view migration.
+struct InfluenceInput {
+  std::map<std::pair<VertexIndex,VertexIndex>,Exact> weights;
+  std::vector<std::vector<std::pair<VertexIndex,Exact>>> incoming;
+  InfluenceInput(const Graph& graph, bool cascade, Work& work) : incoming(graph.vertex_count()) {
+    for (const auto& edge : graph.canonical().edges) {
+      work.tick();
+      require(edge.weight && *edge.weight >= 0 && *edge.weight <= 1,
+              "Every diffusion edge needs an explicit weight in [0,1]");
+      const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+      if (u == v) continue;
+      auto& weight = weights[{u,v}];
+      const Exact probability(*edge.weight);
+      if (cascade) weight = 1 - (1 - weight) * (1 - probability);
+      else weight += probability;
+    }
+    for (const auto& [ends,weight] : weights)
+      if (weight > 0) incoming[ends.second].emplace_back(ends.first,weight);
+  }
+};
 }  // namespace graphmine::legacy_test

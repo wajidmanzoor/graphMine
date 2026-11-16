@@ -1,8 +1,38 @@
 #include <queue>
 
 #include "family_util.hpp"
+#include "influence_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile cascade_profile{"influence-maximization:cpp:independent_cascade", {"influence-maximization"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:probability_union",
+       "weights":"rational_exact","require_edge_weights":true,"nonnegative_weights":true})"};
+const ViewProfile threshold_profile{"influence-maximization:cpp:linear_threshold", {"influence-maximization"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:sum",
+       "weights":"rational_exact","require_edge_weights":true,"nonnegative_weights":true})"};
+}
+InfluenceInput influence_input(const Graph& graph, bool independent_cascade, Work& work) {
+  // Retain this common operation constraint and its validation/budget order.
+  // Weight casting, loop removal and parallel composition occur in make_view.
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    require(edge.weight && *edge.weight >= 0 && *edge.weight <= 1,
+            "Every diffusion edge needs an explicit weight in [0,1]");
+  }
+  const auto input = consume_view(graph,independent_cascade ? cascade_profile : threshold_profile,
+                                  work,ViewBudget::algorithm_owned);
+  const auto& view = std::get<CooView>(input->view);
+  const auto& weights = std::get<std::vector<RationalWeight>>(view.weights);
+  InfluenceInput result;
+  result.incoming.resize(graph.vertex_count());
+  for (std::size_t i=0; i<view.src.size(); ++i) {
+    const Exact weight = Exact(Integer(weights[i].numerator)) / Integer(weights[i].denominator);
+    result.weights.emplace(std::make_pair(view.src[i],view.dst[i]),weight);
+    if (weight > 0) result.incoming[view.dst[i]].emplace_back(view.src[i],weight);
+  }
+  return result;
+}
 json::object influence_maximization(const Graph& graph, const json::object& args,
                                     const std::string&, int, Work& work) {
   using namespace family_util;
@@ -15,23 +45,8 @@ json::object influence_maximization(const Graph& graph, const json::object& args
   require(k <= n, "seed_set_size exceeds vertex count");
   const bool fixed = args.contains("vertex_thresholds") && !args.at("vertex_thresholds").is_null();
   require(!fixed || model == "linear_threshold", "Fixed thresholds apply only to linear_threshold");
-  std::map<std::pair<VertexIndex, VertexIndex>, Exact> weights;
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    require(edge.weight && *edge.weight >= 0 && *edge.weight <= 1,
-            "Every diffusion edge needs an explicit weight in [0,1]");
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    if (u == v) continue;
-    auto& weight = weights[{u, v}];
-    const Exact probability(*edge.weight);
-    if (model == "independent_cascade")
-      weight = 1 - (1 - weight) * (1 - probability);
-    else
-      weight += probability;
-  }
-  std::vector<std::vector<std::pair<VertexIndex, Exact>>> incoming(n);
-  for (const auto& [ends, weight] : weights)
-    if (weight > 0) incoming[ends.second].emplace_back(ends.first, weight);
+  const auto input = influence_input(graph,model == "independent_cascade",work);
+  const auto& weights = input.weights; const auto& incoming = input.incoming;
   if (model == "linear_threshold")
     for (const auto& row : incoming) {
       Exact sum = 0;

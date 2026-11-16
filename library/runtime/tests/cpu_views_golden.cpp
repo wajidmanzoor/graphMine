@@ -4,6 +4,7 @@
 #include "../record_query.hpp"
 #include "../force_layout.hpp"
 #include "../structure_input.hpp"
+#include "../influence_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -114,6 +115,51 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool influence_input(const gm::Graph& graph, bool cascade, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::InfluenceInput> expected;
+  std::string old_failure;
+  try {
+    // This adapter only admits directed input, before constructing any arrays.
+    rt::require(graph.directed(),"Influence maximization requires directed input");
+    expected.emplace(graph,cascade,old_work);
+  } catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::InfluenceInput> actual;
+    std::string new_failure;
+    try {
+      rt::require(graph.directed(),"Influence maximization requires directed input");
+      actual = rt::influence_input(graph,cascade,work);
+    } catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Influence input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->weights.size() != actual->weights.size() || expected->incoming.size() != actual->incoming.size() ||
+        old_work.candidates != work.candidates) throw std::runtime_error("Influence input shape/cost differs");
+    auto a = expected->weights.begin(); auto b = actual->weights.begin();
+    for (; a != expected->weights.end(); ++a,++b) {
+      equal(std::vector<gm::VertexIndex>{a->first.first,a->first.second},
+            std::vector<gm::VertexIndex>{b->first.first,b->first.second});
+      if (rt::json::serialize(rt::fraction_json(a->second)) != rt::json::serialize(rt::fraction_json(b->second)))
+        throw std::runtime_error("Influence probability fraction bytes differ");
+    }
+    for (std::size_t v=0; v<expected->incoming.size(); ++v) {
+      std::vector<gm::VertexIndex> old_neighbors, new_neighbors;
+      std::string old_weights, new_weights;
+      for (const auto& [u,w] : expected->incoming[v]) {
+        old_neighbors.push_back(u); old_weights += rt::json::serialize(rt::fraction_json(w))+'\n';
+      }
+      for (const auto& [u,w] : actual->incoming[v]) {
+        new_neighbors.push_back(u); new_weights += rt::json::serialize(rt::fraction_json(w))+'\n';
+      }
+      equal(old_neighbors,new_neighbors);
+      if (old_weights != new_weights) throw std::runtime_error("Influence incoming weight bytes differ");
+    }
   }
   return !expected;
 }
@@ -488,6 +534,27 @@ void contracts() {
   auto positive = raw;
   for (auto& edge : positive.as_object().at("edges").as_array())
     edge.as_object()["weight"] = std::abs(edge.as_object().at("weight").to_number<double>());
+  auto probabilities = positive;
+  for (auto& edge : probabilities.as_object().at("edges").as_array()) edge.as_object()["weight"] = 0.1;
+  for (bool cascade : {false,true}) {
+    const auto* profile = cascade ? "influence-maximization:cpp:independent_cascade" : "influence-maximization:cpp:linear_threshold";
+    influence_input(rt::parse_graph(probabilities),cascade);
+    influence_input(graph,cascade);
+    influence_input(rt::parse_graph(undirected),cascade);
+    for (std::uint64_t budget=0; budget<7; ++budget) influence_input(graph,cascade,budget);
+    declared_request(profile,probabilities,{{"diffusion_model",cascade ? "independent_cascade" : "linear_threshold"},
+      {"seed_set_size",1}});
+    if (!cascade) declared_request(profile,probabilities,{{"diffusion_model","linear_threshold"},{"seed_set_size",1},
+      {"vertex_thresholds",{rt::json::object{{"vertex",0},{"value",0.1}},
+                            rt::json::object{{"vertex",1},{"value",0.2}},
+                            rt::json::object{{"vertex",2},{"value",0.3}}}}});
+    for (const rt::json::value value : {rt::json::value(0),rt::json::value(1),rt::json::value(-0.1),rt::json::value(1.1),rt::json::value(nullptr)}) {
+      auto boundary = probabilities;
+      auto& loop = boundary.as_object().at("edges").as_array().back().as_object();
+      if (value.is_null()) loop.erase("weight"); else loop["weight"] = value;
+      influence_input(rt::parse_graph(boundary),cascade);
+    }
+  }
   for (bool weighted : {false,true}) for (std::size_t dimensions : {2,3}) {
     force_layout_input(graph,weighted,dimensions);
     force_layout_input(rt::parse_graph(undirected),weighted,dimensions);
@@ -676,6 +743,7 @@ int main(int argc, char** argv) {
     const bool layout = argc > 1 && std::string(argv[1]) == "--layout";
     const bool subgraph_matching = argc > 1 && std::string(argv[1]) == "--subgraph-matching";
     const bool structure = argc > 1 && std::string(argv[1]) == "--structure";
+    const bool influence = argc > 1 && std::string(argv[1]) == "--influence";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -696,13 +764,19 @@ int main(int argc, char** argv) {
     if (local_community) selected_exact.push_back(local_community_case);
     if (geolocation) selected_exact.push_back(geolocation_case);
     if (condensation) selected_exact.push_back(condensation_case);
-    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure)
+    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (influence) for (bool cascade : {false,true}) {
+          const bool rejected = influence_input(graph,cascade);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",cascade ? "influence-maximization:cpp:independent_cascade" : "influence-maximization:cpp:linear_threshold"},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (structure) for (const auto* operation : {"biconnected-components","k-truss"}) {
           const bool rejected = structure_input(graph,operation);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
@@ -753,10 +827,10 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
           }
-        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout && !subgraph_matching && !structure) traversal(graph);
+        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout && !subgraph_matching && !structure && !influence) traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
     std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1] : "traversal")

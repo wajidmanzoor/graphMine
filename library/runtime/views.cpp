@@ -146,6 +146,8 @@ void merge_weight(Weight& stored, const Weight& next, const ViewSpec& spec, Edge
   if (spec.weights == "rational_exact") {
     if (spec.parallel_edges == "collapse:sum")
       stored.rational = std::make_shared<const Rational>(*stored.rational + *next.rational);
+    else if (spec.parallel_edges == "collapse:probability_union")
+      stored.rational = std::make_shared<const Rational>(1 - (1 - *stored.rational) * (1 - *next.rational));
     else if ((spec.parallel_edges == "collapse:min" && *next.rational < *stored.rational) ||
              (spec.parallel_edges == "collapse:max" && *next.rational > *stored.rational)) {
       stored = next;
@@ -261,6 +263,8 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
     if (spec.nonnegative_edge_weights)
       check(edge.weight.value_or(1) >= 0, "This operation requires nonnegative edge weights");
     const auto weight = spec.weights == "none" ? Weight{} : cast_weight(edge_number(edge, spec), spec, summary);
+    if (spec.parallel_edges == "collapse:probability_union")
+      check(*weight.rational >= 0 && *weight.rational <= 1, "Probability-union weights must lie in [0,1]");
     if (spec.nonnegative_weights)
       check(spec.weights == "rational_exact" ? *weight.rational >= 0 :
                 spec.weights == "int64_exact" ? weight.integer >= 0 : weight.f64 >= 0,
@@ -398,8 +402,11 @@ void ViewSpec::validate() const {
         "COO records require kind=coo, direction=keep, parallel_edges=keep and sorted_neighbors=false");
   check(one_of(direction, {"keep", "symmetrize", "reverse", "both"}), "unknown direction");
   check(one_of(self_loops, {"keep", "drop"}), "unknown self_loops policy");
-  check(one_of(parallel_edges, {"keep", "collapse:sum", "collapse:min", "collapse:max", "collapse:first"}),
+  check(one_of(parallel_edges, {"keep", "collapse:sum", "collapse:min", "collapse:max", "collapse:first",
+                               "collapse:probability_union"}),
         "unknown parallel_edges policy");
+  check(parallel_edges != "collapse:probability_union" || weights == "rational_exact",
+        "collapse:probability_union requires rational_exact weights");
   check(one_of(weights, {"none", "f64", "int64_exact", "rational_exact"}), "unknown weight type");
   check(one_of(sum_arithmetic, {"standard", "long_double_round_each"}), "unknown sum arithmetic");
   check(sum_arithmetic == "standard" || (weights == "f64" && parallel_edges == "collapse:sum"),

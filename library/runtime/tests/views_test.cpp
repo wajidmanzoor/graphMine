@@ -298,6 +298,26 @@ void weight_tests() {
   rejects([&] { view(input,spec); }, "timestamp converted without a declared unit");
 }
 void records_exact_tests() {
+  auto probability_spec = ViewSpec::from_json(R"({"kind":"coo","weights":"rational_exact",
+    "parallel_edges":"collapse:probability_union","self_loops":"drop"})");
+  auto probabilities = graph(true); edge(probabilities,0,1,0.25); edge(probabilities,0,1,0.5);
+  edge(probabilities,0,1,0); edge(probabilities,1,2,0); edge(probabilities,1,2,1);
+  const auto probability_result = view(probabilities,probability_spec);
+  check(std::get<std::vector<RationalWeight>>(std::get<CooView>(probability_result->view).weights) ==
+        std::vector<RationalWeight>({{"5","8"},{"1","1"}}), "exact probability union changed");
+  check(probability_result->normalization.parallel_edges_collapsed == 3, "probability collapse count changed");
+  check(ViewSpec::from_json(probability_spec.canonical_json()).canonical_json() == probability_spec.canonical_json(),
+        "probability spec round trip failed");
+  auto sum_spec = probability_spec; sum_spec.parallel_edges = "collapse:sum";
+  check(view(probabilities,sum_spec).get() != probability_result.get(), "probability and sum cache keys collide");
+  for (double invalid : {-0.01,1.01}) {
+    auto bad = graph(true); edge(bad,0,0,invalid);
+    rejects([&] { view(bad,probability_spec); }, "invalid loop probability escaped validation");
+  }
+  for (const auto* type : {"none","f64","int64_exact"}) {
+    auto invalid = probability_spec; invalid.weights = type;
+    rejects([&] { invalid.validate(); }, "probability union accepted inexact weight mode");
+  }
   auto special = ViewSpec::from_json(R"({"kind":"coo","parallel_edges":"collapse:sum",
     "sum_arithmetic":"long_double_round_each","require_edge_weights":true})");
   check(ViewSpec::from_json(special.canonical_json()).canonical_json() == special.canonical_json(),

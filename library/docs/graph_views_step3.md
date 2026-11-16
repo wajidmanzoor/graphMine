@@ -321,3 +321,18 @@ combined algorithm input on fresh builds and retained cache hits. Budget checks
 and real requests verify all four declarations, including requested truss levels.
 An initial constructor parameter/local-variable name collision was corrected;
 the failed build log is retained under `diagnostics/`.
+
+## Influence maximization
+
+Both diffusion models now declare exact COO inputs. The user approved the new
+`collapse:probability_union` rule for independent cascade; linear threshold
+keeps exact sum. Probability validation, zero-probability entries, incoming-row
+order, fixed-threshold propagation and exhaustive seed selection are unchanged.
+
+Checkpoint `21-influence` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. The two profiles pass 13,142 corpus cases: admissible directed inputs
+match endpoint/probability arrays and incoming rows byte for byte, while invalid
+direction or missing/out-of-range probabilities reproduce the old rejection.
+Tests cover exact parallel composition, zero/one probabilities, invalid dropped
+loops, budget precedence, and both real diffusion models including fixed vertex
+thresholds. Fresh/cache-hit assertions and declaration checks pass.

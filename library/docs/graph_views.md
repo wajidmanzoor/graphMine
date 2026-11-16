@@ -130,6 +130,12 @@ It requires `weights: f64` and `parallel_edges: collapse:sum`. The default
 profiles that enable it require an explicit weight on every original edge,
 including a loop that will later be dropped. Both options enter the cache key.
 
+The approved `collapse:probability_union` rule computes `1 - product(1 - p)`
+using `rational_exact` weights. This preserves the existing independent-cascade
+diffusion model's parallel-edge probabilities. Every input probability must lie
+in `[0,1]`, including dropped loops; ordinary sum/min/max/first defaults are
+unchanged. The linear-threshold model continues to use exact parallel sums.
+
 u32 limits vertex counts to `UINT32_MAX`. i32 limits vertex and entry counts to
 `INT32_MAX`; CSR storage itself remains u64/u32. Limits are checked on ordinary
 input and expanded output, dense cell counts and hypergraph incidence counts.
