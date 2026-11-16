@@ -567,3 +567,20 @@ CPU admissions. All 6,571 corpus cases match serialized typed endpoint pairs,
 candidate costs and directed-input rejections on fresh and cached views. New
 requests exercise empty updates, triangle insertion, mixed string/integer IDs,
 loops, parallel edges and limited changed-instance output.
+
+## Node and knowledge-graph embeddings
+
+Node embedding now declares exact CSR profiles for both directions and all
+three loop policies. Required nonnegative/loop checks retain their original
+order; parallel sums and projection occur in the factory. Transition support,
+walk sampling, context-pair formation and fitting remain unchanged.
+Knowledge embedding reads record COO endpoints, original IDs and aligned
+relation labels. Training/validation selection and relation indexing are
+unchanged.
+
+Checkpoint `38-embeddings` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. The six node profiles plus original and explicitly directed/labelled
+knowledge fixtures pass 52,568 corpus cases. Checks compare exact adjacency
+fractions, endpoint bytes, relation strings, ID maps, ordering, costs and
+rejections on fresh and cached views. Requests cover LINE, DeepWalk, node2vec,
+DistMult, zero transition masses, loops and disjoint validation triples.

@@ -91,6 +91,38 @@ struct HypergraphInput {
     }
   }
 };
+inline std::vector<std::map<VertexIndex,Exact>> embedding_adjacency(const Graph& graph, const std::string& loops,
+                                                                 const std::string& direction, Work& work) {
+  std::vector<std::map<VertexIndex,Exact>> adjacency(graph.vertex_count());
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    const auto u = graph.dense_index(edge.source),v = graph.dense_index(edge.target);
+    require(edge.weight.value_or(1) >= 0,"Embedding weights must be nonnegative");
+    if (u == v) {
+      require(loops != "reject","Node embedding profile rejects loops");
+      if (loops == "drop") continue;
+    }
+    const Exact weight(edge.weight.value_or(1));
+    adjacency[u][v] += weight;
+    if (u != v && (!graph.directed() || direction == "undirected_projection")) adjacency[v][u] += weight;
+  }
+  return adjacency;
+}
+struct KnowledgeInput {
+  std::map<ExternalId,std::size_t> edge_indices;
+  std::vector<VertexIndex> sources,targets;
+  std::vector<std::string> relations;
+  KnowledgeInput(const Graph& graph, Work&) {
+    require(graph.directed(),"Knowledge embeddings require directed triples");
+    for (std::size_t i=0; i<graph.edge_count(); ++i) {
+      const auto& edge = graph.canonical().edges[i];
+      require(edge.type && !edge.type->empty(),"Every knowledge edge needs a nonempty relation type");
+      edge_indices[edge.id] = i;
+      sources.push_back(graph.dense_index(edge.source)); targets.push_back(graph.dense_index(edge.target));
+      relations.push_back(*edge.type);
+    }
+  }
+};
 inline std::set<std::pair<ExternalId,ExternalId>> dynamic_triangle_edges(const Graph& graph, Work& work) {
   require(!graph.directed(),"Dynamic triangles require an undirected graph");
   auto input = graph.canonical(); input.edges.clear();

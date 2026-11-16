@@ -1,6 +1,50 @@
 #include "learning.hpp"
+#include "embedding_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile embedding_views[] = {
+  {"node-embedding:cpp:preserve_reject", {"node-embedding"}, R"({"kind":"csr","direction":"keep","self_loops":"drop","parallel_edges":"collapse:sum","weights":"rational_exact","nonnegative_weights":true})"},
+  {"node-embedding:cpp:preserve_drop", {"node-embedding"}, R"({"kind":"csr","direction":"keep","self_loops":"drop","parallel_edges":"collapse:sum","weights":"rational_exact","nonnegative_weights":true})"},
+  {"node-embedding:cpp:preserve_keep", {"node-embedding"}, R"({"kind":"csr","direction":"keep","self_loops":"keep","parallel_edges":"collapse:sum","weights":"rational_exact","nonnegative_weights":true})"},
+  {"node-embedding:cpp:undirected_projection_reject", {"node-embedding"}, R"({"kind":"csr","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:sum","weights":"rational_exact","nonnegative_weights":true})"},
+  {"node-embedding:cpp:undirected_projection_drop", {"node-embedding"}, R"({"kind":"csr","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:sum","weights":"rational_exact","nonnegative_weights":true})"},
+  {"node-embedding:cpp:undirected_projection_keep", {"node-embedding"}, R"({"kind":"csr","direction":"symmetrize","self_loops":"keep","parallel_edges":"collapse:sum","weights":"rational_exact","nonnegative_weights":true})"}
+};
+const ViewProfile knowledge_records{"knowledge-graph-embedding:cpp:records", {"knowledge-graph-embedding"},
+  R"({"kind":"coo","coo_layout":"records","weights":"none","edge_ids":true,"labels":["edge_label"]})"};
+}
+WalkAdjacency embedding_adjacency(const Graph& graph, const std::string& loops, const std::string& direction, Work& work) {
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    require(edge.weight.value_or(1) >= 0,"Embedding weights must be nonnegative");
+    require(loops != "reject" || edge.source != edge.target,"Node embedding profile rejects loops");
+  }
+  const auto index = (direction == "undirected_projection" ? 3 : 0) + (loops == "keep" ? 2 : loops == "drop" ? 1 : 0);
+  const auto built = consume_view(graph,embedding_views[index],work,ViewBudget::algorithm_owned);
+  const auto& view = std::get<CsrView>(built->view);
+  const auto& weights = std::get<std::vector<RationalWeight>>(view.weights);
+  WalkAdjacency result(graph.vertex_count());
+  for (VertexIndex u=0; u<result.size(); ++u)
+    for (auto e=view.offsets[u]; e<view.offsets[u+1]; ++e)
+      result[u].emplace(view.indices[e],Exact(Integer(weights[e].numerator))/Integer(weights[e].denominator));
+  return result;
+}
+KnowledgeInput knowledge_input(const Graph& graph, Work& work) {
+  require(graph.directed(),"Knowledge embeddings require directed triples");
+  for (const auto& edge : graph.canonical().edges)
+    require(edge.type && !edge.type->empty(),"Every knowledge edge needs a nonempty relation type");
+  const auto built = consume_view(graph,knowledge_records,work,ViewBudget::algorithm_owned);
+  const auto& view = std::get<CooView>(built->view);
+  KnowledgeInput result;
+  for (std::size_t e=0; e<view.src.size(); ++e) {
+    result.edge_indices.emplace(graph.canonical().edges[(*view.edge_ids)[e]].id,e);
+    result.sources.push_back(view.vertices.to_original[view.src[e]]);
+    result.targets.push_back(view.vertices.to_original[view.dst[e]]);
+    result.relations.push_back(view.side_tables.edge_label_dictionary[(*view.side_tables.edge_label)[e]]);
+  }
+  return result;
+}
 json::object node_embedding(const Graph& graph, const json::object& args, const std::string&, int,
                             Work& work) {
   using namespace family_util;
@@ -31,20 +75,7 @@ json::object node_embedding(const Graph& graph, const json::object& args, const 
     VertexIndex vertex;
     Exact weight;
   };
-  std::vector<std::map<VertexIndex, Exact>> adjacency(n);
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    require(edge.weight.value_or(1) >= 0, "Embedding weights must be nonnegative");
-    if (u == v) {
-      require(loops != "reject", "Node embedding profile rejects loops");
-      if (loops == "drop") continue;
-    }
-    const Exact weight(edge.weight.value_or(1));
-    adjacency[u][v] += weight;
-    if (u != v && (!graph.directed() || direction == "undirected_projection"))
-      adjacency[v][u] += weight;
-  }
+  const auto adjacency = embedding_adjacency(graph,loops,direction,work);
   std::vector<std::vector<Arc>> rows(n);
   for (std::size_t v = 0; v < n; ++v)
     for (const auto& [u, weight] : adjacency[v])
@@ -214,13 +245,8 @@ json::object knowledge_embedding(const Graph& graph, const json::object& args, c
   const auto negatives = natural(options, "negative_samples", 1, 1);
   NativeRandom random(options);
   const auto configuration = training(options);
-  std::map<ExternalId, std::size_t> edge_indices;
-  for (std::size_t i = 0; i < graph.edge_count(); ++i) {
-    const auto& edge = graph.canonical().edges[i];
-    require(edge.type && !edge.type->empty(),
-            "Every knowledge edge needs a nonempty relation type");
-    edge_indices[edge.id] = i;
-  }
+  const auto input = knowledge_input(graph,work);
+  const auto& edge_indices = input.edge_indices;
   require(args.at("training_triples").is_array() && !args.at("training_triples").as_array().empty(),
           "training_triples must contain edge IDs");
   std::set<ExternalId> selected;
@@ -229,7 +255,7 @@ json::object knowledge_embedding(const Graph& graph, const json::object& args, c
     const auto id = external_id(raw);
     require(edge_indices.count(id) && selected.insert(id).second,
             "Training triples need distinct known edge IDs");
-    relation_names.insert(*graph.canonical().edges[edge_indices.at(id)].type);
+    relation_names.insert(input.relations[edge_indices.at(id)]);
   }
   std::vector<std::string> relations(relation_names.begin(), relation_names.end());
   std::map<std::string, std::size_t> relation_index;
@@ -238,9 +264,8 @@ json::object knowledge_embedding(const Graph& graph, const json::object& args, c
   std::set<Triple> positives;
   std::vector<Triple> validation;
   for (const auto& id : selected) {
-    const auto& edge = graph.canonical().edges[edge_indices.at(id)];
-    positives.emplace(graph.dense_index(edge.source), relation_index.at(*edge.type),
-                      graph.dense_index(edge.target));
+    const auto edge = edge_indices.at(id);
+    positives.emplace(input.sources[edge],relation_index.at(input.relations[edge]),input.targets[edge]);
   }
   const auto raw_validation = args.contains("validation_triples") ? args.at("validation_triples")
                                                                   : json::value(json::array{});

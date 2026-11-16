@@ -19,6 +19,7 @@
 #include "../feature_input.hpp"
 #include "../hypergraph_input.hpp"
 #include "../dynamic_input.hpp"
+#include "../embedding_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -131,6 +132,62 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
     equal(old_endpoints,new_endpoints);
   }
   return !expected;
+}
+bool embedding_input(const gm::Graph& graph, const std::string& loops, const std::string& direction, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<rt::WalkAdjacency> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::embedding_adjacency(graph,loops,direction,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::WalkAdjacency> actual;
+    std::string new_failure;
+    try { actual = rt::embedding_adjacency(graph,loops,direction,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Embedding adjacency rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->size() != actual->size() || old_work.candidates != work.candidates)
+      throw std::runtime_error("Embedding adjacency shape/cost differs");
+    for (std::size_t u=0; u<expected->size(); ++u) {
+      rt::json::array old_values,new_values; std::vector<gm::VertexIndex> old_neighbors,new_neighbors;
+      for (const auto& [v,w] : expected->at(u)) { old_neighbors.push_back(v); old_values.push_back(rt::fraction_json(w)); }
+      for (const auto& [v,w] : actual->at(u)) { new_neighbors.push_back(v); new_values.push_back(rt::fraction_json(w)); }
+      equal(old_neighbors,new_neighbors);
+      if (rt::json::serialize(old_values) != rt::json::serialize(new_values)) throw std::runtime_error("Embedding exact adjacency bytes differ");
+    }
+  }
+  return !expected;
+}
+bool knowledge_input(const gm::Graph& graph, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::KnowledgeInput> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,old_work); } catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::KnowledgeInput> actual;
+    std::string new_failure;
+    try { actual = rt::knowledge_input(graph,work); } catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Knowledge record rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    equal(expected->sources,actual->sources); equal(expected->targets,actual->targets);
+    if (expected->edge_indices != actual->edge_indices || expected->relations != actual->relations || old_work.candidates != work.candidates)
+      throw std::runtime_error("Knowledge record IDs/labels/cost differ");
+  }
+  return !expected;
+}
+rt::json::value corpus_knowledge(rt::json::value graph) {
+  graph.as_object().at("graph").as_object()["directed"] = true;
+  std::size_t i=0;
+  for (auto& edge : graph.as_object().at("edges").as_array()) {
+    edge.as_object()["type"] = "relation_"+std::to_string(i%3); ++i;
+  }
+  return graph;
 }
 bool dynamic_input(const gm::Graph& graph, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
@@ -925,6 +982,29 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  const auto knowledge = corpus_knowledge(raw);
+  knowledge_input(graph); knowledge_input(rt::parse_graph(knowledge));
+  knowledge_input(rt::parse_graph(knowledge),0);
+  declared_request("knowledge-graph-embedding:cpp:records",knowledge,
+    {{"model","distmult"},{"dimensions",2},{"training_triples",{0,2,3}},
+     {"validation_triples",{rt::json::object{{"source",0},{"type","relation_0"},{"target",2}}}},
+     {"training_parameters",{{"epochs",2},{"random_seed",9}}}});
+  for (const auto* loops : {"reject","drop","keep"}) for (const auto* direction : {"preserve","undirected_projection"}) {
+    embedding_input(graph,loops,direction);
+    auto valid = raw;
+    for (std::size_t e=0; e<valid.as_object().at("edges").as_array().size(); ++e)
+      valid.as_object().at("edges").as_array()[e].as_object()["weight"] = e==2 ? 0.0 : 0.1*(e+1);
+    if (std::string(loops)=="reject") valid.as_object().at("edges").as_array().pop_back();
+    embedding_input(rt::parse_graph(valid),loops,direction);
+    for (std::uint64_t budget=0; budget<6; ++budget) embedding_input(rt::parse_graph(valid),loops,direction,budget);
+    const std::string profile = std::string("node-embedding:cpp:")+direction+"_"+loops;
+    for (const auto* model : {"line","deepwalk","node2vec"}) {
+      rt::json::object options{{"epochs",2},{"self_loops",loops},{"direction",direction}};
+      if (std::string(model)!="line") { options["walk_length"]=2; options["walks_per_vertex"]=1; options["window"]=1; }
+      if (std::string(model)=="node2vec") { options["p"]=0.5; options["q"]=2; }
+      declared_request(profile.c_str(),valid,{{"model",model},{"dimensions",2},{"training_parameters",options},{"random_seed",19}});
+    }
+  }
   auto hyper = corpus_hypergraph(graph);
   for (std::size_t v=0; v<3; ++v)
     hyper.at("vertices").as_array()[v].as_object()["attributes"] =
@@ -1535,6 +1615,7 @@ int main(int argc, char** argv) {
     const bool knn = argc > 1 && std::string(argv[1]) == "--knn";
     const bool hypergraphs = argc > 1 && std::string(argv[1]) == "--hypergraphs";
     const bool dynamic_triangles = argc > 1 && std::string(argv[1]) == "--dynamic-triangles";
+    const bool embeddings = argc > 1 && std::string(argv[1]) == "--embeddings";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1560,7 +1641,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1568,6 +1649,19 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (embeddings) {
+          for (const auto* loops : {"reject","drop","keep"}) for (const auto* direction : {"preserve","undirected_projection"}) {
+            const bool rejected = embedding_input(graph,loops,direction);
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile",std::string("node-embedding:cpp:")+direction+"_"+loops},{"equal",true},{"rejected",rejected}}) << '\n';
+          }
+          for (bool labelled : {false,true}) {
+            const bool rejected = knowledge_input(labelled ? rt::parse_graph(corpus_knowledge(input.at("graph"))) : graph);
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile","knowledge-graph-embedding:cpp:records"},{"directed_labelled_fixture",labelled},
+              {"equal",true},{"rejected",rejected}}) << '\n';
+          }
+        }
         if (dynamic_triangles) {
           const bool rejected = dynamic_input(graph);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

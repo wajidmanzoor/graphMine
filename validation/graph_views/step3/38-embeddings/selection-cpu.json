@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  }
+]

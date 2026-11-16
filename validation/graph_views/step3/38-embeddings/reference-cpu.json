@@ -1,0 +1,50 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpu",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "paths",
+    "backend": "cpu",
+    "gpu_device": 0,
+    "passed_requests": 3645,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "forests",
+    "backend": "cpu",
+    "gpu_device": 0,
+    "passed_requests": 1458,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "connectivity",
+    "backend": "cpu",
+    "gpu_device": 0,
+    "passed_requests": 320,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "rank",
+    "backend": "cpu",
+    "gpu_device": 0,
+    "passed_requests": 706,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  },
+  {
+    "suite": "similarity",
+    "backend": "cpu",
+    "gpu_device": 0,
+    "passed_requests": 1024,
+    "failed": 0,
+    "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba"
+  }
+]
