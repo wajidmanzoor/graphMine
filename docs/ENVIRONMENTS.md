@@ -33,15 +33,20 @@ runtime; changing an app branch alone does not replace native binaries.
 
 Each application environment has its own Python environment, data store,
 accounts, captures, history, backups, Studio workspace, and login cookie names.
-Development and testing start with empty database-connection configurations.
-Use disposable test databases or separately provisioned read-only benchmark
-connections; never copy production write credentials into these configurations.
+All three environments use the same five published, isolated read-query
+datasets: Transfers demo, Yelp, MovieLens 32M, MovieLens Tag Genome and LDBC SNB
+SF100 BI. Each environment reads the registry from its own checkout and keeps
+application accounts, conversations and snapshots separate. The demo's optional
+SQL enrichment uses `graphmine_reader`; production write credentials are not
+copied into testing or development.
 
-The development benchmark registry adds independent Neo4j connections only after
-their dataset verification passes. Its registry, instance-root and private
-password-file paths are configured only in the development environment. See
+`GRAPHMINE_DATABASE_DATASET_ALLOWLIST` selects those five entries and enables
+the single dataset picker. `GRAPHMINE_DATABASE_CREDENTIALS_FILE` and
+`GRAPHMINE_NEO4J_DATASETS_PASSWORD_FILE` reference the private, owner-only
+`.database-workspace/demo.env`. No credentials are stored in Git. A registry
+entry is queryable only after its dataset verification passes. See
 [Database workspace](DATABASE_CYPHER_WORKSPACE.md#benchmark-datasets-and-schemas)
-for ports, storage, loading gates and the deferred Stack Overflow dataset.
+for ports, storage, loading gates, paused OnTime and deferred Stack Overflow.
 
 Production keeps its existing `/data/labdata/wajid/graphmine_data/store` data.
 Studio's production workspace and dataset root are under

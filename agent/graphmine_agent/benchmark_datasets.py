@@ -20,9 +20,17 @@ DATASETS = {
 }
 
 
+def visible_ids(settings):
+    if not settings.database_dataset_allowlist:
+        return tuple(DATASETS)
+    from .neo4j_registry import ready_datasets
+    ready = {row["id"] for row in ready_datasets(settings)}
+    return tuple(key for key in settings.database_dataset_allowlist if key in DATASETS and key in ready)
+
+
 def directory(settings, identifier):
     root = settings.benchmark_datasets_root
-    if not root or identifier not in DATASETS:
+    if not root or identifier not in visible_ids(settings):
         raise RecordNotFound("Benchmark dataset not found")
     path = root / identifier
     if not path.is_dir():
@@ -81,7 +89,7 @@ def register_benchmark_routes(router):
         if not settings.benchmark_datasets_root:
             return []
         return [
-            describe(settings, identifier) for identifier in DATASETS
+            describe(settings, identifier) for identifier in visible_ids(settings)
             if (settings.benchmark_datasets_root / identifier).is_dir()
         ]
 

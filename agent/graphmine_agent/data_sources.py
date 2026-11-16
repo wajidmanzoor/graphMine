@@ -11,7 +11,11 @@ def discover(runtime):
     from .database_sources import available as databases
 
     items, warnings = [], []
-    for provider, read in (("database", lambda: databases(runtime.settings)), ("connector", lambda: connectors(runtime))):
+    curated = bool(runtime.settings.database_dataset_allowlist)
+    providers = [("database", lambda: databases(runtime.settings))]
+    if not curated:
+        providers.append(("connector", lambda: connectors(runtime)))
+    for provider, read in providers:
         try:
             sources = read()
         except (AnalyticsError, AccountError) as error:
@@ -27,8 +31,10 @@ def discover(runtime):
                 item.update(type=source.type, capabilities={"cypher": False, "preview": True, "import": True,
                             "enrichment": False, "expansion": False, "sync": False})
             items.append(item)
-    items.sort(key=lambda item: (item["name"].casefold(), item["id"]))
-    return {"items": items, "warnings": warnings, "can_manage_imports": current_principal.get() is not None}
+    if not curated:
+        items.sort(key=lambda item: (item["name"].casefold(), item["id"]))
+    return {"items": items, "warnings": warnings, "dataset_picker_only": curated,
+            "can_manage_imports": not curated and current_principal.get() is not None}
 
 
 def register_source_routes(router):

@@ -14,7 +14,7 @@ window.GraphMineDataLayout = ({node, host, panes, controls, footer, queryAction,
   const next = node("button", {id: "data-step-next", type: "button", class: "secondary"}, "Continue to query");
   const hint = node("span", {class: "data-step-hint", role: "status"});
   const actions = node("div", {class: "data-step-actions"}); actions.append(previous, hint, next); footer.prepend(actions);
-  let selected = "connection", available = false, active = true, mode = "query";
+  let selected = "connection", available = false, active = true, mode = "query", datasetPicker = false;
   function render() {
     const current = names.indexOf(selected);
     controls.hidden = !active || !media.matches;
@@ -31,6 +31,7 @@ window.GraphMineDataLayout = ({node, host, panes, controls, footer, queryAction,
     next.hidden = current === 2;
     next.textContent = current === 0 ? mode === "import" ? "Continue to import" : "Continue to query" : "View preview";
     buttons[1].lastElementChild.textContent = mode === "import" ? "Import" : "Query";
+    buttons[0].lastElementChild.textContent = datasetPicker ? "Dataset" : "Connection";
     next.disabled = current === 0 && !available;
     hint.textContent = current === 0 && !available ? "Choose a ready dataset to continue." : "";
     queryAction.hidden = media.matches && selected === "connection";
@@ -63,6 +64,7 @@ window.GraphMineDataLayout = ({node, host, panes, controls, footer, queryAction,
   render();
   return {select, current: () => selected,
     mode(value) { mode = value; render(); },
+    datasetPicker(value) { datasetPicker = value; render(); },
     ready(value) { available = value; render(); },
     active(value) { active = value; render(); },
     destroy() { media.removeEventListener("change", resize); observer.disconnect(); }};

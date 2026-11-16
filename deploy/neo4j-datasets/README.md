@@ -23,7 +23,11 @@ changed. LDBC publishes an administrative bulk importer. Its original shell
 script is reference material only; it includes commands unsuitable for this
 shared host. The user approved adapting that published importer for its own
 Neo4j 5.26 Community instance. The user subsequently approved starting its
-import while OnTime continues loading in the background.
+import while OnTime loaded in the background. LDBC has now passed verification.
+The user subsequently paused OnTime: its service is stopped and disabled and
+its partial store is preserved. Do not restart that import without reviewing
+the partial data. The current registry contains only Yelp, MovieLens 32M,
+MovieLens Tag Genome and LDBC; the app also offers an isolated Transfers demo.
 
 ## Import preparation
 
@@ -96,8 +100,8 @@ a mismatch. Only a passed report can set `status=ready` and add the dataset to
 `registry.json`. Memory and disk measurements are included in the final report.
 
 For LDBC, `load_dataset.py` uses `ldbc_bulk.py` after Yelp and both MovieLens
-datasets are verified. OnTime and LDBC may load concurrently, as approved by the
-user on 2026-11-15 (America/New_York); each is published only after its own
+datasets are verified. Concurrent loading was approved by the user on
+2026-11-15 (America/New_York), but OnTime is now explicitly paused. Each is published only after its own
 loading and verification gates pass. The adapter preserves the published eight node and 23
 relationship groups and rejects every bad entry. It stops only the dedicated
 LDBC service, preserves its verified-empty initial store, uses a 40 GiB process

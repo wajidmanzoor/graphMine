@@ -66,11 +66,12 @@ SHA-256: `ea6f46b541c473ab79fff4359524027a462d031f21048b8a8acbceb4fa46a92f`.
 Upstream release: https://github.com/neo4j/apoc/releases/tag/5.26.32.
 No shared distribution or existing instance plugin was changed.
 
-Every new instance starts with a 4 GiB heap. Planned page caches are 12, 8, 8,
-40, 16, and 56 GiB for Yelp, ML32M, Genome, Stack Overflow, OnTime, and LDBC,
-respectively. The six systemd hard memory limits total 176 GiB, including
-2 GiB per instance beyond heap and cache, leaving about 75 GiB on this host.
-Stack Overflow is deferred, so its reservation is not currently allocated.
+The other benchmark instances use a 4 GiB heap; OnTime's retry uses 16 GiB.
+Configured page caches are 12, 8, 8, 40, 12, and 56 GiB for Yelp, ML32M, Genome,
+Stack Overflow, OnTime, and LDBC, respectively. The six systemd hard memory
+limits would total 184 GiB, including 2 GiB per instance beyond heap and cache,
+leaving about 67 GiB on this host. Stack Overflow is deferred and OnTime is
+paused, so neither service currently consumes that reservation.
 Actual memory and disk use are recorded after loading. Transaction-log
 retention is `2 days 2G`, matching the existing host configuration; this does
 not change the graph mapping. All listeners bind to loopback with auth enabled.
@@ -106,6 +107,17 @@ empty store, the same verified inputs and unchanged published Cypher, with
 16 GiB heap, 12 GiB page cache and a 30 GiB service cap. The six-instance plan
 still leaves at least 64 GiB for other services. The retry receipt is
 `neo4j-instances/ontime/retry-receipt.json`.
+
+## Paused by the user
+
+On 2026-11-16 at 03:15 UTC, the user requested stopping OnTime to focus on the
+four already verified benchmarks and the demo. The service shut down cleanly
+and was disabled. Six monthly FLIGHT files had finished with zero failed
+operations; the seventh (`load/008.cypher`) was interrupted. The partial store,
+inputs and receipts are preserved, with `status=paused`, `phase=paused_by_user`
+and `resume_requires_review=true`. OnTime is not in the registry or interface.
+The cancellation details are in `ontime/user-stop-request.json` and
+`ontime/user-paused-rollout/`. No verification success is claimed.
 
 ## Published year-property inconsistency
 

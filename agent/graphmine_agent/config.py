@@ -124,6 +124,10 @@ class Settings:
     connectors_file: Path | None = None
     connector_allowed_origins: tuple[str, ...] = ()
     database_sources_file: Path | None = None
+    database_credentials_file: Path | None = None
+    # A curated deployment exposes only these dataset IDs; empty keeps the
+    # general connection/import workspace available for other installations.
+    database_dataset_allowlist: tuple[str, ...] = ()
     database_pool_limit: int = 16
     database_pool_size: int = 4
     database_pool_wait_seconds: int = 10
@@ -302,6 +306,11 @@ class Settings:
         )
         token = os.getenv("GRAPHMINE_API_TOKEN", "").strip() or None
         return cls(
+            database_credentials_file=Path(os.environ["GRAPHMINE_DATABASE_CREDENTIALS_FILE"]).expanduser().absolute()
+            if os.getenv("GRAPHMINE_DATABASE_CREDENTIALS_FILE") else None,
+            database_dataset_allowlist=tuple(
+                item.strip() for item in os.getenv("GRAPHMINE_DATABASE_DATASET_ALLOWLIST", "").split(",") if item.strip()
+            ),
             neo4j_datasets_registry=Path(os.environ["GRAPHMINE_NEO4J_DATASETS_REGISTRY"]).expanduser().resolve()
             if os.getenv("GRAPHMINE_NEO4J_DATASETS_REGISTRY") else None,
             neo4j_instances_root=Path(os.environ["GRAPHMINE_NEO4J_INSTANCES_ROOT"]).expanduser().resolve()

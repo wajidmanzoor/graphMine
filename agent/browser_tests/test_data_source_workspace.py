@@ -184,7 +184,7 @@ def test_movielens_shared_movies_projection_opens_in_chat(loading_browser, datab
 
 
 @pytest.mark.parametrize("dataset", [
-    "yelp", "movielens-32m", "movielens-genome", "ontime", "ldbc-snb",
+    "yelp", "movielens-32m", "movielens-genome", "ldbc-snb",
 ])
 def test_imported_dataset_preview_and_chat(loading_browser, database_server, dataset):
     """Opt in after the large benchmark import has completed."""

@@ -105,4 +105,4 @@ def password(path, name):
                 raise ValueError("Missing or duplicate credential")
             return matches[0]
     except (OSError, ValueError) as error:
-        raise AnalyticsError("A benchmark database credential is not configured.", "database_configuration", 503) from error
+        raise AnalyticsError("A database credential is not configured.", "database_configuration", 503) from error

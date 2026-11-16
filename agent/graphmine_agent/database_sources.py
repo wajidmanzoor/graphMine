@@ -64,6 +64,7 @@ class DatabaseSource(Strict):
     _config_stamp: tuple | None = PrivateAttr(default=None)
     _managed: bool = PrivateAttr(default=False)
     _registry_password_file: Path | None = PrivateAttr(default=None)
+    _credentials_file: Path | None = PrivateAttr(default=None)
     id: str = Field(pattern=r"^[A-Za-z0-9_-]{1,64}$")
     name: str = Field(min_length=1, max_length=160)
     users: list[str] = Field(min_length=1)
@@ -197,7 +198,7 @@ class DatabaseSource(Strict):
             try:
                 from psycopg.conninfo import conninfo_to_dict
 
-                fields = conninfo_to_dict(os.environ.get(self.sql_dsn_env or "", ""))
+                fields = conninfo_to_dict(source_secret(self, self.sql_dsn_env))
                 sql = {
                     "host": fields.get("host", ""),
                     "port": int(fields.get("port") or 5432),
@@ -205,7 +206,7 @@ class DatabaseSource(Strict):
                     "username": fields.get("user", ""),
                     "sslmode": fields.get("sslmode", "prefer"),
                 }
-            except (ImportError, ValueError):
+            except (ImportError, ValueError, AnalyticsError):
                 sql = {}
         if self.sql_type == "sqlite":
             sql = {"database": Path(self.sqlite_path).name}
@@ -244,6 +245,7 @@ def configured(settings):
             raise ValueError("Invalid source inventory")
         for source in sources:
             source._config_stamp = (path, info.st_ino, info.st_mtime_ns, info.st_size)
+            source._credentials_file = settings.database_credentials_file
         return sources
     except (OSError, ValueError, TypeError) as exc:
         raise AnalyticsError(
@@ -258,11 +260,20 @@ def available(settings):
     from .neo4j_registry import sources as registry_sources
 
     principal = current_principal.get()
-    return [
+    sources = [
         s
         for s in configured(settings)
         if "*" in s.users or principal and principal.username in s.users
-    ] + registry_sources(settings) + managed_sources(settings)
+    ]
+    benchmarks = registry_sources(settings)
+    allowlist = settings.database_dataset_allowlist
+    if allowlist:
+        # The configured demo and verified registries are the only routes in
+        # curated mode, including requests made directly to the query API.
+        choices = {"default": s for s in sources if s.id == "local-transfers"}
+        choices.update({s._catalog["id"]: s for s in benchmarks})
+        return [choices[key] for key in dict.fromkeys(allowlist) if key in choices]
+    return sources + benchmarks + managed_sources(settings)
 
 
 def get_source(settings, identifier):
@@ -279,6 +290,14 @@ def secret(name):
             "A database credential is not configured.", "database_configuration", 503
         )
     return value
+
+
+def source_secret(source, name):
+    path = source._registry_password_file or source._credentials_file
+    if path is not None:
+        from .neo4j_registry import password
+        return password(path, name)
+    return secret(name)
 
 
 def json_value(value):
@@ -380,7 +399,7 @@ def _postgres_connection(source):
                       dbname=values["database"], user=values["username"],
                       password=values["password"], sslmode=values["sslmode"])
     else:
-        kwargs = conninfo_to_dict(secret(source.sql_dsn_env))
+        kwargs = conninfo_to_dict(source_secret(source, source.sql_dsn_env))
     # The connection default also bounds pool checks/reset after a rollback.
     kwargs.update(connect_timeout=5, options=kwargs.get("options", "") + f" -c statement_timeout={source.timeout_seconds * 1000}")
     signature = [kwargs, {key: value for key, value in os.environ.items() if key.startswith("PG")}]
@@ -614,11 +633,7 @@ def neo4j_session(source, *, write=False):
     from .database_pools import current_database_pools, resource
     from .identity import identity_scope
 
-    if source._registry_password_file is not None:
-        from .neo4j_registry import password as registry_password
-        credential = registry_password(source._registry_password_file, password)
-    else:
-        credential = source._neo4j_password or secret(password)
+    credential = source._neo4j_password or source_secret(source, password)
     options, address_key = {}, None
     if source._network_settings is not None:
         from .database_connections import network_address

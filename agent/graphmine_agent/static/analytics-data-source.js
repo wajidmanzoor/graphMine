@@ -12,7 +12,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
   let opening = false, closeDialog = null, selectPart = null, mounting = 0, pendingPart = "connection";
   const launch = button("open-database-workspace", "Open data workspace", "primary");
   const start = node("div", {class: "database-start"}), startText = node("div");
-  startText.append(node("strong", {}, "Start with your data"), node("p", {}, "Connect a database, shape your graph with Cypher, or upload a file."));
+  startText.append(node("strong", {}, "Start with your data"), node("p", {}, "Choose a dataset, shape your graph with Cypher, or upload a file."));
   start.append(icon("data"), startText, launch);
   document.querySelector(".domain-grid-heading").before(start);
   const nav = button("nav-database", "", "nav-item");
@@ -54,7 +54,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     }
     const databasePanel = node("section", {id: "source-database-panel", class: "source-database-panel", role: "tabpanel", "aria-labelledby": databaseTab.id});
     const filePanel = node("section", {id: "source-files-panel", class: "source-files-panel", role: "tabpanel", "aria-labelledby": fileTab.id, hidden: true});
-    const status = node("p", {id: "database-query-status", class: "source-status", role: "status"}, "Loading your connections…");
+    const status = node("p", {id: "database-query-status", class: "source-status", role: "status"}, "Loading your datasets…");
     const sidebar = node("section", {class: "source-sidebar data-pane", id: "data-connection-pane", "data-heading": "data-connection-heading", tabindex: "0"});
     const source = node("select", {id: "database-source", "aria-label": "Database"});
     const dataset = node("select", {id: "database-dataset", "aria-label": "Dataset"});
@@ -69,8 +69,10 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const connectionSummary = node("summary", {}, "Connection details"), connectionActions = node("div", {class: "source-connection-actions"});
     const discoveryWarning = node("p", {id: "source-discovery-warning", class: "source-hint", role: "status", hidden: true});
     connectionDetails.append(connectionSummary, health, check); connectionActions.append(add, edit);
-    sidebar.append(node("h2", {id: "data-connection-heading"}, "Connection & schema"), label("Connection", source), connectionActions, discoveryWarning, connectionDetails,
-      label("Dataset", dataset), datasetStatus, reloadDatasets, schema);
+    const sourceLabel = label("Connection", source), datasetLabel = label("Dataset", dataset);
+    const connectionHeading = node("h2", {id: "data-connection-heading"}, "Connection & schema");
+    sidebar.append(connectionHeading, sourceLabel, connectionActions, discoveryWarning, connectionDetails,
+      datasetLabel, datasetStatus, reloadDatasets, schema);
     const work = node("section", {class: "source-work data-pane", id: "data-query-pane", "data-heading": "data-query-heading", tabindex: "0"});
     const schemaBox = node("details", {class: "source-dataset-schema"}), schemaView = node("div");
     schemaBox.open = !window.matchMedia("(max-width: 600px)").matches;
@@ -83,6 +85,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     sharedMovies.hidden = true;
     const editor = node("textarea", {id: "cypher-editor", class: "code-editor", rows: "8", spellcheck: "false", "aria-label": "Cypher query", "aria-describedby": "cypher-hint"});
     const hint = node("p", {id: "cypher-hint", class: "source-hint"}, "Return nodes, relationships or paths to choose the graph for your analysis.");
+    const queryScope = node("p", {id: "database-query-scope", class: "source-hint", role: "status"});
     const parameters = node("textarea", {id: "cypher-parameters", class: "code-editor", rows: "3", "aria-label": "Query parameters (JSON)", spellcheck: "false"});
     const parameterBox = node("details", {class: "query-parameters"});
     parameterBox.append(node("summary", {}, "Parameters"), parameters);
@@ -133,7 +136,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const sync = button("sync-database", "Refresh graph from tables", "quiet");
     const builderBox = node("div"), queryLibraryBox = node("div"), jobsBox = node("div");
     const importDescription = node("p", {id: "source-import-description", class: "source-hint", hidden: true});
-    work.append(queryHeading, queryLibraryBox, builderBox, sharedMovies, hint, editor, draftStatus, options, jobsBox);
+    work.append(queryHeading, queryScope, queryLibraryBox, builderBox, sharedMovies, hint, editor, draftStatus, options, jobsBox);
     work.append(importDescription);
     sidebar.append(sync, schemaBox);
     const previewPane = node("section", {class: "source-preview data-pane", id: "data-preview-pane", "data-heading": "data-preview-heading", tabindex: "0"});
@@ -160,7 +163,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     if (fileControls) { fileControls.before(controlsPlace); fileControls.hidden = false; filePanel.append(fileControls); }
     dialog.append(heading, tabs, databasePanel, filePanel); $("data-workspace-view").append(dialog);
     let sources = [], datasets = [], generation = 0, healthGeneration = 0, datasetGeneration = 0, sourceGeneration = 0, saved = null, cy = null, busy = false, uploading = false, benchmarks = null;
-    let canManageImports = false, discoveryPending = true;
+    let canManageImports = false, discoveryPending = true, datasetPickerOnly = false;
     const selectedSource = () => sources.find(item => item.id === source.value);
     const importing = () => selectedSource()?.source_kind === "connector";
     const readController = new AbortController();
@@ -265,7 +268,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       source.disabled = edit.disabled = value;
       add.disabled = value;
       editor.disabled = parameters.disabled = direction.disabled = projection.disabled = sharedMovies.disabled = value || unavailable;
-      sync.hidden = importing() || dataset.value !== "default" || selectedSource()?.capabilities?.sync === false;
+      sync.hidden = datasetPickerOnly || importing() || dataset.value !== "default" || selectedSource()?.capabilities?.sync === false;
       sync.disabled = value || !selectedSource()?.entities?.length;
       check.disabled = value || unavailable || importing();
       layout.ready(!unavailable && !value);
@@ -325,6 +328,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     function describeDataset(preserve = false) {
       resetPreview(); benchmarks?.destroy();
       const selected = datasets.find(d => d.id === dataset.value);
+      queryScope.textContent = selected?.status === "ready" ? `Queries run only on ${selected.name}.` : "Choose a ready dataset to run a query.";
       builder.setContext(source.value, dataset.value, selected?.status === "ready");
       schemaView.replaceChildren();
       schemaBox.hidden = !selected;
@@ -332,7 +336,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       queryTools.setContext(source.value, dataset.value, selected?.status === "ready");
       sharedMovies.hidden = selected?.id !== "movielens-32m";
       describeProjection();
-      datasetStatus.textContent = !selected ? "No datasets are available in this connection."
+      datasetStatus.textContent = !selected ? datasetPickerOnly ? "Choose an available dataset." : "No datasets are available in this connection."
         : selected.status === "ready" ? selected.node_count != null
           ? `${selected.node_count.toLocaleString()} nodes · ${selected.relationship_count.toLocaleString()} relationships`
           : "Ready to query"
@@ -353,7 +357,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       const isImport = importing();
       queryTools.setVisible(!isImport);
       healthGeneration++; datasetGeneration++;
-      for (const element of [queryLibraryBox, builderBox, hint, editor, draftStatus, options, jobsBox, discardDraft]) element.hidden = isImport;
+      for (const element of [queryScope, queryLibraryBox, builderBox, hint, editor, draftStatus, options, jobsBox, discardDraft]) element.hidden = isImport;
       importDescription.hidden = !isImport;
       queryHeading.querySelector("h2").textContent = isImport ? "Import" : "Query";
       queryHeading.querySelector(".source-badge").textContent = isImport ? selected.type === "sqlite" ? "SQLite" : selected.type === "rest" ? "REST API" : "HTTP export" : "Cypher";
@@ -362,7 +366,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       check.hidden = isImport;
       layout.mode?.(isImport ? "import" : "query");
       jobs.setContext(isImport ? null : selected?.id || null);
-      edit.hidden = !selected?.managed; setBusy(false);
+      edit.hidden = datasetPickerOnly || !selected?.managed; setBusy(false);
       if (isImport) {
         draftContext = null; draftDirty = false; draftPresent = false;
         builder.setContext(null, null, false); queryTools.setContext(null, null, false); benchmarks?.destroy();
@@ -378,10 +382,11 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       }
       if (!selected) {
         editor.value = defaultQuery(); parameters.value = "{}";
-        status.textContent = "Add a database connection, or choose Upload file to get started.";
+        status.textContent = datasetPickerOnly ? "Choose a dataset, or upload a file to get started." : "Add a database connection, or choose Upload file to get started.";
         health.replaceChildren(); connectionSummary.textContent = "Connection details"; datasets = []; dataset.replaceChildren(); describeDataset(); return;
       }
-      checkHealth(); setBusy(true); datasetStatus.textContent = "Loading datasets from this database…";
+      checkHealth(); setBusy(true); datasetStatus.textContent = datasetPickerOnly ? "Loading dataset details…" : "Loading datasets from this database…";
+      queryScope.textContent = `Selecting ${selected.name}…`;
       const current = ++datasetGeneration, selectedId = selected.id;
       try {
         const entries = await api(`/api/database-sources/${encodeURIComponent(selected.id)}/datasets`, {signal: readController.signal});
@@ -418,9 +423,16 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
         }
         if (current !== sourceGeneration || !dialog.isConnected) return false;
         canManageImports = Boolean(response.can_manage_imports);
+        datasetPickerOnly = Boolean(response.dataset_picker_only);
+        sourceLabel.firstChild.nodeValue = datasetPickerOnly ? "Dataset" : "Connection";
+        source.setAttribute("aria-label", datasetPickerOnly ? "Dataset" : "Database");
+        connectionHeading.textContent = datasetPickerOnly ? "Dataset & schema" : "Connection & schema";
+        databaseTab.textContent = datasetPickerOnly ? "Datasets" : "Database";
+        connectionActions.hidden = connectionDetails.hidden = datasetLabel.hidden = datasetPickerOnly;
+        layout.datasetPicker?.(datasetPickerOnly);
         sources = response.items.map(item => item.provider === "database" ? item.connection : {...item, id: `connector:${item.source_id}`, connector_id: item.source_id, source_kind: "connector"});
         discoveryWarning.textContent = (response.warnings || []).map(warning => warning.message).join(" "); discoveryWarning.hidden = !discoveryWarning.textContent;
-        source.replaceChildren(...sources.map(s => node("option", {value: s.id}, s.name + (s.source_kind === "connector" ? ` · ${s.type === "rest" ? "REST API" : s.type === "sqlite" ? "SQLite" : "Neo4j HTTP export"}` : " · Neo4j"))));
+        source.replaceChildren(...sources.map(s => node("option", {value: s.id}, s.name + (datasetPickerOnly ? "" : s.source_kind === "connector" ? ` · ${s.type === "rest" ? "REST API" : s.type === "sqlite" ? "SQLite" : "Neo4j HTTP export"}` : " · Neo4j"))));
         if (sources.some(s => s.id === selected)) source.value = selected;
         else if (selected) source.value = "";
         return true;
@@ -446,6 +458,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     };
     add.onclick = () => settings(false); edit.onclick = () => settings(true);
     function readQuery() {
+      if (!selectedSource() || datasets.find(d => d.id === dataset.value)?.status !== "ready") throw new Error("Choose a ready dataset first.");
       let values;
       try {
         values = W.parse(parameters.value || "{}");
@@ -461,7 +474,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       const body = readQuery(); queryTools.sync();
       const signature = source.value + W.stringify(body);
       resetPreview(); const current = generation;
-      status.textContent = "Running your query…";
+      status.textContent = `Running your query on ${datasets.find(d => d.id === dataset.value).name}…`;
       const response = await jobs.execute(`/api/database-sources/${encodeURIComponent(source.value)}/queries`, body);
       if (current !== generation || !dialog.isConnected) return null;
       return renderQuery(response, signature);

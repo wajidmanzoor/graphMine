@@ -330,8 +330,29 @@ queries and snapshots remain private and use their selected connections.
 Benchmark connections expose no SQL mappings or writer credentials. **Add table
 attributes** and **Add relationships** are hidden for their snapshots; the API
 also rejects those operations. The Transfers demo retains mapped SQL enrichment,
-expansion and synchronization. Ordinary Neo4j connections expose their default
+and expansion. Ordinary Neo4j connections expose their default
 graph even when an optional SQL service is unavailable.
+
+The deployed interface has one **Dataset** selector containing Transfers demo,
+Yelp, MovieLens 32M, MovieLens Tag Genome and LDBC SNB SF100 BI. Selecting an
+entry scopes every Cypher query to its independent instance. The query pane
+names that dataset; switching clears the old preview and restores that dataset's
+own draft. Connection administration and synchronization controls are hidden.
+The API applies `GRAPHMINE_DATABASE_DATASET_ALLOWLIST` too, so hidden legacy,
+managed, paused and deferred sources cannot be queried through a direct request.
+The benchmark schema catalog exposes only the selected verified datasets.
+An empty allowlist retains the general connection workspace for other installs.
+
+Transfers demo now has its own instance at `bolt://127.0.0.1:17700`. Exactly
+8 Account/GraphMineEntity nodes and 10 TRANSFER relationships were copied from
+the legacy shared store, with all labels and properties compared after copying.
+The old store was not modified. This makes even `MATCH (n) RETURN count(n)`
+return only the demo's eight nodes. Its copy, receipt and provisioning script
+are in `neo4j-instances/transfers-demo/`; SQL enrichment still reads the existing
+PostgreSQL tables using the read-only `graphmine_reader` role.
+After the exact copy, only its `gm_mapping_hash` metadata was updated to match
+the new connection URI; `mapping-migration.json` records that change and the
+comparison of all remaining properties, labels and stable IDs.
 
 The Cypher validator accepts identifiers such as `start` and `stop` in patterns,
 properties and aliases while rejecting administrative and writing clauses.
@@ -352,18 +373,23 @@ actual memory and disk measurements are saved in each `verify_report.json`.
 
 | Dataset | Bolt / HTTP | Heap / page cache | Service memory cap |
 | --- | --- | --- | --- |
+| Transfers demo | 17700 / 17400 | 1 / 1 GiB | 3 GiB |
 | Yelp | 17701 / 17401 | 4 / 12 GiB | 18 GiB |
 | MovieLens 32M | 17702 / 17402 | 4 / 8 GiB | 14 GiB |
 | MovieLens Tag Genome | 17703 / 17403 | 4 / 8 GiB | 14 GiB |
 | Stack Overflow (deferred) | 17704 / 17404 reserved | 4 / 40 GiB planned | 46 GiB planned |
-| OnTime | 17705 / 17405 | 16 / 12 GiB | 30 GiB |
+| OnTime (paused; service disabled) | 17705 / 17405 reserved | 16 / 12 GiB configured | 30 GiB configured |
 | LDBC SNB SF100 | 17706 / 17406 | 4 / 56 GiB | 62 GiB |
 
-The five active service caps total 138 GiB on this 251 GiB host. The old shared
-Neo4j and PostgreSQL services remain intact. The user approved starting LDBC
-while OnTime continues loading, after Yelp and both MovieLens datasets passed
-verification. Each dataset still needs its own complete loading, count, index
-and representative-query checks before publication. OnTime started with a 4 GiB heap; its
+The four benchmark service caps total 108 GiB; the isolated demo adds 3 GiB on
+this 251 GiB host. The old shared Neo4j and PostgreSQL services remain intact.
+LDBC completed loading and verification. The user paused OnTime after six
+monthly flight files completed; its service is stopped and disabled, and its
+partial seventh file and prior receipts are preserved. It is absent from the
+registry and user interface. Resuming requires review of the partial store;
+the loader must not be blindly rerun against it. Each dataset still needs its
+own complete loading, count, index and representative-query checks before
+publication. OnTime started with a 4 GiB heap; its
 first flight import exhausted that heap. The failed new store was preserved
 and the loader retried against a fresh empty store with the larger budget above,
 without changing the published Cypher.
@@ -381,8 +407,8 @@ These are observations, not fixed reservations. Service memory includes its
 accounted file cache. Disk columns cover the named instance subdirectories;
 the original raw datasets and shared binaries are separate. The exact byte
 counts are in `neo4j-instances/<dataset>/resource-usage.json`, alongside the
-original verification report. OnTime is still loading and will be measured
-after its verification gate passes.
+original verification report. OnTime remains paused without a passed
+verification report; its stop receipt is `ontime/user-stop-request.json`.
 
 The local data root is `/data/labdata/wajid/graphmine_data`:
 
@@ -884,11 +910,15 @@ GRAPHMINE_TEST_DATABASE_INTEGRATION=1 .venv/bin/python -m pytest \
 GRAPHMINE_TEST_BENCHMARK_INTEGRATION=1 .venv/bin/python -m pytest \
   agent/tests/test_benchmark_instances_integration.py -q
 
-# After all five active datasets are verified, with the four registry/schema
+# With the four benchmark datasets verified and the registry/schema
 # paths above exported and GRAPHMINE_TEST_RUNTIME_ROOT set to a built runtime.
 GRAPHMINE_TEST_DATABASE_INTEGRATION=1 GRAPHMINE_TEST_BENCHMARK_INTEGRATION=1 \
   .venv/bin/python -m pytest agent/browser_tests/test_data_source_workspace.py \
   -k 'benchmark or imported_dataset or movielens or published_schemas' -q
+
+# With the curated allowlist, isolated demo source and credential file configured:
+GRAPHMINE_TEST_DATABASE_INTEGRATION=1 GRAPHMINE_TEST_BENCHMARK_INTEGRATION=1 \
+  .venv/bin/python -m pytest agent/browser_tests/test_curated_dataset_picker.py -q
 ```
 
 The live checks use real PostgreSQL, Neo4j, native CPU calculations, the API and
