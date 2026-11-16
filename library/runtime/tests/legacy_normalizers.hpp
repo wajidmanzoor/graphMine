@@ -277,4 +277,23 @@ inline std::vector<ExactEdge> exact_records(const Graph& graph, Work& work) {
   }
   return result;
 }
+// Frozen random_walks adjacency construction, including zero-mass entries and
+// self-loops, before its CPU input migration.
+inline std::vector<std::map<VertexIndex,Exact>> walk_adjacency(const Graph& graph, bool uniform, Work& work) {
+  work.tick(graph.vertex_count());
+  std::vector<std::map<VertexIndex,Exact>> adj(graph.vertex_count());
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    const Exact weight = uniform ? Exact(1) : Exact(edge.weight.value_or(1));
+    require(weight >= 0,"Walk weights must be nonnegative");
+    auto add = [&](VertexIndex from,VertexIndex to) {
+      if (uniform) adj[from][to] = 1;
+      else adj[from][to] += weight;
+    };
+    add(u,v);
+    if (!graph.directed() && u != v) add(v,u);
+  }
+  return adj;
+}
 }  // namespace graphmine::legacy_test

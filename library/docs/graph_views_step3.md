@@ -362,3 +362,16 @@ admissions. Both profiles pass 13,142 corpus cases, comparing endpoints, origina
 IDs, exact weight fractions, costs and applicable rejections on fresh and cached
 views. Request checks cover automatic/supplied partitions, quotient-loop keep
 and drop policies, sum/mean feature reduction and both consumed declarations.
+
+## Random walks
+
+Uniform walks now read a unit CSR view; weighted and node2vec walks read exact
+summed CSR weights. Self-loops, zero-mass transitions, missing-weight defaults
+and sorted neighbor order are preserved. The random generator, node2vec bias
+and stopping behavior are unchanged. The cuGraph preparation remains for Step 4.
+
+Checkpoint `24-walks` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Both profiles pass 13,142 corpus cases comparing neighbor arrays,
+exact transition weights, costs and rejections on fresh and cached views.
+Directed/undirected real requests cover all three walk models with fixed seeds,
+parallel/zero weights, loops and nondefault node2vec parameters.

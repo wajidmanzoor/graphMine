@@ -6,6 +6,7 @@
 #include "../structure_input.hpp"
 #include "../influence_input.hpp"
 #include "../steiner_input.hpp"
+#include "../walk_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -116,6 +117,39 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool walk_input(const gm::Graph& graph, bool uniform, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<std::vector<std::map<gm::VertexIndex,rt::Exact>>> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::walk_adjacency(graph,uniform,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::WalkAdjacency> actual;
+    std::string new_failure;
+    try { actual = rt::walk_adjacency(graph,uniform,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Walk input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->size() != actual->size() || old_work.candidates != work.candidates)
+      throw std::runtime_error("Walk input size/cost differs");
+    for (std::size_t v=0; v<expected->size(); ++v) {
+      std::vector<gm::VertexIndex> old_neighbors, new_neighbors;
+      std::string old_weights, new_weights;
+      for (const auto& [u,w] : expected->at(v)) {
+        old_neighbors.push_back(u); old_weights += rt::json::serialize(rt::fraction_json(w))+'\n';
+      }
+      for (const auto& [u,w] : actual->at(v)) {
+        new_neighbors.push_back(u); new_weights += rt::json::serialize(rt::fraction_json(w))+'\n';
+      }
+      equal(old_neighbors,new_neighbors);
+      if (old_weights != new_weights) throw std::runtime_error("Walk transition weight bytes differ");
+    }
   }
   return !expected;
 }
@@ -542,6 +576,23 @@ void contracts() {
   auto positive = raw;
   for (auto& edge : positive.as_object().at("edges").as_array())
     edge.as_object()["weight"] = std::abs(edge.as_object().at("weight").to_number<double>());
+  for (bool uniform : {false,true}) {
+    walk_input(graph,uniform); walk_input(rt::parse_graph(undirected),uniform);
+    for (std::uint64_t budget=0; budget<10; ++budget) walk_input(graph,uniform,budget);
+  }
+  auto walk_graph = positive;
+  walk_graph.as_object().at("edges").as_array()[0].as_object()["weight"] = 0.0;
+  walk_graph.as_object().at("edges").as_array()[1].as_object()["weight"] = 0.1;
+  for (bool directed : {false,true}) {
+    walk_graph.as_object().at("graph").as_object()["directed"] = directed;
+    for (const auto* model : {"uniform","weighted","node2vec"}) {
+      const bool uniform = std::string(model) == "uniform";
+      walk_input(rt::parse_graph(walk_graph),uniform);
+      rt::json::object parameters{{"start_vertices",{0,1,2}},{"length",8},{"walk_model",model},{"random_seed",43}};
+      if (std::string(model) == "node2vec") { parameters["p"] = 0.5; parameters["q"] = 2; }
+      declared_request(uniform ? "random-walks:cpp:uniform" : "random-walks:cpp:weighted",walk_graph,parameters);
+    }
+  }
   auto probabilities = positive;
   for (auto& edge : probabilities.as_object().at("edges").as_array()) edge.as_object()["weight"] = 0.1;
   for (bool cascade : {false,true}) {
@@ -783,6 +834,7 @@ int main(int argc, char** argv) {
     const bool subgraph_matching = argc > 1 && std::string(argv[1]) == "--subgraph-matching";
     const bool structure = argc > 1 && std::string(argv[1]) == "--structure";
     const bool influence = argc > 1 && std::string(argv[1]) == "--influence";
+    const bool walks = argc > 1 && std::string(argv[1]) == "--walks";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -807,13 +859,19 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence)
+    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (walks) for (bool uniform : {false,true}) {
+          const bool rejected = walk_input(graph,uniform);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",uniform ? "random-walks:cpp:uniform" : "random-walks:cpp:weighted"},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (influence) for (bool cascade : {false,true}) {
           const bool rejected = influence_input(graph,cascade);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
@@ -870,10 +928,10 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
           }
-        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout && !subgraph_matching && !structure && !influence) traversal(graph);
+        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks) traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
     std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1] : "traversal")

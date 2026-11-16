@@ -6,9 +6,16 @@
 #include "internal.hpp"
 #include "native_random.hpp"
 #include "native_time.hpp"
+#include "walk_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
+const ViewProfile uniform_walk{"random-walks:cpp:uniform", {"random-walks"},
+  R"({"kind":"csr","direction":"keep","self_loops":"keep","parallel_edges":"collapse:first",
+       "weights":"rational_exact","weight_source":"unit","nonnegative_weights":true})"};
+const ViewProfile weighted_walk{"random-walks:cpp:weighted", {"random-walks"},
+  R"({"kind":"csr","direction":"keep","self_loops":"keep","parallel_edges":"collapse:sum",
+       "weights":"rational_exact","nonnegative_weights":true})"};
 std::vector<VertexIndex> selected_ids(const Graph& graph, const json::value& value, Work& work) {
   require(value.is_array(), "Seeds must be an array");
   std::vector<VertexIndex> output;
@@ -36,6 +43,24 @@ struct Neighbor {
   Exact weight;
 };
 }  // namespace
+WalkAdjacency walk_adjacency(const Graph& graph, bool uniform, Work& work) {
+  work.tick(graph.vertex_count());
+  std::shared_ptr<const ViewResult> input;
+  try {
+    input = consume_view(graph,uniform ? uniform_walk : weighted_walk,work,ViewBudget::record_edges);
+  } catch (const Failure& error) {
+    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+      throw Failure("invalid_input","Walk weights must be nonnegative");
+    throw;
+  }
+  const auto& view = std::get<CsrView>(input->view);
+  const auto& weights = std::get<std::vector<RationalWeight>>(view.weights);
+  WalkAdjacency result(graph.vertex_count());
+  for (VertexIndex u=0; u<result.size(); ++u)
+    for (auto e=view.offsets[u]; e<view.offsets[u+1]; ++e)
+      result[u].emplace(view.indices[e],Exact(Integer(weights[e].numerator))/Integer(weights[e].denominator));
+  return result;
+}
 json::object random_walks(const Graph& graph, const json::object& args, const std::string& backend,
                           int device, Work& work) {
   fields(args, {"start_vertices", "length", "walk_model", "p", "q", "random_seed"},
@@ -50,21 +75,24 @@ json::object random_walks(const Graph& graph, const json::object& args, const st
   require(p > 0 && q > 0, "Node2vec p and q must be positive");
   require(model == "node2vec" || (p == 1 && q == 1), "p and q apply only to node2vec");
   NativeRandom rng(args);
-  work.tick(graph.vertex_count());
-  std::vector<std::map<VertexIndex, Exact>> adj(graph.vertex_count());
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    const Exact weight = model == "uniform" ? Exact(1) : Exact(edge.weight.value_or(1));
-    require(weight >= 0, "Walk weights must be nonnegative");
-    auto add = [&](VertexIndex from, VertexIndex to) {
-      if (model == "uniform")
-        adj[from][to] = 1;
-      else
-        adj[from][to] += weight;
-    };
-    add(u, v);
-    if (!graph.directed() && u != v) add(v, u);
+  WalkAdjacency adj;
+  if (backend == "cpp") adj = walk_adjacency(graph,model == "uniform",work);
+  else {
+    // The cuGraph path retains its input preparation until Step 4.
+    work.tick(graph.vertex_count());
+    adj.resize(graph.vertex_count());
+    for (const auto& edge : graph.canonical().edges) {
+      work.tick();
+      const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+      const Exact weight = model == "uniform" ? Exact(1) : Exact(edge.weight.value_or(1));
+      require(weight >= 0, "Walk weights must be nonnegative");
+      auto add = [&](VertexIndex from, VertexIndex to) {
+        if (model == "uniform") adj[from][to] = 1;
+        else adj[from][to] += weight;
+      };
+      add(u,v);
+      if (!graph.directed() && u != v) add(v,u);
+    }
   }
   std::vector<std::vector<VertexIndex>> paths;
   if (backend == "cpp") {
