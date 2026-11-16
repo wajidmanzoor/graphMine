@@ -77,6 +77,9 @@ const ExactCase partition_exact_cases[] = {
 const ExactCase spectral_exact_cases[] = {
   {"laplacian-eigenpairs:cpp:default",true}, {"graph-signal-denoising:cpp:default",true}
 };
+const ExactCase alignment_exact_cases[] = {
+  {"network-alignment:cpp:edge_weight",true}, {"network-alignment:cpp:unweighted",false}
+};
 bool exact_edges(const gm::Graph& graph, const ExactCase& test, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
   std::optional<std::vector<gm::legacy_test::ExactEdge>> expected;
@@ -324,6 +327,15 @@ void contracts() {
     {{"observed_signal",signal},{"regularization_strength",0}});
   density_input.as_object().at("edges").as_array()[0].as_object()["weight"] = 1e16;
   density_input.as_object().at("edges").as_array()[1].as_object()["weight"] = 1;
+  for (const auto& test : alignment_exact_cases) {
+    exact_edges(graph,test);
+    exact_edges(rt::parse_graph(density_input),test);
+    declared_request(test.profile,density_input,
+      {{"other_graph",density_input},{"weight_mode",test.weighted ? "edge_weight" : "unweighted"}});
+    declared_request(test.profile,positive,
+      {{"other_graph",positive},{"weight_mode",test.weighted ? "edge_weight" : "unweighted"},
+       {"node_similarity_prior",{rt::json::object{{"graph_a_vertex",0},{"graph_b_vertex",0},{"value",2}}}}});
+  }
   for (const auto& test : partition_exact_cases) {
     exact_edges(graph,test);
     exact_edges(rt::parse_graph(density_input),test);
@@ -399,6 +411,7 @@ int main(int argc, char** argv) {
     const bool patterns = argc > 1 && std::string(argv[1]) == "--patterns";
     const bool partitioning = argc > 1 && std::string(argv[1]) == "--partitioning";
     const bool spectral = argc > 1 && std::string(argv[1]) == "--spectral";
+    const bool alignment = argc > 1 && std::string(argv[1]) == "--alignment";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -415,6 +428,7 @@ int main(int argc, char** argv) {
     if (density) selected_exact.assign(std::begin(density_exact_cases),std::end(density_exact_cases));
     if (partitioning) selected_exact.assign(std::begin(partition_exact_cases),std::end(partition_exact_cases));
     if (spectral) selected_exact.assign(std::begin(spectral_exact_cases),std::end(spectral_exact_cases));
+    if (alignment) selected_exact.assign(std::begin(alignment_exact_cases),std::end(alignment_exact_cases));
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
@@ -453,7 +467,7 @@ int main(int argc, char** argv) {
       if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : coloring ? "coloring" : similarity ? "similarity" : patterns ? "patterns" : partitioning ? "partitioning" : spectral ? "spectral" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : coloring ? "coloring" : similarity ? "similarity" : patterns ? "patterns" : partitioning ? "partitioning" : spectral ? "spectral" : alignment ? "alignment" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }

@@ -208,3 +208,15 @@ admissions. Both profiles pass 13,142 exact edge-input corpus cases. Declaration
 checks cover combinatorial/normalized Laplacians, both eigenvalue selections,
 all three denoising regularizers and zero-strength denoising. Existing numerical
 tests continue to verify independent residuals and objective certificates.
+
+## Network alignment
+
+Both alignment graphs now consume the selected weighted or unit exact-COO
+profile. The explicit-weight guard, edge-conservation objective, node priors,
+assignment order and tie-breaking remain unchanged.
+
+Checkpoint `13-alignment` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Two profiles pass 13,142 exact edge-input corpus cases, including
+direction, edge order, original identities and exact sums. Request checks cover
+directed/undirected input, both weight modes and node-similarity priors while
+verifying the declaration consumed for each graph.

@@ -1,6 +1,14 @@
 #include "family_util.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile weighted_profile{"network-alignment:cpp:edge_weight", {"network-alignment"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:sum",
+       "weights":"rational_exact","nonnegative_weights":true,"edge_ids":true})"};
+const ViewProfile unweighted_profile{"network-alignment:cpp:unweighted", {"network-alignment"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:first",
+       "weights":"rational_exact","weight_source":"unit","nonnegative_weights":true,"edge_ids":true})"};
+}
 json::object network_alignment(const Graph& graph, const json::object& args, const std::string&,
                                int, Work& work) {
   using namespace family_util;
@@ -23,8 +31,8 @@ json::object network_alignment(const Graph& graph, const json::object& args, con
       for (const auto& edge : input->canonical().edges)
         require(edge.weight.has_value(),
                 "Weighted alignment requires explicit edge weights on both graphs");
-  const auto a = edges(graph, weights == "edge_weight", work),
-             b = edges(other, weights == "edge_weight", work);
+  const auto& profile = weights == "edge_weight" ? weighted_profile : unweighted_profile;
+  const auto a = edges(graph, profile, work), b = edges(other, profile, work);
   using Pair = std::pair<VertexIndex, VertexIndex>;
   std::map<Pair, Exact> b_weights, prior;
   for (const auto& edge : b) b_weights[{edge.u, edge.v}] = edge.weight;
