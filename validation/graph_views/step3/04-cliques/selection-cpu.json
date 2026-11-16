@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "2e1a0c69534cb8fc2030f5d2f23ab731111606023df9a2146e3a1fc091834a82"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "2e1a0c69534cb8fc2030f5d2f23ab731111606023df9a2146e3a1fc091834a82"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "2e1a0c69534cb8fc2030f5d2f23ab731111606023df9a2146e3a1fc091834a82"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "2e1a0c69534cb8fc2030f5d2f23ab731111606023df9a2146e3a1fc091834a82"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "2e1a0c69534cb8fc2030f5d2f23ab731111606023df9a2146e3a1fc091834a82"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "2e1a0c69534cb8fc2030f5d2f23ab731111606023df9a2146e3a1fc091834a82"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "2e1a0c69534cb8fc2030f5d2f23ab731111606023df9a2146e3a1fc091834a82"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "2e1a0c69534cb8fc2030f5d2f23ab731111606023df9a2146e3a1fc091834a82"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "2e1a0c69534cb8fc2030f5d2f23ab731111606023df9a2146e3a1fc091834a82"
+  }
+]

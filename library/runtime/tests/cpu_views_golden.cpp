@@ -29,8 +29,26 @@ void traversal(const gm::Graph& graph, const char* id = "breadth-first-search:cp
     const auto input = rt::consume_view(graph, profile, work, rt::ViewBudget::original_edges);
     const auto& view = std::get<gm::CsrView>(input->view);
     equal(offsets, view.offsets); equal(indices, view.indices);
+    const auto repacked = rt::adjacency_layout(view);
+    if (repacked.size() != expected.size()) throw std::runtime_error("CPU row layout size differs");
+    for (std::size_t v=0; v<repacked.size(); ++v) equal(expected[v],repacked[v]);
     if (work.candidates != old_work.candidates) throw std::runtime_error("CPU view candidate cost differs");
   }
+}
+const char* clique_profiles[] = {
+  "maximal-cliques:cpp:default", "maximum-clique:cpp:default", "k-cliques:cpp:default",
+  "k-core:cpp:default", "maximum-independent-set:cpp:default", "minimum-vertex-cover:cpp:default"
+};
+void declared_request(const char* id, const rt::json::value& graph, const rt::json::object& parameters) {
+  const auto& profile = rt::cpu_view_profile(id);
+  const rt::json::object request{{"command","run"},{"operation",profile.operations.front()},
+    {"device","cpu"},{"graph",graph},{"parameters",parameters}};
+  const auto response = rt::strict_json(rt::request(rt::json::serialize(request))).as_object();
+  if (response.contains("error")) throw std::runtime_error(rt::json::serialize(response));
+  const auto& used = response.at("representations").as_array().back().as_object();
+  if (rt::string(used.at("view_profile"),"view_profile") != profile.id ||
+      used.at("view") != rt::json::parse(profile.spec.canonical_json()))
+    throw std::runtime_error(profile.id + ": consumed a different declared spec");
 }
 struct WeightedCase {
   const char* profile; const char* aggregation; bool nonnegative, unit;
@@ -93,6 +111,19 @@ void contracts() {
   for (const auto& test : weighted_cases) weighted_path(graph,test);
   for (const auto& test : connectivity_cases) weighted_path(graph,test);
   traversal(graph,"topological-sort:cpp:default");
+  auto undirected = raw;
+  undirected.as_object().at("graph").as_object()["directed"] = false;
+  for (const auto* profile : clique_profiles) {
+    traversal(graph,profile);
+    rt::json::object parameters;
+    if (std::string(profile) == "k-cliques:cpp:default") parameters["k"] = 2;
+    declared_request(profile,undirected,parameters);
+  }
+  declared_request("maximal-cliques:cpp:default",undirected,{{"minimum_clique_size",2},{"result_limit",1}});
+  declared_request("maximum-clique:cpp:default",undirected,{{"return_all_ties",true}});
+  declared_request("k-cliques:cpp:default",undirected,{{"k",2},{"mode","enumerate"}});
+  declared_request("k-core:cpp:default",undirected,{{"requested_k",1}});
+  declared_request("minimum-vertex-cover:cpp:default",undirected,{{"mode","decision"},{"k",1}});
   for (const auto* mode : {"independent", "nearest_source"}) {
     const rt::json::object request{{"command","run"},{"operation","breadth-first-search"},
       {"device","cpu"},{"graph",raw},{"parameters",{{"sources",{0,1}},{"source_mode",mode}}}};
@@ -148,6 +179,7 @@ int main(int argc, char** argv) {
     if (argc > 1 && std::string(argv[1]) == "--self-test") { contracts(); return 0; }
     const bool weighted = argc > 1 && std::string(argv[1]) == "--weighted-paths";
     const bool connectivity = argc > 1 && std::string(argv[1]) == "--connectivity";
+    const bool cliques = argc > 1 && std::string(argv[1]) == "--cliques";
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
@@ -168,13 +200,19 @@ int main(int argc, char** argv) {
           traversal(graph,"topological-sort:cpp:default");
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
             {"profile","topological-sort:cpp:default"},{"equal",true},{"rejected",false}}) << '\n';
+        } else if (cliques) {
+          for (const auto* profile : clique_profiles) {
+            traversal(graph,profile);
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
+          }
         } else traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (!weighted && !connectivity) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (!weighted && !connectivity && !cliques) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }

@@ -5,9 +5,24 @@
 #include <set>
 
 #include "internal.hpp"
+#include "view_profiles.hpp"
 
 namespace graphmine::runtime {
 namespace {
+constexpr const char* clique_view = R"({"kind":"csr","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"none","sorted_neighbors":true})";
+const ViewProfile maximal_profile{"maximal-cliques:cpp:default", {"maximal-cliques"}, clique_view};
+const ViewProfile maximum_profile{"maximum-clique:cpp:default", {"maximum-clique"}, clique_view};
+const ViewProfile fixed_profile{"k-cliques:cpp:default", {"k-cliques"}, clique_view};
+const ViewProfile core_profile{"k-core:cpp:default", {"k-core"}, clique_view};
+const ViewProfile independent_profile{"maximum-independent-set:cpp:default", {"maximum-independent-set"}, clique_view};
+const ViewProfile cover_profile{"minimum-vertex-cover:cpp:default", {"minimum-vertex-cover"}, clique_view};
+MiningGraph clique_input(const Graph& graph, const ViewProfile& profile,
+                         const std::string& backend, Work& work) {
+  if (backend != "cpp") return adjacency(graph, work);
+  const auto input = consume_view(graph, profile, work, ViewBudget::original_edges);
+  return adjacency_layout(std::get<CsrView>(input->view));
+}
 using Vertices = std::vector<VertexIndex>;
 using Groups = std::vector<Vertices>;
 Vertices intersect(const Vertices& a, const Vertices& b, Work& work) {
@@ -186,7 +201,7 @@ json::object maximal_cliques(const Graph& graph, const json::object& args,
                            : 1;
   require(minimum > 0, "minimum_clique_size must be positive");
   const auto limit = result_limit(args);
-  const auto adj = adjacency(graph, work);
+  const auto adj = clique_input(graph, maximal_profile, backend, work);
   Groups values;
   std::uint64_t unfiltered = 0;
   std::optional<std::uint64_t> gpu_count;
@@ -223,7 +238,7 @@ json::object maximum_clique(const Graph& graph, const json::object& args,
   fields(args, {"return_all_ties"});
   require(!graph.directed(), "Maximum clique requires an undirected graph");
   const auto ties = boolean(args, "return_all_ties", false);
-  const auto adj = adjacency(graph, work);
+  const auto adj = clique_input(graph, maximum_profile, backend, work);
   auto values = maximum(adj, ties, backend, device, work);
   auto output = group_output(graph, values, {{"return_all_ties", ties}});
   output.at("result").as_object()["maximum_size"] = values.empty() ? 0 : values.front().size();
@@ -245,7 +260,7 @@ json::object k_cliques(const Graph& graph, const json::object& args, const std::
   const auto mode = args.contains("mode") ? string(args.at("mode"), "mode") : "count";
   require(mode == "count" || mode == "enumerate", "mode must be count or enumerate");
   const auto limit = result_limit(args);
-  const auto adj = adjacency(graph, work);
+  const auto adj = clique_input(graph, fixed_profile, backend, work);
   std::uint64_t count = 0;
   Groups values;
   std::optional<std::uint64_t> gpu_count;
@@ -319,7 +334,7 @@ json::object core_numbers(const Graph& graph, const json::object& args, const st
   if (args.contains("requested_k") && !args.at("requested_k").is_null())
     k = uint(args.at("requested_k"), "requested_k");
   work.output(graph.vertex_count());
-  const auto adj = adjacency(graph, work);
+  const auto adj = clique_input(graph, core_profile, backend, work);
   std::vector<std::uint32_t> values(adj.size(), 0);
   if (backend == "cpp") {
     using Item = std::pair<std::uint32_t, VertexIndex>;
@@ -375,7 +390,8 @@ json::object maximum_independent_set(const Graph& graph, const json::object& arg
   fields(args, {"mode"});
   require(!graph.directed(), "Maximum independent set requires an undirected graph");
   require(!args.contains("mode") || args.at("mode") == "exact", "Only exact mode is supported");
-  const auto sets = maximum(complement(adjacency(graph, work), work), false, backend, device, work);
+  const auto adj = clique_input(graph, independent_profile, backend, work);
+  const auto sets = maximum(complement(adj, work), false, backend, device, work);
   const auto vertices = sets.empty() ? json::array{} : external(graph, sets.front());
   work.output(vertices.size());
   return {
@@ -395,7 +411,8 @@ json::object minimum_vertex_cover(const Graph& graph, const json::object& args,
   std::optional<std::uint64_t> k;
   if (args.contains("k") && !args.at("k").is_null()) k = uint(args.at("k"), "k");
   require(mode != "decision" || k, "Decision mode requires k");
-  const auto sets = maximum(complement(adjacency(graph, work), work), false, backend, device, work);
+  const auto adj = clique_input(graph, cover_profile, backend, work);
+  const auto sets = maximum(complement(adj, work), false, backend, device, work);
   Vertices independent = sets.empty() ? Vertices{} : sets.front();
   std::sort(independent.begin(), independent.end());
   json::array vertices;

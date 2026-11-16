@@ -77,3 +77,18 @@ admissions. Three profile goldens cover the complete Step 2 corpus and check
 forward/reverse arrays, weights, direction and candidate costs. Real-operation
 checks verify each selected declaration. GPU connectivity adapters remain for
 their later migration steps.
+
+## Cliques and cores
+
+Maximal, maximum and fixed-size cliques, k-core, maximum independent set and
+minimum vertex cover now consume declared CSR views. Their vector-row repacking
+only copies CSR slices; normalization is entirely in the factory. Complement
+construction remains part of the independent-set/vertex-cover algorithm.
+
+Checkpoint `04-cliques` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Six profile goldens compare CSR arrays and the repacked row bytes
+against the frozen old adjacency builder on all 6,571 corpus graphs, with cold
+and warm cache calls and equal candidate costs (39,426 profile cases). Operation
+requests check the consumed declaration, including tie enumeration, fixed-size
+enumeration, core selection and vertex-cover decision modes. GPU paths retain
+their existing adapters.

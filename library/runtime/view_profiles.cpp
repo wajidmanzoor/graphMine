@@ -32,6 +32,13 @@ json::array cpu_view_declarations() {
   }
   return result;
 }
+MiningGraph adjacency_layout(const CsrView& view) {
+  const CsrRows rows{view};
+  MiningGraph output(rows.size());
+  for (VertexIndex v = 0; v < rows.size(); ++v)
+    output[v].assign(rows[v].begin(), rows[v].end());
+  return output;
+}
 std::shared_ptr<const ViewResult> consume_view(const Graph& graph, const ViewProfile& profile,
                                               Work& work, ViewBudget budget) {
   // Preserve each old adapter's candidate cost, including on cache hits.
