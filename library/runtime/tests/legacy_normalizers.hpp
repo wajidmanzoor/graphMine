@@ -244,4 +244,25 @@ struct InfluenceInput {
       if (weight > 0) incoming[ends.second].emplace_back(ends.first,weight);
   }
 };
+// Frozen group-Steiner minimum-edge preparation and cost/index solver order.
+inline std::vector<ExactEdge> steiner_edges(const Graph& graph, Work& work) {
+  std::map<std::pair<VertexIndex,VertexIndex>,ExactEdge> normalized;
+  for (std::size_t i=0; i<graph.edge_count(); ++i) {
+    work.tick();
+    const auto& edge = graph.canonical().edges[i];
+    require(edge.weight && *edge.weight >= 0,"Every group-Steiner edge needs nonnegative weight");
+    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (u == v) continue;
+    if (u > v) std::swap(u,v);
+    auto [it,inserted] = normalized.emplace(std::make_pair(u,v),ExactEdge{u,v,Exact(*edge.weight),i});
+    if (!inserted && Exact(*edge.weight) < it->second.weight)
+      it->second = {u,v,Exact(*edge.weight),i};
+  }
+  std::vector<ExactEdge> result;
+  for (const auto& [_,edge] : normalized) result.push_back(edge);
+  std::sort(result.begin(),result.end(),[](const auto& a,const auto& b) {
+    return a.weight != b.weight ? a.weight < b.weight : a.original < b.original;
+  });
+  return result;
+}
 }  // namespace graphmine::legacy_test

@@ -5,6 +5,7 @@
 #include "../force_layout.hpp"
 #include "../structure_input.hpp"
 #include "../influence_input.hpp"
+#include "../steiner_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -261,7 +262,7 @@ bool force_layout_input(const gm::Graph& graph, bool weighted, std::size_t dimen
   }
   return !expected;
 }
-struct ExactCase { const char* profile; bool weighted, nonnegative = true, loops = false; };
+struct ExactCase { const char* profile; bool weighted, nonnegative = true, loops = false, steiner = false; };
 const ExactCase density_exact_cases[] = {
   {"densest-subgraph:cpp:edge_weight",true}, {"densest-subgraph:cpp:unweighted",false},
   {"densest-k-subgraph:cpp:edge_weight",true}, {"densest-k-subgraph:cpp:unweighted",false}
@@ -279,18 +280,21 @@ const ExactCase alignment_exact_cases[] = {
 const ExactCase local_community_case{"seeded-local-community:cpp:default",true};
 const ExactCase geolocation_case{"graph-geolocation:cpp:default",true};
 const ExactCase condensation_case{"graph-condensation:cpp:default",true};
+const ExactCase steiner_case{"group-steiner-tree:cpp:default",true,true,false,true};
 bool exact_edges(const gm::Graph& graph, const ExactCase& test, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
   std::optional<std::vector<gm::legacy_test::ExactEdge>> expected;
   std::string expected_failure;
-  try { expected = gm::legacy_test::exact_edges(graph,test.weighted,old_work,test.nonnegative,test.loops); }
+  try { expected = test.steiner ? gm::legacy_test::steiner_edges(graph,old_work)
+    : gm::legacy_test::exact_edges(graph,test.weighted,old_work,test.nonnegative,test.loops); }
   catch (const std::exception& e) { expected_failure = e.what(); }
   clear_views();
   for (int repeat=0; repeat<2; ++repeat) {
     auto work = unlimited(); work.max_candidates = budget;
     std::optional<std::vector<rt::family_util::Edge>> actual;
     std::string actual_failure;
-    try { actual = rt::family_util::edges(graph,rt::cpu_view_profile(test.profile),work); }
+    try { actual = test.steiner ? rt::group_steiner_edges(graph,work)
+      : rt::family_util::edges(graph,rt::cpu_view_profile(test.profile),work); }
     catch (const std::exception& e) { actual_failure = e.what(); }
     if (expected_failure != actual_failure) throw std::runtime_error(std::string(test.profile)+": exact edge rejection differs");
     if (!expected) continue;
@@ -608,6 +612,21 @@ void contracts() {
   density_input.as_object().at("graph").as_object()["directed"] = false;
   auto spectral_input = density_input;
   spectral_input.as_object().at("edges").as_array().pop_back();
+  exact_edges(graph,steiner_case);
+  exact_edges(rt::parse_graph(spectral_input),steiner_case);
+  for (std::uint64_t budget=0; budget<7; ++budget) exact_edges(graph,steiner_case,budget);
+  for (const auto* quality : {"exact","approximate"})
+    declared_request(steiner_case.profile,density_input,{{"groups",{{0},{2}}},
+      {"required_vertices",{1}},{"solution_quality",quality}});
+  auto steiner_ties = density_input;
+  auto& steiner_edges = steiner_ties.as_object().at("edges").as_array();
+  steiner_edges[0].as_object()["weight"] = 0.25;
+  steiner_edges[1].as_object()["weight"] = 0.25;
+  exact_edges(rt::parse_graph(steiner_ties),steiner_case);
+  steiner_edges[1].as_object()["weight"] = 0.125;
+  exact_edges(rt::parse_graph(steiner_ties),steiner_case);
+  steiner_edges.back().as_object().erase("weight");
+  exact_edges(rt::parse_graph(steiner_ties),steiner_case);
   exact_edges(graph,local_community_case);
   exact_edges(rt::parse_graph(spectral_input),local_community_case);
   declared_request(local_community_case.profile,spectral_input,{{"seeds",{0}}});
@@ -744,6 +763,7 @@ int main(int argc, char** argv) {
     const bool subgraph_matching = argc > 1 && std::string(argv[1]) == "--subgraph-matching";
     const bool structure = argc > 1 && std::string(argv[1]) == "--structure";
     const bool influence = argc > 1 && std::string(argv[1]) == "--influence";
+    const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -764,6 +784,7 @@ int main(int argc, char** argv) {
     if (local_community) selected_exact.push_back(local_community_case);
     if (geolocation) selected_exact.push_back(geolocation_case);
     if (condensation) selected_exact.push_back(condensation_case);
+    if (steiner) selected_exact.push_back(steiner_case);
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;

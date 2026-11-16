@@ -1,6 +1,33 @@
 #include "family_util.hpp"
+#include "steiner_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile steiner_profile{"group-steiner-tree:cpp:default", {"group-steiner-tree"},
+  R"({"kind":"coo","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:min",
+       "weights":"rational_exact","edge_ids":true,"require_edge_weights":true,"nonnegative_weights":true})"};
+}
+std::vector<family_util::Edge> group_steiner_edges(const Graph& graph, Work& work) {
+  std::vector<family_util::Edge> edges;
+  try {
+    const auto input = consume_view(graph,steiner_profile,work,ViewBudget::record_edges);
+    edges = family_util::edge_layout(std::get<CooView>(input->view));
+  } catch (const Failure& error) {
+    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+      throw Failure("invalid_input","Every group-Steiner edge needs nonnegative weight");
+    throw;
+  } catch (const std::invalid_argument& error) {
+    if (std::string(error.what()) == "Graph view: This view requires explicit edge weights")
+      throw Failure("invalid_input","Every group-Steiner edge needs nonnegative weight");
+    throw;
+  }
+  // The solver visits minimum spanning-tree candidates by cost, then original
+  // position. The factory has already chosen each minimum parallel edge.
+  std::sort(edges.begin(),edges.end(),[](const auto& a,const auto& b) {
+    return a.weight != b.weight ? a.weight < b.weight : a.original < b.original;
+  });
+  return edges;
+}
 json::object group_steiner(const Graph& graph, const json::object& args, const std::string&, int,
                            Work& work) {
   using namespace family_util;
@@ -18,29 +45,7 @@ json::object group_steiner(const Graph& graph, const json::object& args, const s
   Vertices required;
   if (args.contains("required_vertices") && !args.at("required_vertices").is_null())
     required = vertices(graph, args.at("required_vertices"), "required_vertices", true);
-  struct Edge {
-    VertexIndex u, v;
-    Exact weight;
-    std::size_t index;
-  };
-  std::map<std::pair<VertexIndex, VertexIndex>, Edge> normalized;
-  for (std::size_t i = 0; i < graph.edge_count(); ++i) {
-    work.tick();
-    const auto& edge = graph.canonical().edges[i];
-    require(edge.weight && *edge.weight >= 0, "Every group-Steiner edge needs nonnegative weight");
-    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    if (u == v) continue;
-    if (u > v) std::swap(u, v);
-    auto [it, inserted] =
-        normalized.emplace(std::make_pair(u, v), Edge{u, v, Exact(*edge.weight), i});
-    if (!inserted && Exact(*edge.weight) < it->second.weight)
-      it->second = {u, v, Exact(*edge.weight), i};
-  }
-  std::vector<Edge> edges;
-  for (const auto& [_, edge] : normalized) edges.push_back(edge);
-  std::sort(edges.begin(), edges.end(), [](const auto& a, const auto& b) {
-    return a.weight != b.weight ? a.weight < b.weight : a.index < b.index;
-  });
+  const auto edges = group_steiner_edges(graph,work);
   std::optional<Exact> best;
   Vertices selected;
   std::vector<std::size_t> chosen;
@@ -75,7 +80,7 @@ json::object group_steiner(const Graph& graph, const json::object& args, const s
         if (u == v) continue;
         parent[u] = v;
         cost += edge.weight;
-        tree.push_back(edge.index);
+        tree.push_back(edge.original);
         if (best && cost >= *best) break;
         if (tree.size() + 1 == size) break;
       }

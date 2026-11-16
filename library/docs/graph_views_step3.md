@@ -336,3 +336,16 @@ direction or missing/out-of-range probabilities reproduce the old rejection.
 Tests cover exact parallel composition, zero/one probabilities, invalid dropped
 loops, budget precedence, and both real diffusion models including fixed vertex
 thresholds. Fresh/cache-hit assertions and declaration checks pass.
+
+## Group Steiner tree
+
+The CPU solver now consumes a minimum-weight exact COO view with original edge
+identities. The factory selects the cheapest parallel edge, preserving the
+first original edge on ties. The solver retains its cost/index visitation order,
+group constraints, required vertices and exact optimization.
+
+Checkpoint `22-steiner` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. All 6,571 corpus cases match edge endpoints, exact weights, selected
+original IDs, visit order, costs and rejections. Tests cover equal/lower parallel
+weights, negative/missing loop weights, budgets and both accepted quality
+settings, with fresh/cache-hit and real-operation declaration checks.
