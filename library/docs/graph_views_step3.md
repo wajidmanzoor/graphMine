@@ -274,3 +274,20 @@ incoming/outgoing original-edge lists, ID maps, complete record JSON bytes and
 candidate costs. Fresh/cache-hit assertions and small budget rejection checks
 pass. Real requests verify all seven declarations, directed/undirected inputs,
 both-direction discovery, path enumeration, grouped aggregation and extraction.
+
+## Force-directed layout
+
+Layout now declares dense weighted and unit adjacency views. The user approved
+`sum_arithmetic: long_double_round_each` to preserve its existing extended
+intermediate and per-addition rounding, including positive-zero initialization.
+The default f64 arithmetic is unchanged. Required-weight and sign validation
+still precede loop removal; dense allocation guards still precede edge checks.
+
+Checkpoint `18-layout` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Weighted/unit input in both 2D and 3D passes 26,284 corpus cases.
+These comparisons use the existing 2,000,000-candidate budget: accepted matrices
+and initial position arrays match byte for byte on fresh builds and cache hits;
+large inputs reproduce the old rejection before allocating a dense matrix.
+Boundary tests cover a demonstrated one-bit arithmetic difference, signed zero,
+sequential rounding, reciprocal edges, missing and negative loop weights,
+overflow, and budget-error precedence. Real requests verify both declarations.

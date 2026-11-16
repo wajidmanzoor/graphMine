@@ -2,6 +2,7 @@
 #include "../view_profiles.hpp"
 #include "../family_util.hpp"
 #include "../record_query.hpp"
+#include "../force_layout.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -112,6 +113,32 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool force_layout_input(const gm::Graph& graph, bool weighted, std::size_t dimensions,
+                        std::uint64_t budget = rt::Work{}.max_candidates) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::ForceLayoutInput> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::force_layout_input(graph,weighted,dimensions,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::ForceLayoutInput> actual;
+    std::string new_failure;
+    try { actual = rt::force_layout_input(graph,weighted,dimensions,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure)
+      throw std::runtime_error("Force layout rejection differs: " + old_failure + " / " + new_failure);
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->weights.rows != actual->weights.rows || expected->weights.cols != actual->weights.cols ||
+        expected->positions.rows != actual->positions.rows || expected->positions.cols != actual->positions.cols ||
+        old_work.candidates != work.candidates) throw std::runtime_error("Force layout shape/cost differs");
+    equal(expected->weights.values,actual->weights.values);
+    equal(expected->positions.values,actual->positions.values);
   }
   return !expected;
 }
@@ -364,6 +391,38 @@ void contracts() {
   auto positive = raw;
   for (auto& edge : positive.as_object().at("edges").as_array())
     edge.as_object()["weight"] = std::abs(edge.as_object().at("weight").to_number<double>());
+  for (bool weighted : {false,true}) for (std::size_t dimensions : {2,3}) {
+    force_layout_input(graph,weighted,dimensions);
+    force_layout_input(rt::parse_graph(undirected),weighted,dimensions);
+    const auto* profile = weighted ? "force-directed-layout:cpp:edge_weight" : "force-directed-layout:cpp:unweighted";
+    declared_request(profile,positive,{{"weight_mode",weighted ? "edge_weight" : "unweighted"},
+      {"dimensions",dimensions},{"iterations",2}});
+  }
+  // Positive zero initialization, reciprocal/parallel ordering, sequential
+  // extended rounding, missing/negative loops, overflow and budget precedence.
+  auto layout_input = positive;
+  const auto layout_cases = std::vector<rt::json::array>{
+    {-0.0,0.0}, {1.0,std::ldexp(1.0,-53)+std::ldexp(1.0,-64)}, {0.1,0.2,0.3},
+    {std::numeric_limits<double>::max(),std::numeric_limits<double>::max()}};
+  for (const auto& weights : layout_cases) {
+    rt::json::array edges;
+    for (std::size_t e=0; e<weights.size(); ++e) edges.push_back(rt::json::object{
+      {"id",e},{"source",e%2},{"target",1-e%2},{"weight",weights[e]}});
+    layout_input.as_object()["edges"] = edges;
+    for (bool directed : {false,true}) {
+      layout_input.as_object().at("graph").as_object()["directed"] = directed;
+      force_layout_input(rt::parse_graph(layout_input),true,2);
+    }
+  }
+  for (const auto* failure : {"missing_loop","missing_edge","negative_loop"}) {
+    layout_input = positive;
+    auto& edges = layout_input.as_object().at("edges").as_array();
+    if (std::string(failure) == "negative_loop") edges.back().as_object()["weight"] = -1;
+    else edges[std::string(failure)=="missing_loop" ? edges.size()-1 : 0].as_object().erase("weight");
+    for (std::uint64_t budget=0; budget<25; ++budget)
+      force_layout_input(rt::parse_graph(layout_input),true,2,budget);
+    force_layout_input(rt::parse_graph(layout_input),false,3);
+  }
   for (const auto& test : centrality_cases) {
     weighted_path(graph,test);
     const auto& profile = rt::cpu_view_profile(test.profile);
@@ -517,6 +576,7 @@ int main(int argc, char** argv) {
     const bool geolocation = argc > 1 && std::string(argv[1]) == "--geolocation";
     const bool condensation = argc > 1 && std::string(argv[1]) == "--condensation";
     const bool records = argc > 1 && std::string(argv[1]) == "--records";
+    const bool layout = argc > 1 && std::string(argv[1]) == "--layout";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -537,13 +597,20 @@ int main(int argc, char** argv) {
     if (local_community) selected_exact.push_back(local_community_case);
     if (geolocation) selected_exact.push_back(geolocation_case);
     if (condensation) selected_exact.push_back(condensation_case);
-    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records)
+    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (layout) for (bool weighted : {false,true}) for (std::size_t dimensions : {2,3}) {
+          const bool rejected = force_layout_input(graph,weighted,dimensions);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",weighted ? "force-directed-layout:cpp:edge_weight" : "force-directed-layout:cpp:unweighted"},
+            {"dimensions",dimensions},{"candidate_budget",rt::Work{}.max_candidates},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (records) for (const auto* profile : record_profiles) {
           const bool rejected = record_index(graph,profile);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
@@ -576,10 +643,10 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
           }
-        } else if (selected_weighted.empty() && selected_exact.empty() && !records) traversal(graph);
+        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout) traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
     std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1] : "traversal")

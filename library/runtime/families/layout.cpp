@@ -2,8 +2,39 @@
 
 #include "native_random.hpp"
 #include "numeric.hpp"
+#include "force_layout.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile weighted_profile{"force-directed-layout:cpp:edge_weight", {"force-directed-layout"},
+  R"({"kind":"dense","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:sum",
+       "weights":"f64","nonnegative_weights":true,"require_edge_weights":true,
+       "sum_arithmetic":"long_double_round_each"})"};
+const ViewProfile unweighted_profile{"force-directed-layout:cpp:unweighted", {"force-directed-layout"},
+  R"({"kind":"dense","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:first",
+       "weights":"f64","weight_source":"unit","nonnegative_weights":true})"};
+}
+ForceLayoutInput force_layout_input(const Graph& graph, bool weighted, std::size_t dimensions, Work& work) {
+  const auto n = graph.vertex_count();
+  ForceLayoutInput result{numeric::Matrix(n,n,work),numeric::Matrix(n,dimensions,work)};
+  try {
+    const auto input = consume_view(graph, weighted ? weighted_profile : unweighted_profile,
+                                    work, ViewBudget::record_edges);
+    // A symmetric matrix has identical row-major and column-major value bytes.
+    result.weights.values = std::get<std::vector<double>>(std::get<DenseView>(input->view).values);
+  } catch (const Failure& error) {
+    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+      throw Failure("invalid_input", "Layout weights must be nonnegative");
+    if (std::string(error.what()) == "Aggregated edge weight overflowed")
+      throw Failure("invalid_input", "Numerical result exceeded finite float64 range");
+    throw;
+  } catch (const std::invalid_argument& error) {
+    if (std::string(error.what()) == "Graph view: This view requires explicit edge weights")
+      throw Failure("invalid_input", "Weighted layout requires every edge weight");
+    throw;
+  }
+  return result;
+}
 json::object force_layout(const Graph& graph, const json::object& args, const std::string&, int,
                           Work& work) {
   using namespace family_util;
@@ -23,18 +54,8 @@ json::object force_layout(const Graph& graph, const json::object& args, const st
                        ? float64(args.at("optimal_distance"), "optimal_distance")
                        : 1 / std::sqrt(std::max<std::size_t>(1, n));
   require(k > 0, "optimal_distance must be positive");
-  Matrix weights(n, n, work), positions(n, dimensions, work);
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    require(weight_mode == "unweighted" || edge.weight.has_value(),
-            "Weighted layout requires every edge weight");
-    const double value = weight_mode == "unweighted" ? 1 : *edge.weight;
-    require(value >= 0, "Layout weights must be nonnegative");
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    if (u == v) continue;
-    weights(u, v) = weights(v, u) =
-        weight_mode == "unweighted" ? 1 : finite(static_cast<long double>(weights(u, v)) + value);
-  }
+  auto input = force_layout_input(graph, weight_mode == "edge_weight", dimensions, work);
+  auto weights = std::move(input.weights), positions = std::move(input.positions);
   if (args.contains("initial_positions") && !args.at("initial_positions").is_null()) {
     const auto rows = vertex_values(graph, args.at("initial_positions"), "initial_positions");
     for (std::size_t v = 0; v < n; ++v) {

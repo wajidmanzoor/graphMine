@@ -298,6 +298,41 @@ void weight_tests() {
   rejects([&] { view(input,spec); }, "timestamp converted without a declared unit");
 }
 void records_exact_tests() {
+  auto special = ViewSpec::from_json(R"({"kind":"coo","parallel_edges":"collapse:sum",
+    "sum_arithmetic":"long_double_round_each","require_edge_weights":true})");
+  check(ViewSpec::from_json(special.canonical_json()).canonical_json() == special.canonical_json(),
+        "extended arithmetic spec did not round trip");
+  auto standard = special; standard.sum_arithmetic = "standard";
+  auto rounding = graph(true); edge(rounding,0,1,1.0);
+  const double half_plus = std::ldexp(1.0,-53)+std::ldexp(1.0,-64);
+  edge(rounding,0,1,half_plus);
+  const auto extended_result = view(rounding,special), standard_result = view(rounding,standard);
+  const auto extended = std::get<std::vector<double>>(std::get<CooView>(extended_result->view).weights)[0];
+  const auto ordinary = std::get<std::vector<double>>(std::get<CooView>(standard_result->view).weights)[0];
+  check(extended == static_cast<double>(1.0L + half_plus) && ordinary == 1.0 + half_plus,
+        "sum arithmetic differs from its declared intermediate");
+  check(extended_result.get() != standard_result.get() && extended_result->canonical_spec != standard_result->canonical_spec,
+        "sum arithmetic collided in the view cache");
+  if (std::numeric_limits<long double>::digits == 64)
+    check(extended == 1.0 && ordinary == std::nextafter(1.0,2.0), "extended-rounding boundary was lost");
+  rounding = graph(true); edge(rounding,0,1,-0.0);
+  check(!std::signbit(std::get<std::vector<double>>(std::get<CooView>(view(rounding,special)->view).weights)[0]),
+        "extended accumulation did not start from positive zero");
+  check(std::signbit(std::get<std::vector<double>>(std::get<CooView>(view(rounding,standard)->view).weights)[0]),
+        "default signed-zero behavior changed");
+  rounding = graph(true); edge(rounding,0,0,1);
+  rounding.at("edges").as_array()[0].as_object().erase("weight");
+  special.self_loops = "drop";
+  rejects([&] { view(rounding,special); }, "missing weight on dropped loop accepted");
+  special.require_edge_weights = false;
+  check(std::get<CooView>(view(rounding,special)->view).src.empty(), "optional-weight default changed");
+  for (const auto* invalid : {
+    R"({"sum_arithmetic":"unknown"})", R"({"sum_arithmetic":"long_double_round_each"})",
+    R"({"sum_arithmetic":"long_double_round_each","parallel_edges":"collapse:sum","weights":"int64_exact"})",
+    R"({"require_edge_weights":true,"weight_source":"unit"})",
+    R"({"require_edge_weights":true,"weights":"none"})",
+    R"({"require_edge_weights":true,"kind":"hypergraph"})"})
+    rejects([&] { ViewSpec::from_json(invalid); }, "invalid extended arithmetic/required-weight spec accepted");
   auto input = graph(false);
   edge(input, 2, 0, 1); edge(input, 0, 2, 2); edge(input, 1, 1, 3);
   auto spec = ViewSpec::from_json(R"({"kind":"coo","coo_layout":"records","edge_ids":true})");

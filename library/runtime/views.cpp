@@ -110,6 +110,8 @@ Weight cast_weight(const Number& number, const ViewSpec& spec, NormalizationSumm
   if (spec.weights == "f64") {
     result.f64 = std::visit([](const auto& value) { return static_cast<double>(value); }, number);
     check(std::isfinite(result.f64), "f64 weight must be finite");
+    if (spec.sum_arithmetic == "long_double_round_each")
+      result.f64 = static_cast<double>(0.0L + static_cast<long double>(result.f64));
     summary.weights_cast += !std::holds_alternative<double>(number);
   } else if (spec.weights == "int64_exact") {
     result.integer = exact_integer(number);
@@ -158,7 +160,9 @@ void merge_weight(Weight& stored, const Weight& next, const ViewSpec& spec, Edge
             "int64_exact sum overflows signed 64-bit range");
       stored.integer += b;
     } else {
-      stored.f64 += next.f64;
+      if (spec.sum_arithmetic == "long_double_round_each")
+        stored.f64 = static_cast<double>(static_cast<long double>(stored.f64) + next.f64);
+      else stored.f64 += next.f64;
       check(std::isfinite(stored.f64), "f64 sum overflows");
     }
   } else {
@@ -252,6 +256,8 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
     charge_original_edges(1);
     charge(1);
     const auto& edge = graph.canonical().edges[i];
+    if (spec.require_edge_weights)
+      check(edge.weight.has_value(), "This view requires explicit edge weights");
     if (spec.nonnegative_edge_weights)
       check(edge.weight.value_or(1) >= 0, "This operation requires nonnegative edge weights");
     const auto weight = spec.weights == "none" ? Weight{} : cast_weight(edge_number(edge, spec), spec, summary);
@@ -395,6 +401,11 @@ void ViewSpec::validate() const {
   check(one_of(parallel_edges, {"keep", "collapse:sum", "collapse:min", "collapse:max", "collapse:first"}),
         "unknown parallel_edges policy");
   check(one_of(weights, {"none", "f64", "int64_exact", "rational_exact"}), "unknown weight type");
+  check(one_of(sum_arithmetic, {"standard", "long_double_round_each"}), "unknown sum arithmetic");
+  check(sum_arithmetic == "standard" || (weights == "f64" && parallel_edges == "collapse:sum"),
+        "long_double_round_each requires f64 collapse:sum");
+  check(!require_edge_weights || (weights != "none" && weight_source == "edge.weight"),
+        "require_edge_weights requires numeric edge.weight input");
   check(weight_source == "edge.weight" || weight_source == "unit" ||
             (weight_source.rfind("attribute:", 0) == 0 && weight_source.size() > 10),
         "unknown weight source");
@@ -419,6 +430,7 @@ void ViewSpec::validate() const {
     check(seen.insert(label).second, "duplicate side table");
   }
   if (kind == "hypergraph") {
+    check(!require_edge_weights, "hypergraph input does not have graph edge.weight records");
     check(direction == "keep" && self_loops == "keep" && parallel_edges == "keep",
           "hypergraph incidence preserves direction, membership and hyperedge identity");
     check(labels.empty(), "hypergraph input has no graph label/timestamp fields");
@@ -436,17 +448,19 @@ ViewSpec ViewSpec::from_json(std::string_view input) {
   const auto value = rt::object(rt::strict_json(input), "view spec");
   rt::fields(value, {"kind", "coo_layout", "direction", "self_loops", "parallel_edges", "weights", "weight_source",
                     "edge_ids", "labels", "bipartite_sides", "sorted_neighbors", "index_width",
-                    "limits", "parameters", "nonnegative_weights", "nonnegative_edge_weights"});
+                    "limits", "parameters", "nonnegative_weights", "nonnegative_edge_weights",
+                    "sum_arithmetic", "require_edge_weights"});
   ViewSpec spec;
   for (auto [key, target] : std::initializer_list<std::pair<const char*, std::string*>>{
            {"kind", &spec.kind}, {"coo_layout", &spec.coo_layout}, {"direction", &spec.direction}, {"self_loops", &spec.self_loops},
            {"parallel_edges", &spec.parallel_edges}, {"weights", &spec.weights},
            {"weight_source", &spec.weight_source}, {"bipartite_sides", &spec.bipartite_sides},
-           {"index_width", &spec.index_width}})
+           {"index_width", &spec.index_width}, {"sum_arithmetic", &spec.sum_arithmetic}})
     if (value.contains(key)) *target = rt::string(value.at(key), key);
   if (spec.coo_layout == "records" && !value.contains("sorted_neighbors")) spec.sorted_neighbors = false;
   for (auto [key, target] : {std::pair{"edge_ids", &spec.edge_ids}, {"sorted_neighbors", &spec.sorted_neighbors},
-                           {"nonnegative_weights", &spec.nonnegative_weights}, {"nonnegative_edge_weights", &spec.nonnegative_edge_weights}})
+                           {"nonnegative_weights", &spec.nonnegative_weights}, {"nonnegative_edge_weights", &spec.nonnegative_edge_weights},
+                           {"require_edge_weights", &spec.require_edge_weights}})
     if (value.contains(key)) {
       check(value.at(key).is_bool(), std::string(key) + " must be boolean");
       *target = value.at(key).as_bool();
@@ -483,6 +497,7 @@ std::string ViewSpec::canonical_json() const {
   json::object result{{"kind", kind}, {"coo_layout", coo_layout}, {"direction", direction}, {"self_loops", self_loops},
                       {"parallel_edges", parallel_edges}, {"weights", weights}, {"weight_source", weight_source},
                       {"nonnegative_weights", nonnegative_weights}, {"nonnegative_edge_weights", nonnegative_edge_weights},
+                      {"sum_arithmetic", sum_arithmetic}, {"require_edge_weights", require_edge_weights},
                       {"edge_ids", edge_ids}, {"labels", columns}, {"bipartite_sides", bipartite_sides},
                       {"sorted_neighbors", sorted_neighbors}, {"index_width", index_width},
                       {"limits", {{"max_vertices", limits.max_vertices}, {"max_edges", limits.max_edges}}}};

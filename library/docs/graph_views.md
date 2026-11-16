@@ -122,6 +122,14 @@ fractions. Casting and min/max/sum aggregation occur in the shared factory.
 This mode does not bypass existing canonical graph parsing precision checks:
 only `int64_exact` opts into the previously approved exact-integer parser.
 
+The approved `sum_arithmetic: long_double_round_each` option preserves force
+layout's existing f64 accumulation: start at positive zero, add using a native
+`long double` intermediate, then round back to f64 after every contribution.
+It requires `weights: f64` and `parallel_edges: collapse:sum`. The default
+`standard` arithmetic is unchanged. `require_edge_weights` defaults to false;
+profiles that enable it require an explicit weight on every original edge,
+including a loop that will later be dropped. Both options enter the cache key.
+
 u32 limits vertex counts to `UINT32_MAX`. i32 limits vertex and entry counts to
 `INT32_MAX`; CSR storage itself remains u64/u32. Limits are checked on ordinary
 input and expanded output, dense cell counts and hypergraph incidence counts.

@@ -7,6 +7,7 @@
 #include "../internal.hpp"
 #include "../exact_number.hpp"
 #include "../pattern_match.hpp"
+#include "../numeric.hpp"
 namespace graphmine::legacy_test {
 using namespace graphmine::runtime;
 inline UndirectedGraphView simple(const Graph& graph, UndirectedProjectionOptions options = {}) {
@@ -164,4 +165,23 @@ struct RecordIndex {
     }
   }
 };
+// Frozen force-layout input preparation from 06dc4cf3. In particular, every
+// addition uses a long-double intermediate and rounds back to double at once.
+struct ForceLayoutInput { numeric::Matrix weights, positions; };
+inline ForceLayoutInput force_layout_input(const Graph& graph, bool weighted,
+                                           std::size_t dimensions, Work& work) {
+  const auto n = graph.vertex_count();
+  ForceLayoutInput input{numeric::Matrix(n,n,work),numeric::Matrix(n,dimensions,work)};
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    require(!weighted || edge.weight.has_value(), "Weighted layout requires every edge weight");
+    const double value = weighted ? *edge.weight : 1;
+    require(value >= 0, "Layout weights must be nonnegative");
+    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (u == v) continue;
+    input.weights(u,v) = input.weights(v,u) = weighted
+      ? numeric::finite(static_cast<long double>(input.weights(u,v)) + value) : 1;
+  }
+  return input;
+}
 }  // namespace graphmine::legacy_test
