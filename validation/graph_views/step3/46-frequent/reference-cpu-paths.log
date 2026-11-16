@@ -1,0 +1,8 @@
+Validated 500 native requests on cpu 0
+Validated 1000 native requests on cpu 0
+Validated 1500 native requests on cpu 0
+Validated 2000 native requests on cpu 0
+Validated 2500 native requests on cpu 0
+Validated 3000 native requests on cpu 0
+Validated 3500 native requests on cpu 0
+{"suite":"paths","backend":"cpu","gpu_device":0,"passed_requests":3645,"failed":0,"implementation_sha256":"50a2aeea68c40a1f4bc0ec1db89dfe68e5c539589230981be1214e09432a9f39"}

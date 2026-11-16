@@ -209,7 +209,7 @@ json::object temporal_motifs(const Graph& graph, const json::object& args, const
         }
         return true;
       },
-      work,&bundle_profile);
+      work,bundle_profile);
   json::array rows;
   for (VertexIndex v = 0; v < graph.vertex_count(); ++v)
     rows.push_back(json::object{{"vertex", id_json(graph.external_id(v))},

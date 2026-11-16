@@ -155,36 +155,25 @@ bool AttributePredicates::match(const json::object& data, const json::object& pa
   return true;
 }
 
-PatternRecords::PatternRecords(const Graph& graph, Work& work, const ViewProfile* profile) {
+PatternRecords::PatternRecords(const Graph& graph, Work& work, const ViewProfile& profile) {
   for (const auto& v : graph.canonical().vertices)
     vertices.push_back(vertex_record_json(v,work));
-  if (profile) {
-    const auto input = consume_view(graph,*profile,work,ViewBudget::algorithm_owned);
-    const auto& view = std::get<CooView>(input->view);
-    // Each undirected record has a canonical arc and its mirror. Copy only
-    // the canonical half; neither parallel records nor self-loops are removed.
-    for (std::size_t i=0; i<view.src.size(); ++i) {
-      if (view.symmetric && view.src[i] > view.dst[i]) continue;
-      work.tick();
-      bundles[{view.src[i],view.dst[i]}].push_back(edges.size());
-      edges.push_back(edge_record_json(graph.canonical().edges.at(view.edge_ids->at(i)),work));
-    }
-  } else {
-    // Unmigrated temporal/frequent-pattern callers retain their legacy input
-    // path until their own family evidence and corpus comparisons are ready.
-    for (const auto& edge : graph.canonical().edges) {
-      work.tick();
-      auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-      if (!graph.directed() && u > v) std::swap(u,v);
-      bundles[{u,v}].push_back(edges.size());
-      edges.push_back(edge_record_json(edge,work));
-    }
+  const auto input = consume_view(graph,profile,work,ViewBudget::algorithm_owned);
+  const auto& view = std::get<CooView>(input->view);
+  // Each undirected record has a canonical arc and its mirror. Copy only
+  // the canonical half; neither parallel records nor self-loops are removed.
+  for (std::size_t i=0; i<view.src.size(); ++i) {
+    if (view.symmetric && view.src[i] > view.dst[i]) continue;
+    work.tick();
+    bundles[{view.src[i],view.dst[i]}].push_back(edges.size());
+    edges.push_back(edge_record_json(graph.canonical().edges.at(view.edge_ids->at(i)),work));
   }
+
 }
 bool pattern_mappings(const Graph& graph, const Graph& query, bool induced,
                       const json::array& vertex_specs, const json::array& edge_specs,
                       const std::function<bool(const std::vector<VertexIndex>&)>& emit,
-                      Work& work, const ViewProfile* profile) {
+                      Work& work, const ViewProfile& profile) {
   require(graph.directed() == query.directed(), "Query and data graph direction must match");
   const AttributePredicates vertex_match(vertex_specs, query, false),
       edge_match(edge_specs, query, true);

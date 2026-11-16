@@ -26,6 +26,7 @@
 #include "../sampling_input.hpp"
 #include "../temporal_motif_input.hpp"
 #include "../comparison_input.hpp"
+#include "../frequent_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -138,6 +139,69 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
     equal(old_endpoints,new_endpoints);
   }
   return !expected;
+}
+template<class Input> std::string frequent_bytes(const Input& input) {
+  rt::json::array labels,edges;
+  for (const auto& label : input.labels) labels.push_back(label);
+  for (const auto& edge : input.edges) edges.push_back(rt::json::array{edge.u,edge.v,edge.label});
+  return rt::json::serialize(rt::json::array{input.directed,input.vertex_field,input.edge_field,labels,edges});
+}
+bool single_frequent_input(const gm::Graph& graph, const std::string& vf, const std::string& parallel="collapse",
+                            std::uint64_t budget=UINT64_MAX) {
+  auto old_work=unlimited(); old_work.max_candidates=budget;
+  std::optional<gm::legacy_test::FrequentInput> expected;
+  std::string old_failure;
+  try { expected=gm::legacy_test::frequent_input(graph,vf,"","reject",parallel,old_work); }
+  catch (const std::exception& e) { old_failure=e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work=unlimited(); work.max_candidates=budget;
+    std::optional<rt::FrequentInput> actual;
+    std::string new_failure;
+    try { actual=rt::single_frequent_input(graph,vf,parallel,work); }
+    catch (const std::exception& e) { new_failure=e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Single frequent input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (frequent_bytes(*expected) != frequent_bytes(*actual) || old_work.candidates != work.candidates)
+      throw std::runtime_error("Single frequent labels/edge bytes/cost differ");
+  }
+  return !expected;
+}
+bool frequent_collection_input(const rt::json::value& input, const std::string& vf, const std::string& ef,
+    const std::string& loops="drop", const std::string& parallel="collapse", std::uint64_t budget=UINT64_MAX) {
+  auto old_work=unlimited(); old_work.max_candidates=budget;
+  std::vector<gm::Graph> graphs;
+  std::vector<gm::legacy_test::FrequentInput> expected;
+  std::string old_failure;
+  try {
+    graphs=rt::graph_collection(input,old_work);
+    for (const auto& graph : graphs) expected.push_back(gm::legacy_test::frequent_input(graph,vf,ef,loops,parallel,old_work));
+  } catch (const std::exception& e) { old_failure=e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work=unlimited(); work.max_candidates=budget;
+    std::shared_ptr<const gm::ViewResult> built;
+    std::vector<rt::FrequentInput> actual;
+    std::string new_failure;
+    try {
+      const auto parsed=rt::graph_collection(input,work);
+      built=rt::frequent_collection_view(input,work);
+      const auto& view=std::get<gm::CollectionView>(built->view);
+      for (std::size_t m=0; m<parsed.size(); ++m)
+        actual.push_back(rt::frequent_member_input(parsed[view.member_indices[m]],view.members[m],vf,ef,loops,parallel,work));
+    } catch (const std::exception& e) { new_failure=e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Frequent collection rejection differs");
+    if (!old_failure.empty()) continue;
+    cache_pass(work,repeat);
+    const auto& view=std::get<gm::CollectionView>(built->view);
+    if (view.members.size()!=graphs.size() || actual.size()!=expected.size() || old_work.candidates!=work.candidates)
+      throw std::runtime_error("Frequent collection member count/cost differs");
+    for (std::size_t m=0; m<expected.size(); ++m)
+      if (view.member_indices[m]!=m || view.member_ids[m]!=graphs[m].canonical().graph.id || frequent_bytes(expected[m])!=frequent_bytes(actual[m]))
+        throw std::runtime_error("Frequent collection identity/labels/edge bytes differ");
+  }
+  return !old_failure.empty();
 }
 template<class Input> std::string comparison_bytes(const Input& input) {
   rt::json::array labels,edges,indices;
@@ -1042,7 +1106,7 @@ bool pattern_records(const gm::Graph& graph, const char* profile, std::uint64_t 
     auto work = unlimited(); work.max_candidates = budget;
     std::optional<rt::PatternRecords> actual;
     std::string new_failure;
-    try { actual.emplace(graph,work,&rt::cpu_view_profile(profile)); }
+    try { actual.emplace(graph,work,rt::cpu_view_profile(profile)); }
     catch (const std::exception& e) { new_failure = e.what(); }
     if (old_failure != new_failure) throw std::runtime_error("Pattern bundle rejection differs");
     if (!expected) continue;
@@ -1267,6 +1331,37 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  auto frequent_graph=raw;
+  frequent_graph.as_object().at("graph").as_object()["directed"]=false;
+  frequent_graph.as_object().at("edges").as_array().resize(3);
+  for (auto& v : frequent_graph.as_object().at("vertices").as_array()) {
+    v.as_object()["label"]="l"; v.as_object()["type"]="t";
+  }
+  for (auto& e : frequent_graph.as_object().at("edges").as_array()) e.as_object()["type"]="r";
+  auto second_frequent=frequent_graph; second_frequent.as_object().at("graph").as_object()["id"]="second";
+  const rt::json::object frequent_collection{{"dataset_id","frequent"},{"graphs",rt::json::array{frequent_graph,second_frequent}}};
+  for (const auto* vf : {"","type"}) for (const auto* ef : {"","type"}) {
+    for (std::uint64_t budget : {0,1,7,14,20,30,80}) frequent_collection_input(frequent_collection,vf,ef,"drop","collapse",budget);
+    const auto semantics=std::string(vf).empty() ? (std::string(ef).empty() ? "unlabeled" : "edge_type") :
+      (std::string(ef).empty() ? "vertex_type" : "vertex_and_edge_type");
+    for (bool induced : {false,true})
+      declared_request("frequent-subgraphs:cpp:collection",frequent_collection,{{"minimum_support_fraction",0.5},
+        {"maximum_edges",1},{"maximum_vertices",2},{"parallel_edges","collapse"},{"self_loops","drop"},
+        {"label_semantics",semantics},{"induced",induced},{"include_supporting_graph_ids",true}});
+  }
+  for (const auto* vf : {"label","type"}) {
+    for (std::uint64_t budget : {0,1,2,3,4,5,6,20}) single_frequent_input(rt::parse_graph(frequent_graph),vf,"collapse",budget);
+    for (const auto* mode : {"induced","non_induced"}) for (const auto* profile : {"single-graph-frequent-subgraphs:cpp:host","single-graph-frequent-subgraphs:cpp:bundles"})
+      declared_request(profile,frequent_graph,{{"minimum_image_support",1},{"max_pattern_edges",1},{"vertex_label_field",vf},
+        {"parallel_edges","collapse"},{"match_mode",mode},{"output_mode","patterns"},{"include_images",true}});
+  }
+  for (const auto* loops : {"drop","reject"}) for (const auto* parallel : {"reject","collapse"}) {
+    auto conflicts=raw;
+    conflicts.as_object().at("edges").as_array()[1].as_object()["type"]="different";
+    frequent_collection_input(rt::json::object{{"dataset_id","conflicts"},{"graphs",rt::json::array{conflicts}}},"type","type",loops,parallel);
+    single_frequent_input(graph,"label",parallel);
+  }
+  frequent_collection_input(rt::json::object{{"dataset_id","empty"},{"graphs",rt::json::array{}}},"type","type");
   for (bool directed : {false,true}) for (bool edit : {false,true}) {
     auto labeled=raw;
     labeled.as_object().at("graph").as_object()["directed"]=directed;
@@ -2054,6 +2149,7 @@ int main(int argc, char** argv) {
     const bool temporal_paths = argc > 1 && std::string(argv[1]) == "--temporal-paths";
     const bool temporal_motifs = argc > 1 && std::string(argv[1]) == "--temporal-motifs";
     const bool comparison = argc > 1 && std::string(argv[1]) == "--comparison";
+    const bool frequent = argc > 1 && std::string(argv[1]) == "--frequent";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -2079,7 +2175,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling || temporal_paths || temporal_motifs || comparison;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling || temporal_paths || temporal_motifs || comparison || frequent;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -2087,6 +2183,22 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (frequent) {
+          for (const auto* vf : {"","type"}) for (const auto* ef : {"","type"}) {
+            const rt::json::object collection{{"dataset_id","corpus"},{"graphs",rt::json::array{input.at("graph")}}};
+            const bool rejected=frequent_collection_input(collection,vf,ef);
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile","frequent-subgraphs:cpp:collection"},{"vertex_field",vf},{"edge_field",ef},{"equal",true},{"rejected",rejected}}) << '\n';
+          }
+          for (const auto* vf : {"label","type"}) {
+            const bool rejected=single_frequent_input(graph,vf);
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile","single-graph-frequent-subgraphs:cpp:host"},{"vertex_field",vf},{"equal",true},{"rejected",rejected}}) << '\n';
+          }
+          const bool rejected=pattern_records(graph,"single-graph-frequent-subgraphs:cpp:bundles");
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile","single-graph-frequent-subgraphs:cpp:bundles"},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (comparison) {
           for (bool edit : {false,true}) for (bool ignore : {false,true}) for (const auto* parallel : {"reject","collapse"}) {
             const bool rejected=comparison_input(graph,edit,ignore,"drop",parallel);

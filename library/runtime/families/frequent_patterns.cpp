@@ -1,47 +1,62 @@
 #include "pattern_match.hpp"
 #include "structured_input.hpp"
+#include "frequent_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
 using namespace family_util;
-struct Labeled {
-  bool directed;
-  std::string vertex_field, edge_field;
+using Labeled = FrequentInput;
+const ViewProfile collection_profile{"frequent-subgraphs:cpp:collection", {"frequent-subgraphs"},
+  R"({"kind":"collection","self_loops":"drop","parallel_edges":"collapse:first","weights":"none","edge_ids":true})"};
+const ViewProfile single_profile{"single-graph-frequent-subgraphs:cpp:host", {"single-graph-frequent-subgraphs"},
+  R"({"kind":"csr","self_loops":"drop","parallel_edges":"collapse:first","weights":"none","edge_ids":true})"};
+const ViewProfile bundle_profile{"single-graph-frequent-subgraphs:cpp:bundles", {"single-graph-frequent-subgraphs"},
+  R"({"kind":"coo","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+}  // namespace
+std::shared_ptr<const ViewResult> frequent_collection_view(const json::value& input, Work& work) {
+  return consume_view(input,collection_profile,work);
+}
+FrequentInput frequent_member_input(const Graph& graph, const CsrView& view, const std::string& vf,
+    const std::string& ef, const std::string& loops, const std::string& parallel, Work& work) {
+  // Keep common-front label decoding, validation order and candidate costs.
+  // This map checks conflicting duplicate labels; it does not supply topology.
   std::vector<json::value> labels;
-  struct Edge {
-    VertexIndex u, v;
-    json::value label;
-  };
-  std::vector<Edge> edges;
-};
-Labeled normalize(const Graph& graph, const std::string& vf, const std::string& ef,
-                  const std::string& loops, const std::string& parallel, Work& work) {
-  Labeled out{graph.directed(), vf, ef, {}, {}};
-  std::map<std::pair<VertexIndex, VertexIndex>, json::value> edges;
+  std::map<std::pair<VertexIndex,VertexIndex>,json::value> validation_labels;
   for (const auto& v : graph.canonical().vertices) {
     work.tick();
-    const auto record = vertex_record_json(v, work);
-    out.labels.push_back(!vf.empty() && record.contains(vf) ? record.at(vf) : json::value(nullptr));
+    const auto record=vertex_record_json(v,work);
+    labels.push_back(!vf.empty() && record.contains(vf) ? record.at(vf) : json::value(nullptr));
   }
-  for (const auto& e : graph.canonical().edges) {
+  for (const auto& edge : graph.canonical().edges) {
     work.tick();
-    auto u = graph.dense_index(e.source), v = graph.dense_index(e.target);
-    if (u == v) {
-      require(loops == "drop", "Frequent patterns reject self-loops");
-      continue;
-    }
-    if (!out.directed && u > v) std::swap(u, v);
-    const json::value label = !ef.empty() && e.type ? json::value(*e.type) : json::value(nullptr);
-    const auto [it, inserted] = edges.emplace(std::make_pair(u, v), label);
+    auto u=graph.dense_index(edge.source), v=graph.dense_index(edge.target);
+    if (u==v) { require(loops=="drop","Frequent patterns reject self-loops"); continue; }
+    if (!graph.directed() && u>v) std::swap(u,v);
+    const json::value label=!ef.empty() && edge.type ? json::value(*edge.type) : json::value(nullptr);
+    const auto [it,inserted]=validation_labels.emplace(std::make_pair(u,v),label);
     if (!inserted) {
-      require(parallel == "collapse", "Parallel edges require explicit collapse");
-      require(typed_equal(it->second, label, work),
-              "Cannot collapse different selected edge types");
+      require(parallel=="collapse","Parallel edges require explicit collapse");
+      require(typed_equal(it->second,label,work),"Cannot collapse different selected edge types");
     }
   }
-  for (const auto& [pair, label] : edges) out.edges.push_back({pair.first, pair.second, label});
+  FrequentInput out{view.directed,vf,ef,{}, {}};
+  for (const auto original : view.vertices.to_original) out.labels.push_back(labels[original]);
+  for (VertexIndex u=0; u+1<view.offsets.size(); ++u)
+    for (auto i=view.offsets[u]; i<view.offsets[u+1]; ++i) {
+      const auto v=view.indices[i];
+      if (view.symmetric && u>v) continue;
+      const auto& edge=graph.canonical().edges[view.edge_ids->at(i)];
+      out.edges.push_back({view.vertices.to_original[u],view.vertices.to_original[v],
+        !ef.empty() && edge.type ? json::value(*edge.type) : json::value(nullptr)});
+    }
   return out;
 }
+FrequentInput single_frequent_input(const Graph& graph, const std::string& vf,
+    const std::string& parallel, Work& work) {
+  const auto built=consume_view(graph,single_profile,work,ViewBudget::algorithm_owned);
+  return frequent_member_input(graph,std::get<CsrView>(built->view),vf,"","reject",parallel,work);
+}
+namespace {
 struct CanonicalPattern {
   std::string key;
   json::object graph;
@@ -164,8 +179,11 @@ json::object frequent_subgraphs(const json::value& input, const json::object& ar
     std::vector<std::string> ids;
   };
   std::map<std::string, Record> records;
-  for (const auto& graph : collection) {
-    const auto host = normalize(graph, vf, ef, loops, parallel, work);
+  const auto built=frequent_collection_view(input,work);
+  const auto& views=std::get<CollectionView>(built->view);
+  for (std::size_t member=0; member<collection.size(); ++member) {
+    const auto& graph=collection[views.member_indices[member]];
+    const auto host=frequent_member_input(graph,views.members[member],vf,ef,loops,parallel,work);
     std::set<std::string> seen;
     const auto maximum =
         std::min<std::uint64_t>(host.labels.size(), maximum_vertices.value_or(host.labels.size()));
@@ -264,7 +282,7 @@ json::object single_graph_frequent(const Graph& graph, const json::object& args,
              parallel = choice(args, "parallel_edges", "reject", {"reject", "collapse"});
   const bool include = boolean(args, "include_images", false), induced = match == "induced";
   require(!include || mode == "patterns", "include_images requires patterns output");
-  const auto host = normalize(graph, field, "", "reject", parallel, work);
+  const auto host = single_frequent_input(graph,field,parallel,work);
   for (const auto& label : host.labels)
     require(label.is_string(), "Every vertex needs the selected label/type");
   // Match against the normalized simple host, retaining its original IDs.
@@ -298,7 +316,7 @@ json::object single_graph_frequent(const Graph& graph, const json::object& args,
           for (std::size_t v = 0; v < mapping.size(); ++v) images[v].insert(mapping[v]);
           return true;
         },
-        work);
+        work,bundle_profile);
     std::size_t value = graph.vertex_count();
     for (const auto& image : images) value = std::min(value, image.size());
     if (value < support) return;

@@ -858,4 +858,45 @@ inline ComparisonGraph comparison_graph(const Graph& input, const std::vector<st
   return result;
 }
 
+
+// Frozen frequent-pattern labeled host normalization before V1/V5 migration.
+struct FrequentInput {
+  bool directed;
+  std::string vertex_field, edge_field;
+  std::vector<json::value> labels;
+  struct Edge {
+    VertexIndex u, v;
+    json::value label;
+  };
+  std::vector<Edge> edges;
+};
+inline FrequentInput frequent_input(const Graph& graph, const std::string& vf, const std::string& ef,
+                  const std::string& loops, const std::string& parallel, Work& work) {
+  FrequentInput out{graph.directed(), vf, ef, {}, {}};
+  std::map<std::pair<VertexIndex, VertexIndex>, json::value> edges;
+  for (const auto& v : graph.canonical().vertices) {
+    work.tick();
+    const auto record = vertex_record_json(v, work);
+    out.labels.push_back(!vf.empty() && record.contains(vf) ? record.at(vf) : json::value(nullptr));
+  }
+  for (const auto& e : graph.canonical().edges) {
+    work.tick();
+    auto u = graph.dense_index(e.source), v = graph.dense_index(e.target);
+    if (u == v) {
+      require(loops == "drop", "Frequent patterns reject self-loops");
+      continue;
+    }
+    if (!out.directed && u > v) std::swap(u, v);
+    const json::value label = !ef.empty() && e.type ? json::value(*e.type) : json::value(nullptr);
+    const auto [it, inserted] = edges.emplace(std::make_pair(u, v), label);
+    if (!inserted) {
+      require(parallel == "collapse", "Parallel edges require explicit collapse");
+      require(typed_equal(it->second, label, work),
+              "Cannot collapse different selected edge types");
+    }
+  }
+  for (const auto& [pair, label] : edges) out.edges.push_back({pair.first, pair.second, label});
+  return out;
+}
+
 }  // namespace graphmine::legacy_test

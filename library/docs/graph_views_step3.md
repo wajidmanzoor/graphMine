@@ -692,3 +692,20 @@ pass 52,568 corpus cases on builds/hits. Checks compare normalized graph JSON,
 label keys, oriented endpoints, identity indices, costs and rejections. Requests
 verify all four declarations and every supported label-field subset; boundary
 cases include conflicting edge types, loops, missing labels and budgets.
+
+## Frequent subgraphs
+
+Collection mining now consumes V5 member CSR views; single-graph mining consumes
+V1 host CSR and declared pattern COO bundles. The factory selects simple
+topology and retained identities, while the common front preserves selected
+label conversion and conflicting-parallel validation costs. Pattern enumeration,
+canonicalization and support calculations are unchanged. The shared pattern
+matcher now requires a declared profile; its unused legacy branch is removed.
+
+Checkpoint `46-frequent` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Four collection label semantics, two single-host label fields and
+pattern bundles pass 45,997 corpus cases on builds/hits, comparing member
+identities, endpoint ordering, typed label/record bytes, costs and rejections.
+Requests cover induced/non-induced mining, support IDs, images and empty/multiple
+members. A missed pointer-to-reference call site in the required-profile cleanup
+was corrected before final validation; its build diagnostic is retained.

@@ -36,7 +36,7 @@ json::object subgraph_isomorphism(const Graph& graph, const json::object& args, 
         matches.push_back(mapping_rows(graph, query, mapping));
         return true;
       },
-      work, &subgraph_profile);
+      work, subgraph_profile);
   auto port = result_port("vertex_mappings", matches, complete);
   port["query_graph_fingerprint"] = input_fingerprint(args.at("query_graph"));
   return output({{"query_graph", args.at("query_graph")},

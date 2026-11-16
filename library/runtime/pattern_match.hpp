@@ -16,11 +16,11 @@ struct AttributePredicates {
 struct PatternRecords {
   std::vector<json::object> vertices, edges;
   std::map<std::pair<VertexIndex,VertexIndex>,std::vector<std::size_t>> bundles;
-  PatternRecords(const Graph&, Work&, const ViewProfile* = nullptr);
+  PatternRecords(const Graph&, Work&, const ViewProfile&);
 };
 bool pattern_mappings(const Graph&, const Graph&, bool, const json::array&, const json::array&,
                       const std::function<bool(const std::vector<VertexIndex>&)>&, Work&,
-                      const ViewProfile* = nullptr);
+                      const ViewProfile&);
 bool simple_mappings(const MiningGraph&, const MiningGraph&, bool, bool,
                      const std::function<bool(const std::vector<VertexIndex>&)>&, Work&);
 json::array mapping_rows(const Graph&, const Graph&, const std::vector<VertexIndex>&);

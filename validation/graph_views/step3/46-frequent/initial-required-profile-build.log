@@ -1,0 +1,28 @@
+-- Found the following ICU libraries:
+--   uc (required): /usr/lib/x86_64-linux-gnu/libicuuc.so
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/build/native-views-step3
+[  7%] Built target graphmine_runtime_core
+[  9%] Built target graphmine_core_view_test
+[ 10%] Building CXX object CMakeFiles/graphmine_runtime.dir/runtime.cpp.o
+[ 11%] Building CXX object CMakeFiles/graphmine_runtime.dir/registry.cpp.o
+[ 12%] Building CXX object CMakeFiles/graphmine_runtime.dir/validation.cpp.o
+[ 13%] Building CXX object CMakeFiles/graphmine_runtime.dir/view_profiles.cpp.o
+[ 14%] Building CXX object CMakeFiles/graphmine_runtime.dir/representation_cache.cpp.o
+[ 15%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/common.cpp.o
+[ 15%] Building CXX object CMakeFiles/graphmine_runtime.dir/pattern_match.cpp.o
+[ 16%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/pattern_matching.cpp.o
+[ 17%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/graphlets.cpp.o
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/families/pattern_matching.cpp: In function ‘boost::json::object graphmine::runtime::subgraph_isomorphism(const graphmine::Graph&, const boost::json::object&, const std::string&, int, Work&)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/families/pattern_matching.cpp:39:13: error: invalid initialization of reference of type ‘const graphmine::runtime::ViewProfile&’ from expression of type ‘const graphmine::runtime::ViewProfile*’
+   39 |       work, &subgraph_profile);
+      |             ^~~~~~~~~~~~~~~~~
+In file included from /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/families/pattern_matching.cpp:1:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/pattern_match.hpp:23:23: note: in passing argument 8 of ‘bool graphmine::runtime::pattern_mappings(const graphmine::Graph&, const graphmine::Graph&, bool, const boost::json::array&, const boost::json::array&, const std::function<bool(const std::vector<unsigned int>&)>&, Work&, const ViewProfile&)’
+   23 |                       const ViewProfile&);
+      |                       ^~~~~~~~~~~~~~~~~~
+gmake[2]: *** [CMakeFiles/graphmine_runtime.dir/build.make:692: CMakeFiles/graphmine_runtime.dir/families/pattern_matching.cpp.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+gmake[1]: *** [CMakeFiles/Makefile2:895: CMakeFiles/graphmine_runtime.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2
