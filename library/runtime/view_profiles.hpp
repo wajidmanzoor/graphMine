@@ -28,9 +28,12 @@ struct CsrNeighbors {
 };
 struct CsrRows {
   const CsrView& view;
+  bool incoming = false;
   std::size_t size() const { return view.offsets.size() - 1; }
   CsrNeighbors operator[](std::size_t v) const {
-    return {view.indices.begin() + view.offsets[v], view.indices.begin() + view.offsets[v+1]};
+    const auto& offsets = incoming ? *view.in_offsets : view.offsets;
+    const auto& indices = incoming ? *view.in_indices : view.indices;
+    return {indices.begin() + offsets[v], indices.begin() + offsets[v+1]};
   }
 };
 struct CsrArcs {

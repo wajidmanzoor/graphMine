@@ -63,3 +63,17 @@ direction, successful candidate counts and rejection messages against the frozen
 old builders, including cold/warm cache cases. Real operation requests also check
 that the consumed spec equals the adapter's declaration. CPU path arithmetic and
 tie-breaking are unchanged; the cuGraph code path remains for Step 4.
+
+## Connectivity
+
+Weak/strong connected components and topological sorting now consume declared
+CSR views. Strong components use the factory's reverse CSR; weak components use
+the identical symmetric rows in both directions. The old reverse-index candidate
+cost is preserved. Topological sorting retains its existing rejection of
+self-loops before consuming the view.
+
+Checkpoint `03-connectivity` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Three profile goldens cover the complete Step 2 corpus and check
+forward/reverse arrays, weights, direction and candidate costs. Real-operation
+checks verify each selected declaration. GPU connectivity adapters remain for
+their later migration steps.

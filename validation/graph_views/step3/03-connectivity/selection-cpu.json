@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "d79fe16d420b3887ffe8848917b4f6818e0ecbd85a27bab665b2b0fc709064f6"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "d79fe16d420b3887ffe8848917b4f6818e0ecbd85a27bab665b2b0fc709064f6"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "d79fe16d420b3887ffe8848917b4f6818e0ecbd85a27bab665b2b0fc709064f6"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "d79fe16d420b3887ffe8848917b4f6818e0ecbd85a27bab665b2b0fc709064f6"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "d79fe16d420b3887ffe8848917b4f6818e0ecbd85a27bab665b2b0fc709064f6"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "d79fe16d420b3887ffe8848917b4f6818e0ecbd85a27bab665b2b0fc709064f6"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "d79fe16d420b3887ffe8848917b4f6818e0ecbd85a27bab665b2b0fc709064f6"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "d79fe16d420b3887ffe8848917b4f6818e0ecbd85a27bab665b2b0fc709064f6"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "d79fe16d420b3887ffe8848917b4f6818e0ecbd85a27bab665b2b0fc709064f6"
+  }
+]

@@ -3,12 +3,26 @@
 #include <queue>
 
 #include "internal.hpp"
+#include "view_profiles.hpp"
 
 namespace graphmine::runtime {
 namespace {
-std::vector<std::vector<VertexIndex>> cpu_components(const WeightedGraph& graph, bool strong,
+const ViewProfile weak_view{"connected-components:cpp:weak", {"connected-components"}, R"({
+  "kind":"csr", "direction":"symmetrize", "self_loops":"drop",
+  "parallel_edges":"collapse:first", "weights":"f64", "weight_source":"unit"
+})"};
+const ViewProfile strong_view{"connected-components:cpp:strong", {"connected-components"}, R"({
+  "kind":"csr", "direction":"both", "self_loops":"drop",
+  "parallel_edges":"collapse:first", "weights":"f64", "weight_source":"unit"
+})"};
+const ViewProfile topological_view{"topological-sort:cpp:default", {"topological-sort"}, R"({
+  "kind":"csr", "direction":"keep", "self_loops":"drop",
+  "parallel_edges":"collapse:first", "weights":"none"
+})"};
+std::vector<std::vector<VertexIndex>> cpu_components(const CsrView& graph, bool strong,
                                                      Work& work) {
-  const auto n = graph.rows.size();
+  const CsrRows rows{graph};
+  const auto n = rows.size();
   std::vector<bool> seen(n, false);
   std::vector<VertexIndex> order;
   for (VertexIndex root = 0; root < n; ++root) {
@@ -18,24 +32,22 @@ std::vector<std::vector<VertexIndex>> cpu_components(const WeightedGraph& graph,
     while (!stack.empty()) {
       work.tick();
       auto& [u, position] = stack.back();
-      if (position == graph.rows[u].size()) {
+      if (position == rows[u].size()) {
         order.push_back(u);
         stack.pop_back();
         continue;
       }
-      const auto v = graph.rows[u][position++].target;
+      const auto v = rows[u][position++];
       if (!seen[v]) {
         seen[v] = true;
         stack.emplace_back(v, 0);
       }
     }
   }
-  std::vector<std::vector<VertexIndex>> reverse(n);
-  for (VertexIndex u = 0; u < n; ++u)
-    for (const auto& arc : graph.rows[u]) {
-      work.tick();
-      reverse[arc.target].push_back(u);
-    }
+  // The factory supplies the exact old transpose. Symmetric weak views already
+  // have the same rows in both directions. Retain the old indexing work cost.
+  work.tick(graph.indices.size());
+  const CsrRows reverse{graph, strong};
   std::fill(seen.begin(), seen.end(), false);
   if (strong)
     std::reverse(order.begin(), order.end());
@@ -75,10 +87,16 @@ json::object components(const Graph& graph, const json::object& args, const std:
   require(mode == "weakly_connected" || mode == "strongly_connected", "Unknown connectivity_mode");
   const bool strong = mode == "strongly_connected" && graph.directed();
   work.output(graph.vertex_count());
-  const auto input = weighted_graph(graph, false, false, "collapse",
-                                    strong ? "outgoing" : "undirected_projection", work);
-  auto groups = backend == "cpp" ? cpu_components(input, strong, work)
-                                 : cugraph_components(input, strong, device, work);
+  std::vector<std::vector<VertexIndex>> groups;
+  if (backend == "cpp") {
+    const auto input = consume_view(graph, strong ? strong_view : weak_view, work,
+                                    ViewBudget::weighted_adjacency);
+    groups = cpu_components(std::get<CsrView>(input->view), strong, work);
+  } else {
+    const auto input = weighted_graph(graph, false, false, "collapse",
+                                      strong ? "outgoing" : "undirected_projection", work);
+    groups = cugraph_components(input, strong, device, work);
+  }
   for (auto& members : groups) std::sort(members.begin(), members.end());
   std::sort(groups.begin(), groups.end(), [](const auto& a, const auto& b) {
     return a.size() != b.size() ? a.size() > b.size() : a < b;
@@ -105,10 +123,11 @@ json::object topological(const Graph& graph, const json::object& args, const std
   for (const auto& edge : graph.canonical().edges)
     require(edge.source != edge.target,
             "A self-loop is a directed cycle; no topological ordering exists");
-  const auto adj = adjacency(graph, work);
+  const auto input = consume_view(graph, topological_view, work, ViewBudget::original_edges);
+  const CsrRows adj{std::get<CsrView>(input->view)};
   std::vector<std::size_t> degree(graph.vertex_count(), 0);
-  for (const auto& row : adj)
-    for (const auto v : row) {
+  for (VertexIndex u = 0; u < adj.size(); ++u)
+    for (const auto v : adj[u]) {
       work.tick();
       ++degree[v];
     }

@@ -16,8 +16,8 @@ template<class T> void equal(const std::vector<T>& a, const std::vector<T>& b) {
   if (a.size() != b.size() || (!a.empty() && std::memcmp(a.data(), b.data(), a.size()*sizeof(T))))
     throw std::runtime_error("CPU view array bytes differ");
 }
-void traversal(const gm::Graph& graph) {
-  const auto& profile = rt::cpu_view_profile("breadth-first-search:cpp:default");
+void traversal(const gm::Graph& graph, const char* id = "breadth-first-search:cpp:default") {
+  const auto& profile = rt::cpu_view_profile(id);
   auto old_work = unlimited();
   const auto expected = gm::legacy_test::adjacency(graph, old_work);
   std::vector<std::uint64_t> offsets{0}; std::vector<gm::VertexIndex> indices;
@@ -32,7 +32,11 @@ void traversal(const gm::Graph& graph) {
     if (work.candidates != old_work.candidates) throw std::runtime_error("CPU view candidate cost differs");
   }
 }
-struct WeightedCase { const char* profile; const char* aggregation; bool nonnegative, unit; };
+struct WeightedCase {
+  const char* profile; const char* aggregation; bool nonnegative, unit;
+  bool weighted = true;
+  const char* direction = "outgoing";
+};
 const WeightedCase weighted_cases[] = {
   {"single-source-shortest-paths:cpp:default", "min", true, false},
   {"many-source-shortest-paths:cpp:edge_weight", "min", true, false},
@@ -40,9 +44,13 @@ const WeightedCase weighted_cases[] = {
   {"spanning-tree-forest:cpp:minimum", "min", false, false},
   {"spanning-tree-forest:cpp:maximum", "max", false, false}
 };
+const WeightedCase connectivity_cases[] = {
+  {"connected-components:cpp:weak", "collapse", false, false, false, "undirected_projection"},
+  {"connected-components:cpp:strong", "collapse", false, false, false, "outgoing"}
+};
 bool weighted_path(const gm::Graph& graph, const WeightedCase& test) {
   auto reference_work = unlimited(); std::optional<rt::WeightedGraph> expected; std::string failure;
-  try { expected = gm::legacy_test::weighted(graph, true, test.nonnegative, test.aggregation, "outgoing", reference_work); }
+  try { expected = gm::legacy_test::weighted(graph, test.weighted, test.nonnegative, test.aggregation, test.direction, reference_work); }
   catch (const std::exception& e) { failure = e.what(); }
   // Frozen many-source unweighted conversion from 201b2367; validates stored
   // lengths before using unit distances, including discarded self-loops.
@@ -60,6 +68,14 @@ bool weighted_path(const gm::Graph& graph, const WeightedCase& test) {
       offsets.push_back(indices.size());
     }
     equal(offsets,view.offsets); equal(indices,view.indices); equal(weights,std::get<std::vector<double>>(view.weights));
+    if (view.in_offsets) {
+      std::vector<std::vector<gm::VertexIndex>> reverse(expected->rows.size());
+      for (gm::VertexIndex u=0; u<expected->rows.size(); ++u)
+        for (const auto& arc : expected->rows[u]) reverse[arc.target].push_back(u);
+      offsets.assign(1,0); indices.clear();
+      for (const auto& row : reverse) { indices.insert(indices.end(),row.begin(),row.end()); offsets.push_back(indices.size()); }
+      equal(offsets,*view.in_offsets); equal(indices,*view.in_indices);
+    }
     if (view.directed != expected->directed || work.candidates != reference_work.candidates)
       throw std::runtime_error(std::string(test.profile)+": direction/candidate cost differs");
   }
@@ -75,6 +91,8 @@ void contracts() {
   const auto graph = rt::parse_graph(raw);
   traversal(graph);
   for (const auto& test : weighted_cases) weighted_path(graph,test);
+  for (const auto& test : connectivity_cases) weighted_path(graph,test);
+  traversal(graph,"topological-sort:cpp:default");
   for (const auto* mode : {"independent", "nearest_source"}) {
     const rt::json::object request{{"command","run"},{"operation","breadth-first-search"},
       {"device","cpu"},{"graph",raw},{"parameters",{{"sources",{0,1}},{"source_mode",mode}}}};
@@ -89,7 +107,10 @@ void contracts() {
   auto positive = raw;
   for (auto& edge : positive.as_object().at("edges").as_array())
     edge.as_object()["weight"] = std::abs(edge.as_object().at("weight").to_number<double>());
-  for (const auto& test : weighted_cases) {
+  std::vector<WeightedCase> operation_cases(std::begin(weighted_cases),std::end(weighted_cases));
+  operation_cases.insert(operation_cases.end(),std::begin(connectivity_cases),std::end(connectivity_cases));
+  operation_cases.push_back({"topological-sort:cpp:default","collapse",false,false});
+  for (const auto& test : operation_cases) {
     const auto& profile = rt::cpu_view_profile(test.profile);
     auto input = positive;
     rt::json::object parameters;
@@ -100,6 +121,9 @@ void contracts() {
       input.as_object().at("graph").as_object()["directed"] = false;
       parameters["objective"] = std::string(test.aggregation) == "max" ? "maximum" : "minimum";
     }
+    if (operation == "connected-components")
+      parameters["connectivity_mode"] = profile.id.find(":strong") != std::string::npos ? "strongly_connected" : "weakly_connected";
+    if (operation == "topological-sort") input.as_object().at("edges").as_array().pop_back();
     const rt::json::object request{{"command","run"},{"operation",operation},{"device","cpu"},
                                     {"graph",input},{"parameters",parameters}};
     const auto response = rt::strict_json(rt::request(rt::json::serialize(request))).as_object();
@@ -123,6 +147,7 @@ int main(int argc, char** argv) {
   try {
     if (argc > 1 && std::string(argv[1]) == "--self-test") { contracts(); return 0; }
     const bool weighted = argc > 1 && std::string(argv[1]) == "--weighted-paths";
+    const bool connectivity = argc > 1 && std::string(argv[1]) == "--connectivity";
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
@@ -134,13 +159,22 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",test.profile},{"equal",true},{"rejected",rejected}}) << '\n';
           }
+        } else if (connectivity) {
+          for (const auto& test : connectivity_cases) {
+            const bool rejected = weighted_path(graph,test);
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile",test.profile},{"equal",true},{"rejected",rejected}}) << '\n';
+          }
+          traversal(graph,"topological-sort:cpp:default");
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile","topological-sort:cpp:default"},{"equal",true},{"rejected",false}}) << '\n';
         } else traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (!weighted) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (!weighted && !connectivity) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }
