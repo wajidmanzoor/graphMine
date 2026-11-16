@@ -367,4 +367,10 @@ inline std::vector<MatchingEdge> general_matching_edges(const Graph& graph, Work
   for (auto& [_,edge] : unique) result.push_back(std::move(edge));
   return result;
 }
+// Frozen entity-resolution vertex input; edge hints are not algorithm inputs.
+inline std::vector<json::object> vertex_records_input(const Graph& graph, Work& work) {
+  std::vector<json::object> records;
+  for (const auto& v : graph.canonical().vertices) records.push_back(vertex_record_json(v,work));
+  return records;
+}
 }  // namespace graphmine::legacy_test

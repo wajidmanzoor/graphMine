@@ -11,6 +11,7 @@
 #include "../filtration_input.hpp"
 #include "../signed_input.hpp"
 #include "../matching_input.hpp"
+#include "../vertex_records_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -121,6 +122,30 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool vertex_records_input(const gm::Graph& graph, const char* profile, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<std::vector<rt::json::object>> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::vertex_records_input(graph,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<std::vector<rt::json::object>> actual;
+    std::string new_failure;
+    try { actual = rt::vertex_records_input(graph,rt::cpu_view_profile(profile),work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Vertex record rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->size() != actual->size() || old_work.candidates != work.candidates)
+      throw std::runtime_error("Vertex record count/cost differs");
+    for (std::size_t i=0; i<expected->size(); ++i)
+      if (rt::json::serialize(expected->at(i)) != rt::json::serialize(actual->at(i)))
+        throw std::runtime_error("Vertex record JSON bytes differ");
   }
   return !expected;
 }
@@ -590,6 +615,20 @@ void contracts() {
   traversal(graph,"topological-sort:cpp:default");
   auto undirected = raw;
   undirected.as_object().at("graph").as_object()["directed"] = false;
+  auto entity_graph = raw;
+  for (std::size_t v=0; v<3; ++v)
+    entity_graph.as_object().at("vertices").as_array()[v].as_object()["attributes"] =
+      rt::json::object{{"name",v < 2 ? "Straße" : "STRASSE"},{"amount",9007199254740993ULL+v}};
+  vertex_records_input(graph,"entity-resolution:cpp:vertices");
+  vertex_records_input(rt::parse_graph(entity_graph),"entity-resolution:cpp:vertices");
+  for (std::uint64_t budget=0; budget<15; ++budget)
+    vertex_records_input(rt::parse_graph(entity_graph),"entity-resolution:cpp:vertices",budget);
+  const rt::json::object predicate{{"field","name"},{"operator","eq"},{"normalization","nfkc_casefold"}};
+  const rt::json::array blocking{rt::json::object{{"id","same_name"},{"all",{predicate}}}};
+  declared_request("entity-resolution:cpp:vertices",entity_graph,{{"task","blocking"},{"blocking_rules",blocking}});
+  for (const auto* policy : {"connected_components","correlation_clustering"})
+    declared_request("entity-resolution:cpp:vertices",entity_graph,{{"task","resolution"},{"blocking_rules",blocking},
+      {"match_decision_rule",{{"all",{predicate}}}},{"clustering_policy",policy}});
   for (const auto& null_graph : {raw,undirected}) {
     edge_set_input(rt::parse_graph(null_graph),"null-model-significance:cpp:default");
     for (const auto* model : {"degree_preserving_configuration","erdos_renyi"})
@@ -1017,6 +1056,7 @@ int main(int argc, char** argv) {
     const bool topology = argc > 1 && std::string(argv[1]) == "--topology";
     const bool signed_balance = argc > 1 && std::string(argv[1]) == "--signed-balance";
     const bool general_matching = argc > 1 && std::string(argv[1]) == "--general-matching";
+    const bool entity_resolution = argc > 1 && std::string(argv[1]) == "--entity-resolution";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1041,7 +1081,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1049,6 +1089,12 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (entity_resolution) {
+          const auto* profile = "entity-resolution:cpp:vertices";
+          const bool rejected = vertex_records_input(graph,profile);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",profile},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (general_matching) {
           const bool rejected = general_matching_input(graph);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

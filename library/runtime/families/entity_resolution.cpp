@@ -3,9 +3,12 @@
 #include <unicode/unistr.h>
 
 #include "pattern_match.hpp"
+#include "vertex_records_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
+const ViewProfile entity_profile{"entity-resolution:cpp:vertices", {"entity-resolution"},
+  R"({"kind":"coo","coo_layout":"records","weights":"none","sorted_neighbors":false})"};
 using namespace family_util;
 using Text = std::vector<UChar32>;
 Text unicode_text(const std::string& raw, const std::string& normalization, Work& work) {
@@ -188,8 +191,7 @@ json::object entity_resolution(const Graph& graph, const json::object& args, con
   require(args.at("blocking_rules").is_array() && !args.at("blocking_rules").as_array().empty(),
           "blocking_rules must be nonempty");
   const auto n = graph.vertex_count();
-  std::vector<json::object> records;
-  for (const auto& v : graph.canonical().vertices) records.push_back(vertex_record_json(v, work));
+  const auto records = vertex_records_input(graph,entity_profile,work);
   std::vector<Rule> rules;
   std::vector<ExternalId> rule_ids;
   std::set<ExternalId> seen;

@@ -427,3 +427,16 @@ CPU admissions. All 6,571 corpus cases match canonical endpoints, exact weights,
 selected original IDs, ordering, costs and rejections, with fresh/cache-hit
 checks. Boundary and request tests cover parallel maxima/ties, missing or
 negative loop weights, small budgets and both accepted quality settings.
+
+## Entity resolution
+
+Entity resolution now reads vertex identities/order through a declared record
+COO view and obtains unchanged typed records through its original-index map.
+Blocking predicates, ICU text normalization, match decisions and clustering
+remain unchanged. Input edge hints are still ignored by the algorithm.
+
+Checkpoint `29-entity-resolution` passes 53 CTests, 238 Python tests and all 82
+CPU admissions. All 6,571 corpus cases match complete vertex-record JSON bytes,
+ordering, costs and budget behavior on fresh and cached views. Real requests
+verify blocking and both clustering policies with Unicode names and large exact
+integer attributes; existing independent Unicode/decision tests still pass.
