@@ -1,0 +1,35 @@
+{
+  "source_commit": "adce2c72f5a19d8549f36a1f39d1f79995f7d3b5",
+  "implementation_sha256": "dc2c281fc2b80e2a7d364652ae309d15e2b5344f1034054ff161b20b29f1b8b7",
+  "native_library_sha256": "dc8322c01bcd2f104ff3813fcb914d5251a01e53bc627adcb566ccd9a91640be",
+  "cpu_operations": 82,
+  "compiled_and_verified_gpu_operations": 36,
+  "compiled_and_verified_gpu_profiles": 59,
+  "gpu_profiles_per_device": {
+    "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b": 58,
+    "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7": 59
+  },
+  "ctest_passed": 53,
+  "cpu_completion_passed": 161,
+  "cpu_binding_passed": 43,
+  "gpu_extension_tests": {
+    "gpu-0": {
+      "passed": 33,
+      "excluded": 1,
+      "reason": "Existing mbe-gpu worker exceeds available memory alongside the loaded LLM; failures retained under resource-contention/."
+    },
+    "gpu-1": {
+      "passed": 34
+    }
+  },
+  "native_oracle_requests_passed": {
+    "cpu": 129073,
+    "gpu-0": 44884,
+    "gpu-1": 44884
+  },
+  "evidence_reports": 49,
+  "verification_issues": [],
+  "scope": "Deploy completed CPU graph-view Steps 1\u20133 with the existing GPU adapters; GPU view migration Steps 4\u20139 remain paused.",
+  "deployment_notes": "Final application gates, authenticated testing acceptance, data backup and promotion records are retained privately under graphmine-data/environments/state/.",
+  "model_service_restarted": false
+}

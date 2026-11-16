@@ -1,0 +1,958 @@
+[  1%] Linking CUDA executable workers/graphmine-worker-ecl-scc
+[  1%] Linking CUDA executable workers/graphmine-worker-hungarian-cuda
+[  1%] Linking CXX static library libgraphmine_json.a
+[  1%] Linking CUDA executable workers/graphmine-worker-ecl-maxflow
+[  3%] Linking CXX static library libgraphmine_core.a
+[  5%] Linking CUDA device code CMakeFiles/graphmine_worker_gdlog_tc.dir/cmake_device_link.o
+[  7%] Built target graphmine_worker_ecl_scc
+[  7%] Built target graphmine_worker_ecl_flow
+[  7%] Built target graphmine_json
+[  7%] Built target graphmine_worker_hungarian
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 10%] Built target graphmine_core
+[ 10%] Linking CXX static library libgraphmine_repaired_algorithms.a
+[ 10%] Building CUDA object CMakeFiles/graphmine_backend_kcgpu.dir/src/backends/kcgpu.cu.o
+[ 10%] Linking CUDA device code CMakeFiles/graphmine_backend_graphset_kclique.dir/cmake_device_link.o
+[ 10%] Linking CUDA device code CMakeFiles/graphmine_backend_graphset_motif.dir/cmake_device_link.o
+[ 10%] Linking CUDA device code CMakeFiles/graphmine_backend_graphminer_motif.dir/cmake_device_link.o
+[ 10%] Building CUDA object CMakeFiles/graphmine_backend_gamma_kclique.dir/src/backends/gamma_kclique.cu.o
+[ 12%] Linking CUDA device code CMakeFiles/graphmine_backend_dumato_motif.dir/cmake_device_link.o
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 12%] Linking CUDA executable workers/graphmine-worker-gdlog
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 12%] Built target graphmine_repaired_algorithms
+[ 12%] Linking CXX static library libgraphmine_backend_graphset_kclique.a
+[ 14%] Linking CXX static library libgraphmine_backend_graphset_motif.a
+[ 14%] Linking CXX static library libgraphmine_backend_graphminer_motif.a
+[ 15%] Linking CXX static library libgraphmine_backend_turbobc.a
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+[ 19%] Built target graphmine_worker_gdlog_tc
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 19%] Linking CXX static library libgraphmine_backend_cumbe.a
+[ 19%] Built target graphmine_backend_turbobc
+[ 19%] Linking CXX static library libgraphmine_backend_cuqc.a
+[ 19%] Linking CXX static library libgraphmine_backend_dumato_motif.a
+[ 21%] Built target graphmine_backend_graphset_kclique
+[ 24%] Built target graphmine_backend_graphminer_motif
+[ 26%] Building CUDA object CMakeFiles/graphmine_backend_gmatch.dir/gmatch-generated/join_bfs_dfs.cu.o
+[ 33%] Built target graphmine_backend_graphset_motif
+[ 33%] Linking CUDA device code CMakeFiles/graphmine_backend_mce_gpu.dir/cmake_device_link.o
+[ 35%] Built target graphmine_backend_cumbe
+[ 35%] Linking CUDA device code CMakeFiles/graphmine_backend_g2_aimd.dir/cmake_device_link.o
+[ 36%] Linking CUDA device code CMakeFiles/graphmine_backend_rdmce.dir/cmake_device_link.o
+[ 36%] Built target graphmine_backend_cuqc
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 38%] Linking CUDA device code CMakeFiles/graphmine_backend_kcoregpu.dir/cmake_device_link.o
+[ 42%] Built target graphmine_backend_dumato_motif
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 42%] Linking CUDA device code CMakeFiles/graphmine_backend_cuda_ms.dir/cmake_device_link.o
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 42%] Linking CXX static library libgraphmine_backend_rdmce.a
+[ 42%] Linking CXX static library libgraphmine_backend_kcoregpu.a
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 43%] Linking CXX static library libgraphmine_backend_g2_aimd.a
+[ 43%] Linking CXX static library libgraphmine_backend_cuda_ms.a
+[ 45%] Linking CXX static library libgraphmine_backend_mce_gpu.a
+[ 47%] Built target graphmine_backend_rdmce
+[ 49%] Built target graphmine_backend_kcoregpu
+[ 49%] Linking CUDA device code CMakeFiles/graphmine_backend_maximum_clique_on_gpu.dir/cmake_device_link.o
+[ 49%] Linking CUDA device code CMakeFiles/graphmine_backend_gpu_maximum_clique.dir/cmake_device_link.o
+[ 54%] Built target graphmine_backend_g2_aimd
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 57%] Built target graphmine_backend_cuda_ms
+[ 57%] Linking CUDA device code CMakeFiles/graphmine_backend_tot.dir/cmake_device_link.o
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 57%] Linking CXX static library libgraphmine_backend_wetric.a
+[ 57%] Built target graphmine_backend_mce_gpu
+[ 57%] Linking CUDA device code CMakeFiles/graphmine_backend_edtc.dir/cmake_device_link.o
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 57%] Built target graphmine_backend_wetric
+[ 57%] Building CUDA object CMakeFiles/graphmine_backend_everest.dir/src/backends/everest.cu.o
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 59%] Linking CXX static library libgraphmine_backend_maximum_clique_on_gpu.a
+[ 61%] Linking CXX static library libgraphmine_backend_tot.a
+[ 61%] Linking CXX static library libgraphmine_backend_gpu_maximum_clique.a
+[ 61%] Linking CXX static library libgraphmine_backend_edtc.a
+[ 61%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 61%] Built target graphmine_backend_tot
+[ 63%] Built target graphmine_backend_edtc
+[ 63%] Building CUDA object CMakeFiles/graphmine_backend_mayura.dir/src/backends/mayura.cu.o
+[ 63%] Linking CUDA device code CMakeFiles/graphmine_backend_gleiden.dir/cmake_device_link.o
+[ 66%] Built target graphmine_backend_gpu_maximum_clique
+[ 66%] Building CXX object CMakeFiles/graphmine_backend_pggc.dir/src/backends/pggc.cpp.o
+[ 66%] Linking CXX static library libgraphmine_maximal_cliques.a
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 66%] Linking CXX static library libgraphmine_backend_gleiden.a
+[ 66%] Built target graphmine_maximal_cliques
+[ 66%] Building CXX object CMakeFiles/graphmine_backend_pggc.dir/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/problems/16_community_detection/papers/2026_multilevel_graph_clustering/code/src/leidenR.cpp.o
+[ 68%] Built target graphmine_backend_gleiden
+[ 68%] Linking CXX static library libgraphmine_graph_motifs.a
+[ 68%] Built target graphmine_graph_motifs
+[ 68%] Linking CXX static library libgraphmine_betweenness_centrality.a
+[ 70%] Built target graphmine_betweenness_centrality
+[ 71%] Building CXX object CMakeFiles/graphmine_backend_pggc.dir/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/problems/16_community_detection/papers/2026_multilevel_graph_clustering/code/src/contract.cpp.o
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2234): warning #83-D: type qualifier specified more than once
+          const T const aBegin,
+                  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2235): warning #83-D: type qualifier specified more than once
+          const T const aEnd,
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2236): warning #83-D: type qualifier specified more than once
+          const T const bBegin,
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2237): warning #83-D: type qualifier specified more than once
+          const T const bEnd
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gmatch-generated/join_bfs_dfs.cu(599): warning #127-D: expected a statement
+  }
+  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gmatch-generated/join_bfs_dfs.cu(1111): warning #127-D: expected a statement
+  }
+  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2234): warning #83-D: type qualifier specified more than once
+          const T const aBegin,
+                  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2235): warning #83-D: type qualifier specified more than once
+          const T const aEnd,
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2236): warning #83-D: type qualifier specified more than once
+          const T const bBegin,
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(2237): warning #83-D: type qualifier specified more than once
+          const T const bEnd
+                  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gmatch-generated/join_bfs_dfs.cu(599): warning #127-D: expected a statement
+  }
+  ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gmatch-generated/join_bfs_dfs.cu(1111): warning #127-D: expected a statement
+  }
+  ^
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/../include/cub_wrappers.cuh(131): warning #177-D: variable "start" was declared but never referenced
+      cudaEvent_t start, end;
+                  ^
+          detected during:
+            instantiation of "void graph::SingleGPU_Kclique<T>::bucket_scan(graph::GPUArray<T>, T, T, T, graph::GraphQueue<T, __nv_bool> &, graph::GPUArray<T>, graph::GraphQueue<T, __nv_bool> &, T &) [with T=uint]" at line 1778 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/kcgpu-generated/kclique.cuh
+            instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/../include/cub_wrappers.cuh(131): warning #177-D: variable "end" was declared but never referenced
+      cudaEvent_t start, end;
+                         ^
+          detected during:
+            instantiation of "void graph::SingleGPU_Kclique<T>::bucket_scan(graph::GPUArray<T>, T, T, T, graph::GraphQueue<T, __nv_bool> &, graph::GPUArray<T>, graph::GraphQueue<T, __nv_bool> &, T &) [with T=uint]" at line 1778 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/kcgpu-generated/kclique.cuh
+            instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/../include/cub_wrappers.cuh(132): warning #177-D: variable "elaspedTime" was declared but never referenced
+      float elaspedTime = 0, singleKernelTime = 0;
+            ^
+          detected during:
+            instantiation of "void graph::SingleGPU_Kclique<T>::bucket_scan(graph::GPUArray<T>, T, T, T, graph::GraphQueue<T, __nv_bool> &, graph::GPUArray<T>, graph::GraphQueue<T, __nv_bool> &, T &) [with T=uint]" at line 1778 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/kcgpu-generated/kclique.cuh
+            instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/../include/cub_wrappers.cuh(132): warning #177-D: variable "singleKernelTime" was declared but never referenced
+      float elaspedTime = 0, singleKernelTime = 0;
+                             ^
+          detected during:
+            instantiation of "void graph::SingleGPU_Kclique<T>::bucket_scan(graph::GPUArray<T>, T, T, T, graph::GraphQueue<T, __nv_bool> &, graph::GPUArray<T>, graph::GraphQueue<T, __nv_bool> &, T &) [with T=uint]" at line 1778 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/kcgpu-generated/kclique.cuh
+            instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/kcgpu-generated/kckernels_pivoting.cuh(31): warning #177-D: variable "clique_count" was declared but never referenced
+                uint64 clique_count[numPartitions];
+                       ^
+          detected during instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/src/backends/kcgpu.cu
+
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/../problems/03_k_clique_counting_enumeration/papers/2022_parallel_k_clique_counting/code/include/TriCountPrim.cuh(1875): warning #177-D: variable "warpIdx" was declared but never referenced
+          const int warpIdx = threadIdx.x / CPARTSIZE;
+                    ^
+          detected during:
+            instantiation of "void kckernel_node_block_warp_binary_pivot_count<T,BLOCK_DIM_X,CPARTSIZE>(uint64 *, graph::COOCSRGraph_d<T>, graph::GraphQueue_d<T, __nv_bool>, T *, uint64 *, T *, T *, T *, T *, T *, T *, T *, T *, T *, unsigned long long *) [with T=uint, BLOCK_DIM_X=128U, CPARTSIZE=8U]" at line 1838 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/kcgpu-generated/kclique.cuh
+            instantiation of "void graph::SingleGPU_Kclique<T>::findKclqueIncremental_node_pivot_async<PSIZE>(int, graph::COOCSRGraph_d<T> &, ProcessingElementEnum, size_t, size_t) [with T=uint, PSIZE=8]" at line 154 of /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/src/backends/kcgpu.cu
+
+[ 71%] Linking CXX static library libgraphmine_backend_kcgpu.a
+[ 73%] Linking CUDA device code CMakeFiles/graphmine_backend_everest.dir/cmake_device_link.o
+[ 73%] Built target graphmine_backend_kcgpu
+[ 73%] Linking CXX static library libgraphmine_maximal_bicliques.a
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 73%] Linking CXX static library libgraphmine_backend_everest.a
+[ 75%] Built target graphmine_maximal_bicliques
+[ 75%] Linking CXX static library libgraphmine_quasi_cliques.a
+[ 75%] Built target graphmine_backend_everest
+[ 77%] Built target graphmine_quasi_cliques
+[ 77%] Linking CXX static library libgraphmine_k_core.a
+[ 78%] Linking CXX static library libgraphmine_maximum_clique.a
+[ 78%] Linking CUDA device code CMakeFiles/graphmine_backend_mayura.dir/cmake_device_link.o
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 80%] Built target graphmine_k_core
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 80%] Linking CXX static library libgraphmine_triangle_counting.a
+[ 80%] Built target graphmine_maximum_clique
+[ 82%] Linking CXX static library libgraphmine_dynamic_triangle_counting.a
+[ 84%] Linking CXX static library libgraphmine_backend_mayura.a
+[ 84%] Linking CUDA device code CMakeFiles/graphmine_backend_gmatch.dir/cmake_device_link.o
+[ 85%] Built target graphmine_triangle_counting
+[ 85%] Building CXX object CMakeFiles/graphmine_backend_pggc.dir/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/problems/16_community_detection/papers/2026_multilevel_graph_clustering/code/src/local_mover.cpp.o
+[ 85%] Built target graphmine_dynamic_triangle_counting
+[ 85%] Building CXX object CMakeFiles/graphmine_backend_pggc.dir/pggc-generated/clustering_methods.cpp.o
+[ 85%] Built target graphmine_backend_mayura
+[ 85%] Linking CXX static library libgraphmine_validated_expansion.a
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+[ 87%] Built target graphmine_validated_expansion
+[ 89%] Linking CXX static library libgraphmine_temporal_motif_mining.a
+[ 89%] Linking CXX static library libgraphmine_backend_gmatch.a
+[ 89%] Built target graphmine_temporal_motif_mining
+[ 89%] Building CXX object CMakeFiles/graphmine_backend_pggc.dir/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/problems/16_community_detection/papers/2026_multilevel_graph_clustering/code/src/ordering.cpp.o
+[ 91%] Built target graphmine_backend_gmatch
+[ 91%] Linking CXX static library libgraphmine_subgraph_isomorphism.a
+[ 91%] Built target graphmine_subgraph_isomorphism
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/embedding.cuh: In member function ‘void GraphMineGammaEmbeddingList::check_all(int, uint64_t, patternID*, GraphMineGammaCSRGraph)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/embedding.cuh:184:22: warning: format ‘%u’ expects argument of type ‘unsigned int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  184 |                 printf("show %u embeddings:\n", display_num);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~
+      |                                               |
+      |                                               uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/embedding.cuh:191:36: warning: format ‘%d’ expects argument of type ‘int’, but argument 6 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  191 |                                 printf("node %d %d data %d %d id_data %d %d\n", first, sec, nodeData[first], nodeData[sec], lab&0xff, (lab>>8)&0xff);
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                              ~~~~~~~~~~~
+      |                                                                                                                             |
+      |                                                                                                                             uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/embedding.cuh:191:36: warning: format ‘%d’ expects argument of type ‘int’, but argument 7 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  191 |                                 printf("node %d %d data %d %d id_data %d %d\n", first, sec, nodeData[first], nodeData[sec], lab&0xff, (lab>>8)&0xff);
+      |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                           ~~~~~~~~~~~~~~~~  
+      |                                                                                                                                                 |
+      |                                                                                                                                                 uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/expand.cuh: In function ‘void graphmine_gamma_expand_in_batch(GraphMineGammaCSRGraph&, GraphMineGammaEmbeddingList&, int, GraphMineGammaExpandConstraint&)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/expand.cuh:700:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘emb_off_type’ {aka ‘long unsigned int’} [-Wformat=]
+  700 |                 printf("for the %d th expand_alloc, the total size is %d\n", i, batch_expand_off[i]);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     ~~~~~~~~~~~~~~~~~~~
+      |                                                                                                 |
+      |                                                                                                 emb_off_type {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/expand.cuh: In function ‘void graphmine_gamma_expand_dynamic_by_edge(GraphMineGammaCSRGraph&, GraphMineGammaEmbeddingList&, int, uint32_t*)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/expand.cuh:1068:22: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+ 1068 |                 printf("all used mem is %d MB, and data label is %d MB\n", all_size/1024/1024, g.nnodes/1024/1024);
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                              |
+      |                                                                                              uint64_t {aka long unsigned int}
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/clock.h: In member function ‘const char* GraphMineGammaClock::count(const char*, ...)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/clock.h:38:14: warning: ‘%s’ directive writing up to 999 bytes into a region of size between 957 and 962 [-Wformat-overflow=]
+   38 |         sprintf(str, "[\033[1m\033[44;31m%-12s\033[0m] %.6lfs   %s", s.c_str(), t, str2);
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                  ~~~~
+In function ‘int sprintf(char*, const char*, ...)’,
+    inlined from ‘const char* GraphMineGammaClock::count(const char*, ...)’ at /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/gamma-kclique-generated/clock.h:38:8:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:30:31: note: ‘__builtin___sprintf_chk’ output 39 or more bytes (assuming 1043) into a destination of size 1000
+   30 |   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+      |        ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                  
+[ 92%] Linking CXX static library libgraphmine_backend_gamma_kclique.a
+[ 92%] Built target graphmine_backend_gamma_kclique
+[ 94%] Linking CXX static library libgraphmine_k_cliques.a
+[ 94%] Built target graphmine_k_cliques
+[ 96%] Linking CXX static library libgraphmine_backend_pggc.a
+[ 96%] Built target graphmine_backend_pggc
+[ 96%] Building CXX object CMakeFiles/graphmine_community_detection.dir/src/problems/community_detection.cpp.o
+[ 98%] Linking CXX static library libgraphmine_community_detection.a
+[ 98%] Built target graphmine_community_detection
+[ 98%] Linking CXX executable graphmine
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+ptxas warning : Value of threads per SM for entry _Z16cycle4_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z18triangle_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z15wedge_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+[100%] Built target graphmine_cli
+[  1%] Built target graphmine_worker_ecl_scc
+[  2%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_json
+[  2%] Linking CUDA executable optimization-workers/graphmine-worker-hungarian-cuda
+[  2%] Built target graphmine_worker_ecl_flow
+[  4%] Linking CUDA executable optimization-workers/graphmine-worker-ecl-maxflow
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_repaired_algorithms
+[ 16%] Built target graphmine_backend_dumato_motif
+[ 18%] Built target graphmine_backend_graphminer_motif
+[ 25%] Built target graphmine_backend_graphset_motif
+[ 26%] Built target graphmine_backend_turbobc
+[ 28%] Built target graphmine_backend_cumbe
+[ 28%] Built target graphmine_backend_cuqc
+[ 30%] Built target graphmine_backend_rdmce
+[ 33%] Built target graphmine_backend_kcoregpu
+[ 38%] Built target graphmine_backend_g2_aimd
+[ 40%] Built target graphmine_backend_mce_gpu
+[ 42%] Built target graphmine_backend_gmatch
+[ 45%] Built target graphmine_backend_cuda_ms
+[ 46%] Built target graphmine_backend_wetric
+[ 46%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 48%] Built target graphmine_backend_tot
+[ 50%] Built target graphmine_backend_gpu_maximum_clique
+[ 50%] Built target graphmine_native_worker_ecl_flow
+[ 52%] Built target graphmine_backend_edtc
+[ 53%] Built target graphmine_backend_graphset_kclique
+[ 53%] Built target graphmine_native_worker_hungarian
+[ 53%] Built target graphmine_backend_kcgpu
+[ 54%] Built target graphmine_backend_everest
+[ 56%] Built target graphmine_backend_gamma_kclique
+[ 56%] Built target graphmine_graph_motifs
+[ 57%] Built target graphmine_backend_mayura
+[ 58%] Built target graphmine_backend_gleiden
+[ 60%] Built target graphmine_maximal_bicliques
+[ 61%] Built target graphmine_quasi_cliques
+[ 61%] Built target graphmine_subgraph_isomorphism
+[ 62%] Built target graphmine_triangle_counting
+[ 64%] Built target graphmine_dynamic_triangle_counting
+[ 65%] Built target graphmine_validated_expansion
+[ 66%] Built target graphmine_temporal_motif_mining
+[ 69%] Built target graphmine_backend_pggc
+[ 70%] Built target graphmine_community_detection
+[ 70%] Linking CXX shared library libgraphmine_runtime.so
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z16cycle4_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z18triangle_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z15wedge_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine-native
+[100%] Built target graphmine_native_cli
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_native_worker_hungarian
+[  2%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_json
+[  2%] Built target graphmine_worker_ecl_flow
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_repaired_algorithms
+[ 12%] Built target graphmine_backend_cuqc
+[ 16%] Built target graphmine_backend_dumato_motif
+[ 17%] Built target graphmine_backend_cumbe
+[ 24%] Built target graphmine_backend_graphset_motif
+[ 26%] Built target graphmine_backend_graphminer_motif
+[ 28%] Built target graphmine_backend_turbobc
+[ 30%] Built target graphmine_backend_gmatch
+[ 33%] Built target graphmine_backend_rdmce
+[ 38%] Built target graphmine_backend_g2_aimd
+[ 41%] Built target graphmine_backend_kcoregpu
+[ 42%] Built target graphmine_backend_mce_gpu
+[ 45%] Built target graphmine_backend_cuda_ms
+[ 46%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 48%] Built target graphmine_backend_tot
+[ 50%] Built target graphmine_backend_gpu_maximum_clique
+[ 50%] Built target graphmine_backend_wetric
+[ 50%] Built target graphmine_backend_kcgpu
+[ 52%] Built target graphmine_backend_graphset_kclique
+[ 53%] Built target graphmine_backend_edtc
+[ 54%] Built target graphmine_backend_gamma_kclique
+[ 56%] Built target graphmine_backend_everest
+[ 57%] Built target graphmine_backend_mayura
+[ 58%] Built target graphmine_backend_gleiden
+[ 58%] Built target graphmine_graph_motifs
+[ 60%] Built target graphmine_maximal_bicliques
+[ 60%] Built target graphmine_subgraph_isomorphism
+[ 61%] Built target graphmine_quasi_cliques
+[ 62%] Built target graphmine_triangle_counting
+[ 64%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_backend_pggc
+[ 68%] Built target graphmine_temporal_motif_mining
+[ 69%] Built target graphmine_validated_expansion
+[ 70%] Built target graphmine_community_detection
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_cpu_views_golden
+[100%] Built target graphmine_cpu_views_golden
+[  0%] Built target graphmine_native_worker_hungarian
+[  1%] Built target graphmine_worker_ecl_scc
+[  2%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_json
+[  2%] Built target graphmine_worker_ecl_flow
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_backend_cuqc
+[ 12%] Built target graphmine_repaired_algorithms
+[ 16%] Built target graphmine_backend_dumato_motif
+[ 17%] Built target graphmine_backend_cumbe
+[ 24%] Built target graphmine_backend_graphset_motif
+[ 26%] Built target graphmine_backend_graphminer_motif
+[ 28%] Built target graphmine_backend_turbobc
+[ 30%] Built target graphmine_backend_gmatch
+[ 36%] Built target graphmine_backend_g2_aimd
+[ 38%] Built target graphmine_backend_rdmce
+[ 41%] Built target graphmine_backend_cuda_ms
+[ 44%] Built target graphmine_backend_kcoregpu
+[ 45%] Built target graphmine_backend_mce_gpu
+[ 46%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 49%] Built target graphmine_backend_gpu_maximum_clique
+[ 50%] Built target graphmine_backend_tot
+[ 50%] Built target graphmine_backend_wetric
+[ 50%] Built target graphmine_backend_kcgpu
+[ 52%] Built target graphmine_backend_edtc
+[ 53%] Built target graphmine_backend_gamma_kclique
+[ 54%] Built target graphmine_backend_graphset_kclique
+[ 56%] Built target graphmine_backend_everest
+[ 57%] Built target graphmine_backend_mayura
+[ 58%] Built target graphmine_backend_gleiden
+[ 58%] Built target graphmine_graph_motifs
+[ 60%] Built target graphmine_maximal_bicliques
+[ 61%] Built target graphmine_quasi_cliques
+[ 61%] Built target graphmine_subgraph_isomorphism
+[ 62%] Built target graphmine_triangle_counting
+[ 64%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_backend_pggc
+[ 68%] Built target graphmine_temporal_motif_mining
+[ 69%] Built target graphmine_validated_expansion
+[ 70%] Built target graphmine_community_detection
+[ 98%] Built target graphmine_runtime
+[100%] Linking CXX executable graphmine_views_test
+[100%] Built target graphmine_views_test
+[100%] Built target graphmine_core
+[100%] Linking CXX executable graphmine_core_view_test
+[100%] Built target graphmine_core_view_test
+[  2%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_worker_ecl_scc
+[  2%] Built target graphmine_native_worker_hungarian
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  4%] Built target graphmine_worker_ecl_flow
+[  4%] Built target graphmine_json
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_backend_cuqc
+[ 13%] Built target graphmine_repaired_algorithms
+[ 13%] Built target graphmine_backend_cumbe
+[ 24%] Built target graphmine_backend_graphset_motif
+[ 18%] Built target graphmine_backend_dumato_motif
+[ 27%] Built target graphmine_backend_graphminer_motif
+[ 28%] Built target graphmine_backend_turbobc
+[ 31%] Built target graphmine_backend_gmatch
+[ 33%] Built target graphmine_backend_rdmce
+[ 39%] Built target graphmine_backend_g2_aimd
+[ 43%] Built target graphmine_backend_cuda_ms
+[ 41%] Built target graphmine_backend_mce_gpu
+[ 45%] Built target graphmine_backend_kcoregpu
+[ 47%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 50%] Built target graphmine_backend_gpu_maximum_clique
+[ 51%] Built target graphmine_backend_tot
+[ 51%] Built target graphmine_backend_wetric
+[ 51%] Built target graphmine_backend_kcgpu
+[ 54%] Built target graphmine_backend_edtc
+[ 54%] Built target graphmine_backend_graphset_kclique
+[ 55%] Built target graphmine_backend_gamma_kclique
+[ 56%] Built target graphmine_backend_everest
+[ 58%] Built target graphmine_backend_mayura
+[ 59%] Built target graphmine_backend_gleiden
+[ 59%] Built target graphmine_graph_motifs
+[ 60%] Built target graphmine_maximal_bicliques
+[ 62%] Built target graphmine_quasi_cliques
+[ 62%] Built target graphmine_subgraph_isomorphism
+[ 63%] Built target graphmine_triangle_counting
+[ 66%] Built target graphmine_backend_pggc
+[ 67%] Built target graphmine_dynamic_triangle_counting
+[ 68%] Built target graphmine_temporal_motif_mining
+[ 70%] Built target graphmine_validated_expansion
+[ 71%] Built target graphmine_community_detection
+[100%] Built target graphmine_runtime
+[100%] Linking CXX executable graphmine_normalizer_golden
+[100%] Built target graphmine_normalizer_golden
+[  1%] Built target graphmine_worker_ecl_scc
+[  2%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_native_worker_hungarian
+[  2%] Built target graphmine_json
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  4%] Built target graphmine_worker_ecl_flow
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_backend_cuqc
+[ 12%] Built target graphmine_repaired_algorithms
+[ 16%] Built target graphmine_backend_dumato_motif
+[ 17%] Built target graphmine_backend_cumbe
+[ 24%] Built target graphmine_backend_graphset_motif
+[ 26%] Built target graphmine_backend_graphminer_motif
+[ 28%] Built target graphmine_backend_turbobc
+[ 30%] Built target graphmine_backend_gmatch
+[ 36%] Built target graphmine_backend_rdmce
+[ 38%] Built target graphmine_backend_g2_aimd
+[ 41%] Built target graphmine_backend_cuda_ms
+[ 44%] Built target graphmine_backend_kcoregpu
+[ 45%] Built target graphmine_backend_mce_gpu
+[ 46%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 49%] Built target graphmine_backend_gpu_maximum_clique
+[ 50%] Built target graphmine_backend_tot
+[ 50%] Built target graphmine_backend_wetric
+[ 52%] Built target graphmine_backend_graphset_kclique
+[ 52%] Built target graphmine_backend_kcgpu
+[ 53%] Built target graphmine_backend_gamma_kclique
+[ 54%] Built target graphmine_backend_edtc
+[ 56%] Built target graphmine_backend_everest
+[ 57%] Built target graphmine_backend_mayura
+[ 57%] Built target graphmine_graph_motifs
+[ 58%] Built target graphmine_backend_gleiden
+[ 60%] Built target graphmine_maximal_bicliques
+[ 60%] Built target graphmine_subgraph_isomorphism
+[ 61%] Built target graphmine_triangle_counting
+[ 62%] Built target graphmine_quasi_cliques
+[ 65%] Built target graphmine_backend_pggc
+[ 66%] Built target graphmine_dynamic_triangle_counting
+[ 68%] Built target graphmine_temporal_motif_mining
+[ 69%] Built target graphmine_validated_expansion
+[ 70%] Built target graphmine_community_detection
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_runtime_test
+[100%] Built target graphmine_runtime_test
+[  1%] Built target graphmine_worker_hungarian
+[  1%] Built target graphmine_native_worker_hungarian
+[  2%] Built target graphmine_worker_ecl_scc
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  4%] Built target graphmine_json
+[  4%] Built target graphmine_worker_ecl_flow
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_repaired_algorithms
+[ 12%] Built target graphmine_backend_cuqc
+[ 16%] Built target graphmine_backend_dumato_motif
+[ 17%] Built target graphmine_backend_cumbe
+[ 24%] Built target graphmine_backend_graphset_motif
+[ 25%] Built target graphmine_backend_turbobc
+[ 28%] Built target graphmine_backend_graphminer_motif
+[ 30%] Built target graphmine_backend_gmatch
+[ 33%] Built target graphmine_backend_rdmce
+[ 36%] Built target graphmine_backend_kcoregpu
+[ 41%] Built target graphmine_backend_g2_aimd
+[ 42%] Built target graphmine_backend_mce_gpu
+[ 45%] Built target graphmine_backend_cuda_ms
+[ 46%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 49%] Built target graphmine_backend_gpu_maximum_clique
+[ 50%] Built target graphmine_backend_tot
+[ 50%] Built target graphmine_backend_wetric
+[ 52%] Built target graphmine_backend_graphset_kclique
+[ 52%] Built target graphmine_backend_kcgpu
+[ 53%] Built target graphmine_backend_edtc
+[ 54%] Built target graphmine_backend_gamma_kclique
+[ 56%] Built target graphmine_backend_everest
+[ 57%] Built target graphmine_backend_mayura
+[ 58%] Built target graphmine_backend_gleiden
+[ 58%] Built target graphmine_graph_motifs
+[ 60%] Built target graphmine_maximal_bicliques
+[ 61%] Built target graphmine_quasi_cliques
+[ 61%] Built target graphmine_subgraph_isomorphism
+[ 62%] Built target graphmine_triangle_counting
+[ 64%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_backend_pggc
+[ 68%] Built target graphmine_temporal_motif_mining
+[ 69%] Built target graphmine_validated_expansion
+[ 70%] Built target graphmine_community_detection
+[ 98%] Built target graphmine_runtime
+[100%] Linking CXX executable graphmine_reference_test
+[100%] Built target graphmine_reference_test
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_worker_ecl_flow
+[  2%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_native_worker_hungarian
+[  2%] Built target graphmine_json
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_backend_cuqc
+[ 12%] Built target graphmine_repaired_algorithms
+[ 13%] Built target graphmine_backend_cumbe
+[ 17%] Built target graphmine_backend_dumato_motif
+[ 24%] Built target graphmine_backend_graphset_motif
+[ 26%] Built target graphmine_backend_graphminer_motif
+[ 28%] Built target graphmine_backend_turbobc
+[ 30%] Built target graphmine_backend_gmatch
+[ 33%] Built target graphmine_backend_rdmce
+[ 34%] Built target graphmine_backend_mce_gpu
+[ 40%] Built target graphmine_backend_g2_aimd
+[ 42%] Built target graphmine_backend_kcoregpu
+[ 45%] Built target graphmine_backend_cuda_ms
+[ 46%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 49%] Built target graphmine_backend_gpu_maximum_clique
+[ 50%] Built target graphmine_backend_tot
+[ 50%] Built target graphmine_backend_wetric
+[ 50%] Built target graphmine_backend_kcgpu
+[ 52%] Built target graphmine_backend_gamma_kclique
+[ 53%] Built target graphmine_backend_graphset_kclique
+[ 54%] Built target graphmine_backend_edtc
+[ 56%] Built target graphmine_backend_everest
+[ 57%] Built target graphmine_backend_mayura
+[ 58%] Built target graphmine_backend_gleiden
+[ 61%] Built target graphmine_maximal_bicliques
+[ 61%] Built target graphmine_graph_motifs
+[ 61%] Built target graphmine_triangle_counting
+[ 62%] Built target graphmine_quasi_cliques
+[ 62%] Built target graphmine_subgraph_isomorphism
+[ 64%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_backend_pggc
+[ 68%] Built target graphmine_temporal_motif_mining
+[ 69%] Built target graphmine_validated_expansion
+[ 70%] Built target graphmine_community_detection
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_structure_test
+[100%] Built target graphmine_structure_test
+[  1%] Built target graphmine_native_worker_hungarian
+[  1%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_worker_ecl_scc
+[  2%] Built target graphmine_worker_ecl_flow
+[  2%] Built target graphmine_json
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_backend_cuqc
+[ 12%] Built target graphmine_repaired_algorithms
+[ 16%] Built target graphmine_backend_dumato_motif
+[ 17%] Built target graphmine_backend_cumbe
+[ 24%] Built target graphmine_backend_graphset_motif
+[ 27%] Built target graphmine_backend_graphminer_motif
+[ 28%] Built target graphmine_backend_turbobc
+[ 31%] Built target graphmine_backend_gmatch
+[ 33%] Built target graphmine_backend_rdmce
+[ 35%] Built target graphmine_backend_mce_gpu
+[ 40%] Built target graphmine_backend_g2_aimd
+[ 45%] Built target graphmine_backend_cuda_ms
+[ 45%] Built target graphmine_backend_kcoregpu
+[ 47%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 50%] Built target graphmine_backend_gpu_maximum_clique
+[ 51%] Built target graphmine_backend_tot
+[ 51%] Built target graphmine_backend_wetric
+[ 52%] Built target graphmine_backend_graphset_kclique
+[ 52%] Built target graphmine_backend_kcgpu
+[ 54%] Built target graphmine_backend_edtc
+[ 55%] Built target graphmine_backend_gamma_kclique
+[ 56%] Built target graphmine_backend_everest
+[ 58%] Built target graphmine_backend_mayura
+[ 60%] Built target graphmine_graph_motifs
+[ 60%] Built target graphmine_backend_gleiden
+[ 60%] Built target graphmine_maximal_bicliques
+[ 62%] Built target graphmine_quasi_cliques
+[ 62%] Built target graphmine_subgraph_isomorphism
+[ 63%] Built target graphmine_triangle_counting
+[ 64%] Built target graphmine_dynamic_triangle_counting
+[ 67%] Built target graphmine_backend_pggc
+[ 68%] Built target graphmine_temporal_motif_mining
+[ 70%] Built target graphmine_validated_expansion
+[ 71%] Built target graphmine_community_detection
+[100%] Built target graphmine_runtime
+[100%] Linking CXX executable graphmine_centrality_test
+[100%] Built target graphmine_centrality_test
+[  1%] Built target graphmine_native_worker_hungarian
+[  1%] Built target graphmine_worker_ecl_scc
+[  2%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_json
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  4%] Built target graphmine_worker_ecl_flow
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_backend_cuqc
+[ 12%] Built target graphmine_repaired_algorithms
+[ 16%] Built target graphmine_backend_dumato_motif
+[ 17%] Built target graphmine_backend_cumbe
+[ 24%] Built target graphmine_backend_graphset_motif
+[ 27%] Built target graphmine_backend_graphminer_motif
+[ 28%] Built target graphmine_backend_turbobc
+[ 31%] Built target graphmine_backend_gmatch
+[ 33%] Built target graphmine_backend_rdmce
+[ 35%] Built target graphmine_backend_mce_gpu
+[ 41%] Built target graphmine_backend_kcoregpu
+[ 43%] Built target graphmine_backend_g2_aimd
+[ 45%] Built target graphmine_backend_cuda_ms
+[ 47%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 50%] Built target graphmine_backend_gpu_maximum_clique
+[ 51%] Built target graphmine_backend_tot
+[ 51%] Built target graphmine_backend_wetric
+[ 52%] Built target graphmine_backend_graphset_kclique
+[ 52%] Built target graphmine_backend_kcgpu
+[ 54%] Built target graphmine_backend_gamma_kclique
+[ 55%] Built target graphmine_backend_edtc
+[ 56%] Built target graphmine_backend_everest
+[ 58%] Built target graphmine_backend_mayura
+[ 59%] Built target graphmine_backend_gleiden
+[ 60%] Built target graphmine_graph_motifs
+[ 60%] Built target graphmine_maximal_bicliques
+[ 62%] Built target graphmine_quasi_cliques
+[ 62%] Built target graphmine_subgraph_isomorphism
+[ 63%] Built target graphmine_triangle_counting
+[ 64%] Built target graphmine_dynamic_triangle_counting
+[ 67%] Built target graphmine_backend_pggc
+[ 68%] Built target graphmine_temporal_motif_mining
+[ 70%] Built target graphmine_validated_expansion
+[ 71%] Built target graphmine_community_detection
+[100%] Built target graphmine_runtime
+[100%] Linking CXX executable graphmine_matching_test
+[100%] Built target graphmine_matching_test
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_native_worker_hungarian
+[  2%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_worker_ecl_flow
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  4%] Built target graphmine_json
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_backend_cuqc
+[ 16%] Built target graphmine_backend_dumato_motif
+[ 16%] Built target graphmine_repaired_algorithms
+[ 17%] Built target graphmine_backend_cumbe
+[ 24%] Built target graphmine_backend_graphset_motif
+[ 25%] Built target graphmine_backend_turbobc
+[ 28%] Built target graphmine_backend_graphminer_motif
+[ 30%] Built target graphmine_backend_gmatch
+[ 33%] Built target graphmine_backend_rdmce
+[ 36%] Built target graphmine_backend_mce_gpu
+[ 37%] Built target graphmine_backend_cuda_ms
+[ 45%] Built target graphmine_backend_g2_aimd
+[ 44%] Built target graphmine_backend_kcoregpu
+[ 46%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 49%] Built target graphmine_backend_gpu_maximum_clique
+[ 50%] Built target graphmine_backend_tot
+[ 50%] Built target graphmine_backend_wetric
+[ 52%] Built target graphmine_backend_graphset_kclique
+[ 52%] Built target graphmine_backend_kcgpu
+[ 53%] Built target graphmine_backend_gamma_kclique
+[ 54%] Built target graphmine_backend_edtc
+[ 56%] Built target graphmine_backend_everest
+[ 57%] Built target graphmine_backend_mayura
+[ 58%] Built target graphmine_backend_gleiden
+[ 58%] Built target graphmine_graph_motifs
+[ 60%] Built target graphmine_maximal_bicliques
+[ 61%] Built target graphmine_quasi_cliques
+[ 61%] Built target graphmine_subgraph_isomorphism
+[ 62%] Built target graphmine_triangle_counting
+[ 64%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_backend_pggc
+[ 68%] Built target graphmine_temporal_motif_mining
+[ 69%] Built target graphmine_validated_expansion
+[ 70%] Built target graphmine_community_detection
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_flow_test
+[100%] Built target graphmine_flow_test
+[  0%] Built target graphmine_json
+[  1%] Built target graphmine_native_worker_hungarian
+[  1%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_worker_ecl_scc
+[  2%] Built target graphmine_worker_ecl_flow
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_backend_cuqc
+[ 12%] Built target graphmine_repaired_algorithms
+[ 18%] Built target graphmine_backend_graphset_motif
+[ 20%] Built target graphmine_backend_cumbe
+[ 26%] Built target graphmine_backend_graphminer_motif
+[ 26%] Built target graphmine_backend_dumato_motif
+[ 28%] Built target graphmine_backend_turbobc
+[ 30%] Built target graphmine_backend_gmatch
+[ 37%] Built target graphmine_backend_rdmce
+[ 38%] Built target graphmine_backend_g2_aimd
+[ 44%] Built target graphmine_backend_cuda_ms
+[ 44%] Built target graphmine_backend_kcoregpu
+[ 45%] Built target graphmine_backend_mce_gpu
+[ 46%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 49%] Built target graphmine_backend_gpu_maximum_clique
+[ 50%] Built target graphmine_backend_tot
+[ 50%] Built target graphmine_backend_wetric
+[ 52%] Built target graphmine_backend_graphset_kclique
+[ 53%] Built target graphmine_backend_edtc
+[ 54%] Built target graphmine_backend_kcgpu
+[ 54%] Built target graphmine_backend_gamma_kclique
+[ 56%] Built target graphmine_backend_everest
+[ 57%] Built target graphmine_backend_mayura
+[ 58%] Built target graphmine_backend_gleiden
+[ 58%] Built target graphmine_graph_motifs
+[ 60%] Built target graphmine_maximal_bicliques
+[ 61%] Built target graphmine_quasi_cliques
+[ 61%] Built target graphmine_subgraph_isomorphism
+[ 62%] Built target graphmine_triangle_counting
+[ 64%] Built target graphmine_dynamic_triangle_counting
+[ 65%] Built target graphmine_temporal_motif_mining
+[ 68%] Built target graphmine_backend_pggc
+[ 69%] Built target graphmine_validated_expansion
+[ 70%] Built target graphmine_community_detection
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_mining_test
+[100%] Built target graphmine_mining_test
+[  1%] Built target graphmine_worker_ecl_scc
+[  2%] Built target graphmine_worker_hungarian
+[  2%] Built target graphmine_native_worker_hungarian
+[  2%] Built target graphmine_worker_ecl_flow
+[  2%] Built target graphmine_json
+[  4%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_core
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 12%] Built target graphmine_backend_cuqc
+[ 12%] Built target graphmine_repaired_algorithms
+[ 14%] Built target graphmine_backend_cumbe
+[ 17%] Built target graphmine_backend_dumato_motif
+[ 25%] Built target graphmine_backend_graphminer_motif
+[ 26%] Built target graphmine_backend_graphset_motif
+[ 28%] Built target graphmine_backend_turbobc
+[ 30%] Built target graphmine_backend_gmatch
+[ 32%] Built target graphmine_backend_mce_gpu
+[ 36%] Built target graphmine_backend_rdmce
+[ 40%] Built target graphmine_backend_g2_aimd
+[ 42%] Built target graphmine_backend_kcoregpu
+[ 45%] Built target graphmine_backend_cuda_ms
+[ 46%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 49%] Built target graphmine_backend_gpu_maximum_clique
+[ 50%] Built target graphmine_backend_tot
+[ 50%] Built target graphmine_backend_wetric
+[ 52%] Built target graphmine_backend_graphset_kclique
+[ 52%] Built target graphmine_backend_kcgpu
+[ 53%] Built target graphmine_backend_gamma_kclique
+[ 54%] Built target graphmine_backend_edtc
+[ 56%] Built target graphmine_backend_everest
+[ 57%] Built target graphmine_backend_mayura
+[ 58%] Built target graphmine_backend_gleiden
+[ 58%] Built target graphmine_graph_motifs
+[ 60%] Built target graphmine_maximal_bicliques
+[ 61%] Built target graphmine_quasi_cliques
+[ 61%] Built target graphmine_subgraph_isomorphism
+[ 62%] Built target graphmine_triangle_counting
+[ 65%] Built target graphmine_backend_pggc
+[ 66%] Built target graphmine_dynamic_triangle_counting
+[ 68%] Built target graphmine_temporal_motif_mining
+[ 69%] Built target graphmine_validated_expansion
+[ 70%] Built target graphmine_community_detection
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_selection_test
+[100%] Built target graphmine_selection_test

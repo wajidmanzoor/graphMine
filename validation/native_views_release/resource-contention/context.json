@@ -1,0 +1,11 @@
+{
+  "condition": "Concurrent native oracle processes and vLLM on GPU 0",
+  "operation": "maximal-biclique-counting",
+  "backend": "mbe-gpu",
+  "worker_fixed_scratch_bytes": 11427905536,
+  "status": "Confirmed insufficient GPU 0 memory with the existing loaded LLM, including an isolated process after all oracle tests exited",
+  "gpu_0_uuid": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+  "gpu_1_full_extension_suite": "34 passed",
+  "admission": "mbe-gpu is admitted only on GPU 1; CPU remains admitted on every operation. Existing GPU assignments and LLM residency are preserved.",
+  "gpu_0_passing_subset": "The remaining 33 extension tests are rerun separately; the one excluded test and its failures are retained here."
+}

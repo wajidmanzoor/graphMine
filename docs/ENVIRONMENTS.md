@@ -25,11 +25,21 @@ The workspace root is `/home/wajid/projects/graphDatabaseAgent`.
 | Development | `graphMine-database-cypher` | 18002 / 8879 | Loopback; SSH forwarding |
 | Testing | `graphMine-testing` | 18001 / 8878 | Loopback; SSH forwarding |
 
-`graphMine-repo` is a detached, pinned native-runtime checkout. Its compiled
-engine, analytics Python environment, and vLLM environment support production.
-Do not use it as a development checkout or install packages into its runtime
-environments. Native engine changes need a separately built and verified
-runtime; changing an app branch alone does not replace native binaries.
+`graphMine-runtime-20261116-views` is the detached, pinned native-runtime
+checkout for the completed CPU graph-view migration. Its compiled engine and
+execution evidence are promoted together with the application. The existing
+`graphMine-repo` checkout still supplies the analytics Python and vLLM
+environments. Do not develop in these pinned checkouts or install packages into
+their runtime environments. Native engine changes need a separately built and
+verified runtime; changing an app branch alone does not replace native binaries.
+
+The new native build keeps its Kokkos/KokkosKernels dependencies under
+`library/build/native-dependencies/` in its pinned checkout. These dependencies
+must remain available for rebuilding; the previous temporary installation under
+`/tmp/pggc-deps` had been cleared. The release's build settings, dependency
+versions, source hashes and validation reports are recorded in
+`validation/native_views_release/`. Later GPU graph-view migration steps remain
+separate work; this release retains the existing GPU adapters.
 
 Each application environment has its own Python environment, data store,
 accounts, captures, history, backups, Studio workspace, and login cookie names.

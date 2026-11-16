@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "dc2c281fc2b80e2a7d364652ae309d15e2b5344f1034054ff161b20b29f1b8b7"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "dc2c281fc2b80e2a7d364652ae309d15e2b5344f1034054ff161b20b29f1b8b7"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "dc2c281fc2b80e2a7d364652ae309d15e2b5344f1034054ff161b20b29f1b8b7"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "dc2c281fc2b80e2a7d364652ae309d15e2b5344f1034054ff161b20b29f1b8b7"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "dc2c281fc2b80e2a7d364652ae309d15e2b5344f1034054ff161b20b29f1b8b7"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "dc2c281fc2b80e2a7d364652ae309d15e2b5344f1034054ff161b20b29f1b8b7"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "dc2c281fc2b80e2a7d364652ae309d15e2b5344f1034054ff161b20b29f1b8b7"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "dc2c281fc2b80e2a7d364652ae309d15e2b5344f1034054ff161b20b29f1b8b7"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "dc2c281fc2b80e2a7d364652ae309d15e2b5344f1034054ff161b20b29f1b8b7"
+  }
+]

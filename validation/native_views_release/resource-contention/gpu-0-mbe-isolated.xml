@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.348" timestamp="2026-11-16T08:28:50.294301-05:00" hostname="guoglambda01"><testcase classname="library.tests.test_native_original_gpu" name="test_biclique_enumeration_and_count[maximal-biclique-counting-mbe-gpu]" time="1.242"><failure message="original_native_binding.NativeError: mbe-gpu worker failed: GPUassert: out of memory /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/repaired-workers/.build/mbe-gpu-6e33dea644d13800/source/src/IterFinderGpu.cu 1453&#10;/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/workers/graphmine-worker-mbe-gpu, 2, /tmp/graphmine-worker-RsaeET/graph.adj, 142, 16, 20, 1500">native = &lt;original_native_binding.NativeLibrary object at 0x769c86f42ab0&gt;
+op = 'maximal-biclique-counting', backend = 'mbe-gpu'
+
+    @pytest.mark.parametrize(
+        "op,backend",
+        [("maximal-bicliques", "cumbe"), ("maximal-biclique-counting", "mbe-gpu")],
+    )
+    def test_biclique_enumeration_and_count(native, op, backend):
+        left, right = {0, 1, 2}, {3, 4, 5}
+        for edges in [[], [(0, 3), (0, 4), (1, 3), (1, 4), (2, 4), (2, 5)]]:
+            expected = set()
+            for a in range(1, 8):
+                l = frozenset(i for i in left if a &amp; (1 &lt;&lt; i))
+                r = frozenset(v for v in right if all((u, v) in edges for u in l))
+                if r and all(any((u, v) not in edges for v in r) for u in left - l):
+                    expected.add((l, r))
+            params = (
+                {"left_partition": sorted(left), "right_partition": sorted(right)}
+                if op == "maximal-bicliques"
+                else {}
+            )
+&gt;           result = call(native, op, backend, graph(6, edges, left=left), **params)[
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                "result"
+            ]
+
+library/tests/test_native_original_gpu.py:185: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+library/tests/test_native_original_gpu.py:79: in call
+    result = native.run(
+python/graphmine/graphmine/native/__init__.py:230: in run
+    return self.request(request)
+           ^^^^^^^^^^^^^^^^^^^^^
+library/tests/test_native_original_gpu.py:37: in observe
+    result = transport(value)
+             ^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;original_native_binding.NativeLibrary object at 0x769c86f42ab0&gt;
+value = {'command': 'run', 'operation': 'maximal-biclique-counting', 'graph': {'graph': {'id': 'original-runtime-oracle', 'dir... 'target': 4}, {'id': 'e4', 'source': 2, 'target': 4}, {'id': 'e5', 'source': 2, 'target': 5}]}, 'parameters': {}, ...}
+
+    def request(self, value):
+        raw = json.dumps(value, ensure_ascii=False, allow_nan=False).encode("utf-8")
+        output = ctypes.c_void_p()
+        length = ctypes.c_size_t()
+        status = self._library.graphmine_runtime_request(
+            raw, len(raw), ctypes.byref(output), ctypes.byref(length)
+        )
+        if status != 0:
+            raise NativeError("resource_limit", "Native response allocation failed")
+        try:
+            response = json.loads(ctypes.string_at(output, length.value))
+        finally:
+            self._library.graphmine_runtime_free(output)
+        if "error" in response:
+&gt;           raise NativeError(response["error"]["code"], response["error"]["message"])
+E           original_native_binding.NativeError: mbe-gpu worker failed: GPUassert: out of memory /home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/repaired-workers/.build/mbe-gpu-6e33dea644d13800/source/src/IterFinderGpu.cu 1453
+E           /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/workers/graphmine-worker-mbe-gpu, 2, /tmp/graphmine-worker-RsaeET/graph.adj, 142, 16, 20, 1500
+
+python/graphmine/graphmine/native/__init__.py:106: NativeError</failure></testcase></testsuite></testsuites>

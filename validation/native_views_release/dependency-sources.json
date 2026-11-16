@@ -1,0 +1,14 @@
+[
+  {
+    "repository": "https://github.com/kokkos/kokkos",
+    "tag": "4.7.00",
+    "url": "https://codeload.github.com/kokkos/kokkos/tar.gz/refs/tags/4.7.00",
+    "archive_sha256": "19225933536e7403d4fb53f4cceb1b1602dca55ed48e069e2566e0aedfd26122"
+  },
+  {
+    "repository": "https://github.com/kokkos/kokkos-kernels",
+    "tag": "4.7.00",
+    "url": "https://codeload.github.com/kokkos/kokkos-kernels/tar.gz/refs/tags/4.7.00",
+    "archive_sha256": "c5dc86a7111dd65ce47814f5ffe320dee44f3998a8a8645eefd6935a8dbda703"
+  }
+]
