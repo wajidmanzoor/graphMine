@@ -19,7 +19,16 @@ GDS examples are retained for source completeness and must not be executed.
 
 ## Verification and count differences
 
-No database has been loaded or verified yet. Published counts are unchanged.
+Verified on 2026-11-16 at 00:54:30 UTC. Every published label and relationship-type
+count matches, and all indexes are online. The final rollout report verifies
+Q01, Q04, Q07 and Q08 under the user-approved representative scope.
+The expected counts and published mapping are unchanged.
+
+Evidence: `neo4j-instances/movielens-genome/verify_report.json`. A later memory
+and disk observation is saved in
+`neo4j-instances/movielens-genome/resource-usage.json`, measured on 2026-11-16 at
+02:51:39 UTC without altering the verification report. This later disk snapshot
+records the allocated graph-store space after the initial load measurement.
 
 ## Host compatibility and memory (2026-11-15)
 

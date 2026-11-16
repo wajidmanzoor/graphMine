@@ -1,0 +1,75 @@
+{
+  "selection": "Use a real KNOWS pair and its source person's language, plus countries, tags and a tag class selected from actual nodes. Temporal/filter values are explicit verification examples, not official performance-benchmark parameters.",
+  "selectors": [
+    {
+      "query": "MATCH (a:Person)-[:KNOWS]-(b:Person) RETURN a.id AS source, b.id AS target, a.speaks AS languages LIMIT 1",
+      "parameters": {}
+    },
+    {
+      "query": "MATCH (n:Country) RETURN n.name AS name ORDER BY n.id LIMIT 2",
+      "parameters": {}
+    },
+    {
+      "query": "MATCH (n:Tag) RETURN n.name AS name ORDER BY n.id LIMIT 2",
+      "parameters": {}
+    },
+    {
+      "query": "MATCH (n:TagClass) RETURN n.name AS name ORDER BY n.id LIMIT 1",
+      "parameters": {}
+    }
+  ],
+  "default": {
+    "personId": 37383395781696,
+    "person1Id": 37383395781696,
+    "person2Id": 246,
+    "language": "fr",
+    "languages": [
+      "fr",
+      "ln",
+      "en"
+    ],
+    "limit": 20,
+    "birthday": {
+      "type": "date",
+      "value": "1980-01-01"
+    },
+    "country": "India",
+    "country1": "India",
+    "country2": "China",
+    "tag": "Hamid_Karzai",
+    "tagA": "Hamid_Karzai",
+    "tagB": "Rumi",
+    "tagClass": "Thing",
+    "startDate": {
+      "type": "datetime",
+      "value": "2009-01-01T00:00:00+00:00"
+    },
+    "endDate": {
+      "type": "datetime",
+      "value": "2013-01-01T00:00:00+00:00"
+    },
+    "date": {
+      "type": "datetime",
+      "value": "2011-01-01T00:00:00+00:00"
+    },
+    "datetime": {
+      "type": "datetime",
+      "value": "2013-01-01T00:00:00+00:00"
+    },
+    "dateA": {
+      "type": "datetime",
+      "value": "2011-01-01T00:00:00+00:00"
+    },
+    "dateB": {
+      "type": "datetime",
+      "value": "2012-01-01T00:00:00+00:00"
+    },
+    "minDegree": 2,
+    "lengthThreshold": 100,
+    "minPathDistance": 1,
+    "maxPathDistance": 2,
+    "maxKnowsLimit": 10,
+    "delta": 24
+  },
+  "queries": {}
+}

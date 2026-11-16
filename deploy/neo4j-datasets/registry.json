@@ -45,6 +45,21 @@
         "page_cache_gib": 8,
         "maximum_gib": 14
       }
+    },
+    {
+      "id": "ldbc-snb",
+      "name": "LDBC SNB SF100 BI",
+      "bolt_uri": "bolt://127.0.0.1:17706",
+      "http_port": 17406,
+      "bolt_port": 17706,
+      "password_env": "GRAPHMINE_NEO4J_LDBC_SNB_PASSWORD",
+      "workload_url": "https://pgraphbenchweb.vercel.app/workloads/snb-neo4j.html",
+      "default_query": "MATCH p = (a)-[r]->(b) RETURN p LIMIT 1000",
+      "memory": {
+        "heap_gib": 4,
+        "page_cache_gib": 56,
+        "maximum_gib": 62
+      }
     }
   ]
 }

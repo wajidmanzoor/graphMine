@@ -368,6 +368,22 @@ first flight import exhausted that heap. The failed new store was preserved
 and the loader retried against a fresh empty store with the larger budget above,
 without changing the published Cypher.
 
+Measured usage for the four verified instances on 2026-11-16 at 02:51:39 UTC:
+
+| Dataset | Graph store (GiB) | Transaction logs (GiB) | Source cache (GiB) | Service memory, current / peak (GiB) |
+| --- | ---: | ---: | ---: | ---: |
+| Yelp | 9.76 | 2.19 | 8.11 | 15.31 / 18.00 |
+| MovieLens 32M | 2.47 | 2.04 | <0.01 | 7.78 / 14.00 |
+| MovieLens Tag Genome | 6.42 | 2.12 | 3.71 | 11.72 / 14.00 |
+| LDBC SNB SF100 | 190.39 | <0.01 | 114.72 | 60.05 / 62.00 |
+
+These are observations, not fixed reservations. Service memory includes its
+accounted file cache. Disk columns cover the named instance subdirectories;
+the original raw datasets and shared binaries are separate. The exact byte
+counts are in `neo4j-instances/<dataset>/resource-usage.json`, alongside the
+original verification report. OnTime is still loading and will be measured
+after its verification gate passes.
+
 The local data root is `/data/labdata/wajid/graphmine_data`:
 
 | Directory | Contents |

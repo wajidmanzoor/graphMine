@@ -20,7 +20,17 @@ The copied schema alone does not load this dataset.
 
 ## Verification and count differences
 
-No database has been loaded or verified yet. Published counts are unchanged.
+Verified on 2026-11-16 at 02:47:53 UTC. Every published label and relationship-type
+count matches, and all 19 indexes are online. The final rollout report verifies
+Q01, Q04, Q07 and Q08 under the user-approved representative scope.
+The graph contains 254,634,696 physical nodes and 1,703,042,944 relationships;
+label counts overlap because some nodes have multiple published labels.
+The expected counts and published mapping are unchanged.
+
+Evidence: `neo4j-instances/ldbc-snb/verify_report.json`. A later memory and disk
+observation is saved in `neo4j-instances/ldbc-snb/resource-usage.json`, measured
+on 2026-11-16 at 02:51:39 UTC without altering the verification report. Browser
+checks for preview-to-chat and switching published schemas also passed.
 
 ## Approved bulk-import compatibility preparation
 
@@ -109,3 +119,12 @@ import retains its 40 GiB memory cap; its Neo4j service is stopped during that
 offline stage. Each dataset must independently finish loading and pass its
 count, index and representative-query checks before it enters the registry.
 The published mappings and source records are unchanged.
+
+## Verification parameters
+
+The publisher supplies parameterized queries without concrete values. Use a real
+KNOWS pair and its source person's language, plus countries, tags and a tag class
+selected from actual nodes. Temporal/filter values are explicit verification
+examples, not official performance-benchmark parameters. The exact values and
+selection queries are saved in `verification-parameters.json`; the published
+Cypher is unchanged.

@@ -17,7 +17,14 @@ GDS examples are retained for source completeness and must not be executed.
 
 ## Verification and count differences
 
-No database has been loaded or verified yet. Published counts are unchanged.
+Verified on 2026-11-16 at 00:31:30 UTC. Every published label and relationship-type
+count matches, and all indexes are online. The final rollout report verifies
+Q01, Q02, Q08 and Q24 under the user-approved representative scope.
+The expected counts and published mapping are unchanged.
+
+Evidence: `neo4j-instances/yelp/verify_report.json`. A later memory and disk
+observation is saved in `neo4j-instances/yelp/resource-usage.json`, measured on
+2026-11-16 at 02:51:39 UTC without altering the verification report.
 
 ## Host compatibility and memory (2026-11-15)
 
