@@ -10,6 +10,7 @@
 #include "../edge_set_input.hpp"
 #include "../filtration_input.hpp"
 #include "../signed_input.hpp"
+#include "../matching_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -120,6 +121,37 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool general_matching_input(const gm::Graph& graph, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<std::vector<gm::legacy_test::MatchingEdge>> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::general_matching_edges(graph,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::MatchingEdges> actual;
+    std::string new_failure;
+    try { actual = rt::general_matching_edges(graph,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("General matching rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->size() != actual->size() || old_work.candidates != work.candidates)
+      throw std::runtime_error("General matching input size/cost differs");
+    std::vector<gm::VertexIndex> old_endpoints, new_endpoints;
+    std::vector<std::size_t> old_ids, new_ids;
+    for (std::size_t i=0; i<expected->size(); ++i) {
+      const auto& a = expected->at(i); const auto& b = actual->at(i);
+      old_endpoints.insert(old_endpoints.end(),{a.u,a.v}); new_endpoints.insert(new_endpoints.end(),{b.u,b.v});
+      old_ids.push_back(a.original); new_ids.push_back(b.original);
+      if (rt::json::serialize(rt::fraction_json(a.value)) != rt::json::serialize(rt::fraction_json(b.value)))
+        throw std::runtime_error("General matching exact weight bytes differ");
+    }
+    equal(old_endpoints,new_endpoints); equal(old_ids,new_ids);
   }
   return !expected;
 }
@@ -784,6 +816,20 @@ void contracts() {
   }
   auto density_input = positive;
   density_input.as_object().at("graph").as_object()["directed"] = false;
+  general_matching_input(graph); general_matching_input(rt::parse_graph(undirected));
+  general_matching_input(rt::parse_graph(density_input));
+  for (std::uint64_t budget=0; budget<7; ++budget) general_matching_input(rt::parse_graph(undirected),budget);
+  for (const auto* quality : {"exact","approximate"})
+    declared_request("weighted-matching:cpp:default",density_input,{{"solution_quality",quality}});
+  auto matching_ties = density_input;
+  auto& matching_edges = matching_ties.as_object().at("edges").as_array();
+  matching_edges[0].as_object()["weight"] = 0.125;
+  matching_edges[1].as_object()["weight"] = 0.125;
+  general_matching_input(rt::parse_graph(matching_ties));
+  matching_edges[1].as_object()["weight"] = 0.25;
+  general_matching_input(rt::parse_graph(matching_ties));
+  matching_edges.back().as_object().erase("weight");
+  general_matching_input(rt::parse_graph(matching_ties));
   auto spectral_input = density_input;
   spectral_input.as_object().at("edges").as_array().pop_back();
   filtration_input(graph);
@@ -970,6 +1016,7 @@ int main(int argc, char** argv) {
     const bool null_models = argc > 1 && std::string(argv[1]) == "--null-models";
     const bool topology = argc > 1 && std::string(argv[1]) == "--topology";
     const bool signed_balance = argc > 1 && std::string(argv[1]) == "--signed-balance";
+    const bool general_matching = argc > 1 && std::string(argv[1]) == "--general-matching";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -994,7 +1041,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1002,6 +1049,11 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (general_matching) {
+          const bool rejected = general_matching_input(graph);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile","weighted-matching:cpp:default"},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (signed_balance) for (bool weighted : {false,true}) {
           const bool rejected = signed_input(graph,weighted);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

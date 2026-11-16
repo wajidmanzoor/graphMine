@@ -413,3 +413,17 @@ admissions. Both profiles pass 13,142 corpus cases comparing endpoint and sign
 arrays, exact costs, ordering, budgets and rejections. Request tests verify both
 tasks and quality settings, and boundary cases cover contradictory parallel
 signs, fractional sums, missing types and negative loop costs.
+
+## General weighted matching
+
+General matching now consumes an exact maximum-weight COO view with selected
+original edge IDs. Ties retain the first original edge. Directed-input,
+required-weight and nonnegative-weight validation keep their existing errors.
+Blossom construction, exact integer scaling and tie-breaking are unchanged.
+Bipartite matching retains its earlier path for its separate V3 migration.
+
+Checkpoint `28-general-matching` passes 53 CTests, 238 Python tests and all 82
+CPU admissions. All 6,571 corpus cases match canonical endpoints, exact weights,
+selected original IDs, ordering, costs and rejections, with fresh/cache-hit
+checks. Boundary and request tests cover parallel maxima/ties, missing or
+negative loop weights, small budgets and both accepted quality settings.

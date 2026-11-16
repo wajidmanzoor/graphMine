@@ -345,4 +345,26 @@ inline std::map<std::pair<VertexIndex,VertexIndex>,SignedEdge> signed_input(cons
   }
   return result;
 }
+// Frozen normalized(graph, nullptr, "maximum_weight", work) for general matching.
+struct MatchingEdge { VertexIndex u, v; std::size_t original; Exact value; };
+inline std::vector<MatchingEdge> general_matching_edges(const Graph& graph, Work& work) {
+  require(!graph.directed(),"Matching requires an undirected graph");
+  std::map<std::pair<VertexIndex,VertexIndex>,MatchingEdge> unique;
+  for (std::size_t i=0; i<graph.edge_count(); ++i) {
+    work.tick();
+    const auto& edge = graph.canonical().edges[i];
+    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (v < u) std::swap(u,v);
+    require(edge.weight.has_value(),"Weighted matching requires every edge weight");
+    const Exact value(*edge.weight);
+    require(value >= 0,"General weighted matching requires nonnegative weights");
+    if (u == v) continue;
+    const auto pair = std::make_pair(u,v);
+    const auto found = unique.find(pair);
+    if (found == unique.end() || value > found->second.value) unique[pair] = {u,v,i,value};
+  }
+  std::vector<MatchingEdge> result;
+  for (auto& [_,edge] : unique) result.push_back(std::move(edge));
+  return result;
+}
 }  // namespace graphmine::legacy_test

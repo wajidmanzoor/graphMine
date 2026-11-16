@@ -8,14 +8,14 @@
 
 #include "exact_number.hpp"
 #include "internal.hpp"
+#include "matching_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
-struct Edge {
-  VertexIndex u, v;
-  std::size_t original;
-  Exact value;
-};
+const ViewProfile general_matching{"weighted-matching:cpp:default", {"weighted-matching"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:max",
+       "weights":"rational_exact","edge_ids":true,"require_edge_weights":true,"nonnegative_weights":true})"};
+using Edge = MatchingEdge;
 using Edges = std::vector<Edge>;
 std::string quality(const json::object& args) {
   const auto value = args.contains("solution_quality")
@@ -273,11 +273,30 @@ Assignment assign(std::size_t n, const std::vector<bool>& left, const Edges& edg
 }
 }  // namespace
 
+MatchingEdges general_matching_edges(const Graph& graph, Work& work) {
+  require(!graph.directed(),"Matching requires an undirected graph");
+  std::shared_ptr<const ViewResult> input;
+  try {
+    input = consume_view(graph,general_matching,work,ViewBudget::record_edges);
+  } catch (const Failure& error) {
+    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+      throw Failure("invalid_input","General weighted matching requires nonnegative weights");
+    throw;
+  } catch (const std::invalid_argument& error) {
+    if (std::string(error.what()) == "Graph view: This view requires explicit edge weights")
+      throw Failure("invalid_input","Weighted matching requires every edge weight");
+    throw;
+  }
+  MatchingEdges result;
+  for (const auto& edge : family_util::edge_layout(std::get<CooView>(input->view)))
+    result.push_back({edge.u,edge.v,edge.original,edge.weight});
+  return result;
+}
 json::object weighted_matching(const Graph& graph, const json::object& args, const std::string&,
                                int, Work& work) {
   fields(args, {"solution_quality"});
   const auto requested = quality(args);
-  const auto edges = normalized(graph, nullptr, "maximum_weight", work);
+  const auto edges = general_matching_edges(graph,work);
   return selected_output(graph, edges, blossom(graph.vertex_count(), edges, work),
                          {{"solution_quality", requested}}, nullptr, work);
 }
