@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "68fc296a9550f8cbeddf68dd971d4aab8eddc885208b728fbee62fa6b2b000d6"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "68fc296a9550f8cbeddf68dd971d4aab8eddc885208b728fbee62fa6b2b000d6"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "68fc296a9550f8cbeddf68dd971d4aab8eddc885208b728fbee62fa6b2b000d6"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "68fc296a9550f8cbeddf68dd971d4aab8eddc885208b728fbee62fa6b2b000d6"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "68fc296a9550f8cbeddf68dd971d4aab8eddc885208b728fbee62fa6b2b000d6"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "68fc296a9550f8cbeddf68dd971d4aab8eddc885208b728fbee62fa6b2b000d6"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "68fc296a9550f8cbeddf68dd971d4aab8eddc885208b728fbee62fa6b2b000d6"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "68fc296a9550f8cbeddf68dd971d4aab8eddc885208b728fbee62fa6b2b000d6"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "68fc296a9550f8cbeddf68dd971d4aab8eddc885208b728fbee62fa6b2b000d6"
+  }
+]

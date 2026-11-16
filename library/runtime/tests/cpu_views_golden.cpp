@@ -3,6 +3,7 @@
 #include "../family_util.hpp"
 #include "../record_query.hpp"
 #include "../force_layout.hpp"
+#include "../structure_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -19,8 +20,8 @@ void clear_views() {
   const auto response = rt::strict_json(rt::request(R"({"command":"representation_cache","action":"clear"})")).as_object();
   if (response.contains("error")) throw std::runtime_error(rt::json::serialize(response));
 }
-void cache_pass(const rt::Work& work, int repeat) {
-  const auto& used = work.representations.at(0).as_object();
+void cache_pass(const rt::Work& work, int repeat, std::size_t position = 0) {
+  const auto& used = work.representations.at(position).as_object();
   if (!used.at("retained").as_bool() || used.at("hit").as_bool() != (repeat != 0))
     throw std::runtime_error("Golden did not exercise a fresh build followed by a cache hit");
 }
@@ -113,6 +114,44 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool structure_input(const gm::Graph& graph, const std::string& operation, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::StructureInput> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::StructureInput> actual;
+    std::string new_failure;
+    try { actual = rt::structure_input(graph,rt::cpu_view_profile(operation+":cpp:topology"),
+        rt::cpu_view_profile(operation+":cpp:records"),work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Structure input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat,0); cache_pass(work,repeat,1);
+    if (expected->pairs.size() != actual->pairs.size() || expected->source_ids.size() != actual->source_ids.size() ||
+        expected->adjacency.size() != actual->adjacency.size() || old_work.candidates != work.candidates)
+      throw std::runtime_error("Structure input shape/cost differs");
+    std::vector<gm::VertexIndex> old_pairs, new_pairs;
+    for (std::size_t i=0; i<expected->pairs.size(); ++i) {
+      old_pairs.insert(old_pairs.end(),{expected->pairs[i].first,expected->pairs[i].second});
+      new_pairs.insert(new_pairs.end(),{actual->pairs[i].first,actual->pairs[i].second});
+      if (rt::json::serialize(expected->source_ids[i]) != rt::json::serialize(actual->source_ids[i]))
+        throw std::runtime_error("Structure source edge ID bytes differ");
+    }
+    equal(old_pairs,new_pairs);
+    for (std::size_t v=0; v<expected->adjacency.size(); ++v) {
+      std::vector<gm::VertexIndex> old_neighbors, new_neighbors;
+      std::vector<std::size_t> old_indices, new_indices;
+      for (const auto& [u,e] : expected->adjacency[v]) { old_neighbors.push_back(u); old_indices.push_back(e); }
+      for (const auto& [u,e] : actual->adjacency[v]) { new_neighbors.push_back(u); new_indices.push_back(e); }
+      equal(old_neighbors,new_neighbors); equal(old_indices,new_indices);
+    }
   }
   return !expected;
 }
@@ -346,6 +385,17 @@ void contracts() {
   traversal(graph,"topological-sort:cpp:default");
   auto undirected = raw;
   undirected.as_object().at("graph").as_object()["directed"] = false;
+  for (const auto* operation : {"biconnected-components","k-truss"}) {
+    structure_input(graph,operation);
+    structure_input(rt::parse_graph(undirected),operation);
+    for (std::uint64_t budget=0; budget<16; ++budget) structure_input(graph,operation,budget);
+    for (const auto* suffix : {":cpp:topology",":cpp:records"}) {
+      const auto profile = std::string(operation)+suffix;
+      declared_request(profile.c_str(),undirected,{});
+      if (std::string(operation) == "k-truss")
+        declared_request(profile.c_str(),undirected,{{"requested_k",3}});
+    }
+  }
   for (const auto& pattern_graph : {raw,undirected}) {
     const auto parsed = rt::parse_graph(pattern_graph);
     pattern_records(parsed,"subgraph-isomorphism:cpp:bundles");
@@ -625,6 +675,7 @@ int main(int argc, char** argv) {
     const bool records = argc > 1 && std::string(argv[1]) == "--records";
     const bool layout = argc > 1 && std::string(argv[1]) == "--layout";
     const bool subgraph_matching = argc > 1 && std::string(argv[1]) == "--subgraph-matching";
+    const bool structure = argc > 1 && std::string(argv[1]) == "--structure";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
@@ -645,13 +696,18 @@ int main(int argc, char** argv) {
     if (local_community) selected_exact.push_back(local_community_case);
     if (geolocation) selected_exact.push_back(geolocation_case);
     if (condensation) selected_exact.push_back(condensation_case);
-    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching)
+    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (structure) for (const auto* operation : {"biconnected-components","k-truss"}) {
+          const bool rejected = structure_input(graph,operation);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",std::string(operation)+":cpp:topology+records"},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (subgraph_matching) {
           const auto* profile = "subgraph-isomorphism:cpp:bundles";
           const bool rejected = pattern_records(graph,profile);
@@ -697,10 +753,10 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
           }
-        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout && !subgraph_matching) traversal(graph);
+        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout && !subgraph_matching && !structure) traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
     std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1] : "traversal")

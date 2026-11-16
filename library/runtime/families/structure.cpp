@@ -5,16 +5,60 @@
 #include <set>
 
 #include "internal.hpp"
+#include "structure_input.hpp"
 
 namespace graphmine::runtime {
+StructureInput structure_input(const Graph& graph, const ViewProfile& topology,
+                                const ViewProfile& records, Work& work) {
+  work.tick(graph.vertex_count());
+  StructureInput result;
+  result.adjacency.resize(graph.vertex_count());
+  const auto topology_input = consume_view(graph,topology,work,ViewBudget::record_edges);
+  const auto record_input = consume_view(graph,records,work,ViewBudget::algorithm_owned);
+  const auto& csr = std::get<CsrView>(topology_input->view);
+  const auto& coo = std::get<CooView>(record_input->view);
+  std::map<std::pair<VertexIndex,VertexIndex>,std::size_t> positions;
+  for (VertexIndex u=0; u<graph.vertex_count(); ++u)
+    for (const auto v : CsrRows{csr}[u]) {
+      if (u >= v) continue;
+      work.tick();
+      const auto position = result.pairs.size();
+      result.pairs.emplace_back(u,v);
+      positions.emplace(std::make_pair(u,v),position);
+      result.adjacency[u].emplace_back(v,position);
+      result.adjacency[v].emplace_back(u,position);
+    }
+  result.source_ids.resize(result.pairs.size());
+  // Topology collapse belongs to its CSR spec. The second view retains each
+  // contributing record so the original source-ID side lists remain lossless.
+  for (std::size_t i=0; i<coo.src.size(); ++i) {
+    if (coo.src[i] > coo.dst[i]) continue;
+    const auto position = positions.at({coo.src[i],coo.dst[i]});
+    result.source_ids[position].push_back(id_json(graph.canonical().edges.at(coo.edge_ids->at(i)).id));
+  }
+  for (auto& row : result.adjacency) std::sort(row.begin(),row.end());
+  return result;
+}
 namespace {
+const ViewProfile block_topology{"biconnected-components:cpp:topology", {"biconnected-components"},
+  R"({"kind":"csr","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile block_records{"biconnected-components:cpp:records", {"biconnected-components"},
+  R"({"kind":"coo","direction":"symmetrize","self_loops":"drop","parallel_edges":"keep","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+const ViewProfile truss_topology{"k-truss:cpp:topology", {"k-truss"},
+  R"({"kind":"csr","direction":"symmetrize","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile truss_records{"k-truss:cpp:records", {"k-truss"},
+  R"({"kind":"coo","direction":"symmetrize","self_loops":"drop","parallel_edges":"keep","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
 using Pair = std::pair<VertexIndex, VertexIndex>;
 Pair ordered(VertexIndex u, VertexIndex v) { return std::minmax(u, v); }
-struct SimpleEdges {
-  std::vector<Pair> pairs;
-  std::vector<json::array> source_ids;
-  std::vector<std::vector<std::pair<VertexIndex, std::size_t>>> adjacency;
-  explicit SimpleEdges(const Graph& graph, Work& work) : adjacency(graph.vertex_count()) {
+struct SimpleEdges : StructureInput {
+  explicit SimpleEdges(const Graph& graph, Work& work, const ViewProfile* topology = nullptr,
+                        const ViewProfile* record_spec = nullptr) {
+    if (topology) {
+      static_cast<StructureInput&>(*this) = structure_input(graph,*topology,*record_spec,work);
+      return;
+    }
+    // Preserve the GPU path until its own migration and evidence checkpoint.
+    adjacency.resize(graph.vertex_count());
     work.tick(graph.vertex_count());
     std::map<Pair, json::array> records;
     for (const auto& edge : graph.canonical().edges) {
@@ -68,7 +112,7 @@ json::object biconnected(const Graph& graph, const json::object& args, const std
                          Work& work) {
   fields(args, {});
   require(!graph.directed(), "Biconnected blocks require an undirected graph");
-  const SimpleEdges input(graph, work);
+  const SimpleEdges input(graph, work, &block_topology, &block_records);
   const auto n = graph.vertex_count();
   const auto missing = input.pairs.size();
   std::vector<std::size_t> discovered(n, 0), low(n, 0), parent_edge(n, missing), children(n, 0),
@@ -200,7 +244,8 @@ json::object truss(const Graph& graph, const json::object& args, const std::stri
     requested = uint(args.at("requested_k"), "requested_k");
     require(*requested >= 2, "requested_k must be at least two");
   }
-  const SimpleEdges input(graph, work);
+  const SimpleEdges input(graph, work, backend == "cpp" ? &truss_topology : nullptr,
+                                      backend == "cpp" ? &truss_records : nullptr);
   work.output(input.pairs.size());
   std::vector<std::uint32_t> values(input.pairs.size(), 2);
   if (backend == "cpp") {

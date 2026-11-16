@@ -306,3 +306,18 @@ CPU admissions. All 6,571 corpus cases match vertex/edge JSON bytes, ordered
 bundle endpoints, original-edge index arrays and costs, on fresh and cached
 views. Budget tests and real induced/non-induced requests with parallel-weight
 predicates and result limits pass and verify the consumed declaration.
+
+## Biconnected components and k-truss
+
+Both CPU adapters now declare a collapsed CSR topology and a COO view of all
+contributing non-loop records. Repacking preserves canonical pair order,
+neighbor/edge-index arrays and every original source ID. The second view avoids
+losing parallel-edge identities from the existing results. The GPU k-truss path
+remains on its earlier input constructor for its own migration.
+
+Checkpoint `20-structure` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. The two adapters pass 13,142 corpus cases, each comparing both views'
+combined algorithm input on fresh builds and retained cache hits. Budget checks
+and real requests verify all four declarations, including requested truss levels.
+An initial constructor parameter/local-variable name collision was corrected;
+the failed build log is retained under `diagnostics/`.

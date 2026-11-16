@@ -1,0 +1,25 @@
+-- GLOB mismatch!
+-- Found the following ICU libraries:
+--   uc (required): /usr/lib/x86_64-linux-gnu/libicuuc.so
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/build/native-views-step3
+[  7%] Built target graphmine_runtime_core
+[  9%] Built target graphmine_core_view_test
+[ 10%] Building CXX object CMakeFiles/graphmine_runtime.dir/runtime.cpp.o
+[ 11%] Building CXX object CMakeFiles/graphmine_runtime.dir/registry.cpp.o
+[ 12%] Building CXX object CMakeFiles/graphmine_runtime.dir/representation_cache.cpp.o
+[ 13%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/common.cpp.o
+[ 14%] Building CXX object CMakeFiles/graphmine_runtime.dir/view_profiles.cpp.o
+[ 14%] Building CXX object CMakeFiles/graphmine_runtime.dir/families/structure.cpp.o
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/families/structure.cpp: In constructor ‘graphmine::runtime::{anonymous}::SimpleEdges::SimpleEdges(const graphmine::Graph&, graphmine::runtime::Work&, const graphmine::runtime::ViewProfile*, const graphmine::runtime::ViewProfile*)’:
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/families/structure.cpp:63:33: error: declaration of ‘std::map<std::pair<unsigned int, unsigned int>, boost::json::array> records’ shadows a parameter
+   63 |     std::map<Pair, json::array> records;
+      |                                 ^~~~~~~
+/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/runtime/families/structure.cpp:55:44: note: ‘const graphmine::runtime::ViewProfile* records’ previously declared here
+   55 |                         const ViewProfile* records = nullptr) {
+      |                         ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+gmake[2]: *** [CMakeFiles/graphmine_runtime.dir/build.make:356: CMakeFiles/graphmine_runtime.dir/families/structure.cpp.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+gmake[1]: *** [CMakeFiles/Makefile2:895: CMakeFiles/graphmine_runtime.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

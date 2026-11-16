@@ -201,4 +201,27 @@ struct PatternRecords {
     }
   }
 };
+// Frozen structure.cpp::SimpleEdges input construction from ed2fcfb8.
+struct StructureInput {
+  std::vector<std::pair<VertexIndex,VertexIndex>> pairs;
+  std::vector<json::array> source_ids;
+  std::vector<std::vector<std::pair<VertexIndex,std::size_t>>> adjacency;
+  StructureInput(const Graph& graph, Work& work) : adjacency(graph.vertex_count()) {
+    work.tick(graph.vertex_count());
+    std::map<std::pair<VertexIndex,VertexIndex>,json::array> records;
+    for (const auto& edge : graph.canonical().edges) {
+      work.tick();
+      const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+      if (u != v) records[std::minmax(u,v)].push_back(id_json(edge.id));
+    }
+    for (auto& [edge,ids] : records) {
+      work.tick();
+      const auto position = pairs.size();
+      pairs.push_back(edge); source_ids.push_back(std::move(ids));
+      adjacency[edge.first].emplace_back(edge.second,position);
+      adjacency[edge.second].emplace_back(edge.first,position);
+    }
+    for (auto& row : adjacency) std::sort(row.begin(),row.end());
+  }
+};
 }  // namespace graphmine::legacy_test
