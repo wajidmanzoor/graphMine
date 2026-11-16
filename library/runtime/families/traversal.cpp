@@ -3,9 +3,17 @@
 #include <set>
 
 #include "internal.hpp"
+#include "view_profiles.hpp"
 
 namespace graphmine::runtime {
-Search cpu_bfs(const std::vector<std::vector<VertexIndex>>& graph, VertexIndex source,
+namespace {
+const ViewProfile bfs_view{"breadth-first-search:cpp:default", {"breadth-first-search"}, R"({
+  "kind":"csr", "direction":"keep", "self_loops":"drop",
+  "parallel_edges":"collapse:first", "weights":"none", "sorted_neighbors":true
+})"};
+
+template<class Rows>
+Search bfs_rows(const Rows& graph, VertexIndex source,
                std::optional<std::uint64_t> depth, Work& work) {
   Search result{std::vector<std::int64_t>(graph.size(), -1),
                 std::vector<std::int64_t>(graph.size(), -1)};
@@ -26,6 +34,16 @@ Search cpu_bfs(const std::vector<std::vector<VertexIndex>>& graph, VertexIndex s
     }
   }
   return result;
+}
+}  // namespace
+
+Search cpu_bfs(const std::vector<std::vector<VertexIndex>>& graph, VertexIndex source,
+               std::optional<std::uint64_t> depth, Work& work) {
+  return bfs_rows(graph, source, depth, work);
+}
+Search cpu_bfs(const CsrView& graph, VertexIndex source,
+               std::optional<std::uint64_t> depth, Work& work) {
+  return bfs_rows(CsrRows{graph}, source, depth, work);
 }
 
 json::object bfs(const Graph& graph, const json::object& args, const std::string& backend,
@@ -62,7 +80,8 @@ json::object bfs(const Graph& graph, const json::object& args, const std::string
   if (backend == "libcugraph") {
     found = cugraph_bfs(graph, sources, depth, device, work);
   } else {
-    const auto adj = adjacency(graph, work);
+    const auto input = consume_view(graph, bfs_view, work, ViewBudget::original_edges);
+    const auto& adj = std::get<CsrView>(input->view);
     for (auto source : sources) found.push_back(cpu_bfs(adj, source, depth, work));
   }
   json::array rows, reached;

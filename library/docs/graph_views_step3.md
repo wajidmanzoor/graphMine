@@ -29,3 +29,21 @@ is preserved losslessly under the checkpoint's `diagnostics/` directory.
 `tools/validate_graph_view_checkpoint.py` runs the existing gates and refreshes
 execution evidence for each family commit. Algorithm-specific input goldens are
 retained alongside those reports.
+
+## Traversal
+
+Breadth-first search now reads V1 CSR directly. Its immutable declaration lives
+beside the CPU adapter and specifies preserved direction, dropped loops, first
+parallel-edge collapse, omitted weights and sorted neighbors. Source selection,
+predecessor tie-breaking, depth limits and independent/nearest-source modes are
+unchanged. The existing cuGraph path remains for Step 4.
+
+`view_profiles.*` exposes the same declarations used by adapters for later
+registry generation. The shared acquisition helper records the actual profile,
+resolved spec and normalization in provenance, preserving candidate admission
+on fresh and cached views. It performs no normalization itself.
+
+Checkpoint `01-traversal` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Its byte golden compares the actual declared view with the frozen
+old adjacency builder on every Step 2 corpus graph, including warm-cache costs.
+The declaration test also checks the spec reported by real BFS requests.

@@ -95,7 +95,7 @@ struct BipartiteView {
 
 struct DenseView {
   std::uint64_t rows = 0, columns = 0;
-  ViewWeights values;  // row-major; always f64 or int64_exact
+  ViewWeights values;  // row-major numeric values in the declared weight type
   std::vector<ExternalId> row_ids, column_ids;
   std::vector<VertexIndex> row_original, column_original;
   // Absent graph cells are zero but distinguishable from explicit zero edges.

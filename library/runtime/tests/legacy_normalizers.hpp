@@ -85,4 +85,20 @@ inline WeightedGraph weighted(const Graph& graph, bool weighted, bool nonnegativ
   return result;
 }
 
+inline std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work& work) {
+  std::vector<std::vector<VertexIndex>> result(graph.vertex_count());
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (u != v) {
+      result[u].push_back(v);
+      if (!graph.directed()) result[v].push_back(u);
+    }
+  }
+  for (auto& row : result) {
+    std::sort(row.begin(), row.end());
+    row.erase(std::unique(row.begin(), row.end()), row.end());
+  }
+  return result;
+}
 }  // namespace graphmine::legacy_test
