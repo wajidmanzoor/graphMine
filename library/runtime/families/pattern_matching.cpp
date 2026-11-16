@@ -1,6 +1,12 @@
 #include "pattern_match.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile motif_input{"motif-counting:cpp:input", {"motif-counting"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
+const ViewProfile motif_query{"motif-counting:cpp:motif", {"motif-counting"},
+  R"({"kind":"csr","direction":"both","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
+}
 json::object subgraph_isomorphism(const Graph& graph, const json::object& args, const std::string&,
                                   int, Work& work) {
   using namespace family_util;
@@ -53,7 +59,8 @@ json::object motif_counting(const Graph& graph, const json::object& args, const 
                                {"unique_vertex_set_and_mapping_class", "all_embeddings"});
   const auto cap = limit(args, "result_limit_per_motif");
   require(!cap || listing, "result_limit_per_motif applies only when listing instances");
-  const auto adj = adjacency(graph, work);
+  const auto input = consume_view(graph, motif_input, work, ViewBudget::original_edges);
+  const auto adj = adjacency_layout(std::get<CsrView>(input->view));
   json::object counts, completeness, instances;
   json::array rows;
   std::uint64_t materialized = 0;
@@ -63,10 +70,16 @@ json::object motif_counting(const Graph& graph, const json::object& args, const 
     require(!counts.contains(name), "Motif graph IDs must be unique");
     require(query.directed() == graph.directed(), "Motif direction must match input");
     require(query.vertex_count() > 0, "Motif must be nonempty");
-    auto qadj = adjacency(query, work), weak = qadj;
+    const auto query_input = consume_view(query, motif_query, work, ViewBudget::original_edges);
+    const auto& query_view = std::get<CsrView>(query_input->view);
+    auto qadj = adjacency_layout(query_view), weak = qadj;
+    // Concatenate forward and reverse slices without sorting or deduplication;
+    // this preserves the old weak-connectivity BFS input and visitation cost.
     if (query.directed())
-      for (VertexIndex u = 0; u < qadj.size(); ++u)
-        for (const auto v : qadj[u]) weak[v].push_back(u);
+      for (VertexIndex v = 0; v < qadj.size(); ++v) {
+        const auto incoming = CsrRows{query_view,true}[v];
+        weak[v].insert(weak[v].end(),incoming.begin(),incoming.end());
+      }
     const auto reached = cpu_bfs(weak, 0, {}, work);
     require(std::all_of(reached.distances.begin(), reached.distances.end(),
                         [](auto d) { return d >= 0; }),

@@ -2,6 +2,10 @@
 #include "pattern_match.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile graphlet_profile{"graphlet-counting:cpp:default", {"graphlet-counting"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
+}
 json::object graphlet_counting(const Graph& graph, const json::object& args, const std::string&,
                                int, Work& work) {
   using namespace family_util;
@@ -80,7 +84,8 @@ json::object graphlet_counting(const Graph& graph, const json::object& args, con
     lookup[signature(pattern.adj)].push_back(patterns.size());
     patterns.push_back(std::move(pattern));
   }
-  const auto adj = adjacency(graph, work);
+  const auto input = consume_view(graph, graphlet_profile, work, ViewBudget::original_edges);
+  const auto adj = adjacency_layout(std::get<CsrView>(input->view));
   std::vector<std::map<std::string, std::uint64_t>> roles(graph.vertex_count());
   for (const auto size : sizes)
     combinations(graph.vertex_count(), size, work, [&](const Vertices& selected) {

@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "2e7b1c9352d15d13a6667bb14ed36a8a2392eb9e53f82ff8b6aa3b0214d0f6b8"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "2e7b1c9352d15d13a6667bb14ed36a8a2392eb9e53f82ff8b6aa3b0214d0f6b8"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "2e7b1c9352d15d13a6667bb14ed36a8a2392eb9e53f82ff8b6aa3b0214d0f6b8"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "2e7b1c9352d15d13a6667bb14ed36a8a2392eb9e53f82ff8b6aa3b0214d0f6b8"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "2e7b1c9352d15d13a6667bb14ed36a8a2392eb9e53f82ff8b6aa3b0214d0f6b8"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "2e7b1c9352d15d13a6667bb14ed36a8a2392eb9e53f82ff8b6aa3b0214d0f6b8"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "2e7b1c9352d15d13a6667bb14ed36a8a2392eb9e53f82ff8b6aa3b0214d0f6b8"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "2e7b1c9352d15d13a6667bb14ed36a8a2392eb9e53f82ff8b6aa3b0214d0f6b8"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "2e7b1c9352d15d13a6667bb14ed36a8a2392eb9e53f82ff8b6aa3b0214d0f6b8"
+  }
+]

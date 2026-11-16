@@ -2,12 +2,17 @@
 #include <limits>
 
 #include "internal.hpp"
+#include "view_profiles.hpp"
 
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_TRIANGLES
 #include "graphmine/problems/triangle_counting.hpp"
 #endif
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile triangle_profile{"triangle-counting:cpp:default", {"triangle-counting"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
+}
 bool original_triangles_compiled(const std::string& backend) {
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_TRIANGLES
   for (const auto& item : TriangleCounting::backends())
@@ -45,7 +50,11 @@ json::object triangles(const Graph& graph, const json::object& args, const std::
   std::uint64_t count = 0;
   json::array groups;
   if (!gpu_count || mode == "enumerate") {
-    const auto adj = adjacency(graph, work);
+    MiningGraph adj;
+    if (backend == "cpp") {
+      const auto input = consume_view(graph, triangle_profile, work, ViewBudget::original_edges);
+      adj = adjacency_layout(std::get<CsrView>(input->view));
+    } else adj = adjacency(graph, work);
     for (VertexIndex u = 0; u < graph.vertex_count(); ++u) {
       for (const auto v : adj[u]) {
         work.tick();

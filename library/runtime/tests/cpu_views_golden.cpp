@@ -36,6 +36,23 @@ void traversal(const gm::Graph& graph, const char* id = "breadth-first-search:cp
     const auto repacked = rt::adjacency_layout(view);
     if (repacked.size() != expected.size()) throw std::runtime_error("CPU row layout size differs");
     for (std::size_t v=0; v<repacked.size(); ++v) equal(expected[v],repacked[v]);
+    if (view.in_offsets) {
+      rt::MiningGraph reverse(expected.size()), old_weak=expected, new_weak=repacked;
+      for (gm::VertexIndex u=0; u<expected.size(); ++u)
+        for (const auto v : expected[u]) {
+          reverse[v].push_back(u);
+          if (graph.directed()) old_weak[v].push_back(u);
+        }
+      std::vector<std::uint64_t> incoming_offsets{0}; std::vector<gm::VertexIndex> incoming_indices;
+      for (gm::VertexIndex v=0; v<expected.size(); ++v) {
+        const auto row = rt::CsrRows{view,true}[v];
+        incoming_indices.insert(incoming_indices.end(),reverse[v].begin(),reverse[v].end());
+        incoming_offsets.push_back(incoming_indices.size());
+        if (graph.directed()) new_weak[v].insert(new_weak[v].end(),row.begin(),row.end());
+        equal(old_weak[v],new_weak[v]);
+      }
+      equal(incoming_offsets,*view.in_offsets); equal(incoming_indices,*view.in_indices);
+    }
     if (work.candidates != old_work.candidates) throw std::runtime_error("CPU view candidate cost differs");
   }
 }
@@ -46,6 +63,8 @@ const char* clique_profiles[] = {
 const char* reachability_profiles[] = {"transitive-closure:cpp:default", "overlapping-communities:cpp:default"};
 const char* density_profiles[] = {"densest-subgraph:cpp:clique_terms", "quasi-cliques:cpp:default"};
 const char* coloring_profiles[] = {"maximal-independent-set:cpp:default", "vertex-coloring:cpp:default"};
+const char* pattern_profiles[] = {"triangle-counting:cpp:default", "graphlet-counting:cpp:default",
+                                 "motif-counting:cpp:input", "motif-counting:cpp:motif"};
 struct ExactCase { const char* profile; bool weighted, nonnegative = true, loops = false; };
 const ExactCase density_exact_cases[] = {
   {"densest-subgraph:cpp:edge_weight",true}, {"densest-subgraph:cpp:unweighted",false},
@@ -88,10 +107,15 @@ void declared_request(const char* id, const rt::json::value& graph, const rt::js
     {"device","cpu"},{"graph",graph},{"parameters",parameters}};
   const auto response = rt::strict_json(rt::request(rt::json::serialize(request))).as_object();
   if (response.contains("error")) throw std::runtime_error(rt::json::serialize(response));
-  const auto& used = response.at("representations").as_array().back().as_object();
-  if (rt::string(used.at("view_profile"),"view_profile") != profile.id ||
-      used.at("view") != rt::json::parse(profile.spec.canonical_json()))
-    throw std::runtime_error(profile.id + ": consumed a different declared spec");
+  bool consumed = false;
+  for (const auto& item : response.at("representations").as_array()) {
+    const auto& used = item.as_object();
+    if (!used.contains("view_profile") || rt::string(used.at("view_profile"),"view_profile") != profile.id) continue;
+    if (used.at("view") != rt::json::parse(profile.spec.canonical_json()))
+      throw std::runtime_error(profile.id + ": consumed a different declared spec");
+    consumed = true;
+  }
+  if (!consumed) throw std::runtime_error(profile.id + ": did not consume its declared view");
 }
 struct WeightedCase {
   const char* profile; const char* aggregation; bool nonnegative, unit;
@@ -220,6 +244,17 @@ void contracts() {
     declared_request(profile,raw,{{"query_mode","single_source_all"},{"source_vertex",0},{"direction_mode",direction}});
     declared_request(profile,raw,{{"query_mode","top_k_pairs"},{"direction_mode",direction}});
   }
+  for (const auto* profile : pattern_profiles) traversal(graph,profile);
+  declared_request("triangle-counting:cpp:default",undirected,{});
+  declared_request("triangle-counting:cpp:default",undirected,{{"mode","enumerate"},{"result_limit",1}});
+  declared_request("graphlet-counting:cpp:default",undirected,{{"graphlet_sizes",{2,3}}});
+  declared_request("graphlet-counting:cpp:default",undirected,{{"graphlet_sizes",{2,3}},
+    {"include_orbit_counts",true},{"list_instances",true},{"result_limit_per_graphlet",1}});
+  for (const auto* profile : {"motif-counting:cpp:input","motif-counting:cpp:motif"}) {
+    declared_request(profile,raw,{{"motifs",rt::json::array{raw}}});
+    declared_request(profile,undirected,{{"motifs",rt::json::array{undirected}},
+      {"induced",true},{"occurrence_identity","all_embeddings"},{"list_instances",true}});
+  }
   for (const auto* profile : reachability_profiles) traversal(graph,profile);
   declared_request("transitive-closure:cpp:default",raw,{});
   declared_request("transitive-closure:cpp:default",raw,{{"enumerate_closure_edges",false}});
@@ -322,12 +357,14 @@ int main(int argc, char** argv) {
     const bool centrality = argc > 1 && std::string(argv[1]) == "--centrality";
     const bool coloring = argc > 1 && std::string(argv[1]) == "--coloring";
     const bool similarity = argc > 1 && std::string(argv[1]) == "--similarity";
+    const bool patterns = argc > 1 && std::string(argv[1]) == "--patterns";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
     if (reachability) simple_profiles.assign(std::begin(reachability_profiles),std::end(reachability_profiles));
     if (density) simple_profiles.assign(std::begin(density_profiles),std::end(density_profiles));
     if (coloring) simple_profiles.assign(std::begin(coloring_profiles),std::end(coloring_profiles));
+    if (patterns) simple_profiles.assign(std::begin(pattern_profiles),std::end(pattern_profiles));
     std::vector<WeightedCase> selected_weighted;
     if (weighted) selected_weighted.assign(std::begin(weighted_cases),std::end(weighted_cases));
     if (connectivity) selected_weighted.assign(std::begin(connectivity_cases),std::end(connectivity_cases));
@@ -371,7 +408,7 @@ int main(int argc, char** argv) {
       if (selected_weighted.empty() && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : coloring ? "coloring" : similarity ? "similarity" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : coloring ? "coloring" : similarity ? "similarity" : patterns ? "patterns" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }

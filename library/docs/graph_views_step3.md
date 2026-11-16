@@ -167,3 +167,18 @@ rows with the frozen weighted, adjacency and SimRank builders. Link prediction
 checks both former input layouts and their combined candidate cost. Declaration
 checks cover all eight link scores and all three SimRank query modes in both
 directions. The cuGraph Jaccard path remains unchanged.
+
+## Pattern counts
+
+Triangle, graphlet and motif counting now consume declared CSR views. Motif
+queries declare both forward and reverse CSR; their connectivity check copies
+the two slices in the previous order, including reciprocal entries. Embedded
+graphlet templates and the counting/enumeration algorithms remain unchanged.
+
+Checkpoint `10-patterns` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Four profiles pass 26,284 corpus cases, including forward/reverse
+arrays and the exact concatenated weak-connectivity rows. Request checks cover
+counts, limited listings, graphlet orbits and directed/undirected motif modes,
+and verify both input and motif declarations. The first build found a type
+comparison error in the test helper; it was corrected before these successful
+gates, and the original build log is preserved in `diagnostics/`.
