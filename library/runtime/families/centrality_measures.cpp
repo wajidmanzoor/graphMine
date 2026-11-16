@@ -6,12 +6,39 @@
 
 #include "exact_number.hpp"
 #include "internal.hpp"
+#include "view_profiles.hpp"
 
 namespace graphmine::runtime {
 namespace {
+const ViewProfile betweenness_unweighted{"betweenness-centrality:cpp:unweighted", {"betweenness-centrality"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:min","weights":"f64","weight_source":"unit",
+  "nonnegative_weights":true})"};
+const ViewProfile betweenness_edge_weight{"betweenness-centrality:cpp:edge_weight", {"betweenness-centrality"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:min","weights":"f64","weight_source":"edge.weight",
+  "nonnegative_weights":true})"};
+const ViewProfile degree_outgoing{"degree-centrality:cpp:outgoing", {"degree-centrality"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"f64","weight_source":"unit"})"};
+const ViewProfile degree_incoming{"degree-centrality:cpp:incoming", {"degree-centrality"},
+  R"({"kind":"csr","direction":"reverse","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"f64","weight_source":"unit"})"};
+const ViewProfile degree_both{"degree-centrality:cpp:both", {"degree-centrality"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"f64","weight_source":"unit"})"};
+const ViewProfile degree_undirected_projection{"degree-centrality:cpp:undirected_projection", {"degree-centrality"},
+  R"({"kind":"csr","direction":"symmetrize","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"f64","weight_source":"unit"})"};
+const ViewProfile& degree_profile(const std::string& direction) {
+  if (direction == "incoming") return degree_incoming;
+  if (direction == "both") return degree_both;
+  if (direction == "undirected_projection") return degree_undirected_projection;
+  return degree_outgoing;
+}
 // Brandes accumulation with unbounded integer path counts and exact rational
 // distances/dependencies. Positive weights ensure the predecessor DAG is acyclic.
-std::vector<Exact> cpu_betweenness(const WeightedGraph& graph, bool weighted, Work& work) {
+std::vector<Exact> cpu_betweenness(const WeightedCsrInput& graph, bool weighted, Work& work) {
   const auto n = graph.rows.size();
   std::vector<Exact> scores(n, 0);
   if (n < 3) return scores;
@@ -144,7 +171,13 @@ json::object betweenness(const Graph& graph, const json::object& args, const std
               "Weighted betweenness requires strictly positive edge lengths");
     }
   work.output(graph.vertex_count());
-  const auto input = weighted_graph(graph, mode == "edge_weight", true, "min", "outgoing", work);
+  std::shared_ptr<const ViewResult> cpu_input;
+  std::optional<WeightedGraph> gpu_input;
+  if (backend == "cpp")
+    cpu_input = consume_view(graph, mode == "edge_weight" ? betweenness_edge_weight : betweenness_unweighted,
+                             work, ViewBudget::weighted_adjacency);
+  else
+    gpu_input = weighted_graph(graph, mode == "edge_weight", true, "min", "outgoing", work);
   const auto n = graph.vertex_count();
   // Both CPU and adapters supply ordered-pair accumulation. Undirected raw
   // scores divide by two; normalized scores divide by (n-1)(n-2) in both cases.
@@ -161,7 +194,7 @@ json::object betweenness(const Graph& graph, const json::object& args, const std
       {"parallel_edges", "minimum_length"},
       {"self_loops", "discard"}};
   if (backend == "cpp") {
-    auto scores = cpu_betweenness(input, mode == "edge_weight", work);
+    auto scores = cpu_betweenness(WeightedCsrInput(std::get<CsrView>(cpu_input->view)), mode == "edge_weight", work);
     for (auto& value : scores) {
       work.tick();
       value *= scale;
@@ -172,6 +205,7 @@ json::object betweenness(const Graph& graph, const json::object& args, const std
          "exact rational over admitted binary64 lengths; unbounded integer path counts"}};
     return result;
   }
+  const auto& input = *gpu_input;
   std::vector<double> scores;
   if (backend == "turbo-bc") {
     MiningGraph adjacency(input.rows.size());
@@ -210,8 +244,8 @@ json::object degree_centrality(const Graph& graph, const json::object& args, con
               direction == "undirected_projection",
           "Unknown direction_mode");
   work.output(graph.vertex_count());
-  const auto input = weighted_graph(graph, false, false, "collapse",
-                                    direction == "both" ? "outgoing" : direction, work);
+  const auto view = consume_view(graph, degree_profile(direction), work, ViewBudget::weighted_adjacency);
+  const WeightedCsrInput input(std::get<CsrView>(view->view));
   std::vector<Exact> scores(graph.vertex_count(), 0);
   for (VertexIndex u = 0; u < input.rows.size(); ++u) {
     work.tick(input.rows[u].size() + 1);

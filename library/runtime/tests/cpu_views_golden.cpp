@@ -105,6 +105,22 @@ const WeightedCase connectivity_cases[] = {
   {"connected-components:cpp:weak", "collapse", false, false, false, "undirected_projection"},
   {"connected-components:cpp:strong", "collapse", false, false, false, "outgoing"}
 };
+const WeightedCase centrality_cases[] = {
+  {"pagerank:cpp:edge_weight", "sum", true, false, true, "outgoing"},
+  {"pagerank:cpp:unweighted", "sum", true, false, false, "outgoing"},
+  {"personalized-pagerank:cpp:outgoing:edge_weight", "sum", true, false, true, "outgoing"},
+  {"personalized-pagerank:cpp:outgoing:unweighted", "sum", true, false, false, "outgoing"},
+  {"personalized-pagerank:cpp:incoming:edge_weight", "sum", true, false, true, "incoming"},
+  {"personalized-pagerank:cpp:incoming:unweighted", "sum", true, false, false, "incoming"},
+  {"personalized-pagerank:cpp:undirected_projection:edge_weight", "sum", true, false, true, "undirected_projection"},
+  {"personalized-pagerank:cpp:undirected_projection:unweighted", "sum", true, false, false, "undirected_projection"},
+  {"betweenness-centrality:cpp:edge_weight", "min", true, false, true, "outgoing"},
+  {"betweenness-centrality:cpp:unweighted", "min", true, false, false, "outgoing"},
+  {"degree-centrality:cpp:outgoing", "collapse", false, false, false, "outgoing"},
+  {"degree-centrality:cpp:incoming", "collapse", false, false, false, "incoming"},
+  {"degree-centrality:cpp:both", "collapse", false, false, false, "outgoing"},
+  {"degree-centrality:cpp:undirected_projection", "collapse", false, false, false, "undirected_projection"}
+};
 bool weighted_path(const gm::Graph& graph, const WeightedCase& test) {
   auto reference_work = unlimited(); std::optional<rt::WeightedGraph> expected; std::string failure;
   try { expected = gm::legacy_test::weighted(graph, test.weighted, test.nonnegative, test.aggregation, test.direction, reference_work); }
@@ -125,6 +141,13 @@ bool weighted_path(const gm::Graph& graph, const WeightedCase& test) {
       offsets.push_back(indices.size());
     }
     equal(offsets,view.offsets); equal(indices,view.indices); equal(weights,std::get<std::vector<double>>(view.weights));
+    const auto packed = rt::weighted_layout(view);
+    std::vector<gm::VertexIndex> packed_indices; std::vector<double> packed_weights;
+    for (const auto& row : packed.rows) for (const auto& arc : row) {
+      packed_indices.push_back(arc.target); packed_weights.push_back(arc.weight);
+    }
+    equal(indices,packed_indices); equal(weights,packed_weights);
+    if (packed.directed != expected->directed) throw std::runtime_error("Weighted row layout direction differs");
     if (view.in_offsets) {
       std::vector<std::vector<gm::VertexIndex>> reverse(expected->rows.size());
       for (gm::VertexIndex u=0; u<expected->rows.size(); ++u)
@@ -187,6 +210,23 @@ void contracts() {
   auto positive = raw;
   for (auto& edge : positive.as_object().at("edges").as_array())
     edge.as_object()["weight"] = std::abs(edge.as_object().at("weight").to_number<double>());
+  for (const auto& test : centrality_cases) {
+    weighted_path(graph,test);
+    const auto& profile = rt::cpu_view_profile(test.profile);
+    const auto& operation = profile.operations.front();
+    rt::json::object parameters;
+    if (operation == "degree-centrality") {
+      parameters["direction_mode"] = profile.id.substr(profile.id.rfind(':')+1);
+    } else parameters["weight_mode"] = test.weighted ? "edge_weight" : "unweighted";
+    if (operation == "personalized-pagerank") {
+      parameters["seed_vertices"] = rt::json::array{0};
+      parameters["direction_mode"] = test.direction;
+      for (const auto* policy : {"redistribute_to_seeds","redistribute_uniformly","self_loop"}) {
+        parameters["dangling_policy"] = policy;
+        declared_request(test.profile,positive,parameters);
+      }
+    } else declared_request(test.profile,positive,parameters);
+  }
   auto density_input = positive;
   density_input.as_object().at("graph").as_object()["directed"] = false;
   density_input.as_object().at("edges").as_array()[0].as_object()["weight"] = 1e16;
@@ -245,11 +285,16 @@ int main(int argc, char** argv) {
     const bool connectivity = argc > 1 && std::string(argv[1]) == "--connectivity";
     const bool cliques = argc > 1 && std::string(argv[1]) == "--cliques";
     const bool reachability = argc > 1 && std::string(argv[1]) == "--reachability";
+    const bool centrality = argc > 1 && std::string(argv[1]) == "--centrality";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
     if (reachability) simple_profiles.assign(std::begin(reachability_profiles),std::end(reachability_profiles));
     if (density) simple_profiles.assign(std::begin(density_profiles),std::end(density_profiles));
+    std::vector<WeightedCase> selected_weighted;
+    if (weighted) selected_weighted.assign(std::begin(weighted_cases),std::end(weighted_cases));
+    if (connectivity) selected_weighted.assign(std::begin(connectivity_cases),std::end(connectivity_cases));
+    if (centrality) selected_weighted.assign(std::begin(centrality_cases),std::end(centrality_cases));
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
@@ -260,18 +305,14 @@ int main(int argc, char** argv) {
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
             {"profile",test.profile},{"equal",true},{"rejected",rejected}}) << '\n';
         }
-        if (weighted) {
-          for (const auto& test : weighted_cases) {
+        if (!selected_weighted.empty()) {
+          for (const auto& test : selected_weighted) {
             const bool rejected = weighted_path(graph,test);
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",test.profile},{"equal",true},{"rejected",rejected}}) << '\n';
           }
-        } else if (connectivity) {
-          for (const auto& test : connectivity_cases) {
-            const bool rejected = weighted_path(graph,test);
-            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
-              {"profile",test.profile},{"equal",true},{"rejected",rejected}}) << '\n';
-          }
+        }
+        if (connectivity) {
           traversal(graph,"topological-sort:cpp:default");
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
             {"profile","topological-sort:cpp:default"},{"equal",true},{"rejected",false}}) << '\n';
@@ -281,13 +322,13 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
           }
-        } else traversal(graph);
+        } else if (selected_weighted.empty()) traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (!weighted && !connectivity && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (selected_weighted.empty() && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }

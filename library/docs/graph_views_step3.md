@@ -125,3 +125,19 @@ edge-index bytes, canonical rational numerator/denominator bytes, candidate
 costs and matching rejections. Contract tests include sums beyond f64 precision
 and range, weighted/unweighted modes, small candidate budgets and declarations
 consumed by real density requests.
+
+## Centrality
+
+PageRank and personalized PageRank now declare f64 CSR inputs for each weight
+and direction mode. Their layout-only row copy feeds the existing Markov
+transition calculation, including its long-double row sums and dangling-node
+policy. Betweenness and degree centrality read weighted CSR directly. The
+positive-length guard, exact Brandes arithmetic, normalization and tie-breaking
+remain unchanged.
+
+Checkpoint `07-centrality` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Fourteen profile goldens cover 91,994 corpus cases, checking CSR and
+repacked row bytes, weight bits, direction, successful candidate costs and
+matching rejections. Declaration checks exercise every weight/direction profile
+and all three personalized PageRank dangling policies. GPU solver paths retain
+their existing input builders.

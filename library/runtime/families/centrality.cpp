@@ -4,9 +4,54 @@
 #include <set>
 
 #include "internal.hpp"
+#include "view_profiles.hpp"
 
 namespace graphmine::runtime {
 namespace {
+constexpr const char* outgoing_unweighted_spec = R"({"kind":"csr","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:sum","weights":"f64","weight_source":"unit",
+  "nonnegative_weights":true})";
+const ViewProfile personalized_outgoing_unweighted{"personalized-pagerank:cpp:outgoing:unweighted",
+  {"personalized-pagerank"}, outgoing_unweighted_spec};
+const ViewProfile pagerank_unweighted{"pagerank:cpp:unweighted", {"pagerank"}, outgoing_unweighted_spec};
+constexpr const char* outgoing_edge_weight_spec = R"({"kind":"csr","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:sum","weights":"f64","weight_source":"edge.weight",
+  "nonnegative_weights":true})";
+const ViewProfile personalized_outgoing_edge_weight{"personalized-pagerank:cpp:outgoing:edge_weight",
+  {"personalized-pagerank"}, outgoing_edge_weight_spec};
+const ViewProfile pagerank_edge_weight{"pagerank:cpp:edge_weight", {"pagerank"}, outgoing_edge_weight_spec};
+constexpr const char* incoming_unweighted_spec = R"({"kind":"csr","direction":"reverse","self_loops":"drop",
+  "parallel_edges":"collapse:sum","weights":"f64","weight_source":"unit",
+  "nonnegative_weights":true})";
+const ViewProfile personalized_incoming_unweighted{"personalized-pagerank:cpp:incoming:unweighted",
+  {"personalized-pagerank"}, incoming_unweighted_spec};
+constexpr const char* incoming_edge_weight_spec = R"({"kind":"csr","direction":"reverse","self_loops":"drop",
+  "parallel_edges":"collapse:sum","weights":"f64","weight_source":"edge.weight",
+  "nonnegative_weights":true})";
+const ViewProfile personalized_incoming_edge_weight{"personalized-pagerank:cpp:incoming:edge_weight",
+  {"personalized-pagerank"}, incoming_edge_weight_spec};
+constexpr const char* undirected_projection_unweighted_spec = R"({"kind":"csr","direction":"symmetrize","self_loops":"drop",
+  "parallel_edges":"collapse:sum","weights":"f64","weight_source":"unit",
+  "nonnegative_weights":true})";
+const ViewProfile personalized_undirected_projection_unweighted{"personalized-pagerank:cpp:undirected_projection:unweighted",
+  {"personalized-pagerank"}, undirected_projection_unweighted_spec};
+constexpr const char* undirected_projection_edge_weight_spec = R"({"kind":"csr","direction":"symmetrize","self_loops":"drop",
+  "parallel_edges":"collapse:sum","weights":"f64","weight_source":"edge.weight",
+  "nonnegative_weights":true})";
+const ViewProfile personalized_undirected_projection_edge_weight{"personalized-pagerank:cpp:undirected_projection:edge_weight",
+  {"personalized-pagerank"}, undirected_projection_edge_weight_spec};
+const ViewProfile& personalized_profile(const std::string& direction, bool weighted) {
+  if (direction == "incoming") return weighted ? personalized_incoming_edge_weight : personalized_incoming_unweighted;
+  if (direction == "undirected_projection")
+    return weighted ? personalized_undirected_projection_edge_weight : personalized_undirected_projection_unweighted;
+  return weighted ? personalized_outgoing_edge_weight : personalized_outgoing_unweighted;
+}
+WeightedGraph rank_input(const Graph& graph, const ViewProfile& profile, bool weighted,
+                         const std::string& direction, const std::string& backend, Work& work) {
+  if (backend != "cpp") return weighted_graph(graph, weighted, true, "sum", direction, work);
+  const auto input = consume_view(graph, profile, work, ViewBudget::weighted_adjacency);
+  return weighted_layout(std::get<CsrView>(input->view));
+}
 struct RankResult {
   std::vector<double> values;
   double residual = 0;
@@ -128,7 +173,8 @@ json::object pagerank(const Graph& graph, const json::object& args, const std::s
   require(mode == "unweighted" || mode == "edge_weight", "Unknown weight_mode");
   validate(alpha, tolerance, iterations);
   work.output(graph.vertex_count());
-  const auto input = weighted_graph(graph, mode == "edge_weight", true, "sum", "outgoing", work);
+  const auto& profile = mode == "edge_weight" ? pagerank_edge_weight : pagerank_unweighted;
+  const auto input = rank_input(graph, profile, mode == "edge_weight", "outgoing", backend, work);
   const std::vector<double> uniform(graph.vertex_count(),
                                     graph.vertex_count() ? 1.0 / graph.vertex_count() : 0);
   const auto computed =
@@ -213,7 +259,8 @@ json::object personalized_pagerank(const Graph& graph, const json::object& args,
           "Unknown dangling_policy");
   validate(alpha, tolerance, iterations);
   work.output(graph.vertex_count());
-  auto input = weighted_graph(graph, mode == "edge_weight", true, "sum", direction, work);
+  auto input = rank_input(graph, personalized_profile(direction, mode == "edge_weight"),
+                           mode == "edge_weight", direction, backend, work);
   if (policy == "self_loop")
     for (VertexIndex v = 0; v < input.rows.size(); ++v)
       if (std::none_of(input.rows[v].begin(), input.rows[v].end(),

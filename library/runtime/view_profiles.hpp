@@ -19,6 +19,7 @@ enum class ViewBudget { algorithm_owned, original_edges, weighted_adjacency, rec
 std::shared_ptr<const ViewResult> consume_view(const Graph&, const ViewProfile&, Work&, ViewBudget);
 // Layout-only copy for algorithms that retain vector rows internally.
 MiningGraph adjacency_layout(const CsrView&);
+WeightedGraph weighted_layout(const CsrView&);
 
 struct CsrNeighbors {
   using Iterator = std::vector<VertexIndex>::const_iterator;
