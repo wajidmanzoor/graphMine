@@ -1,7 +1,9 @@
-# Standard graph views: Step 3 progress
+# Standard graph views: Step 3 family notes
 
-Step 3 is in progress in `devlopment`. Production is unchanged. This file will
-record the CPU-family migrations and their independent commit gates.
+Step 3 is complete in `devlopment`: all 82 CPU operations consume declared
+views. Production is unchanged. The [completion report](graph_views_step3_report.md)
+lists files, validation totals, per-dataset artifacts and evidence for every
+operation. These notes record each family's changes and independent commit gates.
 
 ## Prerequisite extensions
 

@@ -1,0 +1,1672 @@
+{
+  "step": 3,
+  "status": "complete",
+  "branch": "devlopment",
+  "implementation_commit": "255d45a6ee50a4218e4802f1d09ad1c08624568e",
+  "implementation_sha256": "a59d914809946801301c4a336848995e8d387e859a47ff61d54a7366fcd2b73e",
+  "binary_sha256": "9f0033f12fcb50cee452b14273636202535cb1fe7847434d8d8abd7bdfabf420",
+  "cpu_operations": 82,
+  "declared_profiles": 141,
+  "family_checkpoints": 47,
+  "golden_datasets_per_family": 6571,
+  "golden_profile_cases": 1090786,
+  "golden_cold_warm_comparisons": 2181572,
+  "golden_mismatches": 0,
+  "historical_artifact_hashes_verified": 3754,
+  "final_tests": {
+    "ctest": 53,
+    "native-cpu": 127,
+    "native-original-cpu": 34,
+    "python-bindings-cpu": 43,
+    "evidence-gate": 31,
+    "agent-capabilities": 3
+  },
+  "cpp_oracle_requests": 129073,
+  "operations": {
+    "balanced-partitioning": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "balanced-partitioning:cpp:edge_weight",
+        "balanced-partitioning:cpp:unweighted"
+      ],
+      "checkpoints": [
+        "11-partitioning"
+      ]
+    },
+    "betweenness-centrality": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "betweenness-centrality:cpp:edge_weight",
+        "betweenness-centrality:cpp:unweighted"
+      ],
+      "checkpoints": [
+        "07-centrality"
+      ]
+    },
+    "biconnected-components": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "biconnected-components:cpp:records",
+        "biconnected-components:cpp:topology"
+      ],
+      "checkpoints": [
+        "20-structure"
+      ]
+    },
+    "bipartite-matching": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "bipartite-matching:cpp:maximum_cardinality",
+        "bipartite-matching:cpp:maximum_weight",
+        "bipartite-matching:cpp:minimum_cost"
+      ],
+      "checkpoints": [
+        "47-bipartite"
+      ]
+    },
+    "bounded-paths-cycles": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "bounded-paths-cycles:cpp:collapse_first",
+        "bounded-paths-cycles:cpp:preserve",
+        "bounded-paths-cycles:cpp:records"
+      ],
+      "checkpoints": [
+        "32-enumeration"
+      ]
+    },
+    "breadth-first-search": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "breadth-first-search:cpp:default"
+      ],
+      "checkpoints": [
+        "01-traversal"
+      ]
+    },
+    "butterfly-counting": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "butterfly-counting:cpp:sides"
+      ],
+      "checkpoints": [
+        "47-bipartite"
+      ]
+    },
+    "common-neighbors": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "common-neighbors:cpp:records"
+      ],
+      "checkpoints": [
+        "17-record-queries"
+      ]
+    },
+    "community-detection": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "community-detection:cpp:edge_weight",
+        "community-detection:cpp:unweighted"
+      ],
+      "checkpoints": [
+        "11-partitioning"
+      ]
+    },
+    "connected-components": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "connected-components:cpp:strong",
+        "connected-components:cpp:weak"
+      ],
+      "checkpoints": [
+        "03-connectivity"
+      ]
+    },
+    "degree-centrality": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "degree-centrality:cpp:both",
+        "degree-centrality:cpp:incoming",
+        "degree-centrality:cpp:outgoing",
+        "degree-centrality:cpp:undirected_projection"
+      ],
+      "checkpoints": [
+        "07-centrality"
+      ]
+    },
+    "densest-k-subgraph": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "densest-k-subgraph:cpp:edge_weight",
+        "densest-k-subgraph:cpp:unweighted"
+      ],
+      "checkpoints": [
+        "06-density"
+      ]
+    },
+    "densest-subgraph": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "densest-subgraph:cpp:clique_terms",
+        "densest-subgraph:cpp:edge_weight",
+        "densest-subgraph:cpp:unweighted"
+      ],
+      "checkpoints": [
+        "06-density"
+      ]
+    },
+    "dynamic-triangle-counting": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "dynamic-triangle-counting:cpp:topology"
+      ],
+      "checkpoints": [
+        "37-dynamic-triangles"
+      ]
+    },
+    "edge-filter": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "edge-filter:cpp:records"
+      ],
+      "checkpoints": [
+        "17-record-queries"
+      ]
+    },
+    "entity-resolution": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "entity-resolution:cpp:vertices"
+      ],
+      "checkpoints": [
+        "29-entity-resolution"
+      ]
+    },
+    "force-directed-layout": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "force-directed-layout:cpp:edge_weight",
+        "force-directed-layout:cpp:unweighted"
+      ],
+      "checkpoints": [
+        "18-layout"
+      ]
+    },
+    "frequent-subgraphs": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "frequent-subgraphs:cpp:collection"
+      ],
+      "checkpoints": [
+        "46-frequent"
+      ]
+    },
+    "graph-aggregate": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "graph-aggregate:cpp:records"
+      ],
+      "checkpoints": [
+        "17-record-queries"
+      ]
+    },
+    "graph-anomalies": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "graph-anomalies:cpp:neighbors",
+        "graph-anomalies:cpp:records",
+        "graph-anomalies:cpp:simple",
+        "graph-anomalies:cpp:weighted"
+      ],
+      "checkpoints": [
+        "41-anomalies"
+      ]
+    },
+    "graph-coarsening": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "graph-coarsening:cpp:matching",
+        "graph-coarsening:cpp:records"
+      ],
+      "checkpoints": [
+        "23-coarsening"
+      ]
+    },
+    "graph-condensation": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "graph-condensation:cpp:default"
+      ],
+      "checkpoints": [
+        "16-condensation"
+      ]
+    },
+    "graph-edit-distance": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "graph-edit-distance:cpp:records",
+        "graph-edit-distance:cpp:simple"
+      ],
+      "checkpoints": [
+        "45-comparison"
+      ]
+    },
+    "graph-geolocation": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "graph-geolocation:cpp:default"
+      ],
+      "checkpoints": [
+        "15-geolocation"
+      ]
+    },
+    "graph-learning": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "graph-learning:cpp:incoming",
+        "graph-learning:cpp:outgoing",
+        "graph-learning:cpp:structural_features",
+        "graph-learning:cpp:undirected_projection"
+      ],
+      "checkpoints": [
+        "34-graph-learning"
+      ]
+    },
+    "graph-signal-denoising": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "graph-signal-denoising:cpp:default"
+      ],
+      "checkpoints": [
+        "12-spectral"
+      ]
+    },
+    "graphlet-counting": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "graphlet-counting:cpp:default"
+      ],
+      "checkpoints": [
+        "10-patterns"
+      ]
+    },
+    "group-steiner-tree": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "group-steiner-tree:cpp:default"
+      ],
+      "checkpoints": [
+        "22-steiner"
+      ]
+    },
+    "hypergraph-node-learning": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "hypergraph-node-learning:cpp:incidence"
+      ],
+      "checkpoints": [
+        "36-hypergraphs"
+      ]
+    },
+    "hypergraph-partitioning": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "hypergraph-partitioning:cpp:incidence"
+      ],
+      "checkpoints": [
+        "36-hypergraphs"
+      ]
+    },
+    "induced-subgraph": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "induced-subgraph:cpp:incoming",
+        "induced-subgraph:cpp:outgoing",
+        "induced-subgraph:cpp:records",
+        "induced-subgraph:cpp:undirected_projection"
+      ],
+      "checkpoints": [
+        "31-induced-subgraph"
+      ]
+    },
+    "influence-maximization": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "influence-maximization:cpp:independent_cascade",
+        "influence-maximization:cpp:linear_threshold"
+      ],
+      "checkpoints": [
+        "21-influence"
+      ]
+    },
+    "k-cliques": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "k-cliques:cpp:default"
+      ],
+      "checkpoints": [
+        "04-cliques"
+      ]
+    },
+    "k-core": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "k-core:cpp:default"
+      ],
+      "checkpoints": [
+        "04-cliques"
+      ]
+    },
+    "k-truss": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "k-truss:cpp:records",
+        "k-truss:cpp:topology"
+      ],
+      "checkpoints": [
+        "20-structure"
+      ]
+    },
+    "knn-graph": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "knn-graph:cpp:features"
+      ],
+      "checkpoints": [
+        "35-knn"
+      ]
+    },
+    "knowledge-graph-embedding": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "knowledge-graph-embedding:cpp:records"
+      ],
+      "checkpoints": [
+        "38-embeddings"
+      ]
+    },
+    "laplacian-eigenpairs": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "laplacian-eigenpairs:cpp:default"
+      ],
+      "checkpoints": [
+        "12-spectral"
+      ]
+    },
+    "link-prediction": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "link-prediction:cpp:default"
+      ],
+      "checkpoints": [
+        "09-similarity"
+      ]
+    },
+    "many-source-shortest-paths": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "many-source-shortest-paths:cpp:edge_weight",
+        "many-source-shortest-paths:cpp:unweighted"
+      ],
+      "checkpoints": [
+        "02-weighted-paths"
+      ]
+    },
+    "max-flow-min-cut": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "max-flow-min-cut:cpp:unit_records",
+        "max-flow-min-cut:cpp:unit_sum",
+        "max-flow-min-cut:cpp:weight_records",
+        "max-flow-min-cut:cpp:weight_sum"
+      ],
+      "checkpoints": [
+        "40-flow"
+      ]
+    },
+    "maximal-biclique-counting": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "maximal-biclique-counting:cpp:sides"
+      ],
+      "checkpoints": [
+        "47-bipartite"
+      ]
+    },
+    "maximal-bicliques": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "maximal-bicliques:cpp:sides"
+      ],
+      "checkpoints": [
+        "47-bipartite"
+      ]
+    },
+    "maximal-cliques": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "maximal-cliques:cpp:default"
+      ],
+      "checkpoints": [
+        "04-cliques"
+      ]
+    },
+    "maximal-independent-set": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "maximal-independent-set:cpp:default"
+      ],
+      "checkpoints": [
+        "08-coloring"
+      ]
+    },
+    "maximum-clique": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "maximum-clique:cpp:default"
+      ],
+      "checkpoints": [
+        "04-cliques"
+      ]
+    },
+    "maximum-common-subgraph": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "maximum-common-subgraph:cpp:records",
+        "maximum-common-subgraph:cpp:simple"
+      ],
+      "checkpoints": [
+        "45-comparison"
+      ]
+    },
+    "maximum-independent-set": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "maximum-independent-set:cpp:default"
+      ],
+      "checkpoints": [
+        "04-cliques"
+      ]
+    },
+    "minimum-vertex-cover": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "minimum-vertex-cover:cpp:default"
+      ],
+      "checkpoints": [
+        "04-cliques"
+      ]
+    },
+    "motif-counting": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "motif-counting:cpp:input",
+        "motif-counting:cpp:motif"
+      ],
+      "checkpoints": [
+        "10-patterns"
+      ]
+    },
+    "neighborhood-sampling": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "neighborhood-sampling:cpp:uniform",
+        "neighborhood-sampling:cpp:uniform_typed",
+        "neighborhood-sampling:cpp:weighted",
+        "neighborhood-sampling:cpp:weighted_typed"
+      ],
+      "checkpoints": [
+        "42-sampling"
+      ]
+    },
+    "neighbors": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "neighbors:cpp:records"
+      ],
+      "checkpoints": [
+        "17-record-queries"
+      ]
+    },
+    "network-alignment": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "network-alignment:cpp:edge_weight",
+        "network-alignment:cpp:unweighted"
+      ],
+      "checkpoints": [
+        "13-alignment"
+      ]
+    },
+    "node-embedding": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "node-embedding:cpp:preserve_drop",
+        "node-embedding:cpp:preserve_keep",
+        "node-embedding:cpp:preserve_reject",
+        "node-embedding:cpp:undirected_projection_drop",
+        "node-embedding:cpp:undirected_projection_keep",
+        "node-embedding:cpp:undirected_projection_reject"
+      ],
+      "checkpoints": [
+        "38-embeddings"
+      ]
+    },
+    "node-learning": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "node-learning:cpp:incoming",
+        "node-learning:cpp:outgoing",
+        "node-learning:cpp:undirected_projection"
+      ],
+      "checkpoints": [
+        "33-node-learning"
+      ]
+    },
+    "node-lookup": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "node-lookup:cpp:records"
+      ],
+      "checkpoints": [
+        "17-record-queries"
+      ]
+    },
+    "null-model-significance": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "null-model-significance:cpp:default"
+      ],
+      "checkpoints": [
+        "25-null-models"
+      ]
+    },
+    "overlapping-communities": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "overlapping-communities:cpp:default"
+      ],
+      "checkpoints": [
+        "05-reachability"
+      ]
+    },
+    "pagerank": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "pagerank:cpp:edge_weight",
+        "pagerank:cpp:unweighted"
+      ],
+      "checkpoints": [
+        "07-centrality"
+      ]
+    },
+    "persistent-homology": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "persistent-homology:cpp:default"
+      ],
+      "checkpoints": [
+        "26-topology"
+      ]
+    },
+    "personalized-pagerank": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "personalized-pagerank:cpp:incoming:edge_weight",
+        "personalized-pagerank:cpp:incoming:unweighted",
+        "personalized-pagerank:cpp:outgoing:edge_weight",
+        "personalized-pagerank:cpp:outgoing:unweighted",
+        "personalized-pagerank:cpp:undirected_projection:edge_weight",
+        "personalized-pagerank:cpp:undirected_projection:unweighted"
+      ],
+      "checkpoints": [
+        "07-centrality"
+      ]
+    },
+    "quasi-cliques": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "quasi-cliques:cpp:default"
+      ],
+      "checkpoints": [
+        "06-density"
+      ]
+    },
+    "query-paths": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "query-paths:cpp:records"
+      ],
+      "checkpoints": [
+        "17-record-queries"
+      ]
+    },
+    "query-subgraph": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "query-subgraph:cpp:records"
+      ],
+      "checkpoints": [
+        "17-record-queries"
+      ]
+    },
+    "random-walks": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "random-walks:cpp:uniform",
+        "random-walks:cpp:weighted"
+      ],
+      "checkpoints": [
+        "24-walks"
+      ]
+    },
+    "seeded-local-community": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "seeded-local-community:cpp:default"
+      ],
+      "checkpoints": [
+        "14-local-community"
+      ]
+    },
+    "signed-balance": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "signed-balance:cpp:edge_weight",
+        "signed-balance:cpp:unweighted"
+      ],
+      "checkpoints": [
+        "27-signed-balance"
+      ]
+    },
+    "simrank": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "simrank:cpp:incoming",
+        "simrank:cpp:undirected_projection"
+      ],
+      "checkpoints": [
+        "09-similarity"
+      ]
+    },
+    "single-graph-frequent-subgraphs": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "single-graph-frequent-subgraphs:cpp:bundles",
+        "single-graph-frequent-subgraphs:cpp:host"
+      ],
+      "checkpoints": [
+        "46-frequent"
+      ]
+    },
+    "single-source-shortest-paths": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "single-source-shortest-paths:cpp:default"
+      ],
+      "checkpoints": [
+        "02-weighted-paths"
+      ]
+    },
+    "spanning-tree-forest": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "spanning-tree-forest:cpp:maximum",
+        "spanning-tree-forest:cpp:minimum"
+      ],
+      "checkpoints": [
+        "02-weighted-paths"
+      ]
+    },
+    "spectral-sparsification": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "spectral-sparsification:cpp:positive_edges"
+      ],
+      "checkpoints": [
+        "39-sparsification"
+      ]
+    },
+    "subgraph-isomorphism": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "subgraph-isomorphism:cpp:bundles"
+      ],
+      "checkpoints": [
+        "19-subgraph-matching"
+      ]
+    },
+    "temporal-motifs": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "temporal-motifs:cpp:bundles",
+        "temporal-motifs:cpp:events",
+        "temporal-motifs:cpp:query_records"
+      ],
+      "checkpoints": [
+        "44-temporal-motifs"
+      ]
+    },
+    "temporal-paths": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "temporal-paths:cpp:records"
+      ],
+      "checkpoints": [
+        "43-temporal-paths"
+      ]
+    },
+    "top-k-critical-paths": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "top-k-critical-paths:cpp:default"
+      ],
+      "checkpoints": [
+        "30-path-profiles"
+      ]
+    },
+    "topological-sort": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "topological-sort:cpp:default"
+      ],
+      "checkpoints": [
+        "03-connectivity"
+      ]
+    },
+    "transitive-closure": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "transitive-closure:cpp:default"
+      ],
+      "checkpoints": [
+        "05-reachability"
+      ]
+    },
+    "triangle-counting": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "triangle-counting:cpp:default"
+      ],
+      "checkpoints": [
+        "10-patterns"
+      ]
+    },
+    "vertex-coloring": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "vertex-coloring:cpp:default"
+      ],
+      "checkpoints": [
+        "08-coloring"
+      ]
+    },
+    "weighted-matching": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "weighted-matching:cpp:default"
+      ],
+      "checkpoints": [
+        "28-general-matching"
+      ]
+    },
+    "widest-paths": {
+      "backend": "cpp",
+      "admitted": true,
+      "profiles": [
+        "widest-paths:cpp:default"
+      ],
+      "checkpoints": [
+        "30-path-profiles"
+      ]
+    }
+  },
+  "families": [
+    {
+      "checkpoint": "01-traversal",
+      "operations": [
+        "breadth-first-search"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "c972d445ecad61c47ff1f47be55a55d8c6579414e434b48653fb80a0cfdd2b18",
+      "summary_sha256": "65cc796d42aeaa19a961449ac2d29e7cc89d1c0622f117b69b0ae87c6598d341"
+    },
+    {
+      "checkpoint": "02-weighted-paths",
+      "operations": [
+        "single-source-shortest-paths",
+        "many-source-shortest-paths",
+        "spanning-tree-forest"
+      ],
+      "datasets": 6571,
+      "profile_cases": 32855,
+      "cold_warm_comparisons": 65710,
+      "matching_rejections": 6,
+      "mismatches": 0,
+      "implementation_sha256": "34f3d0015f4bf0d16a117a3029d2c8a9b3ca7f1e6d33b150a6c0f0bdcea90215",
+      "summary_sha256": "2f889683a74813145288a0949241a13212b628c817cb5ccfdab6b77f794ba258"
+    },
+    {
+      "checkpoint": "03-connectivity",
+      "operations": [
+        "connected-components",
+        "topological-sort"
+      ],
+      "datasets": 6571,
+      "profile_cases": 19713,
+      "cold_warm_comparisons": 39426,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "d79fe16d420b3887ffe8848917b4f6818e0ecbd85a27bab665b2b0fc709064f6",
+      "summary_sha256": "128110e64a630407f54d8684d08a442b0c839a6f145c93ed5d7d7be74e9e3038"
+    },
+    {
+      "checkpoint": "04-cliques",
+      "operations": [
+        "maximal-cliques",
+        "maximum-clique",
+        "k-cliques",
+        "k-core",
+        "maximum-independent-set",
+        "minimum-vertex-cover"
+      ],
+      "datasets": 6571,
+      "profile_cases": 39426,
+      "cold_warm_comparisons": 78852,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "2e1a0c69534cb8fc2030f5d2f23ab731111606023df9a2146e3a1fc091834a82",
+      "summary_sha256": "35a5613c00f92c258a1f06831c5a5d84d463bbfd69ef7b61e3868c13fd5bcec1"
+    },
+    {
+      "checkpoint": "05-reachability",
+      "operations": [
+        "transitive-closure",
+        "overlapping-communities"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "c971e339ff40e2b579f60bdef4e914746a1c2bc6381455294175a8714fc6c8d7",
+      "summary_sha256": "a254db09470acd64f38af2615f32c720bfc10ac2de081c18542c7530447f5329"
+    },
+    {
+      "checkpoint": "06-density",
+      "operations": [
+        "densest-subgraph",
+        "densest-k-subgraph",
+        "quasi-cliques"
+      ],
+      "datasets": 6571,
+      "profile_cases": 39426,
+      "cold_warm_comparisons": 78852,
+      "matching_rejections": 4,
+      "mismatches": 0,
+      "implementation_sha256": "32526761c150166a0cd9b6275e38a668e69e97e4568525f81d38ca939d10edf7",
+      "summary_sha256": "72a20dd714a6a7e6552dce8e5d327014fbb919cc28f4b1b335e25032d6de5eca"
+    },
+    {
+      "checkpoint": "07-centrality",
+      "operations": [
+        "pagerank",
+        "personalized-pagerank",
+        "betweenness-centrality",
+        "degree-centrality"
+      ],
+      "datasets": 6571,
+      "profile_cases": 91994,
+      "cold_warm_comparisons": 183988,
+      "matching_rejections": 10,
+      "mismatches": 0,
+      "implementation_sha256": "4b651833961fc530ae32446b67040a14142b079a8bd04aa54f8b82f2c4325126",
+      "summary_sha256": "a20508f3db73477fd0c159780cc3f875f230f1614d596f2e4ac6430f4b905067"
+    },
+    {
+      "checkpoint": "08-coloring",
+      "operations": [
+        "maximal-independent-set",
+        "vertex-coloring"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "6dea1bb50eb33fe7d8dffe08d4f020aad800b3293e9696014c6336ebc24975d3",
+      "summary_sha256": "a0e8b570efc1986773f8464424059c2437a1f6c154aa2937c17dce571a0a9f5e"
+    },
+    {
+      "checkpoint": "09-similarity",
+      "operations": [
+        "link-prediction",
+        "simrank"
+      ],
+      "datasets": 6571,
+      "profile_cases": 19713,
+      "cold_warm_comparisons": 39426,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "0c3f7f186975c3526ae0e6badf17a9ea7eb2b02691821e08286be5509939ef81",
+      "summary_sha256": "b19b413d3eb121fb54e6bbe8a1f96e0d0a62633f46a73e564850f7335fe0e6fe"
+    },
+    {
+      "checkpoint": "10-patterns",
+      "operations": [
+        "triangle-counting",
+        "graphlet-counting",
+        "motif-counting"
+      ],
+      "datasets": 6571,
+      "profile_cases": 26284,
+      "cold_warm_comparisons": 52568,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "2e7b1c9352d15d13a6667bb14ed36a8a2392eb9e53f82ff8b6aa3b0214d0f6b8",
+      "summary_sha256": "68e426925da88e59daf990213426202182c6bea7e9f69491f4f5c26b993743ad"
+    },
+    {
+      "checkpoint": "11-partitioning",
+      "operations": [
+        "community-detection",
+        "balanced-partitioning"
+      ],
+      "datasets": 6571,
+      "profile_cases": 26284,
+      "cold_warm_comparisons": 52568,
+      "matching_rejections": 4,
+      "mismatches": 0,
+      "implementation_sha256": "c98ad75105684409cff919d0d9f4ee516fd8a44a53a653f19397275385d38e5b",
+      "summary_sha256": "ed96e85b379112c8d0810919bd6ed14b42023e398d3d89b3987ecbff99f74ef9"
+    },
+    {
+      "checkpoint": "12-spectral",
+      "operations": [
+        "laplacian-eigenpairs",
+        "graph-signal-denoising"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 4,
+      "mismatches": 0,
+      "implementation_sha256": "7cdcace8666e0abba25f2f84baade9c5fdfbad4e940bcd26c7d5f19b4c58203c",
+      "summary_sha256": "1695332724473ef95d876b7b98095f539413ea71e1981f37af74e99073b8293b"
+    },
+    {
+      "checkpoint": "13-alignment",
+      "operations": [
+        "network-alignment"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 2,
+      "mismatches": 0,
+      "implementation_sha256": "e4ad7b2cb99be484afa8fe63713944d0b48d0dca12115f03755c3e4cf5dc003b",
+      "summary_sha256": "25ed5a13247b0740069cca52364e9799166b62e58628e1121653a11c516a866d"
+    },
+    {
+      "checkpoint": "14-local-community",
+      "operations": [
+        "seeded-local-community"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 2,
+      "mismatches": 0,
+      "implementation_sha256": "fc3a7962a62f7bc48ccd091a937785894564e6891ac3aee7a41f3f46433d536a",
+      "summary_sha256": "d0f631cb9ae7d600943fb7230e69ba95b661617dc39ed51fb0f62f78a765ba14"
+    },
+    {
+      "checkpoint": "15-geolocation",
+      "operations": [
+        "graph-geolocation"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 2,
+      "mismatches": 0,
+      "implementation_sha256": "44565ae6830fa15f38e0cbf1581d3519b50127972182ad42674f8df44c65b94e",
+      "summary_sha256": "35b6a3802d5fe9d780a57dcd79c4e9e351d6f39a8b682ae51d8263287d5ae5a5"
+    },
+    {
+      "checkpoint": "16-condensation",
+      "operations": [
+        "graph-condensation"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 2,
+      "mismatches": 0,
+      "implementation_sha256": "6ad9c31bcbb520f841165a8a2632c9b691a51d6006b54b85d48b04a2669305b5",
+      "summary_sha256": "a06d1f2ebabf9d10332008f914015874ba9dd6116a60acebc2088c3f35d20efa"
+    },
+    {
+      "checkpoint": "17-record-queries",
+      "operations": [
+        "node-lookup",
+        "edge-filter",
+        "neighbors",
+        "common-neighbors",
+        "query-paths",
+        "graph-aggregate",
+        "query-subgraph"
+      ],
+      "datasets": 6571,
+      "profile_cases": 45997,
+      "cold_warm_comparisons": 91994,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "13c5fe0e5a1815bf8e9c838d68bca4ed5c937a24808e9ee631b9a7d2f4786814",
+      "summary_sha256": "1aa3b450fe83c5d1df3ad5027077f11de9df231a38b884edf06e70ae32cc2a6e"
+    },
+    {
+      "checkpoint": "18-layout",
+      "operations": [
+        "force-directed-layout"
+      ],
+      "datasets": 6571,
+      "profile_cases": 26284,
+      "cold_warm_comparisons": 52568,
+      "matching_rejections": 11398,
+      "mismatches": 0,
+      "implementation_sha256": "eadfc5f92b93c4a16262872dbea1ccd4a2f492b5a7f805a17f775ebb4bfa774a",
+      "summary_sha256": "bf7a59967ed5db5dc9d5e9ecd585415f724d5ae09c94da98968c7e03f7ed02ab"
+    },
+    {
+      "checkpoint": "19-subgraph-matching",
+      "operations": [
+        "subgraph-isomorphism"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "6d753d218943fb90203db8834080efb6a3fa99bfd2b8ea8315485e6fc341680e",
+      "summary_sha256": "ef0cc739ddc0d79403aa3f82a2c41250edf1fb7278f8a315027e6daa27147ec0"
+    },
+    {
+      "checkpoint": "20-structure",
+      "operations": [
+        "biconnected-components",
+        "k-truss"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "68fc296a9550f8cbeddf68dd971d4aab8eddc885208b728fbee62fa6b2b000d6",
+      "summary_sha256": "91c7397190860810f6e0396bb755087fcb55ea799ea6be3f9fa7ae16457336dd"
+    },
+    {
+      "checkpoint": "21-influence",
+      "operations": [
+        "influence-maximization"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 12728,
+      "mismatches": 0,
+      "implementation_sha256": "3d68bf41de8ecd90021758e613a52149c175961ea1a5736f1702ef2b039be425",
+      "summary_sha256": "0d98f741e3fcd7c5c15e1a6f2bc27ca89e5fa45fbfea6e6a00ef48db66121d3b"
+    },
+    {
+      "checkpoint": "22-steiner",
+      "operations": [
+        "group-steiner-tree"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 5691,
+      "mismatches": 0,
+      "implementation_sha256": "b787f6ea892f908a8e54836cf6c5408c644b438a7284833c7a6cc5fad371b33b",
+      "summary_sha256": "c8ccf9a63456af28a2cac13418be762e50d5d92012072e0ba5e88a16878faa0c"
+    },
+    {
+      "checkpoint": "23-coarsening",
+      "operations": [
+        "graph-coarsening"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 2,
+      "mismatches": 0,
+      "implementation_sha256": "5192aec98cbc57be2c36dae16475e0d7bc04571a30a919f0bf4038c1d2cb0028",
+      "summary_sha256": "225677b5ee28bffcb30a4ba27276e8a02338acd186e93fcf47b1dfd999db34db"
+    },
+    {
+      "checkpoint": "24-walks",
+      "operations": [
+        "random-walks"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 2,
+      "mismatches": 0,
+      "implementation_sha256": "29ee5e0073a7aea095b42e8e89134fe35d48201b1f4a62821d1b112acba04e03",
+      "summary_sha256": "27fb4b62257d0ea736262c40dcd25d2eb0eca058ba5299d312b954aba0524d97"
+    },
+    {
+      "checkpoint": "25-null-models",
+      "operations": [
+        "null-model-significance"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "182f2695cdec1e6b925a0e16c8ea2b7b463465134ccf4a3c12cb10bad073e7ab",
+      "summary_sha256": "cebff26643cce2fec7659292134f684a32a9eb274e5e9d707b3b38c26001d34b"
+    },
+    {
+      "checkpoint": "26-topology",
+      "operations": [
+        "persistent-homology"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 5692,
+      "mismatches": 0,
+      "implementation_sha256": "ed7821ffcd78f1d0ae42a6d57d0dab771ec785f229c5f43bad952e94ceb9c858",
+      "summary_sha256": "b177a32ae7346a025227613e34368e54df4820013203f28c4a87f4439f4ea95b"
+    },
+    {
+      "checkpoint": "27-signed-balance",
+      "operations": [
+        "signed-balance"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 12948,
+      "mismatches": 0,
+      "implementation_sha256": "414a78b02357a8913cf660401a554e7b82d05d7c485088c2dfacf6601c2e7bf4",
+      "summary_sha256": "2eb628eaa2f6165816545f7797258ac74b5b7f949d8bc583a3ece2d1102f6b05"
+    },
+    {
+      "checkpoint": "28-general-matching",
+      "operations": [
+        "weighted-matching"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 6119,
+      "mismatches": 0,
+      "implementation_sha256": "4e976bc772bd085e89c8be2d0444a4379376fa501069702ea3e9dddb3d3f6198",
+      "summary_sha256": "905a220d5d544e0fa0ea1f6dc8b4c22f57c6e981ee3feae3126f26100f01a112"
+    },
+    {
+      "checkpoint": "29-entity-resolution",
+      "operations": [
+        "entity-resolution"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "5c7917c2f197f2a55464d3915c271bef3e773fdf437db0fec942b5215c02a94f",
+      "summary_sha256": "40735cb17fee07e8bc2d1b47db905d4754107106a5eaec11d24531e2be576a63"
+    },
+    {
+      "checkpoint": "30-path-profiles",
+      "operations": [
+        "widest-paths",
+        "top-k-critical-paths"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 11380,
+      "mismatches": 0,
+      "implementation_sha256": "c3f5e5c43514662377106d674027dcaeca951c14ed1a2d607be8d58d1a73261e",
+      "summary_sha256": "d44dc9da232eab77c1deb96d6a3f5f7948aed08d50f3c32ec40a26064fd1430e"
+    },
+    {
+      "checkpoint": "31-induced-subgraph",
+      "operations": [
+        "induced-subgraph"
+      ],
+      "datasets": 6571,
+      "profile_cases": 39426,
+      "cold_warm_comparisons": 78852,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "8da0fad6f63bd313e203c2ffd31553ea119db8a97ace84076940595979ba4149",
+      "summary_sha256": "36638cc2d7501ceedc45b21913f39751d7593e0c74523faec1afbde1d386dcd0"
+    },
+    {
+      "checkpoint": "32-enumeration",
+      "operations": [
+        "bounded-paths-cycles"
+      ],
+      "datasets": 6571,
+      "profile_cases": 26284,
+      "cold_warm_comparisons": 52568,
+      "matching_rejections": 24378,
+      "mismatches": 0,
+      "implementation_sha256": "b9ff5be8ed0fc401c1d9fad5790cd373125aa11df30479763ce5550cc7263d80",
+      "summary_sha256": "d3ec458b0ba6baea8b72fe534b238d9138d48b9bf4fd733a7959be76c5b2e200"
+    },
+    {
+      "checkpoint": "33-node-learning",
+      "operations": [
+        "node-learning"
+      ],
+      "datasets": 6571,
+      "profile_cases": 19713,
+      "cold_warm_comparisons": 39426,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "42b72f8bf3e72f12bc6acb5896d660b0eae4a751b6388835ca1e1c53668af12e",
+      "summary_sha256": "4ee5d1e81cdbd65fc6df1dee2b2666999eaa87b0cfd22c61e31a68adebf1b79c"
+    },
+    {
+      "checkpoint": "34-graph-learning",
+      "operations": [
+        "graph-learning"
+      ],
+      "datasets": 6571,
+      "profile_cases": 26284,
+      "cold_warm_comparisons": 52568,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "51ebe19110c0d53dd1dbe8a35b76667f2ff2ceeb09ffea3b8e5e86bd5a1098d1",
+      "summary_sha256": "b50af39f29ecbd99258d298d94a91764a58437e05a054af53ff22ea8ebde04a7"
+    },
+    {
+      "checkpoint": "35-knn",
+      "operations": [
+        "knn-graph"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "55c967c428c04b2ab475d43bce5669787e3c14e8a45d7a3df7ce5e84bbe5a574",
+      "summary_sha256": "8c68b6239715a1057080b06e748668cc0c00bc87d574e71e73f34bf3292cb873"
+    },
+    {
+      "checkpoint": "36-hypergraphs",
+      "operations": [
+        "hypergraph-partitioning",
+        "hypergraph-node-learning"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "b600557c0400fff084edec00f48e76e55f161e01b57f98c64d614ac1467f1f20",
+      "summary_sha256": "9ddd54a22804673ca710ece06bdd372ea0abbdc29c52633e2babc4fa2a859796"
+    },
+    {
+      "checkpoint": "37-dynamic-triangles",
+      "operations": [
+        "dynamic-triangle-counting"
+      ],
+      "datasets": 6571,
+      "profile_cases": 6571,
+      "cold_warm_comparisons": 13142,
+      "matching_rejections": 786,
+      "mismatches": 0,
+      "implementation_sha256": "568a17270cc1e3167f001ee96f8432a51ed9c06ae086f2ae958d29e37ecc1a97",
+      "summary_sha256": "1a77d710c09c0d2d037fc86b8ee95c69a4f612b8e03eaddbc8da08db8cd47cf6"
+    },
+    {
+      "checkpoint": "38-embeddings",
+      "operations": [
+        "node-embedding",
+        "knowledge-graph-embedding"
+      ],
+      "datasets": 6571,
+      "profile_cases": 52568,
+      "cold_warm_comparisons": 105136,
+      "matching_rejections": 6574,
+      "mismatches": 0,
+      "implementation_sha256": "ae4d206593827755c39778d7f0f1ea78c9cd564c68781243547acb556a5724ba",
+      "summary_sha256": "5a7b437577491c6cc57125eab0f995679890f6433cb1fd0a09330a8704399b3d"
+    },
+    {
+      "checkpoint": "39-sparsification",
+      "operations": [
+        "spectral-sparsification"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 6120,
+      "mismatches": 0,
+      "implementation_sha256": "406ab66fe786c30ad64ae0258297b0f36dd1b97e2ed4144909c15a261c640af2",
+      "summary_sha256": "4e59ffc9d060dc4c260dc69ab14e19497f302188695d1c43c29d201741af48c9"
+    },
+    {
+      "checkpoint": "40-flow",
+      "operations": [
+        "max-flow-min-cut"
+      ],
+      "datasets": 6571,
+      "profile_cases": 13142,
+      "cold_warm_comparisons": 26284,
+      "matching_rejections": 5691,
+      "mismatches": 0,
+      "implementation_sha256": "60c5990fa65280cfcde2a227760a32d5567e71e55e6c2e28040c064fff7fef15",
+      "summary_sha256": "a291ee6c10b493b8f09c533e21ded5b2d5db1765df540b7360e31affb33c3f91"
+    },
+    {
+      "checkpoint": "41-anomalies",
+      "operations": [
+        "graph-anomalies"
+      ],
+      "datasets": 6571,
+      "profile_cases": 19713,
+      "cold_warm_comparisons": 39426,
+      "matching_rejections": 0,
+      "mismatches": 0,
+      "implementation_sha256": "048d1fa97fa56fca44738909b22708c659d8c19f3396fba5e977b62cfa728827",
+      "summary_sha256": "b5968111290a46127251851b6f9cb1cb49127d7b61c5bf54773018664af51dcb"
+    },
+    {
+      "checkpoint": "42-sampling",
+      "operations": [
+        "neighborhood-sampling"
+      ],
+      "datasets": 6571,
+      "profile_cases": 59139,
+      "cold_warm_comparisons": 118278,
+      "matching_rejections": 38544,
+      "mismatches": 0,
+      "implementation_sha256": "25e03709895483b7ac7832a6fae45e158bf1eb38013341fb02e6eea74c534467",
+      "summary_sha256": "5f0ad95baace1770293c572451cc7e08769f1d6286451a3356db9b5625cb6a9b"
+    },
+    {
+      "checkpoint": "43-temporal-paths",
+      "operations": [
+        "temporal-paths"
+      ],
+      "datasets": 6571,
+      "profile_cases": 26284,
+      "cold_warm_comparisons": 52568,
+      "matching_rejections": 6554,
+      "mismatches": 0,
+      "implementation_sha256": "25ec52711d75b7f458f794352836088300cf31d4ae1f187f3cba463a2f3f951e",
+      "summary_sha256": "ea343e414eb3e93dbf959d65ceb14b0af226cd470ff9985226ce47290b9edad0"
+    },
+    {
+      "checkpoint": "44-temporal-motifs",
+      "operations": [
+        "temporal-motifs"
+      ],
+      "datasets": 6571,
+      "profile_cases": 26284,
+      "cold_warm_comparisons": 52568,
+      "matching_rejections": 6324,
+      "mismatches": 0,
+      "implementation_sha256": "95fb2cb5e22defeefc92c7f0ee4dcbf998c33b1bb2afc7cbbd183d3ee078b350",
+      "summary_sha256": "0986458cff84002b83bbc030866f3484fc88ae87ad4ed7ae405b41d5bb0c028c"
+    },
+    {
+      "checkpoint": "45-comparison",
+      "operations": [
+        "graph-edit-distance",
+        "maximum-common-subgraph"
+      ],
+      "datasets": 6571,
+      "profile_cases": 52568,
+      "cold_warm_comparisons": 105136,
+      "matching_rejections": 376,
+      "mismatches": 0,
+      "implementation_sha256": "36ebe6b9672ee3284e3f42a512f3d0d7af44a79c7c1f8ea6cc25142d47c1fd76",
+      "summary_sha256": "04399d371ae23cbcb7c63eaf5af5282c37b3cf5d68d4a1952210e59c79295403"
+    },
+    {
+      "checkpoint": "46-frequent",
+      "operations": [
+        "frequent-subgraphs",
+        "single-graph-frequent-subgraphs"
+      ],
+      "datasets": 6571,
+      "profile_cases": 45997,
+      "cold_warm_comparisons": 91994,
+      "matching_rejections": 8,
+      "mismatches": 0,
+      "implementation_sha256": "50a2aeea68c40a1f4bc0ec1db89dfe68e5c539589230981be1214e09432a9f39",
+      "summary_sha256": "4624d3fe5ae8dbbf206e96e43daee9ac32c8f9c223357fd90aad0c4ed6a2071c"
+    },
+    {
+      "checkpoint": "47-bipartite",
+      "operations": [
+        "maximal-bicliques",
+        "butterfly-counting",
+        "maximal-biclique-counting",
+        "bipartite-matching"
+      ],
+      "datasets": 6571,
+      "profile_cases": 78852,
+      "cold_warm_comparisons": 157704,
+      "matching_rejections": 36344,
+      "mismatches": 0,
+      "implementation_sha256": "a59d914809946801301c4a336848995e8d387e859a47ff61d54a7366fcd2b73e",
+      "summary_sha256": "7a189004eca5af735177e2838c132acf3314a25b6d44d5b3739a52dbc09af50b"
+    }
+  ],
+  "source_files_changed": [
+    "catalog/native_execution_evidence.json",
+    "library/docs/graph_views.md",
+    "library/docs/graph_views_step3.md",
+    "library/include/graphmine/views.hpp",
+    "library/runtime/CMakeLists.txt",
+    "library/runtime/anomaly_input.hpp",
+    "library/runtime/bipartite_input.hpp",
+    "library/runtime/comparison_input.hpp",
+    "library/runtime/dynamic_input.hpp",
+    "library/runtime/edge_set_input.hpp",
+    "library/runtime/embedding_input.hpp",
+    "library/runtime/enumeration_input.hpp",
+    "library/runtime/families/alignment.cpp",
+    "library/runtime/families/anomalies.cpp",
+    "library/runtime/families/bipartite.cpp",
+    "library/runtime/families/centrality.cpp",
+    "library/runtime/families/centrality_measures.cpp",
+    "library/runtime/families/cliques.cpp",
+    "library/runtime/families/coloring.cpp",
+    "library/runtime/families/comparison.cpp",
+    "library/runtime/families/condensation.cpp",
+    "library/runtime/families/connectivity.cpp",
+    "library/runtime/families/construction.cpp",
+    "library/runtime/families/density.cpp",
+    "library/runtime/families/embeddings.cpp",
+    "library/runtime/families/entity_resolution.cpp",
+    "library/runtime/families/enumeration.cpp",
+    "library/runtime/families/flow.cpp",
+    "library/runtime/families/frequent_patterns.cpp",
+    "library/runtime/families/geolocation.cpp",
+    "library/runtime/families/graphlets.cpp",
+    "library/runtime/families/influence.cpp",
+    "library/runtime/families/layout.cpp",
+    "library/runtime/families/local_community.cpp",
+    "library/runtime/families/matching.cpp",
+    "library/runtime/families/null_models.cpp",
+    "library/runtime/families/partitioning.cpp",
+    "library/runtime/families/path_profiles.cpp",
+    "library/runtime/families/pattern_matching.cpp",
+    "library/runtime/families/patterns.cpp",
+    "library/runtime/families/queries.cpp",
+    "library/runtime/families/reachability.cpp",
+    "library/runtime/families/sampling.cpp",
+    "library/runtime/families/similarity.cpp",
+    "library/runtime/families/simrank.cpp",
+    "library/runtime/families/sparsification.cpp",
+    "library/runtime/families/spectral.cpp",
+    "library/runtime/families/steiner.cpp",
+    "library/runtime/families/structure.cpp",
+    "library/runtime/families/subgraphs.cpp",
+    "library/runtime/families/supervised_learning.cpp",
+    "library/runtime/families/temporal_motifs.cpp",
+    "library/runtime/families/topology.cpp",
+    "library/runtime/families/traversal.cpp",
+    "library/runtime/families/weighted_paths.cpp",
+    "library/runtime/family_util.hpp",
+    "library/runtime/feature_input.hpp",
+    "library/runtime/filtration_input.hpp",
+    "library/runtime/flow_input.hpp",
+    "library/runtime/force_layout.hpp",
+    "library/runtime/frequent_input.hpp",
+    "library/runtime/graph_output.cpp",
+    "library/runtime/graph_output_view.hpp",
+    "library/runtime/hypergraph_input.hpp",
+    "library/runtime/influence_input.hpp",
+    "library/runtime/learning.cpp",
+    "library/runtime/learning.hpp",
+    "library/runtime/matching_input.hpp",
+    "library/runtime/numeric.cpp",
+    "library/runtime/numeric.hpp",
+    "library/runtime/original_extensions.cpp",
+    "library/runtime/path_input.hpp",
+    "library/runtime/pattern_match.cpp",
+    "library/runtime/pattern_match.hpp",
+    "library/runtime/record_query.cpp",
+    "library/runtime/record_query.hpp",
+    "library/runtime/sampling_input.hpp",
+    "library/runtime/signed_input.hpp",
+    "library/runtime/sparsification_input.hpp",
+    "library/runtime/steiner_input.hpp",
+    "library/runtime/structure_input.hpp",
+    "library/runtime/temporal_motif_input.hpp",
+    "library/runtime/tests/cpu_views_golden.cpp",
+    "library/runtime/tests/legacy_normalizers.hpp",
+    "library/runtime/tests/views_test.cpp",
+    "library/runtime/vertex_records_input.hpp",
+    "library/runtime/view_profiles.cpp",
+    "library/runtime/view_profiles.hpp",
+    "library/runtime/views.cpp",
+    "library/runtime/views_input.cpp",
+    "library/runtime/views_internal.hpp",
+    "library/runtime/walk_input.hpp",
+    "library/src/core/view_cache.cpp",
+    "tools/validate_graph_view_checkpoint.py"
+  ],
+  "production": {
+    "checkout_head": "1ad6afe7efaab786dcd9946d023f4669523823f7",
+    "runtime_checkout_head": "22a26ecea340c5682c3e32827dc45e12286e323b",
+    "native_library_sha256": "4d61032d61197766d86b294936cec3f461b1bb17cffdb93087d7ea6b870621a8"
+  },
+  "production_changed": false,
+  "gpu_build_or_deployment_performed": false,
+  "remaining_steps": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "validation_scope": "Each family input golden ran against all corpus datasets at its recorded implementation hash, with cold and warm calls. The final checkpoint repeats all CTest, CPU oracle, Python and agent admission gates. Structured inputs use documented deterministic corpus conversions; these are input comparisons, not full algorithm runs on every large graph.",
+  "artifacts": {
+    "validation/graph_views/step3/completion/changed-files.txt": "e56bac8d7fb965b8e50b1a7a627e206eb887634631612a862a2f6f98c4a3a388",
+    "validation/graph_views/step3/completion/cpu-view-declarations.json": "d54ae0c5b0e22472ab27f0d9b7d839e538712e66517773ab5b39c10bc9154704",
+    "validation/graph_views/step3/completion/per-dataset.jsonl.gz": "6ff2b00ab96ec856f968e22f3979bea93b3fd292354cbd9d64251696785964ce",
+    "validation/graph_views/step3/completion/changed-source-files.txt": "4fda8a6d7f14f8d828debae80855364d43e539ceca700dca5a3ae9c3b4d60c0a"
+  }
+}
