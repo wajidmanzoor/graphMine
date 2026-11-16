@@ -1,0 +1,26 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpu",
+    "gpu_device": 0,
+    "passed_requests": 20,
+    "failed": 0,
+    "implementation_sha256": "568a17270cc1e3167f001ee96f8432a51ed9c06ae086f2ae958d29e37ecc1a97"
+  },
+  {
+    "suite": "bfs",
+    "backend": "cpu",
+    "gpu_device": 0,
+    "passed_requests": 4608,
+    "failed": 0,
+    "implementation_sha256": "568a17270cc1e3167f001ee96f8432a51ed9c06ae086f2ae958d29e37ecc1a97"
+  },
+  {
+    "suite": "triangles",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2048,
+    "failed": 0,
+    "implementation_sha256": "568a17270cc1e3167f001ee96f8432a51ed9c06ae086f2ae958d29e37ecc1a97"
+  }
+]

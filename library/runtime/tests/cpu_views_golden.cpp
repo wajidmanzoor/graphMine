@@ -18,6 +18,7 @@
 #include "../learning.hpp"
 #include "../feature_input.hpp"
 #include "../hypergraph_input.hpp"
+#include "../dynamic_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -128,6 +129,30 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool dynamic_input(const gm::Graph& graph, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<std::set<std::pair<gm::ExternalId,gm::ExternalId>>> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::dynamic_triangle_edges(graph,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<std::set<std::pair<gm::ExternalId,gm::ExternalId>>> actual;
+    std::string new_failure;
+    try { actual = rt::dynamic_triangle_edges(graph,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Dynamic triangle input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    rt::json::array old_pairs,new_pairs;
+    for (const auto& [u,v] : *expected) old_pairs.push_back(rt::json::array{rt::id_json(u),rt::id_json(v)});
+    for (const auto& [u,v] : *actual) new_pairs.push_back(rt::json::array{rt::id_json(u),rt::id_json(v)});
+    if (rt::json::serialize(old_pairs) != rt::json::serialize(new_pairs) || old_work.candidates != work.candidates)
+      throw std::runtime_error("Dynamic triangle typed endpoint bytes/cost differ");
   }
   return !expected;
 }
@@ -950,6 +975,18 @@ void contracts() {
   traversal(graph,"topological-sort:cpp:default");
   auto undirected = raw;
   undirected.as_object().at("graph").as_object()["directed"] = false;
+  dynamic_input(graph); dynamic_input(rt::parse_graph(undirected));
+  for (std::uint64_t budget=0; budget<8; ++budget) dynamic_input(rt::parse_graph(undirected),budget);
+  auto typed_ids = undirected;
+  const rt::json::array replacement_ids{"0",-7,"a"};
+  for (std::size_t v=0; v<3; ++v) typed_ids.as_object().at("vertices").as_array()[v].as_object()["id"] = replacement_ids[v];
+  for (auto& edge : typed_ids.as_object().at("edges").as_array()) for (const auto* field : {"source","target"})
+    edge.as_object()[field] = replacement_ids[edge.as_object().at(field).to_number<std::size_t>()];
+  dynamic_input(rt::parse_graph(typed_ids));
+  declared_request("dynamic-triangle-counting:cpp:topology",typed_ids,{{"updates",rt::json::array{}}});
+  declared_request("dynamic-triangle-counting:cpp:topology",undirected,
+    {{"updates",{rt::json::object{{"kind","insert_edge"},{"source",0},{"target",2}}}},
+     {"list_changed_instances",true},{"result_limit",1}});
   auto other_graph = raw; other_graph.as_object().at("graph").as_object()["id"] = "other";
   auto empty_graph = raw; empty_graph.as_object().at("graph").as_object()["id"] = "empty";
   empty_graph.as_object()["vertices"] = rt::json::array{}; empty_graph.as_object()["edges"] = rt::json::array{};
@@ -1497,6 +1534,7 @@ int main(int argc, char** argv) {
     const bool graph_learning = argc > 1 && std::string(argv[1]) == "--graph-learning";
     const bool knn = argc > 1 && std::string(argv[1]) == "--knn";
     const bool hypergraphs = argc > 1 && std::string(argv[1]) == "--hypergraphs";
+    const bool dynamic_triangles = argc > 1 && std::string(argv[1]) == "--dynamic-triangles";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1522,7 +1560,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1530,6 +1568,11 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (dynamic_triangles) {
+          const bool rejected = dynamic_input(graph);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile","dynamic-triangle-counting:cpp:topology"},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (hypergraphs) for (const auto* profile : {"hypergraph-partitioning:cpp:incidence","hypergraph-node-learning:cpp:incidence"}) {
           const bool rejected = hypergraph_input(corpus_hypergraph(graph),profile);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},

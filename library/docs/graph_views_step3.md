@@ -554,3 +554,16 @@ boundary cases cover uint64 and wide integer weights, duplicate IDs/members,
 missing vertices and negative weights. An initial classification test used
 floating labels; the fixture now uses the existing integer-label contract,
 with its initial diagnostic retained.
+
+## Dynamic triangles
+
+The CPU dynamic-triangle input now comes from a declared simple COO view,
+mapped back to its ordered typed external-ID pairs. Initial/final triangle
+enumeration, deletion-before-insertion updates and changed-instance output are
+unchanged. The original GPU worker preparation remains for its later step.
+
+Checkpoint `37-dynamic-triangles` passes 53 CTests, 238 Python tests and all 82
+CPU admissions. All 6,571 corpus cases match serialized typed endpoint pairs,
+candidate costs and directed-input rejections on fresh and cached views. New
+requests exercise empty updates, triangle insertion, mixed string/integer IDs,
+loops, parallel edges and limited changed-instance output.

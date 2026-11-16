@@ -91,6 +91,24 @@ struct HypergraphInput {
     }
   }
 };
+inline std::set<std::pair<ExternalId,ExternalId>> dynamic_triangle_edges(const Graph& graph, Work& work) {
+  require(!graph.directed(),"Dynamic triangles require an undirected graph");
+  auto input = graph.canonical(); input.edges.clear();
+  std::set<std::pair<ExternalId,ExternalId>> seen;
+  for (auto edge : graph.canonical().edges) {
+    work.tick();
+    if (edge.source == edge.target) continue;
+    auto a=edge.source,b=edge.target;
+    if (!graph.directed() && b<a) std::swap(a,b);
+    if (!seen.emplace(a,b).second) continue;
+    edge.weight.reset(); edge.original_weight.reset();
+    input.edges.push_back(std::move(edge));
+  }
+  const Graph normalized(std::move(input));
+  std::set<std::pair<ExternalId,ExternalId>> result;
+  for (const auto& edge : normalized.canonical().edges) result.emplace(std::minmax(edge.source,edge.target));
+  return result;
+}
 inline UndirectedGraphView simple(const Graph& graph, UndirectedProjectionOptions options = {}) {
   if (graph.canonical().graph.directed && !options.allow_directed_projection) {
     throw std::invalid_argument(

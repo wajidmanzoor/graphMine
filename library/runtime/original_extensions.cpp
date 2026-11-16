@@ -3,6 +3,7 @@
 #include <tuple>
 
 #include "family_util.hpp"
+#include "dynamic_input.hpp"
 
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_EXTENSIONS
 #include "graphmine/problems/community_detection.hpp"
@@ -19,6 +20,8 @@ namespace graphmine::runtime {
 namespace {
 using namespace family_util;
 using Pair = std::pair<ExternalId, ExternalId>;
+const ViewProfile dynamic_topology{"dynamic-triangle-counting:cpp:topology", {"dynamic-triangle-counting"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
 const std::map<std::string, std::vector<std::string>> registrations{
     {"community-detection", {"gleiden", "parallel-louvain", "parallel-leiden", "parallel-leiden-plus"}},
     {"quasi-cliques", {"cuqc"}}, {"maximal-bicliques", {"cumbe"}},
@@ -526,6 +529,13 @@ json::object maximal_biclique_count(const Graph& graph, const json::object& args
   return output({}, {{"total_count", count}}, {{"count", result_port("scalar", count)}});
 }
 
+std::set<std::pair<ExternalId,ExternalId>> dynamic_triangle_edges(const Graph& graph, Work& work) {
+  require(!graph.directed(), "Dynamic triangles require an undirected graph");
+  std::set<std::pair<ExternalId,ExternalId>> result;
+  for (const auto& [u,v] : edge_set_input(graph,dynamic_topology,work))
+    result.emplace(std::minmax(graph.external_id(u),graph.external_id(v)));
+  return result;
+}
 json::object dynamic_triangles(const Graph& graph, const json::object& args, const std::string& backend, int device, Work& work) {
   fields(args, {"updates", "list_changed_instances", "result_limit"}, {"updates"});
   require(!graph.directed(), "Dynamic triangles require an undirected graph");
@@ -533,9 +543,13 @@ json::object dynamic_triangles(const Graph& graph, const json::object& args, con
   const bool listing = boolean(args, "list_changed_instances", false);
   const auto cap = limit(args);
   require(!cap || listing, "result_limit requires list_changed_instances");
-  auto input = normalized(graph, true, true, work);
+  std::optional<Graph> input;
   std::set<Pair> edges;
-  for (const auto& edge : input.canonical().edges) edges.emplace(std::minmax(edge.source, edge.target));
+  if (backend == "cpp") edges = dynamic_triangle_edges(graph,work);
+  else {
+    input = normalized(graph,true,true,work);
+    for (const auto& edge : input->canonical().edges) edges.emplace(std::minmax(edge.source,edge.target));
+  }
   auto triangle_set = [&] {
     std::set<std::vector<ExternalId>> result;
     combinations(graph.vertex_count(), 3, work, [&](const auto& selected) {
@@ -570,7 +584,7 @@ json::object dynamic_triangles(const Graph& graph, const json::object& args, con
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_EXTENSIONS
     DynamicTriangleOptions options; options.backend = DynamicTriangleBackend::edtc; options.execution.device_ids = {device};
     auto lock = admission(work);
-    const auto value = checked(DynamicTriangleCounting(options).run(input, updates(args)), work);
+    const auto value = checked(DynamicTriangleCounting(options).run(*input, updates(args)), work);
     certify(value.deleted_triangle_count == deleted.size() && value.inserted_triangle_count == inserted.size(), "EDTC disagrees with exact dynamic triangle changes");
 #else
     throw Failure("backend_unavailable", "EDTC is not linked");
