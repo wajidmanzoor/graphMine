@@ -65,11 +65,11 @@ Matrix power(Matrix matrix, std::uint64_t exponent, Work& work) {
   }
   return result;
 }
-Matrix laplacian(const Graph& graph, bool normalized, Work& work) {
+Matrix laplacian(const Graph& graph, const ViewProfile& profile, bool normalized, Work& work) {
   require(!graph.directed(), "Laplacian requires undirected input");
   for (const auto& edge : graph.canonical().edges)
     require(edge.source != edge.target, "Laplacian profiles reject self-loops");
-  const auto edges = family_util::edges(graph, true, work);
+  const auto edges = family_util::edges(graph, profile, work);
   const auto n = graph.vertex_count();
   Matrix result(n, n, work);
   std::vector<long double> degree(n, 0);

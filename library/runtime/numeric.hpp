@@ -23,7 +23,7 @@ Matrix transpose(const Matrix&, Work&);
 Matrix multiply(const Matrix&, const Matrix&, Work&);
 Matrix identity(std::size_t, Work&);
 Matrix power(Matrix, std::uint64_t, Work&);
-Matrix laplacian(const Graph&, bool normalized, Work&);
+Matrix laplacian(const Graph&, const ViewProfile&, bool normalized, Work&);
 struct Eigen {
   std::vector<double> values;
   Matrix vectors;

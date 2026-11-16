@@ -195,3 +195,16 @@ admissions. Four profiles pass 26,284 corpus cases. Real-operation declaration
 checks cover both community quality functions, exact/heuristic search, both
 weight modes and both balanced-cut objectives. GPU adapters and the separate
 signed-balance operation retain their existing paths for subsequent migrations.
+
+## Spectral operators
+
+Laplacian eigenpairs and graph-signal denoising now pass their declared exact
+COO profile into Laplacian construction. Denoising's incidence operator consumes
+the same profile. Matrix assembly, precision/underflow guards, LAPACK calls,
+optimization and residual checks remain unchanged.
+
+Checkpoint `12-spectral` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Both profiles pass 13,142 exact edge-input corpus cases. Declaration
+checks cover combinatorial/normalized Laplacians, both eigenvalue selections,
+all three denoising regularizers and zero-strength denoising. Existing numerical
+tests continue to verify independent residuals and objective certificates.

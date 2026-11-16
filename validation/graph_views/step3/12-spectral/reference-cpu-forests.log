@@ -1,0 +1,3 @@
+Validated 500 native requests on cpu 0
+Validated 1000 native requests on cpu 0
+{"suite":"forests","backend":"cpu","gpu_device":0,"passed_requests":1458,"failed":0,"implementation_sha256":"7cdcace8666e0abba25f2f84baade9c5fdfbad4e940bcd26c7d5f19b4c58203c"}

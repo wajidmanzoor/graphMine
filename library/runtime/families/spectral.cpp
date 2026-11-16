@@ -1,6 +1,12 @@
 #include "numeric.hpp"
 
 namespace graphmine::runtime {
+namespace {
+constexpr const char* weighted_spec = R"({"kind":"coo","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:sum","weights":"rational_exact","nonnegative_weights":true,"edge_ids":true})";
+const ViewProfile eigen_profile{"laplacian-eigenpairs:cpp:default", {"laplacian-eigenpairs"}, weighted_spec};
+const ViewProfile denoising_profile{"graph-signal-denoising:cpp:default", {"graph-signal-denoising"}, weighted_spec};
+}
 json::object laplacian_eigenpairs(const Graph& graph, const json::object& args, const std::string&,
                                   int, Work& work) {
   using namespace family_util;
@@ -12,7 +18,7 @@ json::object laplacian_eigenpairs(const Graph& graph, const json::object& args, 
       choice(args, "laplacian", "combinatorial", {"combinatorial", "symmetric_normalized"});
   const auto selection = choice(args, "selection", "smallest", {"smallest", "largest"});
   const auto tol = tolerance(args);
-  const auto matrix = laplacian(graph, kind == "symmetric_normalized", work);
+  const auto matrix = laplacian(graph, eigen_profile, kind == "symmetric_normalized", work);
   const auto spectrum = symmetric_eigen(matrix, work);
   const auto first = selection == "smallest" ? 0 : n - count;
   json::array values, vectors, residuals;
@@ -101,7 +107,7 @@ json::object signal_denoising(const Graph& graph, const json::object& args, cons
       for (std::size_t j = 0; j < width; ++j) y(v, j) = float64(input[v].as_array()[j], "signal");
     }
   }
-  const auto matrix = laplacian(graph, false, work);
+  const auto matrix = laplacian(graph, denoising_profile, false, work);
   Matrix x = y;
   double objective = 0, gap = 0, dual_objective = 0;
   std::string solver = "native_identity";
@@ -123,7 +129,7 @@ json::object signal_denoising(const Graph& graph, const json::object& args, cons
         finite(0.5L * dot(difference, difference, work) + 0.5L * strength * dot(x, lx, work));
     solver = "native_LAPACK_dposv";
   } else if (n && strength > 0) {
-    const auto normalized = edges(graph, true, work);
+    const auto normalized = edges(graph, denoising_profile, work);
     Matrix difference(normalized.size(), n, work);
     for (std::size_t i = 0; i < normalized.size(); ++i) {
       const auto& edge = normalized[i];
