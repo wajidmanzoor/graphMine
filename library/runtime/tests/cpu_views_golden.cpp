@@ -12,6 +12,7 @@
 #include "../signed_input.hpp"
 #include "../matching_input.hpp"
 #include "../vertex_records_input.hpp"
+#include "../path_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -122,6 +123,59 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
     equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool widest_path_input(const gm::Graph& graph, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<rt::CapacityRows> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::widest_path_input(graph,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::CapacityRows> actual;
+    std::string new_failure;
+    try { actual = rt::widest_path_input(graph,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Widest-path input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->size() != actual->size() || old_work.candidates != work.candidates)
+      throw std::runtime_error("Widest-path input size/cost differs");
+    for (std::size_t v=0; v<expected->size(); ++v) {
+      std::vector<gm::VertexIndex> old_neighbors, new_neighbors; std::vector<double> old_weights, new_weights;
+      for (const auto& [u,w] : expected->at(v)) { old_neighbors.push_back(u); old_weights.push_back(w); }
+      for (const auto& [u,w] : actual->at(v)) { new_neighbors.push_back(u); new_weights.push_back(w); }
+      equal(old_neighbors,new_neighbors); equal(old_weights,new_weights);
+    }
+  }
+  return !expected;
+}
+bool critical_path_input(const gm::Graph& graph, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<gm::legacy_test::CriticalPathInput> expected;
+  std::string old_failure;
+  try { expected.emplace(graph,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<rt::CriticalPathInput> actual;
+    std::string new_failure;
+    try { actual = rt::critical_path_input(graph,work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Critical-path input rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (expected->adjacency.size() != actual->adjacency.size() || expected->weights.size() != actual->weights.size() ||
+        old_work.candidates != work.candidates) throw std::runtime_error("Critical-path input size/cost differs");
+    equal(expected->indegree,actual->indegree); equal(expected->ends,actual->ends);
+    for (std::size_t v=0; v<expected->adjacency.size(); ++v) equal(expected->adjacency[v],actual->adjacency[v]);
+    for (std::size_t e=0; e<expected->weights.size(); ++e)
+      if (rt::json::serialize(rt::fraction_json(expected->weights[e])) != rt::json::serialize(rt::fraction_json(actual->weights[e])))
+        throw std::runtime_error("Critical-path exact weight bytes differ");
   }
   return !expected;
 }
@@ -744,6 +798,30 @@ void contracts() {
   auto positive = raw;
   for (auto& edge : positive.as_object().at("edges").as_array())
     edge.as_object()["weight"] = std::abs(edge.as_object().at("weight").to_number<double>());
+  for (const auto& path_graph : {raw,undirected,positive}) {
+    widest_path_input(rt::parse_graph(path_graph)); critical_path_input(rt::parse_graph(path_graph));
+  }
+  for (std::uint64_t budget=0; budget<7; ++budget) {
+    widest_path_input(graph,budget); critical_path_input(graph,budget);
+  }
+  declared_request("widest-paths:cpp:default",positive,{{"source_vertex",0}});
+  auto path_graph = positive;
+  path_graph.as_object().at("graph").as_object()["directed"] = false;
+  path_graph.as_object()["edges"] = rt::json::array{
+    rt::json::object{{"id",0},{"source",2},{"target",1},{"weight",0.1}},
+    rt::json::object{{"id",1},{"source",0},{"target",1},{"weight",0.2}},
+    rt::json::object{{"id",2},{"source",1},{"target",2},{"weight",0.3}},
+    rt::json::object{{"id",3},{"source",1},{"target",0},{"weight",-0.0}}};
+  widest_path_input(rt::parse_graph(path_graph));
+  declared_request("widest-paths:cpp:default",path_graph,{{"source_vertex",1}});
+  auto critical_graph = raw;
+  critical_graph.as_object().at("edges").as_array().pop_back();
+  critical_graph.as_object().at("edges").as_array().back().as_object()["weight"] = -2;
+  critical_path_input(rt::parse_graph(critical_graph));
+  declared_request("top-k-critical-paths:cpp:default",critical_graph,{{"k",5}});
+  declared_request("top-k-critical-paths:cpp:default",critical_graph,{{"k",1},{"sources",{0,2}},{"sinks",{2}}});
+  critical_graph.as_object().at("edges").as_array()[0].as_object().erase("weight");
+  critical_path_input(rt::parse_graph(critical_graph)); widest_path_input(rt::parse_graph(critical_graph));
   auto signed_graph = positive;
   signed_graph.as_object().at("graph").as_object()["directed"] = false;
   for (auto& edge : signed_graph.as_object().at("edges").as_array()) edge.as_object()["type"] = "positive";
@@ -1057,6 +1135,7 @@ int main(int argc, char** argv) {
     const bool signed_balance = argc > 1 && std::string(argv[1]) == "--signed-balance";
     const bool general_matching = argc > 1 && std::string(argv[1]) == "--general-matching";
     const bool entity_resolution = argc > 1 && std::string(argv[1]) == "--entity-resolution";
+    const bool path_profiles = argc > 1 && std::string(argv[1]) == "--path-profiles";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1081,7 +1160,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1089,6 +1168,12 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (path_profiles) for (bool critical : {false,true}) {
+          const bool rejected = critical ? critical_path_input(graph) : widest_path_input(graph);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",critical ? "top-k-critical-paths:cpp:default" : "widest-paths:cpp:default"},
+            {"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (entity_resolution) {
           const auto* profile = "entity-resolution:cpp:vertices";
           const bool rejected = vertex_records_input(graph,profile);

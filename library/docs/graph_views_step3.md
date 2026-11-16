@@ -440,3 +440,18 @@ CPU admissions. All 6,571 corpus cases match complete vertex-record JSON bytes,
 ordering, costs and budget behavior on fresh and cached views. Real requests
 verify blocking and both clustering policies with Unicode names and large exact
 integer attributes; existing independent Unicode/decision tests still pass.
+
+## Widest and critical paths
+
+Widest paths now read a required-weight CSR view. Layout repacking restores each
+row's original-edge visitation order, including interleaved undirected mirrors,
+without changing its arcs or weights. Critical paths read exact record COO
+weights, endpoint arrays and original-edge adjacency. Cycle checks, source/sink
+selection, dynamic programming and result ordering are unchanged.
+
+Checkpoint `30-path-profiles` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Both adapters pass 13,142 corpus cases comparing neighbor order,
+float64 capacity bytes, original-edge rows, indegrees, endpoints, exact weight
+fractions, costs and rejections. Tests cover signed zero, reciprocal/parallel
+records, missing weights, small budgets, negative DAG weights, explicit
+sources/sinks and limited top-k output, with fresh/cache-hit assertions.

@@ -2,24 +2,72 @@
 
 #include "family_util.hpp"
 #include "native_time.hpp"
+#include "path_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile widest_profile{"widest-paths:cpp:default", {"widest-paths"},
+  R"({"kind":"csr","direction":"keep","self_loops":"drop","parallel_edges":"keep","weights":"f64",
+       "edge_ids":true,"sorted_neighbors":false,"require_edge_weights":true,"nonnegative_weights":true})"};
+const ViewProfile critical_profile{"top-k-critical-paths:cpp:default", {"top-k-critical-paths"},
+  R"({"kind":"coo","coo_layout":"records","weights":"rational_exact","edge_ids":true,
+       "sorted_neighbors":false,"require_edge_weights":true})"};
+}
+CapacityRows widest_path_input(const Graph& graph, Work& work) {
+  std::shared_ptr<const ViewResult> input;
+  try {
+    input = consume_view(graph,widest_profile,work,ViewBudget::record_edges);
+  } catch (const Failure& error) {
+    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+      throw Failure("invalid_input","Every widest-path edge requires a nonnegative capacity");
+    throw;
+  } catch (const std::invalid_argument& error) {
+    if (std::string(error.what()) == "Graph view: This view requires explicit edge weights")
+      throw Failure("invalid_input","Every widest-path edge requires a nonnegative capacity");
+    throw;
+  }
+  const auto& view = std::get<CsrView>(input->view);
+  const auto& weights = std::get<std::vector<double>>(view.weights);
+  CapacityRows result(graph.vertex_count());
+  for (VertexIndex u=0; u<result.size(); ++u) {
+    // Repack each CSR row into the solver's original-record visitation order.
+    // Every arc and weight comes from the view, including undirected mirrors.
+    std::vector<EdgeIndex> order(view.offsets[u+1]-view.offsets[u]);
+    std::iota(order.begin(),order.end(),view.offsets[u]);
+    std::sort(order.begin(),order.end(),[&](auto a,auto b) { return view.edge_ids->at(a) < view.edge_ids->at(b); });
+    for (const auto e : order) result[u].emplace_back(view.indices[e],weights[e]);
+  }
+  return result;
+}
+CriticalPathInput critical_path_input(const Graph& graph, Work& work) {
+  std::shared_ptr<const ViewResult> input;
+  try {
+    input = consume_view(graph,critical_profile,work,ViewBudget::record_edges);
+  } catch (const std::invalid_argument& error) {
+    if (std::string(error.what()) == "Graph view: This view requires explicit edge weights")
+      throw Failure("invalid_input","Critical paths require every edge weight");
+    throw;
+  }
+  const auto& view = std::get<CooView>(input->view);
+  const auto& weights = std::get<std::vector<RationalWeight>>(view.weights);
+  CriticalPathInput result;
+  result.adjacency.resize(graph.vertex_count()); result.indegree.resize(graph.vertex_count());
+  result.ends.resize(graph.edge_count()); result.weights.resize(graph.edge_count());
+  for (std::size_t i=0; i<view.src.size(); ++i) {
+    const auto e = view.edge_ids->at(i);
+    result.adjacency[view.src[i]].push_back(e); ++result.indegree[view.dst[i]];
+    result.ends[e] = view.dst[i];
+    result.weights[e] = Exact(Integer(weights[i].numerator))/Integer(weights[i].denominator);
+  }
+  return result;
+}
 json::object widest_paths(const Graph& graph, const json::object& args, const std::string&, int,
                           Work& work) {
   using namespace family_util;
   fields(args, {"source_vertex"}, {"source_vertex"});
   const auto source = graph.dense_index(external_id(args.at("source_vertex")));
   const auto n = graph.vertex_count();
-  std::vector<std::vector<std::pair<VertexIndex, double>>> adj(n);
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    require(edge.weight && *edge.weight >= 0,
-            "Every widest-path edge requires a nonnegative capacity");
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    if (u == v) continue;
-    adj[u].emplace_back(v, *edge.weight);
-    if (!graph.directed()) adj[v].emplace_back(u, *edge.weight);
-  }
+  const auto adj = widest_path_input(graph,work);
   std::vector<std::optional<double>> capacity(n);
   std::vector<std::optional<VertexIndex>> parent(n);
   capacity[source] = std::numeric_limits<double>::infinity();
@@ -65,15 +113,9 @@ json::object critical_paths(const Graph& graph, const json::object& args, const 
   require(k < UINT64_MAX, "k exceeds native indexing capacity");
   const auto n = graph.vertex_count();
   const auto& raw = graph.canonical().edges;
-  std::vector<std::vector<std::size_t>> adj(n);
-  std::vector<std::size_t> indegree(n, 0);
-  for (std::size_t i = 0; i < raw.size(); ++i) {
-    work.tick();
-    require(raw[i].weight.has_value(), "Critical paths require every edge weight");
-    const auto u = graph.dense_index(raw[i].source), v = graph.dense_index(raw[i].target);
-    adj[u].push_back(i);
-    ++indegree[v];
-  }
+  auto input = critical_path_input(graph,work);
+  const auto& adj = input.adjacency;
+  auto indegree = std::move(input.indegree);
   Vertices sources, sinks;
   if (args.contains("sources") && !args.at("sources").is_null())
     sources = vertices(graph, args.at("sources"), "sources");
@@ -96,7 +138,7 @@ json::object critical_paths(const Graph& graph, const json::object& args, const 
     order.push_back(u);
     for (const auto e : adj[u]) {
       work.tick();
-      const auto v = graph.dense_index(raw[e].target);
+      const auto v = input.ends[e];
       if (--indegree[v] == 0) queue.push(v);
     }
   }
@@ -120,10 +162,10 @@ json::object critical_paths(const Graph& graph, const json::object& args, const 
     auto& current = suffixes[u];
     if (is_sink[u]) current.push_back({0, u, {}});
     for (const auto e : adj[u]) {
-      const auto v = graph.dense_index(raw[e].target);
+      const auto v = input.ends[e];
       for (const auto& suffix : suffixes[v]) {
         work.tick(suffix.edges.size() + 1);
-        Path path{Exact(*raw[e].weight) + suffix.weight, u, {e}};
+        Path path{input.weights[e] + suffix.weight, u, {e}};
         path.edges.insert(path.edges.end(), suffix.edges.begin(), suffix.edges.end());
         current.push_back(std::move(path));
       }

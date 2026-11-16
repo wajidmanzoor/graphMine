@@ -373,4 +373,34 @@ inline std::vector<json::object> vertex_records_input(const Graph& graph, Work& 
   for (const auto& v : graph.canonical().vertices) records.push_back(vertex_record_json(v,work));
   return records;
 }
+// Frozen widest-path row builder; undirected rows interleave original edge IDs.
+inline std::vector<std::vector<std::pair<VertexIndex,double>>> widest_path_input(const Graph& graph, Work& work) {
+  std::vector<std::vector<std::pair<VertexIndex,double>>> rows(graph.vertex_count());
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    require(edge.weight && *edge.weight >= 0,"Every widest-path edge requires a nonnegative capacity");
+    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (u == v) continue;
+    rows[u].emplace_back(v,*edge.weight);
+    if (!graph.directed()) rows[v].emplace_back(u,*edge.weight);
+  }
+  return rows;
+}
+// Frozen critical-path adjacency plus the raw endpoints/weights read by its DP.
+struct CriticalPathInput {
+  std::vector<std::vector<std::size_t>> adjacency;
+  std::vector<std::size_t> indegree;
+  std::vector<VertexIndex> ends;
+  std::vector<Exact> weights;
+  CriticalPathInput(const Graph& graph, Work& work) : adjacency(graph.vertex_count()),indegree(graph.vertex_count()) {
+    for (std::size_t i=0; i<graph.edge_count(); ++i) {
+      work.tick();
+      const auto& edge = graph.canonical().edges[i];
+      require(edge.weight.has_value(),"Critical paths require every edge weight");
+      const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+      adjacency[u].push_back(i); ++indegree[v];
+      ends.push_back(v); weights.emplace_back(*edge.weight);
+    }
+  }
+};
 }  // namespace graphmine::legacy_test
