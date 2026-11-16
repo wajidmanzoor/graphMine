@@ -104,6 +104,27 @@ WeightedGraph cached_weighted_graph(const std::string& semantics, Work& work,
   return *graph;
 }
 
+std::shared_ptr<const ViewResult> cached_standard_view(
+    const std::string& snapshot, const std::string& canonical_spec,
+    const std::function<ViewResult()>& build) {
+  const auto key = snapshot + ":standard-view-v1:" + implementation_sha256 + ":" + canonical_spec;
+  if (const auto found = lookup(key))
+    return std::static_pointer_cast<const ViewResult>(found->value);
+  auto result = std::make_shared<const ViewResult>(build());
+  const auto bytes = result->accounted_bytes();
+  // The map and the LRU list each retain a key string.
+  const auto accounted = key.size() > (SIZE_MAX - bytes) / 2 ? SIZE_MAX : bytes + 2 * key.size();
+  if (insert(key, result, accounted, 0)) {
+    // Reuse the winning immutable object when equivalent builds race. A clear
+    // or eviction between insert and this lookup leaves our own result valid.
+    auto& state = cache();
+    std::lock_guard<std::mutex> lock(state.mutex);
+    if (const auto found = state.entries.find(key); found != state.entries.end())
+      return std::static_pointer_cast<const ViewResult>(found->second.value);
+  }
+  return result;
+}
+
 json::object representation_cache_request(const json::object& request) {
   fields(request, {"command", "action", "max_bytes"}, {"command"});
   const auto action =

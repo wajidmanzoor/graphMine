@@ -92,7 +92,7 @@ list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS
      "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/native_parameter_schemas.json"
      "${CMAKE_CURRENT_SOURCE_DIR}/../src/core/graph.cpp"
      "${CMAKE_CURRENT_SOURCE_DIR}/../src/core/json.cpp")
-foreach(header IN ITEMS graph.hpp runtime.hpp runtime_c.h backend.hpp execution.hpp status.hpp)
+foreach(header IN ITEMS graph.hpp views.hpp runtime.hpp runtime_c.h backend.hpp execution.hpp status.hpp)
   list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS "${CMAKE_CURRENT_SOURCE_DIR}/../include/graphmine/${header}")
 endforeach()
 if(TARGET graphmine_triangle_counting)
@@ -204,7 +204,7 @@ string(SHA256 GRAPHMINE_NATIVE_SOURCE_SHA256 "${GRAPHMINE_NATIVE_SOURCE_DIGEST}"
 configure_file(catalog_data.hpp.in generated/catalog_data.hpp @ONLY)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/native-source-hashes.txt" "${GRAPHMINE_NATIVE_SOURCE_DIGEST}")
 
-add_library(graphmine_runtime SHARED runtime.cpp registry.cpp validation.cpp representation_cache.cpp json_graph.cpp json_input.cpp c_api.cpp original_mining.cpp original_optimization.cpp original_extensions.cpp
+add_library(graphmine_runtime SHARED runtime.cpp registry.cpp validation.cpp representation_cache.cpp views.cpp json_graph.cpp json_input.cpp c_api.cpp original_mining.cpp original_optimization.cpp original_extensions.cpp
             families/traversal.cpp families/patterns.cpp families/common.cpp
             families/weighted_paths.cpp families/connectivity.cpp families/centrality.cpp
             families/similarity.cpp families/cliques.cpp families/structure.cpp families/centrality_measures.cpp families/matching.cpp families/flow.cpp families/coloring.cpp families/subgraphs.cpp families/sampling.cpp
@@ -320,13 +320,22 @@ target_link_libraries(graphmine_native_cli PRIVATE GraphMine::runtime)
 set_target_properties(graphmine_native_cli PROPERTIES OUTPUT_NAME graphmine-native INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
 install(TARGETS graphmine_runtime graphmine_native_cli EXPORT GraphMineRuntimeTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES ../include/graphmine/runtime.hpp ../include/graphmine/runtime_c.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/graphmine)
+install(FILES ../include/graphmine/runtime.hpp ../include/graphmine/runtime_c.h
+              ../include/graphmine/graph.hpp ../include/graphmine/views.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/graphmine)
 install(FILES ../manifests/problem_families.json DESTINATION ${CMAKE_INSTALL_DATADIR}/graphmine)
 install(EXPORT GraphMineRuntimeTargets NAMESPACE GraphMine:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GraphMineRuntime)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GraphMineRuntimeConfig.cmake" "include(\"\${CMAKE_CURRENT_LIST_DIR}/GraphMineRuntimeTargets.cmake\")\n")
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GraphMineRuntimeConfig.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GraphMineRuntime)
 
 if(BUILD_TESTING OR GRAPHMINE_BUILD_TESTS)
+  find_package(Threads REQUIRED)
+  add_executable(graphmine_views_test tests/views_test.cpp ../src/core/json.cpp)
+  target_include_directories(graphmine_views_test PRIVATE "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
+  target_link_libraries(graphmine_views_test PRIVATE GraphMine::runtime Threads::Threads)
+  foreach(suite IN ITEMS spec normalization weights bipartite structured determinism cache)
+    add_test(NAME graphmine_views_${suite} COMMAND graphmine_views_test ${suite})
+  endforeach()
   add_executable(graphmine_selection_test tests/selection_test.cpp ../src/core/json.cpp)
   target_include_directories(graphmine_selection_test PRIVATE "${GRAPHMINE_RUNTIME_BOOST_INCLUDE}")
   target_link_libraries(graphmine_selection_test PRIVATE GraphMine::runtime)

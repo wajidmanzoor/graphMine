@@ -85,7 +85,7 @@ bool boolean(const json::object& value, const char* field) {
 }
 }  // namespace
 
-Graph parse_graph(const json::value& value) {
+Graph parse_graph(const json::value& value, bool preserve_int64_weights) {
   const auto data = object(value, "graph input");
   fields(data, {"graph", "vertices", "edges"}, {"graph", "vertices", "edges"});
   const auto meta = object(data.at("graph"), "graph metadata");
@@ -137,11 +137,11 @@ Graph parse_graph(const json::value& value) {
       require(std::isfinite(*edge.weight), "Edge weight must be finite");
       // The existing native Graph stores weights as doubles. Do not silently
       // change an integer weight before a future weighted native operation.
-      if (weight.is_int64())
+      if (!preserve_int64_weights && weight.is_int64())
         require(
             static_cast<long double>(*edge.weight) == static_cast<long double>(weight.as_int64()),
             "Integer edge weight loses precision in native Graph");
-      if (weight.is_uint64())
+      if (!preserve_int64_weights && weight.is_uint64())
         require(
             static_cast<long double>(*edge.weight) == static_cast<long double>(weight.as_uint64()),
             "Integer edge weight loses precision in native Graph");

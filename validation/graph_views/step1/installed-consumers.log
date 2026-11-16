@@ -1,0 +1,36 @@
+-- Install configuration: "Release"
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/lib/libgraphmine_runtime.so.2.0.0
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/lib/libgraphmine_runtime.so.1
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/lib/libgraphmine_runtime.so
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/bin/graphmine-native
+-- Set non-toolchain portion of runtime path of "/tmp/graphmine-views-step1-20261116-installed/bin/graphmine-native" to "$ORIGIN/../lib"
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/include/graphmine/runtime.hpp
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/include/graphmine/runtime_c.h
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/include/graphmine/graph.hpp
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/include/graphmine/views.hpp
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/share/graphmine/problem_families.json
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/lib/cmake/GraphMineRuntime/GraphMineRuntimeTargets.cmake
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/lib/cmake/GraphMineRuntime/GraphMineRuntimeTargets-release.cmake
+-- Installing: /tmp/graphmine-views-step1-20261116-installed/lib/cmake/GraphMineRuntime/GraphMineRuntimeConfig.cmake
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/graphmine-views-step1-20261116-consumer
+[ 25%] Building CXX object CMakeFiles/cpp_consumer.dir/main.cpp.o
+[ 50%] Building C object CMakeFiles/c_consumer.dir/main.c.o
+[ 75%] Linking C executable c_consumer
+[ 75%] Built target c_consumer
+[100%] Linking CXX executable cpp_consumer
+[100%] Built target cpp_consumer
+Installed C and C++ algorithm consumers passed without Python or CUDA

@@ -1,0 +1,3 @@
+Validated 500 structure requests
+Validated 1000 structure requests
+{"suite":"blocks","backend":"cpp","gpu_device":0,"passed_requests":1027,"failed":0,"implementation_sha256":"1b047e2e3e1d7c7007ec756547d1e9c2bf518e245d24ee09cd0d65473aabc7a7"}

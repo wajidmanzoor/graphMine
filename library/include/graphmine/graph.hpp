@@ -155,6 +155,11 @@ struct NormalizationSummary {
   bool directed_projection_applied = false;
   std::uint64_t self_loops_removed = 0;
   std::uint64_t parallel_edges_collapsed = 0;
+  // Standard-view provenance; the legacy fields above retain their meaning.
+  bool projection_applied = false;
+  std::uint64_t weights_cast = 0;
+  std::uint64_t vertices = 0;
+  std::uint64_t edges = 0;
 };
 
 struct UndirectedGraphView {

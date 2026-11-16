@@ -100,7 +100,8 @@ struct HypergraphInput : StructuredVertices {
     }
   }
 };
-inline std::vector<Graph> graph_collection(const json::value& input, Work& work) {
+inline std::vector<Graph> graph_collection(const json::value& input, Work& work,
+                                          bool preserve_int64_weights = false) {
   const auto data = object(input, "graph_collection");
   fields(data, {"dataset_id", "graphs"}, {"dataset_id", "graphs"});
   require(!string(data.at("dataset_id"), "dataset_id").empty(), "dataset_id must not be empty");
@@ -108,7 +109,7 @@ inline std::vector<Graph> graph_collection(const json::value& input, Work& work)
   std::vector<Graph> graphs;
   std::set<std::string> ids;
   for (const auto& raw : data.at("graphs").as_array()) {
-    graphs.push_back(parse_graph(raw));
+    graphs.push_back(parse_graph(raw, preserve_int64_weights));
     const auto& graph = graphs.back();
     work.tick(graph.vertex_count() + graph.edge_count() + 1);
     require(ids.insert(graph.canonical().graph.id).second, "Collection graph IDs must be unique");

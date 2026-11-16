@@ -68,7 +68,9 @@ std::string string(const json::value& value, const std::string& context);
 std::uint64_t uint(const json::value& value, const std::string& context);
 ExternalId external_id(const json::value& value);
 json::value id_json(const ExternalId& value);
-Graph parse_graph(const json::value& value);
+// Existing algorithms keep binary64 validation. Only int64_exact views opt in
+// to preserving wider integers through EdgeRecord::original_weight.
+Graph parse_graph(const json::value& value, bool preserve_int64_weights = false);
 std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work& work);
 Search cpu_bfs(const std::vector<std::vector<VertexIndex>>& adjacency, VertexIndex source,
                std::optional<std::uint64_t> depth, Work& work);

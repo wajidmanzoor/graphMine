@@ -35,6 +35,8 @@ agent/frontend/node_modules/
 /.environments/
 /environments.local.json
 /dataset-studio/workspace/
+# Isolated native graph-view development builds.
+/build/native-views-*/
 
 # Keep training, data collection, and deployment documentation local.
 /agent/CLI.md
