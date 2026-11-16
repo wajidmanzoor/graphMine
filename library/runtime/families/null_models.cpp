@@ -1,8 +1,13 @@
 #include "family_util.hpp"
 #include "native_random.hpp"
 #include "numeric.hpp"
+#include "edge_set_input.hpp"
 
 namespace graphmine::runtime {
+namespace {
+const ViewProfile null_profile{"null-model-significance:cpp:default", {"null-model-significance"},
+  R"({"kind":"coo","direction":"keep","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
+}
 json::object null_significance(const Graph& graph, const json::object& args, const std::string&,
                                int, Work& work) {
   using namespace family_util;
@@ -24,14 +29,7 @@ json::object null_significance(const Graph& graph, const json::object& args, con
   const auto n = graph.vertex_count();
   using Pair = std::pair<VertexIndex, VertexIndex>;
   using EdgeSet = std::set<Pair>;
-  EdgeSet original;
-  for (const auto& edge : graph.canonical().edges) {
-    work.tick();
-    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    if (u == v) continue;
-    if (!graph.directed() && u > v) std::swap(u, v);
-    original.emplace(u, v);
-  }
+  const auto original = edge_set_input(graph,null_profile,work);
   const auto definition = object(args.at("statistic_definition"), "statistic_definition");
   require(definition.contains("name"), "statistic_definition needs name");
   const auto name = string(definition.at("name"), "statistic name");

@@ -1,0 +1,2 @@
+Validated 500 native requests on cpu 0
+{"suite":"rank","backend":"cpu","gpu_device":0,"passed_requests":706,"failed":0,"implementation_sha256":"182f2695cdec1e6b925a0e16c8ea2b7b463465134ccf4a3c12cb10bad073e7ab"}

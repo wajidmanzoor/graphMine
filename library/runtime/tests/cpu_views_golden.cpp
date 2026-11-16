@@ -7,6 +7,7 @@
 #include "../influence_input.hpp"
 #include "../steiner_input.hpp"
 #include "../walk_input.hpp"
+#include "../edge_set_input.hpp"
 #include "graphmine/runtime.hpp"
 #include <cstring>
 #include <iostream>
@@ -116,6 +117,31 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
       old_endpoints.insert(old_endpoints.end(),{expected->endpoints[e].first,expected->endpoints[e].second});
       new_endpoints.insert(new_endpoints.end(),{actual->endpoints[e].first,actual->endpoints[e].second});
     }
+    equal(old_endpoints,new_endpoints);
+  }
+  return !expected;
+}
+bool edge_set_input(const gm::Graph& graph, const char* profile, std::uint64_t budget = UINT64_MAX) {
+  using Edges = std::set<std::pair<gm::VertexIndex,gm::VertexIndex>>;
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<Edges> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::edge_set_input(graph,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<Edges> actual;
+    std::string new_failure;
+    try { actual = rt::edge_set_input(graph,rt::cpu_view_profile(profile),work); }
+    catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Edge set rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (old_work.candidates != work.candidates) throw std::runtime_error("Edge set candidate cost differs");
+    std::vector<gm::VertexIndex> old_endpoints, new_endpoints;
+    for (const auto& [u,v] : *expected) old_endpoints.insert(old_endpoints.end(),{u,v});
+    for (const auto& [u,v] : *actual) new_endpoints.insert(new_endpoints.end(),{u,v});
     equal(old_endpoints,new_endpoints);
   }
   return !expected;
@@ -473,6 +499,18 @@ void contracts() {
   traversal(graph,"topological-sort:cpp:default");
   auto undirected = raw;
   undirected.as_object().at("graph").as_object()["directed"] = false;
+  for (const auto& null_graph : {raw,undirected}) {
+    edge_set_input(rt::parse_graph(null_graph),"null-model-significance:cpp:default");
+    for (const auto* model : {"degree_preserving_configuration","erdos_renyi"})
+      for (const auto* tail : {"greater","less","two_sided_about_null_mean"})
+        declared_request("null-model-significance:cpp:default",null_graph,
+          {{"null_model",model},{"statistic_definition",{{"name","density"}}},{"sample_count",3},
+           {"random_seed",41},{"tail",tail},{"return_randomized_edges",true}});
+  }
+  for (std::uint64_t budget=0; budget<7; ++budget)
+    edge_set_input(graph,"null-model-significance:cpp:default",budget);
+  declared_request("null-model-significance:cpp:default",undirected,
+    {{"statistic_definition",{{"name","triangles"}}},{"sample_count",3},{"random_seed",42}});
   for (const auto* operation : {"biconnected-components","k-truss"}) {
     structure_input(graph,operation);
     structure_input(rt::parse_graph(undirected),operation);
@@ -835,6 +873,7 @@ int main(int argc, char** argv) {
     const bool structure = argc > 1 && std::string(argv[1]) == "--structure";
     const bool influence = argc > 1 && std::string(argv[1]) == "--influence";
     const bool walks = argc > 1 && std::string(argv[1]) == "--walks";
+    const bool null_models = argc > 1 && std::string(argv[1]) == "--null-models";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -859,13 +898,19 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks)
+    if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks && !null_models)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (null_models) {
+          const auto* profile = "null-model-significance:cpp:default";
+          const bool rejected = edge_set_input(graph,profile);
+          std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+            {"profile",profile},{"equal",true},{"rejected",rejected}}) << '\n';
+        }
         if (walks) for (bool uniform : {false,true}) {
           const bool rejected = walk_input(graph,uniform);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
@@ -928,10 +973,10 @@ int main(int argc, char** argv) {
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
           }
-        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks) traversal(graph);
+        } else if (selected_weighted.empty() && selected_exact.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks && !null_models) traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !records && !layout && !subgraph_matching && !structure && !influence && !walks && !null_models) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
     std::cerr << count << " datasets passed CPU " << (argc > 1 ? argv[1] : "traversal")

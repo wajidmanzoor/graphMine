@@ -375,3 +375,15 @@ admissions. Both profiles pass 13,142 corpus cases comparing neighbor arrays,
 exact transition weights, costs and rejections on fresh and cached views.
 Directed/undirected real requests cover all three walk models with fixed seeds,
 parallel/zero weights, loops and nondefault node2vec parameters.
+
+## Null-model significance
+
+The original edge set now comes from a declared COO view with dropped loops and
+first-edge parallel collapse. Direction, canonical pair order, degree counts,
+seeded randomization and statistic evaluation remain unchanged.
+
+Checkpoint `25-null-models` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. All 6,571 corpus cases match endpoint bytes and candidate costs on
+fresh builds and cache hits. Budget checks and real requests cover both null
+models, all three tail choices, directed/undirected inputs, randomized-edge
+output and multiple statistics while verifying the consumed declaration.

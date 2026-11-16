@@ -296,4 +296,16 @@ inline std::vector<std::map<VertexIndex,Exact>> walk_adjacency(const Graph& grap
   }
   return adj;
 }
+// Frozen original-edge set used by null-model significance before randomizing.
+inline std::set<std::pair<VertexIndex,VertexIndex>> edge_set_input(const Graph& graph, Work& work) {
+  std::set<std::pair<VertexIndex,VertexIndex>> result;
+  for (const auto& edge : graph.canonical().edges) {
+    work.tick();
+    auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
+    if (u == v) continue;
+    if (!graph.directed() && u > v) std::swap(u,v);
+    result.emplace(u,v);
+  }
+  return result;
+}
 }  // namespace graphmine::legacy_test
