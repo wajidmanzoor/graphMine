@@ -39,6 +39,7 @@ const char* clique_profiles[] = {
   "maximal-cliques:cpp:default", "maximum-clique:cpp:default", "k-cliques:cpp:default",
   "k-core:cpp:default", "maximum-independent-set:cpp:default", "minimum-vertex-cover:cpp:default"
 };
+const char* reachability_profiles[] = {"transitive-closure:cpp:default", "overlapping-communities:cpp:default"};
 void declared_request(const char* id, const rt::json::value& graph, const rt::json::object& parameters) {
   const auto& profile = rt::cpu_view_profile(id);
   const rt::json::object request{{"command","run"},{"operation",profile.operations.front()},
@@ -124,6 +125,13 @@ void contracts() {
   declared_request("k-cliques:cpp:default",undirected,{{"k",2},{"mode","enumerate"}});
   declared_request("k-core:cpp:default",undirected,{{"requested_k",1}});
   declared_request("minimum-vertex-cover:cpp:default",undirected,{{"mode","decision"},{"k",1}});
+  for (const auto* profile : reachability_profiles) traversal(graph,profile);
+  declared_request("transitive-closure:cpp:default",raw,{});
+  declared_request("transitive-closure:cpp:default",raw,{{"enumerate_closure_edges",false}});
+  declared_request("transitive-closure:cpp:default",raw,{{"query_mode","single_pair"},{"query_pairs",{{0,2}}}});
+  declared_request("transitive-closure:cpp:default",raw,{{"query_mode","batch_pairs"},{"query_pairs",{{0,2},{2,0}}}});
+  declared_request("overlapping-communities:cpp:default",undirected,{{"k",2}});
+  declared_request("overlapping-communities:cpp:default",undirected,{{"k",3},{"include_unassigned_vertices",false}});
   for (const auto* mode : {"independent", "nearest_source"}) {
     const rt::json::object request{{"command","run"},{"operation","breadth-first-search"},
       {"device","cpu"},{"graph",raw},{"parameters",{{"sources",{0,1}},{"source_mode",mode}}}};
@@ -180,6 +188,10 @@ int main(int argc, char** argv) {
     const bool weighted = argc > 1 && std::string(argv[1]) == "--weighted-paths";
     const bool connectivity = argc > 1 && std::string(argv[1]) == "--connectivity";
     const bool cliques = argc > 1 && std::string(argv[1]) == "--cliques";
+    const bool reachability = argc > 1 && std::string(argv[1]) == "--reachability";
+    std::vector<const char*> simple_profiles;
+    if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
+    if (reachability) simple_profiles.assign(std::begin(reachability_profiles),std::end(reachability_profiles));
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
@@ -200,8 +212,8 @@ int main(int argc, char** argv) {
           traversal(graph,"topological-sort:cpp:default");
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
             {"profile","topological-sort:cpp:default"},{"equal",true},{"rejected",false}}) << '\n';
-        } else if (cliques) {
-          for (const auto* profile : clique_profiles) {
+        } else if (!simple_profiles.empty()) {
+          for (const auto* profile : simple_profiles) {
             traversal(graph,profile);
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
               {"profile",profile},{"equal",true},{"rejected",false}}) << '\n';
@@ -209,10 +221,10 @@ int main(int argc, char** argv) {
         } else traversal(graph);
       }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      if (!weighted && !connectivity && !cliques) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (!weighted && !connectivity && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }

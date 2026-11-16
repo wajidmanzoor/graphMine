@@ -1,6 +1,13 @@
 #include "family_util.hpp"
+#include "view_profiles.hpp"
 
 namespace graphmine::runtime {
+namespace {
+constexpr const char* adjacency_spec = R"({"kind":"csr","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"none","sorted_neighbors":true})";
+const ViewProfile closure_profile{"transitive-closure:cpp:default", {"transitive-closure"}, adjacency_spec};
+const ViewProfile percolation_profile{"overlapping-communities:cpp:default", {"overlapping-communities"}, adjacency_spec};
+}
 json::object transitive_closure(const Graph& graph, const json::object& args, const std::string&,
                                 int, Work& work) {
   using namespace family_util;
@@ -8,7 +15,8 @@ json::object transitive_closure(const Graph& graph, const json::object& args, co
   const auto mode = choice(args, "query_mode", "full_transitive_closure",
                            {"single_pair", "batch_pairs", "full_transitive_closure"});
   const bool enumerate = boolean(args, "enumerate_closure_edges", true);
-  const auto adj = adjacency(graph, work);
+  const auto input = consume_view(graph, closure_profile, work, ViewBudget::original_edges);
+  const auto& adj = std::get<CsrView>(input->view);
   json::array rows;
   std::uint64_t count = 0;
   if (mode == "full_transitive_closure") {
@@ -64,7 +72,8 @@ json::object overlapping_communities(const Graph& graph, const json::object& arg
   require(!graph.directed(), "Clique percolation requires undirected input");
   const auto k = natural(args, "k", 2, 2), minimum = natural(args, "minimum_community_size", 1, 1);
   const bool unassigned = boolean(args, "include_unassigned_vertices", true);
-  const auto adj = adjacency(graph, work);
+  const auto input = consume_view(graph, percolation_profile, work, ViewBudget::original_edges);
+  const auto adj = adjacency_layout(std::get<CsrView>(input->view));
   std::vector<Vertices> cliques;
   if (k <= graph.vertex_count())
     enumerate_maximal_cliques(

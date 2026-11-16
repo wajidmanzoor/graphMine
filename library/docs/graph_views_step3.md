@@ -92,3 +92,15 @@ and warm cache calls and equal candidate costs (39,426 profile cases). Operation
 requests check the consumed declaration, including tie enumeration, fixed-size
 enumeration, core selection and vertex-cover decision modes. GPU paths retain
 their existing adapters.
+
+## Reachability and clique percolation
+
+Transitive closure now searches CSR directly. Overlapping communities copies
+CSR slices into the existing clique enumerator's row layout. Both declare
+unweighted, loop-free, sorted neighbors with first parallel-edge collapse.
+
+Checkpoint `05-reachability` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Both input profiles pass 13,142 cold/warm corpus cases against the
+frozen adjacency builder, including row bytes and candidate costs. Declaration
+checks cover full/count-only closure, single/batch pairs, and clique-percolation
+options. Their algorithm results remain covered by the existing CPU tests.
