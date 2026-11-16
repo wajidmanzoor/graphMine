@@ -91,6 +91,27 @@ struct HypergraphInput {
     }
   }
 };
+struct TemporalPathEvent { VertexIndex u,v; Exact departure,arrival; std::size_t edge; };
+inline std::vector<TemporalPathEvent> temporal_path_input(const Graph& graph, const Exact& ready,
+    const std::optional<Exact>& deadline, const std::string& attribute, Work& work) {
+  require(graph.directed(),"Temporal paths require directed input");
+  std::vector<TemporalPathEvent> events;
+  for (std::size_t i=0; i<graph.edge_count(); ++i) {
+    work.tick(); const auto& edge = graph.canonical().edges[i];
+    const auto departure = timestamp_seconds(edge.timestamp,work);
+    const auto it = edge.attributes.find(attribute);
+    require(it != edge.attributes.end(),"Every event needs the requested duration attribute");
+    const auto& value = it->second.value();
+    Exact duration;
+    if (std::holds_alternative<std::int64_t>(value)) duration = std::get<std::int64_t>(value);
+    else { require(std::holds_alternative<double>(value),"Event duration must be numeric"); duration = std::get<double>(value); }
+    require(duration >= 0,"Event duration must be nonnegative");
+    const Exact arrival = departure + duration;
+    if (departure < ready || (deadline && arrival > *deadline)) continue;
+    events.push_back({graph.dense_index(edge.source),graph.dense_index(edge.target),departure,arrival,i});
+  }
+  return events;
+}
 struct SamplingInput {
   struct Neighbor { VertexIndex vertex; std::size_t edge; Exact weight; };
   std::vector<std::vector<Neighbor>> adjacency;

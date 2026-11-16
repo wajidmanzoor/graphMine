@@ -137,6 +137,42 @@ bool record_index(const gm::Graph& graph, const char* profile, std::uint64_t bud
   }
   return !expected;
 }
+template<class Events> std::string temporal_path_bytes(const Events& events) {
+  rt::json::array rows;
+  for (const auto& event : events) rows.push_back(rt::json::array{event.u,event.v,
+    rt::fraction_json(event.departure),rt::fraction_json(event.arrival),event.edge});
+  return rt::json::serialize(rows);
+}
+bool temporal_path_input(const gm::Graph& graph, const rt::Exact& ready, const std::optional<rt::Exact>& deadline,
+                         const std::string& attribute, std::uint64_t budget = UINT64_MAX) {
+  auto old_work = unlimited(); old_work.max_candidates = budget;
+  std::optional<std::vector<gm::legacy_test::TemporalPathEvent>> expected;
+  std::string old_failure;
+  try { expected = gm::legacy_test::temporal_path_input(graph,ready,deadline,attribute,old_work); }
+  catch (const std::exception& e) { old_failure = e.what(); }
+  clear_views();
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); work.max_candidates = budget;
+    std::optional<std::vector<rt::TemporalPathEvent>> actual;
+    std::string new_failure;
+    try { actual = rt::temporal_path_input(graph,ready,deadline,attribute,work); } catch (const std::exception& e) { new_failure = e.what(); }
+    if (old_failure != new_failure) throw std::runtime_error("Temporal path event rejection differs");
+    if (!expected) continue;
+    cache_pass(work,repeat);
+    if (temporal_path_bytes(*expected) != temporal_path_bytes(*actual) || old_work.candidates != work.candidates)
+      throw std::runtime_error("Temporal path exact event bytes/cost differ");
+  }
+  return !expected;
+}
+gm::Graph corpus_temporal_paths(const gm::Graph& graph) {
+  auto data=graph.canonical(); data.graph.directed=true;
+  for (std::size_t i=0; i<data.edges.size(); ++i) {
+    auto& edge=data.edges[i]; edge.timestamp=static_cast<std::int64_t>(i%4);
+    edge.attributes["duration"] = gm::PropertyValue(0.25*(i%3));
+    edge.attributes["travel.time"] = gm::PropertyValue(0.5);
+  }
+  return gm::Graph(std::move(data));
+}
 bool sampling_input(const gm::Graph& graph, bool weighted, bool typed, const std::optional<rt::Exact>& cutoff,
                     std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
@@ -1135,6 +1171,30 @@ void contracts() {
       {"id":2,"source":1,"target":2,"weight":1},
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
+  auto temporal_graph = raw;
+  for (std::size_t i=0; i<4; ++i) {
+    auto& edge=temporal_graph.as_object().at("edges").as_array()[i].as_object();
+    edge["timestamp"] = static_cast<std::int64_t>(i);
+    edge["attributes"] = rt::json::object{{"duration",0.25*(i%2)},{"travel.time",0.5}};
+  }
+  temporal_path_input(graph,0,std::nullopt,"duration");
+  for (const auto* attribute : {"duration","travel.time"}) {
+    temporal_path_input(rt::parse_graph(temporal_graph),0,std::nullopt,attribute);
+    temporal_path_input(rt::parse_graph(temporal_graph),1,rt::Exact(2),attribute);
+    for (std::uint64_t budget=0; budget<7; ++budget) temporal_path_input(rt::parse_graph(temporal_graph),0,std::nullopt,attribute,budget);
+    for (const auto* objective : {"fastest_duration","earliest_arrival"})
+      declared_request("temporal-paths:cpp:records",temporal_graph,{{"source",0},{"ready_time",1},{"deadline",3},
+        {"objective",objective},{"duration_attribute",attribute}});
+  }
+  for (int change=0; change<5; ++change) {
+    auto changed=temporal_graph; auto& first=changed.as_object().at("edges").as_array()[0].as_object();
+    if (change==0) first["timestamp"] = "1970-01-01T01:00:00.001+01:00";
+    if (change==1) first.at("attributes").as_object()["duration"] = 9007199254740993LL;
+    if (change==2) first.at("attributes").as_object()["duration"] = -1;
+    if (change==3) first.at("attributes").as_object()["duration"] = "bad";
+    if (change==4) first.at("attributes").as_object().erase("duration");
+    temporal_path_input(rt::parse_graph(changed),1,rt::Exact(2),"duration");
+  }
   auto sample_graph = raw;
   for (std::size_t i=0; i<4; ++i) {
     auto& edge = sample_graph.as_object().at("edges").as_array()[i].as_object();
@@ -1850,6 +1910,7 @@ int main(int argc, char** argv) {
     const bool flow = argc > 1 && std::string(argv[1]) == "--flow";
     const bool anomalies = argc > 1 && std::string(argv[1]) == "--anomalies";
     const bool sampling = argc > 1 && std::string(argv[1]) == "--sampling";
+    const bool temporal_paths = argc > 1 && std::string(argv[1]) == "--temporal-paths";
     const bool steiner = argc > 1 && std::string(argv[1]) == "--steiner";
     const bool coarsening = argc > 1 && std::string(argv[1]) == "--coarsening";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
@@ -1875,7 +1936,7 @@ int main(int argc, char** argv) {
     if (condensation) selected_exact.push_back(condensation_case);
     if (steiner) selected_exact.push_back(steiner_case);
     if (coarsening) selected_exact.assign(std::begin(coarsening_cases),std::end(coarsening_cases));
-    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling;
+    const bool custom_inputs = records || layout || subgraph_matching || structure || influence || walks || null_models || topology || signed_balance || general_matching || entity_resolution || path_profiles || induced_subgraph || enumeration || node_learning || graph_learning || knn || hypergraphs || dynamic_triangles || embeddings || sparsification || flow || anomalies || sampling || temporal_paths;
     if (argc > 1 && selected_weighted.empty() && selected_exact.empty() && simple_profiles.empty() && !custom_inputs)
       throw std::runtime_error("Unknown CPU golden suite");
     std::string line; std::size_t count=0;
@@ -1883,6 +1944,15 @@ int main(int argc, char** argv) {
       const auto input=rt::strict_json(line).as_object();
       try {
         const auto graph = rt::parse_graph(input.at("graph"));
+        if (temporal_paths) {
+          const auto fixture=corpus_temporal_paths(graph);
+          for (int mode=0; mode<4; ++mode) {
+            const bool rejected=temporal_path_input(mode==0 ? graph : fixture,mode==2 ? 1 : 0,
+              mode>=2 ? std::optional<rt::Exact>(2) : std::nullopt,mode==3 ? "travel.time" : "duration");
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile","temporal-paths:cpp:records"},{"event_fixture",mode},{"equal",true},{"rejected",rejected}}) << '\n';
+          }
+        }
         if (sampling) {
           for (bool weighted : {false,true}) for (bool typed : {false,true}) for (bool timed : {false,true}) {
             const bool rejected = sampling_input(graph,weighted,typed,timed ? std::optional<rt::Exact>(1) : std::nullopt);

@@ -1,0 +1,6 @@
+Validated 500 centrality requests
+Validated 1000 centrality requests
+Validated 1500 centrality requests
+Validated 2000 centrality requests
+Validated 2500 centrality requests
+{"suite":"betweenness","backend":"cpp","gpu_device":0,"passed_requests":2658,"failed":0,"implementation_sha256":"25ec52711d75b7f458f794352836088300cf31d4ae1f187f3cba463a2f3f951e"}

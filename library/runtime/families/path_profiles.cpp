@@ -12,6 +12,35 @@ const ViewProfile widest_profile{"widest-paths:cpp:default", {"widest-paths"},
 const ViewProfile critical_profile{"top-k-critical-paths:cpp:default", {"top-k-critical-paths"},
   R"({"kind":"coo","coo_layout":"records","weights":"rational_exact","edge_ids":true,
        "sorted_neighbors":false,"require_edge_weights":true})"};
+const ViewProfile temporal_profile{"temporal-paths:cpp:records", {"temporal-paths"},
+  R"({"kind":"coo","coo_layout":"records","weights":"none","edge_ids":true,"sorted_neighbors":false})"};
+}
+std::vector<TemporalPathEvent> temporal_path_input(const Graph& graph, const Exact& ready,
+    const std::optional<Exact>& deadline, const std::string& attribute, Work& work) {
+  require(graph.directed(),"Temporal paths require directed input");
+  const auto built = consume_view(graph,temporal_profile,work,ViewBudget::algorithm_owned);
+  const auto& view = std::get<CooView>(built->view);
+  std::vector<TemporalPathEvent> events;
+  for (std::size_t i=0; i<view.src.size(); ++i) {
+    work.tick();
+    const auto original = view.edge_ids->at(i);
+    const auto& edge = graph.canonical().edges[original];
+    const auto departure = timestamp_seconds(edge.timestamp,work);
+    const auto it = edge.attributes.find(attribute);
+    require(it != edge.attributes.end(),"Every event needs the requested duration attribute");
+    const auto& value = it->second.value();
+    Exact duration;
+    if (std::holds_alternative<std::int64_t>(value)) duration = std::get<std::int64_t>(value);
+    else {
+      require(std::holds_alternative<double>(value),"Event duration must be numeric");
+      duration = std::get<double>(value);
+    }
+    require(duration >= 0,"Event duration must be nonnegative");
+    const Exact arrival = departure + duration;
+    if (departure < ready || (deadline && arrival > *deadline)) continue;
+    events.push_back({view.vertices.to_original[view.src[i]],view.vertices.to_original[view.dst[i]],departure,arrival,original});
+  }
+  return events;
 }
 CapacityRows widest_path_input(const Graph& graph, Work& work) {
   std::shared_ptr<const ViewResult> input;
@@ -232,37 +261,14 @@ json::object temporal_paths(const Graph& graph, const json::object& args, const 
                              ? string(args.at("duration_attribute"), "duration_attribute")
                              : "duration";
   require(!attribute.empty(), "duration_attribute must be nonempty");
-  struct Event {
-    VertexIndex u, v;
-    Exact departure, arrival;
-    std::size_t edge;
-  };
   const auto n = graph.vertex_count();
-  std::vector<Event> events;
   std::vector<std::set<Exact>> times(n);
   times[source].insert(ready);
   const auto& raw = graph.canonical().edges;
-  for (std::size_t i = 0; i < raw.size(); ++i) {
-    work.tick();
-    const auto& edge = raw[i];
-    const auto departure = timestamp_seconds(edge.timestamp, work);
-    const auto it = edge.attributes.find(attribute);
-    require(it != edge.attributes.end(), "Every event needs the requested duration attribute");
-    const auto& value = it->second.value();
-    Exact duration;
-    if (std::holds_alternative<std::int64_t>(value))
-      duration = std::get<std::int64_t>(value);
-    else {
-      require(std::holds_alternative<double>(value), "Event duration must be numeric");
-      duration = std::get<double>(value);
-    }
-    require(duration >= 0, "Event duration must be nonnegative");
-    const Exact arrival = departure + duration;
-    if (departure < ready || (deadline && arrival > *deadline)) continue;
-    const auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
-    events.push_back({u, v, departure, arrival, i});
-    times[u].insert(departure);
-    times[v].insert(arrival);
+  const auto events = temporal_path_input(graph,ready,deadline,attribute,work);
+  for (const auto& event : events) {
+    times[event.u].insert(event.departure);
+    times[event.v].insert(event.arrival);
   }
   struct State {
     VertexIndex vertex;

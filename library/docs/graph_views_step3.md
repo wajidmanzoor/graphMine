@@ -648,3 +648,17 @@ full-neighbor fanouts and cutoffs; boundary checks include fractional RFC3339
 times, offsets and invalid future records. An initial test used unsigned
 in-memory timestamp tokens; it now follows the unchanged signed-epoch contract,
 with the diagnostic retained.
+
+## Temporal paths
+
+Temporal paths now consume a declared original-record COO view. The adapter
+reads endpoints and edge identities from that view while the common front
+retains exact timestamp/duration parsing and ready-time/deadline validation.
+Time-state construction, search objectives and result metadata are unchanged.
+
+Checkpoint `43-temporal-paths` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Four cases per corpus graph pass 26,284 comparisons of event order,
+endpoints, exact departure/arrival times, original identities, costs and
+rejections on builds/hits. Requests cover both objectives, fractional RFC3339
+timestamps, exact wide integer durations, literal dotted attribute names and
+invalid records outside the selected time window.
