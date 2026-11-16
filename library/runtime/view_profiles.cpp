@@ -49,6 +49,14 @@ std::shared_ptr<const ViewResult> consume_view(const Graph& graph, const ViewPro
         {"view_profile", profile.id}, {"view", json::parse(view.canonical_spec)},
         {"normalization", json::parse(view.normalization_json())}});
   };
-  return make_view(graph, profile.spec, options);
+  try { return make_view(graph, profile.spec, options); }
+  catch (const std::invalid_argument& error) {
+    const std::string message = error.what();
+    if (message == "Graph view: f64 sum overflows")
+      throw Failure("invalid_input", "Aggregated edge weight overflowed");
+    if (message == "Graph view: This operation requires nonnegative edge weights")
+      throw Failure("invalid_input", "This operation requires nonnegative edge weights");
+    throw;
+  }
 }
 }  // namespace graphmine::runtime

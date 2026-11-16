@@ -32,6 +32,39 @@ void traversal(const gm::Graph& graph) {
     if (work.candidates != old_work.candidates) throw std::runtime_error("CPU view candidate cost differs");
   }
 }
+struct WeightedCase { const char* profile; const char* aggregation; bool nonnegative, unit; };
+const WeightedCase weighted_cases[] = {
+  {"single-source-shortest-paths:cpp:default", "min", true, false},
+  {"many-source-shortest-paths:cpp:edge_weight", "min", true, false},
+  {"many-source-shortest-paths:cpp:unweighted", "min", true, true},
+  {"spanning-tree-forest:cpp:minimum", "min", false, false},
+  {"spanning-tree-forest:cpp:maximum", "max", false, false}
+};
+bool weighted_path(const gm::Graph& graph, const WeightedCase& test) {
+  auto reference_work = unlimited(); std::optional<rt::WeightedGraph> expected; std::string failure;
+  try { expected = gm::legacy_test::weighted(graph, true, test.nonnegative, test.aggregation, "outgoing", reference_work); }
+  catch (const std::exception& e) { failure = e.what(); }
+  // Frozen many-source unweighted conversion from 201b2367; validates stored
+  // lengths before using unit distances, including discarded self-loops.
+  if (expected && test.unit) for (auto& row : expected->rows) for (auto& arc : row) arc.weight = 1;
+  for (int repeat=0; repeat<2; ++repeat) {
+    auto work = unlimited(); std::shared_ptr<const gm::ViewResult> input; std::string actual_failure;
+    try { input = rt::consume_view(graph, rt::cpu_view_profile(test.profile), work, rt::ViewBudget::weighted_adjacency); }
+    catch (const std::exception& e) { actual_failure = e.what(); }
+    if (failure != actual_failure) throw std::runtime_error(std::string(test.profile)+": rejection differs");
+    if (!expected) continue;
+    const auto& view = std::get<gm::CsrView>(input->view);
+    std::vector<std::uint64_t> offsets{0}; std::vector<gm::VertexIndex> indices; std::vector<double> weights;
+    for (const auto& row : expected->rows) {
+      for (const auto& arc : row) { indices.push_back(arc.target); weights.push_back(arc.weight); }
+      offsets.push_back(indices.size());
+    }
+    equal(offsets,view.offsets); equal(indices,view.indices); equal(weights,std::get<std::vector<double>>(view.weights));
+    if (view.directed != expected->directed || work.candidates != reference_work.candidates)
+      throw std::runtime_error(std::string(test.profile)+": direction/candidate cost differs");
+  }
+  return !expected;
+}
 void contracts() {
   const auto raw = rt::strict_json(R"({"graph":{"id":"profile","directed":true,"allows_self_loops":true,"allows_parallel_edges":true},
     "vertices":[{"id":0},{"id":1},{"id":2}],"edges":[
@@ -41,6 +74,7 @@ void contracts() {
       {"id":3,"source":2,"target":2,"weight":-1}]})");
   const auto graph = rt::parse_graph(raw);
   traversal(graph);
+  for (const auto& test : weighted_cases) weighted_path(graph,test);
   for (const auto* mode : {"independent", "nearest_source"}) {
     const rt::json::object request{{"command","run"},{"operation","breadth-first-search"},
       {"device","cpu"},{"graph",raw},{"parameters",{{"sources",{0,1}},{"source_mode",mode}}}};
@@ -52,6 +86,29 @@ void contracts() {
         used.at("view") != rt::json::parse(declared.spec.canonical_json()))
       throw std::runtime_error("BFS consumed a view different from its declaration");
   }
+  auto positive = raw;
+  for (auto& edge : positive.as_object().at("edges").as_array())
+    edge.as_object()["weight"] = std::abs(edge.as_object().at("weight").to_number<double>());
+  for (const auto& test : weighted_cases) {
+    const auto& profile = rt::cpu_view_profile(test.profile);
+    auto input = positive;
+    rt::json::object parameters;
+    const auto& operation = profile.operations.front();
+    if (operation == "single-source-shortest-paths") parameters["source"] = 0;
+    if (operation == "many-source-shortest-paths") parameters["weight_mode"] = test.unit ? "unweighted" : "edge_weight";
+    if (operation == "spanning-tree-forest") {
+      input.as_object().at("graph").as_object()["directed"] = false;
+      parameters["objective"] = std::string(test.aggregation) == "max" ? "maximum" : "minimum";
+    }
+    const rt::json::object request{{"command","run"},{"operation",operation},{"device","cpu"},
+                                    {"graph",input},{"parameters",parameters}};
+    const auto response = rt::strict_json(rt::request(rt::json::serialize(request))).as_object();
+    if (response.contains("error")) throw std::runtime_error(rt::json::serialize(response));
+    const auto& used = response.at("representations").as_array().back().as_object();
+    if (rt::string(used.at("view_profile"),"view_profile") != profile.id ||
+        used.at("view") != rt::json::parse(profile.spec.canonical_json()))
+      throw std::runtime_error("Weighted path consumed a different declared spec");
+  }
   for (unsigned budget = 0; budget < 10; ++budget) {
     auto a = unlimited(), b = unlimited(); a.max_candidates = b.max_candidates = budget;
     std::string expected, actual;
@@ -62,18 +119,28 @@ void contracts() {
   }
   std::cout << "CPU traversal declaration, arrays and budgets passed\n";
 }
-int main(int argc, char**) {
+int main(int argc, char** argv) {
   try {
-    if (argc > 1) { contracts(); return 0; }
+    if (argc > 1 && std::string(argv[1]) == "--self-test") { contracts(); return 0; }
+    const bool weighted = argc > 1 && std::string(argv[1]) == "--weighted-paths";
     std::string line; std::size_t count=0;
     while (std::getline(std::cin,line)) {
       const auto input=rt::strict_json(line).as_object();
-      try { traversal(rt::parse_graph(input.at("graph"))); }
+      try {
+        const auto graph = rt::parse_graph(input.at("graph"));
+        if (weighted) {
+          for (const auto& test : weighted_cases) {
+            const bool rejected = weighted_path(graph,test);
+            std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
+              {"profile",test.profile},{"equal",true},{"rejected",rejected}}) << '\n';
+          }
+        } else traversal(graph);
+      }
       catch (const std::exception& e) { throw std::runtime_error(rt::string(input.at("dataset"),"dataset")+": "+e.what()); }
-      std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
+      if (!weighted) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU traversal array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }

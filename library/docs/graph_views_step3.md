@@ -47,3 +47,19 @@ Checkpoint `01-traversal` passes 53 CTests, 238 Python tests and all 82 CPU
 admissions. Its byte golden compares the actual declared view with the frozen
 old adjacency builder on every Step 2 corpus graph, including warm-cache costs.
 The declaration test also checks the spec reported by real BFS requests.
+
+## Weighted paths
+
+Single-source and many-source shortest paths now read weighted CSR directly.
+Minimum/maximum spanning forests read candidates from that same layout. Five
+immutable profiles describe their weight modes and collapse policies. The
+unweighted many-source profile retains the original rule that stored negative
+lengths are invalid, including dropped self-loops; it requests unit weights from
+the factory instead of overwriting them in the adapter.
+
+Checkpoint `02-weighted-paths` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Its five-profile golden compares offsets, neighbors, f64 weight bits,
+direction, successful candidate counts and rejection messages against the frozen
+old builders, including cold/warm cache cases. Real operation requests also check
+that the consumed spec equals the adapter's declaration. CPU path arithmetic and
+tie-breaking are unchanged; the cuGraph code path remains for Step 4.

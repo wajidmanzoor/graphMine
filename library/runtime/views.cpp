@@ -250,6 +250,8 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
   for (EdgeIndex i = 0; i < graph.edge_count(); ++i) {
     charge(1);
     const auto& edge = graph.canonical().edges[i];
+    if (spec.nonnegative_edge_weights)
+      check(edge.weight.value_or(1) >= 0, "This operation requires nonnegative edge weights");
     const auto weight = spec.weights == "none" ? Weight{} : cast_weight(edge_number(edge, spec), spec, summary);
     if (spec.nonnegative_weights)
       check(spec.weights == "rational_exact" ? *weight.rational >= 0 :
@@ -432,7 +434,7 @@ ViewSpec ViewSpec::from_json(std::string_view input) {
   const auto value = rt::object(rt::strict_json(input), "view spec");
   rt::fields(value, {"kind", "coo_layout", "direction", "self_loops", "parallel_edges", "weights", "weight_source",
                     "edge_ids", "labels", "bipartite_sides", "sorted_neighbors", "index_width",
-                    "limits", "parameters", "nonnegative_weights"});
+                    "limits", "parameters", "nonnegative_weights", "nonnegative_edge_weights"});
   ViewSpec spec;
   for (auto [key, target] : std::initializer_list<std::pair<const char*, std::string*>>{
            {"kind", &spec.kind}, {"coo_layout", &spec.coo_layout}, {"direction", &spec.direction}, {"self_loops", &spec.self_loops},
@@ -441,7 +443,8 @@ ViewSpec ViewSpec::from_json(std::string_view input) {
            {"index_width", &spec.index_width}})
     if (value.contains(key)) *target = rt::string(value.at(key), key);
   if (spec.coo_layout == "records" && !value.contains("sorted_neighbors")) spec.sorted_neighbors = false;
-  for (auto [key, target] : {std::pair{"edge_ids", &spec.edge_ids}, {"sorted_neighbors", &spec.sorted_neighbors}, {"nonnegative_weights", &spec.nonnegative_weights}})
+  for (auto [key, target] : {std::pair{"edge_ids", &spec.edge_ids}, {"sorted_neighbors", &spec.sorted_neighbors},
+                           {"nonnegative_weights", &spec.nonnegative_weights}, {"nonnegative_edge_weights", &spec.nonnegative_edge_weights}})
     if (value.contains(key)) {
       check(value.at(key).is_bool(), std::string(key) + " must be boolean");
       *target = value.at(key).as_bool();
@@ -477,7 +480,8 @@ std::string ViewSpec::canonical_json() const {
   for (const auto& name : sorted_labels) columns.push_back(json::value(name));
   json::object result{{"kind", kind}, {"coo_layout", coo_layout}, {"direction", direction}, {"self_loops", self_loops},
                       {"parallel_edges", parallel_edges}, {"weights", weights}, {"weight_source", weight_source},
-                      {"nonnegative_weights", nonnegative_weights}, {"edge_ids", edge_ids}, {"labels", columns}, {"bipartite_sides", bipartite_sides},
+                      {"nonnegative_weights", nonnegative_weights}, {"nonnegative_edge_weights", nonnegative_edge_weights},
+                      {"edge_ids", edge_ids}, {"labels", columns}, {"bipartite_sides", bipartite_sides},
                       {"sorted_neighbors", sorted_neighbors}, {"index_width", index_width},
                       {"limits", {{"max_vertices", limits.max_vertices}, {"max_edges", limits.max_edges}}}};
   if (parameters)

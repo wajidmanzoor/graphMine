@@ -143,6 +143,9 @@ operation IDs, parameters and algorithm result fields are unchanged.
 it when the existing operation requires nonnegative input, including weights on
 self-loops that will be dropped. This validation belongs to the shared builder
 and participates in cache identity.
+`nonnegative_edge_weights` separately retains stored-length validation for
+existing hop-count profiles even when `weight_source` is `unit`. Both validations
+run before self-loop removal.
 
 ## Cache
 

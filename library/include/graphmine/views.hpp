@@ -20,6 +20,8 @@ struct ViewSpec {
   std::string weight_source = "edge.weight";
   // Validate all selected input weights, including edges subsequently dropped.
   bool nonnegative_weights = false;
+  // Some existing hop-count profiles still validate stored edge lengths.
+  bool nonnegative_edge_weights = false;
   bool edge_ids = false;
   std::vector<std::string> labels;
   std::string bipartite_sides = "none";

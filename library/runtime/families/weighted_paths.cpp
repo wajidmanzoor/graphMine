@@ -7,14 +7,71 @@
 
 #include "exact_number.hpp"
 #include "internal.hpp"
+#include "view_profiles.hpp"
 
 namespace graphmine::runtime {
 namespace {
+const ViewProfile sssp_view{"single-source-shortest-paths:cpp:default", {"single-source-shortest-paths"}, R"({
+  "kind": "csr",
+  "direction": "keep",
+  "self_loops": "drop",
+  "parallel_edges": "collapse:min",
+  "weights": "f64",
+  "weight_source": "edge.weight",
+  "nonnegative_weights": true,
+  "nonnegative_edge_weights": false,
+  "sorted_neighbors": true
+})"};
+const ViewProfile many_weighted_view{"many-source-shortest-paths:cpp:edge_weight", {"many-source-shortest-paths"}, R"({
+  "kind": "csr",
+  "direction": "keep",
+  "self_loops": "drop",
+  "parallel_edges": "collapse:min",
+  "weights": "f64",
+  "weight_source": "edge.weight",
+  "nonnegative_weights": true,
+  "nonnegative_edge_weights": false,
+  "sorted_neighbors": true
+})"};
+const ViewProfile many_unit_view{"many-source-shortest-paths:cpp:unweighted", {"many-source-shortest-paths"}, R"({
+  "kind": "csr",
+  "direction": "keep",
+  "self_loops": "drop",
+  "parallel_edges": "collapse:min",
+  "weights": "f64",
+  "weight_source": "unit",
+  "nonnegative_weights": false,
+  "nonnegative_edge_weights": true,
+  "sorted_neighbors": true
+})"};
+const ViewProfile forest_min_view{"spanning-tree-forest:cpp:minimum", {"spanning-tree-forest"}, R"({
+  "kind": "csr",
+  "direction": "keep",
+  "self_loops": "drop",
+  "parallel_edges": "collapse:min",
+  "weights": "f64",
+  "weight_source": "edge.weight",
+  "nonnegative_weights": false,
+  "nonnegative_edge_weights": false,
+  "sorted_neighbors": true
+})"};
+const ViewProfile forest_max_view{"spanning-tree-forest:cpp:maximum", {"spanning-tree-forest"}, R"({
+  "kind": "csr",
+  "direction": "keep",
+  "self_loops": "drop",
+  "parallel_edges": "collapse:max",
+  "weights": "f64",
+  "weight_source": "edge.weight",
+  "nonnegative_weights": false,
+  "nonnegative_edge_weights": false,
+  "sorted_neighbors": true
+})"};
+
 struct ExactSearch {
   std::vector<std::optional<Exact>> distances;
   std::vector<std::int64_t> predecessors;
 };
-ExactSearch dijkstra(const WeightedGraph& graph, VertexIndex source, Work& work) {
+ExactSearch dijkstra(const WeightedCsrInput& graph, VertexIndex source, Work& work) {
   work.tick(graph.rows.size());
   ExactSearch result{std::vector<std::optional<Exact>>(graph.rows.size()),
                      std::vector<std::int64_t>(graph.rows.size(), -1)};
@@ -59,17 +116,26 @@ json::array external_vertices(const Graph& graph, const std::vector<VertexIndex>
   for (const auto v : values) result.push_back(id_json(graph.external_id(v)));
   return result;
 }
-std::vector<ExactSearch> searches(const WeightedGraph& graph,
-                                  const std::vector<VertexIndex>& sources,
+std::vector<ExactSearch> searches(const Graph& graph, const ViewProfile& profile,
+                                  const std::vector<VertexIndex>& sources, bool compute,
                                   const std::string& backend, int device, Work& work) {
   std::vector<ExactSearch> result;
-  work.tick(static_cast<std::uint64_t>(graph.rows.size()) * sources.size());
   if (backend == "cpp") {
-    for (const auto source : sources) result.push_back(dijkstra(graph, source, work));
+    const auto view = consume_view(graph, profile, work, ViewBudget::weighted_adjacency);
+    if (!compute) return result;
+    work.tick(static_cast<std::uint64_t>(graph.vertex_count()) * sources.size());
+    const WeightedCsrInput input(std::get<CsrView>(view->view));
+    for (const auto source : sources) result.push_back(dijkstra(input, source, work));
   } else {
-    for (const auto& computed : cugraph_shortest_paths(graph, sources, device, work)) {
-      ExactSearch row{std::vector<std::optional<Exact>>(graph.rows.size()), computed.predecessors};
-      for (std::size_t i = 0; i < graph.rows.size(); ++i)
+    // Retain the cuGraph adapter until its own migration/evidence step.
+    auto input = weighted_graph(graph, true, true, "min", "outgoing", work);
+    if (profile.spec.weight_source == "unit")
+      for (auto& row : input.rows) for (auto& arc : row) arc.weight = 1;
+    if (!compute) return result;
+    work.tick(static_cast<std::uint64_t>(graph.vertex_count()) * sources.size());
+    for (const auto& computed : cugraph_shortest_paths(input, sources, device, work)) {
+      ExactSearch row{std::vector<std::optional<Exact>>(graph.vertex_count()), computed.predecessors};
+      for (std::size_t i = 0; i < graph.vertex_count(); ++i)
         if (computed.distances[i] < std::numeric_limits<double>::max())
           row.distances[i] = Exact(computed.distances[i]);
       result.push_back(std::move(row));
@@ -107,8 +173,7 @@ json::object shortest_paths(const Graph& graph, const json::object& args,
   }
   const bool predecessors = boolean(args, "return_predecessors", true), exact = backend == "cpp";
   work.output(graph.vertex_count());
-  const auto input = weighted_graph(graph, true, true, "min", "outgoing", work);
-  const auto computed = searches(input, {source}, backend, device, work).front();
+  const auto computed = searches(graph, sssp_view, {source}, true, backend, device, work).front();
   json::array rows;
   for (VertexIndex v = 0; v < graph.vertex_count(); ++v) {
     auto distance = computed.distances[v];
@@ -147,15 +212,10 @@ json::object many_shortest_paths(const Graph& graph, const json::object& args,
   const auto targets = vertices(
       graph, args.contains("destinations") ? args.at("destinations") : json::value(nullptr));
   work.output(static_cast<std::uint64_t>(sources.size()) * targets.size());
-  // The reference contract rejects negative stored lengths even when asking
-  // for hop counts; retain that validation instead of changing request meaning.
-  auto input = weighted_graph(graph, true, true, "min", "outgoing", work);
-  if (mode == "unweighted")
-    for (auto& row : input.rows)
-      for (auto& arc : row) arc.weight = 1;
+  // The unit profile retains the legacy stored-length sign validation.
+  const auto& profile = mode == "unweighted" ? many_unit_view : many_weighted_view;
   const bool exact = backend == "cpp";
-  const auto computed = targets.empty() ? std::vector<ExactSearch>{}
-                                        : searches(input, sources, backend, device, work);
+  const auto computed = searches(graph, profile, sources, !targets.empty(), backend, device, work);
   json::array rows;
   for (std::size_t i = 0; !targets.empty() && i < sources.size(); ++i)
     for (const auto target : targets) {
@@ -189,15 +249,25 @@ json::object spanning_forest(const Graph& graph, const json::object& args,
   require(objective == "minimum" || objective == "maximum", "Unknown spanning forest objective");
   const bool connected = boolean(args, "require_connected", false),
              maximum = objective == "maximum";
-  const auto input = weighted_graph(graph, true, false, maximum ? "max" : "min", "outgoing", work);
+  std::optional<WeightedGraph> gpu_input;
   struct Edge {
     VertexIndex u, v;
     double weight;
   };
   std::vector<Edge> candidates;
-  for (VertexIndex u = 0; u < input.rows.size(); ++u)
-    for (const auto& arc : input.rows[u])
-      if (u < arc.target) candidates.push_back({u, arc.target, arc.weight});
+  auto collect = [&](const auto& rows) {
+    for (VertexIndex u = 0; u < rows.size(); ++u)
+      for (const auto& arc : rows[u])
+        if (u < arc.target) candidates.push_back({u, arc.target, arc.weight});
+  };
+  if (backend == "cpp") {
+    const auto view = consume_view(graph, maximum ? forest_max_view : forest_min_view,
+                                  work, ViewBudget::weighted_adjacency);
+    collect(WeightedCsrRows{std::get<CsrView>(view->view)});
+  } else {
+    gpu_input = weighted_graph(graph, true, false, maximum ? "max" : "min", "outgoing", work);
+    collect(gpu_input->rows);
+  }
   std::vector<VertexIndex> parents(graph.vertex_count()), sizes(graph.vertex_count(), 1);
   std::iota(parents.begin(), parents.end(), 0);
   auto root = [&](VertexIndex v) {
@@ -227,6 +297,7 @@ json::object spanning_forest(const Graph& graph, const json::object& args,
       if (join(edge.u, edge.v)) chosen.push_back(edge);
     }
   } else {
+    const auto& input = *gpu_input;
     std::set<std::pair<VertexIndex, VertexIndex>> seen;
     for (auto [u, v] : cugraph_spanning_forest(input, maximum, device, work)) {
       work.tick();
