@@ -4,13 +4,23 @@
 
 #include "internal.hpp"
 #include "native_random.hpp"
+#include "view_profiles.hpp"
 
 namespace graphmine::runtime {
 namespace {
-MiningGraph conflicts(const Graph& graph, unsigned distance, Work& work) {
+constexpr const char* adjacency_spec = R"({"kind":"csr","direction":"keep","self_loops":"drop",
+  "parallel_edges":"collapse:first","weights":"none","sorted_neighbors":true})";
+const ViewProfile independent_profile{"maximal-independent-set:cpp:default", {"maximal-independent-set"}, adjacency_spec};
+const ViewProfile coloring_profile{"vertex-coloring:cpp:default", {"vertex-coloring"}, adjacency_spec};
+MiningGraph conflicts(const Graph& graph, unsigned distance, const ViewProfile& profile,
+                       const std::string& backend, Work& work) {
   require(!graph.directed(), "Independent sets and coloring require undirected input");
   work.tick(graph.vertex_count());
-  const auto adj = adjacency(graph, work);
+  MiningGraph adj;
+  if (backend == "cpp") {
+    const auto input = consume_view(graph, profile, work, ViewBudget::original_edges);
+    adj = adjacency_layout(std::get<CsrView>(input->view));
+  } else adj = adjacency(graph, work);
   if (distance == 1) return adj;
   MiningGraph output(adj.size());
   for (VertexIndex u = 0; u < adj.size(); ++u) {
@@ -39,7 +49,7 @@ json::object maximal_independent(const Graph& graph, const json::object& args,
                                  const std::string& backend, int device, Work& work) {
   fields(args, {"random_seed"});
   NativeRandom rng(args);
-  const auto adj = conflicts(graph, 1, work);
+  const auto adj = conflicts(graph, 1, independent_profile, backend, work);
   std::vector<VertexIndex> chosen;
   if (backend == "cpp") {
     std::vector<bool> blocked(adj.size(), false);
@@ -89,7 +99,7 @@ json::object vertex_coloring(const Graph& graph, const json::object& args,
   const auto distance = args.contains("distance") ? uint(args.at("distance"), "distance") : 1;
   require(distance == 1 || distance == 2, "Coloring distance must be 1 or 2");
   NativeRandom rng(args);
-  const auto adj = conflicts(graph, distance, work);
+  const auto adj = conflicts(graph, distance, coloring_profile, backend, work);
   work.output(adj.size());
   std::vector<std::uint32_t> colors;
   if (backend == "cpp") {

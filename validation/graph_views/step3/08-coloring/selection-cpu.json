@@ -1,0 +1,74 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 28,
+    "failed": 0,
+    "implementation_sha256": "6dea1bb50eb33fe7d8dffe08d4f020aad800b3293e9696014c6336ebc24975d3"
+  },
+  {
+    "suite": "independent",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2286,
+    "failed": 0,
+    "implementation_sha256": "6dea1bb50eb33fe7d8dffe08d4f020aad800b3293e9696014c6336ebc24975d3"
+  },
+  {
+    "suite": "coloring",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "6dea1bb50eb33fe7d8dffe08d4f020aad800b3293e9696014c6336ebc24975d3"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 13762,
+    "failed": 0,
+    "implementation_sha256": "6dea1bb50eb33fe7d8dffe08d4f020aad800b3293e9696014c6336ebc24975d3"
+  },
+  {
+    "suite": "walks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1788,
+    "failed": 0,
+    "implementation_sha256": "6dea1bb50eb33fe7d8dffe08d4f020aad800b3293e9696014c6336ebc24975d3"
+  },
+  {
+    "suite": "sampling",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2304,
+    "failed": 0,
+    "implementation_sha256": "6dea1bb50eb33fe7d8dffe08d4f020aad800b3293e9696014c6336ebc24975d3"
+  },
+  {
+    "suite": "probability",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 7,
+    "failed": 0,
+    "implementation_sha256": "6dea1bb50eb33fe7d8dffe08d4f020aad800b3293e9696014c6336ebc24975d3"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 16,
+    "failed": 0,
+    "implementation_sha256": "6dea1bb50eb33fe7d8dffe08d4f020aad800b3293e9696014c6336ebc24975d3"
+  },
+  {
+    "suite": "large",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "6dea1bb50eb33fe7d8dffe08d4f020aad800b3293e9696014c6336ebc24975d3"
+  }
+]

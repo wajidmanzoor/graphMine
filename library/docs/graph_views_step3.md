@@ -141,3 +141,15 @@ repacked row bytes, weight bits, direction, successful candidate costs and
 matching rejections. Declaration checks exercise every weight/direction profile
 and all three personalized PageRank dangling policies. GPU solver paths retain
 their existing input builders.
+
+## Coloring and maximal independent set
+
+The seeded greedy coloring and maximal-independent-set algorithms now obtain
+their adjacency rows from declared CSR views. Their seeded traversal, conflict
+checks and distance-two conflict construction remain unchanged. GPU adapters
+continue to use their existing input path.
+
+Checkpoint `08-coloring` passes 53 CTests, 238 Python tests and all 82 CPU
+admissions. Both profiles pass 13,142 corpus cases comparing CSR and copied row
+bytes, with identical candidate costs. Real-operation checks verify declarations
+for maximal independent set and both supported coloring distances.

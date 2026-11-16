@@ -42,6 +42,7 @@ const char* clique_profiles[] = {
 };
 const char* reachability_profiles[] = {"transitive-closure:cpp:default", "overlapping-communities:cpp:default"};
 const char* density_profiles[] = {"densest-subgraph:cpp:clique_terms", "quasi-cliques:cpp:default"};
+const char* coloring_profiles[] = {"maximal-independent-set:cpp:default", "vertex-coloring:cpp:default"};
 struct ExactCase { const char* profile; bool weighted, nonnegative = true, loops = false; };
 const ExactCase density_exact_cases[] = {
   {"densest-subgraph:cpp:edge_weight",true}, {"densest-subgraph:cpp:unweighted",false},
@@ -186,6 +187,11 @@ void contracts() {
   declared_request("k-cliques:cpp:default",undirected,{{"k",2},{"mode","enumerate"}});
   declared_request("k-core:cpp:default",undirected,{{"requested_k",1}});
   declared_request("minimum-vertex-cover:cpp:default",undirected,{{"mode","decision"},{"k",1}});
+  for (const auto* profile : coloring_profiles) {
+    traversal(graph,profile);
+    declared_request(profile,undirected,{{"random_seed",42}});
+  }
+  declared_request("vertex-coloring:cpp:default",undirected,{{"random_seed",42},{"distance",2}});
   for (const auto* profile : reachability_profiles) traversal(graph,profile);
   declared_request("transitive-closure:cpp:default",raw,{});
   declared_request("transitive-closure:cpp:default",raw,{{"enumerate_closure_edges",false}});
@@ -286,11 +292,13 @@ int main(int argc, char** argv) {
     const bool cliques = argc > 1 && std::string(argv[1]) == "--cliques";
     const bool reachability = argc > 1 && std::string(argv[1]) == "--reachability";
     const bool centrality = argc > 1 && std::string(argv[1]) == "--centrality";
+    const bool coloring = argc > 1 && std::string(argv[1]) == "--coloring";
     const bool density = argc > 1 && std::string(argv[1]) == "--density";
     std::vector<const char*> simple_profiles;
     if (cliques) simple_profiles.assign(std::begin(clique_profiles),std::end(clique_profiles));
     if (reachability) simple_profiles.assign(std::begin(reachability_profiles),std::end(reachability_profiles));
     if (density) simple_profiles.assign(std::begin(density_profiles),std::end(density_profiles));
+    if (coloring) simple_profiles.assign(std::begin(coloring_profiles),std::end(coloring_profiles));
     std::vector<WeightedCase> selected_weighted;
     if (weighted) selected_weighted.assign(std::begin(weighted_cases),std::end(weighted_cases));
     if (connectivity) selected_weighted.assign(std::begin(connectivity_cases),std::end(connectivity_cases));
@@ -328,7 +336,7 @@ int main(int argc, char** argv) {
       if (selected_weighted.empty() && simple_profiles.empty()) std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},{"profile","breadth-first-search:cpp:default"},{"equal",true}}) << '\n';
       ++count;
     }
-    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : "traversal") << " array goldens (cold/warm)\n";
+    std::cerr << count << " datasets passed CPU " << (weighted ? "weighted-path" : connectivity ? "connectivity" : cliques ? "clique/core" : reachability ? "reachability" : density ? "density" : centrality ? "centrality" : coloring ? "coloring" : "traversal") << " array goldens (cold/warm)\n";
     return count ? 0 : 2;
   } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }
