@@ -87,6 +87,7 @@
     reset.append(make("h3", {}, "Automatic reset"), make("strong", {}, new Date(q.resets_at).toLocaleTimeString([], {hour: "numeric", minute: "2-digit"})), hint("Your allowance renews every 24 hours. Signing out does not reset usage."));
     const storage = make("section", {class: "account-card"}), mib = bytes => `${(bytes / 2 ** 20).toLocaleString([], {maximumFractionDigits: 1})} MiB`;
     if (q.storage) storage.append(make("h3", {}, "Storage"), make("strong", {class: "account-stat"}, `${mib(q.storage.used)} / ${mib(q.storage.limit)}`), hint(`Uploads ${mib(q.storage.uploads)}, saved analyses ${mib(q.storage.results)}, dataset versions and templates ${mib((q.storage.datasets || 0) + (q.storage.templates || 0))}, temporary query previews ${mib(q.storage.previews || 0)}, active database work reservations ${mib(q.storage.database_jobs || 0)}, exploration settings ${mib(q.storage.exploration || 0)}, project snapshots and notes ${mib(q.storage.shared || 0)}. Unused query previews expire after 24 hours. Remove unused conversations, files or saved library/project items to free space.`));
+    if (q.storage?.reset_bytes) storage.append(hint(`${mib(q.storage.stored)} saved in total. Your administrator reset the allowance with ${mib(q.storage.reset_bytes)} already stored; only storage above that amount counts toward your allowance.`));
     details.append(jobs, reset, ...(q.storage ? [storage] : []));
     usagePanel.replaceChildren(make("h3", {class: "account-section-title"}, "Usage"), hint("See what you have used and when your allowance renews."), card, details);
     if (data.user.role === "admin") {
@@ -207,10 +208,10 @@
           await loadUsers(user.username); await refreshUsage(); message(notice, `Daily token limit updated for ${user.username}.`);
         });
       });
-      const reset = button("Reset token usage", "account-reset-tokens");
+      const reset = button("Reset all usage", "account-reset-tokens");
       reset.addEventListener("click", () => action(reset, notice, async () => {
         await post(`${endpoint}/reset-tokens`);
-        await loadUsers(user.username); await refreshUsage(); message(notice, `Token usage reset for ${user.username}. The shared server budget is unchanged.`);
+        await loadUsers(user.username); await refreshUsage(); message(notice, `All usage reset for ${user.username}: tokens, graph jobs and upload/storage allowance.`);
       }));
       const resetPassword = make("form", {class: "account-password-reset"});
       const field = passwordField("account-reset-password");
@@ -232,7 +233,7 @@
         await post(`${endpoint}/${user.disabled ? "enable" : "disable"}`);
         await loadUsers(user.username); message(notice, `Account ${user.disabled ? "enabled" : "disabled"}.`);
       }));
-      detail.append(head, quota, limits, hint(`Maximum ${number(identity.quota.server_token_limit)} tokens. Use 0 to pause AI access.`), reset, hint("Reset clears this user's spent tokens. Their scheduled reset time, graph jobs and shared server usage stay the same."), resetPassword, toggle);
+      detail.append(head, quota, limits, hint(`Maximum ${number(identity.quota.server_token_limit)} tokens. Use 0 to pause AI access.`), reset, hint("Reset clears tokens and graph jobs, and grants a fresh upload/storage allowance. Saved files, configured limits, the scheduled reset time and shared server usage are preserved. Wait for active work to finish first."), resetPassword, toggle);
       if (toggle.disabled) detail.append(hint("You cannot disable your own administrator account."));
     }
     async function loadUsers(selection = selectedUser) {

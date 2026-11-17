@@ -1382,6 +1382,7 @@
     if (!row || typeof row !== "object" || Array.isArray(row)) return [];
     if (state.port.vertex_field && row[state.port.vertex_field] !== undefined) return [row[state.port.vertex_field]];
     if (Array.isArray(row.vertices)) return members(row.vertices);
+    if (Array.isArray(row.left_vertices) && Array.isArray(row.right_vertices)) return [...row.left_vertices, ...row.right_vertices];
     if (Array.isArray(row.left) && Array.isArray(row.right)) return [...row.left, ...row.right];
     if (row.vertex !== undefined) return [row.vertex];
     if (row.source !== undefined && row.target !== undefined) return [row.source, row.target];

@@ -18,7 +18,7 @@ import secrets
 import sqlite3
 import time
 from collections import defaultdict
-from contextlib import asynccontextmanager, closing, suppress
+from contextlib import asynccontextmanager, closing, nullcontext, suppress
 from datetime import datetime, timezone
 from functools import lru_cache
 
@@ -109,6 +109,10 @@ class Accounts:
                 )
             if "daily_token_limit" not in columns:
                 db.execute("ALTER TABLE accounts ADD COLUMN daily_token_limit INTEGER")
+            if "storage_reset_bytes" not in columns:
+                db.execute(
+                    "ALTER TABLE accounts ADD COLUMN storage_reset_bytes INTEGER NOT NULL DEFAULT 0"
+                )
 
     def _audit(self, db, action, target, details=None):
         """Commit a secret-free activity entry in the mutation's transaction."""
@@ -233,7 +237,7 @@ class Accounts:
             return self._usage(db, user[0], self.clock())
 
     def reset_tokens(self, username):
-        """Clear this user's tokens; retain their reset schedule and shared charges."""
+        """Reset all user usage, retaining saved work, limits and shared charges."""
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
             user = db.execute(
@@ -247,20 +251,45 @@ class Accounts:
                 (user[0], now),
             ).fetchone():
                 raise AccountError(
-                    "Wait for this user's current AI request to finish before resetting tokens.",
+                    "Wait for this user's current AI request to finish before resetting usage.",
                     "tokens_in_use",
                     409,
                 )
+            principal = current_principal.get()
+            # The administrator's own reset holds a request lease. Other work
+            # must finish before taking the storage snapshot and clearing jobs.
+            if db.execute(
+                "SELECT 1 FROM account_leases WHERE user_id=? AND expires_at>? "
+                "AND (kind IN ('job','execution','planning') OR (kind='request' AND user_id!=?))",
+                (user[0], now, principal.user_id if principal else ""),
+            ).fetchone() or db.execute(
+                "SELECT 1 FROM database_jobs WHERE owner_id=? AND status IN ('queued','running','cancelling')",
+                (user[0],),
+            ).fetchone():
+                raise AccountError(
+                    "Wait for this user's current uploads and jobs to finish before resetting usage.",
+                    "usage_in_use",
+                    409,
+                )
+            storage = self.storage_usage(user[0], db=db)
             self._bucket(db, user[0], now)
             # A late settlement of an expired request must not refund new usage.
             # Its server period is retained so shared accounting remains correct.
             db.execute(
-                "UPDATE account_leases SET user_period=NULL WHERE user_id=? AND kind='model'",
+                "UPDATE account_leases SET user_period=NULL WHERE user_id=? AND kind IN ('model','job')",
                 (user[0],),
             )
-            db.execute("UPDATE quota_buckets SET tokens=0 WHERE scope=?", (user[0],))
-            self._audit(db, "tokens.reset", username)
-            return self._usage(db, user[0], now)
+            db.execute("UPDATE quota_buckets SET tokens=0,jobs=0 WHERE scope=?", (user[0],))
+            db.execute(
+                "UPDATE accounts SET storage_reset_bytes=? WHERE id=?",
+                (storage["stored"], user[0]),
+            )
+            self._audit(
+                db, "usage.reset", username,
+                {"storage_reset_bytes": storage["stored"]},
+            )
+            storage.update(used=0, reset_bytes=storage["stored"])
+            return dict(self._usage(db, user[0], now), storage=storage)
 
     def change_password(self, user_id, current_password, new_password):
         if not 12 <= len(new_password) <= 128:
@@ -454,9 +483,14 @@ class Accounts:
                 is not None
             )
 
-    def storage_usage(self, user_id):
-        """Raw uploads plus each conversation's saved analysis inputs and results."""
-        with self.database._connect() as db:
+    def storage_usage(self, user_id, *, db=None):
+        """Stored bytes and usage charged against the last administrator reset."""
+        connection = nullcontext(db) if db is not None else self.database._connect()
+        with connection as db:
+            account = db.execute(
+                "SELECT storage_reset_bytes FROM accounts WHERE id=?", (user_id,)
+            ).fetchone()
+            reset_bytes = account[0] if account else 0
             uploads = db.execute(
                 "SELECT coalesce(sum(json_extract(f.payload,'$.size_bytes')),0) FROM files f JOIN sessions s ON s.id=f.session_id WHERE s.owner_id=?",
                 (user_id,),
@@ -529,6 +563,7 @@ class Accounts:
                         continue
                     with suppress(OSError):
                         results += path.stat().st_size if path.is_file() else 0
+        stored = uploads + results + datasets + templates + shared + connections + previews + database_jobs + exploration
         return {
             "uploads": uploads,
             "results": results,
@@ -539,7 +574,9 @@ class Accounts:
             "previews": previews,
             "database_jobs": database_jobs,
             "exploration": exploration,
-            "used": uploads + results + datasets + templates + shared + connections + previews + database_jobs + exploration,
+            "stored": stored,
+            "reset_bytes": reset_bytes,
+            "used": max(0, stored - reset_bytes),
             "limit": self.settings.account_storage_bytes,
         }
 

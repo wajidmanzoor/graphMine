@@ -78,6 +78,20 @@ completeness and a dependent workflow example.
 
 ## Browser workspace
 
+For maximal bicliques, the application prepares complete partitions from the
+full selected snapshot and checks that every edge crosses between them. The
+model can select an offered entity-type choice (for example Users or Businesses);
+the server supplies both complete vertex-ID arrays before native validation.
+Complete `attributes.side` declarations are also supported. Sampled vertices
+never stand in for a complete partition. Missing sides become a clarification,
+and directed inputs require confirmation before creating an undirected copy.
+Partitions remain scoped to their original graph; transformed graphs require
+partitions belonging to that transformed graph.
+Prepared biclique plans use a 20-million-candidate search budget because the
+two completed sides produce more candidates than the original edge count
+suggests. The native 60-second and 100,000-output-item defaults still apply;
+explicit execution budgets are preserved.
+
 Open `/`, configure the API token through **Connection** if required, and upload
 a canonical graph or relationship CSV. Upload settings also accept feature
 vector and hypergraph JSON with an explicit input kind. Choose **CPU only**,

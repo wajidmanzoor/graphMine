@@ -692,6 +692,7 @@ def test_saved_analyses_count_toward_storage(account_settings, triangle_graph):
             runtime.analytics._directory(record) / "result.json",
             "x" * (len(triangle_graph) * 2),
         )
+        saved_result = (runtime.analytics._directory(record) / "result.json").read_bytes()
         storage = runtime.accounts.usage(user)["storage"]
         assert storage["uploads"] == len(triangle_graph)
         assert storage["results"] >= 2 * len(triangle_graph)
@@ -702,6 +703,16 @@ def test_saved_analyses_count_toward_storage(account_settings, triangle_graph):
             headers=auth,
         )
         assert refused.json()["error"]["code"] == "storage_limit"
+        reset = runtime.accounts.reset_tokens("alice")
+        assert reset["storage"]["used"] == 0
+        assert reset["storage"]["stored"] == storage["used"]
+        assert runtime.accounts.upload_remaining(user) == settings.account_storage_bytes
+        assert (runtime.analytics._directory(record) / "result.json").read_bytes() == saved_result
+        assert client.post(
+            f"/api/sessions/{sid}/files",
+            files={"file": ("after-reset.json", triangle_graph)},
+            headers=auth,
+        ).status_code == 201
 
 
 def test_retention_deletes_idle_conversations_but_not_running_work(account_settings):
@@ -1319,7 +1330,7 @@ def test_custom_token_limits_persist_and_are_enforced(account_settings):
     assert restarted.usage(alice)["token_limit"] == 1000
 
 
-def test_manual_token_reset_keeps_server_jobs_schedule_and_inflight_accounting(
+def test_manual_usage_reset_clears_jobs_keeps_server_schedule_and_inflight_accounting(
     account_settings,
 ):
     now = [1000000.0]
@@ -1334,9 +1345,11 @@ def test_manual_token_reset_keeps_server_jobs_schedule_and_inflight_accounting(
     now[0] += 241
     reset = accounts.reset_tokens("alice")
     assert reset["tokens_used"] == 0
-    assert reset["jobs_used"] == 1
+    assert reset["jobs_used"] == 0
     assert reset["resets_at"] == before["resets_at"]
     assert reset["server_tokens_remaining"] == before["server_tokens_remaining"]
+    with accounts.database._connect() as db:
+        assert db.execute("SELECT jobs FROM quota_buckets WHERE scope='server'").fetchone()[0] == 1
     accounts.settle_tokens(lease, 200)
     after = accounts.usage(user)
     assert after["tokens_used"] == 0
@@ -1347,8 +1360,78 @@ def test_manual_token_reset_keeps_server_jobs_schedule_and_inflight_accounting(
     assert accounts.usage(user)["server_tokens_used"] == 500
 
 
-def test_admin_quota_api_and_validation(account_settings):
-    with TestClient(create_app(account_settings)) as client:
+@pytest.mark.parametrize("kind", ["job", "execution", "planning", "request"])
+def test_usage_reset_waits_for_active_work(account_settings, kind):
+    accounts, _ = store(account_settings)
+    user = accounts.create_user("alice", PASSWORD)["id"]
+    accounts.settle_tokens(accounts.reserve_tokens(user, 500), 300)
+    lease = accounts.admit_jobs(user) if kind == "job" else accounts.acquire(user, kind, 8)
+    before = accounts.usage(user)
+    with pytest.raises(AccountError) as busy:
+        accounts.reset_tokens("alice")
+    assert busy.value.code == "usage_in_use"
+    assert accounts.usage(user) == before
+    accounts.release(lease)
+    assert accounts.reset_tokens("alice")["tokens_used"] == 0
+
+
+def test_usage_reset_preserves_late_job_refund_accounting(account_settings):
+    now = [1000000.0]
+    accounts, database = store(account_settings, now)
+    user = accounts.create_user("alice", PASSWORD)["id"]
+    lease = accounts.admit_jobs(user, 2)
+    with database._connect() as db:
+        db.execute("UPDATE account_leases SET expires_at=? WHERE id=?", (now[0] - 1, lease))
+    accounts.reset_tokens("alice")
+    # A new charge in the same daily window must survive the old job's refund.
+    with database._connect() as db:
+        db.execute("BEGIN IMMEDIATE")
+        accounts._charge(db, user, "jobs", 1)
+    accounts.abort_admission(lease)
+    assert accounts.usage(user)["jobs_used"] == 1
+    with database._connect() as db:
+        assert db.execute("SELECT jobs FROM quota_buckets WHERE scope='server'").fetchone()[0] == 1
+
+
+@pytest.mark.parametrize("status", ["queued", "running", "cancelling"])
+def test_usage_reset_waits_for_database_jobs(account_settings, status):
+    accounts, database = store(account_settings)
+    user = accounts.create_user("alice", PASSWORD)["id"]
+    accounts.settle_tokens(accounts.reserve_tokens(user, 500), 300)
+    with database._connect() as db:
+        db.execute(
+            "INSERT INTO database_jobs(id,owner_id,source_id,kind,status,document,request_hash,"
+            "reserved_bytes,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            ("pending", user, "demo", "query", status, "{}", "hash", 1024, "now", "now"),
+        )
+    with pytest.raises(AccountError) as busy:
+        accounts.reset_tokens("alice")
+    assert busy.value.code == "usage_in_use"
+    assert accounts.usage(user)["tokens_used"] == 300
+    assert accounts.storage_usage(user)["reset_bytes"] == 0
+    with database._connect() as db:
+        db.execute("DELETE FROM database_jobs WHERE id='pending'")
+    assert accounts.reset_tokens("alice")["storage"]["used"] == 0
+
+
+def test_storage_reset_migration_preserves_existing_accounts_and_usage(account_settings):
+    accounts, database = store(account_settings)
+    user = accounts.create_user("alice", PASSWORD, daily_token_limit=1000)["id"]
+    accounts.settle_tokens(accounts.reserve_tokens(user, 500), 300)
+    accounts.release(accounts.admit_jobs(user))
+    before = accounts.usage(user)
+    with database._connect() as db:
+        db.execute("ALTER TABLE accounts DROP COLUMN storage_reset_bytes")
+    restarted = Accounts(account_settings, Database(database.path))
+    assert restarted.usage(user) == before
+    assert restarted.login("alice", PASSWORD, "test")[1].user_id == user
+
+
+def test_admin_quota_api_and_validation(account_settings, triangle_graph):
+    settings = replace(
+        account_settings, account_storage_bytes=len(triangle_graph), account_daily_jobs=1
+    )
+    with TestClient(create_app(settings)) as client:
         accounts = client.app.state.runtime.accounts
         accounts.create_user("owner", PASSWORD, admin=True)
         accounts.create_user("alice", PASSWORD)
@@ -1367,6 +1450,27 @@ def test_admin_quota_api_and_validation(account_settings):
         bob = response.json()["id"]
         assert accounts.usage(bob)["token_limit"] == 12345
         accounts.settle_tokens(accounts.reserve_tokens(bob, 1000), 750)
+        accounts.release(accounts.admit_jobs(bob))
+        bob_auth = login(client, "bob")
+        sid = client.post(
+            "/api/sessions", headers=bob_auth, json={"domain_id": "general"}
+        ).json()["id"]
+        files = f"/api/sessions/{sid}/files"
+        uploaded = client.post(
+            files, headers=bob_auth, files={"file": ("graph.json", triangle_graph)}
+        )
+        assert uploaded.status_code == 201, uploaded.text
+        assert accounts.upload_remaining(bob) == 0
+        assert client.post(
+            files, headers=bob_auth, files={"file": ("full.json", triangle_graph)}
+        ).status_code == 429
+        with pytest.raises(AccountError) as exhausted:
+            accounts.admit_jobs(bob)
+        assert exhausted.value.code == "daily_jobs_limit"
+        alice_id = next(row["id"] for row in accounts.list_users() if row["username"] == "alice")
+        accounts.settle_tokens(accounts.reserve_tokens(alice_id, 100), 50)
+        accounts.release(accounts.admit_jobs(alice_id))
+        alice_before = accounts.usage(alice_id)
         for operation, body in (
             ("token-limit", {"daily_token_limit": 20000}),
             ("reset-tokens", {}),
@@ -1397,11 +1501,36 @@ def test_admin_quota_api_and_validation(account_settings):
         reset = client.post(f"{base}/bob/reset-tokens", headers=admin)
         assert reset.status_code == 200
         assert reset.json()["tokens_used"] == 0
-        assert reset.json()["server_tokens_used"] == 750
+        assert reset.json()["jobs_used"] == 0
+        assert reset.json()["server_tokens_used"] == 800
+        assert reset.json()["storage"]["used"] == 0
+        assert reset.json()["storage"]["stored"] == len(triangle_graph)
+        assert accounts.usage(alice_id) == alice_before
+        assert accounts.upload_remaining(bob) == len(triangle_graph)
+        assert client.get(files, headers=bob_auth).json()[0]["id"] == uploaded.json()["id"]
+        restarted = Accounts(settings, Database(settings.database_path))
+        assert restarted.upload_remaining(bob) == len(triangle_graph)
+        # A repeated reset grants one allowance, without accumulating credit.
+        repeated = client.post(f"{base}/bob/reset-tokens", headers=admin)
+        assert repeated.json()["storage"] == reset.json()["storage"]
+        assert client.post(
+            files, headers=bob_auth, files={"file": ("fresh.json", triangle_graph)}
+        ).status_code == 201
+        assert accounts.upload_remaining(bob) == 0
+        assert client.post(
+            files, headers=bob_auth, files={"file": ("full-again.json", triangle_graph)}
+        ).status_code == 429
+        accounts.release(accounts.admit_jobs(bob))
+        assert accounts.usage(bob)["jobs_used"] == 1
+        with accounts.database._connect() as db:
+            assert db.execute("SELECT jobs FROM quota_buckets WHERE scope='server'").fetchone()[0] == 3
+        assert accounts.activity()[0]["action"] == "usage.reset"
         rows = client.get(base, headers=admin).json()
         row = next(row for row in rows if row["username"] == "bob")
         assert row["quota"]["token_limit"] == 30000
         assert all("password_hash" not in row for row in rows)
+        # The administrator can also reset their own account via the UI endpoint.
+        assert client.post(f"{base}/owner/reset-tokens", headers=admin).status_code == 200
 
 
 def test_change_own_password_requires_current_password_and_revokes_logins(

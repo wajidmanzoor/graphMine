@@ -179,6 +179,7 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         runtime.accounts.settle_tokens(
             runtime.accounts.reserve_tokens(carol["id"], 1400), 900
         )
+        runtime.accounts.release(runtime.accounts.admit_jobs(carol["id"]))
         driver.find_element(By.ID, "account-refresh-users").click()
         wait.until(
             lambda d: (
@@ -202,14 +203,17 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         )
         driver.save_screenshot(str(tmp_path / "administrator-mobile.png"))
         driver.browsing_context.set_viewport(context=driver.current_window_handle, viewport={"width": 1400, "height": 1000})
-        driver.find_element(By.ID, "account-reset-tokens").click()
+        reset = driver.find_element(By.ID, "account-reset-tokens")
+        assert reset.text == "Reset all usage"
+        reset.click()
         wait.until(
             lambda d: (
-                "Token usage reset"
+                "All usage reset"
                 in d.find_element(By.ID, "account-admin-message").text
             )
         )
         assert runtime.accounts.usage(carol["id"])["tokens_used"] == 0
+        assert runtime.accounts.usage(carol["id"])["jobs_used"] == 0
         assert runtime.accounts.usage(carol["id"])["server_tokens_used"] == 13400
         driver.find_element(By.ID, "account-tab-profile").click()
 

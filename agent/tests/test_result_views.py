@@ -111,6 +111,32 @@ def test_densest_induces_only_returned_members_and_preserves_typed_ids():
     assert ids(view, "edges") == ["text"]
 
 
+@pytest.mark.parametrize("left,right", [("left_vertices", "right_vertices"), ("left", "right")])
+def test_biclique_view_resolves_both_sides_and_keeps_exact_ids(left, right, monkeypatch):
+    g = graph()
+    output = result("maximal-bicliques", "bipartite_groups", [
+        {left: [1], right: [2]},
+        {left: ["1"], right: [3]},
+    ])
+    before = deepcopy((g, output))
+    record = {"id": "w", "revision": 1, "validation": {"plan": {"steps": []}}}
+    service = SimpleNamespace(get=lambda _: record, _saved=lambda *args, **kwargs: {"result": output})
+    monkeypatch.setattr("graphmine_agent.result_views.input_graph", lambda *args: g)
+    default = result_view(service, "w", "mine", "out")
+    assert default["index"] == 0 and default["bipartite_sides"] == [[1], [2]]
+    assert ids(default, "vertices") == [1, 2] and ids(default, "edges") == ["12"]
+    selected = result_view(service, "w", "mine", "out", index=1)
+    assert selected["bipartite_sides"] == [["1"], [3]]
+    assert ids(selected, "vertices") == ["1", 3] and ids(selected, "edges") == ["text"]
+    context = result_view(service, "w", "mine", "out", index=1, context=True)
+    assert context["selected_vertices"] == ["1", 3]
+    assert context["vertex_count"] == 6 and context["edge_count"] == 6
+    limited = result_view(service, "w", "mine", "out", index=1, vertex_limit=1)
+    assert limited["bipartite_sides"] == [["1"], []]
+    assert limited["selection_truncated"]
+    assert (g, output) == before
+
+
 @pytest.mark.parametrize(
     "typ,value,expected",
     [

@@ -29,7 +29,7 @@ Changing a password signs out all devices and preserves usage.
 
 Administrators also see **Settings → Manage users**, where you can create ordinary
 accounts with a username, password and daily token allowance. Select a user to
-see their usage, edit their allowance, reset token usage, reset their password,
+see their usage, edit their allowance, reset all usage, reset their password,
 or disable and re-enable access. Search helps find accounts in a larger list.
 Ordinary users cannot use those controls or
 their API endpoints. Only the local CLI can create another administrator.
@@ -109,11 +109,19 @@ An administrator can set a whole-number limit from 0 to the shared server limit;
 preserves spent tokens and takes effect on the next request. Lowering a limit
 below current usage leaves no tokens remaining; requests already running finish.
 
-**Reset token usage** clears only the selected user's spent tokens. It preserves
-their scheduled 24-hour reset, graph-job usage, and shared server usage. Resetting
-is refused while that user has an active AI request; retry after it finishes.
-An individual reset cannot bypass an exhausted server allowance. The Usage tab
-shows the shared server allowance to administrators as a separate progress bar.
+**Reset all usage** clears the selected user's spent tokens and graph-job count,
+and restores their full upload/storage allowance. Existing files and saved work
+are kept: their total stored size becomes a persistent storage credit, and only
+storage above that amount counts against the allowance. The Usage tab shows both
+charged usage and the actual stored total after a reset. Repeating a reset
+replaces the credit with the current stored total; it does not add credits.
+The reset preserves configured limits, the scheduled 24-hour reset, and shared
+server usage. Per-file size, concurrency and execution limits still apply.
+Resetting is refused while that user has an active AI request, upload, planning
+request or queued/running job; retry after it finishes. An individual reset
+cannot bypass an exhausted server allowance. The existing `/reset-tokens` API
+route performs this complete reset too. The Usage tab shows the shared server
+allowance to administrators as a separate progress bar.
 
 These are starting limits, not a 100-concurrent-user capacity measurement. Graph
 algorithms have very different costs. Monitor CPU, GPU memory, execution time
