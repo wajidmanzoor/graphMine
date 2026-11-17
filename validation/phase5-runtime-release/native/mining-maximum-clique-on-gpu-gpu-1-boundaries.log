@@ -1,0 +1,4 @@
+Found clique of size 4.
+Found clique of size 4.
+Found clique of size 4.
+{"suite":"boundaries","backend":"maximum-clique-on-gpu","gpu_device":1,"passed_requests":25,"failed":0,"implementation_sha256":"464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"}

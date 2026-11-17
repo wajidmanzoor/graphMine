@@ -1,0 +1,1 @@
+{"suite":"maximum","backend":"maximum-clique-on-gpu","gpu_device":0,"passed_requests":132,"failed":0,"implementation_sha256":"464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"}

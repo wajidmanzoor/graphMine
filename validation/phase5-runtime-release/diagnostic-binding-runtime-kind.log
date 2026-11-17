@@ -1,0 +1,13 @@
+............................................................F........... [ 51%]
+....................................................................     [100%]
+=================================== FAILURES ===================================
+___________________ test_cudf_reader_refuses_cpu_only_build ____________________
+library/tests/test_native_binding.py:527: in test_cudf_reader_refuses_cpu_only_build
+    assert caught.value.code == "backend_unavailable"
+E   AssertionError: assert 'invalid_input' == 'backend_unavailable'
+E     
+E     - backend_unavailable
+E     + invalid_input
+=========================== short test summary info ============================
+FAILED library/tests/test_native_binding.py::test_cudf_reader_refuses_cpu_only_build
+1 failed, 139 passed in 71.54s (0:01:11)

@@ -1,0 +1,66 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 25,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  },
+  {
+    "suite": "independent",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  },
+  {
+    "suite": "coloring",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 2200,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  },
+  {
+    "suite": "subgraphs",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 8642,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  },
+  {
+    "suite": "walks",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 1192,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  },
+  {
+    "suite": "probability",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 2,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 2,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  },
+  {
+    "suite": "large",
+    "backend": "libcugraph",
+    "gpu_device": 0,
+    "passed_requests": 11,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  }
+]
