@@ -1,0 +1,95 @@
+{
+  "completed_at": "2026-11-17T00:03:51.430639+00:00",
+  "scope": "Requested chat and Activity changes before Phase 2; Phase 2 has not started.",
+  "environment": "devlopment",
+  "before": {
+    "chat": "Plan decisions, stage progress and inline model reasoning appeared alongside results.",
+    "activity": "Stage/validation messages and collapsed reasoning; answer model calls were not recorded in Activity."
+  },
+  "after": {
+    "chat": "Answer and computed facts, a collapsed optional Explanation, and a results link. Clarification choices, Stop and review controls remain available.",
+    "activity": "Raw returned reasoning grouped by question, one entry per model-call attempt including retries and answer composition.",
+    "missing_reasoning": "Explicit label when the model returned no reasoning or historical reasoning was not recorded.",
+    "persistence": "Call IDs correlate start, streamed fragments, full reasoning and completion. Partial failed-call reasoning survives pagination and reload.",
+    "call_count_example": "Route + failed plan + retried plan + answer = four Activity entries, including the answer call with no returned reasoning."
+  },
+  "source_files": {
+    "agent/graphmine_agent/analytics.py": "3be173c942d182bc7e87703e8ccbd51cca256e7c682b70d4f661899aaa61a22e",
+    "agent/graphmine_agent/analytics_planning.py": "161fcd39730f677f8988d36b44920e4a5a9359de9d6fae676884cc197a05b0a2",
+    "agent/graphmine_agent/conversation_timeline.py": "d030a9abc6bb70864e82cdaa89ca0e3420f6461fe1f978644a806e72adb28e53",
+    "agent/graphmine_agent/static/analytics-incremental.js": "17c9a7b9516d3f35a5657074ad4587b28ad49cf38ce472de433b7d32848404ef",
+    "agent/graphmine_agent/static/analytics-ui.js": "18a3dd2a709789914197017a26aaf1c609b2cce73ff45b1a76944e3a634f7d2e",
+    "agent/graphmine_agent/static/analytics.html": "9709b29948996b8071eb11c0b7716635e9f1b3fea9bbd07b5cc3ed52e4279164",
+    "agent/graphmine_agent/static/analytics-chat.css": "5ecb55d2807d523b8189183cc7f13293f807c731523c2e3d0d1df9bd38c998e6",
+    "agent/graphmine_agent/static/analytics-shell.css": "fd2c3e9103bcf50ee634027c0b32fa8dbdfbe952d8136b0408ae745ced2e0c20"
+  },
+  "test_files": [
+    "agent/frontend/tests/model-activity.test.cjs",
+    "agent/tests/test_analytics_answers.py",
+    "agent/tests/test_analytics_planning.py",
+    "agent/tests/test_conversation_timeline.py",
+    "agent/browser_tests/test_workspace_conversation_graph.py",
+    "agent/browser_tests/test_workspace_incremental.py",
+    "agent/browser_tests/test_workspace_shell.py",
+    "agent/browser_tests/test_workspace_device_quality.py",
+    "agent/browser_tests/test_analytics_workspace.py"
+  ],
+  "verification": {
+    "planner": {
+      "tests": 90,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 357.931,
+      "evidence": "planning.xml"
+    },
+    "browser": {
+      "tests": 52,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 206.963,
+      "evidence": "browser.xml",
+      "api_native_cases": 4,
+      "authored_fixture_cases": 48,
+      "sources_unchanged": true,
+      "viewports_checked": [
+        1440,
+        390
+      ],
+      "scope": "Includes confirmed undirected biclique conversion, lost-response recovery, chat/activity reloads and existing controls. Model responses are authored fixtures."
+    },
+    "answer_and_timeline_unit": {
+      "tests": 30,
+      "failures": 0,
+      "seconds": 6.51,
+      "command": ".venv/bin/python -m pytest agent/tests/test_analytics_answers.py agent/tests/test_conversation_timeline.py -q"
+    },
+    "frontend_node": {
+      "tests": 17,
+      "failures": 0,
+      "command": "npm test (agent/frontend)"
+    },
+    "total_passed": 189,
+    "new_cases": 13,
+    "typecheck": "passed",
+    "javascript_syntax": "passed",
+    "git_diff_check": "passed",
+    "screenshots_reviewed": [
+      "screenshots/chat-1440.png",
+      "screenshots/activity-390.png"
+    ],
+    "setup_notes": [
+      "Initial native/planner test invocation lacked GRAPHMINE_ANALYTICS_PYTHON and was stopped. Corrected runs passed; initial planner evidence is retained as planning-environment-error.xml.",
+      "An initial browser process ended with SIGTERM after five passes; the complete rerun passed all 52 cases.",
+      "Planner regression suite uses the established frozen GPU-capable runtime; native browser cases use the current dev CPU runtime."
+    ]
+  },
+  "runtime": {
+    "dev_agent_restarted": true,
+    "dev_agent_and_studio": "active",
+    "dev_http_status": 200,
+    "new_activity_markup_and_renderer_served": true
+  },
+  "historical_baseline": "Phase 1 baseline artifacts remain the original pre-change measurements."
+}

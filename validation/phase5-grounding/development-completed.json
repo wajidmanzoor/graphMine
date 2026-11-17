@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-11-17T16:37:58.069855+00:00",
+  "home_http": 200,
+  "asset_http": 200,
+  "asset_path": "/assets/cb04cfc9a461c5c3f7b9cefe.js",
+  "build_id": "7036262dcb436a8814c6",
+  "expected_build_id": "7036262dcb436a8814c6",
+  "served_bundle_matches_final_sources": true,
+  "sources_drawer": true,
+  "google_search_link": true,
+  "admin_expert_notes": true,
+  "config_sha256": "0724505bc7917b9a85385e939c9bffcdb5d5a3cc5bb33d05c14e15c3a7cf0b51",
+  "development_llm_enabled": "false",
+  "protected_api_http": 401,
+  "service_pid": 2369317
+}

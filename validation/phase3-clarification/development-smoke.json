@@ -1,0 +1,12 @@
+{
+  "home_http": 200,
+  "studio_http": 302,
+  "asset_path": "/assets/c89aea529993bd19daf8737d.js",
+  "asset_http": 200,
+  "clarification_panel_in_html": true,
+  "clarification_ui_in_bundle": true,
+  "served_bundle_contains_current_ui": true,
+  "protected_capabilities_http": 401,
+  "environment_configuration_sha256": "0724505bc7917b9a85385e939c9bffcdb5d5a3cc5bb33d05c14e15c3a7cf0b51",
+  "development_llm_enabled": "false"
+}

@@ -1,0 +1,493 @@
+{
+  "phase": 4,
+  "status": "complete",
+  "created_at": "2026-11-17T14:46:09.075753+00:00",
+  "scope": "Phase 4 two-option selection plus the requested Phase 5 chat display. The Phase 5 citation checker is separate work.",
+  "changes": [
+    "Five parallel Qwen samples at temperature 0.7 select only code-built eligible operation/parameter-choice pairs.",
+    "One n=5 HTTP request preserves account concurrency limits; maximum output reservation covers all five samples and reported usage settles once.",
+    "Code merges votes, reads operation-token logprobs, penalizes missing arguments and ranks two distinct cards. Unsampled alternatives are honestly Low.",
+    "High thresholds require matching model, server, operation catalog and calibration evidence. Both Low produces one saved open question.",
+    "All native parameters are exposed for review/editing; edits are schema checked and every selected workflow passes native validation before execution.",
+    "High preselection never runs. Selected multi-step workflows preserve dependencies under untouched nullable defaults, and explicit edits override planned values.",
+    "Chat avoids duplicate replies and fact-title prefixes, shows short chosen/validated traces, and moves full planning traces to Activity.",
+    "Working notes are collapsed and labelled unchecked; only admins in Expert mode can display them. REST and websocket delivery redact note text for non-admins."
+  ],
+  "files_changed": {
+    "agent": [
+      "agent/graphmine_agent/analytics_options.py",
+      "agent/graphmine_agent/analytics_lanes.py",
+      "agent/graphmine_agent/analytics_clarification.py",
+      "agent/graphmine_agent/analytics_planning.py",
+      "agent/graphmine_agent/accounts.py",
+      "agent/graphmine_agent/activity_visibility.py",
+      "agent/graphmine_agent/api.py"
+    ],
+    "ui": [
+      "agent/graphmine_agent/static/analytics-options.js",
+      "agent/graphmine_agent/static/analytics-ui.js",
+      "agent/graphmine_agent/static/analytics-incremental.js",
+      "agent/graphmine_agent/static/analytics-chat.css",
+      "agent/graphmine_agent/static/analytics.html"
+    ],
+    "measurement": [
+      "tools/calibrate_option_scores.py",
+      "tools/evaluate_lane_baseline.py",
+      "catalog/option_calibration.json"
+    ],
+    "tests": [
+      "agent/tests/test_analytics_options.py",
+      "agent/tests/test_analytics_lanes.py",
+      "agent/tests/test_analytics_clarification.py",
+      "agent/tests/test_analytics_planning.py",
+      "agent/tests/test_activity_visibility.py",
+      "agent/tests/test_accounts.py",
+      "agent/tests/test_lane_baseline.py",
+      "agent/tests/test_pilot_feedback.py",
+      "agent/tests/test_training_capture.py",
+      "agent/browser_tests/test_workspace_options.py",
+      "agent/browser_tests/test_workspace_conversation_graph.py",
+      "agent/browser_tests/test_analytics_workspace.py",
+      "agent/frontend/tests/model-activity.test.cjs"
+    ]
+  },
+  "source_files": {
+    "agent/graphmine_agent/analytics_options.py": "8fc60b64da4e324db0e223e64743361725f797b4fe32d31f044aef01d19a1ed4",
+    "agent/graphmine_agent/analytics_lanes.py": "8deb984e2ea124d657785207611dc03c6ff0339b597180f3bd61bb895024fca6",
+    "agent/graphmine_agent/analytics_clarification.py": "e8ee9cfa17360023ef21eb479d5c1f0b09b8cd5a5602782212f66bab83ca4b69",
+    "agent/graphmine_agent/analytics_planning.py": "90526b5c38cb9034b760f2d47890d2f1e876fa37b32aed8923ad3c44d15d22be",
+    "agent/graphmine_agent/accounts.py": "7c6e807914240383fe92131a62ae8e950e6b9456c2e0e8bd066e85d2fe4078b5",
+    "agent/graphmine_agent/activity_visibility.py": "68779accc314c8d2eaac6e682759d40755cdc66117f2140cec52789c1307fb56",
+    "agent/graphmine_agent/api.py": "c3afa97b4d34e1bf85d71348b56fac610a19e2743c34886308943c950cbbcef4",
+    "agent/graphmine_agent/static/analytics-options.js": "fe2aa315e5f211077c811d0dac0d5bd85fd3d7ba09a3d29b5af1422bd09ecacc",
+    "agent/graphmine_agent/static/analytics-ui.js": "4efeecaf066d54ee53d69f3a793c1483381808d4760e03ad57af98fe55eec01f",
+    "agent/graphmine_agent/static/analytics-incremental.js": "706d4b49a193bc22f32835372dcb50f61e5e9cb19d290030a62e056186f81ea2",
+    "agent/graphmine_agent/static/analytics-chat.css": "4be97a349fa8457bd8b8096916559d32cdec5d67760039044e21693f9aeaccb9",
+    "agent/graphmine_agent/static/analytics.html": "21c70b02da203e7f56eea1edd9d7731e6271d9a68782947936e8ec427fa66eda",
+    "tools/calibrate_option_scores.py": "7f19313b5c4b5dc8886914068a224f5b08764cc8a4b5633263b356d00cb06edb",
+    "tools/evaluate_lane_baseline.py": "ecf0d67588cf98a1bdabb131b879eb5f74b35885951c98ddecce4419fcaf6aad",
+    "catalog/option_calibration.json": "b9b668383acf32fa8344e0e52d1a85116adf17a2e91a41444c8831d678f4ff95",
+    "agent/tests/test_analytics_options.py": "9221997152cda2a9c08040f4f8df4c82a283424622266f096815274c98007f41",
+    "agent/tests/test_analytics_lanes.py": "21ec57bfd33ef613ca7326ff1e5a3a2d430ccc0b49d0d85e41bc79507ad1d4ce",
+    "agent/tests/test_analytics_clarification.py": "7a2cb322c4045b1133bfff2ed951bc7527d9db0bfba67837c2d3948787f9437b",
+    "agent/tests/test_analytics_planning.py": "9011fa308bab0e1968bb24cc634a29dadb1d40959662b3e1335d15269d371ce6",
+    "agent/tests/test_activity_visibility.py": "f54d16cc8b1638398f5211944790f37c5d0258792cafdb38186564b15693e372",
+    "agent/tests/test_accounts.py": "fbeeec83e57ca19a3a849ae57648ef3a5d445a351737d0fa98e35b81e8830723",
+    "agent/tests/test_lane_baseline.py": "ea1213e9d306ada2c92fdbca526d65949ad23536a8241df97ac96474db6e38a7",
+    "agent/tests/test_pilot_feedback.py": "e8b3531b8cf4bf02fc448ef5297df54fbd2e791db2ce3f9538ef516059281b9c",
+    "agent/tests/test_training_capture.py": "c1ba1c3b584db178a39c0e7fbe150dd14179594b0f6f8c25714c65b4e4d8813d",
+    "agent/browser_tests/test_workspace_options.py": "4e160902eddfe1ee9e3ff91fd8c39064a01e1fc9f764626abaccecb5d180d7ee",
+    "agent/browser_tests/test_workspace_conversation_graph.py": "0af38e8df416ae5037c53a8c9d19bafbfb5bdb4e71bd675abf17f26198bba622",
+    "agent/browser_tests/test_analytics_workspace.py": "5021e16ba4d8f014d2850a11ef7abe305bd849a0cd8e3d796a83a68b642e8841",
+    "agent/frontend/tests/model-activity.test.cjs": "2907707090965b8beb9d09b82002b56e5f81e89bc783be2097a4b3982c3bc2da"
+  },
+  "tests_added": [
+    "Finite menu eligibility/defaults; IDs absent from model choices; vote/logprob/gap ranking; distinct Low runners; calibration binding and missing-logprob downgrade.",
+    "UTF-8 operation token spans and terminal tokens; five separate streaming choices; n=5 request schema and incomplete response handling.",
+    "Account reservation for five outputs and single request settlement; exact token/request/sample baseline accounting.",
+    "Editable parameter bounds and unknown-key rejection; edited native plans without resampling; open question when both matches are Low.",
+    "Native multi-step execution with nullable defaults and edited vertex selections; mixed-quality cards and eligible dependency chains.",
+    "Calibration rejects wrong key parameters and disables High below 85% observed precision or without logprobs.",
+    "Member/admin authorization for event pages and websocket notes; member Expert UI remains hidden.",
+    "Desktop/mobile saved cards, preselection without execution, editable enums/integers/large typed IDs, invalid JSON, and duplicate reply suppression."
+  ],
+  "verification": {
+    "python_tests_passed": 310,
+    "browser_tests_passed": 55,
+    "test_artifacts": {
+      "python-final.xml": {
+        "tests": 306,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "cc3feca68da9007d487b1854530b3f0495755d6c69a05ce020c45defdbfb3135"
+      },
+      "gpu-policy-final.xml": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "454f4c03c55c3b1da7a6ab18bc866242f6cb3ad85a941cb36a519355e1690314"
+      },
+      "workspace-browser-tests.xml": {
+        "tests": 55,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "794899e6012aa369ec064d29e0b158afc9621e624d7e40bf346b80dc7d9aecd2"
+      },
+      "browser-final-smoke.xml": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "2d668c9115d1dbe4aced1b7ce4bc72a19f8efada5054f8598ae1ff037a3749a0"
+      }
+    },
+    "frontend": {
+      "javascript_tests_passed": 18,
+      "typescript": "passed",
+      "api_contracts": "passed"
+    },
+    "native_implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+    "native_abi_changed": false,
+    "native_oracle_cases_passed": 34,
+    "gpu_policy_runtime": "/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views",
+    "gpu_policy_scope": "Admission/catalog/validation checks on the pinned verified runtime; the legacy API execution test uses its existing authored binary fixture. No new native GPU benchmark.",
+    "development_smoke": {
+      "home_http": 200,
+      "asset_http": 200,
+      "asset_path": "/assets/cc5fbefe8730f271b3cccff4.js",
+      "build_id": "df8235e894fda0a56e42",
+      "served_bundle_matches_final_sources": true,
+      "editable_option_cards": true,
+      "admin_expert_notes": true,
+      "capabilities_http": 401,
+      "config_sha256": "0724505bc7917b9a85385e939c9bffcdb5d5a3cc5bb33d05c14e15c3a7cf0b51",
+      "development_llm_enabled": "false"
+    }
+  },
+  "comparison": {
+    "phase1": {
+      "cases": 60,
+      "successes": 27,
+      "lane_matches": 28,
+      "seconds": 1215.068,
+      "model_calls": 102,
+      "by_stage": {
+        "route": 55,
+        "plan": 26,
+        "answer": 21
+      },
+      "tokens": {
+        "prompt_tokens": 537433,
+        "completion_tokens": 30497,
+        "total_tokens": 567930
+      },
+      "known_tokens": {
+        "prompt_tokens": 537433,
+        "completion_tokens": 30497,
+        "total_tokens": 567930
+      },
+      "calls_missing_usage": 0,
+      "by_lane": {
+        "calculate": {
+          "cases": 4,
+          "successes": 0,
+          "lane_matches": 0,
+          "model_calls": 0,
+          "median_seconds": 0.0
+        },
+        "describe_input": {
+          "cases": 8,
+          "successes": 0,
+          "lane_matches": 0,
+          "model_calls": 24,
+          "median_seconds": 34.537
+        },
+        "explain": {
+          "cases": 8,
+          "successes": 7,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 13.808
+        },
+        "lookup": {
+          "cases": 6,
+          "successes": 0,
+          "lane_matches": 0,
+          "model_calls": 18,
+          "median_seconds": 33.984
+        },
+        "needs_information": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 13,
+          "median_seconds": 19.101
+        },
+        "options": {
+          "cases": 8,
+          "successes": 0,
+          "lane_matches": 0,
+          "model_calls": 21,
+          "median_seconds": 25.23
+        },
+        "reply": {
+          "cases": 6,
+          "successes": 0,
+          "lane_matches": 0,
+          "model_calls": 6,
+          "median_seconds": 17.828
+        },
+        "unsupported": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 4,
+          "median_seconds": 17.191
+        },
+        "view": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 10.894
+        }
+      },
+      "median_question_seconds": 17.819000000000003
+    },
+    "phase3": {
+      "cases": 60,
+      "successes": 60,
+      "lane_matches": 60,
+      "seconds": 847.938,
+      "model_calls": 70,
+      "by_stage": {
+        "route": 55,
+        "answer": 9,
+        "clarify": 6
+      },
+      "tokens": {
+        "prompt_tokens": 585090,
+        "completion_tokens": 19628,
+        "total_tokens": 604718
+      },
+      "known_tokens": {
+        "prompt_tokens": 585090,
+        "completion_tokens": 19628,
+        "total_tokens": 604718
+      },
+      "calls_missing_usage": 0,
+      "by_lane": {
+        "calculate": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 3,
+          "median_seconds": 2.192
+        },
+        "describe_input": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 13.769
+        },
+        "explain": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 14.921
+        },
+        "lookup": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 12,
+          "median_seconds": 12.24
+        },
+        "needs_information": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 14,
+          "median_seconds": 21.991
+        },
+        "options": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 7,
+          "median_seconds": 12.938
+        },
+        "reply": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 6,
+          "median_seconds": 19.747
+        },
+        "unsupported": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 4,
+          "median_seconds": 18.626
+        },
+        "view": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 10.442
+        }
+      },
+      "median_question_seconds": 14.129
+    },
+    "phase4": {
+      "cases": 60,
+      "successes": 60,
+      "lane_matches": 60,
+      "seconds": 958.0,
+      "model_calls": 78,
+      "model_samples": 110,
+      "by_stage": {
+        "route": 55,
+        "answer": 9,
+        "clarify": 6,
+        "candidates": 8
+      },
+      "tokens": {
+        "prompt_tokens": 673454,
+        "completion_tokens": 22229,
+        "total_tokens": 695683
+      },
+      "known_tokens": {
+        "prompt_tokens": 673454,
+        "completion_tokens": 22229,
+        "total_tokens": 695683
+      },
+      "calls_missing_usage": 0,
+      "by_lane": {
+        "calculate": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 3,
+          "median_seconds": 2.215
+        },
+        "describe_input": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 13.677
+        },
+        "explain": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 15.255
+        },
+        "lookup": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 12,
+          "median_seconds": 12.139
+        },
+        "needs_information": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 14,
+          "median_seconds": 21.901
+        },
+        "options": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 15,
+          "median_seconds": 27.736
+        },
+        "reply": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 6,
+          "median_seconds": 19.523
+        },
+        "unsupported": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 4,
+          "median_seconds": 18.669
+        },
+        "view": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 10.069
+        }
+      },
+      "median_question_seconds": 15.340499999999999
+    }
+  },
+  "calibration": {
+    "model": "Qwen/Qwen3.8-27B-FP8",
+    "server": "http://127.0.0.1:8001/v1",
+    "samples": 5,
+    "temperature": 0.7,
+    "score": "clip(0.65 * votes/5 + 0.35 * exp(mean operation-token logprob) - 0.15 * min(missing parameters, 4), 0, 1)",
+    "fit": {
+      "threshold": 0.99933,
+      "count": 8,
+      "correct": 8,
+      "precision": 1.0
+    },
+    "threshold_file": "catalog/option_calibration.json",
+    "full_run_high_count": 8,
+    "full_run_high_correct": 8,
+    "full_run_high_precision": 1.0,
+    "cases": [
+      {
+        "case": "options_maximal_cliques",
+        "score": 0.999959,
+        "correct_operation_and_parameters": true
+      },
+      {
+        "case": "options_pagerank",
+        "score": 0.999881,
+        "correct_operation_and_parameters": true
+      },
+      {
+        "case": "options_core",
+        "score": 0.999791,
+        "correct_operation_and_parameters": true
+      },
+      {
+        "case": "options_maximum_clique",
+        "score": 0.999909,
+        "correct_operation_and_parameters": true
+      },
+      {
+        "case": "options_degrees",
+        "score": 0.99933,
+        "correct_operation_and_parameters": true
+      },
+      {
+        "case": "options_components",
+        "score": 0.999956,
+        "correct_operation_and_parameters": true
+      },
+      {
+        "case": "options_bicliques",
+        "score": 0.999899,
+        "correct_operation_and_parameters": true
+      },
+      {
+        "case": "options_triangles",
+        "score": 0.999725,
+        "correct_operation_and_parameters": true
+      }
+    ],
+    "limitation": "Eight frozen development questions. The later 60-question run repeats those labels; 100% observed High precision is not held-out or production accuracy."
+  },
+  "measurement_limits": [
+    "Calls count HTTP requests; samples count independent completions. Candidate requests use n=5. Reported token usage is not multiplied by five.",
+    "One live attempt per frozen question. Timing includes local model/cache/load conditions and is not a controlled speed benchmark.",
+    "Success checks structured results, selected operations and lanes; general answer prose is not human-reviewed.",
+    "Backend sources stayed unchanged throughout baseline.json. After measurement, analytics_planning.py received two isolated fixes: preserve nullable-default dependencies only for selected multi-step cards, and preserve raw captured route output while returning the same normalized intent. No baseline case selects a multi-step card. Final native integration and browser smoke tests cover these changes. This is not represented as a hash-identical final-tree live run."
+  ],
+  "pending": [
+    "Phase 5 backend: universal citation shape, current-turn citation provenance, number/name checking, one retry and bare-facts fallback, generalized numberless lead.",
+    "Previously approved web search for conceptual replies has not been wired into the reply lane.",
+    "User review of catalog/vague_terms.json; broader held-out confidence validation.",
+    "Production promotion and any model adapter training remain outside this phase. Development keeps its configured live-LLM-disabled setting; live evaluation used isolated stores with the authorized Qwen server."
+  ]
+}

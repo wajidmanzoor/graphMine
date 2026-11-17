@@ -1,0 +1,256 @@
+{
+  "phase": 1,
+  "status": "completed",
+  "scope": "Development evaluation; no application behavior changes.",
+  "files_added": [
+    "tools/evaluate_lane_baseline.py",
+    "agent/tests/test_lane_baseline.py",
+    "agent/evaluation/lanes/questions.json",
+    "agent/evaluation/lanes/graphs/demo.json",
+    "agent/evaluation/lanes/graphs/yelp.json"
+  ],
+  "artifacts": [
+    "validation/phase1-lanes/frozen-suite.json",
+    "validation/phase1-lanes/harness-tests.xml",
+    "validation/phase1-lanes/oracles.json",
+    "validation/phase1-lanes/baseline.json",
+    "validation/phase1-lanes/per-question.csv",
+    "validation/phase1-lanes/lookup-most-connections-result.json"
+  ],
+  "questions": 60,
+  "lanes": {
+    "calculate": 4,
+    "describe_input": 8,
+    "explain": 8,
+    "lookup": 6,
+    "needs_information": 8,
+    "options": 8,
+    "reply": 6,
+    "unsupported": 4,
+    "view": 8
+  },
+  "fixture_summary": {
+    "demo": {
+      "vertices": 8,
+      "edges": 10,
+      "directed": true
+    },
+    "demo_undirected": {
+      "vertices": 8,
+      "edges": 10,
+      "directed": false
+    },
+    "yelp": {
+      "vertices": 20,
+      "edges": 69,
+      "directed": true
+    },
+    "yelp_undirected": {
+      "vertices": 20,
+      "edges": 69,
+      "directed": false
+    }
+  },
+  "tests_added": 14,
+  "offline_checks": {
+    "harness_tests_passed": 14,
+    "native_reference_cases_passed": 34,
+    "diff_check": "passed"
+  },
+  "before_after": {
+    "labelled_questions": {
+      "before": 0,
+      "after": 60
+    },
+    "live_questions_measured": {
+      "before": 0,
+      "after": 60
+    }
+  },
+  "measurement_fields": [
+    "lane_chosen",
+    "operations",
+    "model_calls",
+    "tokens",
+    "seconds",
+    "success"
+  ],
+  "measurement_design": [
+    "One isolated session per question; no production writes or permanent training captures.",
+    "Normal application behavior, including working direct shortcuts, is preserved.",
+    "Model metrics include routing, planning, retries and answer composition; missing token usage remains unknown.",
+    "Saved-result questions use actual validated native results created before the timed turn.",
+    "Selected-card payloads are sent unchanged; rejected request contracts count as failures.",
+    "Every completed case is checkpointed; automatic success requires the labelled lane, operation and behavior checks."
+  ],
+  "live_run_started": true,
+  "live_results": "validation/phase1-lanes/baseline.json",
+  "remaining_work": [],
+  "approval": {
+    "authorized": true,
+    "user_instruction": "try now doing it",
+    "scope": "Prepared isolated local Qwen baseline with the existing server credential and copied Yelp/demo graphs."
+  },
+  "summary": {
+    "cases": 60,
+    "successes": 27,
+    "lane_matches": 28,
+    "seconds": 1215.068,
+    "model_calls": 102,
+    "by_stage": {
+      "route": 55,
+      "plan": 26,
+      "answer": 21
+    },
+    "tokens": {
+      "prompt_tokens": 537433,
+      "completion_tokens": 30497,
+      "total_tokens": 567930
+    },
+    "known_tokens": {
+      "prompt_tokens": 537433,
+      "completion_tokens": 30497,
+      "total_tokens": 567930
+    },
+    "calls_missing_usage": 0,
+    "by_lane": {
+      "calculate": {
+        "cases": 4,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 0,
+        "median_seconds": 0.0
+      },
+      "describe_input": {
+        "cases": 8,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 24,
+        "median_seconds": 34.537
+      },
+      "explain": {
+        "cases": 8,
+        "successes": 7,
+        "lane_matches": 8,
+        "model_calls": 8,
+        "median_seconds": 13.808
+      },
+      "lookup": {
+        "cases": 6,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 18,
+        "median_seconds": 33.984
+      },
+      "needs_information": {
+        "cases": 8,
+        "successes": 8,
+        "lane_matches": 8,
+        "model_calls": 13,
+        "median_seconds": 19.101
+      },
+      "options": {
+        "cases": 8,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 21,
+        "median_seconds": 25.23
+      },
+      "reply": {
+        "cases": 6,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 6,
+        "median_seconds": 17.828
+      },
+      "unsupported": {
+        "cases": 4,
+        "successes": 4,
+        "lane_matches": 4,
+        "model_calls": 4,
+        "median_seconds": 17.191
+      },
+      "view": {
+        "cases": 8,
+        "successes": 8,
+        "lane_matches": 8,
+        "model_calls": 8,
+        "median_seconds": 10.894
+      }
+    },
+    "median_turn_seconds": 17.819,
+    "latency_precision_seconds": 0.001,
+    "workflow_statuses": {
+      "completed": 22,
+      "no_workflow": 38
+    },
+    "fully_complete_workflow_outputs": 21,
+    "reference_checked_complete_calculations": 13
+  },
+  "findings": [
+    {
+      "finding": "All eight saved-result views pass without planning or a new calculation.",
+      "cases": 8
+    },
+    {
+      "finding": "All eight missing-information cases and all four unsupported calculations select the expected lane.",
+      "cases": 12
+    },
+    {
+      "finding": "Seven of eight saved-result explanations meet the full label; one returns the correct vertex IDs instead of the requested account names.",
+      "case": "explain_clique_members",
+      "source": "analytics._labels reads only top-level label; the demo supplies attributes.name."
+    },
+    {
+      "finding": "Conceptual replies, metadata descriptions, lightweight lookups and two-option proposals do not have their requested lanes yet.",
+      "cases": 28
+    },
+    {
+      "finding": "All four explicit picked-card payloads are rejected by the current request schema before a model call.",
+      "cases": 4
+    },
+    {
+      "finding": "The most-outgoing-connections lookup returns the correct native top row for Ada but duplicates the same aggregation twice. The capped outputs and different operation fail the strict baseline criteria; chat facts omit the top account.",
+      "case": "lookup_most_connections",
+      "evidence": "lookup-most-connections-result.json"
+    },
+    {
+      "finding": "The biclique calculation matches all 33 independent expected bicliques. Directed input requests confirmation, and missing sides stop before planning.",
+      "cases": [
+        "options_bicliques",
+        "confirm_yelp_direction",
+        "missing_biclique_sides"
+      ]
+    }
+  ],
+  "interpretation": {
+    "success_definition": "Expected lane, accepted operation set, and the frozen behavior checks all match. This is not an overall numerical-accuracy percentage.",
+    "missing_future_contract_or_lane_cases": 32,
+    "additional_named_entity_presentation_mismatch": 1,
+    "authorship": "Assistant-authored development regression labels, frozen before model use; no human annotation or held-out evaluation claim.",
+    "timings": "One serial live run against the existing local Qwen server; measured turn time includes routing, planning, product retries, native execution and answer composition. Fixture setup is excluded.",
+    "zero_latency_cases": "Four rejected selected-card payloads took less than the report millisecond precision and made no model calls.",
+    "alternative_valid_computations": "The fixed expected operation and completeness criteria can reject a numerically correct alternative, as the preserved top-account aggregation illustrates.",
+    "verification_scope": "Thirteen completed calculation cases passed their independent frozen output checks. Other labels test routing, required questions, display actions, saved facts or request-contract behavior."
+  },
+  "integrity": {
+    "case_ids_unique_and_complete": true,
+    "suite_sha256": "1b372ed31e58f6d4c971ba5e60b695f04f46b23277d750d8b2c75960d6b1f166",
+    "source_files_unchanged": 200,
+    "sources_unchanged_during_run": true,
+    "fixtures_unchanged_during_run": true,
+    "original_yelp_snapshot_unchanged": true,
+    "calls_missing_usage": 0,
+    "all_model_calls_returned_successfully": true,
+    "temporary_store_removed": true,
+    "baseline_file_sha256": "5e8e9b9747638a14c1a1ca1fd6d84e001d639ef5e83b630db22d16109037d08f",
+    "per_question_csv_sha256": "1c8b28a12f94d7cd6baa4fd2af522d0927a4a0fac1a29050b8110a95173b1d7d"
+  },
+  "remaining_goal_scope": "Phases 2\u20135 remain. Phase 1 is complete; stop and report before eligibility and lane implementation.",
+  "reproduction": {
+    "runner": "tools/evaluate_lane_baseline.py",
+    "suite": "agent/evaluation/lanes/questions.json",
+    "command": "python tools/evaluate_lane_baseline.py --live --output <new-report-path.json>",
+    "environment": "Use the development CPU runtime and analytics interpreter plus the existing local model endpoint credential. The runner creates an isolated temporary store and refuses to overwrite a report."
+  }
+}

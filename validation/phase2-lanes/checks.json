@@ -1,0 +1,65 @@
+{
+  "phase": 2,
+  "status": "passed",
+  "source_files": {
+    "agent/graphmine_agent/analytics_eligibility.py": "0c84919e3df8988c3605bba60bb1edb37650d28b7ee5860c65e447c73c4ba866",
+    "agent/graphmine_agent/analytics_lane_choices.py": "ac64f9244b770d409a7c358b71673a827f3265ee9e8d6aec3458f200b0431d39",
+    "agent/graphmine_agent/analytics_lanes.py": "b335f2baeae3d8413ed80cb57e7e963346a6b66c784c3ac4fbe400ebb61caaf7",
+    "agent/graphmine_agent/analytics_parameter_choices.py": "5fd1c757c75c92341f5aced3354ff59835e7028c43c176e773c75c9e491cb51e",
+    "catalog/operation_requirements.json": "0bb8fe4da8598aa6b57963575ef45250922c3ac84846547f7bd42da7dbafca01",
+    "catalog/agent_concepts.json": "edaf3893afe3f6f4480314d85fd67d2eb80fdf505a011c7f815092468cba9a5f",
+    "agent/graphmine_agent/analytics_planning.py": "24c7f057018d664a5c10491aa5e1568f752e66d2f1606d6c385c0d8f70a07811",
+    "agent/graphmine_agent/analytics.py": "1fb646c5bf8c085a6811d429564ded715553ae171a34b71ecb1ef36ec76d079e",
+    "agent/graphmine_agent/analytics_context.py": "996c966acf34384b0876b6c451deb9fe88bf735cd6490948cb629bb691618182",
+    "agent/graphmine_agent/config.py": "f8d64319cd8e2772f19e461a38d69d6cbf1196e2ec3cb0b920abae8f72908fa0",
+    "agent/.env.example": "c25546d306fde8d1d9289fa5e6b6ace07ca47b716225701b942b8f56d5d3120f",
+    "agent/graphmine_agent/static/analytics-ui.js": "7272ba11bbc579a1373383291044f049bd6b0e9c6f3d5aec360c7d90a75351e9",
+    "agent/graphmine_agent/static/analytics-chat.css": "5ca32715ec9f8f12d249bb7dcb444e692e60164cef3514859f773c2d2f31510f",
+    "agent/frontend/generated/api.d.ts": "c409911081435d98b85207865f57ce84d95c6f729c145d9c738bb7ddf99ffcef",
+    "tools/evaluate_lane_baseline.py": "6c92a4e32d44df4789b75a7cb3c60e775a23de04f5c723b0a27d4f30b0a378c2"
+  },
+  "environment_configuration_sha256": "0724505bc7917b9a85385e939c9bffcdb5d5a3cc5bb33d05c14e15c3a7cf0b51",
+  "native_implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+  "native_abi_changed": false,
+  "frontend": {
+    "api_contracts": "passed",
+    "typescript": "passed",
+    "javascript_tests_passed": 17
+  },
+  "not_implemented_in_this_phase": [
+    "Phase 3 general clarification state and structured validation-gap mapping",
+    "Phase 4 five-sample routing, calibrated confidence, and full parameter editor",
+    "Phase 5 independent citation checking"
+  ],
+  "development_smoke_check": {
+    "service": "graphmine-devlopment-agent.service",
+    "active": true,
+    "home_http": 200,
+    "asset_path": "/assets/246d2205d1354928fba774fd.js",
+    "asset_http": 200,
+    "protected_capabilities_http": 401,
+    "protected_endpoint_requires_sign_in": true,
+    "served_bundle_contains_current_ui": true,
+    "two_option_ui_present": true,
+    "live_llm_enabled_in_configuration": false
+  },
+  "python_tests_passed": 194,
+  "browser_tests_passed": 55,
+  "browser_test_note": "55 distinct passing cases: 47 initial regression passes, one atomic view-assertion rerun, and seven final live browser/API/native cases including chained preparation and explicit example review.",
+  "python_artifacts": [
+    "unit.xml",
+    "device-tests.xml",
+    "integration.xml"
+  ],
+  "browser_artifacts": [
+    "browser-regressions.xml",
+    "browser-view-recheck.xml",
+    "browser-lanes.xml"
+  ],
+  "native_oracle_cases_passed": 34,
+  "live_regression_successes": 59,
+  "live_regression_cases": 60,
+  "sources_match_tested_files": true,
+  "live_sources_unchanged": true,
+  "live_fixtures_unchanged": true
+}

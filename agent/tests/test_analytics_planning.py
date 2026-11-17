@@ -29,17 +29,33 @@ from graphmine_agent.models import ConversationEvent, FileRole, SessionRecord
 
 
 class ReplayPlanner(AnalyticsPlanner):
-    def __init__(self, *args, responses):
+    def __init__(self, *args, responses, candidate_operation=None):
         super().__init__(*args)
         self.responses = list(responses)
         self.calls = []
         self.catalogs = []
+        self.candidate_operation = candidate_operation
+        self.candidate_calls = []
 
     async def _generate(self, stage, payload, schema, catalog=None):
+        if stage == "candidates":
+            # Authored unanimous sampling fixture. It is deliberately separate
+            # from the historical route/DAG replay and is not accuracy evidence.
+            self.candidate_calls.append((stage, deepcopy(payload), deepcopy(schema)))
+            operation = self.candidate_operation
+            assert operation, "Specify the sampled operation in this test"
+            offered = next(row for row in payload["choices"] if row["operation"] == operation)
+            choice = offered["choices"][0]
+            return [{"decision": {"operation": operation, "parameter_choice": choice["id"],
+                                  "interpretation": "Use the requested calculation."},
+                     "operation_logprob": {"sum": -.02, "tokens": 2, "mean": -.01}} for _ in range(5)]
         self.calls.append((stage, deepcopy(payload), deepcopy(schema)))
         self.catalogs.append(deepcopy(catalog))
         assert self.responses, "Unexpected extra model call"
-        return deepcopy(self.responses.pop(0))
+        response = deepcopy(self.responses.pop(0))
+        if response.get("operations"):
+            self.candidate_operation = response["operations"][0]
+        return response
 
 
 class StalledPlanner(AnalyticsPlanner):
@@ -200,7 +216,7 @@ async def test_follow_up_sees_earlier_results_selection_and_named_entities(
         events,
         responses=[route("triangle-counting"), proposal()],
     )
-    monkeypatch.setattr(planner, "_saved_result", lambda wid: earlier)
+    monkeypatch.setattr(planner, "_saved_result", lambda wid, **_kwargs: earlier)
     body.message = "Count the triangles around vertex 2 in this clique."
     body.previous_workflow_id = "earlier"
     body.selection = PlanningSelection(
@@ -227,6 +243,7 @@ async def test_follow_up_routes_in_one_call(setup, monkeypatch):
     original = analytics.get
     earlier = {
         "id": "earlier",
+        "revision": 1,
         "session_id": session,
         "validation": {"plan": {"steps": [{"operation": "triangle-counting"}]}},
         "input_files": {},
@@ -240,7 +257,7 @@ async def test_follow_up_routes_in_one_call(setup, monkeypatch):
         events,
         responses=[route("triangle-counting"), proposal()],
     )
-    monkeypatch.setattr(planner, "_saved_result", lambda wid: None)
+    monkeypatch.setattr(planner, "_saved_result", lambda wid, **_kwargs: None)
     body.previous_workflow_id = "earlier"
     result = await planner.plan(session, body)
     assert result["status"] == "ready"
@@ -248,7 +265,7 @@ async def test_follow_up_routes_in_one_call(setup, monkeypatch):
     assert result["trace"][0]["stage"] == "route"
     # Without a saved result there is nothing to show or explain.
     intents = {v["properties"]["intent"]["const"] for v in planner.calls[0][2]["oneOf"]}
-    assert intents == {"calculate", "needs_information", "unsupported"}
+    assert intents == {"calculate", "needs_information", "unsupported", "options", "reply", "describe_input", "lookup"}
 
 
 def _saved_earlier(analytics, planner, session, monkeypatch):
@@ -268,7 +285,7 @@ def _saved_earlier(analytics, planner, session, monkeypatch):
             else original(wid)
         ),
     )
-    monkeypatch.setattr(planner, "_saved_result", lambda wid: SAVED)
+    monkeypatch.setattr(planner, "_saved_result", lambda wid, **_kwargs: SAVED)
 
 
 def _reply(analytics, session):
@@ -311,14 +328,14 @@ async def test_display_request_is_carried_out_without_planning(setup, monkeypatc
 
 
 @pytest.mark.parametrize(
-    "lead, shown",
+    "lead",
     [
-        ("These are the groups it found.", "These are the groups it found."),
-        ("It found 7 groups.", "Here is what the saved result shows."),
+        "These are the groups it found.",
+        "It found 7 groups.",
     ],
 )
 async def test_questions_about_a_saved_result_are_answered_from_its_facts(
-    setup, monkeypatch, lead, shown
+    setup, monkeypatch, lead
 ):
     settings, analytics, events, session, body = setup
     decision = {"intent": "explain", "fact_ids": ["f2", "f1"], "message": lead}
@@ -328,8 +345,10 @@ async def test_questions_about_a_saved_result_are_answered_from_its_facts(
     body.previous_workflow_id = "earlier"
     result = await planner.plan(session, body)
     assert result["status"] == "answered" and result["plan"] is None
-    assert result["message"] == shown
     facts = result["answer"]["facts"]
+    assert result["message"] == result["answer"]["text"] == "\n".join(fact["text"] for fact in facts)
+    assert "7 groups" not in result["message"]
+    assert [row["id"] for row in result["answer"]["citations"]] == ["f2", "f1"]
     assert [fact["id"] for fact in facts] == ["f2", "f1"]
     assert facts[1]["statement"].endswith(
         ": found 2 cliques, with 3 and 2 members; the largest: 0, 1, 2."
@@ -344,7 +363,7 @@ async def test_clarifying_questions_offer_clickable_choices(setup):
     asking = {
         "intent": "needs_information",
         "message": "Which kind of group do you mean?",
-        "choices": ["The single largest clique", "Every maximal clique"],
+        "choices": ["Use Find the largest fully connected group.", "Use Find complete groups that cannot be extended."],
     }
     planner = ReplayPlanner(settings, analytics, events, responses=[asking])
     result = await planner.plan(session, body)
@@ -424,6 +443,7 @@ def setup(settings, database, graph_store, session, triangle_graph):
     analytics = AnalyticsService(settings, database, graph_store, events)
     body = PlanningRequest(
         message="Count the three-way connections in this network.",
+        mode="interactive",  # Existing explicit-review/DAG coverage; Normal is covered in test_analytics_lanes.
         device="cpu",
         inputs={"main": {"file_id": file.id}},
     )
@@ -459,21 +479,23 @@ def proposal(op="triangle-counting", parameters=None):
 
 
 @pytest.mark.asyncio
-async def test_explicit_count_uses_native_validation_without_a_model(setup, monkeypatch):
+async def test_explicit_count_waits_for_a_card_then_uses_native_validation(setup):
     settings, analytics, events, session, body = setup
     settings = replace(settings, analytics_direct_plans=True)
-    planner = AnalyticsPlanner(settings, analytics, events)
+    planner = ReplayPlanner(settings, analytics, events, responses=[], candidate_operation="triangle-counting")
     body.message = "How many triangles are in this graph?"
 
-    async def unexpected_model(*args, **kwargs):
-        raise AssertionError("An explicit count should not need a model call")
-
-    monkeypatch.setattr(planner, "_generate", unexpected_model)
     result = await planner.plan(session, body)
-    assert result["status"] == "ready"
-    assert result["validation"]["plan"] == result["plan"]
+    assert result["status"] == "options" and result["plan"] is None
+    assert len(planner.candidate_calls) == 1 and planner.calls == []
     assert result["trace"][0]["source"] == "direct"
-    assert result["plan"]["steps"][0]["operation"] == "triangle-counting"
+    option = result["options"][0]
+    chosen = body.model_copy(update={"intent": "calculate", "operations": option["operations"], "parameters": option["parameters"],
+                                    "option_id": option["id"], "option_turn_id": result["turn_id"]})
+    ready = await planner.plan(session, chosen)
+    assert ready["status"] == "ready" and ready["validation"]["plan"] == ready["plan"]
+    assert ready["plan"]["steps"][0]["operation"] == "triangle-counting"
+    assert len(planner.candidate_calls) == 1
 
 
 @pytest.mark.asyncio
@@ -526,7 +548,7 @@ async def test_auto_routing_includes_verified_gpu_only_cards(setup, monkeypatch)
 async def test_auto_planning_preserves_explicit_solution_quality(setup, quality):
     settings, analytics, events, session, body = setup
     body.device = "auto"
-    body.message = f"Find communities using an {quality} solution."
+    body.message = f"Find unweighted modularity communities using an {quality} solution."
     proposed = proposal("community-detection", {"solution_quality": quality})
     proposed["plan"]["device"] = "auto"
     planner = ReplayPlanner(
@@ -544,7 +566,7 @@ async def test_auto_planning_preserves_explicit_solution_quality(setup, quality)
 async def test_restored_gpu_community_profiles_reach_the_planner(setup):
     settings, analytics, events, session, body = setup
     body.device = "gpu"
-    body.message = "Find communities on the GPU using heuristic modularity."
+    body.message = "Find communities on the GPU using unweighted heuristic modularity."
     proposed = proposal("community-detection", {"solution_quality": "heuristic"})
     proposed["plan"]["device"] = "gpu"
     planner = ReplayPlanner(
@@ -715,6 +737,7 @@ async def test_invalid_step_references_receive_one_bounded_repair(
     setup, reference, repair
 ):
     settings, analytics, events, session, body = setup
+    body.message = "Extract a vertices subgraph using out direction, using vertices 0 and 1."
     valid = proposal("query-subgraph", {"mode": "vertices", "vertices": [0, 1]})
     invalid = deepcopy(valid)
     invalid["plan"]["steps"][0]["input"] = {"step": reference, "port": "graph"}
@@ -757,12 +780,12 @@ async def test_one_routing_call_then_real_library_validation_and_execution(setup
     result = await planner.plan(session, body)
     assert result["status"] == "ready"
     assert [stage for stage, _, _ in planner.calls] == ["route", "plan"]
-    # Routing sees every operation in the catalog, never full cards.
+    # Routing sees eligible operation summaries and requirements, never full cards.
     assert "operations" not in planner.calls[0][1]
     listed = {op["id"] for f in planner.catalogs[0] for op in f["operations"]}
     assert {"triangle-counting", "pagerank"} <= listed
     assert all(
-        set(op) <= {"id", "title", "about", "quality", "input", "choices"}
+        set(op) <= {"id", "title", "about", "quality", "input", "choices", "requirements"}
         for f in planner.catalogs[0]
         for op in f["operations"]
     )
@@ -975,12 +998,71 @@ async def test_planner_failures_are_classified_and_recorded(
     assert caught.value.code == code
     saved = analytics.database.events(session)
     report = next(e.payload for e in saved if e.type == "workflow.diagnostics")
+    call = next(e.payload for e in saved if e.type == "workflow.model_call")
+    assert call["call_id"] == report["call_id"] and call["turn_id"] == "turn"
     assert report["stage"] == "route" and report["outcome"] == code
     assert report["seconds"] >= 0
     if code == "planner_truncated":
         assert report["finish_reason"] == "length"
         assert report["usage"]["completion_tokens"] == 3072
         assert any(e.type == "workflow.reasoning" for e in saved)
+
+
+@pytest.mark.parametrize("count", [5, 4])
+async def test_candidates_use_five_parallel_choices_and_preserve_operation_logprobs(setup, monkeypatch, count):
+    from graphmine_agent.analytics_options import candidate_menu, sampling_contract
+    settings, analytics, events, _session, _body = setup
+    cards = (await analytics.capabilities())["operations"]
+    cards = [card for card in cards if card["id"] == "triangle-counting"]
+    menu = candidate_menu(cards, {"main": {"input_kind": "graph", "directed": False}}, "Count triangles")
+    schema, choices = sampling_contract(menu, cards)
+    def respond(request):
+        body = json.loads(request.content)
+        assert body["n"] == 5 and body["temperature"] == .7 and body["logprobs"] is True
+        assert body["max_completion_tokens"] <= 512 and body["reasoning_effort"] == "none"
+        assert "seed" not in body and "thinking_token_budget" not in body
+        decision = {"operation": menu[0]["operation"], "parameter_choice": menu[0]["id"], "interpretation": "Count all triangles."}
+        content = json.dumps(decision)
+        return httpx.Response(200, json={"choices": [{"index": i, "finish_reason": "stop", "message": {"content": content},
+            "logprobs": {"content": [{"token": content, "logprob": -.1}]}} for i in range(count)]})
+    original = httpx.AsyncClient
+    monkeypatch.setattr("graphmine_agent.analytics_planning.httpx.AsyncClient",
+                        lambda **kwargs: original(transport=httpx.MockTransport(respond), **kwargs))
+    planner = AnalyticsPlanner(replace(settings, llm_enabled=True), analytics, events)
+    if count < 5:
+        with pytest.raises(AnalyticsError) as error:
+            await planner._generate("candidates", {"question": "Count triangles", "choices": choices}, schema)
+        assert error.value.code == "router_samples_incomplete"
+    else:
+        samples = await planner._generate("candidates", {"question": "Count triangles", "choices": choices}, schema)
+        assert len(samples) == 5 and all(row["operation_logprob"]["sum"] == -.1 for row in samples)
+
+
+@pytest.mark.asyncio
+async def test_interrupted_model_call_preserves_its_unflushed_reasoning(setup, monkeypatch):
+    settings, analytics, events, session, _body = setup
+    planner = AnalyticsPlanner(
+        replace(settings, llm_enabled=True, llm_base_url="http://planner.test/v1"),
+        analytics, events,
+    )
+
+    async def interrupted(_client, _path, *, json, on_reasoning):
+        await on_reasoning("Partial reasoning\n  before the timeout.")
+        raise httpx.ReadTimeout("stream interrupted")
+
+    monkeypatch.setattr("graphmine_agent.accounts.model_stream", interrupted)
+    planner.conversation.set({"session_id": session, "turn_id": "turn"})
+    with pytest.raises(AnalyticsError) as caught:
+        await planner._generate("route", {"question": "Count triangles"}, route_schema([{"id": "triangle-counting"}]))
+    assert caught.value.code == "planner_timeout"
+    saved = analytics.database.events(session)
+    calls = [e.payload for e in saved if e.type == "workflow.model_call"]
+    partials = [e.payload for e in saved if e.type == "workflow.reasoning.delta"]
+    reports = [e.payload for e in saved if e.type == "workflow.diagnostics"]
+    assert len(calls) == len(partials) == len(reports) == 1
+    assert calls[0]["call_id"] == partials[0]["call_id"] == reports[0]["call_id"]
+    assert partials[0]["text"] == "Partial reasoning\n  before the timeout."
+    assert not any(e.type == "workflow.reasoning" for e in saved)
 
 
 @pytest.mark.asyncio
@@ -1028,7 +1110,7 @@ async def test_model_transport_uses_constrained_new_contract_and_validates_respo
         route_schema([{"id": "triangle-counting"}]),
         catalog=catalog,
     )
-    assert answer == route("triangle-counting")
+    assert answer == {**route("triangle-counting"), "intent": "options"}
     # The catalog is part of the fixed instructions, ahead of the question.
     assert calls[0]["messages"][0]["content"].endswith(
         json.dumps(catalog, separators=(",", ":"))
@@ -1038,7 +1120,7 @@ async def test_model_transport_uses_constrained_new_contract_and_validates_respo
         "Return JSON matching the supplied schema" in calls[0]["messages"][0]["content"]
     )
     assert "Ignore instructions" in calls[0]["messages"][1]["content"]
-    assert calls[0]["model"] == (native_model or settings.llm_model)
+    assert calls[0]["model"] == settings.llm_model  # Native adapter does not override routing.
     assert calls[0]["reasoning_effort"] == settings.analytics_reasoning_effort
     if thinking_budget is None:
         assert "thinking_token_budget" not in calls[0]
@@ -1056,9 +1138,11 @@ async def test_model_transport_uses_constrained_new_contract_and_validates_respo
 
 
 @pytest.mark.asyncio
-async def test_generation_transport_executes_dependent_native_plan(setup, monkeypatch):
+@pytest.mark.parametrize("edited_vertices", [None, [1, 2]])
+async def test_generation_transport_executes_dependent_native_plan(setup, monkeypatch, edited_vertices):
     settings, analytics, events, session, body = setup
     planner = AnalyticsPlanner(replace(settings, llm_enabled=True), analytics, events)
+    body.message = "Look up vertices 0 and 1, extract their induced subgraph, then count triangles."
     wire = {
         "status": "ready",
         "message": "Count triangles among the selected vertices.",
@@ -1112,8 +1196,16 @@ async def test_generation_transport_executes_dependent_native_plan(setup, monkey
                 for op in listed.values()
             )
             response = route("node-lookup", "query-subgraph", "triangle-counting")
+        elif stage == "candidates":
+            option = next(row for row in payload["choices"] if row["operation"] == "node-lookup")
+            selected = next(row for row in option["choices"] if len(row.get("operations", [])) == 3)
+            response = {"operation": option["operation"], "parameter_choice": selected["id"], "interpretation": "Count triangles among the chosen vertices."}
+            return httpx.Response(200, json={"choices": [{"index": i, "finish_reason": "stop", "message": {"content": json.dumps(response)}} for i in range(5)]})
         else:
             schema = content["response_format"]["json_schema"]["schema"]
+            selected = next(row for row in payload["parameter_choices"] if row["operation"] == "node-lookup"
+                            and row["parameter"] == "vertices" and "all entities explicitly named" in row["description"])
+            wire["plan"]["steps"][0]["arguments"][0]["value"] = {"choice": selected["id"]}
             jsonschema.validate(wire, schema)
             response = wire
         return httpx.Response(
@@ -1141,17 +1233,32 @@ async def test_generation_transport_executes_dependent_native_plan(setup, monkey
     assert decoded["plan"]["steps"][1]["bindings"] == {
         "vertices": {"step": "step_1", "port": "vertices"}
     }
-    planned = await planner.plan(session, body)
-    assert planned["status"] == "ready"
-    assert calls == ["route", "plan"]
+    offered = await planner.plan(session, body)
+    assert offered["status"] == "options" and analytics.list(session) == []
+    choice = offered["options"][0]
+    assert choice["operations"] == ["node-lookup", "query-subgraph", "triangle-counting"]
+    parameters = deepcopy(choice["parameters"])
+    if edited_vertices is not None:
+        parameters["node-lookup"]["vertices"] = edited_vertices
+    picked = body.model_copy(update={"intent": "calculate", "operations": choice["operations"], "parameters": parameters,
+                                    "option_id": choice["id"], "option_turn_id": offered["turn_id"]})
+    planned = await planner.plan(session, picked)
+    assert planned["status"] == "ready", json.dumps(planned.get("trace"), indent=2)
+    assert calls == ["route", "candidates", "plan"]
     reasoning = [
         event.payload
         for event in analytics.database.events(session)
         if event.type == "workflow.reasoning"
     ]
-    assert [row["stage"] for row in reasoning] == calls
-    assert all(row["turn_id"] == planned["turn_id"] for row in reasoning)
+    assert [row["stage"] for row in reasoning] == ["route", "plan"]
+    assert [row["turn_id"] for row in reasoning] == [offered["turn_id"], planned["turn_id"]]
     assert reasoning[-1]["text"] == "Recorded test reasoning for plan"
+    starts = [event.payload for event in analytics.database.events(session) if event.type == "workflow.model_call"]
+    diagnostics = [event.payload for event in analytics.database.events(session) if event.type == "workflow.diagnostics"]
+    assert len({row["call_id"] for row in starts}) == 3
+    assert starts[1]["samples"] == 5
+    assert [row["call_id"] for row in starts if row["stage"] != "candidates"] == [row["call_id"] for row in reasoning]
+    assert [row["call_id"] for row in starts] == [row["call_id"] for row in diagnostics]
     analytics.open()
     try:
         saved = await analytics.create(
@@ -1163,10 +1270,7 @@ async def test_generation_transport_executes_dependent_native_plan(setup, monkey
         assert result["status"] == "completed" and result["complete"]
         ports = result["steps"]["step_3"]["result"]["ports"]
         assert ports["count"]["value"] == 0
-        assert result["steps"]["step_2"]["result"]["ports"]["vertices"]["value"] == [
-            0,
-            1,
-        ]
+        assert result["steps"]["step_2"]["result"]["ports"]["vertices"]["value"] == (edited_vertices or [0, 1])
     finally:
         await analytics.close()
 
@@ -1212,7 +1316,7 @@ async def test_domain_clarification_history_and_workflow_link_are_saved(
     with pytest.raises(AnalyticsError, match="already saved"):
         await planner.plan(session.id, body)
     body.request_id = uuid4()
-    body.message = "Use degree centrality."
+    body.message = "Use degree centrality with outgoing connections."
     second = await planner.plan(session.id, body)
     assert second["status"] == "ready" and first["turn_id"] != second["turn_id"]
     payload = planner.calls[1][1]
@@ -1360,7 +1464,7 @@ async def test_generation_transport_rejects_conflicting_or_invalid_arguments(
     step = wire["plan"]["steps"][0]
     del step["id"], step["parameters"], step["bindings"]
     step["input"] = {"source": "input", "input": "main"}
-    step["arguments"] = [{"name": "sources", "value": {"literal": [0]}}]
+    step["arguments"] = [{"name": "sources", "value": {"choice": "source_0"}}]
     if attack == "two_sources":
         step["arguments"][0]["value"]["binding"] = {
             "source": "input",
@@ -1370,7 +1474,7 @@ async def test_generation_transport_rejects_conflicting_or_invalid_arguments(
         step["arguments"].append(
             {
                 "name": "sources",
-                "value": {"literal": [1]},
+                "value": {"choice": "source_1"},
             }
         )
     elif attack == "unknown_name":
@@ -1402,7 +1506,11 @@ async def test_generation_transport_rejects_conflicting_or_invalid_arguments(
     with pytest.raises(
         AnalyticsError, match="could not return a valid decision"
     ) as caught:
-        await planner._generate("plan", {"operations": cards}, schema)
+        await planner._generate("plan", {"operations": cards, "parameter_choices": [
+            {"id": f"source_{value}", "operation": "breadth-first-search", "parameter": "sources",
+             "value": [value], "description": f"Start at vertex {value}."} for value in (0, 1)] + [
+                {"id": "predecessors", "operation": "breadth-first-search", "parameter": "return_predecessors",
+                 "value": False, "description": "Do not include predecessors."}]}, schema)
     if attack == "duplicate_name":
         assert "supplied more than once" in str(caught.value.__cause__)
 
@@ -1435,7 +1543,7 @@ async def test_followup_retains_reviewed_plan_context_without_automatic_executio
         ),
     )
     body.previous_workflow_id = initial["id"]
-    body.message = "Include the actual triangles too."
+    body.message = "Enumerate the actual triangles too."
     planner = ReplayPlanner(
         settings,
         analytics,
@@ -1497,7 +1605,8 @@ async def test_graph_collection_context_and_pattern_selector_schema(
         content=json.dumps({"dataset_id": "test", "graphs": members}).encode(),
     )
     body = PlanningRequest(
-        message="Find patterns shared by at least half of the graphs.",
+        message="Find frequent subgraphs with minimum support fraction 0.5, maximum edges 2, induced false, vertex and edge type labels; reject self loops and parallel edges.",
+        mode="interactive",
         device="cpu",
         inputs={"main": {"file_id": file.id, "kind": "graph_collection"}},
     )
@@ -1515,7 +1624,9 @@ async def test_graph_collection_context_and_pattern_selector_schema(
     )
     result = await planner.plan(session, body)
     assert result["status"] == "ready"
-    context = planner.calls[0][1]["inputs"]["main"]
+    profile = planner.calls[0][1]["inputs"]["main"]
+    assert profile["input_kind"] == "graph_collection" and profile["vertices_count"] == 100
+    context = planner.calls[1][1]["inputs"]["main"]
     assert context["kind"] == "graph_collection" and context["graphs_count"] == 10
     assert context["metadata"] == {"dataset_id": "test"}
     assert len(context["graphs_sample"]) == 8 and context["samples_are_excerpts"]

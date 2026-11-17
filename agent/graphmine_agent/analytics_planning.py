@@ -19,10 +19,23 @@ import jsonschema
 from pydantic import BaseModel, ConfigDict, Field
 
 from .analytics import AnalyticsError, InputReference
-from .analytics_answers import build_facts, numberless_lead, suggested_questions
+from .analytics_answers import build_facts, suggested_questions, compose_sources, writer_observers
+from .answer_grounding import Evidence, SAFE_LEADS, fact_sources
+from . import google_search
 from .analytics_context import matched_entities, resolve_selection, summarize_result
+from .analytics_bipartite import (
+    CONVERT_CHOICE, KEEP_CHOICE, complete_partitions, missing_required_parameter,
+    missing_sides, partition_context, planning_cards as biclique_planning_cards,
+)
+from .analytics_eligibility import eligible, requested_preferences, score_hints
+from .analytics_lane_choices import describes, description_answer, lookup_choices, reply_sources
+from .analytics_lanes import AnalyticsLanes
+from .analytics_clarification import detect_gap, explicit_operation, gap as clarification_gap, validator_gap
+from .analytics_lane_choices import explicit_parameters
+from .analytics_parameter_choices import constrain_literals, parameter_choices, resolve_literals
 from .database import RecordNotFound
 from .identity import AccountError
+from .models import FileRole
 
 _logger = logging.getLogger(__name__)
 
@@ -158,8 +171,9 @@ def family_catalog(cards):
 class _ReasoningStream:
     """Saves reasoning in pieces while a stage runs; the full text follows it."""
 
-    def __init__(self, events, context, stage, interval=1.5):
+    def __init__(self, events, context, stage, interval=1.5, call_id=None):
         self.events, self.context, self.stage = events, context, stage
+        self.call_id = call_id
         self.interval, self.pending, self.sent = interval, [], time.monotonic()
 
     async def add(self, text):
@@ -174,7 +188,8 @@ class _ReasoningStream:
         await self.events.publish(
             self.context["session_id"],
             "workflow.reasoning.delta",
-            {"turn_id": self.context["turn_id"], "stage": self.stage, "text": text},
+            {"turn_id": self.context["turn_id"], "call_id": self.call_id,
+             "stage": self.stage, "text": text},
         )
 
 
@@ -192,7 +207,7 @@ class PlanningSelection(BaseModel):
 class PlanningRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     message: str = Field(min_length=1, max_length=20000)
-    inputs: dict[str, InputReference] = Field(min_length=1, max_length=16)
+    inputs: dict[str, InputReference] = Field(default_factory=dict, max_length=16)
     device: Literal["auto", "cpu", "gpu"] = "auto"
     family_id: str | None = None
     previous_workflow_id: str | None = None
@@ -203,6 +218,14 @@ class PlanningRequest(BaseModel):
     # The checked action of a suggested follow-up for previous_workflow_id. It
     # is accepted only if that result still offers exactly this action.
     action: dict[str, Any] | None = None
+    intent: Literal["calculate"] | None = None
+    operations: list[str] = Field(default_factory=list, max_length=8)
+    parameters: dict[str, Any] = Field(default_factory=dict, max_length=128)
+    option_id: str | None = Field(default=None, max_length=100)
+    option_turn_id: str | None = Field(default=None, max_length=100)
+    clarification_id: str | None = Field(default=None, max_length=100)
+    clarification_choice: str | None = Field(default=None, max_length=100)
+    clarification_cancel: bool = False
 
 
 def _object(properties, required=None):
@@ -260,6 +283,8 @@ def route_catalog(cards, families):
             }
             if choices:
                 row["choices"] = choices
+            if "requirements" in card:
+                row["requirements"] = card["requirements"]
             operations.append(row)
         catalog.append(
             {"family": family["id"], "title": family["title"], "operations": operations}
@@ -413,7 +438,7 @@ def view_schema(targets):
     return {"oneOf": actions}
 
 
-def route_schema(cards, *, facts=(), targets=None):
+def route_schema(cards, *, facts=(), targets=None, descriptions=(), lookups=(), sources=(), gap_cards=()):
     """One decision: a new calculation, a display change, an answer from saved facts,
     a clarifying question, or unsupported. Each is one state, not independent flags.
     """
@@ -442,6 +467,29 @@ def route_schema(cards, *, facts=(), targets=None):
         ),
         _object({"intent": {"const": "unsupported"}, "message": message}),
     ]
+    if not cards:
+        variants.pop(0)
+    else:
+        options = deepcopy(variants[0])
+        options["properties"]["intent"] = {"const": "options"}
+        variants.append(options)
+    if descriptions:
+        variants.append(_object({"intent": {"const": "describe_input"},
+            "fact_ids": {"type": "array", "items": {"enum": [fact["id"] for fact in descriptions]},
+                         "minItems": 1, "maxItems": 6, "uniqueItems": True}, "message": message}))
+    if lookups:
+        variants.append(_object({"intent": {"const": "lookup"},
+            "lookup_id": {"enum": [choice["id"] for choice in lookups]}, "message": message}))
+    if sources:
+        variants.append(_object({"intent": {"const": "reply"},
+            "source_ids": {"type": "array", "items": {"enum": [row["id"] for row in sources]},
+                           "minItems": 1, "maxItems": 6, "uniqueItems": True},
+            "message": {"type": "string", "minLength": 1, "maxLength": 2400}}))
+        gap = next(row for row in variants if row["properties"]["intent"] == {"const": "needs_information"})
+        gap["properties"]["choices"] = {"type": "array", "maxItems": min(4, len(cards)),
+            "items": {"enum": [f"Use {card['title']}." for card in cards]} if cards else {"type": "string"}}
+        if gap_cards:
+            gap["properties"]["operation"] = {"enum": [card["id"] for card in gap_cards]}
     if targets:
         variants.append(
             _object(
@@ -629,7 +677,9 @@ def plan_schema(cards, aliases, device):
                     "operation": {"const": card["id"]},
                     "input": reference,
                     "parameters": _object(parameters, []),
-                    "bindings": _object({key: reference for key in parameters}, []),
+                    "bindings": _object(
+                        {key: reference for key in parameters if key != "entity_type"}, []
+                    ),
                 },
                 ["id", "operation", "input", "parameters", "bindings"],
             )
@@ -802,7 +852,7 @@ This stage chooses capabilities; the later plan stage fills parameters and valid
 """
 
 
-class AnalyticsPlanner:
+class AnalyticsPlanner(AnalyticsLanes):
     def __init__(self, settings, analytics, events):
         self.settings, self.analytics, self.events = settings, analytics, events
         self.conversation = ContextVar("analytics_conversation", default=None)
@@ -857,19 +907,45 @@ class AnalyticsPlanner:
         generation_schema = (
             generation_plan_schema(schema) if stage == "plan" else schema
         )
+        entity_choices = {}
+        highlight = next((action for variant in schema.get("oneOf", [])
+                          for action in variant.get("properties", {}).get("view", {}).get("oneOf", [])
+                          if action["properties"]["kind"] == {"const": "highlight"}), None) if stage == "route" else None
+        if highlight:
+            generation_schema = deepcopy(schema)
+            entities = highlight["properties"]["vertices"]["items"]["enum"]
+            entity_choices = {f"entity_{index}": value for index, value in enumerate(entities)}
+            for variant in generation_schema["oneOf"]:
+                if variant["properties"].get("intent") == {"const": "view"}:
+                    for action in variant["properties"]["view"]["oneOf"]:
+                        if action["properties"]["kind"] == {"const": "highlight"}:
+                            action["properties"]["vertices"]["items"]["enum"] = list(entity_choices)
+            labels = payload.get("matched_entities", [])
+            payload = {**payload, "view_targets": {**payload.get("view_targets", {}),
+                "entities": [{"id": key, "label": labels[index].get("label", str(value)) if index < len(labels) else str(value)}
+                             for index, (key, value) in enumerate(entity_choices.items())]}}
+        literal_choices = payload.get("parameter_choices", []) if stage == "plan" else []
+        if stage == "plan":
+            generation_schema = constrain_literals(generation_schema, literal_choices)
+            payload = {**payload, "parameter_choices": [{key: value for key, value in row.items() if key != "value"} for row in literal_choices]}
         stage_instructions = {
-            "route": "CURRENT STAGE: decide what the person is asking for and return exactly one intent. calculate: a new computation on the data; choose every operation the request needs from the catalog, including each stated dependency, such as extracting a subgraph and then analyzing it, and explain the choice in one sentence. Basic lookup, filtering and aggregation are query operations. Parameters are filled later. view: only a change to how the saved result is displayed, such as showing a group or clique, changing the layout, highlighting named entities, opening another output, searching the result rows or opening the results page. A view never computes anything; if the request needs a value that the saved result does not contain, calculate instead. explain: the listed result_facts already answer a question about the saved result; choose those facts, most relevant first, and write one lead sentence that contains no digits or numbers. needs_information: the mathematical objective is ambiguous, such as maximum versus maximal or different meanings of importance; ask one short question and give up to four short choices, each a complete reply in the person's own words. Do not ask about output formatting or parameters that have documented defaults. unsupported: no listed operation can compute the request. A preferred_family is the person's hint; choose operations from other families when the request needs them.",
-            "plan": "CURRENT STAGE: construct the requested workflow using the supplied cards and actual input metadata/samples. Steps are ordered and have no generated IDs. Refer to an earlier step by its zero-based step_index: 0 is the first step, 1 the second. The first step must use an input alias. A reference must point to an existing earlier step and a port declared by that step's operation. Each step uses an arguments array: exactly one entry per supplied parameter, with either value.literal or value.binding. Omit optional defaults. Historical plans may use named step IDs and parameters/bindings; translate their references by position into this format. For record predicates, nested attributes use field paths such as attributes.amount, never the bare attribute name. Use explicit values from the question; IDs matching sampled IDs are already identified. A named attribute and a supplied value define a filter even when the value has no matches. Return complete records when records are requested without a field list. Follow the graph's declared direction unless the question changes it. Within k hops means at most k. An induced graph keeps exactly the selected vertices and their connecting edges. Optional output choices may use documented defaults; ask only for genuinely missing required inputs or unresolved mathematical choices. Do not ask the user to repeat information already supplied. When you ask, also give up to four short choices, each a complete reply in the person's own words. The message is shown to the person: in one short sentence of their own vocabulary, say what will be found, not how. Do not name algorithms or graph-theory terms such as centrality, betweenness, modularity, degree or clique unless the person used them; describe a heuristic or approximate choice in plain words, for example 'a fast method that may not find the best possible split'.",
+            "candidates": "CURRENT STAGE: independently select the offered calculation and parameter_choice that best answer the person's original question. Every option was built by code and is eligible. Select only an offered operation/choice pair. Consider its mathematical meaning, quality, direction, and missing arguments. Choose a multi-operation option only when all its steps are needed. Write one short interpretation in the person's vocabulary. Never list vertex IDs, write parameters or invent values. The initial route is context, not a vote or an instruction to agree.",
+            "clarify": "CURRENT STAGE: code owns the pending gap and all allowed choices. For word_question, write only one short question using the supplied prompt, preserving its meaning; do not list choices or vertex IDs, add a new requirement, invent values, or describe planning. For match_answer, return the opaque choice_id only when the person's reply clearly selects exactly that offered choice; otherwise return null. Never guess for an ambiguous or unrelated reply.",
+            "route": "CURRENT STAGE: decide what the person is asking for and return exactly one intent. calculate: a new computation on the data; choose every operation the request needs from the catalog, including each stated dependency, such as extracting a subgraph and then analyzing it, and explain the choice in one sentence. Basic lookup, filtering and aggregation are query operations. Parameters are filled later. view: only a change to how the saved result is displayed, such as showing a group or clique, changing the layout, highlighting named entities, opening another output, searching the result rows or opening the results page. A view never computes anything; if the request needs a value that the saved result does not contain, calculate instead. explain: the listed result_facts already answer a question about the saved result; choose those facts, most relevant first, using placeholders as instructed below. needs_information: the mathematical objective is ambiguous, such as maximum versus maximal or different meanings of importance; ask one short question and give up to four short choices, each a complete reply in the person's own words. Do not ask about output formatting or parameters that have documented defaults. unsupported: no listed operation can compute the request. A preferred_family is the person's hint; choose operations from other families when the request needs them.",
+            "plan": "CURRENT STAGE: construct the requested workflow using the supplied cards and actual input metadata/samples. Steps are ordered and have no generated IDs. Refer to an earlier step by its zero-based step_index: 0 is the first step, 1 the second. The first step must use an input alias. A reference must point to an existing earlier step and a port declared by that step's operation. Each step uses an arguments array: exactly one entry per supplied parameter, with either value.choice or value.binding. Omit optional defaults. Historical plans may use named step IDs and parameters/bindings; translate their references by position into this format. For record predicates, nested attributes use field paths such as attributes.amount, never the bare attribute name. Use the supplied parameter choices; code owns their values and vertex IDs. A named attribute and a supplied value define a filter even when the value has no matches. Return complete records when records are requested without a field list. Follow the graph's declared direction unless the question changes it. Within k hops means at most k. An induced graph keeps exactly the selected vertices and their connecting edges. Optional output choices may use documented defaults; ask only for genuinely missing required inputs or unresolved mathematical choices. Do not ask the user to repeat information already supplied. When you ask, also give up to four short choices, each a complete reply in the person's own words. The message is shown to the person: in one short sentence of their own vocabulary, say what will be found, not how. Do not name algorithms or graph-theory terms such as centrality, betweenness, modularity, degree or clique unless the person used them; describe a heuristic or approximate choice in plain words, for example 'a fast method that may not find the best possible split'.",
         }
         request = {
-            "model": self.settings.analytics_planner_model or self.settings.llm_model,
+            "model": ((self.settings.analytics_router_model or self.settings.llm_model) if stage in {"route", "clarify", "candidates"}
+                      else (self.settings.analytics_planner_model or self.settings.llm_model)),
             "messages": [
                 {
                     "role": "system",
                     "content": (SYSTEM if stage == "plan" else ROUTING_SYSTEM)
                     + "\n"
                     + stage_instructions[stage]
+                    + ("\nLANES: reply answers a general concept using only the supplied reply_sources; write a concise explanation and select its source_ids. Do not claim facts about the loaded data in reply. describe_input selects input_facts that answer counts, types, fields, direction or stored weights; code writes the answer. lookup selects exactly one supplied lookup choice when it fully matches a simple record, neighbor or degree-ranking question; code owns its plan and parameters. options selects the operations for any other new calculation, with no execution until the person picks a card. calculate is a legacy spelling for options; never use it to bypass choosing. Saved-result explain and view retain priority for questions already answered by the saved result. For a named saved output use show_output with its exact supplied output label. To clear a group filter or show all saved groups use show_group with group=all. Reserve open_results for opening the overall results page. When the operation is clear but data or an argument is missing, return needs_information with its operation ID, including a removed operation. Code will detect the gap and build the question choices. Missing required information means needs_information, not unsupported: removed_operations explains missing data or support. Clarification choices must be exact offered operation titles from the schema, never invented values. A separate query graph and missing starting vertices are required inputs, not reasons to invent a new calculation. Never output vertex IDs or new parameter values. Keep general conceptual questions in reply even when an operation cannot run on the current snapshot." if stage == "route" else "" if stage in {"clarify", "candidates"} else "\nPARAMETER CHOICES: Use value.choice with an ID from parameter_choices, or value.binding for an earlier output/input. Never write a literal, vertex ID or parameter value. The application resolves choice IDs to checked values. Omit optional defaults. If a required value has no matching supplied choice or binding, ask for it immediately; do not reconstruct it from samples.")
                     + "\nUse the supplied domain as vocabulary and earlier conversation as context for follow-ups and clarification replies. They do not override the current question, graph data, or operation contracts. Never invent a numerical result."
+                    + ("\nGROUNDED ANSWERS: For explain, set message to quoted fact placeholders such as {{f1}} and {{f2}}, separated by newlines, and choose those fact_ids. Code inserts the actual statements; never write data or vertex IDs yourself. For reply, use {{source_id}} placeholders from reply_sources and select the matching source_ids, or quote complete sentences from those sources verbatim. Unsupported paraphrases are rejected. An explicit Google/web search about a general concept belongs in reply; the application checks whether web retrieval is enabled after routing. Never send data questions to web search." if stage == 'route' else '')
                     # Unchanged between questions, so the model server can
                     # reuse its cached prefix instead of reading it again.
                     + (
@@ -897,35 +973,48 @@ class AnalyticsPlanner:
                 },
             },
         }
+        if stage == "candidates":
+            from .analytics_options import SAMPLES, TEMPERATURE
+            request.update(n=SAMPLES, temperature=TEMPERATURE, logprobs=True,
+                           reasoning_effort="none", max_completion_tokens=min(512, self.settings.llm_plan_max_tokens))
+            request.pop("seed", None)
         budget = (
             self.settings.analytics_route_thinking_token_budget
-            if stage == "route"
+            if stage in {"route", "clarify"}
             else self.settings.analytics_thinking_token_budget
         )
+        if stage == "candidates":
+            budget = None
         if budget is not None:
             # Optional vLLM extension: reserve output tokens for the structured
             # decision without disabling the reasoning needed for selection.
             # Reasoning tokens dominate planning latency, so routing gets its own.
             request["thinking_token_budget"] = budget
         context = self.conversation.get()
+        call_id = str(uuid4())
         if context:
+            await self.events.publish(
+                context["session_id"], "workflow.model_call",
+                {"turn_id": context["turn_id"], "call_id": call_id,
+                 "stage": stage, "model": request["model"], "samples": request.get("n", 1)},
+            )
             await self.events.publish(
                 context["session_id"],
                 "workflow.planning",
                 {"turn_id": context["turn_id"], "stage": stage, "status": "running"},
             )
-        started, report = time.monotonic(), {"stage": stage, "model": request["model"]}
-        body = data = None
+        started, report = time.monotonic(), {"stage": stage, "model": request["model"], "call_id": call_id}
+        body = data = live = None
         try:
             async with httpx.AsyncClient(
-                base_url=self.settings.llm_base_url,
+                base_url=(self.settings.analytics_router_base_url or self.settings.llm_base_url) if stage in {"route", "clarify", "candidates"} else self.settings.llm_base_url,
                 headers={"Authorization": f"Bearer {self.settings.llm_api_key}"},
                 timeout=httpx.Timeout(120, connect=5),
             ) as client:
                 from .accounts import model_post, model_stream
 
                 if context:
-                    live = _ReasoningStream(self.events, context, stage)
+                    live = _ReasoningStream(self.events, context, stage, call_id=call_id)
                     body = await model_stream(
                         client, "/chat/completions", json=request, on_reasoning=live.add
                     )
@@ -941,6 +1030,20 @@ class AnalyticsPlanner:
                 report.update(
                     finish_reason=choice.get("finish_reason"), usage=body.get("usage")
                 )
+                if stage == "candidates":
+                    from .analytics_options import SAMPLES, operation_logprob
+                    if len(body["choices"]) != SAMPLES:
+                        raise AnalyticsError("The routing server did not return all five samples.", "router_samples_incomplete", 503)
+                    data = []
+                    for sample in body["choices"]:
+                        if sample.get("finish_reason") == "length":
+                            raise AnalyticsError("A routing sample was truncated.", "router_sample_truncated", 503)
+                        decision = json.loads(sample["message"]["content"])
+                        jsonschema.Draft202012Validator(schema).validate(decision)
+                        probability = operation_logprob(sample)
+                        data.append({"decision": decision, "operation_logprob": probability})
+                    report.update(outcome="ok", samples=SAMPLES, samples_missing_logprobs=sum(row["operation_logprob"] is None for row in data))
+                    return data
                 # Saved before parsing, so a cut-off answer keeps its reasoning.
                 reasoning = message.get("reasoning") or message.get("reasoning_content")
                 if context and isinstance(reasoning, str) and reasoning.strip():
@@ -949,6 +1052,7 @@ class AnalyticsPlanner:
                         "workflow.reasoning",
                         {
                             "turn_id": context["turn_id"],
+                            "call_id": call_id,
                             "stage": stage,
                             "model": request["model"],
                             "text": reasoning[:40000],
@@ -962,10 +1066,18 @@ class AnalyticsPlanner:
                     )
                 data = json.loads(message["content"])
             jsonschema.Draft202012Validator(generation_schema).validate(data)
+            if entity_choices and data.get("intent") == "view" and data["view"]["kind"] == "highlight":
+                data["view"]["vertices"] = [entity_choices[key] for key in data["view"]["vertices"]]
             if stage == "plan":
-                data = decoded_plan(data)
+                data = decoded_plan(resolve_literals(data, literal_choices))
             jsonschema.Draft202012Validator(schema).validate(data)
+            # Older router contracts used calculate for proposals. Normalize
+            # at the model boundary; only an explicit picked card may run.
             report["outcome"] = "ok"
+            if stage == "route" and data.get("intent") == "calculate":
+                # Keep the model's original output with its decoding contract
+                # in capture; the application consumes the normalized intent.
+                return {**data, "intent": "options"}
             return data
         except (AnalyticsError, AccountError) as exc:
             report["outcome"] = exc.code
@@ -998,6 +1110,8 @@ class AnalyticsPlanner:
                 503,
             ) from exc
         finally:
+            if live is not None:
+                await live.flush()
             report.setdefault("outcome", "interrupted")
             report["seconds"] = round(time.monotonic() - started, 2)
             _logger.info("planner stage %s", json.dumps(report, default=str))
@@ -1070,6 +1184,7 @@ class AnalyticsPlanner:
                         or self.settings.llm_model,
                         "answer_model": self.settings.analytics_answer_model
                         or self.settings.llm_model,
+                        "router_model": self.settings.analytics_router_model or self.settings.llm_model,
                     },
                     "mode": body.mode,
                     "evaluation_id": body.evaluation_id,
@@ -1082,6 +1197,10 @@ class AnalyticsPlanner:
                     "selection": body.selection.model_dump()
                     if body.selection
                     else None,
+                    "intent": body.intent, "operations": body.operations, "parameters": body.parameters,
+                    "option_id": body.option_id, "option_turn_id": body.option_turn_id,
+                    "clarification_id": body.clarification_id, "clarification_choice": body.clarification_choice,
+                    "clarification_cancel": body.clarification_cancel,
                 },
             )
             self.analytics.database.touch_session(session_id)
@@ -1118,15 +1237,16 @@ class AnalyticsPlanner:
                     else [],
                     "evaluation_id": body.evaluation_id,
                     "plan": response.get("plan"),
-                    "inputs": {
+                    "inputs": response.get("inputs") or {
                         key: ref.model_dump() for key, ref in body.inputs.items()
                     },
                     "mode": body.mode,
                     **{
                         key: response[key]
-                        for key in ("view", "answer")
+                        for key in ("view", "answer", "pending_question", "lane", "options", "question", "alternatives", "clarification_context", "option_evidence", "trace")
                         if key in response
                     },
+                    "device": body.device,
                 },
             )
             return {**response, "turn_id": turn_id,
@@ -1189,15 +1309,91 @@ class AnalyticsPlanner:
             if targets is None:
                 raise AnalyticsError("This result has no view to change.")
             return {"intent": "view", "view": body.action["view"], "message": body.message}
-        return {"intent": "explain", "fact_ids": body.action["fact_ids"], "message": ""}
+        return {"intent": "explain", "fact_ids": body.action["fact_ids"],
+                "message": '\n'.join('{{' + key + '}}' for key in body.action['fact_ids'])}
 
-    def _saved_result(self, workflow_id):
+    def _saved_result(self, workflow_id, *, expected_revision=None):
         try:
-            return self.analytics.result(workflow_id)
+            return self.analytics.result(workflow_id, expected_revision=expected_revision)
         except (AnalyticsError, RecordNotFound):
             return None  # Not run yet: the plan alone is the context.
 
-    async def _plan(self, session_id, body):
+    async def _resume_biclique_conversion(self, session_id, body, inputs):
+        """Only the exact saved choice, for the same files, resumes this plan."""
+        if body.evaluation_id:
+            return None
+        current = self.conversation.get()["turn_id"]
+        replies = [
+            event.payload for event in self.analytics.database.events(
+                session_id, types=("workflow.chat",)
+            )
+            if event.payload.get("role") == "assistant"
+            and event.payload.get("turn_id") != current
+        ]
+        pending = replies[-1].get("pending_question") if replies else None
+        refs = {alias: ref.model_dump() for alias, ref in body.inputs.items()}
+        if (not pending or pending.get("gap") != "biclique_direction"
+                or pending.get("inputs") != refs
+                or pending.get("device") != body.device
+                or body.message.strip() not in pending["choices"]):
+            return None
+        if body.message.strip() == KEEP_CHOICE:
+            return {
+                "status": "needs_information", "plan": None, "choices": [],
+                "message": "The graph remains directed. Maximal bicliques requires "
+                "undirected connections, so this analysis has not run.", "trace": [],
+            }
+        converted = {}
+        resumed_plan = deepcopy(pending["plan"])
+        for alias in pending["aliases"]:
+            source = self.analytics.database.get_file(body.inputs[alias].file_id)
+            if source.id not in converted:
+                graph = deepcopy(inputs[alias]["data"])
+                graph["graph"]["directed"] = False
+                generated = await asyncio.to_thread(
+                    self.analytics.graph_store.ingest,
+                    session_id=session_id, role=FileRole.graph,
+                    filename="bicliques-undirected.json",
+                    content=json.dumps(graph, allow_nan=False).encode(),
+                    unlimited=True,
+                    provenance={
+                        "type": "confirmed_undirected_projection",
+                        "source_file_id": source.id, "source_sha256": source.sha256,
+                        "question": pending["question"], "confirmation": body.message,
+                    },
+                )
+                converted[source.id] = generated.id
+            # Other objectives may still depend on the original direction.
+            # Bind only biclique steps to the new snapshot; never replace a
+            # shared alias used by another calculation in this workflow.
+            suffix = 1
+            converted_alias = f"biclique_input_{suffix}"
+            while converted_alias in refs:
+                suffix += 1
+                converted_alias = f"biclique_input_{suffix}"
+            refs[converted_alias] = {"file_id": converted[source.id], "kind": "graph"}
+            for step in resumed_plan["steps"]:
+                if step["operation"] == "maximal-bicliques" and step["input"] == {"input": alias}:
+                    step["input"] = {"input": converted_alias}
+        references = {alias: InputReference.model_validate(ref) for alias, ref in refs.items()}
+        projected = await self.analytics.load_inputs(session_id, references)
+        checked = await self.analytics.validate(session_id, references, resumed_plan, projected)
+        trace = [
+            {"stage": "preparation", "status": "passed",
+             "message": "Created an undirected copy for bicliques; the original graph is unchanged."},
+            {"stage": "validation", "status": "passed",
+             "message": "The plan and its input bindings passed validation."},
+        ]
+        for row in trace:
+            await self.events.publish(session_id, "workflow.planning", {**row, "turn_id": current})
+        return {
+            "status": "ready", "message": "Find the maximal bicliques using the confirmed undirected copy.",
+            "plan": checked["plan"], "validation": checked, "inputs": refs, "trace": trace,
+        }
+
+    async def _plan(self, session_id, body, *, continuation=None):
+        if body.mode == "expert":
+            raise AnalyticsError("Expert mode accepts plan JSON in the plan editor. Submit that plan to the validator.")
         session = self.analytics.database.get_session(session_id)
         caps = await self.analytics.capabilities()
         policy = body.device
@@ -1211,17 +1407,24 @@ class AnalyticsPlanner:
             )
         ]
         families = family_catalog(cards)
-        if not cards:
-            raise AnalyticsError(
-                "No currently verified operations support this device policy",
-                "verification_required",
-                503,
-            )
         if body.family_id is not None and body.family_id not in {
             f["id"] for f in families
         }:
             raise AnalyticsError("Unknown task family")
         inputs = await self.analytics.load_inputs(session_id, body.inputs)
+        picked = self._picked_option(session_id, body)
+        if picked is not None and continuation is not None:
+            picked = {**picked, "question": continuation["question"],
+                      "input": continuation["alias"], "clarification": continuation}
+        resumed = await self._resume_clarification(session_id, body, inputs, cards)
+        if resumed is not None:
+            return resumed
+        resumed = await self._resume_lane_preparation(session_id, body, inputs, cards)
+        if resumed is not None:
+            return resumed
+        resumed = await self._resume_biclique_conversion(session_id, body, inputs)
+        if resumed is not None:
+            return resumed
         context = {}
         for alias, descriptor in inputs.items():
             data = descriptor["data"]
@@ -1269,6 +1472,8 @@ class AnalyticsPlanner:
                         sample if len(json.dumps(sample)) < 16000 else []
                     )
             context[alias]["samples_are_excerpts"] = True
+            if descriptor["kind"] == "graph":
+                context[alias]["bipartition"] = partition_context(data)
         payload = {
             "question": body.message,
             "device_policy": body.device,
@@ -1311,20 +1516,20 @@ class AnalyticsPlanner:
                 )
             payload["previous_plan"] = previous["validation"]["plan"]
             payload["previous_input_files"] = previous["input_files"]
-            results_for_routing = self._saved_result(previous["id"])
+            results_for_routing = self._saved_result(previous["id"], expected_revision=previous['revision'])
             if results_for_routing:
                 payload["previous_results"] = summarize_result(results_for_routing)
         if body.selection:
-            if (
-                self.analytics.get(body.selection.workflow_id)["session_id"]
-                != session_id
-            ):
+            selected_record = self.analytics.get(body.selection.workflow_id)
+            if selected_record['session_id'] != session_id:
                 raise AnalyticsError("The selected result belongs to another workspace")
-            results = self._saved_result(body.selection.workflow_id)
+            results = self._saved_result(body.selection.workflow_id, expected_revision=selected_record['revision'])
             selected = results and resolve_selection(results, body.selection)
             if selected:
                 payload["current_selection"] = selected
-        entities = await asyncio.to_thread(matched_entities, body.message, inputs)
+        entities = await asyncio.to_thread(matched_entities, body.message, inputs, limit=1000000)
+        if continuation is not None:
+            entities = continuation.get("entities", entities)
         if entities:
             payload["matched_entities"] = entities
         # Routing needs to know what earlier results and the selection are;
@@ -1378,11 +1583,85 @@ class AnalyticsPlanner:
         if body.family_id:
             routing["preferred_family"] = body.family_id
 
+        profiles = self._profiles(inputs)
+        reachable = {profile["input_kind"] for profile in profiles.values()}
+        derived = []
+        while True:
+            outputs = {port["type"] for card in cards if card["input_kind"] in reachable
+                       for port in card["output_ports"].values()
+                       if port["type"] in {"graph", "graph_collection", "hypergraph", "feature_vectors"}}
+            added = outputs - reachable
+            if not added:
+                break
+            derived.extend({"input_kind": kind, "unknown_data": True} for kind in sorted(added))
+            reachable.update(added)
+        requested = requested_preferences(picked["question"] if picked else body.message, body.parameters)
+        eligible_cards, removed = [], []
+        for operation in caps["operations"]:
+            if operation not in cards:
+                removed.append({"operation": operation["id"], "reason": f"No verified backend for device={body.device}."})
+                continue
+            checks = [eligible(operation, profile, requested) for profile in [*profiles.values(), *derived]]
+            if any(ok for ok, _reason in checks):
+                eligible_cards.append(operation)
+            else:
+                removed.append({"operation": operation["id"], "reason": " ".join(dict.fromkeys(reason for _ok, reason in checks)) or "No input snapshot is loaded."})
+        input_facts = describes(profiles)
+        lookups = lookup_choices(inputs, eligible_cards, entities, body.message, body.device)
+        sources = reply_sources(caps["operations"], self.settings.repository_root)
+        words = set(re.findall(r"[a-z]{2,}", body.message.lower())) - {"the", "what", "this", "does", "with", "from", "and", "for", "graph", "how"}
+        contracts = sorted((row for row in sources if row["kind"] == "contract"),
+            key=lambda row: (-len(words & set(re.findall(r"[a-z]{2,}", (row["id"] + " " + row["title"] + " " + row["text"]).lower()))), row["id"]))[:8]
+        sources = [row for row in sources if row["kind"] == "doc"] + contracts
+        routing["inputs"] = {alias: {key: value for key, value in profile.items() if key not in ("vertex_fields", "edge_fields")}
+                             for alias, profile in profiles.items()}
+        routing["input_facts"] = input_facts
+        routing["lookup_choices"] = [{key: value for key, value in row.items() if key != "plan"} for row in lookups]
+        routing["reply_sources"] = sources
+        # These are fresh tool results for this turn, including re-read saved
+        # results. Historical citations alone never authorize a new answer.
+        turn_id = self.conversation.get()['turn_id']
+        evidence = Evidence(turn_id).record('reply_sources', sources)
+        if facts:
+            evidence.record('build_facts', fact_sources(facts, workflow_id=previous['id'], revision=previous['revision']))
+        input_sources = [{'id': fact['id'], 'kind': 'fact',
+                          'ref': f"input:{body.inputs[fact['input']].file_id}:{fact['property']}",
+                          'title': 'Input fact', 'text': fact['statement']} for fact in input_facts]
+        evidence.record('describe_input', input_sources)
+        await self.events.publish(session_id, 'workflow.evidence',
+            {'turn_id': turn_id, 'sources': list(evidence.sources.values())})
+
+        async def grounded(message, identifiers, *, data_answer):
+            selected = evidence.subset(identifiers)
+            draft = selected.answer(message, identifiers)
+            try:
+                draft = selected.render(draft, data_answer=data_answer)
+            except ValueError:
+                draft['text'] = ''  # A failed draft gets one repair, never display.
+            answer = await compose_sources(self.settings, body.message, selected,
+                data_answer=data_answer, first=draft, default_ids=identifiers,
+                **writer_observers(self.settings, self.events, self.analytics.database, session_id, turn_id))
+            answer['sources'] = selected.public_sources(row['id'] for row in answer['citations'])
+            await remember('grounding', {'status': 'passed', 'message': 'Answered from recorded sources.',
+                                        **answer['grounding']})
+            return answer
+        routing["removed_operations"] = removed
+        routing["operation_hints"] = {card["id"]: {alias: score_hints(card, profile, requested) for alias, profile in profiles.items()
+                                      if profile["input_kind"] == card["input_kind"]} for card in eligible_cards}
+        if "matched_entities" in routing:
+            routing["matched_entities"] = [{"input": row["input"], "label": row.get("label", row["matched"])} for row in entities]
+
         try:
             async with asyncio.timeout(PLANNING_DEADLINE_SECONDS):
                 # The shortcut still uses verified cards and native validation.
-                direct = None if payload.get("conversation") else self.direct_plan(body, inputs, cards)
+                direct = None if payload.get("conversation") or picked else self.direct_plan(body, inputs, eligible_cards)
                 if direct is not None:
+                    if body.mode in {"normal", "interactive"}:
+                        operation = direct["steps"][0]
+                        response = await self._operation_lane(session_id, body, inputs, cards,
+                            [operation["operation"]], operation["parameters"], alias=operation["input"]["input"], entities=entities)
+                        await remember("route", {"status": response["lane"], "message": response["message"], "source": "direct", "operations": [operation["operation"]]})
+                        return {**response, "trace": trace}
                     try:
                         checked = await self.analytics.validate(session_id, body.inputs, direct, inputs)
                     except AnalyticsError:
@@ -1393,19 +1672,31 @@ class AnalyticsPlanner:
                         return {"status": "ready", "message": "The calculation is ready.", "plan": checked["plan"], "validation": checked, "trace": trace}
                 # One routing call sees every operation, the saved result's
                 # display options and its facts, and returns a single intent.
-                if body.action is not None:
+                if picked is not None:
+                    effective = body.model_copy(update={"message": picked["question"]})
+                    response = await self._operation_lane(session_id, effective, inputs, cards,
+                        picked["operations"], picked["parameters"], selected=True, alias=picked.get("input"),
+                        entities=(picked.get("clarification") or {}).get("entities", entities), clarification=picked.get("clarification"))
+                    await remember("route", {"status": response["lane"] if response else "calculate", "message": "Using the explicitly selected calculation.", "operations": picked["operations"], "source": "selected"})
+                    if response is not None:
+                        return {**response, "trace": trace}
+                    decision = {"intent": "calculate", "operations": picked["operations"], "message": "Build only the selected calculation."}
+                    payload["question"] = picked["question"]
+                    payload["selected_parameters"] = picked["parameters"]
+                elif body.action is not None:
                     decision = self._suggested(body, results_for_routing, facts, targets)
                 else:
-                    routes = route_schema(cards, facts=facts, targets=targets)
+                    routes = route_schema(eligible_cards, facts=facts, targets=targets,
+                        descriptions=input_facts, lookups=lookups, sources=sources, gap_cards=cards)
                     decision = await self._generate(
-                        "route", routing, routes, catalog=route_catalog(cards, families)
+                        "route", routing, routes, catalog=route_catalog(eligible_cards, family_catalog(eligible_cards))
                     )
                     jsonschema.Draft202012Validator(routes).validate(decision)
                 intent = decision["intent"]
                 step = {"status": intent, "message": decision["message"]}
                 if body.action is not None:
                     step["source"] = "suggestion"
-                if intent == "calculate":
+                if intent in {"calculate", "options"}:
                     step["operations"] = decision["operations"]
                     if body.family_id:
                         hinted = next(
@@ -1428,10 +1719,21 @@ class AnalyticsPlanner:
                     }
                     step["view"] = view
                     await remember("route", step)
+                    message = describe_view(view, labels)
+                    evidence.record('resolve_view', [{'id': 'view.selection', 'kind': 'fact',
+                        'ref': f"workflow:{previous['id']}:revision:{previous['revision']}:view",
+                        'title': 'Selected result view', 'text': message}])
+                    answer = evidence.facts(['view.selection'])
+                    answer.update(sources=evidence.public_sources(['view.selection']),
+                                  grounding={'checked': True, 'fallback': False, 'attempts': 0})
+                    assert not evidence.check(answer, turn_id=turn_id, data_answer=True)
+                    await self.events.publish(session_id, 'workflow.evidence',
+                        {'turn_id': turn_id, 'tool': 'resolve_view', 'sources': answer['sources']})
                     return {
                         "status": "view",
                         # Written from the checked action, not by the model.
-                        "message": describe_view(view, labels),
+                        "message": message,
+                        "answer": answer,
                         "view": view,
                         "trace": trace,
                         "plan": None,
@@ -1439,25 +1741,111 @@ class AnalyticsPlanner:
                 if intent == "explain":
                     by_id = {fact["id"]: fact for fact in facts}
                     chosen = [by_id[key] for key in decision["fact_ids"]]
-                    lead = numberless_lead(decision["message"])
+                    message = decision['message']
+                    if message in SAFE_LEADS:
+                        message += '\n' + '\n'.join('{{' + fact['id'] + '}}' for fact in chosen)
+                    answer = await grounded(message, decision['fact_ids'], data_answer=True)
+                    answer.update(workflow_id=previous['id'], facts=[by_id[row['id']] for row in answer['citations']])
                     step["fact_ids"] = decision["fact_ids"]
                     await remember("route", step)
                     return {
                         "status": "answered",
                         # Figures come from the facts, never from the model's lead.
-                        "message": lead or "Here is what the saved result shows.",
-                        "answer": {"workflow_id": previous["id"], "facts": chosen},
+                        "message": answer['text'],
+                        "answer": answer,
                         "trace": trace,
                         "plan": None,
+                        "lane": "explain",
                     }
+                if intent == "describe_input":
+                    answer = description_answer(decision["fact_ids"], input_facts)
+                    identifiers = [fact['id'] for fact in answer['facts']]
+                    answer.update(evidence.facts(identifiers), sources=evidence.public_sources(identifiers),
+                                  grounding={'checked': True, 'fallback': False, 'attempts': 0})
+                    assert not evidence.check(answer, turn_id=turn_id, data_answer=True)
+                    await remember("route", step)
+                    return {"status": "answered", "lane": "describe_input", "message": "", "answer": answer, "plan": None, "trace": trace}
+                if intent == "reply":
+                    await remember("route", step)
+                    if google_search.requested(body.message) and not entities:
+                        search = await google_search.search(body.message, enabled=self.settings.google_search_enabled)
+                        await self.events.publish(session_id, 'workflow.search', {'turn_id': turn_id, **search})
+                        if search['sources']:
+                            evidence.record('google_search', search['sources'])
+                            await self.events.publish(session_id, 'workflow.evidence', {'turn_id': turn_id, 'tool': 'google_search',
+                                                      'sources': evidence.public_sources(row['id'] for row in search['sources'])})
+                            selected = evidence.subset(row['id'] for row in search['sources'])
+                            answer = await compose_sources(self.settings, body.message, selected, data_answer=False,
+                                **writer_observers(self.settings, self.events, self.analytics.database, session_id, turn_id))
+                            answer['sources'] = selected.public_sources(row['id'] for row in answer['citations'])
+                        else:
+                            # Tool failure is a recorded status, never a fabricated
+                            # web citation or an old local claim presented as current.
+                            evidence.record('google_search', [{'id': 'google.status', 'kind': 'fact', 'ref': 'tool:google_search',
+                                'title': 'Google search status', 'text': 'Web search is currently disabled.' if search['status'] == 'disabled'
+                                else "Google blocked this server's search." if search['status'] == 'blocked'
+                                else 'Google did not return usable search results for this request.'}])
+                            answer = evidence.facts(['google.status'])
+                            answer['sources'] = evidence.public_sources(['google.status'])
+                            answer['grounding'] = {'checked': True, 'fallback': True, 'attempts': 0}
+                            assert not evidence.check(answer, turn_id=turn_id)
+                            await self.events.publish(session_id, 'workflow.evidence', {'turn_id': turn_id, 'tool': 'google_search', 'sources': answer['sources']})
+                        answer['web_search'] = {key: search[key] for key in ('status', 'search_url')}
+                    else:
+                        answer = await grounded(decision['message'], decision['source_ids'], data_answer=False)
+                    return {"status": "answered", "lane": "reply", "message": answer['text'], "plan": None, "trace": trace,
+                            "answer": answer}
+                if intent == "lookup":
+                    choice = next(row for row in lookups if row["id"] == decision["lookup_id"])
+                    lookup_step = choice["plan"]["steps"][0]
+                    card = next(card for card in cards if card["id"] == choice["operation"])
+                    missing = detect_gap(card, inputs, lookup_step["parameters"], lookup_step["input"]["input"], entities, "normal")
+                    if missing:
+                        context = {"question": body.message, "operations": [choice["operation"]],
+                                   "parameters": lookup_step["parameters"], "alias": lookup_step["input"]["input"],
+                                   "entities": entities, "selected": True, "lane": "lookup"}
+                        return {**await self._ask_gap(body, context, missing), "trace": trace}
+                    checked = await self.analytics.validate(session_id, body.inputs, choice["plan"], inputs)
+                    await remember("route", {**step, "operations": [choice["operation"]], "source": "code"})
+                    return {"status": "ready", "lane": "lookup", "message": choice["description"],
+                            "plan": checked["plan"], "validation": checked, "trace": trace}
                 await remember("route", step)
+                if intent == "options" or intent == "calculate" and body.mode == "normal" and picked is None:
+                    response = await self._operation_lane(session_id, body, inputs, cards,
+                        decision["operations"], entities=entities)
+                    return {**response, "trace": trace}
                 if intent != "calculate":
+                    explicit = explicit_operation(body.message, cards)
+                    named = [decision["operation"]] if decision.get("operation") else explicit
+                    if named and intent in {"needs_information", "unsupported"}:
+                        response = await self._operation_lane(session_id, body, inputs, cards, named, entities=entities,
+                            clarify_only=intent == "needs_information" and not explicit)
+                        if response is not None:
+                            return {**response, "trace": trace}
+                    if intent == "needs_information":
+                        offered = decision.get("choices", [])
+                        choices = [{"action": "operation", "operation": card["id"], "label": label}
+                                   for label in offered for card in eligible_cards if f"Use {card['title']}." == label]
+                        # If the router cannot identify an objective, all
+                        # eligible contracts remain finite code-owned choices.
+                        if not choices:
+                            choices = [{"action": "operation", "operation": card["id"], "label": f"Use {card['title']}."} for card in eligible_cards]
+                        context = {"question": body.message, "operations": [], "parameters": {},
+                                   "alias": None, "entities": entities, "selected": False}
+                        response = await self._ask_gap(body, context,
+                            clarification_gap("objective", decision["message"], choices, key="objective"), sentence=decision["message"])
+                        return {**response, "trace": trace}
+                    alternatives = []
+                    if intent == "unsupported":
+                        ranked = sorted(eligible_cards, key=lambda card: (-len(words & set(re.findall(r"[a-z]{2,}", (card["id"] + " " + card["title"]).lower()))), card["id"]))
+                        alternatives = [{"operation": card["id"], "title": card["title"], "quality": card["quality"]} for card in ranked[:2]]
                     return {
                         "status": intent,
                         "message": decision["message"],
                         "choices": decision.get("choices", []),
                         "trace": trace,
                         "plan": None,
+                        "lane": intent, "alternatives": alternatives,
                     }
                 selected_cards = [
                     card for card in cards if card["id"] in decision["operations"]
@@ -1470,7 +1858,23 @@ class AnalyticsPlanner:
                     raise AnalyticsError(
                         "The planner selected an operation outside its task family"
                     )
-                schema = plan_schema(selected_cards, inputs, body.device)
+                if picked is None and len(selected_cards) == 1:
+                    card = selected_cards[0]
+                    aliases = [key for key, value in inputs.items() if value["kind"] == card["input_kind"]]
+                    alias = aliases[0] if len(aliases) == 1 else "main" if "main" in aliases and any(name in card["parameters"] for name in ("query_graph", "other_graph")) else None
+                    values = explicit_parameters(card, body.message, entities, alias)
+                    missing = detect_gap(card, inputs, values, alias, entities, body.mode)
+                    if missing:
+                        return {**await self._ask_gap(body, {"question": body.message, "operations": decision["operations"],
+                            "parameters": values, "alias": alias, "entities": entities, "selected": True}, missing), "trace": trace}
+                if ("maximal-bicliques" in decision["operations"] and not any(
+                    info.get("bipartition", {}).get("available") for info in context.values()
+                )):
+                    gap = missing_sides()
+                    await remember("preparation", {"status": gap["status"], "message": gap["message"]})
+                    return {**gap, "trace": trace}
+                model_cards = biclique_planning_cards(selected_cards, inputs)
+                schema = plan_schema(model_cards, inputs, body.device)
                 examples = self.analytics.examples.search(
                     session_id,
                     body.message,
@@ -1496,11 +1900,14 @@ class AnalyticsPlanner:
                     )
                 planning = {
                     **payload,
-                    "operations": selected_cards,
+                    "operations": model_cards,
+                    "parameter_choices": parameter_choices(model_cards, payload["question"], entities,
+                        lookups, payload.get("current_selection"), payload.get("selected_parameters")),
                     "selection_rationale": decision["message"],
                     "reviewed_examples": examples,
-                    "context_rules": "previous_results summarizes the earlier analysis, and current_selection is the item the user is looking at; 'this group' or 'the selected clique' means current_selection. To reuse an earlier group, repeat the earlier step in this plan and bind its port with the given binding_selection, or pass the listed vertex IDs as a literal vertex array. matched_entities are vertices from the full input whose ID or name appears in the question; use their exact id values.",
-                    "binding_rules": "Graph ports and pattern_graph selections are graph inputs. Each canonical pattern has its own vertex namespace. Vertex selections retain their graph namespace. Every selected objective must be represented. Each argument has exactly one value: literal or binding. Never repeat an argument name. Omit optional literals unless needed; the native core supplies their declared defaults.",
+                    "context_rules": "previous_results summarizes the earlier analysis, and current_selection is the item the user is looking at; 'this group' or 'the selected clique' means current_selection. To reuse an earlier group, repeat the earlier step in this plan and bind its port with the given binding_selection, or select the application-owned parameter choice for the full group. matched_entities identify named vertices; use only supplied opaque parameter choices for their IDs.",
+                    "binding_rules": "Graph ports and pattern_graph selections are graph inputs. Each canonical pattern has its own vertex namespace. Vertex selections retain their graph namespace. Every selected objective must be represented. Each argument has exactly one value: choice or binding. Never repeat an argument name. Omit optional choices unless needed; the native core supplies their declared defaults.",
+                    "missing_information_rules": "If a required parameter cannot be filled from the question, supplied context or documented defaults, return needs_information immediately with plan=null. Do not invent values or spend reasoning trying to reconstruct unseen records. Biclique partitions are application-owned: supply only entity_type if needed, never vertex ID arrays.",
                 }
                 for attempt in range(2):
                     proposal = await self._generate("plan", planning, schema)
@@ -1548,8 +1955,47 @@ class AnalyticsPlanner:
                                         "Generate references using their zero-based step_index."
                                     )
                             earlier.add(step["id"])
+                            if picked and isinstance(picked["parameters"].get(step["operation"]), dict):
+                                # Selected card values are authoritative. The
+                                # model chooses dependencies, not new literals.
+                                selected_values = picked["parameters"][step["operation"]]
+                                placeholders = {field["name"] for field in picked.get("parameter_fields", [])
+                                                if field["operation"] == step["operation"] and field["has_value"] and field["value"] is None}
+                                for name, value in selected_values.items():
+                                    # An untouched nullable default is still
+                                    # unassigned. Preserve an actual code-owned
+                                    # choice or dependency selected by the plan.
+                                    if value is None and name in placeholders and (name in step["bindings"] or name in step["parameters"]):
+                                        continue
+                                    step["parameters"][name] = deepcopy(value)
+                                    step["bindings"].pop(name, None)
+                        if len(selected_cards) > 1:
+                            missing = await self._planned_question(body, proposal["plan"], selected_cards, inputs, entities)
+                            if missing:
+                                return {**missing, "trace": trace}
+                        prepared, gap, directed = complete_partitions(proposal["plan"], inputs)
+                        if gap is None:
+                            gap = missing_required_parameter(prepared, selected_cards, entities)
+                        if gap is not None:
+                            await remember("preparation", {"status": gap["status"], "message": gap["message"]})
+                            return {**gap, "trace": trace}
+                        if directed:
+                            choices = [CONVERT_CHOICE, KEEP_CHOICE]
+                            message = "These connections are directed, but maximal bicliques requires undirected connections. Use an undirected copy for this analysis?"
+                            await remember("preparation", {"status": "needs_information", "message": message})
+                            return {
+                                "status": "needs_information", "message": message,
+                                "plan": None, "choices": choices, "trace": trace,
+                                "pending_question": {
+                                    "gap": "biclique_direction", "question": body.message,
+                                    "operations": decision["operations"], "plan": prepared,
+                                    "aliases": sorted(directed), "choices": choices,
+                                    "inputs": {alias: ref.model_dump() for alias, ref in body.inputs.items()},
+                                    "device": body.device,
+                                },
+                            }
                         checked = await self.analytics.validate(
-                            session_id, body.inputs, proposal["plan"], inputs
+                            session_id, body.inputs, prepared, inputs
                         )
                         await remember(
                             "validation",
@@ -1565,18 +2011,32 @@ class AnalyticsPlanner:
                             "trace": trace,
                         }
                     except AnalyticsError as exc:
+                        if exc.status >= 500 or exc.code.startswith("planner_"):
+                            raise
                         await remember(
                             "validation",
                             {"status": "failed", "message": str(exc)},
                         )
+                        if len(selected_cards) > 1 and proposal.get("plan"):
+                            missing = await self._planned_question(body, proposal["plan"], selected_cards, inputs, entities, error=exc)
+                            if missing:
+                                return {**missing, "trace": trace}
+                        if len(selected_cards) == 1 and proposal.get("plan"):
+                            failed = proposal["plan"]["steps"][0]
+                            missing = validator_gap(exc, selected_cards[0], inputs, failed["input"].get("input"), failed["parameters"])
+                            if missing and missing.get("parameter") in explicit_parameters(selected_cards[0], body.message, entities, failed["input"].get("input")):
+                                missing = None  # The value is known; repair the omitted argument, never ask again.
+                            if missing:
+                                return {**await self._ask_gap(body, {"question": body.message, "operations": decision["operations"],
+                                    "parameters": failed["parameters"], "alias": failed["input"].get("input"), "entities": entities,
+                                    "selected": True}, missing), "trace": trace}
                         if attempt:
-                            # The technical reason stays in Activity's validation step.
+                            # Keep validation details in the saved trace for inspection.
                             return {
                                 "status": "needs_information",
                                 "message": "I couldn't build a plan that passes the checks "
                                 "for this data. Try rephrasing the question or naming the "
-                                "values to use, or review the steps in Interactive mode. "
-                                "Activity shows what failed.",
+                                "values to use, or review the steps in Interactive mode.",
                                 "plan": None,
                                 "trace": trace,
                             }

@@ -66,6 +66,7 @@ from .execution import GraphMineRunner
 from .graph_store import GraphStore, UploadError
 from .history import HistoryStore
 from .identity import AccountError, current_principal
+from .activity_visibility import can_read_notes, visible_event, visible_page
 from .import_preview import register_import_routes
 from .jobs import EventBus, JobManager
 from .models import (
@@ -582,7 +583,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             ],
             "jobs": jobs[-history_limit:] if history_limit else jobs,
             "jobs_truncated": bool(history_limit and len(jobs) > history_limit),
-            "events": timeline["events"] if timeline else database.events(session_id),
+            "events": [visible_event(event) for event in (timeline["events"] if timeline else database.events(session_id))],
             "timeline": {key: value for key, value in timeline.items() if key not in {"messages", "events"}} if timeline else None,
             "feedback_count": database.feedback_count(session_id),
             "deployment": runtime.agent.deployment_info(),
@@ -594,7 +595,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         from .conversation_timeline import conversation_page
 
         runtime = _runtime(request)
-        return conversation_page(runtime.database, session_id, before=before, limit=limit, analytics=runtime.analytics)
+        return visible_page(conversation_page(runtime.database, session_id, before=before, limit=limit, analytics=runtime.analytics))
 
     @router.get("/sessions/{session_id}/feedback/export")
     async def export_feedback(session_id: str, request: Request):
@@ -604,6 +605,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @router.get("/sessions/{session_id}/reasoning")
     async def model_reasoning(session_id: str, request: Request):
+        if not can_read_notes():
+            raise AccountError("Model working notes are available to administrators only.", "forbidden", 403)
         database = _runtime(request).database
         database.get_session(session_id)
         return database.history.model_reasoning(session_id)
@@ -786,7 +789,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         runtime = _runtime(request)
         runtime.database.get_session(session_id)
         if not paged:
-            return runtime.database.events(session_id, after, limit=limit)
+            return [visible_event(event) for event in runtime.database.events(session_id, after, limit=limit)]
         size = limit or 500
         rows = runtime.database.events(session_id, after, limit=size + 1)
         chosen = rows[:size]
@@ -797,7 +800,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 for offset in range(0, len(turns), 400):
                     chunk = turns[offset:offset + 400]
                     numbers.update(db.execute(f"SELECT turn_id,number FROM conversation_turns WHERE session_id=? AND turn_id IN ({','.join('?' for _ in chunk)})", [session_id, *chunk]).fetchall())
-        return ConversationEventPage(events=chosen, after=after, last_sequence=chosen[-1].sequence if chosen else after,
+        return ConversationEventPage(events=[visible_event(event) for event in chosen], after=after, last_sequence=chosen[-1].sequence if chosen else after,
                                      has_more=len(rows) > size, turn_numbers=numbers)
 
     register_workflow_routes(router)
@@ -847,7 +850,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         last_sequence = after
         try:
             for event in runtime.database.events(session_id, after):
-                await websocket.send_json(event.model_dump(mode="json"))
+                await websocket.send_json(visible_event(event).model_dump(mode="json"))
                 last_sequence = max(last_sequence, event.sequence or 0)
             while True:
                 principal = current_principal.get()
@@ -861,7 +864,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     continue
                 if event.sequence and event.sequence <= last_sequence:
                     continue
-                await websocket.send_json(event.model_dump(mode="json"))
+                await websocket.send_json(visible_event(event).model_dump(mode="json"))
                 last_sequence = event.sequence or last_sequence
         except (WebSocketDisconnect, RuntimeError):
             pass

@@ -70,6 +70,26 @@ def test_reasoning_pages_keep_final_attempts_and_current_live_text(database, ses
     assert len(database.events(session.id)) == 6  # Original evidence is retained.
 
 
+def test_call_history_keeps_partial_reasoning_when_a_retry_finishes(database, session):
+    def event(kind, **payload):
+        return database.add_event(ConversationEvent(session_id=session.id, type="workflow." + kind,
+            payload={"turn_id": "retry", **payload}))
+    event("chat", role="user", message="Find groups")
+    event("model_call", call_id="first", stage="plan")
+    partial = event("reasoning.delta", call_id="first", stage="plan", text="Partial first attempt")
+    event("diagnostics", call_id="first", stage="plan", outcome="planner_timeout")
+    event("model_call", call_id="second", stage="plan")
+    redundant = event("reasoning.delta", call_id="second", stage="plan", text="Second")
+    final = event("reasoning", call_id="second", stage="plan", text="Second attempt, complete")
+    event("diagnostics", call_id="second", stage="plan", outcome="ok")
+    event("chat", role="assistant", message="Done")
+    events = conversation_page(database, session.id)["events"]
+    ids = {row["sequence"] for row in events}
+    assert partial.sequence in ids and final.sequence in ids and redundant.sequence not in ids
+    assert len([row for row in events if row["type"] == "workflow.model_call"]) == 2
+    assert len([row for row in events if row["type"] == "workflow.diagnostics"]) == 2
+
+
 def test_classic_archives_are_indexed_once_and_keep_latest_result_and_legacy_boundary(database, session, monkeypatch):
     database.add_message(session.id, "user", {"message": "Before archival chat"})
     history = database.history

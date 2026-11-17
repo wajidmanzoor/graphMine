@@ -1,0 +1,12 @@
+{
+  "home_http": 200,
+  "asset_http": 200,
+  "asset_path": "/assets/cc5fbefe8730f271b3cccff4.js",
+  "build_id": "df8235e894fda0a56e42",
+  "served_bundle_matches_final_sources": true,
+  "editable_option_cards": true,
+  "admin_expert_notes": true,
+  "capabilities_http": 401,
+  "config_sha256": "0724505bc7917b9a85385e939c9bffcdb5d5a3cc5bb33d05c14e15c3a7cf0b51",
+  "development_llm_enabled": "false"
+}

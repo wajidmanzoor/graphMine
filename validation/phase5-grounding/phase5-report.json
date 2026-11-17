@@ -1,0 +1,787 @@
+{
+  "phase": 5,
+  "status": "complete",
+  "created_at": "2026-11-17T16:06:57.957132+00:00",
+  "scope": "Checked data and conceptual answers, citation UI, and public Google search with explicit failure handling. No native ABI, CLI, operation ID or native result JSON changes.",
+  "changes": [
+    "Current-turn tool evidence registry; public answers have text and citation id/kind/ref triples.",
+    "Complete sourced sentences are checked, preserving case-sensitive names and exact numeric text; unsupported paraphrases, stale references and web citations in data answers fail.",
+    "Data output grammar permits only code-owned source placeholders and neutral introductions, never literal vertex IDs. Code renders facts on separate lines.",
+    "One repair attempt after a rejected draft, then bare facts. Service failures fall back immediately. Every actual model request is captured separately.",
+    "Saved result reads are revision-bound. Input descriptions, scalar results and selected fact follow-ups avoid an extra writer request.",
+    "Sources drawer, visible citation provenance, no repeated answer/plan or repeated fact list, short traces, and admin-only Expert working notes.",
+    "Public Google search uses no API key, stops at bot checks, labels bounded result excerpts, and provides an open-search link when blocked.",
+    "Preserve objective clarifications even when the router also suggests an operation; do not sample options until the person answers.",
+    "Require explicitly scoped shortest-path endpoints instead of treating missing accounts as the native all-vertices default. Resolve stated endpoints from the snapshot and resume each saved question without routing again.",
+    "Treat Google 403 bot checks and 429 rate limits as blocked responses without a browser retry; the public status does not claim an unseen CAPTCHA.",
+    "Restore historical answer-schema compatibility for Dataset Studio and validate new source-based answers and routes with the current grounding checker.",
+    "Update stale sync-history and native-upload tests to the existing active-only queue and CPU upload contracts, keeping explicit native transport failure coverage.",
+    "Use the configured analytics interpreter in evidence-isolation tests instead of assuming a checkout-local virtual environment."
+  ],
+  "files_changed_this_phase": {
+    "backend": [
+      "agent/graphmine_agent/answer_grounding.py",
+      "agent/graphmine_agent/google_search.py",
+      "agent/graphmine_agent/analytics_answers.py",
+      "agent/graphmine_agent/analytics.py",
+      "agent/graphmine_agent/analytics_planning.py",
+      "agent/pyproject.toml",
+      "agent/graphmine_agent/analytics_clarification.py",
+      "agent/graphmine_agent/analytics_lanes.py",
+      "agent/graphmine_agent/analytics_lane_choices.py",
+      "agent/graphmine_agent/analytics_studio.py"
+    ],
+    "ui": [
+      "agent/graphmine_agent/static/analytics-ui.js",
+      "agent/graphmine_agent/static/analytics-chat.css"
+    ],
+    "measurement_and_docs": [
+      "tools/evaluate_lane_baseline.py",
+      "docs/ANALYTICS_WORKSPACE.md"
+    ],
+    "tests": [
+      "agent/tests/test_answer_grounding.py",
+      "agent/tests/test_google_search.py",
+      "agent/tests/test_grounded_lanes.py",
+      "agent/tests/test_analytics_answers.py",
+      "agent/tests/test_analytics_planning.py",
+      "agent/tests/test_training_capture.py",
+      "agent/tests/test_lane_baseline.py",
+      "agent/browser_tests/test_analytics_workspace.py",
+      "agent/browser_tests/test_workspace_grounding.py",
+      "agent/tests/test_analytics_clarification.py",
+      "agent/tests/test_database_sync.py",
+      "agent/tests/test_native_uploads.py",
+      "agent/tests/test_studio_exchange.py",
+      "agent/tests/test_analytics_workflows.py",
+      "agent/tests/test_evidence_cache.py"
+    ]
+  },
+  "source_files": {
+    "agent/graphmine_agent/answer_grounding.py": "debc7b3cf193cd9c88d51cb45db2f57dab0f99cc3a730851cf64d3dae2aa9d5b",
+    "agent/graphmine_agent/google_search.py": "d2ab520b48c9027573a395495805f10ed5299e53dc184521cc361e76e896a1e4",
+    "agent/graphmine_agent/analytics_answers.py": "03e42e9b376526752c989a5cb9513e831e0009263e85ad3adce8162037a1f25d",
+    "agent/graphmine_agent/analytics.py": "c9139f78b2b9a2ee236abc9194787c446a2b9cc0c36a71dd31eafba9ae4411ef",
+    "agent/graphmine_agent/analytics_planning.py": "0ac2f9fe1827a377fca0d29cd2615725d7c41727a65838046a71d88a0f9a4fe0",
+    "agent/pyproject.toml": "f385384d6b7875d2c7dd81acc49dea1e79dc624fa4c750dc565c6c9ffae448cc",
+    "agent/graphmine_agent/analytics_clarification.py": "fc944948ece698a41cf9fcdd9b47a1c0060c62ae993e1042bbe3f70bad3784d3",
+    "agent/graphmine_agent/analytics_lanes.py": "37383dacde6f3e800275233a8e71b7ecc0dbb7e6375b8246daa6e76629c735d1",
+    "agent/graphmine_agent/analytics_lane_choices.py": "c1b7cc9de99cc9da3737f85e029da2f25dbce24e0fee25d1af3b6c2d0688f632",
+    "agent/graphmine_agent/analytics_studio.py": "195ccbd00548e9873dfab33388a383a00e345d129214bc6e7f2e404aebed2547",
+    "agent/graphmine_agent/static/analytics-ui.js": "04b4538b22aacd25b5a1cff2e95c2bdf5fd3466763887819aafa79d311cf430b",
+    "agent/graphmine_agent/static/analytics-chat.css": "582c4f371f6a7926c50dded70e8160e9da4ea0e69881314c008eab825236eabb",
+    "tools/evaluate_lane_baseline.py": "bf6eeaa79bd951cc66e16d26f7f5a6133c0730b5dbbd49f9f2685c1eb88260c2",
+    "docs/ANALYTICS_WORKSPACE.md": "4db65122d32726d752462bc50fd9e6a19956a8d0bb1bff2ee32ab14f282add2e",
+    "agent/tests/test_answer_grounding.py": "6e4e67a10e11da622c63b660ece0ecc83845e42efcfe941ba30bd206007abe58",
+    "agent/tests/test_google_search.py": "642acf3d58d76305293ffbe113a91ab1ee10adcb5bab4074cfee36ce376b0ecd",
+    "agent/tests/test_grounded_lanes.py": "f2e03d7a684c391da2cfcb59bdb0c278a634edf774028d6ebdd482ff13d8f2fe",
+    "agent/tests/test_analytics_answers.py": "c55d476b254e5ded8778efa2c9e309cef698c13f9c7476d39de2b54ad43fc2bb",
+    "agent/tests/test_analytics_planning.py": "c7852963154fa5cab97dee8890565e910cb2987d117185e3952f78b93b104b44",
+    "agent/tests/test_training_capture.py": "e160152f75fda39a8bb9fddf66b11c25cfd697aeb924e25d285a629e0ee1e6e4",
+    "agent/tests/test_lane_baseline.py": "4c80b3d1a2d01334a57ef5292d81e4dc96e4eba77f8e4b831a9b8f8cde192afc",
+    "agent/browser_tests/test_analytics_workspace.py": "9477a0c0774d7d29302fd91b6eab70f8eb0a4ea98cb52819e3aaf8e6a55ca798",
+    "agent/browser_tests/test_workspace_grounding.py": "e3d8572f61a4dc1e986fdf6e34b8d56d8b6fa1d93809828e8a96a47886dd1839",
+    "agent/tests/test_analytics_clarification.py": "0b1343d2dec3d4a39c688973ed1f3892af5d1ca0cca0f7a525b4e1fda8a6471b",
+    "agent/tests/test_database_sync.py": "d4d711ea12f2bc593805f91fa53827a776980b7380be883a7f32382fceb79803",
+    "agent/tests/test_native_uploads.py": "b4f8ddef22f8669c9c659e845d9d3a846c17648159d6ef93c5be63e39f21dc53",
+    "agent/tests/test_studio_exchange.py": "fdcea31cf51e37888c6b716742dd624d7b619ce8b6c8a404227b3250d2895768",
+    "agent/tests/test_analytics_workflows.py": "dd78cd387865571800437ee301cb099fc5cf0edf45829e4cac6b38498b17c3b1",
+    "agent/tests/test_evidence_cache.py": "362c85822b35dafb00288c12ffc6e2eef304cfcb9a43ef3c3fe5ab68b2bed716"
+  },
+  "tests_added": [
+    "Wrong names (including case-only changes), counts, units, sign, precision, negation and invented causes.",
+    "Current-turn citations, wrong revision/ref/kind/ID, uncited claims and forbidden web citations for data.",
+    "One repair versus bare-facts fallback, network failures, code-owned data grammar and Qwen-compatible decoding schema.",
+    "Lowercase fact sentence boundaries, revision-bound result reads and zero-call selected fact follow-ups.",
+    "Google success, bot check and unavailable responses; no credentials and no hidden graph context in queries.",
+    "Input/explain/view/reply integration, evidence-event auditing and actual writer-call activity.",
+    "Browser duplicate prevention, source inspection, reload persistence, safe web links/text, and 320/390/1200 pixel source layouts.",
+    "Unresolved objective plus suggested operation remains a pending question and resumes the selected objective without another route.",
+    "Two missing path endpoints, invalid endpoint replies, named endpoints, all-pairs defaults, and a source-to-all request; selected cards retain validated endpoint values.",
+    "HTTP 403/429 Google responses stop retrieval without browser retries; source-backed status messages make no unsupported CAPTCHA claim.",
+    "Dataset Studio accepts old captures and current grounded targets; changed claims, invented sources, duplicate sources and web-backed data answers are rejected."
+  ],
+  "verification": {
+    "unique_browser_checks_passed": 61,
+    "test_artifacts": {
+      "completed-python-cpu.xml": {
+        "tests": 1621,
+        "passed": 1569,
+        "failures": 2,
+        "skipped": 50,
+        "sha256": "5aa1021cbebb77251f10140ab2601266e2a484d5906a22aad662e70fd7c30bee",
+        "failed_tests": [
+          {
+            "classname": "tests.test_analytics_planning",
+            "name": "test_planner_preserves_device_policy_through_native_validation[gpu]",
+            "time": "0.348"
+          },
+          {
+            "classname": "tests.test_analytics_planning",
+            "name": "test_restored_gpu_community_profiles_reach_the_planner",
+            "time": "0.344"
+          }
+        ]
+      },
+      "completed-gpu-policy.xml": {
+        "tests": 4,
+        "passed": 4,
+        "failures": 0,
+        "skipped": 0,
+        "sha256": "c5d3d5056cb71d986abec976cae4b784cef8e209cd0cad47896d9504c9c7a665",
+        "failed_tests": []
+      },
+      "followup-browser.xml": {
+        "tests": 61,
+        "passed": 61,
+        "failures": 0,
+        "skipped": 0,
+        "sha256": "385ecb357a28b36c8a0f61195e3bfd088e7ed99765fff15188e41e90d80fad8a",
+        "failed_tests": []
+      },
+      "followup-studio-integration.xml": {
+        "tests": 18,
+        "passed": 18,
+        "failures": 0,
+        "skipped": 0,
+        "sha256": "649307db03c64f74385f6659d9537c5e6212761c10ac45d75500ab936ab97d0d",
+        "failed_tests": []
+      },
+      "followup-targeted.xml": {
+        "tests": 96,
+        "passed": 96,
+        "failures": 0,
+        "skipped": 0,
+        "sha256": "d519c33c54bb1a0ab49ef2e8f48e3ae62789a77e2cbdfc88225e5ee9538fe100",
+        "failed_tests": []
+      },
+      "followup-studio-grounding.xml": {
+        "tests": 34,
+        "passed": 34,
+        "failures": 0,
+        "skipped": 0,
+        "sha256": "01ccf0bf1dca7d5f204f2cd0fa0f78a4d1776a40272924634e13ff2ae1d51e69",
+        "failed_tests": []
+      },
+      "followup-gpu-policy.xml": {
+        "tests": 4,
+        "passed": 4,
+        "failures": 0,
+        "skipped": 0,
+        "sha256": "8308c75e0542590f37a0974fdd45b9576fb4dcb7a2d6752aab1eb2ee60040de0",
+        "failed_tests": []
+      }
+    },
+    "frontend": {
+      "javascript_tests_passed": 18,
+      "typescript": "passed",
+      "api_contracts": "passed"
+    },
+    "native_implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+    "native_implementation_unchanged": true,
+    "native_oracles": {
+      "suite_sha256": "1b372ed31e58f6d4c971ba5e60b695f04f46b23277d750d8b2c75960d6b1f166",
+      "implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+      "passed": 34,
+      "cases": [
+        {
+          "id": "lookup_los_agaves",
+          "operation": "node-lookup",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_grid",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "calculate_picked_components",
+          "operation": "connected-components",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_triangles",
+          "operation": "triangle-counting",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_search_tracy",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_highlight_ada",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_bicliques_output",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_yelp_bicliques",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_maximal_cliques",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "lookup_ada",
+          "operation": "node-lookup",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "lookup_most_connections",
+          "operation": "degree-centrality",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_pagerank",
+          "operation": "pagerank",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "lookup_ada_neighbors",
+          "operation": "neighbors",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_core",
+          "operation": "k-core",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_components",
+          "operation": "connected-components",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_clique_count",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_clique_guarantee",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_largest_clique",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_open_results",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_maximum_clique",
+          "operation": "maximum-clique",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "calculate_picked_triangles",
+          "operation": "triangle-counting",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_clique_members",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_all_cliques",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_degrees",
+          "operation": "degree-centrality",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_components",
+          "operation": "connected-components",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "lookup_tracy",
+          "operation": "node-lookup",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_bicliques",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_triangles",
+          "operation": "triangle-counting",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "calculate_picked_maximum",
+          "operation": "maximum-clique",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_yelp_guarantee",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "lookup_us_accounts",
+          "operation": "node-lookup",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_yelp_triangles",
+          "operation": "triangle-counting",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "calculate_picked_bicliques",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_circle",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        }
+      ]
+    },
+    "final_backend_matches_live_measurement": true,
+    "browser_note": "61 checks on the final UI assets. Later server-only changes restored Studio schema compatibility and clarified blocked-search wording; their integration tests passed separately.",
+    "development_smoke": {
+      "checked_at": "2026-11-17T16:37:58.069855+00:00",
+      "home_http": 200,
+      "asset_http": 200,
+      "asset_path": "/assets/cb04cfc9a461c5c3f7b9cefe.js",
+      "build_id": "7036262dcb436a8814c6",
+      "expected_build_id": "7036262dcb436a8814c6",
+      "served_bundle_matches_final_sources": true,
+      "sources_drawer": true,
+      "google_search_link": true,
+      "admin_expert_notes": true,
+      "config_sha256": "0724505bc7917b9a85385e939c9bffcdb5d5a3cc5bb33d05c14e15c3a7cf0b51",
+      "development_llm_enabled": "false",
+      "protected_api_http": 401,
+      "service_pid": 2369317
+    },
+    "google_live": {
+      "status": "blocked",
+      "sources": [],
+      "search_url": "https://www.google.com/search?q=k+core+k+truss+graph+difference&udm=14",
+      "query": "k core k truss graph difference",
+      "checked_at": "2026-11-17T16:30:13.482933+00:00",
+      "scope": "Direct public Google request from this server; no credentials or bot-check bypass."
+    },
+    "python_tests_passed": 1571,
+    "python_tests_skipped": 50,
+    "studio_integration_tests_passed": 18,
+    "python_runtime_note": "The current build includes the Phase 0 biclique contract and runs the full suite. Its two GPU-only admission assertions fail because that build has no admitted GPU backends; both pass against the pinned verified GPU build in the complementary four-test policy run. The CLI deselection prefixes did not match pytest’s agent-relative node IDs, so the CPU artifact retains those two configuration failures explicitly. Unique totals use each test’s result from its supported runtime and deduplicate overlapping cases. Optional physical-GPU and disposable-database integration suites remain opt-in and are explicitly skipped."
+  },
+  "comparison": {
+    "phase4": {
+      "cases": 60,
+      "successes": 60,
+      "lane_matches": 60,
+      "seconds": 958.0,
+      "model_calls": 78,
+      "model_samples": 110,
+      "by_stage": {
+        "route": 55,
+        "answer": 9,
+        "clarify": 6,
+        "candidates": 8
+      },
+      "tokens": {
+        "prompt_tokens": 673454,
+        "completion_tokens": 22229,
+        "total_tokens": 695683
+      },
+      "known_tokens": {
+        "prompt_tokens": 673454,
+        "completion_tokens": 22229,
+        "total_tokens": 695683
+      },
+      "calls_missing_usage": 0,
+      "by_lane": {
+        "calculate": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 3,
+          "median_seconds": 2.215
+        },
+        "describe_input": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 13.677
+        },
+        "explain": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 15.255
+        },
+        "lookup": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 12,
+          "median_seconds": 12.139
+        },
+        "needs_information": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 14,
+          "median_seconds": 21.901
+        },
+        "options": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 15,
+          "median_seconds": 27.736
+        },
+        "reply": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 6,
+          "median_seconds": 19.523
+        },
+        "unsupported": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 4,
+          "median_seconds": 18.669
+        },
+        "view": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 10.069
+        }
+      },
+      "median_question_seconds": 15.34
+    },
+    "phase5": {
+      "cases": 60,
+      "successes": 60,
+      "grounding": {
+        "required": 40,
+        "passed": 40,
+        "fallbacks": 0
+      },
+      "lane_matches": 60,
+      "seconds": 925.351,
+      "model_calls": 79,
+      "model_samples": 111,
+      "by_stage": {
+        "route": 55,
+        "answer": 10,
+        "clarify": 6,
+        "candidates": 8
+      },
+      "tokens": {
+        "prompt_tokens": 680153,
+        "completion_tokens": 21249,
+        "total_tokens": 701402
+      },
+      "known_tokens": {
+        "prompt_tokens": 680153,
+        "completion_tokens": 21249,
+        "total_tokens": 701402
+      },
+      "calls_missing_usage": 0,
+      "by_lane": {
+        "calculate": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 3,
+          "median_seconds": 1.523
+        },
+        "describe_input": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 16.985
+        },
+        "explain": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 10.893
+        },
+        "lookup": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 12,
+          "median_seconds": 11.25
+        },
+        "needs_information": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 14,
+          "median_seconds": 21.937
+        },
+        "options": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 15,
+          "median_seconds": 27.835
+        },
+        "reply": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 7,
+          "median_seconds": 15.041
+        },
+        "unsupported": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 4,
+          "median_seconds": 18.278
+        },
+        "view": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 9.867
+        }
+      },
+      "median_question_seconds": 15.309
+    },
+    "phase5_before_followups": {
+      "cases": 60,
+      "successes": 58,
+      "grounding": {
+        "required": 40,
+        "passed": 40,
+        "fallbacks": 0
+      },
+      "lane_matches": 58,
+      "seconds": 957.46,
+      "model_calls": 80,
+      "model_samples": 120,
+      "by_stage": {
+        "route": 55,
+        "answer": 10,
+        "clarify": 5,
+        "candidates": 10
+      },
+      "tokens": {
+        "prompt_tokens": 701993,
+        "completion_tokens": 21855,
+        "total_tokens": 723848
+      },
+      "known_tokens": {
+        "prompt_tokens": 701993,
+        "completion_tokens": 21855,
+        "total_tokens": 723848
+      },
+      "calls_missing_usage": 0,
+      "by_lane": {
+        "calculate": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 3,
+          "median_seconds": 1.538
+        },
+        "describe_input": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 16.984
+        },
+        "explain": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 10.486
+        },
+        "lookup": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 12,
+          "median_seconds": 11.319
+        },
+        "needs_information": {
+          "cases": 8,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 15,
+          "median_seconds": 23.559
+        },
+        "options": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 15,
+          "median_seconds": 27.575
+        },
+        "reply": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 7,
+          "median_seconds": 15.12
+        },
+        "unsupported": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 4,
+          "median_seconds": 18.934
+        },
+        "view": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 10.296
+        }
+      },
+      "median_question_seconds": 16.312
+    }
+  },
+  "lane_mismatches": [],
+  "broader_repository_run": {
+    "tests": 1621,
+    "passed": 1571,
+    "skipped": 50,
+    "failures": 0,
+    "errors": 0,
+    "failed_tests": [],
+    "artifacts": [
+      "completed-python-cpu.xml",
+      "completed-gpu-policy.xml"
+    ],
+    "stopped_after_failures": null,
+    "note": "All collected non-opt-in Python tests passed on the final source tree across the current CPU build and the pinned GPU policy build. Optional external database and physical GPU checks were not enabled. Dataset Studio and browser checks are recorded separately."
+  },
+  "diagnostic_runs_retained": {
+    "baseline.json": "Completed first run: Qwen rejected uniqueItems in the writer grammar; data answers fell back to facts. Token totals are unknown for failed HTTP requests. Not the final comparison.",
+    "baseline-final.json": "Interrupted deliberately after a valid lowercase fact was merged with its introduction and rejected. The final renderer separates statements, and the data grammar prevents literal data drafts.",
+    "qwen-data-grammar.json": "Live synthetic-fact smoke: supported Qwen grammar, one request, checked output, no fallback.",
+    "followup-python-full.xml": "Initial complete audit: two GPU-admission failures under the CPU runtime, two tests with hard-coded interpreter paths, and three Studio failures caused by the removed legacy answer-schema helper. All resolved in the final CPU suite and complementary GPU policy suite.",
+    "diagnostic-pinned-runtime.xml": "Interrupted attempt to use the pinned GPU runtime for every test. That older build lacks the Phase 0 optional biclique-partition contract. Final verification uses each build only for its supported checks.",
+    "followup-before.xml": "Initial sync/upload reproduction exposed ten stale assertions, including native transport checks not reached by the older maxfail=5 run. Revised tests preserve the current CPU upload and temporary job receipt contracts.",
+    "baseline-followup-interrupted.json": "Intentionally stopped after 12 successful cases while finalizing search-status wording and Studio compatibility. Not included in final comparison.",
+    "followup-live-smoke.json": "Both previously failing frozen routing questions passed after the clarification fixes."
+  },
+  "measurement_limits": [
+    "Frozen assistant-labelled development set, not a held-out accuracy study; labels were not changed to hide lane mismatches.",
+    "Grounding audits use the same conservative checker against actual evidence events, independently of the application checked flag. This is not human semantic review.",
+    "The checker accepts complete source sentences, not arbitrary natural-language paraphrases. Grounded does not mean that a web source is independently true.",
+    "Calls count HTTP requests; samples count independent completions. Candidate requests use n=5, and token usage is not multiplied by five.",
+    "Wall-clock measurements include server cache/load conditions and concurrent local verification; this is not a controlled speed benchmark.",
+    "Public Google retrieval was blocked by Google on this deployment network. Successful retrieval/parsing integration is covered by fixtures, not claimed as a successful live search.",
+    "The full Python suite and part of browser verification ran concurrently with local activity; benchmark timings are not controlled performance comparisons."
+  ],
+  "pending": [],
+  "completed_at": "2026-11-17T16:46:16.553916+00:00",
+  "external_limitations": [
+    "Google currently blocks public search from this deployment network. The blocked response, no-retry behavior and user-opened search link work; successful live Google retrieval is not claimed."
+  ],
+  "outside_phase5": [
+    "catalog/vague_terms.json remains an inactive draft for user review, as originally requested.",
+    "Broader held-out confidence validation and reducing total token use remain separate optimization work; the frozen development set is not a production accuracy guarantee.",
+    "Production promotion and adapter training are outside Phase 5. Development keeps its existing live-LLM-disabled configuration; live evaluations use isolated sessions with the authorized Qwen server."
+  ]
+}

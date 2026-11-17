@@ -1,0 +1,35 @@
+{
+  "answer": {
+    "text": "Here are the results. Ann has 3 connections.",
+    "citations": [
+      {
+        "id": "f1",
+        "kind": "fact",
+        "ref": "fixture:ann"
+      }
+    ],
+    "source": "model",
+    "grounding": {
+      "checked": true,
+      "attempts": 1,
+      "fallback": false
+    }
+  },
+  "calls": [
+    {
+      "outcome": "ok",
+      "seconds": 1.2587293926626444,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 205,
+        "total_tokens": 228,
+        "completion_tokens": 23,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    }
+  ],
+  "check_errors": []
+}

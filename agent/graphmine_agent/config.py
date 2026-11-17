@@ -78,8 +78,13 @@ class Settings:
     llm_planner_model: str | None = None
     llm_analyst_model: str | None = None
     analytics_planner_model: str | None = None
+    # Routing and conceptual replies can share a separate adapter/endpoint.
+    analytics_router_model: str | None = None
+    analytics_router_base_url: str | None = None
     # Writes the chat answer from computed facts; defaults to GRAPHMINE_LLM_MODEL.
     analytics_answer_model: str | None = None
+    # Public web retrieval is deferred; enable only for explicit development work.
+    google_search_enabled: bool = False
     analytics_reasoning_effort: str = "medium"
     analytics_thinking_token_budget: int | None = PLAN_THINKING_TOKEN_BUDGET
     analytics_route_thinking_token_budget: int | None = ROUTE_THINKING_TOKEN_BUDGET
@@ -440,6 +445,7 @@ class Settings:
             llm_api_key=os.getenv("GRAPHMINE_LLM_API_KEY", "local-graphmine"),
             llm_model=os.getenv("GRAPHMINE_LLM_MODEL", "Qwen/Qwen3.8-27B-FP8"),
             llm_enabled=_boolean("GRAPHMINE_LLM_ENABLED", True),
+            google_search_enabled=_boolean("GRAPHMINE_GOOGLE_SEARCH_ENABLED", False),
             llm_planner_model=os.getenv("GRAPHMINE_LLM_PLANNER_MODEL", "").strip()
             or None,
             llm_analyst_model=os.getenv("GRAPHMINE_LLM_ANALYST_MODEL", "").strip()
@@ -448,6 +454,8 @@ class Settings:
                 "GRAPHMINE_ANALYTICS_PLANNER_MODEL", ""
             ).strip()
             or None,
+            analytics_router_model=os.getenv("GRAPHMINE_ANALYTICS_ROUTER_MODEL", "").strip() or None,
+            analytics_router_base_url=os.getenv("GRAPHMINE_ANALYTICS_ROUTER_BASE_URL", "").strip().rstrip("/") or None,
             analytics_reasoning_effort=os.getenv(
                 "GRAPHMINE_ANALYTICS_REASONING_EFFORT", "medium"
             ),

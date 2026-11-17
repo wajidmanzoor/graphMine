@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="0" skipped="0" tests="2" time="110.244" timestamp="2026-11-16T18:54:29.107921-05:00" hostname="guoglambda01"><testcase classname="browser_tests.test_analytics_workspace" name="test_biclique_conversion_uses_confirmed_snapshot[False]" time="43.059"><error message="failed on setup with &quot;selenium.common.exceptions.TimeoutException: Message:&quot;">server = ('http://127.0.0.1:40517', PosixPath('/tmp/pytest-of-wajid/pytest-1192/analytics-browser-server0'))
+tmp_path = PosixPath('/tmp/pytest-of-wajid/pytest-1192/test_biclique_conversion_uses_0')
+
+    @pytest.fixture
+    def browser(server, tmp_path):
+        firefox = Path("/snap/firefox/current/usr/lib/firefox/firefox")
+        driver_path = Path("/snap/firefox/current/usr/lib/firefox/geckodriver")
+        assert firefox.is_file() and driver_path.is_file(), (
+            "The browser gate requires Firefox and geckodriver"
+        )
+        options = Options()
+        options.add_argument("-headless")
+        options.binary_location = str(firefox)
+        options.set_preference("browser.download.folderList", 2)
+        options.set_preference("browser.download.dir", str(tmp_path))
+        options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/json")
+        driver = webdriver.Firefox(
+            options=options, service=Service(executable_path=str(driver_path))
+        )
+        driver.set_window_size(1500, 1050)
+        driver.set_script_timeout(30)
+        driver.get(server[0])
+        driver.execute_script(
+            "localStorage.setItem('graphmine.apiToken','analytics-browser-secret')"
+        )
+        driver.refresh()
+        try:
+&gt;           WebDriverWait(driver, 40).until(
+                lambda d: (
+                    d.find_element(By.ID, "connection-state").get_attribute("data-state")
+                    == "ready"
+                )
+            )
+
+agent/browser_tests/test_analytics_workspace.py:249: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="df542b11-8432-42f9-947e-a97f37d79d9f")&gt;
+method = &lt;function browser.&lt;locals&gt;.&lt;lambda&gt; at 0x78b434cf4b80&gt;, message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message:
+
+.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:121: TimeoutException</error></testcase><testcase classname="browser_tests.test_analytics_workspace" name="test_biclique_conversion_uses_confirmed_snapshot[True]" time="42.222"><error message="failed on setup with &quot;selenium.common.exceptions.TimeoutException: Message:&quot;">server = ('http://127.0.0.1:40517', PosixPath('/tmp/pytest-of-wajid/pytest-1192/analytics-browser-server0'))
+tmp_path = PosixPath('/tmp/pytest-of-wajid/pytest-1192/test_biclique_conversion_uses_1')
+
+    @pytest.fixture
+    def browser(server, tmp_path):
+        firefox = Path("/snap/firefox/current/usr/lib/firefox/firefox")
+        driver_path = Path("/snap/firefox/current/usr/lib/firefox/geckodriver")
+        assert firefox.is_file() and driver_path.is_file(), (
+            "The browser gate requires Firefox and geckodriver"
+        )
+        options = Options()
+        options.add_argument("-headless")
+        options.binary_location = str(firefox)
+        options.set_preference("browser.download.folderList", 2)
+        options.set_preference("browser.download.dir", str(tmp_path))
+        options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/json")
+        driver = webdriver.Firefox(
+            options=options, service=Service(executable_path=str(driver_path))
+        )
+        driver.set_window_size(1500, 1050)
+        driver.set_script_timeout(30)
+        driver.get(server[0])
+        driver.execute_script(
+            "localStorage.setItem('graphmine.apiToken','analytics-browser-secret')"
+        )
+        driver.refresh()
+        try:
+&gt;           WebDriverWait(driver, 40).until(
+                lambda d: (
+                    d.find_element(By.ID, "connection-state").get_attribute("data-state")
+                    == "ready"
+                )
+            )
+
+agent/browser_tests/test_analytics_workspace.py:249: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="4fa5e25b-4a63-4b3c-8a7a-f320116053b6")&gt;
+method = &lt;function browser.&lt;locals&gt;.&lt;lambda&gt; at 0x78b4342314e0&gt;, message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message:
+
+.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:121: TimeoutException</error></testcase></testsuite></testsuites>

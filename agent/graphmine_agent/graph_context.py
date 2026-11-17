@@ -201,8 +201,29 @@ def infer_bipartition(
     graph: dict[str, Any], preferred_type: str | None = None
 ) -> list[Any] | None:
     vertices = graph["vertices"]
+    # Declared sides are authoritative; never silently repair partial or invalid
+    # declarations from types. IDs retain their JSON type throughout inference.
+    sides = [row.get("attributes", {}).get("side") for row in vertices]
+    if any(side is not None for side in sides):
+        if any(side not in ("left", "right") for side in sides):
+            return None
+        by_id = {identity(row["id"]): side for row, side in zip(vertices, sides)}
+        if any(
+            by_id[identity(edge["source"])] == by_id[identity(edge["target"])]
+            for edge in graph["edges"]
+            if identity(edge["source"]) != identity(edge["target"])
+        ):
+            return None
+        if preferred_type is not None and any(
+            (row.get("type") == preferred_type) != (side == "left")
+            for row, side in zip(vertices, sides)
+        ):
+            return None
+        return [row["id"] for row, side in zip(vertices, sides) if side == "left"]
     types = {row.get("type") for row in vertices}
     if None in types or len(types) != 2:
+        return None
+    if preferred_type is not None and preferred_type not in types:
         return None
     by_id = {identity(row["id"]): row["type"] for row in vertices}
     if any(

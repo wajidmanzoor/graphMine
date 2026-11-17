@@ -150,5 +150,8 @@ def test_review_and_chat_label_default_heuristic_and_explicit_exact(
         ).text
     )
     summaries = browser.find_elements(By.CSS_SELECTOR, "#messages .step-quality")
+    assert all(not row.is_displayed() for row in summaries)
+    for detail in browser.find_elements(By.CSS_SELECTOR, "#messages .answer-explanation > summary"):
+        detail.click()
     assert any("Heuristic — no guarantee" in row.text for row in summaries)
     assert any("Exact — establishes" in row.text for row in summaries)

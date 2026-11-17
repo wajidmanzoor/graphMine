@@ -80,6 +80,37 @@ def test_current_stage_contracts_use_available_operations_facts_and_wire_format(
         validate_target("AnalyticsAnswer", {"lead": "Result", "fact_ids": ["invented"]}, context)
 
 
+def test_grounded_answer_review_uses_current_sources_and_preserves_legacy_targets():
+    sources = [{"id": "f1", "kind": "fact", "ref": "workflow:w:revision:2:f1", "text": "Ann has 3 connections."}]
+    context = {"sources": sources, "turn_id": "original-turn", "data_answer": True}
+    output = {"text": "{{f1}}", "source_ids": ["f1"]}
+    validate_target("AnalyticsAnswer", output, context)
+    for bad in [
+        {"text": "Bob has 3 connections.", "source_ids": ["f1"]},
+        {"text": "{{unknown}}", "source_ids": ["unknown"]},
+        {"text": "{{f1}}", "source_ids": ["f1", "f1"]},
+    ]:
+        with pytest.raises((ValueError, jsonschema.ValidationError)):
+            validate_target("AnalyticsAnswer", bad, context)
+    web = {**context, "sources": [{**sources[0], "kind": "web", "ref": "https://example.org"}]}
+    with pytest.raises(ValueError, match="cannot cite the web"):
+        validate_target("AnalyticsAnswer", output, web)
+    # The new sources-based contract cannot silently accept an old lead target.
+    with pytest.raises(jsonschema.ValidationError):
+        validate_target("AnalyticsAnswer", {"lead": "Result", "fact_ids": ["f1"]}, context)
+    validate_target("AnalyticsAnswer", {"lead": "Result", "fact_ids": ["f1"]}, {"facts": [{"id": "f1"}]})
+
+
+def test_grounded_route_review_accepts_cited_numbers_and_rejects_changed_claims():
+    source = {"id": "doc.core", "kind": "doc", "ref": "doc:core", "text": "A 3-core has minimum degree 3."}
+    context = {"cards": [], "reply_sources": [source]}
+    validate_target("AnalyticsRoute", {"intent": "reply", "message": "{{doc.core}}", "source_ids": ["doc.core"]}, context)
+    with pytest.raises(ValueError):
+        validate_target("AnalyticsRoute", {"intent": "reply", "message": "A 3-core has minimum degree 4.", "source_ids": ["doc.core"]}, context)
+    context = {"cards": [], "facts": [{"id": "f1", "statement": "Ann has 3 connections."}]}
+    validate_target("AnalyticsRoute", {"intent": "explain", "message": "{{f1}}", "fact_ids": ["f1"]}, context)
+
+
 def test_exchange_rejects_modified_payloads_and_excessive_evidence(exchange):
     client, _, alice, _, _, _, _, _, url = exchange
     bundle = client.get(url, headers=alice).json()

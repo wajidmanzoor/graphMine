@@ -1,0 +1,159 @@
+{
+  "phase": 0,
+  "verification": "passed",
+  "scope": "development only",
+  "fixes": [
+    "Application fills biclique partitions from full snapshots; planner selects an optional entity_type and cannot emit partition arrays.",
+    "Unavailable sides stop before planning; genuinely missing required values stop without a second reasoning attempt.",
+    "Native optional partitions fall back to attributes.side; a single supplied partition still fails validation.",
+    "Directed inputs offer an explicit undirected copy; confirmation resumes the saved validated plan with no model calls.",
+    "Chat submits the converted snapshot and recovers it from saved events after a lost response.",
+    "Only biclique steps use the converted snapshot; other objectives sharing an alias retain the directed original."
+  ],
+  "files_changed": [
+    "agent/browser_tests/test_analytics_workspace.py",
+    "agent/graphmine_agent/analytics_bipartite.py",
+    "agent/graphmine_agent/analytics_context.py",
+    "agent/graphmine_agent/analytics_planning.py",
+    "agent/graphmine_agent/graph_context.py",
+    "agent/graphmine_agent/static/analytics-ui.js",
+    "agent/tests/test_analytics_bicliques.py",
+    "agent/tests/test_analytics_context.py",
+    "catalog/native_execution_evidence.json",
+    "library/runtime/bipartite_input.hpp",
+    "library/runtime/families/bipartite.cpp",
+    "library/runtime/registry.cpp",
+    "library/runtime/runtime.cpp",
+    "library/runtime/validation.cpp",
+    "library/tests/test_native_extended.py"
+  ],
+  "environment_config": {
+    "path": "/home/wajid/projects/graphDatabaseAgent/graphmine-data/environments/config/environments.json",
+    "changed_keys": [
+      "devlopment.env.GRAPHMINE_RUNTIME_REPOSITORY",
+      "devlopment.env.GRAPHMINE_NATIVE_LIBRARY",
+      "devlopment.env.GRAPHMINE_NATIVE_BINARY"
+    ],
+    "services": {
+      "graphmine-devlopment-agent.service": "active",
+      "graphmine-devlopment-studio.service": "active"
+    },
+    "http": {
+      "http://127.0.0.1:18002/": 200,
+      "http://127.0.0.1:8879/": 200
+    },
+    "default_live_model_enabled": false,
+    "live_verification": "Isolated dev store using the existing local Qwen model server; default dev model policy is unchanged.",
+    "agent_restarted_after_final_change": true
+  },
+  "tests_added": {
+    "agent_cases": 14,
+    "browser_cases": 2,
+    "native_cases": 7,
+    "extended_oracle": "Both partition forms checked on all 512 bipartite 3-by-3 graphs; punctuation matching also covered.",
+    "total_new_cases": 23
+  },
+  "evidence_files": [
+    "agent-regression.xml",
+    "dev-end-to-end.xml",
+    "native-completion.xml",
+    "ctest.log",
+    "native-before-after.json",
+    "baseline-yelp.json",
+    "live-yelp.json",
+    "cpu-suites/"
+  ],
+  "invariants": {
+    "c_abi_version": 1,
+    "operation_ids_unchanged": true,
+    "explicit_native_results_unchanged": true,
+    "verified_cpu_operations": 82,
+    "original_yelp_snapshot_unchanged": true,
+    "native_implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+    "non_biclique_steps_keep_original_input": true,
+    "production_and_testing_environment_config_unchanged": true
+  },
+  "later_phase_decisions": {
+    "routing": "Separate adapter requested for general questions and routing, with logprobs; adapter setup belongs to later phases.",
+    "normal_mode": "Always two options for calculations",
+    "reply_lane_web": "Allowed with citations"
+  },
+  "next_phase": 1,
+  "phase_boundary": "Stop and report before beginning the labelled baseline phase.",
+  "test_results": {
+    "agent-regression.xml": {
+      "passed": 140,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "dev-end-to-end.xml": {
+      "passed": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "native-completion.xml": {
+      "passed": 168,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "unique_agent_cases": 141,
+    "browser_cases": 2,
+    "cpp_ctest_passed": 53,
+    "cpu_oracle_suites": "passed; all 82 operation profiles verified"
+  },
+  "before_after": {
+    "saved_yelp_followup": {
+      "graph_vertices": 20,
+      "graph_edges": 69,
+      "before": {
+        "status": "planner_truncated",
+        "planner_completion_tokens": 3072,
+        "planner_seconds": 111.62
+      },
+      "after": {
+        "status": "completed",
+        "planner_completion_tokens": 495,
+        "planner_seconds": 17.19,
+        "route_and_plan_wall_seconds": 33.023,
+        "bicliques": 33,
+        "oracle_bicliques": 33,
+        "confirmation_model_calls": 0,
+        "confirmation_seconds": 0.251,
+        "native_seconds": 0.000882941
+      },
+      "measurement_note": "One isolated live-model replay against a copy of the original saved graph; timing is observational, not a performance benchmark."
+    },
+    "native_attributes_side_80_vertices": {
+      "before": {
+        "exit_code": 2,
+        "error": {
+          "code": "invalid_input",
+          "message": "Missing required parameter: left_partition"
+        },
+        "seconds": 0.11837
+      },
+      "after": {
+        "exit_code": 0,
+        "bicliques": 40,
+        "seconds": 0.007527
+      },
+      "explicit_result_unchanged": true,
+      "operation_ids_unchanged": true,
+      "operation_count": 82,
+      "vertex_count": 80
+    }
+  },
+  "requirements_checked": [
+    "Planner-visible biclique parameters exclude vertex ID arrays; optional entity_type is resolved against the entire selected graph.",
+    "Missing bipartite sides stop before planning; unavailable required parameters return needs_information without a reasoning retry.",
+    "Native attributes.side fallback handles complete declarations, retains typed IDs, and rejects incomplete declarations or a lone explicit partition.",
+    "User/Business Cypher fixture contains 80 vertices, includes the question and side confirmation, and executes through native validation.",
+    "Explicit direction conversion is offered, creates a separate snapshot with provenance, and resumes the persisted plan without re-routing.",
+    "Converted input survives chat transport recovery, and unrelated steps retain the original directed snapshot.",
+    "Existing view/explain shortcuts are preserved; C ABI, operation IDs and explicit result shapes remain unchanged."
+  ],
+  "remaining_scope": "Phases 1\u20135 have not started; user requested a stop and report after each phase."
+}

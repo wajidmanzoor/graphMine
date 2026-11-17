@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="48" time="187.194" timestamp="2026-11-16T19:53:06.264391-05:00" hostname="guoglambda01"><testcase classname="browser_tests.test_workspace_shell" name="test_changing_mode_preserves_a_draft_without_submitting" time="2.380" /><testcase classname="browser_tests.test_workspace_shell" name="test_conversation_and_composer_fit_the_viewport[320-640]" time="2.461" /><testcase classname="browser_tests.test_workspace_shell" name="test_conversation_and_composer_fit_the_viewport[390-844]" time="2.486" /><testcase classname="browser_tests.test_workspace_shell" name="test_conversation_and_composer_fit_the_viewport[820-1180]" time="11.787" /><testcase classname="browser_tests.test_workspace_shell" name="test_conversation_and_composer_fit_the_viewport[1440-1000]" time="2.452" /><testcase classname="browser_tests.test_workspace_shell" name="test_drawers_trap_focus_and_restore_the_trigger" time="11.826" /><testcase classname="browser_tests.test_workspace_shell" name="test_desktop_panels_resize_chat_and_leave_composer_usable[1024]" time="11.790" /><testcase classname="browser_tests.test_workspace_shell" name="test_desktop_panels_resize_chat_and_leave_composer_usable[1440]" time="2.473" /><testcase classname="browser_tests.test_workspace_shell" name="test_desktop_panels_resize_chat_and_leave_composer_usable[1920]" time="2.553" /><testcase classname="browser_tests.test_workspace_shell" name="test_mobile_history_search_and_navigation" time="3.494" /><testcase classname="browser_tests.test_workspace_shell" name="test_sidebar_preference_persists_and_prompt_is_editable" time="2.664" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_all_questions_show_raw_reasoning_for_every_attempt_after_reload" time="2.735" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_chat_answer_and_each_model_call_survive_reload[1440]" time="3.070" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_chat_answer_and_each_model_call_survive_reload[390]" time="3.109" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_delayed_old_events_cannot_hide_new_followup" time="5.431" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_interrupted_question_retries_with_its_original_inputs" time="2.458" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_conversation_polling_slows_when_idle_and_stops_when_signed_out" time="32.741" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_community_overview_filter_and_reset_preserve_typed_ids" time="2.904" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_overlapping_cliques_filter_dropdown_chart_and_table" time="2.736" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_partial_clique_collection_and_graph_preview_remain_explicit" time="2.459" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_count_only_cliques_do_not_invent_filters" time="2.470" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_saved_cliques_open_when_latest_analysis_returns_a_graph" time="2.592" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_clique_preview_retries_busy_requests_only[concurrency_limit]" time="3.406" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_clique_preview_retries_busy_requests_only[quota_exceeded]" time="2.231" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_finished_analysis_answers_in_chat_with_computed_facts" time="2.301" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_question_about_a_selected_clique_sends_its_position" time="2.534" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_reasoning_streams_while_a_stage_runs" time="3.857" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_clarification_choices_are_sent_as_replies" time="2.502" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_conversation_can_be_renamed_and_deleted" time="2.693" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_selected_group_is_loaded_from_the_full_graph" time="2.527" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_scores_size_nodes_and_paths_highlight_their_connections" time="2.455" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_long_outputs_page_and_search_on_the_server" time="2.986" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_display_request_opens_the_largest_clique_without_a_calculation" time="2.507"><failure message="selenium.common.exceptions.StaleElementReferenceException: Message: The element with the reference 4560d5cf-786c-487e-95f8-f4e1e8f83952 is stale; either its node document is not the active document, or it is no longer connected to the DOM; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#staleelementreferenceexception&#10;Stacktrace:&#10;RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:14:8&#10;WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:169:5&#10;StaleElementReferenceError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:830:5&#10;getKnownElement@chrome://remote/content/marionette/json.sys.mjs:412:11&#10;deserializeJSON@chrome://remote/content/marionette/json.sys.mjs:270:20&#10;cloneObject@chrome://remote/content/marionette/json.sys.mjs:59:24&#10;deserializeJSON@chrome://remote/content/marionette/json.sys.mjs:298:16&#10;json.deserialize@chrome://remote/content/marionette/json.sys.mjs:302:10&#10;receiveMessage@chrome://remote/content/marionette/actors/MarionetteCommandsChild.sys.mjs:179:30">loading_browser = &lt;selenium.webdriver.firefox.webdriver.WebDriver (session="98d6eaed-e236-4370-8875-33bd293e79ac")&gt;
+loading_server = namespace(responses=[namespace(started=&lt;threading.Event at 0x7bac5c970b60: set&gt;, release=&lt;threading.Event at 0x7bac5c9...group_graph=None, group_requests=[], port_requests=[], port_page=None, events_status=200, url='http://127.0.0.1:41165')
+
+    def test_display_request_opens_the_largest_clique_without_a_calculation(
+        loading_browser, loading_server
+    ):
+        browser, server = loading_browser, loading_server
+        saved_cliques(server)
+        view = {
+            "kind": "show_group",
+            "workflow_id": "saved-analysis",
+            "step": "core",
+            "port": "groups",
+            "noun": "clique",
+            "group_key": 0,
+            "label": "Clique 1",
+            "size": 3,
+        }
+        message = "Showing Clique 1 (3 vertices) on the results page."
+    
+        def plan(body):
+            turn = body["request_id"]
+            event(server, "chat", turn, role="user", message=body["message"], mode="normal")
+            event(
+                server,
+                "chat",
+                turn,
+                role="assistant",
+                status="view",
+                message=message,
+                view=view,
+            )
+            return {
+                "turn_id": turn,
+                "status": "view",
+                "message": message,
+                "view": view,
+                "plan": None,
+            }
+    
+        server.plan_handler = plan
+        open_saved(browser, server)
+        browser.find_element(By.ID, "question").send_keys("Show me the biggest clique")
+        browser.find_element(By.ID, "plan-question").click()
+        wait_for(
+            browser,
+            "GraphMineWorkspace.state.view === 'results' &amp;&amp; GraphMineWorkspace.state.groupFilter === 'i:0' &amp;&amp; !GraphMineWorkspace.state.busy",
+        )
+        assert browser.current_url.endswith(
+            "#workspace/saved-session/results/saved-analysis"
+        )
+        assert Select(
+            browser.find_element(By.ID, "graph-group")
+&gt;       ).first_selected_option.text.startswith("Clique 1")
+                                ^^^^
+
+agent/browser_tests/test_workspace_conversation_graph.py:1024: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webelement.py:103: in text
+    return self._execute(Command.GET_ELEMENT_TEXT)["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webelement.py:504: in _execute
+    return self._parent.execute(command, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/selenium/webdriver/remote/webdriver.py:506: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7bac5c94d370&gt;
+response = {'status': 404, 'value': '{"value":{"error":"stale element reference","message":"The element with the reference 4560d5...ys.mjs:302:10\\nreceiveMessage@chrome://remote/content/marionette/actors/MarionetteCommandsChild.sys.mjs:179:30\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Check that a JSON response from the WebDriver does not have an error.
+    
+        Args:
+            response: The JSON response from the WebDriver server as a dictionary
+                object.
+    
+        Raises:
+            WebDriverException: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message") if isinstance(message, dict) else None
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.StaleElementReferenceException: Message: The element with the reference 4560d5cf-786c-487e-95f8-f4e1e8f83952 is stale; either its node document is not the active document, or it is no longer connected to the DOM; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#staleelementreferenceexception
+E       Stacktrace:
+E       RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:14:8
+E       WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:169:5
+E       StaleElementReferenceError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:830:5
+E       getKnownElement@chrome://remote/content/marionette/json.sys.mjs:412:11
+E       deserializeJSON@chrome://remote/content/marionette/json.sys.mjs:270:20
+E       cloneObject@chrome://remote/content/marionette/json.sys.mjs:59:24
+E       deserializeJSON@chrome://remote/content/marionette/json.sys.mjs:298:16
+E       json.deserialize@chrome://remote/content/marionette/json.sys.mjs:302:10
+E       receiveMessage@chrome://remote/content/marionette/actors/MarionetteCommandsChild.sys.mjs:179:30
+
+.venv/lib/python3.12/site-packages/selenium/webdriver/remote/errorhandler.py:232: StaleElementReferenceException</failure></testcase><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_saved_display_changes_are_carried_out_on_the_results_page[view0-document.getElementById('graph-layout').value === 'circle']" time="2.491" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_saved_display_changes_are_carried_out_on_the_results_page[view1-GraphMineWorkspace.state.selected.has('i:4') &amp;&amp; GraphMineWorkspace.state.selected.has('i:5') &amp;&amp; GraphMineWorkspace.state.cy?.getElementById('i:4').hasClass('chosen')]" time="2.508" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_saved_display_changes_are_carried_out_on_the_results_page[view2-document.getElementById('table-search').value === 'Vertex 4']" time="2.478" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_saved_display_changes_are_carried_out_on_the_results_page[view3-GraphMineWorkspace.state.groupFilter === '']" time="2.488" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_answers_from_saved_facts_list_each_computed_statement" time="2.423" /><testcase classname="browser_tests.test_workspace_conversation_graph" name="test_suggested_follow_ups_are_asked_about_their_analysis" time="2.593" /><testcase classname="browser_tests.test_workspace_device_quality" name="test_gpu_first_picker_and_quality_are_independent" time="2.831" /><testcase classname="browser_tests.test_workspace_device_quality" name="test_review_and_chat_label_default_heuristic_and_explicit_exact" time="2.382" /><testcase classname="browser_tests.test_workspace_incremental" name="test_event_index_deduplicates_and_merges_out_of_order_history" time="2.403" /><testcase classname="browser_tests.test_workspace_incremental" name="test_new_reasoning_preserves_other_turn_dom_focus_and_expanded_details" time="2.446" /><testcase classname="browser_tests.test_workspace_incremental" name="test_history_pages_preserve_reading_position_numbers_and_new_message_cursor[1440]" time="2.666" /><testcase classname="browser_tests.test_workspace_incremental" name="test_history_pages_preserve_reading_position_numbers_and_new_message_cursor[320]" time="2.677" /><testcase classname="browser_tests.test_workspace_incremental" name="test_older_history_retry_and_delayed_response_after_navigation" time="2.547" /><testcase classname="browser_tests.test_workspace_incremental" name="test_graph_refresh_retains_instance_positions_viewport_and_event_handlers" time="2.575" /><testcase classname="browser_tests.test_workspace_incremental" name="test_event_poll_cursor_keeps_exact_large_sequence_numbers" time="2.440" /></testsuite></testsuites>

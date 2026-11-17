@@ -97,7 +97,7 @@ async def test_planner_calls_keep_the_exact_request_and_raw_response(
     )
     planner.conversation.set({"session_id": session.id, "turn_id": "turn_1"})
     schema = route_schema([{"id": "triangle-counting"}])
-    assert await planner._generate("route", {"question": "Count triangles"}, schema) == decision
+    assert await planner._generate("route", {"question": "Count triangles"}, schema) == {**decision, "intent": "options"}
     with pytest.raises(AnalyticsError):
         await planner._generate("route", {"question": "Count triangles"}, schema)
     records = lines(tmp_path / f"captures/users/local/sessions/{session.id}.jsonl")
@@ -123,7 +123,7 @@ async def test_planner_calls_keep_the_exact_request_and_raw_response(
 @pytest.mark.asyncio
 async def test_answer_composition_reports_its_model_call(settings, monkeypatch, tmp_path):
     facts = build_facts(SAVED, TITLES, LABELS)
-    content = {"lead": "Here are the tightest groups.", "fact_ids": ["f1"]}
+    content = {"text": "Here are the results.\n{{f1}}", "source_ids": ["f1"]}
     original = httpx.AsyncClient
     monkeypatch.setattr(
         "graphmine_agent.analytics_answers.httpx.AsyncClient",
@@ -133,11 +133,12 @@ async def test_answer_composition_reports_its_model_call(settings, monkeypatch, 
     )
     capture = TrainingCapture(tmp_path, owner_of=lambda _session: None)
     on_call = functools.partial(capture.model_call, "s1", stage="answer", turn_id="t1", workflow_id="w1")
-    configured = replace(settings, llm_base_url="http://model.test/v1")
-    assert (await compose(configured, "Which groups are tight?", facts, on_call=on_call))["lead"]
+    configured = replace(settings, llm_enabled=True, llm_base_url="http://model.test/v1")
+    assert (await compose(configured, "Which groups are tight?", facts, on_call=on_call))["grounding"]["checked"]
     [call] = lines(tmp_path / "users/local/sessions/s1.jsonl")
     assert call["workflow_id"] == "w1" and call["data"]["stage"] == "answer"
-    assert json.loads(call["data"]["request"]["messages"][1]["content"])["facts"] == facts
+    sources = json.loads(call["data"]["request"]["messages"][1]["content"])["sources"]
+    assert [row["text"] for row in sources] == [fact["text"] for fact in facts]
     assert call["data"]["output"] == content and call["data"]["outcome"] == "ok"
 
 

@@ -143,6 +143,11 @@ def matched_entities(question, inputs, limit=ENTITY_LIMIT):
     # Short IDs such as "3" match only when named as one ("vertex 3"), never as
     # an ordinary number in the question.
     named = set(re.findall(r"\b(?:vertex|node|id|entity)\s+([\w.-]+)", text))
+    for group in re.findall(r"\b(?:vertices|nodes|ids|entities)\s+(-?\d+(?:\s*(?:,|and)\s*-?\d+)*)", text):
+        named.update(re.findall(r"-?\d+", group))
+    # A sentence-ending full stop is not part of a numeric vertex ID. Retain
+    # the original token too, since string IDs may themselves contain periods.
+    named |= {token.rstrip(".") for token in named}
     found = []
     for alias, descriptor in inputs.items():
         data = descriptor.get("data")

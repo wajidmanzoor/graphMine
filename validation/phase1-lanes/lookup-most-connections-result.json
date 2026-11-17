@@ -1,0 +1,424 @@
+{
+  "case": "lookup_most_connections",
+  "workflow_status": "completed",
+  "complete": false,
+  "steps": {
+    "step_1": {
+      "status": "completed",
+      "cache_key": "dcaad8716b8e0451f26f12e6b1213fa6a42016e3a5365d56f697bf35ef8451df",
+      "result_sha256": "6c276147b7745551bb2b8c51ea587ce7467d3b4a60b9a2b8c8ba5bd94df93381",
+      "reused": false,
+      "execution_device_policy": "cpu",
+      "result": {
+        "parameters": {
+          "filters": [
+            {
+              "field": "type",
+              "op": "eq",
+              "value": "TRANSFER"
+            }
+          ],
+          "group_by": "source",
+          "order": "descending",
+          "result_limit": 1,
+          "scope": "edges",
+          "metric": "count",
+          "field": null,
+          "direction": "out"
+        },
+        "result": {
+          "rows": [
+            {
+              "group": 1,
+              "value": 3,
+              "exact_value": {
+                "numerator": "3",
+                "denominator": "1"
+              },
+              "rounded": false,
+              "record_count": 3
+            }
+          ],
+          "matched_count": 7,
+          "returned_count": 1
+        },
+        "ports": {
+          "rows": {
+            "type": "table",
+            "value": [
+              {
+                "group": 1,
+                "value": 3,
+                "exact_value": {
+                  "numerator": "3",
+                  "denominator": "1"
+                },
+                "rounded": false,
+                "record_count": 3
+              }
+            ],
+            "complete": false,
+            "input_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d",
+            "graph_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d"
+          },
+          "count": {
+            "type": "scalar",
+            "value": 7,
+            "complete": true,
+            "input_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d",
+            "graph_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d"
+          }
+        },
+        "complete": false,
+        "quality": "exact",
+        "diagnostics": {
+          "narrowing_hint": "Add filters or reduce the neighborhood, or increase result_limit. Incomplete collections cannot supply later steps."
+        },
+        "schema_version": "2.0.0",
+        "operation": "graph-aggregate",
+        "problem_id": "graph_record_queries",
+        "family": "query",
+        "input_kind": "graph",
+        "input_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d",
+        "graph_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d",
+        "implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+        "requested_device": "cpu",
+        "backend": {
+          "id": "cpp",
+          "device": "cpu",
+          "implementation_language": "c++/cuda",
+          "python_runtime_required": false
+        },
+        "representations": [
+          {
+            "kind": "canonical_graph",
+            "key": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d:canonical-records-v1:e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+            "hit": true,
+            "retained": true
+          },
+          {
+            "kind": "coo",
+            "key": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d:e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f:3a73dc420a73a45f8880fa572e6c10605c80b8a9e6db4bed68384f6c8ab427fa:standard-view-v2:{\"bipartite_sides\":\"none\",\"coo_layout\":\"records\",\"direction\":\"keep\",\"drop_zero_weights\":false,\"edge_ids\":true,\"index_width\":\"u32\",\"kind\":\"coo\",\"labels\":[],\"limits\":{\"max_edges\":18446744073709551615,\"max_vertices\":4294967295},\"nonnegative_edge_weights\":false,\"nonnegative_weights\":false,\"parallel_edges\":\"keep\",\"require_edge_weights\":false,\"self_loops\":\"keep\",\"sorted_neighbors\":false,\"sum_arithmetic\":\"standard\",\"weight_source\":\"edge.weight\",\"weights\":\"none\"}",
+            "hit": false,
+            "retained": true,
+            "view_profile": "graph-aggregate:cpp:records",
+            "view": {
+              "bipartite_sides": "none",
+              "coo_layout": "records",
+              "direction": "keep",
+              "drop_zero_weights": false,
+              "edge_ids": true,
+              "index_width": "u32",
+              "kind": "coo",
+              "labels": [],
+              "limits": {
+                "max_edges": 18446744073709551615,
+                "max_vertices": 4294967295
+              },
+              "nonnegative_edge_weights": false,
+              "nonnegative_weights": false,
+              "parallel_edges": "keep",
+              "require_edge_weights": false,
+              "self_loops": "keep",
+              "sorted_neighbors": false,
+              "sum_arithmetic": "standard",
+              "weight_source": "edge.weight",
+              "weights": "none"
+            },
+            "normalization": {
+              "projection_applied": false,
+              "self_loops_removed": 0,
+              "parallel_edges_collapsed": 0,
+              "weights_cast": 0,
+              "vertices": 8,
+              "edges": 10
+            }
+          }
+        ],
+        "budget": {
+          "max_candidates": 2000000,
+          "max_output_items": 100000,
+          "timeout_seconds": 60.0
+        },
+        "elapsed_seconds": 0.000153691
+      }
+    },
+    "step_2": {
+      "status": "completed",
+      "cache_key": "3c6c460b3dbafc7b5426c2f4d68cb915abf97dc6064580cc2b0c0f0d36193756",
+      "result_sha256": "036c0e0d4175f58670a4eb5952abb0359c84f72ec9923d98863ba69a6ea53249",
+      "reused": false,
+      "execution_device_policy": "cpu",
+      "result": {
+        "parameters": {
+          "filters": [
+            {
+              "field": "type",
+              "op": "eq",
+              "value": "TRANSFER"
+            }
+          ],
+          "group_by": "source",
+          "order": "descending",
+          "result_limit": 1,
+          "scope": "edges",
+          "metric": "count",
+          "field": null,
+          "direction": "out"
+        },
+        "result": {
+          "rows": [
+            {
+              "group": 1,
+              "value": 3,
+              "exact_value": {
+                "numerator": "3",
+                "denominator": "1"
+              },
+              "rounded": false,
+              "record_count": 3
+            }
+          ],
+          "matched_count": 7,
+          "returned_count": 1
+        },
+        "ports": {
+          "rows": {
+            "type": "table",
+            "value": [
+              {
+                "group": 1,
+                "value": 3,
+                "exact_value": {
+                  "numerator": "3",
+                  "denominator": "1"
+                },
+                "rounded": false,
+                "record_count": 3
+              }
+            ],
+            "complete": false,
+            "input_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d",
+            "graph_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d"
+          },
+          "count": {
+            "type": "scalar",
+            "value": 7,
+            "complete": true,
+            "input_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d",
+            "graph_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d"
+          }
+        },
+        "complete": false,
+        "quality": "exact",
+        "diagnostics": {
+          "narrowing_hint": "Add filters or reduce the neighborhood, or increase result_limit. Incomplete collections cannot supply later steps."
+        },
+        "schema_version": "2.0.0",
+        "operation": "graph-aggregate",
+        "problem_id": "graph_record_queries",
+        "family": "query",
+        "input_kind": "graph",
+        "input_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d",
+        "graph_fingerprint": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d",
+        "implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+        "requested_device": "cpu",
+        "backend": {
+          "id": "cpp",
+          "device": "cpu",
+          "implementation_language": "c++/cuda",
+          "python_runtime_required": false
+        },
+        "representations": [
+          {
+            "kind": "canonical_graph",
+            "key": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d:canonical-records-v1:e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+            "hit": true,
+            "retained": true
+          },
+          {
+            "kind": "coo",
+            "key": "bcf4ffbb9b8be2845597e0f3e5a120cbb9c4fb55931aa3c85b4b3a543c056d7d:e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f:3a73dc420a73a45f8880fa572e6c10605c80b8a9e6db4bed68384f6c8ab427fa:standard-view-v2:{\"bipartite_sides\":\"none\",\"coo_layout\":\"records\",\"direction\":\"keep\",\"drop_zero_weights\":false,\"edge_ids\":true,\"index_width\":\"u32\",\"kind\":\"coo\",\"labels\":[],\"limits\":{\"max_edges\":18446744073709551615,\"max_vertices\":4294967295},\"nonnegative_edge_weights\":false,\"nonnegative_weights\":false,\"parallel_edges\":\"keep\",\"require_edge_weights\":false,\"self_loops\":\"keep\",\"sorted_neighbors\":false,\"sum_arithmetic\":\"standard\",\"weight_source\":\"edge.weight\",\"weights\":\"none\"}",
+            "hit": true,
+            "retained": true,
+            "view_profile": "graph-aggregate:cpp:records",
+            "view": {
+              "bipartite_sides": "none",
+              "coo_layout": "records",
+              "direction": "keep",
+              "drop_zero_weights": false,
+              "edge_ids": true,
+              "index_width": "u32",
+              "kind": "coo",
+              "labels": [],
+              "limits": {
+                "max_edges": 18446744073709551615,
+                "max_vertices": 4294967295
+              },
+              "nonnegative_edge_weights": false,
+              "nonnegative_weights": false,
+              "parallel_edges": "keep",
+              "require_edge_weights": false,
+              "self_loops": "keep",
+              "sorted_neighbors": false,
+              "sum_arithmetic": "standard",
+              "weight_source": "edge.weight",
+              "weights": "none"
+            },
+            "normalization": {
+              "projection_applied": false,
+              "self_loops_removed": 0,
+              "parallel_edges_collapsed": 0,
+              "weights_cast": 0,
+              "vertices": 8,
+              "edges": 10
+            }
+          }
+        ],
+        "budget": {
+          "max_candidates": 2000000,
+          "max_output_items": 100000,
+          "timeout_seconds": 60.0
+        },
+        "elapsed_seconds": 0.000107372
+      }
+    }
+  },
+  "chat_answers": [
+    {
+      "workflow_id": "82c81e18-0318-4d8d-8b60-372bb4fbfca7",
+      "revision": 1,
+      "turn_id": "adf401e5-b064-4a09-9cef-fef57df2ce5e",
+      "lead": "",
+      "fact_ids": [
+        "f1",
+        "f2",
+        "f3",
+        "f4"
+      ],
+      "facts": [
+        {
+          "id": "f1",
+          "kind": "value",
+          "step": "step_1",
+          "statement": "Summarize recorded numeric values: returned 1 row."
+        },
+        {
+          "id": "f2",
+          "kind": "value",
+          "step": "step_1",
+          "statement": "Summarize recorded numeric values: count is 7."
+        },
+        {
+          "id": "f3",
+          "kind": "scope",
+          "step": "step_1",
+          "statement": "Summarize recorded numeric values: exact, so it establishes the declared result; its output is incomplete."
+        },
+        {
+          "id": "f4",
+          "kind": "value",
+          "step": "step_2",
+          "statement": "Summarize recorded numeric values: returned 1 row."
+        },
+        {
+          "id": "f5",
+          "kind": "value",
+          "step": "step_2",
+          "statement": "Summarize recorded numeric values: count is 7."
+        },
+        {
+          "id": "f6",
+          "kind": "scope",
+          "step": "step_2",
+          "statement": "Summarize recorded numeric values: exact, so it establishes the declared result; its output is incomplete."
+        }
+      ],
+      "source": "facts",
+      "suggestions": [
+        {
+          "text": "Explain this result.",
+          "action": null
+        },
+        {
+          "text": "Is this result complete?",
+          "action": {
+            "intent": "explain",
+            "fact_ids": [
+              "f3",
+              "f6"
+            ]
+          }
+        }
+      ],
+      "pending": true
+    },
+    {
+      "workflow_id": "82c81e18-0318-4d8d-8b60-372bb4fbfca7",
+      "revision": 1,
+      "turn_id": "adf401e5-b064-4a09-9cef-fef57df2ce5e",
+      "lead": "The account with the most outgoing transfer connections is not identified in the provided facts.",
+      "fact_ids": [
+        "f2",
+        "f5"
+      ],
+      "facts": [
+        {
+          "id": "f1",
+          "kind": "value",
+          "step": "step_1",
+          "statement": "Summarize recorded numeric values: returned 1 row."
+        },
+        {
+          "id": "f2",
+          "kind": "value",
+          "step": "step_1",
+          "statement": "Summarize recorded numeric values: count is 7."
+        },
+        {
+          "id": "f3",
+          "kind": "scope",
+          "step": "step_1",
+          "statement": "Summarize recorded numeric values: exact, so it establishes the declared result; its output is incomplete."
+        },
+        {
+          "id": "f4",
+          "kind": "value",
+          "step": "step_2",
+          "statement": "Summarize recorded numeric values: returned 1 row."
+        },
+        {
+          "id": "f5",
+          "kind": "value",
+          "step": "step_2",
+          "statement": "Summarize recorded numeric values: count is 7."
+        },
+        {
+          "id": "f6",
+          "kind": "scope",
+          "step": "step_2",
+          "statement": "Summarize recorded numeric values: exact, so it establishes the declared result; its output is incomplete."
+        }
+      ],
+      "source": "model",
+      "suggestions": [
+        {
+          "text": "Explain this result.",
+          "action": null
+        },
+        {
+          "text": "Is this result complete?",
+          "action": {
+            "intent": "explain",
+            "fact_ids": [
+              "f3",
+              "f6"
+            ]
+          }
+        }
+      ],
+      "pending": false
+    }
+  ],
+  "interpretation": "Native execution completed and its top row is account 1 (Ada) with 3 outgoing transfers. The generated plan duplicates the same aggregation twice. Result-limit truncation marks the output incomplete; the frozen benchmark additionally expects the degree-centrality operation. This case is not evidence of a native runtime failure."
+}

@@ -66,10 +66,51 @@ the short 320-pixel viewport checks follow the
 [reflow guidance](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
 
 The message composer provides three modes over the same validated workflow API.
-Normal runs a validated plan immediately. Interactive saves it for inspection
-and explicit approval. Expert accepts an explicit JSON workflow and also
-requires review before execution. Editing increments the revision and
+Normal offers two calculation cards and runs the selected, validated plan.
+Interactive also asks answer-changing questions and saves the plan for inspection
+and explicit approval. Expert accepts an explicit JSON workflow with validator
+errors shown directly. Editing increments the revision and
 invalidates prior approval. `/classic` retains the earlier application.
+
+A routed clarification stays pending even when the router suggests an operation:
+if that operation has no missing input, the application still asks which objective
+the person intended before sampling calculation options. For shortest paths,
+an explicit request between selected endpoints must supply those endpoints;
+the nullable native default means all vertices, not unknown accounts. Named
+endpoints are resolved against the snapshot, and missing endpoints are asked
+one at a time. Explicit all-pairs requests keep the native defaults.
+
+Data and conceptual answers include `text` and `citations`, whose entries contain
+`id`, `kind` (`fact`, `contract`, `doc`, or `web`) and `ref`. The **Sources** drawer
+shows the evidence behind each answer. Tool results are registered for the
+current turn; saved results are read again and identified by workflow revision.
+The checker compares complete factual sentences with the cited evidence. This
+conservative check rejects unsupported paraphrases as well as changed names,
+counts, units, negation and invented explanations. Data writers select source
+placeholders; code inserts actual values and vertex identifiers. A failed draft
+gets one repair attempt, then code displays the bare facts. A service outage
+falls back immediately. Scalar results and input descriptions need no writer.
+Dataset Studio retains the original schema for historical `lead`/`fact_ids`
+captures. New answer reviews use `text`/`source_ids` with their recorded sources
+and the same grounding checker; offline review does not claim fresh retrieval.
+
+Web search is disabled by default (`GRAPHMINE_GOOGLE_SEARCH_ENABLED=false`).
+Explicit search requests report that web search is disabled, with no outbound
+request, browser launch, or search link. Graph answers and local documentation
+replies remain available. The implementation is retained for later development;
+see [Deferred Google search](DEFERRED_GOOGLE_SEARCH.md).
+
+When explicitly enabled for development, Google/web searches and requests for current general information can
+use public Google search in the `reply` lane without an API key. The tool sends
+only the question, not the graph or conversation history. It first reads public
+results; the optional `web` Python extra, Firefox and geckodriver allow pages
+requiring JavaScript to be rendered. Search excerpts are limited to 25 words per
+destination and labelled as excerpts; destination pages are not fetched. A bot
+check, including HTTP 403/429 challenges, is never retried through a browser.
+When Google blocks the server or returns no usable
+results, the answer records that status and offers **Open this search in Google**.
+Data answers cannot cite web sources. Live search availability depends on Google
+accepting requests from the deployment network.
 
 **Automatic (GPU first)** prefers a permitted GPU with current execution
 evidence for the selected calculation. If no such GPU has capacity, or the
@@ -99,8 +140,12 @@ runs and the full text is kept when it finishes; the UI never fabricates numeric
 Each question has a request ID. If its HTTP reply is lost, the browser retrieves
 the saved planning outcome from authenticated events without repeating model
 generation. A saved plan retains its original input files and mode for recovery.
-**Activity** in the conversation header opens a drawer with one timeline per
-question: its stages, then a collapsible copy of the model's reasoning for that question.
+Chat shows short **Chose: …** and **Validated ✓** lines, without repeating the
+operation title on every fact or an identical plan message alongside its answer.
+**Activity** in the conversation header opens a drawer with the full trace and
+each actual model request, including failed verification and its repair.
+Model reasoning is collapsed, labelled **The model's working notes, not checked**,
+and available only to administrators in Expert mode.
 Understanding, operation selection, plan attempts, and validation outcomes appear
 below it, including failed validation and repairs. New planning events retain the
 proposed plan; older saved workflows supply their validated plan. A follow-up is

@@ -1444,6 +1444,30 @@ def test_change_own_password_requires_current_password_and_revokes_logins(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("override", [None, 100])
+async def test_five_samples_reserve_output_budgets_and_settle_one_request(account_settings, override):
+    accounts, database = store(account_settings)
+    payload = {"model": "router", "messages": [], "n": 5, "max_completion_tokens": 100}
+    paths = []
+
+    def respond(request):
+        paths.append(request.url.path)
+        if request.url.path == "/tokenize":
+            return httpx.Response(200, json={"count": 200})
+        assert accounts.usage("alice")["tokens_reserved"] == 700
+        with database._connect() as db:
+            assert db.execute("SELECT count(*) FROM account_leases WHERE kind='model'").fetchone()[0] == 1
+        return httpx.Response(200, json={"usage": {"prompt_tokens": 200, "completion_tokens": 75, "total_tokens": 275}})
+
+    async with httpx.AsyncClient(base_url="http://model.test/v1", transport=httpx.MockTransport(respond)) as client:
+        with identity_scope(Principal("alice", "alice", accounts)):
+            await model_post(client, "/chat/completions", json=payload, max_tokens=override)
+    assert paths == ["/tokenize", "/v1/chat/completions"]
+    assert accounts.usage("alice")["tokens_used"] == 275
+    assert accounts.usage("alice")["tokens_reserved"] == 0
+
+
+@pytest.mark.asyncio
 async def test_large_schema_uses_tokenizer_not_request_bytes(account_settings):
     accounts, _ = store(account_settings)
     accounts.settle_tokens(accounts.reserve_tokens("alice", 8000), 7814)

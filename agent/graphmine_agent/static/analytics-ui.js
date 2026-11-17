@@ -96,7 +96,7 @@
   const polling = window.GraphMinePolling({state, readScope, getSignal: () => workflowController?.signal || sessionController.signal,
     syncConversation, renderWorkflow, renderConversation, loadSaved, loadResults, showWorkflowSync, go, notice: (...args) => notice(...args)});
   const {pollConversation, pollWorkflow} = polling;
-  const descriptions = {normal: "Ask in your own words. GraphMine checks the plan and runs it for you.", interactive: "Discuss your question, review the plan, then approve the calculation.", expert: "Inspect and edit the workflow yourself before running it."};
+  const descriptions = {normal: "Ask in your own words, choose a calculation, then GraphMine checks and runs it.", interactive: "Discuss your question, review the plan, then approve the calculation.", expert: "Inspect and edit the workflow yourself before running it."};
   const friendly = {requested_k: "Minimum connections inside the core", k: "Group size (k)", source: "Starting point", source_vertex: "Starting point", sink: "Destination", target: "Destination", target_vertex: "Comparison point", sources: "Starting points", seeds: "Required starting points", seed_vertices: "Starting points", vertices_or_seeds: "Selected vertices or starting points", connectivity_mode: "Meaning of connected", weight_mode: "How to use connection weights", result_limit: "Maximum results to list", mode: "Result to return", radius: "Maximum connection steps", depth_limit: "Maximum connection steps", quality: "Solution quality", objective: "Objective to optimize"};
   const choiceNames = {enumerate: "List each result", count: "Count only", edge_weight: "Use edge weights", unweighted: "Treat each connection equally", weakly_connected: "Connected when direction is ignored", strongly_connected: "Every member can reach every other member", induced: "Connections within the selected vertices", ego: "Neighborhood around the selected vertices", exact: "Exact", heuristic: "Heuristic"};
   const title = value => friendly[value] || String(value).replaceAll("_", " ").replace(/^./, c => c.toUpperCase());
@@ -176,6 +176,7 @@
     $("use-operation").textContent = mode === "normal" ? "Run this analysis" : "Build a plan to review";
     if (state.session) save(`graphmine.mode.${state.session.id}`, mode);
     if (mode === "expert" && !$("plan-editor").value) loadEditor();
+    renderActivity();
   }
   function updateControls() {
     const controls = ["plan-question", "use-operation", "save-editor", "sample-data", "welcome-sample", "data-upload", "new-session", "nav-new-chat", "session-select", "active-input", "active-kind", "device"];
@@ -195,7 +196,6 @@
     try { await fn(); } catch (error) { if (error.name !== "AbortError") notice(error.message, true); }
     finally { state.busy = false; updateControls(); }
   }
-  const stageNames = {route: "Understanding your question", family: "Understanding your question", operation: "Choosing the calculation", plan: "Building a valid plan", validation: "Validating the plan", retrieval: "Checking reviewed examples"};
   function loadSessions() { return sessionHistory.load(); }
   function renderSessions() { sessionHistory.render(); }
   async function updateSession(changes) {
@@ -273,11 +273,10 @@
     const article = node("article", {class: `chat-message ${role}`}), bubble = node("div", {class: "chat-bubble"});
     article.append(node("div", {class: "chat-avatar", "aria-hidden": "true"}, role === "user" ? "You" : "G"));
     if (label) bubble.append(node("span", {class: "chat-label"}, label));
-    bubble.append(node("p", {}, message)); article.append(bubble);
+    if (message) bubble.append(node("p", {}, message));
+    article.append(bubble);
     return {article, bubble};
   }
-  // Planning takes tens of seconds, so its stages show in the chat itself.
-  const planningStages = [["route", "Understanding your question"], ["plan", "Building a plan"], ["validation", "Checking it against your data"]];
   const elapsedText = started => {
     const seconds = Math.max(0, Math.round((Date.now() - started) / 1000));
     return seconds < 60 ? `${seconds} s` : `${Math.floor(seconds / 60)} min ${seconds % 60} s`;
@@ -293,22 +292,9 @@
     const asked = chats.at(-1)?.payload.role === "user" ? chats.at(-1) : null;
     const turn = state.pendingQuestion?.id || asked?.payload.turn_id || null;
     const started = state.pendingQuestion?.startedAt || Date.parse(asked?.created_at || "") || Date.now();
-    const status = new Map((turn ? eventIndex.turn(turn) : []).filter(e => e.type === "workflow.planning").map(e => [e.payload.stage, e.payload.status]));
-    // A failed check followed by a new plan attempt is a repair, not a failure.
-    const repairing = status.get("validation") === "failed" && status.get("plan") === "running";
-    return messageNodes.item("planning", W.stringify([turn, started, [...status]]), () => {
+    return messageNodes.item("planning", W.stringify([turn, started]), () => {
       const item = messageElement("assistant", "Working on your question…", "GraphMine");
       item.article.classList.add("planning-progress");
-      const list = node("ol", {class: "planning-stages"});
-      for (const [stage, label] of planningStages) {
-        const value = stage === "validation" && repairing ? undefined : status.get(stage);
-        const phase = value === undefined ? "waiting" : value === "running" ? "active" : value === "failed" ? "failed" : "done";
-        const text = stage === "plan" && repairing ? "Revising the plan" : label;
-        const row = node("li", {class: `planning-stage ${phase}`, ...(phase === "active" ? {"aria-current": "step"} : {})});
-        // The marker's colour also has a spoken form.
-        row.append(node("span", {class: "visually-hidden"}, {waiting: "Waiting: ", active: "In progress: ", done: "Done: ", failed: "Failed: "}[phase]), text);
-        list.append(row);
-      }
       const footer = node("p", {class: "planning-footer"});
       footer.append(node("small", {class: "planning-elapsed", "data-started": String(started)}, elapsedText(started)));
       if (turn) {
@@ -316,7 +302,7 @@
         stop.addEventListener("click", () => stopPlanning(turn, stop));
         footer.append(stop);
       }
-      item.bubble.append(list, footer);
+      item.bubble.append(footer);
       return item.article;
     });
   }
@@ -329,16 +315,59 @@
       notice(error.message, true);
     }
   }
-  function appendOutcome(bubble, record) {
+  function factStatement(fact) {
+    const prefix = (state.caps?.operations || []).map(operation => `${methodName(operation.id)}: `).find(prefix => fact.statement.startsWith(prefix));
+    return prefix ? fact.statement.slice(prefix.length) : fact.statement;
+  }
+  const showWorkingNotes = () => state.mode === "expert" && window.GraphMineAccount?.user?.role === "admin";
+  function appendSources(bubble, answer) {
+    if (!answer?.citations?.length) return;
+    const details = node('details', {class: 'answer-sources'});
+    details.append(node('summary', {}, 'Sources'));
+    const sources = new Map((answer.sources || []).map(source => [source.id, source]));
+    const facts = new Map((answer.facts || []).map(fact => [fact.id, fact]));
+    for (const citation of answer.citations) {
+      const source = sources.get(citation.id), fact = facts.get(citation.id);
+      const row = node('div', {class: 'answer-source', 'data-citation': citation.id});
+      row.append(node('small', {}, ({fact: 'Recorded fact', contract: 'Operation contract', doc: 'Documentation', web: 'Web excerpt'})[citation.kind] || 'Source'));
+      if (citation.kind === 'web' && /^https?:\/\//i.test(citation.ref)) {
+        row.append(node('a', {href: citation.ref, target: '_blank', rel: 'noopener noreferrer'}, source?.title || citation.ref));
+      } else row.append(node('strong', {}, source?.title || citation.id));
+      if (citation.kind !== 'web') row.append(node('small', {class: 'source-ref'}, citation.ref));
+      const text = source?.text || fact?.text || fact?.statement;
+      if (text) row.append(node(citation.kind === 'web' ? 'blockquote' : 'p', {}, text));
+      if (source?.provenance) row.append(node('small', {}, source.provenance));
+      details.append(row);
+    }
+    bubble.append(details);
+  }
+  function traceLines(events, record) {
+    const decisions = events.filter(event => event.type === "workflow.planning").map(event => event.payload);
+    const chosen = decisions.findLast(row => row.operations?.length);
+    const lines = [];
+    const operations = record?.validation?.plan?.steps?.map(step => step.operation) || chosen?.operations;
+    if (operations?.length) lines.push(`Chose: ${[...new Set(operations)].map(methodName).join(" → ")}`);
+    if (record?.validation || decisions.some(row => row.stage === "validation" && row.status === "passed")) lines.push("Validated ✓");
+    return lines;
+  }
+  function appendOutcome(bubble, record, explanation = "") {
     const status = {completed: "Analysis complete", awaiting_review: "Ready for your review", ready: "Ready for your review", queued: "Your calculation is queued", running: "Your calculation is running", failed: "The calculation failed", interrupted: "The calculation was interrupted", cancelled: "The calculation was cancelled"}[record.status] || title(record.status);
     const timing = progressText(record);
     const answer = eventIndex.answer(record);
+    const details = node("details", {class: "answer-explanation", "data-history": `explanation-${record.id}-${record.revision}`});
+    details.append(node("summary", {}, "Explanation"));
+    if (explanation && explanation !== answer?.lead && explanation !== answer?.text) details.append(node("p", {}, explanation));
     if (answer) {
+      if (answer.text) {
+        bubble.append(node('p', {class: 'grounded-answer'}, answer.text));
+        appendSources(bubble, answer);
+      } else {
       // Every statement was computed from the result; the model only chose them.
       if (answer.lead) bubble.append(node("p", {class: "answer-lead"}, answer.lead));
-      const facts = new Map(answer.facts.map(fact => [fact.id, fact.statement])), list = node("ul", {class: "answer-facts"});
+      const facts = new Map(answer.facts.map(fact => [fact.id, factStatement(fact)])), list = node("ul", {class: "answer-facts"});
       for (const id of answer.fact_ids) if (facts.has(id)) list.append(node("li", {}, facts.get(id)));
       bubble.append(list);
+      }
       // The findings are final; only their introduction is still being written.
       if (answer.pending) bubble.append(node("p", {class: "answer-pending", role: "status"}, "Writing a summary…"));
       // Follow-up questions about this result, offered while it is the latest one.
@@ -352,15 +381,16 @@
           button.addEventListener("click", () => askAbout(record, text, action));
           choices.append(button);
         }
-        bubble.append(choices);
+        details.append(choices);
       }
     } else bubble.append(node("p", {class: "workflow-outcome"}, state.summaries.get(record.id) || `${status}${timing ? ` · ${timing}` : ""}. ${record.error?.message || ""}`));
     for (const step of record.validation.plan.steps) {
       const result = record.steps[step.id];
       const quality = result?.quality ? qualityDescriptions[result.quality] || title(result.quality) : plannedQuality(card(step.operation), step.parameters, step.bindings);
       const device = result?.backend?.device;
-      bubble.append(node("small", {class: "step-quality"}, `${methodName(step.operation)}: ${quality}${device ? ` · ${device.toUpperCase()}` : ""}.`));
+      details.append(node("small", {class: "step-quality"}, `${quality}${device ? ` · ${device.toUpperCase()}` : ""}.`));
     }
+    if (details.children.length > 1) bubble.append(details);
     if (record.status === "completed") bubble.append(node("a", {class: "result-link", href: route("results", record.id)}, "View results & visualizations →"));
     else {
       const button = node("button", {class: "quiet", type: "button"}, ["ready", "awaiting_review"].includes(record.status) ? "Review this plan" : "Inspect this analysis");
@@ -368,12 +398,47 @@
       bubble.append(button);
     }
   }
+  let clarificationKey = "", clarificationRow = null;
+  function renderClarification(chats) {
+    const latest = chats.at(-1)?.payload;
+    clarificationRow = latest?.role === "assistant" && latest.status === "needs_information" ? latest : null;
+    const panel = $("clarification-panel"), question = $("question");
+    const key = W.stringify([clarificationRow, state.planning]);
+    if (key === clarificationKey) return;
+    clarificationKey = key;
+    panel.replaceChildren(); panel.hidden = !clarificationRow;
+    question.placeholder = clarificationRow ? "Type your answer, or choose an option above…" : "Ask about your network, or type / for commands…";
+    question.setAttribute("aria-label", clarificationRow ? "Your answer" : "Message GraphMine");
+    if (!clarificationRow) { question.removeAttribute("aria-describedby"); return; }
+    const row = clarificationRow, pending = row.pending_question;
+    const heading = node("div", {class: "clarification-heading"});
+    heading.append(node("small", {}, "QUESTION FOR YOU"));
+    if (pending?.id) {
+      const cancel = node("button", {type: "button", class: "quiet", "data-cancel-clarification": pending.id}, "Cancel");
+      cancel.disabled = state.planning;
+      cancel.addEventListener("click", () => replyWith("Cancel this question.", row, null, true));
+      heading.append(cancel);
+    }
+    panel.append(heading, node("p", {id: "clarification-question", class: "clarification-question", "aria-live": "polite"}, row.message));
+    question.setAttribute("aria-describedby", "clarification-question");
+    const choices = node("div", {class: "reply-choices", role: "group", "aria-label": "Suggested answers"});
+    for (const [index, label] of (row.choices || []).entries()) {
+      const choice = pending?.choices?.find(choice => choice.label === label);
+      const button = node("button", {class: "clarification-choice", type: "button", "data-choice": label}, label);
+      button.prepend(node("span", {class: "clarification-number", "aria-hidden": "true"}, String(index + 1)));
+      button.disabled = state.planning;
+      button.addEventListener("click", () => replyWith(label, row, choice));
+      choices.append(button);
+    }
+    panel.append(choices);
+    if (pending?.answer_error) panel.append(node("p", {class: "clarification-error", role: "alert"}, pending.answer_error));
+    panel.append(node("small", {class: "muted"}, "Choose an option or write your own answer below."));
+  }
   function renderConversation({preserveScroll = false} = {}) {
     renderSelectionChip();
     const scroll = $("conversation-scroll"), lastMessage = $("messages").lastElementChild;
     const messageBottom = lastMessage?.getBoundingClientRect().bottom, viewport = scroll.getBoundingClientRect();
     const atBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 90 || messageBottom >= viewport.top && messageBottom <= viewport.bottom + 90;
-    const openDetails = new Set([...$("messages").querySelectorAll("details[open]")].map(el => el.dataset.turn));
     const container = $("messages"), records = workflowIndex();
     const ordered = [];
     for (const [index, row] of state.legacyMessages.entries()) if (row.message && row.kind !== "workflow.chat") {
@@ -386,41 +451,58 @@
       ordered.push({article, time: row.created_at || ""});
     }
     const chats = eventIndex.chats();
+    renderClarification(chats);
     for (const event of chats) {
       const row = event.payload, record = records.get(row.turn_id);
-      const signature = W.stringify([event.sequence, row.role === "assistant" ? eventIndex.version(row.turn_id) : 0,
+      // The active question lives next to its answer box. Once answered it
+      // remains in chat history like every earlier question.
+      if (row === clarificationRow) continue;
+      const signature = W.stringify([event.sequence, row.role === "assistant" ? capabilityVersion : 0,
         row.role === "assistant" ? outcomeKey(record) : null, row.role === "assistant" && event === chats.at(-1),
         row.role === "assistant" && state.startingTurn === row.turn_id]);
       const article = messageNodes.item(`event:${event.sequence}`, signature, () => {
-      const item = messageElement(row.role, row.message, row.role === "user" ? `${title(row.mode || "normal")} mode` : "GraphMine");
+      const hasOutcome = row.role === "assistant" && record;
+      const item = messageElement(row.role, hasOutcome ? "" : row.answer?.text || row.message, row.role === "user" ? `${title(row.mode || "normal")} mode` : "GraphMine");
+      if (!hasOutcome && row.answer?.text) item.bubble.querySelector('p')?.classList.add('grounded-answer');
       item.article.dataset.turn = row.turn_id;
       if (row.role === "assistant") {
-        const decisions = eventIndex.turn(row.turn_id).filter(e => e.type === "workflow.planning" && e.payload.message);
-        if (decisions.length) {
-          const details = node("details", {class: "chat-decision", "data-turn": row.turn_id}); details.open = openDetails.has(row.turn_id);
-          details.append(node("summary", {}, "How this was planned"));
-          decisions.forEach(e => details.append(node("p", {}, e.payload.message)));
-          item.bubble.append(details);
-        }
-        const reasoning = eventIndex.turn(row.turn_id).filter(e => e.type === "workflow.reasoning");
-        if (reasoning.length) {
-          const details = node("details", {class: "chat-decision", "data-turn": `${row.turn_id}-reasoning`}); details.open = openDetails.has(`${row.turn_id}-reasoning`);
-          details.append(node("summary", {}, "Model reasoning"));
-          for (const event of reasoning) { const stage = node("details", {class: "reasoning-record"}); stage.append(node("summary", {}, stageNames[event.payload.stage] || title(event.payload.stage)), node("pre", {}, event.payload.text)); details.append(stage); }
-          item.bubble.append(details);
-        }
         // An answer from the saved result's facts; every statement was computed.
-        if (row.answer?.facts?.length) {
+        if (row.answer?.facts?.length && !row.answer.text) {
           const list = node("ul", {class: "answer-facts"});
-          for (const fact of row.answer.facts) list.append(node("li", {}, fact.statement));
+          for (const fact of row.answer.facts) list.append(node("li", {}, factStatement(fact)));
           item.bubble.append(list);
+        }
+        if (!record && row.answer?.workflow_id) item.bubble.append(node("a", {class: "result-link", href: route("results", row.answer.workflow_id)}, "View results & visualizations →"));
+        appendSources(item.bubble, row.answer);
+        if (row.answer?.web_search?.status && row.answer.web_search.status !== 'ok') {
+          if (/^https:\/\/www\.google\.com\/search\?/.test(row.answer.web_search.search_url)) item.bubble.append(
+            node('a', {href: row.answer.web_search.search_url, target: '_blank', rel: 'noopener noreferrer'}, 'Open this search in Google'));
+        }
+        if ((row.answer?.sources?.length && !row.answer.citations?.length) || row.alternatives?.length) {
+          const details = node("details", {class: "answer-explanation", "data-history": `sources-${row.turn_id}`});
+          details.append(node("summary", {}, "Explanation"));
+          for (const source of (row.answer?.citations?.length ? [] : row.answer?.sources) || []) {
+            details.append(node("strong", {}, source.title), node("p", {}, source.text));
+          }
+          if (row.alternatives?.length) {
+            details.append(node("p", {}, "Related supported calculations:"));
+            for (const alternative of row.alternatives) details.append(node("p", {}, alternative.title));
+          }
+          item.bubble.append(details);
+        }
+        if (row.status === "options" && row.options?.length) {
+          const options = node("div", {class: "calculation-options", "aria-label": "Calculation choices"});
+          for (const option of row.options) {
+            options.append(window.GraphMineOptionCard({option, node, wire: W, onChoose: chosen => chooseOption(row, chosen)}));
+          }
+          item.bubble.append(options);
         }
         if (row.view) {
           const button = node("button", {class: "quiet", type: "button", "data-view": row.turn_id}, "Show this view");
           button.addEventListener("click", () => runAction(() => applyView(row.view)));
           item.bubble.append(button);
         }
-        if (record) appendOutcome(item.bubble, record);
+        if (record) appendOutcome(item.bubble, record, row.message);
         else if (row.plan && row.status === "ready" && state.startingTurn === row.turn_id) {
           // The plan is being saved (and in Normal mode started); its outcome follows.
           item.bubble.append(node("p", {class: "workflow-outcome"}, row.mode === "normal" ? "Starting the calculation…" : "Saving the plan for your review…"));
@@ -432,14 +514,12 @@
           const button = node("button", {class: "quiet", "data-retry": row.turn_id}, "Try again");
           button.addEventListener("click", () => retryQuestion(row.turn_id));
           item.bubble.append(button);
-        } else if (row.status === "needs_information" && row.choices?.length && event === chats.at(-1)) {
-          const choices = node("div", {class: "reply-choices"});
-          for (const choice of row.choices) {
-            const button = node("button", {class: "quiet", type: "button", "data-choice": choice}, choice);
-            button.addEventListener("click", () => replyWith(choice));
-            choices.append(button);
-          }
-          item.bubble.append(choices);
+        }
+        const lines = traceLines(eventIndex.turn(row.turn_id), record);
+        if (lines.length && row.status !== "options") {
+          const trace = node("div", {class: "chat-trace", "aria-label": "Calculation trace"});
+          for (const line of lines) trace.append(node("span", {}, line));
+          item.bubble.append(trace);
         }
       }
       commands?.decorate(item, row);
@@ -449,7 +529,7 @@
     }
     for (const record of state.workflows.filter(record => !record.planning_turn_id && (!manualWorkflows || manualWorkflows.has(record.id)))) {
       const article = messageNodes.item(`workflow:${record.id}`, W.stringify(outcomeKey(record)), () => {
-        const item = messageElement("assistant", record.validation.plan.steps.map(step => methodName(step.operation)).join(" → "), "Saved analysis");
+        const item = messageElement("assistant", "", "Saved analysis");
         appendOutcome(item.bubble, record); return item.article;
       });
       ordered.push({article, time: record.created_at || ordered.at(-1)?.time || ""});
@@ -480,7 +560,6 @@
   }
 
   function renderActivity() {
-    const open = new Set([...document.querySelectorAll('.reasoning-sidebar details[data-history][open]')].map(el => el.dataset.history));
     const questions = eventIndex.chats().filter(e => e.payload.role === "user").map(e => e.payload);
     if (state.pendingQuestion) questions.push({turn_id: state.pendingQuestion.id, message: state.pendingQuestion.message});
     const latest = questions.at(-1)?.turn_id;
@@ -492,68 +571,43 @@
       const answer = events.findLast(e => e.type === "workflow.chat" && e.payload.role === "assistant")?.payload;
       const record = records.get(question.turn_id);
       const decisionsForStatus = new Map(events.filter(event => event.type === "workflow.planning").map(event => [event.payload.stage, event.payload.status]));
-      count += events.filter(event => event.type === "workflow.reasoning").length;
+      const calls = window.GraphMineModelCalls(events);
+      count += calls.length;
       if (question.turn_id === latest) { outcome = answer; workflow = record; thinking ||= !answer && [...decisionsForStatus.values()].includes("running"); }
       const heading = turnNumbers.has(question.turn_id) ? `Question ${turnNumbers.get(question.turn_id)}` : question.turn_id === state.pendingQuestion?.id && turnNumbers.size ? "New question" : `Question ${index + 1}`;
-      rendered.push(activityNodes.item(`turn:${question.turn_id}`, W.stringify([eventIndex.version(question.turn_id), heading, question.message, outcomeKey(record)]), () => {
-      // One timeline per question: its stages, then its model reasoning.
-      const reasoning = node("section", {class: "reasoning-turn", "data-turn": question.turn_id});
-      const attempts = new Map();
-      for (const event of events.filter(e => e.type === "workflow.reasoning")) {
-        const stage = event.payload.stage, attempt = (attempts.get(stage) || 0) + 1; attempts.set(stage, attempt);
-        const key = `reasoning-${event.sequence}`, details = node("details", {class: "reasoning-record", "data-history": key}); details.open = open.has(key);
-        details.append(node("summary", {}, `${stageNames[stage] || title(stage)}${attempt > 1 ? ` · attempt ${attempt}` : ""}`), node("small", {}, event.payload.model || ""), node("pre", {}, event.payload.text));
-        reasoning.append(details);
+      rendered.push(activityNodes.item(`turn:${question.turn_id}`, W.stringify([eventIndex.version(question.turn_id), heading, question.message, outcomeKey(record), showWorkingNotes()]), () => {
+      // Raw returned reasoning, once per call, grouped by the user's question.
+      const reasoning = node("details", {class: "reasoning-turn", "data-turn": question.turn_id});
+      reasoning.append(node("summary", {}, "The model's working notes, not checked"));
+      for (const [index, call] of calls.entries()) {
+        const entry = node("section", {class: "reasoning-record", "data-call": call.key, "data-stage": call.stage,
+          ...(call.running ? {"data-live": call.stage} : {})});
+        entry.append(node("h4", {class: "model-call-label", ...(call.model ? {title: call.model} : {})}, `Call ${index + 1}${call.samples > 1 ? ` · ${call.samples} samples` : ""}`));
+        entry.append(call.text ? node("pre", {}, call.text) : node("p", {class: "muted"}, call.running ? "Waiting for reasoning…" : call.unrecorded ? "No reasoning was recorded for this call." : "No reasoning was returned for this call."));
+        reasoning.append(entry);
       }
-      // Reasoning streamed during a stage, until that stage's full text arrives.
-      const live = new Map();
-      for (const event of events) {
-        if (event.type === "workflow.reasoning.delta") live.set(event.payload.stage, (live.get(event.payload.stage) || "") + event.payload.text);
-        else if (event.type === "workflow.reasoning") live.delete(event.payload.stage);
-      }
-      if (answer) live.clear();
-      for (const [stage, text] of live) {
-        const details = node("details", {class: "reasoning-record live", "data-live": stage}); details.open = true;
-        details.append(node("summary", {}, `${stageNames[stage] || title(stage)} · thinking…`), node("pre", {}, text));
-        reasoning.append(details);
-      }
-      const history = node("li", {class: "activity-turn", "data-turn": question.turn_id}), list = node("ol", {class: "activity-list"});
-      history.append(node("h3", {}, heading), node("p", {class: "turn-question"}, question.message), list);
-      // Pair each start with its completion, while retaining subsequent attempts.
-      const decisions = [];
-      for (const event of events.filter(e => e.type === "workflow.planning")) {
-        const decision = {...event.payload, sequence: event.sequence};
-        const previous = decisions.findLastIndex(row => row.stage === decision.stage && row.status === "running");
-        if (decision.status !== "running" && previous >= 0) decisions[previous] = decision;
-        else decisions.push(decision);
-      }
-      if (record && !decisions.some(row => row.stage === "validation")) decisions.push({stage: "validation", status: "passed", message: "Saved plan validated against its inputs.", plan: record.validation.plan, sequence: `saved-${record.id}`});
-      for (const decision of decisions) {
-        const running = decision.status === "running" && !answer, failed = ["failed", "needs_information", "unsupported", "wrong_family"].includes(decision.status) || decision.status === "running" && answer?.status === "failed";
-        const item = node("li", {class: `activity-step ${running ? "running" : failed ? "failed" : "completed"}`, "data-stage": decision.stage});
-        item.append(node("span", {class: "activity-marker", "aria-hidden": "true"}, running ? "·" : failed ? "!" : "✓"));
-        const content = node("div"); content.append(node("strong", {}, stageNames[decision.stage] || title(decision.stage)), node("p", {}, decision.message || (running ? "In progress…" : failed ? answer?.message || "This stage did not complete." : "Checked.")));
-        if (decision.plan) {
-          const key = `plan-${decision.sequence}`, details = node("details", {class: "reasoning-record", "data-history": key}); details.open = open.has(key);
-          details.append(node("summary", {}, "View plan"), node("pre", {}, W.stringify(decision.plan, true))); content.append(details);
+      const history = node("li", {class: "activity-turn", "data-turn": question.turn_id});
+      history.append(node("h3", {}, heading), node("p", {class: "turn-question"}, question.message),
+        node("small", {class: "model-call-count"}, `${calls.length} model ${calls.length === 1 ? "call" : "calls"}`));
+      const trace = node("ol", {class: "activity-trace"});
+      for (const event of events.filter(event => event.type === "workflow.planning")) {
+        const row = event.payload;
+        const entry = node("li", {}, `${title(row.stage)} · ${row.status || "recorded"}${row.message ? ": " + row.message : ""}`);
+        if (row.plan) {
+          const plan = node("details"); plan.append(node("summary", {}, "Plan"), node("pre", {}, W.stringify(row.plan, true))); entry.append(plan);
         }
-        item.append(content); list.append(item);
+        trace.append(entry);
       }
-      if (record) list.append(node("li", {class: "activity-outcome"}, workflowStatus(record)));
-      const records = attempts.size + live.size;
-      if (records) {
-        const key = `turn-reasoning-${question.turn_id}`, wrap = node("details", {class: "turn-reasoning", "data-history": key});
-        wrap.open = open.has(key) || live.size > 0;
-        wrap.append(node("summary", {}, `Model reasoning (${attempts.size ? [...attempts.values()].reduce((a, b) => a + b, 0) : 0}${live.size ? ", thinking…" : ""})`), reasoning);
-        history.append(wrap);
-      }
+      for (const line of traceLines(events, record)) trace.append(node("li", {}, line));
+      history.append(trace);
+      if (showWorkingNotes()) history.append(reasoning);
       return history;
       }));
     }
-    const status = thinking ? "Thinking through your question…" : workflow ? workflowStatus(workflow) : outcome?.status === "needs_information" ? "Waiting for your reply" : outcome?.status === "failed" ? "Planning failed" : "Ready for your question";
-    $("activity-status").textContent = status; $("chat-status").textContent = thinking ? "Thinking…" : status;
+    const status = thinking ? "Thinking through your question…" : workflow ? workflowStatus(workflow) : outcome?.status === "options" ? "Choose an option" : outcome?.status === "needs_information" ? "Waiting for your reply" : outcome?.status === "failed" ? "Planning failed" : "Ready for your question";
+    $("chat-status").textContent = thinking ? "Thinking…" : status;
     $("reasoning-count").textContent = String(count);
-    if (!questions.length) rendered.push(activityNodes.item("empty", "empty", () => node("li", {class: "muted"}, "Each question's stages and the model's reasoning will appear here.")));
+    if (!questions.length) rendered.push(activityNodes.item("empty", "empty", () => node("li", {class: "muted"}, "Model reasoning will appear here, grouped by question.")));
     activityNodes.reconcile($("activity-list"), rendered);
   }
   async function syncConversation() {
@@ -585,7 +639,6 @@
       const response = events.find(event => event.payload.role === "assistant");
       if (response) { notice(""); return response.payload; }
       if (!events.length && Date.now() - started > 15000) throw originalError;
-      if (events.length) $("activity-status").textContent = "Your saved request is still being processed…";
       await new Promise(resolve => setTimeout(resolve, 1500));
     }
     throw new Error("Your planning request is saved. Reopen this conversation to check its progress.");
@@ -702,19 +755,35 @@
       if (!message) throw new Error("Describe what you want to learn.");
       if (commands.isCommand(message)) { await commands.send(message); return; }
       requireCapabilities();
-      if (!state.active) throw new Error("Add your data first, then send your question.");
       await ensureSession();
       $("question").value = "";
-      await sendQuestion({message, inputs: refs(), mode: state.mode, previous: state.record?.id || null, device: $("device").value, selection: currentSelection()});
+      const row = clarificationRow;
+      const pending = row?.pending_question;
+      const acceptsInput = pending && (["input", "sides"].includes(pending.kind) || ["query_graph", "other_graph"].includes(pending.parameter));
+      await sendQuestion({message, inputs: acceptsInput ? refs() : row?.inputs || refs(), mode: row?.mode || state.mode,
+        previous: state.record?.id || null, device: row?.device || $("device").value, selection: currentSelection(),
+        clarification: row?.pending_question?.id ? {clarification_id: row.pending_question.id} : null});
     });
   }
   // A clicked clarification choice is sent as the person's reply.
-  function replyWith(text) {
+  function replyWith(text, question, choice = null, cancel = false) {
     runAction(async () => {
       requireCapabilities();
-      if (!state.active) throw new Error("Add your data first, then send your question.");
       await ensureSession();
-      await sendQuestion({message: text, inputs: refs(), mode: state.mode, previous: state.record?.id || null, device: $("device").value, selection: currentSelection()});
+      await sendQuestion({message: text, inputs: choice?.action === "current_input" ? refs() : question?.inputs || refs(),
+        mode: question?.mode || state.mode, previous: state.record?.id || null, device: question?.device || $("device").value, selection: currentSelection(),
+        clarification: question?.pending_question?.id ? {clarification_id: question.pending_question.id,
+          ...(choice ? {clarification_choice: choice.id} : {}), ...(cancel ? {clarification_cancel: true} : {})} : null});
+    });
+  }
+  function chooseOption(row, option) {
+    return runAction(async () => {
+      requireCapabilities();
+      await ensureSession();
+      await sendQuestion({message: `Use ${option.title}.`, inputs: row.inputs, mode: state.mode,
+        previous: state.record?.id || null, device: row.device || $("device").value,
+        choice: {intent: "calculate", operations: option.operations, parameters: option.parameters,
+                 option_id: option.id, option_turn_id: row.turn_id}});
     });
   }
   // A suggested follow-up is asked about the analysis it was suggested for. One
@@ -738,7 +807,9 @@
       requireCapabilities();
       const saved = asked.inputs && Object.values(asked.inputs).every(ref => state.files.some(file => file.id === ref.file_id));
       if (!saved && !state.active) throw new Error("Add your data first, then try again.");
-      await sendQuestion({message: asked.message, inputs: saved ? asked.inputs : refs(), mode: asked.mode || state.mode, previous: asked.previous_workflow_id ?? null, device: asked.device || $("device").value, selection: asked.selection || null});
+      await sendQuestion({message: asked.message, inputs: saved ? asked.inputs : refs(), mode: asked.mode || state.mode, previous: asked.previous_workflow_id ?? null, device: asked.device || $("device").value, selection: asked.selection || null,
+        choice: asked.intent === "calculate" ? {intent: asked.intent, operations: asked.operations, parameters: asked.parameters, option_id: asked.option_id, option_turn_id: asked.option_turn_id} : null,
+        clarification: asked.clarification_id ? {clarification_id: asked.clarification_id, clarification_choice: asked.clarification_choice, clarification_cancel: asked.clarification_cancel || false} : null});
     });
   }
   // The group the user is looking at, so "this clique" has a meaning. The server
@@ -755,14 +826,14 @@
     $("selection-chip").hidden = !selection;
     if (selection) $("selection-label").textContent = `Asking about ${selection.label || "the selected group"}`;
   }
-  async function sendQuestion({message, inputs, mode, previous, device, selection = null, action = null}) {
+  async function sendQuestion({message, inputs, mode, previous, device, selection = null, action = null, choice = null, clarification = null}) {
     const id = requestId();
     state.pendingQuestion = {id, message, mode, startedAt: Date.now()}; state.planning = true;
     notice(""); renderConversation(); renderActivity(); pollConversation();
     try {
       let response;
       try {
-        response = await api(`/api/sessions/${state.session.id}/analytics/plan`, {method: "POST", body: W.stringify({message, mode, inputs, device, previous_workflow_id: previous, request_id: id, ...(selection ? {selection} : {}), ...(action ? {action} : {})})});
+        response = await api(`/api/sessions/${state.session.id}/analytics/plan`, {method: "POST", body: W.stringify({message, mode, inputs, device, previous_workflow_id: previous, request_id: id, ...(selection ? {selection} : {}), ...(action ? {action} : {}), ...(choice || {}), ...(clarification || {})})});
       } catch (error) {
         if (!["TypeError", "NetworkError"].includes(error?.name)) throw error;
         response = await savedPlanningResponse(id, error);
@@ -778,7 +849,7 @@
       try { await syncConversation(); } catch { /* Polling will recover saved messages. */ }
       if (response.status === "ready" && response.plan) {
         $("plan-editor").value = W.stringify(response.plan, true);
-        await submitPlan(response.plan, false, response.turn_id, inputs, mode);
+        await submitPlan(response.plan, false, response.turn_id, response.inputs || inputs, mode);
       } else if (response.status === "view") await applyView(response.view);
     } finally {
       state.planning = false; state.startingTurn = null;

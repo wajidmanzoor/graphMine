@@ -1,0 +1,5 @@
+Validated 500 requests with cpp
+Validated 1000 requests with cpp
+Validated 1500 requests with cpp
+Validated 2000 requests with cpp
+{"suite":"maximum","backend":"cpp","gpu_device":0,"passed_requests":2052,"failed":0,"implementation_sha256":"e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f"}

@@ -1025,6 +1025,9 @@ def test_bipartite_exhaustive(native):
             for row in result["result"]["bicliques"]
         }
         assert actual == maximal
+        inferred = run(native, "maximal-bicliques", graph)
+        for key in ("parameters", "result", "ports", "quality", "complete"):
+            assert inferred[key] == result[key]
         butterflies = [(l, r) for l, r in expected if len(l) == len(r) == 2]
         result = run(native, "butterfly-counting", graph, mode="per_vertex")["result"]
         assert result["butterfly_count"] == len(butterflies)
@@ -1257,6 +1260,51 @@ def test_signed_balance_exhaustive(native):
 def test_extended_invalid_contracts(native, operation, parameters):
     with pytest.raises(BINDING.NativeError):
         run(native, operation, canonical(4, [(0, 1), (2, 3)]), **parameters)
+
+
+@pytest.mark.parametrize("fault", ["missing", "partial", "invalid", "same_side", "directed", "one_partition"])
+def test_biclique_attribute_fallback_rejects_invalid_sides(native, fault):
+    graph = canonical(4, [(0, 2), (1, 3)], sides=["left", "left", "right", "right"])
+    parameters = {}
+    if fault == "missing":
+        for row in graph["vertices"]:
+            row.pop("attributes")
+    elif fault == "partial":
+        graph["vertices"][0].pop("attributes")
+    elif fault == "invalid":
+        graph["vertices"][0]["attributes"]["side"] = "unknown"
+    elif fault == "same_side":
+        graph["vertices"][2]["attributes"]["side"] = "left"
+    elif fault == "directed":
+        graph["graph"]["directed"] = True
+    else:
+        parameters["left_partition"] = [0, 1]
+        with pytest.raises(BINDING.NativeError, match="Supply both"):
+            native.validate("maximal-bicliques", graph, parameters=parameters, device="cpu")
+    with pytest.raises(BINDING.NativeError):
+        run(native, "maximal-bicliques", graph, **parameters)
+
+
+def test_biclique_fallback_preserves_ids_isolates_caps_and_explicit_precedence(native):
+    graph = canonical(5, [(0, 2), (0, 2), (0, 0), (1, 3)], sides=["left"] * 2 + ["right"] * 3)
+    ids = [0, "0", 2**53 + 1, "business", "isolate"]
+    for row, value in zip(graph["vertices"], ids):
+        row["id"] = value
+    for edge in graph["edges"]:
+        edge["source"], edge["target"] = ids[edge["source"]], ids[edge["target"]]
+    result = run(native, "maximal-bicliques", graph, result_limit=1)
+    assert native.validate("maximal-bicliques", graph, device="cpu")["operation"] == "maximal-bicliques"
+    assert result["parameters"]["left_partition"] == ids[:2]
+    assert result["parameters"]["right_partition"] == ids[2:]
+    assert not result["complete"] and "total_count" not in result["result"]
+    graph["vertices"][0]["attributes"]["side"] = "invalid"
+    explicit = run(native, "maximal-bicliques", graph, left_partition=ids[:2], right_partition=ids[2:], result_limit=1)
+    for key in ("parameters", "result", "complete"):
+        assert result[key] == explicit[key]
+    assert result["ports"]["bicliques"]["value"] == explicit["ports"]["bicliques"]["value"]
+    card = next(row for row in native.catalog()["operations"] if row["id"] == "maximal-bicliques")
+    assert not card["parameters"]["left_partition"]["required"]
+    assert not card["parameters"]["right_partition"]["required"]
 
 
 def test_extended_truncation_and_budgets(native):

@@ -1,0 +1,40 @@
+{
+  "answer": {
+    "text": "Here are the results.\nfound 2 cliques, with 7 and 2 members; the largest: Valjean, Javert, 3, 4, 5 and 2 more.",
+    "citations": [
+      {
+        "id": "f1",
+        "kind": "fact",
+        "ref": "workflow:current:revision:1:step:groups:f1"
+      }
+    ],
+    "source": "model",
+    "grounding": {
+      "checked": true,
+      "attempts": 1,
+      "fallback": false
+    },
+    "lead": "",
+    "fact_ids": [
+      "f1"
+    ]
+  },
+  "calls": [
+    {
+      "outcome": "ok",
+      "error": null,
+      "content": "{\"text\": \"Here are the results. {{f1}}\", \"source_ids\": [\"f1\"]}",
+      "usage": {
+        "prompt_tokens": 401,
+        "total_tokens": 424,
+        "completion_tokens": 23,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "server_error": null
+    }
+  ],
+  "scope": "Synthetic clique facts; actual authorized Qwen server and constrained data grammar"
+}

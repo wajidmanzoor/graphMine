@@ -892,7 +892,7 @@ def test_live_evidence_is_rechecked_at_execution(settings, triangle_graph, tmp_p
             settings,
             repository_root=tmp_path,
             runtime_repository_root=tmp_path,
-            analytics_python=settings.native_repository_root / ".venv-analytics/bin/python",
+            analytics_python=settings.analytics_python or settings.native_repository_root / ".venv-analytics/bin/python",
         )
         approve(client, record)
         final = wait(client, record["id"])

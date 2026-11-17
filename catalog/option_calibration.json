@@ -1,0 +1,131 @@
+{
+  "score_version": 1,
+  "samples": 5,
+  "temperature": 0.7,
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "server": "http://127.0.0.1:8001/v1",
+  "catalog_sha256": "107698c4f4fff94b0ee9b8fdf355f22525d1bba96d4ae37e051c35fc54df0bd9",
+  "suite_sha256": "1b372ed31e58f6d4c971ba5e60b695f04f46b23277d750d8b2c75960d6b1f166",
+  "source_report_sha256": "f6a713e79577a7e6456927feb13ee5083cee7b4e91350a80e28084d55554133b",
+  "scope": "Frozen Phase 1 development labels; calibration-set precision, not held-out accuracy.",
+  "high": {
+    "threshold": 0.99933,
+    "count": 8,
+    "correct": 8,
+    "precision": 1.0
+  },
+  "rows": [
+    {
+      "case": "options_maximal_cliques",
+      "option": "option_1",
+      "score": 0.999959,
+      "eligible_for_high": true,
+      "correct": true
+    },
+    {
+      "case": "options_maximal_cliques",
+      "option": "option_2",
+      "score": 0,
+      "eligible_for_high": false,
+      "correct": false
+    },
+    {
+      "case": "options_pagerank",
+      "option": "option_1",
+      "score": 0.999887,
+      "eligible_for_high": true,
+      "correct": true
+    },
+    {
+      "case": "options_pagerank",
+      "option": "option_2",
+      "score": 0,
+      "eligible_for_high": false,
+      "correct": false
+    },
+    {
+      "case": "options_core",
+      "option": "option_1",
+      "score": 0.999791,
+      "eligible_for_high": true,
+      "correct": true
+    },
+    {
+      "case": "options_core",
+      "option": "option_2",
+      "score": 0,
+      "eligible_for_high": false,
+      "correct": false
+    },
+    {
+      "case": "options_maximum_clique",
+      "option": "option_1",
+      "score": 0.999909,
+      "eligible_for_high": true,
+      "correct": true
+    },
+    {
+      "case": "options_maximum_clique",
+      "option": "option_2",
+      "score": 0,
+      "eligible_for_high": false,
+      "correct": false
+    },
+    {
+      "case": "options_degrees",
+      "option": "option_1",
+      "score": 0.99933,
+      "eligible_for_high": true,
+      "correct": true
+    },
+    {
+      "case": "options_degrees",
+      "option": "option_2",
+      "score": 0,
+      "eligible_for_high": false,
+      "correct": false
+    },
+    {
+      "case": "options_components",
+      "option": "option_1",
+      "score": 0.999956,
+      "eligible_for_high": true,
+      "correct": true
+    },
+    {
+      "case": "options_components",
+      "option": "option_2",
+      "score": 0,
+      "eligible_for_high": false,
+      "correct": false
+    },
+    {
+      "case": "options_bicliques",
+      "option": "option_1",
+      "score": 0.999899,
+      "eligible_for_high": true,
+      "correct": true
+    },
+    {
+      "case": "options_bicliques",
+      "option": "option_2",
+      "score": 0,
+      "eligible_for_high": false,
+      "correct": false
+    },
+    {
+      "case": "options_triangles",
+      "option": "option_1",
+      "score": 0.999719,
+      "eligible_for_high": true,
+      "correct": true
+    },
+    {
+      "case": "options_triangles",
+      "option": "option_2",
+      "score": 0,
+      "eligible_for_high": false,
+      "correct": false
+    }
+  ]
+}

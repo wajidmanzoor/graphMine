@@ -203,10 +203,9 @@ body[data-page="chat"] .header-label, body[data-page="results"] .header-label { 
 .reasoning-sidebar .drawer-heading { margin-bottom: 20px; }
 .reasoning-sidebar > .muted { font-size: var(--text-small); }
 .reasoning-count { background: var(--yellow-pale); color: var(--yellow-dark); }
-.reasoning-sidebar #activity-status { padding: 14px; margin: 18px 0; background: var(--green-pale); border-radius: 8px; font-size: var(--text-small); color: var(--accent-dark); }
 .activity-step { padding-bottom: 20px; }
 .reasoning-sidebar .activity-list { padding-left: 0; }
-.reasoning-record pre { background: #f0efe7; border-color: #e3e0d5; }
+.reasoning-sidebar .reasoning-record pre { margin: 0; padding: 0; max-height: none; overflow: visible; border: 0; background: transparent; font: inherit; font-size: var(--text-small); line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
 .panel-backdrop { position: fixed; inset: 0; z-index: 55; background: #24241e24; }
 body[data-overlay] { overflow: hidden; }
 @media (min-width: 901px) {

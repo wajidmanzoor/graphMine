@@ -1,8 +1,11 @@
-"""Upload integration with the real native cuDF reader; bounded transport errors."""
+"""CPU upload integration and the separately callable native reader transport.
+
+The app intentionally imports ordinary CSVs on CPU. Actual libcudf parsing is
+covered by library/tests/test_native_ingestion.py, not by the upload endpoint.
+"""
 
 from __future__ import annotations
 
-import csv
 import hashlib
 import json
 import os
@@ -13,8 +16,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 from graphmine_agent.api import create_app
-from graphmine_agent.graph_store import GraphStore, UploadError
+from graphmine_agent.graph_store import UploadError
 from graphmine_agent.models import FileRole
+from graphmine_agent.native_ingestion import IngestionError, read_delimited_graph
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -57,7 +61,7 @@ def evidence(request):
         Path(str(report) + ".metadata.json").write_text(
             json.dumps(
                 {
-                    "scope": "Native cuDF uploads, app validation and transport boundaries; algorithm worker migration remains open",
+                    "scope": "CPU CSV uploads, app validation and explicit native reader transport boundaries",
                     "source_files": before,
                     "sources_unchanged_during_run": unchanged,
                     "native_binary": str(binary),
@@ -74,14 +78,13 @@ def evidence(request):
     assert unchanged
 
 
-def test_upload_uses_cudf_and_preserves_original_bytes(
+def test_upload_uses_cpu_and_preserves_original_bytes(
     graph_store, session, monkeypatch
 ):
     def forbidden(*args, **kwargs):
-        raise AssertionError("Python CSV parsing must not handle uploaded data")
+        raise AssertionError("Ordinary CSV uploads must not launch the native GPU reader")
 
-    monkeypatch.setattr(csv, "reader", forbidden)
-    monkeypatch.setattr(csv, "DictReader", forbidden)
+    monkeypatch.setattr('graphmine_agent.native_ingestion.subprocess.Popen', forbidden)
     content = b'source,target,source_label,amount,note\n001,2,Ava,9007199254740993,"first\nsecond"\n'
     record = graph_store.ingest(
         session_id=session.id,
@@ -96,18 +99,17 @@ def test_upload_uses_cudf_and_preserves_original_bytes(
         "note": "first\nsecond",
     }
     provenance = graph["graph"]["attributes"]["ingestion"]
-    assert provenance["reader"] == "libcudf"
-    assert provenance["construction"] == "native-canonical-v1"
+    assert provenance["reader"] == "python_csv"
+    assert provenance["device"] == "cpu" and provenance["complete"] is True
     assert (
         provenance["input_sha256"]
         == record.sha256
         == hashlib.sha256(content).hexdigest()
     )
-    assert provenance["python_runtime_required"] is False
     assert Path(record.source_path).read_bytes() == content
 
 
-def test_upload_endpoint_returns_graph_constructed_by_cpp(settings):
+def test_upload_endpoint_returns_cpu_graph_with_explicit_columns(settings):
     with TestClient(create_app(settings)) as client:
         headers = {"Authorization": "Bearer test-secret"}
         session = client.post("/api/sessions", headers=headers, json={}).json()["id"]
@@ -135,10 +137,10 @@ def test_upload_endpoint_returns_graph_constructed_by_cpp(settings):
         assert preview.status_code == 200, preview.text
         graph = preview.json()
         assert graph["edges"] == [
-            {"id": 1, "source": "A", "target": "B", "weight": 1.5}
+            {"id": 0, "source": "A", "target": "B", "weight": 1.5}
         ]
         assert graph["graph"]["directed"] is True
-        assert graph["graph"]["attributes"]["ingestion"]["reader"] == "libcudf"
+        assert graph["graph"]["attributes"]["ingestion"]["reader"] == "python_csv"
 
 
 @pytest.mark.parametrize(
@@ -150,7 +152,7 @@ def test_upload_endpoint_returns_graph_constructed_by_cpp(settings):
         (b"source,target\nA,\xff\n", "UTF-8"),
     ],
 )
-def test_native_rejections_leave_no_persisted_graph(
+def test_upload_rejections_leave_no_persisted_graph(
     graph_store, database, session, content, message
 ):
     with pytest.raises(UploadError, match=message):
@@ -164,35 +166,28 @@ def test_native_rejections_leave_no_persisted_graph(
     assert not list(graph_store.settings.data_root.rglob("source/*"))
 
 
-def test_unavailable_cudf_does_not_use_a_python_reader(settings, database, session):
-    store = GraphStore(
-        replace(
-            settings,
-            native_runtime_binary=Path("/tmp/graphmine-native-cpu/graphmine-native"),
-        ),
-        database,
-    )
-    with pytest.raises(UploadError, match="libcudf"):
-        store.ingest(
-            session_id=session.id,
-            role=FileRole.graph,
-            filename="records.csv",
-            content=b"source,target\nA,B\n",
-        )
-    assert database.list_files(session.id) == []
+@pytest.fixture
+def csv_path(tmp_path):
+    path = tmp_path / 'records.csv'
+    path.write_bytes(b'source,target\nA,B\n')
+    return path
 
 
-def test_missing_binary_has_actionable_error(settings, database, session, tmp_path):
-    store = GraphStore(
-        replace(settings, native_runtime_binary=tmp_path / "missing"), database
-    )
-    with pytest.raises(UploadError, match="GRAPHMINE_NATIVE_BINARY"):
-        store.ingest(
-            session_id=session.id,
-            role=FileRole.graph,
-            filename="records.csv",
-            content=b"source,target\nA,B\n",
-        )
+def native_read(settings, path):
+    return read_delimited_graph(settings, path, directed=False, source_column=None, target_column=None)
+
+
+def test_unavailable_cudf_does_not_use_a_python_reader(settings, csv_path, tmp_path):
+    binary = tmp_path / 'without-cudf'
+    binary.write_text(f'#!{sys.executable}\nprint(\'{{"error":{{"message":"libcudf is unavailable"}}}}\')\n')
+    binary.chmod(0o700)
+    with pytest.raises(IngestionError, match='libcudf'):
+        native_read(replace(settings, native_runtime_binary=binary), csv_path)
+
+
+def test_missing_binary_has_actionable_error(settings, csv_path, tmp_path):
+    with pytest.raises(IngestionError, match="GRAPHMINE_NATIVE_BINARY"):
+        native_read(replace(settings, native_runtime_binary=tmp_path / 'missing'), csv_path)
 
 
 @pytest.mark.parametrize(
@@ -209,25 +204,11 @@ def test_missing_binary_has_actionable_error(settings, database, session, tmp_pa
     ],
 )
 def test_native_transport_bounds(
-    settings, database, session, tmp_path, script, limit, message
+    settings, csv_path, tmp_path, script, limit, message
 ):
     binary = tmp_path / "transport-fixture"
     binary.write_text(f"#!{sys.executable}\n{script}\n")
     binary.chmod(0o700)
-    store = GraphStore(
-        replace(
-            settings,
-            native_runtime_binary=binary,
-            job_timeout_seconds=1,
-            max_result_bytes=limit,
-        ),
-        database,
-    )
-    with pytest.raises(UploadError, match=message):
-        store.ingest(
-            session_id=session.id,
-            role=FileRole.graph,
-            filename="records.csv",
-            content=b"source,target\nA,B\n",
-        )
-    assert database.list_files(session.id) == []
+    with pytest.raises(IngestionError, match=message):
+        native_read(replace(settings, native_runtime_binary=binary,
+                            job_timeout_seconds=1, max_result_bytes=limit), csv_path)

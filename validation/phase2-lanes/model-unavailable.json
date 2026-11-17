@@ -1,0 +1,4184 @@
+{
+  "version": "lane-baseline-v1",
+  "status": "completed",
+  "created_at": "2026-11-17T00:51:41.838040+00:00",
+  "scope": "60 assistant-authored development regression questions across all nine requested lanes, using the saved Yelp graph and repository demo seed. Labels are frozen before live evaluation; no human annotation or held-out accuracy claim.",
+  "suite_sha256": "1b372ed31e58f6d4c971ba5e60b695f04f46b23277d750d8b2c75960d6b1f166",
+  "source_files": {
+    "tools/evaluate_lane_baseline.py": "6c92a4e32d44df4789b75a7cb3c60e775a23de04f5c723b0a27d4f30b0a378c2",
+    "agent/evaluation/lanes/questions.json": "4eb70ce5d7e53020b8f7c5ea36a9a9bb3d07bafd52d94b18087a9d081b814cbe",
+    "agent/graphmine_agent/__init__.py": "8059d39218be1587366d977a6d7ff946fc36d19169d7a9285803ac6b3a3345de",
+    "agent/graphmine_agent/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "agent/graphmine_agent/account_api.py": "02fbc146b2f37577114b9eceec9247c9aa918e15ed9d1d21d34038f930395b17",
+    "agent/graphmine_agent/accounts.py": "884a788831c6107676ee9d860fdfba70050709678acdc0f67278584632ae211f",
+    "agent/graphmine_agent/accounts_cli.py": "319be9156ac12cf5fcfcc365822ef33b59c5a371fc376ba4ddded651ce840eda",
+    "agent/graphmine_agent/adapter_server.py": "e28d4cba1d1b561c344ce89a64a9703f3345b0358a728b3a38c0fd4c90b2f3d5",
+    "agent/graphmine_agent/agent_service.py": "c8592e12d0fee2d367c537c69092dbb23776ad1b817ba443f85b6411982bfadd",
+    "agent/graphmine_agent/analysis.py": "9bf1da63fbea61f9006b6297eeb4997dd446efef34b118c7d99e692cba20473c",
+    "agent/graphmine_agent/analytics.py": "1fb646c5bf8c085a6811d429564ded715553ae171a34b71ecb1ef36ec76d079e",
+    "agent/graphmine_agent/analytics_answers.py": "154bbd55d5b539e9cc65cd76ab6262a56a42605036b52d76e38e0a3427d9196c",
+    "agent/graphmine_agent/analytics_bipartite.py": "8651f2e32ffe14c83ac93b3a1c8aa80ee0bc263a792056abfd4497477951817b",
+    "agent/graphmine_agent/analytics_context.py": "996c966acf34384b0876b6c451deb9fe88bf735cd6490948cb629bb691618182",
+    "agent/graphmine_agent/analytics_eligibility.py": "c4371fd0ddfc475a366e7d14cd974717cacb1fe94d6215327d62bdf2649256a0",
+    "agent/graphmine_agent/analytics_examples.py": "2571352681f7639d8ada8c887a6e6ae4e2d13cc9840c04588ffebdc4852a52e3",
+    "agent/graphmine_agent/analytics_exports.py": "a31560373d7ae3d347122e5fdeaf69e27924fa44d83c693ac4b3954a5903b95e",
+    "agent/graphmine_agent/analytics_lane_choices.py": "ac64f9244b770d409a7c358b71673a827f3265ee9e8d6aec3458f200b0431d39",
+    "agent/graphmine_agent/analytics_lanes.py": "b335f2baeae3d8413ed80cb57e7e963346a6b66c784c3ac4fbe400ebb61caaf7",
+    "agent/graphmine_agent/analytics_parameter_choices.py": "5fd1c757c75c92341f5aced3354ff59835e7028c43c176e773c75c9e491cb51e",
+    "agent/graphmine_agent/analytics_planning.py": "2de518eda7262a0543b53eead69b355d4d6d2536a8569c3a230a198cf242b410",
+    "agent/graphmine_agent/analytics_projection.py": "fd990a95749cb84b5338651c5a2585fb335df187d8897e9c5708ef860aa46424",
+    "agent/graphmine_agent/analytics_scheduler.py": "be9f2abff9123b5813dfbd56ab189df1d146d06e8c0ddedf4761df373f8fba80",
+    "agent/graphmine_agent/analytics_studio.py": "1f00aac7250bb21b251086f5dcff103dd569769f2245b6976c6ccf542769a66e",
+    "agent/graphmine_agent/answers.py": "ade789d9aa26f6328189b745bd3d77d2a2407b8faa6765d106339883207c8d9a",
+    "agent/graphmine_agent/api.py": "a3d445fc42b3328beb0ec7f2981470e81f893a6ecaef29e848e9ea89b7587874",
+    "agent/graphmine_agent/api_errors.py": "e7ae0a185667b94daaaf61f6edbe4782d1402baaacc3c8195dd290f40a4c7ef2",
+    "agent/graphmine_agent/backup.py": "04f054c514f10895b0c2383db13124e0e8f74e060fa75d05f40c3aaa2b130602",
+    "agent/graphmine_agent/benchmark_datasets.py": "35cae337cb91e6809ad33a150232a487392029bd167591a2b1e783c7423afbf9",
+    "agent/graphmine_agent/benchmark_mappings.py": "b4b85aecd17aa93f1bce06304fbf10b3c9e248c88168e0e38c3c9a4f19658848",
+    "agent/graphmine_agent/benchmarking.py": "ba5c66d9b97554d6153d5aaf0b6b297a9302f1e888253fcf3851aa4ac4b6abe0",
+    "agent/graphmine_agent/capture.py": "72ed476b83935bf03223d8dddad3b748715d8f5785741d9f21fae00efc6a948f",
+    "agent/graphmine_agent/catalog.py": "1946a9134f7457dde6a16e6d234037302bac44e4273a2ce53d7c3300be938fb7",
+    "agent/graphmine_agent/cli.py": "2bbb2818718e044d2dee6b55f77e042cb3945770cd29856d76094a7fe79221dd",
+    "agent/graphmine_agent/commands.py": "c13d73c454ae46a378559cf622d44e6ca3e040f5ab550be408d0397dee34a7d6",
+    "agent/graphmine_agent/config.py": "f8d64319cd8e2772f19e461a38d69d6cbf1196e2ec3cb0b920abae8f72908fa0",
+    "agent/graphmine_agent/connectors.py": "b655321cacadee5ef91059202c5d66b3b15a082743bdbc339523e52842de9611",
+    "agent/graphmine_agent/conversation_timeline.py": "d030a9abc6bb70864e82cdaa89ca0e3420f6461fe1f978644a806e72adb28e53",
+    "agent/graphmine_agent/csv_ingestion.py": "75191c894cfa96f0a1b480760b7f5fe0b55ed7744c916cec79071ab151f5f2a1",
+    "agent/graphmine_agent/data_sources.py": "f872a66f01a0e4160bc08ccaafa5be8ed7c91e7f28c63b79b19818fcbe4175ae",
+    "agent/graphmine_agent/database.py": "ee0a7257463226e88b0d5a7b27bc79a410d5b6e50e8c88d7a98a7d0465018a65",
+    "agent/graphmine_agent/database_connections.py": "426a223a09a661bfd634c194347503c0feb549bea33ce6dad40d4ce8db28f024",
+    "agent/graphmine_agent/database_datasets.py": "9be5a954e7fc87bcb7a8c5d6395d447d93cb5956a4633633fc9cd01cddedd2f3",
+    "agent/graphmine_agent/database_enrichment.py": "09df58b634e229a22554074d06bce2b206e086b1a7894cccfca70857776e2cd8",
+    "agent/graphmine_agent/database_job_context.py": "e937e9d307852f181e36e1bf2bf037100beb24cee3f6cf9bee5881510d637d11",
+    "agent/graphmine_agent/database_jobs.py": "29efec697d7c77d8880232e44fa1c0c7556956407ffc18651b266420258f0301",
+    "agent/graphmine_agent/database_pools.py": "5d15da2e3a2c3b891e493b80471ff4d4f5637d63ae91643650851794225f908e",
+    "agent/graphmine_agent/database_queries.py": "d3dc8f6ef652240ad046e1b964ca9c8ecfbaaefc4b5a2ff9efe617bfb83101df",
+    "agent/graphmine_agent/database_reconciliation.py": "339a7f763d16f4dabffd863c5359237803f73444a1aad588ae40069fc2d17089",
+    "agent/graphmine_agent/database_schema.py": "372fd43b60c4cd3f4ed9ec4dbc55dfd9fdffbd8a42f93d659b82cc8b009bb5ef",
+    "agent/graphmine_agent/database_sources.py": "e318315b3e18c89c26799901f15275eb8147a3d51ab7330314cb1c2aa9efde14",
+    "agent/graphmine_agent/database_sync.py": "59141b49796ca9f54724a357bd963e40a6e6489f61ab29a32b8635c041818e59",
+    "agent/graphmine_agent/dataset_index.py": "f15cc6a53d24b8fa7d5a5df9e658373f973e41c050b398840fdd561578a0a084",
+    "agent/graphmine_agent/datasets.py": "99be19bb087f69038e5729ad505a0aab2ae5cad8168bd9dfb4799a315062278a",
+    "agent/graphmine_agent/errors.py": "e9a6fb4a6e9249c5a7ed3f42b0b2260a9adc4e53995bcc80febc2f0dbdb149e9",
+    "agent/graphmine_agent/evaluation.py": "76aa2a3693626f38df228c8268d3fb61d1380b873eac3b4d599eccdbfcd6017b",
+    "agent/graphmine_agent/evidence_cache.py": "8ce1d94e37897f2a30304c53134c34d3da5991f5716dd59a579cac1d50692329",
+    "agent/graphmine_agent/execution.py": "d19a87e6ca71a2f2ad2e2e3fc77ebffb9a6c8169464b5dbab2f116ad663233f5",
+    "agent/graphmine_agent/exploration.py": "dd251718bec3270b512a964c858096d3394a02891fc79cbf661b0c5089891d45",
+    "agent/graphmine_agent/export_streams.py": "a04b8d4a558179aea249dd00ba6db6b027cd7d6da077c1d059bd21d47a70d724",
+    "agent/graphmine_agent/graph_context.py": "9a3f6d28f58015220861de2bc570b7195a78c168b14d23cbb779851b30b85e55",
+    "agent/graphmine_agent/graph_store.py": "cbb6ebf529b82e8f6c3ac641e5b58db51e4ec18310a3d51b53c756f6ee5daada",
+    "agent/graphmine_agent/history.py": "6bb81310e0393bf8748d04a86697d3d0db503cebe785a9b3231a497856be7201",
+    "agent/graphmine_agent/identity.py": "acb78ea263f9f1e99f149ab962752eb9ec7606ea26a44e1e66b334efd2fb5c22",
+    "agent/graphmine_agent/import_preview.py": "4a65cdf50846784e7cf9f90c6595044e8bbbf1a40a8edd384e23063fcc41124c",
+    "agent/graphmine_agent/jobs.py": "337af31c90c9ea0b13b1e99d1e31299d3e317b062208df30cfc9aee702901e35",
+    "agent/graphmine_agent/learning/__init__.py": "18ddf5f2ec79711640cab59ce8da25a7ac4f51be8b239a1c0236714f094eca22",
+    "agent/graphmine_agent/learning/adapter_eval.py": "7746a5a21eff011159112d2446795d6d01f150ff01d6e77ef9172d03b63713f4",
+    "agent/graphmine_agent/learning/adapter_holdout.py": "e7312abd87246a461cd199fe793672de0e9314bf6df4947c2a040756630644d9",
+    "agent/graphmine_agent/learning/adapter_review.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "agent/graphmine_agent/learning/adapter_workflow_review.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+    "agent/graphmine_agent/learning/adapter_workflows.py": "983fe356689dd1b42457a5edeceaa84b6a05a0539c3f7766324350901f31d01a",
+    "agent/graphmine_agent/learning/analytics_queries.py": "19a460a4cc7bbe50ad5a79c22f762fd222e2c261baddc3a043b783de9dfee1b1",
+    "agent/graphmine_agent/learning/business_curriculum.py": "30341939f429dd9537772dcce46ca95b94264cad1adb723dc495e11a519cfc1e",
+    "agent/graphmine_agent/learning/business_eval.py": "79690c067c8970134844756eb940a985b0bad8801876fc2d0c1effb214ea9e35",
+    "agent/graphmine_agent/learning/business_questions.py": "be434b7d19de01af6fb1efa6d0a7d440a8cb2145b064695b11870f57b0e18c91",
+    "agent/graphmine_agent/learning/business_workflows.py": "4a6a7cad745154b7cb0adc3f17df360099312a3ee3c3c00a888a7c0eae03296b",
+    "agent/graphmine_agent/learning/catalog_audit.py": "04a4e92c23c4f53a894ef510b80251cdf6b99db044cb268b7b5bf375f14adb1e",
+    "agent/graphmine_agent/learning/catalog_compare.py": "a40d8614263fdbf7256b45c4589a24c4f6b692ebd68a408d9caceec7a7b98a4c",
+    "agent/graphmine_agent/learning/catalog_grade.py": "fbba5b4aaa25b42f49fa2d7492a089973553623841a60c76e1a7ff3751ab27e1",
+    "agent/graphmine_agent/learning/catalog_reference.py": "f25f1eb15140657f20890eb28a24c6ad04489d1dc3a6193120fcf241e16748d6",
+    "agent/graphmine_agent/learning/catalog_replay.py": "ef402b3622b4637d54489c79d0fa6c3423bfc8ab479a8924bef9cb034352d71d",
+    "agent/graphmine_agent/learning/catalog_suite.py": "d4bce53394f5179106949d20c58e937958b4ac8ec615f81a37104b34589d43ed",
+    "agent/graphmine_agent/learning/cli.py": "b40522f3a6b6ec8fff7636d0cbe46739bdb189091ad79df01a9746c880cce488",
+    "agent/graphmine_agent/learning/codex.py": "e54bec1c8b27e8d29cd993057056c8f3bfe2d2884be6fe7db4cab666e3fc2488",
+    "agent/graphmine_agent/learning/collection_only.py": "77e964f823962d10f1ebaebf63b33491dc232cd35cb18a602491e9eae9eb2b78",
+    "agent/graphmine_agent/learning/corpus.py": "28426df22611b633b670b352bdbd8b463246c086c6a24ca33bb1603f06f8dbb5",
+    "agent/graphmine_agent/learning/data_selection.py": "dd46a5df60414326adf2e49d8ff1e723969e7974f0c6b518a2d6d08997ad61b4",
+    "agent/graphmine_agent/learning/dual_conversations.py": "b1306f9c23262ee3b807ab3abe72d652af447a6388a7cbbbaca39d26ea52b83c",
+    "agent/graphmine_agent/learning/dual_corpus.py": "88f51d46e8c45e87ea43581d5bc288d788dd91cb66e2c89b35cd610406dc7e77",
+    "agent/graphmine_agent/learning/dual_eval.py": "be116d0fc960328021797967612b45d29a507fff37607236f7c964bf5c65c277",
+    "agent/graphmine_agent/learning/dual_finetune.py": "741dba75a00ad6e6cb316719c0a89c322a6b36201e72bd6d31f6c32309997cde",
+    "agent/graphmine_agent/learning/dual_questions.py": "386bb9ecd3a6c7cd274edf5c6b1e3a06bf6125819081895cbfcaea45aee1dbce",
+    "agent/graphmine_agent/learning/dual_recovery.py": "6acdfecf8dce283cdd5ac8587b4bb6e413cae1c907892b7d17072c653e8ea890",
+    "agent/graphmine_agent/learning/dual_review.py": "da314beb58340cb25b782cdd0c6db370dac03c43e3f072e7e353711e48676b38",
+    "agent/graphmine_agent/learning/dual_teacher.py": "38f2bf9cde59cdad39c2f1380c4473912f63f3a0d59e517bfdc1831e4dd9eac3",
+    "agent/graphmine_agent/learning/dual_workflows.py": "4809730d157aac5b2cc558cc839b098461cda6a619347629c54f30af51d26696",
+    "agent/graphmine_agent/learning/failure_candidates.py": "0ecd4bd56d60a9ac2298497d4ee86a4093bd6a5f2ce2febd036aa93e7a6cd6cd",
+    "agent/graphmine_agent/learning/finetune.py": "eb82044cbfcffd93298b13a9b5ea8fd007b50111c8d34c89f1c0edbe0f039c77",
+    "agent/graphmine_agent/learning/full_corpus.py": "b79e36f6588ae5eeb8e17956026ca28f59fb60502c8078e4de9af6c2e0ad585d",
+    "agent/graphmine_agent/learning/full_cycle.py": "465fad192d370b70ae44a42bc765f628b83c728c4bd1084d04281c2ccdcac6d5",
+    "agent/graphmine_agent/learning/full_train.py": "f4067dc7b8e416a4d10aeba3c5a5949add24dfc2d623e6a00ac73d4ce19803e6",
+    "agent/graphmine_agent/learning/inference.py": "3023803c04ccd7f531b3c86e6053c83451686e25fd2552f09a59e7609d1e1ded",
+    "agent/graphmine_agent/learning/meaning.py": "3c311efeda051b8bebdc0469e4e6cc95baa5afbcb296b7ef38bd115597823a62",
+    "agent/graphmine_agent/learning/oracles.py": "1fc123db7341013db41fdb16a2f82057b9e1374efb8d735cbe868e6241f415a2",
+    "agent/graphmine_agent/learning/pipeline.py": "48530cd37e6c7bd55ecb326650074eaf76b0a7c3aa4732ab06bb69ba579c4545",
+    "agent/graphmine_agent/learning/presentation_checks.py": "af7ba952b04b0eb3867c24308351159227a622220d136b475ea2fc51f2dfb6d3",
+    "agent/graphmine_agent/learning/proposals.py": "a84400738575e9e7a596b9a407c1fc96d0a68dbcf6c8de0bb3a10b3a2361c9a8",
+    "agent/graphmine_agent/learning/realworld.py": "abab014d564a29f0cadea7cf3d4258f7b18f2f88531cb2a911b6ff0510d1a821",
+    "agent/graphmine_agent/learning/realworld_cases.py": "b5102f1f7e0f69a1c62ab786282d8fc46bec187c5a785d3e773935be1b46d1a0",
+    "agent/graphmine_agent/learning/realworld_eval.py": "0a67a79a71b82cc556df2dc65974870da8307c21910c0275acf176e1f4c3d8b0",
+    "agent/graphmine_agent/learning/reusable_data.py": "8b0027db41f5ae8e65bd9fc4b4191afc6ae1d9f3181c3f9ff59c3384c11013a4",
+    "agent/graphmine_agent/learning/review.py": "6d80d189514e402b0313076c08c52b4332d5955e7da420f4f5fdb0522f738ee0",
+    "agent/graphmine_agent/learning/review_export.py": "3f6ea7880fad4113a1df506f7566960fd160a2fbd9ebec333117f3feb6bde9ed",
+    "agent/graphmine_agent/learning/serving_adapter.py": "485b15c324c194596f24f526a77944fa84858e14bd85c2f20fa5ce6764dbd507",
+    "agent/graphmine_agent/learning/teacher.py": "ff1ff2960631abfc02d410af5ea7fefd6a6a28f22ebd48d7d9ceaa9e1255d819",
+    "agent/graphmine_agent/learning/workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+    "agent/graphmine_agent/legacy_exports.py": "f425c18bc3374dab08111e1c905e282fe5dd50cdc2a1c333c6dc21654998a73e",
+    "agent/graphmine_agent/llm.py": "cab9d7f7aaa1d7ed379874addabfa09de218450f83843560073af148bd036b7d",
+    "agent/graphmine_agent/managed_connectors.py": "3ba1dd9760fd38031be76423d7295ce0daf0cb71fb3662d68f55294959710eb9",
+    "agent/graphmine_agent/mcp.py": "45d593f9d774bb52a57ae6cf46c015a82c94a728aceb2ec13ea8863aedaec536",
+    "agent/graphmine_agent/mcp_database.py": "7680078ec59e76c996b914a4f52d59925facc8a238895b866db5be3ed9946c58",
+    "agent/graphmine_agent/mcp_downloads.py": "adaee483a2982e4fad7f920255f6d3f993845e2dfec57af30b709ff775fd58d8",
+    "agent/graphmine_agent/models.py": "82d246711fa37fa746d37f90e0153944a0c468a730d574b0b1dabbd8734cf26b",
+    "agent/graphmine_agent/native_ingestion.py": "1f3d9c8fcf958aebf2f70e823d9247620ac2cbd513c169e8c55bb7362b3a642c",
+    "agent/graphmine_agent/neo4j_registry.py": "4d77a78cb78d1d3b45b7ae883ca1ff5fc3cc197824e93ed4a9ea25f46f461e25",
+    "agent/graphmine_agent/neo4j_schema.py": "05bfd2d99d0a928e13d43aa8daf7e5a300947e47924f5ff240774201caaa1369",
+    "agent/graphmine_agent/ownership.py": "e3b086cd8539514b6cc702a802d9d528ab7c461d4ab20de5c34364bd360f03ea",
+    "agent/graphmine_agent/planning.py": "bcbf32fff78b72a62bad018d9e4b2b4047e74dc6598d21c148a93e537c963d43",
+    "agent/graphmine_agent/presentation.py": "9e64444b889753fb2d7102477d01301b95fe5b26e93f81f29ca47b5e369153a9",
+    "agent/graphmine_agent/profiles.py": "2ea7583b8814a7fe75c8bc3a73147f3203a2c1812bd5b294321bd8efb659944f",
+    "agent/graphmine_agent/projects.py": "979000df9ceb5f61eff0096926cfa934d2bfdf785162943b909c16ddde3ee4f0",
+    "agent/graphmine_agent/query_previews.py": "e5ec92405744ceee87ce705aa4588be7295cc7611ba05c3380c7afc66df3df17",
+    "agent/graphmine_agent/query_results.py": "a0020598d1b7a9b582325624c92f33a1dddef05bb2c1ba5cd96476a5b7819dfa",
+    "agent/graphmine_agent/reporting.py": "95c84f950c9b5b9621a6342b03e94d1a12850be8617eabea2ff229e403281905",
+    "agent/graphmine_agent/result_cache.py": "0f29afaffbcc575fa437d5ab2afb535294d5590529d1f266398f02b5afb55c40",
+    "agent/graphmine_agent/result_index.py": "2c180999969fceeefe6c96a1a7579038336305da2b13a62b4d46c1d582067999",
+    "agent/graphmine_agent/result_views.py": "df8656c7ab54b8ca98c04de8911af3968d52c1db2daa1d903d63db8ceb5f4392",
+    "agent/graphmine_agent/results.py": "28f0acb4135b5c541647a1a2984eb54e16e18094f48b1d12099d4361c52e5a50",
+    "agent/graphmine_agent/selector.py": "9df8959a0c33f9c645360285cb19ef60df0a0fa2edf5e37a3e6e83876244e68d",
+    "agent/graphmine_agent/smoke.py": "f00c6794494ccd502b3475bc7013e35689178a17d9ac18b85b86844f53ac7f14",
+    "agent/graphmine_agent/table_artifacts.py": "74208f22e1366d03239d246bf6f4fd03ee5ccab73023538dd8897564fb96dabf",
+    "agent/graphmine_agent/terminal.py": "dfeaa4b4c8f9ca5460f1b3a8d425e5d24a3e49b31eb71e60e1fcd3c7bf181d5b",
+    "agent/graphmine_agent/usability.py": "23f31bb2e0d39ce626ec30e44c47f8b19f47614a44c9db4d8f4a512838db80a5",
+    "agent/graphmine_agent/visualization.py": "ad2f3f96812b5d0db128e0ecdb3313342d1b7adb0ede75437d1a0963edaad71c",
+    "agent/graphmine_agent/web_assets.py": "c6719409de8284c9ea6590b02e92bc92f74f66fd0c71a52a8ac7d96435a80aab",
+    "agent/graphmine_agent/workflow_api.py": "a3befc8584c3aa584a5ef97d6b1290084da9636772c3e1697322744e23763606",
+    "agent/graphmine_agent/workflow_index.py": "a44d1d40b0d2fbfed0c00ef814a9fe84820736a458c93e3fd6f8ad45273ce4f9",
+    "agent/graphmine_agent/workflow_templates.py": "fdb5b5259d7ec106ecf27f3850310c6c1febc98204e3a7cd9713f2fc34503c80",
+    "agent/graphmine_agent/workspace_recent.py": "2d2ab63e9c18ccb19422dc7944ba12ba9870cd5219aa7de4de066d28c3632c13",
+    "python/graphmine/graphmine/__init__.py": "11da274baf41d6792c3f0b32f8039a3cffc754e3b226a6596b7b28762ae24316",
+    "python/graphmine/graphmine/algorithms/__init__.py": "53382699408e6aa2062563bd8280220201846569a525274a82950f27ff621c1a",
+    "python/graphmine/graphmine/algorithms/_common.py": "fd974d78455c777830efc2a0265d40d199723ed8d242ad9fa05d1632c5adfcd0",
+    "python/graphmine/graphmine/algorithms/_events.py": "53f7711903989cd7ddc00d02b4a7ac2fc74b248b310892596f07a0e225597e42",
+    "python/graphmine/graphmine/algorithms/_milp.py": "3942312b3c5a8e0854f76b89f6de96ecdf122dba57a6e0467aeaac258240a87e",
+    "python/graphmine/graphmine/algorithms/_numeric.py": "910e25f7ce398c5fd18a15d19a31cd2c9f949ba614314fea1d192c79ba501d65",
+    "python/graphmine/graphmine/algorithms/alignment.py": "917b266f9660135e2df9c459cb400eb2f98fe326b0eeb298516ad13ba5e9725c",
+    "python/graphmine/graphmine/algorithms/anomalies.py": "fd77dc80020c0cc76a69d5734d5067bfc9cc3ae88a4fc26f6594650a2805fb2b",
+    "python/graphmine/graphmine/algorithms/bipartite.py": "7af9026ad525e507c5594df6913e4b2b5c6a5542d6d456b2aab336de9b51fc35",
+    "python/graphmine/graphmine/algorithms/centrality.py": "8e70c8b96c0f36208b3ab5124d20ca337310e51aa02acbe66cdee7914a7136f3",
+    "python/graphmine/graphmine/algorithms/construction.py": "cd6d33f24bf75751192f6a3d364d3c7fb3e454ea47237041cfc47a040f7d16b2",
+    "python/graphmine/graphmine/algorithms/density.py": "9274f8c8ce8d14423261e7427cc036b7cef74104bfc845b6068715eee10c5d8f",
+    "python/graphmine/graphmine/algorithms/entity_resolution.py": "78f26cfcdafbb569407c4742a0dad2da6c72767dac6d1d998a38bfebc596ef41",
+    "python/graphmine/graphmine/algorithms/enumeration.py": "c92fb5d533d768155c8aa9afe5c8b9b6b73c052fedf6790d8fba6a8f7b5cb492",
+    "python/graphmine/graphmine/algorithms/frequent_patterns.py": "f7077de60ce37359a1f157c5ff91c9fa65b3a3b506dcb6b2b3f2fe19355a70e8",
+    "python/graphmine/graphmine/algorithms/graph_comparison.py": "df82800175521aab69cdc5ea6d0e34dc9d5defd6603c0eedc7196dfe7ace69f6",
+    "python/graphmine/graphmine/algorithms/hypergraphs.py": "a88790678adae5ee40e4902040bf04ea738e51261d98c186d62022d33605cffc",
+    "python/graphmine/graphmine/algorithms/influence.py": "428e7dc393d7281bb39e7d7386714b3fc01572617116e097bc5ac36b53e9a57d",
+    "python/graphmine/graphmine/algorithms/layout.py": "05511701f51b1ace8e924261bc4bb5377e0783a02b54e55398954ef30efb985b",
+    "python/graphmine/graphmine/algorithms/local_community.py": "e29bfdc24e821b1cd442ae473c7de7ab6cdf628315fdd9a889d8950a46e225a6",
+    "python/graphmine/graphmine/algorithms/null_models.py": "beb8c732d8459e2c624b29bcfeb1cdd8366dd0167bdcb01cedfd10631fd3b6d1",
+    "python/graphmine/graphmine/algorithms/optimization.py": "04b073aa8013fb6c62f7461b02896260ea86439ec8356cc36e2f99d6e00ed4b7",
+    "python/graphmine/graphmine/algorithms/partitioning.py": "8d68ad980a08a23af8021379aeafac01d484dd3816910704aca55dcbc090639b",
+    "python/graphmine/graphmine/algorithms/paths.py": "2fdc38504435bc0dca9efedf5daa598e58c0d8af0265a3033ca3b082be85a69f",
+    "python/graphmine/graphmine/algorithms/patterns.py": "8619604ba57740e1198582996569fc1687416c7afb399299d7674db5b8ceda0b",
+    "python/graphmine/graphmine/algorithms/queries.py": "8a25e27627573ae7f0e1616da6076719157802516fdf434544de85747636bfdd",
+    "python/graphmine/graphmine/algorithms/sampling.py": "db808b36f75e62bf4b3a92111a8363fade067c9190d2fce2fbef3eb4429684e2",
+    "python/graphmine/graphmine/algorithms/similarity.py": "53d58c37ff897c35ddeeeac7598f8dc6d1cd6dd90096361a6e2fdcc8b8b53597",
+    "python/graphmine/graphmine/algorithms/sparsification.py": "418677691e1675ab08f4377910a66af1067ee9e27dda796c9fae63caa7e26721",
+    "python/graphmine/graphmine/algorithms/spectral.py": "a1b84c6e43c850353f86d399512205d2b924ec68a3b9baa0dca58fc3bc01ee7a",
+    "python/graphmine/graphmine/algorithms/steiner.py": "f3a3ff0d105a691c50ac4e15a5ec3e0ca8283b28682d2513b675c92698bbddbd",
+    "python/graphmine/graphmine/algorithms/structure.py": "2f441a0dc6bd48467fe60585d9553f3e608ad80ffee002bdc9da7de0a0ce8081",
+    "python/graphmine/graphmine/algorithms/temporal.py": "9e4af1f8a17a0bebf83ed1c2ab5916aa2dd27614a97ef1d79b21e0546e71ab64",
+    "python/graphmine/graphmine/algorithms/topology.py": "57392761c3d2f209c82114e7dd1b6257b79f02860e7a08e925e6c143cbfbefe7",
+    "python/graphmine/graphmine/algorithms/traversal.py": "9a62af954a4aebb4be6864161eafc8778bbf434264203d1222275200a08330d7",
+    "python/graphmine/graphmine/backends/__init__.py": "b218e3f7e9db44250d8f6e2f805af2dff1526574fcd1e9f1bbed76cffcffc8e4",
+    "python/graphmine/graphmine/backends/cugraph.py": "145f976f162db2a8831be5e5f8f136c416288a811b8bc863d2516dd52fb3bf30",
+    "python/graphmine/graphmine/cli.py": "93501ecc8f8753c8c26b0edf0d58e92771ad5b15a5f5aa5c693eaf087b9ba712",
+    "python/graphmine/graphmine/contracts.py": "21fcc3ed6b8465d399569fc5a14f02ed655fb9bb89055e43d907b50f296ece33",
+    "python/graphmine/graphmine/dispatch.py": "08296749e416d5d6bc05c0c43591b2b847ae182bda481389f43d7c1ad4e5559b",
+    "python/graphmine/graphmine/evidence.py": "0a2043c5c67f758903291503fc27ba8d8ca9ca92ac5c6672d07c3e6fcf4a334f",
+    "python/graphmine/graphmine/exceptions.py": "2423cd49b2285fae98567483de16c9268907fe2b6dd3c340da511223da7b75c1",
+    "python/graphmine/graphmine/graph.py": "9ef0915bf8d66c4c9bee7723b75550e090b97b1a4dd815ae970295bc0c9742a0",
+    "python/graphmine/graphmine/inputs.py": "3333f3a6d0c1201c2f4923c8342a95aa61da0029baf50c7905fcd4f9526f2b7a",
+    "python/graphmine/graphmine/native/__init__.py": "7d8defc9511a58fbe1ddf291696bbc20df7170ffe4330369745af4f55329d5d6",
+    "python/graphmine/graphmine/native_inputs.py": "b94e7cc495149c25d7049930bab35a59c6b6b813a6b51b941dc27699590e357b",
+    "python/graphmine/graphmine/ports.py": "6e16c06604a3c1e2f715d283d02847f5a4ce69ab22932b898fce1f5c57ca89a0",
+    "python/graphmine/graphmine/reference.py": "9e929c54b882302311af714340e2cc043e5377dab0ccaa0d497788bec43e0513",
+    "python/graphmine/graphmine/reference_evidence.py": "ce68235b89d14e8d89054cbaebea6340ff766ae712f235d7a29c2e0c50a03fd9",
+    "python/graphmine/graphmine/reference_workflows.py": "a17488623315c07559f567fa92e1e8e6d613b697e1ee1f0133c2e899912f99b4",
+    "python/graphmine/graphmine/registry.py": "3eb0cf8c72992881efc5d1e3a94ee0e33a62f423ac1cad92c11dbb0a173e5d7d",
+    "python/graphmine/graphmine/worker.py": "b4385e29ac858cd8953104419c5e940882ec73858c5ca30173b7ebc9ba915f75",
+    "python/graphmine/graphmine/workflows.py": "65ce6beb68808d5d76d9d8db46b8c8c0139774ef8cf7815ccb0562148677de8c",
+    "catalog/native_execution_evidence.json": "0acbfb985c36816a67f7c6376356b27dfec32652c84c3c13276f046fd9271100",
+    "catalog/operation_requirements.json": "0bb8fe4da8598aa6b57963575ef45250922c3ac84846547f7bd42da7dbafca01",
+    "catalog/agent_concepts.json": "edaf3893afe3f6f4480314d85fd67d2eb80fdf505a011c7f815092468cba9a5f"
+  },
+  "oracle_verification": {
+    "suite_sha256": "1b372ed31e58f6d4c971ba5e60b695f04f46b23277d750d8b2c75960d6b1f166",
+    "implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+    "passed": 34,
+    "cases": [
+      {
+        "id": "lookup_los_agaves",
+        "operation": "node-lookup",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "view_grid",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "calculate_picked_components",
+        "operation": "connected-components",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "explain_triangles",
+        "operation": "triangle-counting",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "view_search_tracy",
+        "operation": "maximal-bicliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "view_highlight_ada",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "view_bicliques_output",
+        "operation": "maximal-bicliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "explain_yelp_bicliques",
+        "operation": "maximal-bicliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "options_maximal_cliques",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "lookup_ada",
+        "operation": "node-lookup",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "lookup_most_connections",
+        "operation": "degree-centrality",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "options_pagerank",
+        "operation": "pagerank",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "lookup_ada_neighbors",
+        "operation": "neighbors",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "options_core",
+        "operation": "k-core",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "explain_components",
+        "operation": "connected-components",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "explain_clique_count",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "explain_clique_guarantee",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "view_largest_clique",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "view_open_results",
+        "operation": "maximal-bicliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "options_maximum_clique",
+        "operation": "maximum-clique",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "calculate_picked_triangles",
+        "operation": "triangle-counting",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "explain_clique_members",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "view_all_cliques",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "options_degrees",
+        "operation": "degree-centrality",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "options_components",
+        "operation": "connected-components",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "lookup_tracy",
+        "operation": "node-lookup",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "options_bicliques",
+        "operation": "maximal-bicliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "options_triangles",
+        "operation": "triangle-counting",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "calculate_picked_maximum",
+        "operation": "maximum-clique",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "explain_yelp_guarantee",
+        "operation": "maximal-bicliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "lookup_us_accounts",
+        "operation": "node-lookup",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "explain_yelp_triangles",
+        "operation": "triangle-counting",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "calculate_picked_bicliques",
+        "operation": "maximal-bicliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "view_circle",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "lookup_los_agaves",
+      "question": "Show the full Business record for Los Agaves.",
+      "fixture": "yelp",
+      "expected_lane": "lookup",
+      "started_at": "2026-11-17T00:51:42.370421+00:00",
+      "seconds": 0.129,
+      "setup_seconds": 0.026,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.056,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "2360fad1-6792-4523-9fa9-9c5f6569c949"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "reply_exact_approx",
+      "question": "What do exact and approximate results mean in this graph library?",
+      "fixture": "demo",
+      "expected_lane": "reply",
+      "started_at": "2026-11-17T00:51:42.514840+00:00",
+      "seconds": 0.076,
+      "setup_seconds": 0.015,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "58b5c850-a38c-4793-92dd-f15fe6d550d9"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "describe_yelp_users",
+      "question": "How many Users are in this loaded snapshot?",
+      "fixture": "yelp",
+      "expected_lane": "describe_input",
+      "started_at": "2026-11-17T00:51:42.614176+00:00",
+      "seconds": 0.079,
+      "setup_seconds": 0.023,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.013,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "81be1510-dc07-4c30-8a5b-b24450f1ef69"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "reply_clique_terms",
+      "question": "Explain maximal versus maximum cliques without running an analysis.",
+      "fixture": "demo",
+      "expected_lane": "reply",
+      "started_at": "2026-11-17T00:51:42.708171+00:00",
+      "seconds": 0.075,
+      "setup_seconds": 0.014,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "6e5690d5-34b5-4d95-a39c-723e55bfd65c"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "view_grid",
+      "question": "Arrange the saved graph in a grid.",
+      "fixture": "demo_undirected",
+      "expected_lane": "view",
+      "started_at": "2026-11-17T00:51:43.169502+00:00",
+      "seconds": 0.075,
+      "setup_seconds": 0.386,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "35bcfa2e-eb3f-4e40-b2af-77fa5d6fcb56"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "calculate_picked_components",
+      "question": "I pick the weakly connected components option.",
+      "fixture": "yelp",
+      "expected_lane": "calculate",
+      "started_at": "2026-11-17T00:51:43.268867+00:00",
+      "seconds": 0.489,
+      "setup_seconds": 0.024,
+      "status": "ready",
+      "calls": [
+        {
+          "stage": "answer",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.01,
+          "outcome": "failed",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "cb4f6014-3ecb-4a2b-ab58-d8dfa6731929"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "answer": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": "calculate",
+      "operations": [
+        "connected-components"
+      ],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": true,
+      "result_checks": [
+        {
+          "operation": "connected-components",
+          "port": "groups",
+          "passed": true
+        }
+      ],
+      "success": true,
+      "response": {
+        "status": "ready",
+        "lane": "calculate",
+        "message": "The selected calculation is ready.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "answer",
+              "operation": "connected-components",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "connectivity_mode": "weakly_connected"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "answer",
+                "operation": "connected-components",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "connectivity_mode": "weakly_connected"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "answer"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "3632dc83695821211654f262a7c4c8983ca74a1f7ddb016c826d8446e330052f"
+            }
+          },
+          "workflow_hash": "9afcc876e2c3e80fc6bfafbc2c82c17b2cca6e9b7a7620dd10c2f276f45784ac",
+          "implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "f618513ad0a13d7529068b36114e9ce49108c963c34c104b3cef4303515e0645",
+            "wrapper_sha256": "4268693ac90997172fda11b19e1520e9ab599cb17faff191db9658a7cf08a604",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "route",
+            "status": "calculate",
+            "message": "Using the explicitly selected calculation.",
+            "operations": [
+              "connected-components"
+            ],
+            "source": "selected"
+          }
+        ],
+        "turn_id": "cb4f6014-3ecb-4a2b-ab58-d8dfa6731929"
+      },
+      "error": null,
+      "workflow_status": "completed",
+      "result_sha256": "22d0926317de7328832aa2f3c5aa694f0f498e1a4432bb95e8e92187d9caf770"
+    },
+    {
+      "id": "explain_triangles",
+      "question": "How many triangles did the completed analysis count?",
+      "fixture": "demo_undirected",
+      "expected_lane": "explain",
+      "started_at": "2026-11-17T00:51:44.152331+00:00",
+      "seconds": 0.082,
+      "setup_seconds": 0.393,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "7add29c8-84d6-4896-9428-062037ef3542"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "describe_demo_weights",
+      "question": "Does this graph already have edge weights?",
+      "fixture": "demo",
+      "expected_lane": "describe_input",
+      "started_at": "2026-11-17T00:51:44.254249+00:00",
+      "seconds": 0.085,
+      "setup_seconds": 0.019,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "586cfee4-739b-4561-b2e2-83a9ba83efc9"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "describe_demo_direction",
+      "question": "Is this transfer graph directed?",
+      "fixture": "demo",
+      "expected_lane": "describe_input",
+      "started_at": "2026-11-17T00:51:44.360430+00:00",
+      "seconds": 0.078,
+      "setup_seconds": 0.02,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "c1c6ca9b-84de-491c-8f77-4a50cbbabe59"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "missing_bfs_source",
+      "question": "Run breadth-first search on the graph.",
+      "fixture": "demo",
+      "expected_lane": "needs_information",
+      "started_at": "2026-11-17T00:51:44.453028+00:00",
+      "seconds": 0.077,
+      "setup_seconds": 0.014,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "0a56c4d6-8f07-4ff9-8d45-d515f4fba955"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "view_search_tracy",
+      "question": "Search the saved result rows for Tracy.",
+      "fixture": "yelp_undirected",
+      "expected_lane": "view",
+      "started_at": "2026-11-17T00:51:44.973220+00:00",
+      "seconds": 0.082,
+      "setup_seconds": 0.442,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "aa1fe019-c466-4d64-87b8-dd34f238b1a3"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "view_highlight_ada",
+      "question": "Highlight Ada in the saved graph.",
+      "fixture": "demo_undirected",
+      "expected_lane": "view",
+      "started_at": "2026-11-17T00:51:45.481997+00:00",
+      "seconds": 0.081,
+      "setup_seconds": 0.425,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.013,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "a86d66c1-a7d6-4d39-b7e5-df8bde20b4db"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "unsupported_crossing_number",
+      "question": "Compute the exact crossing number of this graph.",
+      "fixture": "demo_undirected",
+      "expected_lane": "unsupported",
+      "started_at": "2026-11-17T00:51:45.577347+00:00",
+      "seconds": 0.075,
+      "setup_seconds": 0.013,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "3b9bacfe-561c-4079-9f62-d61e803a20e1"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "missing_pattern",
+      "question": "Find subgraphs isomorphic to my query pattern.",
+      "fixture": "demo",
+      "expected_lane": "needs_information",
+      "started_at": "2026-11-17T00:51:45.670575+00:00",
+      "seconds": 0.078,
+      "setup_seconds": 0.017,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.012,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "aeac9673-3373-4a3d-997d-6f741fb9e5cc"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "describe_yelp_businesses",
+      "question": "How many Businesses are in this loaded snapshot?",
+      "fixture": "yelp",
+      "expected_lane": "describe_input",
+      "started_at": "2026-11-17T00:51:45.774965+00:00",
+      "seconds": 0.084,
+      "setup_seconds": 0.025,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.012,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "31bbe1f4-43fa-4532-92d3-fa959a1680c2"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "missing_flow_endpoints",
+      "question": "Compute the maximum flow in this transfer network.",
+      "fixture": "demo",
+      "expected_lane": "needs_information",
+      "started_at": "2026-11-17T00:51:45.873149+00:00",
+      "seconds": 0.082,
+      "setup_seconds": 0.013,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.013,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "22b7d42f-18b3-46e9-bb81-2a802071683a"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "view_bicliques_output",
+      "question": "Show the bicliques output from the saved run.",
+      "fixture": "yelp_undirected",
+      "expected_lane": "view",
+      "started_at": "2026-11-17T00:51:46.390581+00:00",
+      "seconds": 0.083,
+      "setup_seconds": 0.434,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "3b7b7f31-92e2-41ae-bf4f-0945bb27ecc8"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "ambiguous_importance",
+      "question": "Who is important in this network?",
+      "fixture": "yelp",
+      "expected_lane": "needs_information",
+      "started_at": "2026-11-17T00:51:46.498249+00:00",
+      "seconds": 0.077,
+      "setup_seconds": 0.024,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "b6329364-4798-429f-b15a-99361babe411"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "explain_yelp_bicliques",
+      "question": "How many maximal bicliques did the saved review analysis return?",
+      "fixture": "yelp_undirected",
+      "expected_lane": "explain",
+      "started_at": "2026-11-17T00:51:47.214809+00:00",
+      "seconds": 0.078,
+      "setup_seconds": 0.639,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "f4c69662-a820-4456-a36b-deb7eb3e1917"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "options_maximal_cliques",
+      "question": "Find all maximal cliques.",
+      "fixture": "demo_undirected",
+      "expected_lane": "options",
+      "started_at": "2026-11-17T00:51:47.310272+00:00",
+      "seconds": 0.077,
+      "setup_seconds": 0.016,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "093aeaaa-aeb4-4e4b-a460-b2cc274c1679"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "maximal-cliques",
+          "port": "groups",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "lookup_ada",
+      "question": "Show the full record for Ada.",
+      "fixture": "demo",
+      "expected_lane": "lookup",
+      "started_at": "2026-11-17T00:51:47.407170+00:00",
+      "seconds": 0.074,
+      "setup_seconds": 0.019,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.012,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "f558b1b8-8265-46c5-9d2f-a62ce35307e8"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "describe_demo_edges",
+      "question": "How many transfer connections are loaded?",
+      "fixture": "demo",
+      "expected_lane": "describe_input",
+      "started_at": "2026-11-17T00:51:47.496694+00:00",
+      "seconds": 0.074,
+      "setup_seconds": 0.014,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "ff483f60-1223-4de5-a4b2-9f2dc8de6506"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "reply_review_weights",
+      "question": "Explain what it would mean to use review stars as edge weights.",
+      "fixture": "yelp",
+      "expected_lane": "reply",
+      "started_at": "2026-11-17T00:51:47.596785+00:00",
+      "seconds": 0.079,
+      "setup_seconds": 0.025,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "e4b1b1f6-7ed9-4d26-96d2-132db2c81a5c"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "describe_demo_vertices",
+      "question": "How many accounts are loaded?",
+      "fixture": "demo",
+      "expected_lane": "describe_input",
+      "started_at": "2026-11-17T00:51:47.690055+00:00",
+      "seconds": 0.075,
+      "setup_seconds": 0.013,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "4014e892-edf4-4ea2-8665-1de5d5982800"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "lookup_most_connections",
+      "question": "Which account has the most outgoing transfer connections?",
+      "fixture": "demo",
+      "expected_lane": "lookup",
+      "started_at": "2026-11-17T00:51:47.779771+00:00",
+      "seconds": 0.079,
+      "setup_seconds": 0.013,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.012,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "d8d1d885-4971-4686-b0ff-f9abd34292d3"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "degree-centrality",
+          "port": "scores",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "reply_biclique_community",
+      "question": "What does a biclique mean compared with a community in a review network?",
+      "fixture": "yelp",
+      "expected_lane": "reply",
+      "started_at": "2026-11-17T00:51:47.885003+00:00",
+      "seconds": 0.083,
+      "setup_seconds": 0.025,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "96a66c67-b010-4cf1-8bd6-4d69c8ddfacf"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "options_pagerank",
+      "question": "Compute unweighted PageRank with the default damping factor on the directed review graph.",
+      "fixture": "yelp",
+      "expected_lane": "options",
+      "started_at": "2026-11-17T00:51:47.992447+00:00",
+      "seconds": 0.079,
+      "setup_seconds": 0.023,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "ad287c52-e421-4782-9332-40dd3651feeb"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "pagerank",
+          "port": "scores",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "lookup_ada_neighbors",
+      "question": "Which accounts receive a direct transfer from Ada?",
+      "fixture": "demo",
+      "expected_lane": "lookup",
+      "started_at": "2026-11-17T00:51:48.085655+00:00",
+      "seconds": 0.075,
+      "setup_seconds": 0.013,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "9514d6c7-7838-4e32-9f9d-aea95b985226"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "neighbors",
+          "port": "vertices",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "options_core",
+      "question": "Find the vertices in the 3-core.",
+      "fixture": "demo_undirected",
+      "expected_lane": "options",
+      "started_at": "2026-11-17T00:51:48.175238+00:00",
+      "seconds": 0.074,
+      "setup_seconds": 0.013,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "2376b5ae-3d39-4869-88dd-ea1a1f8a9993"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "k-core",
+          "port": "vertices",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "unsupported_text_training",
+      "question": "Train a transformer language model to generate new review text from these reviews.",
+      "fixture": "yelp",
+      "expected_lane": "unsupported",
+      "started_at": "2026-11-17T00:51:48.274847+00:00",
+      "seconds": 0.112,
+      "setup_seconds": 0.024,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "242b4250-8031-4b81-99d2-29a074d7ca65"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "explain_components",
+      "question": "How many connected groups did the saved run find?",
+      "fixture": "demo_undirected",
+      "expected_lane": "explain",
+      "started_at": "2026-11-17T00:51:48.781979+00:00",
+      "seconds": 0.078,
+      "setup_seconds": 0.393,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.012,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "7f3f731f-08ef-4c9d-8fba-ba7ac02af6b6"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "explain_clique_count",
+      "question": "How many cliques did the saved run find?",
+      "fixture": "demo_undirected",
+      "expected_lane": "explain",
+      "started_at": "2026-11-17T00:51:49.249895+00:00",
+      "seconds": 0.078,
+      "setup_seconds": 0.388,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "89981452-edab-4633-b922-5ec34aa6ab08"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "reply_pagerank_degree",
+      "question": "How does PageRank differ from degree centrality?",
+      "fixture": "yelp",
+      "expected_lane": "reply",
+      "started_at": "2026-11-17T00:51:49.354324+00:00",
+      "seconds": 0.077,
+      "setup_seconds": 0.024,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "35c6dc75-1ab7-4c25-841e-27d9163feb93"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "explain_clique_guarantee",
+      "question": "Is the saved clique calculation exact?",
+      "fixture": "demo_undirected",
+      "expected_lane": "explain",
+      "started_at": "2026-11-17T00:51:49.827185+00:00",
+      "seconds": 0.074,
+      "setup_seconds": 0.394,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "31581245-12c3-44c3-a667-0190b367ff95"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "view_largest_clique",
+      "question": "Show the largest clique from the saved result.",
+      "fixture": "demo_undirected",
+      "expected_lane": "view",
+      "started_at": "2026-11-17T00:51:50.300991+00:00",
+      "seconds": 0.078,
+      "setup_seconds": 0.398,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.012,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "78dbdb36-a1a5-471a-93f7-f6e52169357e"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "view_open_results",
+      "question": "Open the results page for the saved analysis.",
+      "fixture": "yelp_undirected",
+      "expected_lane": "view",
+      "started_at": "2026-11-17T00:51:50.822012+00:00",
+      "seconds": 0.082,
+      "setup_seconds": 0.442,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "8ed05f38-d672-4daa-833a-c11a7c46d5af"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "options_maximum_clique",
+      "question": "Find the maximum clique.",
+      "fixture": "demo_undirected",
+      "expected_lane": "options",
+      "started_at": "2026-11-17T00:51:50.921406+00:00",
+      "seconds": 0.064,
+      "setup_seconds": 0.015,
+      "status": "options",
+      "calls": [],
+      "model_calls": 0,
+      "by_stage": {},
+      "tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "options",
+      "operations": [
+        "maximum-clique"
+      ],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "maximum-clique",
+          "port": "vertices",
+          "passed": false
+        }
+      ],
+      "success": true,
+      "response": {
+        "status": "options",
+        "lane": "options",
+        "message": "Choose the result you want to calculate.",
+        "question": "Find the maximum clique.",
+        "options": [
+          {
+            "id": "option_1",
+            "operations": [
+              "maximum-clique"
+            ],
+            "parameters": {},
+            "input": "main",
+            "title": "Find the largest fully connected group",
+            "quality": "exact",
+            "description": "Exact maximum clique, optionally all tied optima. Undirected simple projection; loops, duplicate edges and weights ignored. Original GPU witnesses are checked by native coloring or exact search; ties use native materialization.",
+            "rank": 1,
+            "match": "Suggested",
+            "promotions": [],
+            "explanation": "Matches the requested calculation."
+          },
+          {
+            "id": "option_2",
+            "operations": [
+              "maximal-cliques"
+            ],
+            "parameters": {},
+            "input": "main",
+            "title": "Find complete groups that cannot be extended",
+            "quality": "exact",
+            "description": "Exact maximal cliques in an undirected simple projection. Drop loops and duplicate edges; ignore weights. Original GPU kernels supply a count, with bounded C++ materialization and explicit list completeness.",
+            "rank": 2,
+            "match": "Alternative",
+            "promotions": [],
+            "explanation": "Computes a different result; choose it only if that is what you want."
+          }
+        ],
+        "plan": null,
+        "trace": [
+          {
+            "stage": "route",
+            "status": "options",
+            "message": "Choose the result you want to calculate.",
+            "source": "direct",
+            "operations": [
+              "maximum-clique"
+            ]
+          }
+        ],
+        "turn_id": "acfec04c-7e0a-4d62-b970-d49badea9329"
+      },
+      "error": null,
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "calculate_picked_triangles",
+      "question": "I pick the triangle-counting option.",
+      "fixture": "demo_undirected",
+      "expected_lane": "calculate",
+      "started_at": "2026-11-17T00:51:51.008239+00:00",
+      "seconds": 0.45,
+      "setup_seconds": 0.02,
+      "status": "ready",
+      "calls": [],
+      "model_calls": 0,
+      "by_stage": {},
+      "tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "calculate",
+      "operations": [
+        "triangle-counting"
+      ],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": true,
+      "result_checks": [
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "passed": true
+        }
+      ],
+      "success": true,
+      "response": {
+        "status": "ready",
+        "lane": "calculate",
+        "message": "The selected calculation is ready.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "answer",
+              "operation": "triangle-counting",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "mode": "count"
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "answer",
+                "operation": "triangle-counting",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "mode": "count"
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "answer"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "050f7e904efdbf4a817a403458ea563a284b7cf2669b36d459ee879b6fbd1011"
+            }
+          },
+          "workflow_hash": "fb8b0313f0ca30ec54e21ada14abe1a201a5c610a80dcd6ab230451068b3514c",
+          "implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "f618513ad0a13d7529068b36114e9ce49108c963c34c104b3cef4303515e0645",
+            "wrapper_sha256": "4268693ac90997172fda11b19e1520e9ab599cb17faff191db9658a7cf08a604",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "route",
+            "status": "calculate",
+            "message": "Using the explicitly selected calculation.",
+            "operations": [
+              "triangle-counting"
+            ],
+            "source": "selected"
+          }
+        ],
+        "turn_id": "698dc711-8cb1-4f55-8d9c-05dd011fa7dd"
+      },
+      "error": null,
+      "workflow_status": "completed",
+      "result_sha256": "2ca490070befb59359ed1f5927b59ee4b0b76650f45c2baba187852463b6acff"
+    },
+    {
+      "id": "explain_clique_members",
+      "question": "Which accounts are in the largest clique from the saved run?",
+      "fixture": "demo_undirected",
+      "expected_lane": "explain",
+      "started_at": "2026-11-17T00:51:51.865593+00:00",
+      "seconds": 0.089,
+      "setup_seconds": 0.405,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.013,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "ff0d7a60-f505-4889-bf1e-9cdf1c5de831"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "ambiguous_groups",
+      "question": "Find the groups in this network.",
+      "fixture": "demo_undirected",
+      "expected_lane": "needs_information",
+      "started_at": "2026-11-17T00:51:51.974922+00:00",
+      "seconds": 0.074,
+      "setup_seconds": 0.018,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "700974ba-35a9-4e0a-b3e3-e28746add808"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "view_all_cliques",
+      "question": "Show all cliques from the saved result.",
+      "fixture": "demo_undirected",
+      "expected_lane": "view",
+      "started_at": "2026-11-17T00:51:52.446333+00:00",
+      "seconds": 0.083,
+      "setup_seconds": 0.396,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.012,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "e3928b04-0c3b-49c1-9fb3-212459c392e4"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "options_degrees",
+      "question": "Calculate each vertex degree, without normalization, for the undirected review graph.",
+      "fixture": "yelp_undirected",
+      "expected_lane": "options",
+      "started_at": "2026-11-17T00:51:52.556785+00:00",
+      "seconds": 0.088,
+      "setup_seconds": 0.026,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.013,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "add4aa13-da60-438e-9d9f-764c06bc89a8"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "degree-centrality",
+          "port": "scores",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "unsupported_automorphism_group",
+      "question": "Return generators of the full graph automorphism group.",
+      "fixture": "demo_undirected",
+      "expected_lane": "unsupported",
+      "started_at": "2026-11-17T00:51:52.662532+00:00",
+      "seconds": 0.076,
+      "setup_seconds": 0.015,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "a10ee90e-e2a8-4f07-bff5-8824b6a28ab1"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "options_components",
+      "question": "Find the weakly connected components of the transfer graph.",
+      "fixture": "demo",
+      "expected_lane": "options",
+      "started_at": "2026-11-17T00:51:52.757687+00:00",
+      "seconds": 0.079,
+      "setup_seconds": 0.017,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "f54fa818-6f4b-4965-864d-a5456f23308f"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "connected-components",
+          "port": "groups",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "lookup_tracy",
+      "question": "Show the full User record for Tracy.",
+      "fixture": "yelp",
+      "expected_lane": "lookup",
+      "started_at": "2026-11-17T00:51:52.861562+00:00",
+      "seconds": 0.098,
+      "setup_seconds": 0.023,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "c48b805a-971b-4719-8b6c-2744e8def660"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "options_bicliques",
+      "question": "Find all maximal bicliques in the undirected review snapshot.",
+      "fixture": "yelp_undirected",
+      "expected_lane": "options",
+      "started_at": "2026-11-17T00:51:52.984592+00:00",
+      "seconds": 0.081,
+      "setup_seconds": 0.023,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.012,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "83f50a54-654d-474e-9e44-cfe0e1373885"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "maximal-bicliques",
+          "port": "bicliques",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "options_triangles",
+      "question": "Count all triangles in the entire graph.",
+      "fixture": "demo_undirected",
+      "expected_lane": "options",
+      "started_at": "2026-11-17T00:51:53.080917+00:00",
+      "seconds": 0.08,
+      "setup_seconds": 0.013,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "c3b35f8f-69cf-4538-8433-34b884af9ce2"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "describe_yelp_reviews",
+      "question": "How many review connections are loaded?",
+      "fixture": "yelp",
+      "expected_lane": "describe_input",
+      "started_at": "2026-11-17T00:51:53.185453+00:00",
+      "seconds": 0.076,
+      "setup_seconds": 0.022,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "2c59c36f-b16d-436e-aceb-ba501e56c419"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "calculate_picked_maximum",
+      "question": "I pick the maximum-clique option.",
+      "fixture": "demo_undirected",
+      "expected_lane": "calculate",
+      "started_at": "2026-11-17T00:51:53.276168+00:00",
+      "seconds": 0.464,
+      "setup_seconds": 0.013,
+      "status": "ready",
+      "calls": [
+        {
+          "stage": "answer",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "failed",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "59ae904c-1cb7-427d-bfb2-49b820033009"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "answer": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": "calculate",
+      "operations": [
+        "maximum-clique"
+      ],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": true,
+      "result_checks": [
+        {
+          "operation": "maximum-clique",
+          "port": "vertices",
+          "passed": true
+        }
+      ],
+      "success": true,
+      "response": {
+        "status": "ready",
+        "lane": "calculate",
+        "message": "The selected calculation is ready.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "answer",
+              "operation": "maximum-clique",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {},
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "answer",
+                "operation": "maximum-clique",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {},
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "answer"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "050f7e904efdbf4a817a403458ea563a284b7cf2669b36d459ee879b6fbd1011"
+            }
+          },
+          "workflow_hash": "fd6e0132de92f777ceae9713a8c051c75aba969b6df2fee3a05e4b9cb322f007",
+          "implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "f618513ad0a13d7529068b36114e9ce49108c963c34c104b3cef4303515e0645",
+            "wrapper_sha256": "4268693ac90997172fda11b19e1520e9ab599cb17faff191db9658a7cf08a604",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "route",
+            "status": "calculate",
+            "message": "Using the explicitly selected calculation.",
+            "operations": [
+              "maximum-clique"
+            ],
+            "source": "selected"
+          }
+        ],
+        "turn_id": "59ae904c-1cb7-427d-bfb2-49b820033009"
+      },
+      "error": null,
+      "workflow_status": "completed",
+      "result_sha256": "be235cffaa84b6ca19796598f344f2653e982fa926e2d4ad31f8385a620df296"
+    },
+    {
+      "id": "reply_core_truss",
+      "question": "What is the difference between k-core and k-truss?",
+      "fixture": "demo",
+      "expected_lane": "reply",
+      "started_at": "2026-11-17T00:51:53.759143+00:00",
+      "seconds": 0.08,
+      "setup_seconds": 0.017,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "f646d7d5-f7f3-4b25-8043-4b50c5f9bd31"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "missing_path_endpoints",
+      "question": "Find the shortest path between two accounts.",
+      "fixture": "demo",
+      "expected_lane": "needs_information",
+      "started_at": "2026-11-17T00:51:53.854818+00:00",
+      "seconds": 0.075,
+      "setup_seconds": 0.013,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "17cc7f37-bddf-49ac-87bc-cb8e965aeb88"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "explain_yelp_guarantee",
+      "question": "What guarantee does the saved maximal-biclique analysis provide?",
+      "fixture": "yelp_undirected",
+      "expected_lane": "explain",
+      "started_at": "2026-11-17T00:51:54.355365+00:00",
+      "seconds": 0.081,
+      "setup_seconds": 0.423,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "50bd1555-fd50-40d6-be00-9abcf35fb928"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "confirm_yelp_direction",
+      "question": "Find all maximal bicliques, with Users on one side and Businesses on the other.",
+      "fixture": "yelp",
+      "expected_lane": "needs_information",
+      "started_at": "2026-11-17T00:51:54.461644+00:00",
+      "seconds": 0.08,
+      "setup_seconds": 0.023,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "0f6977c6-ffdb-43c1-8829-a70e9486fc92"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "lookup_us_accounts",
+      "question": "List all account records whose country is US.",
+      "fixture": "demo",
+      "expected_lane": "lookup",
+      "started_at": "2026-11-17T00:51:54.556912+00:00",
+      "seconds": 0.075,
+      "setup_seconds": 0.013,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "0f00b1cb-5573-4772-b649-3020a768feb5"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": false,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "passed": false
+        }
+      ],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "explain_yelp_triangles",
+      "question": "How many triangles did the saved review-graph analysis find?",
+      "fixture": "yelp_undirected",
+      "expected_lane": "explain",
+      "started_at": "2026-11-17T00:51:55.059337+00:00",
+      "seconds": 0.078,
+      "setup_seconds": 0.423,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "038f99bd-ab93-47d5-ae9e-2e32152da706"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "calculate_picked_bicliques",
+      "question": "I pick the maximal-bicliques option.",
+      "fixture": "yelp_undirected",
+      "expected_lane": "calculate",
+      "started_at": "2026-11-17T00:51:55.166129+00:00",
+      "seconds": 0.486,
+      "setup_seconds": 0.026,
+      "status": "ready",
+      "calls": [
+        {
+          "stage": "answer",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "failed",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "512ff4d8-51e1-46cc-af1a-c7587afb03ba"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "answer": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": "calculate",
+      "operations": [
+        "maximal-bicliques"
+      ],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": true,
+      "result_checks": [
+        {
+          "operation": "maximal-bicliques",
+          "port": "bicliques",
+          "passed": true
+        }
+      ],
+      "success": true,
+      "response": {
+        "status": "ready",
+        "lane": "calculate",
+        "message": "The selected calculation is ready.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "answer",
+              "operation": "maximal-bicliques",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "left_partition": [
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944"
+                ],
+                "right_partition": [
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:28569"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "answer",
+                "operation": "maximal-bicliques",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "left_partition": [
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944"
+                  ],
+                  "right_partition": [
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:28569"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "answer"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "7ef1aaca845748d9a45c93c2aecc533724def410230f251c487744f05c716f40"
+            }
+          },
+          "workflow_hash": "458ae4ebe31e7488f9d5a0f61f0692b63584d5efbfd7fac8d2a68207b3c98e98",
+          "implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "f618513ad0a13d7529068b36114e9ce49108c963c34c104b3cef4303515e0645",
+            "wrapper_sha256": "4268693ac90997172fda11b19e1520e9ab599cb17faff191db9658a7cf08a604",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "route",
+            "status": "calculate",
+            "message": "Using the explicitly selected calculation.",
+            "operations": [
+              "maximal-bicliques"
+            ],
+            "source": "selected"
+          }
+        ],
+        "turn_id": "512ff4d8-51e1-46cc-af1a-c7587afb03ba"
+      },
+      "error": null,
+      "workflow_status": "completed",
+      "result_sha256": "61ee6ed9e1ecfba6a30e1cbd9bf9b0867abda7c5a7c0d211f542048aec78c028"
+    },
+    {
+      "id": "view_circle",
+      "question": "Switch the saved graph to a circle layout.",
+      "fixture": "demo_undirected",
+      "expected_lane": "view",
+      "started_at": "2026-11-17T00:51:56.051396+00:00",
+      "seconds": 0.076,
+      "setup_seconds": 0.396,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "88f0c34a-3766-4b69-8445-cbd53789c9cb"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "missing_biclique_sides",
+      "question": "Find all maximal bicliques.",
+      "fixture": "demo_undirected",
+      "expected_lane": "needs_information",
+      "started_at": "2026-11-17T00:51:56.145565+00:00",
+      "seconds": 0.076,
+      "setup_seconds": 0.016,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.012,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "3dd55f51-caa4-41e0-a147-614ebdda13aa"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "unsupported_sir_forecast",
+      "question": "Run a continuous-time SIR epidemic simulation on this review network.",
+      "fixture": "yelp",
+      "expected_lane": "unsupported",
+      "started_at": "2026-11-17T00:51:56.249394+00:00",
+      "seconds": 0.08,
+      "setup_seconds": 0.024,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "4be51a24-ec96-4454-aa8a-df053e20463b"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "describe_yelp_types",
+      "question": "Which vertex types are present in this snapshot?",
+      "fixture": "yelp",
+      "expected_lane": "describe_input",
+      "started_at": "2026-11-17T00:51:56.359809+00:00",
+      "seconds": 0.107,
+      "setup_seconds": 0.028,
+      "status": "failed",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "seconds": 0.011,
+          "outcome": "planner_unavailable",
+          "finish_reason": null,
+          "usage": null,
+          "turn_id": "0c1cc51a-eb2d-4595-987b-29387f9a9a28"
+        }
+      ],
+      "model_calls": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": null,
+        "completion_tokens": null,
+        "total_tokens": null
+      },
+      "known_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "calls_missing_usage": 1,
+      "lane_chosen": null,
+      "operations": [],
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": false,
+      "response": {},
+      "error": {
+        "type": "AnalyticsError",
+        "code": "planner_unavailable",
+        "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    }
+  ],
+  "serial_requests": true,
+  "measurement_notes": [
+    "One attempt per question, including product retries and answer composition; fixture setup is timed separately.",
+    "Real current lanes are recorded without translating calculation into lookup or options.",
+    "Selected-card request fields are sent unchanged; an unsupported request contract counts as a failure.",
+    "Data answers require structured evidence; prose semantics and general explanation quality are not human-reviewed.",
+    "No production writes, training captures, or persistent development configuration changes.",
+    "Observed timings include local server/cache conditions and are not controlled performance benchmarks."
+  ],
+  "model": {
+    "router": "Qwen/Qwen3.8-27B-FP8",
+    "planner": "Qwen/Qwen3.8-27B-FP8",
+    "answer": "Qwen/Qwen3.8-27B-FP8",
+    "reasoning_effort": "medium",
+    "route_thinking_token_budget": 384,
+    "plan_thinking_token_budget": null,
+    "max_completion_tokens": 3072,
+    "direct_plans": true,
+    "temperature": 0,
+    "seed": 0
+  },
+  "native_implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+  "summary": {
+    "cases": 60,
+    "successes": 5,
+    "lane_matches": 5,
+    "seconds": 6.409,
+    "model_calls": 58,
+    "by_stage": {
+      "route": 55,
+      "answer": 3
+    },
+    "tokens": {
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
+    },
+    "known_tokens": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0
+    },
+    "calls_missing_usage": 58,
+    "by_lane": {
+      "calculate": {
+        "cases": 4,
+        "successes": 4,
+        "lane_matches": 4,
+        "model_calls": 3,
+        "median_seconds": 0.475
+      },
+      "describe_input": {
+        "cases": 8,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 8,
+        "median_seconds": 0.079
+      },
+      "explain": {
+        "cases": 8,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 8,
+        "median_seconds": 0.078
+      },
+      "lookup": {
+        "cases": 6,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 6,
+        "median_seconds": 0.077
+      },
+      "needs_information": {
+        "cases": 8,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 8,
+        "median_seconds": 0.077
+      },
+      "options": {
+        "cases": 8,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 7,
+        "median_seconds": 0.079
+      },
+      "reply": {
+        "cases": 6,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 6,
+        "median_seconds": 0.078
+      },
+      "unsupported": {
+        "cases": 4,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 4,
+        "median_seconds": 0.078
+      },
+      "view": {
+        "cases": 8,
+        "successes": 0,
+        "lane_matches": 0,
+        "model_calls": 8,
+        "median_seconds": 0.082
+      }
+    }
+  },
+  "sources_unchanged_during_run": true,
+  "fixtures_unchanged_during_run": true,
+  "finished_at": "2026-11-17T00:51:56.492966+00:00"
+}

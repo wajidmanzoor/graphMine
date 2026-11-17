@@ -1,0 +1,630 @@
+{
+  "version": 1,
+  "scope": "Application routing requirements; native validation and backend admission remain authoritative. Direction mismatches are scored and require explicit preparation, not automatic exclusion.",
+  "source": "library/runtime/registry.cpp and library/runtime/families/",
+  "operations": {
+    "node-lookup": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "edge-filter": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "neighbors": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "source"
+      ]
+    },
+    "common-neighbors": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "source",
+        "sink"
+      ]
+    },
+    "query-paths": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "source",
+        "sink"
+      ]
+    },
+    "graph-aggregate": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "query-subgraph": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "node-embedding": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "knowledge-graph-embedding": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "node-learning": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "graph-learning": {
+      "input_kind": "graph_collection",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "hypergraph-node-learning": {
+      "input_kind": "hypergraph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "graph-geolocation": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "graph-condensation": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "graph-anomalies": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "entity-resolution": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "graph-edit-distance": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "query_graph"
+      ]
+    },
+    "maximum-common-subgraph": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "query_graph"
+      ]
+    },
+    "graph-coarsening": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "spectral-sparsification": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "required",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "frequent-subgraphs": {
+      "input_kind": "graph_collection",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "single-graph-frequent-subgraphs": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "temporal-motifs": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "timestamps",
+        "query_graph"
+      ]
+    },
+    "knn-graph": {
+      "input_kind": "feature_vectors",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "hypergraph-partitioning": {
+      "input_kind": "hypergraph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "subgraph-isomorphism": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "query_graph"
+      ]
+    },
+    "motif-counting": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "query_graph"
+      ]
+    },
+    "graphlet-counting": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "group-steiner-tree": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "required",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "network-alignment": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": [
+        "query_graph"
+      ]
+    },
+    "influence-maximization": {
+      "input_kind": "graph",
+      "direction": "directed",
+      "weights": "required",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "null-model-significance": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "persistent-homology": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "required",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "seeded-local-community": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": [
+        "source"
+      ]
+    },
+    "force-directed-layout": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "laplacian-eigenpairs": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "graph-signal-denoising": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "simrank": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "widest-paths": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "required",
+      "unit_weight_mode": false,
+      "needs": [
+        "source"
+      ]
+    },
+    "top-k-critical-paths": {
+      "input_kind": "graph",
+      "direction": "directed",
+      "weights": "required",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "temporal-paths": {
+      "input_kind": "graph",
+      "direction": "directed",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "timestamps",
+        "source"
+      ]
+    },
+    "bounded-paths-cycles": {
+      "input_kind": "graph",
+      "direction": "directed",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "community-detection": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "balanced-partitioning": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "signed-balance": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "densest-subgraph": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "densest-k-subgraph": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "quasi-cliques": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "maximal-bicliques": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "bipartite_side"
+      ]
+    },
+    "butterfly-counting": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "bipartite_side"
+      ]
+    },
+    "transitive-closure": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "overlapping-communities": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "breadth-first-search": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "source"
+      ]
+    },
+    "triangle-counting": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "single-source-shortest-paths": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": [
+        "source"
+      ]
+    },
+    "many-source-shortest-paths": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "spanning-tree-forest": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "connected-components": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "topological-sort": {
+      "input_kind": "graph",
+      "direction": "directed",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "pagerank": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "degree-centrality": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "betweenness-centrality": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": []
+    },
+    "personalized-pagerank": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": [
+        "source"
+      ]
+    },
+    "link-prediction": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "maximal-independent-set": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "vertex-coloring": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "random-walks": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": [
+        "source"
+      ]
+    },
+    "neighborhood-sampling": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": [
+        "source"
+      ]
+    },
+    "induced-subgraph": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "max-flow-min-cut": {
+      "input_kind": "graph",
+      "direction": "either",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": [
+        "source",
+        "sink"
+      ]
+    },
+    "weighted-matching": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "required",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "bipartite-matching": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "optional",
+      "unit_weight_mode": true,
+      "needs": [
+        "bipartite_side"
+      ]
+    },
+    "maximal-cliques": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "maximum-clique": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "k-cliques": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "biconnected-components": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "k-truss": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "k-core": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "maximum-independent-set": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "minimum-vertex-cover": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "dynamic-triangle-counting": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": []
+    },
+    "maximal-biclique-counting": {
+      "input_kind": "graph",
+      "direction": "undirected",
+      "weights": "ignored",
+      "unit_weight_mode": false,
+      "needs": [
+        "bipartite_side"
+      ]
+    }
+  }
+}

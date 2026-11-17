@@ -1,0 +1,247 @@
+{
+  "phase": 2,
+  "status": "completed",
+  "scope": "Application eligibility and lanes; stop before Phase 3.",
+  "files_changed": [
+    "agent/graphmine_agent/analytics_eligibility.py",
+    "agent/graphmine_agent/analytics_lane_choices.py",
+    "agent/graphmine_agent/analytics_lanes.py",
+    "agent/graphmine_agent/analytics_parameter_choices.py",
+    "catalog/operation_requirements.json",
+    "catalog/agent_concepts.json",
+    "agent/graphmine_agent/analytics_planning.py",
+    "agent/graphmine_agent/analytics.py",
+    "agent/graphmine_agent/analytics_context.py",
+    "agent/graphmine_agent/config.py",
+    "agent/.env.example",
+    "agent/graphmine_agent/static/analytics-ui.js",
+    "agent/graphmine_agent/static/analytics-chat.css",
+    "agent/frontend/generated/api.d.ts",
+    "tools/evaluate_lane_baseline.py",
+    "agent/tests/test_analytics_eligibility.py",
+    "agent/tests/test_analytics_lanes.py",
+    "agent/tests/test_analytics_parameter_choices.py",
+    "agent/tests/test_analytics_planning.py",
+    "agent/tests/test_analytics_bicliques.py",
+    "agent/browser_tests/test_analytics_workspace.py",
+    "agent/browser_tests/test_workspace_conversation_graph.py"
+  ],
+  "implemented": [
+    "Every admitted operation card has machine-readable requirements; full-input profiles inspect every record and field.",
+    "Code filters hard incompatibilities and supplies the router with removed-operation reasons and soft scoring hints.",
+    "All nine lanes are available. Conceptual replies cite supplied local documentation/contracts; input descriptions use code facts; lookups use code-built, validated plans.",
+    "Normal calculations show two distinct ranked cards and wait for a choice. Saved choices reject altered operations, parameters, or input references.",
+    "Single-operation picks use code-owned plans; multi-step model plans select opaque code-owned values or validated bindings instead of generating literals and vertex IDs.",
+    "Directed, weight-field, side-type, and timestamp preparation requires an explicit choice and preserves the original snapshot.",
+    "Separate routing/reply adapter model and endpoint settings are available; the current base model remains the default.",
+    "View/explain shortcuts and per-model-call Activity reasoning are preserved. Chat uses answers, optional explanations, and result links.",
+    "Clarification buttons carry the saved question inputs and device through chained preparation steps."
+  ],
+  "tests_added": {
+    "python_cases": 34,
+    "browser_cases": 2,
+    "new_test_files": [
+      "agent/tests/test_analytics_eligibility.py",
+      "agent/tests/test_analytics_lanes.py",
+      "agent/tests/test_analytics_parameter_choices.py"
+    ],
+    "coverage": [
+      "full records and wide field sets",
+      "typed IDs and valid sides",
+      "hard exclusion reasons and soft direction hints",
+      "two options without execution",
+      "saved-choice tamper and stale-input checks",
+      "confirmed copies for weights and timestamps",
+      "opaque planner values and router highlights",
+      "independent router model/server",
+      "conceptual answers without an upload",
+      "metadata facts without workflows",
+      "native execution after selection",
+      "lost-response recovery and reasoning counts",
+      "chained input preparation keeps the confirmed snapshot and original input"
+    ]
+  },
+  "checks": {
+    "python_passed": 194,
+    "javascript_passed": 17,
+    "browser_passed": 55,
+    "native_oracles_passed": 34,
+    "api_contracts": "passed",
+    "typescript": "passed",
+    "diff_check": "passed",
+    "details": "checks.json"
+  },
+  "before_after": {
+    "successes": {
+      "before": 27,
+      "after": 59,
+      "change_percent": 118.52
+    },
+    "lane_matches": {
+      "before": 28,
+      "after": 59,
+      "change_percent": 110.71
+    },
+    "model_calls": {
+      "before": 102,
+      "after": 64,
+      "change_percent": -37.25
+    },
+    "model_plan_calls": {
+      "before": 26,
+      "after": 0,
+      "change_percent": -100.0
+    },
+    "total_tokens": {
+      "before": 567930,
+      "after": 598581,
+      "change_percent": 5.4
+    },
+    "sum_question_seconds": {
+      "before": 1215.068,
+      "after": 817.046,
+      "change_percent": -32.76
+    },
+    "median_question_seconds": {
+      "before": 17.819000000000003,
+      "after": 13.689499999999999,
+      "change_percent": -23.17
+    }
+  },
+  "baseline_before": "../phase1-lanes/baseline.json",
+  "baseline_after": "baseline.json",
+  "per_question": "per-question.csv",
+  "profiles": "profiles.json",
+  "suite_sha256": "1b372ed31e58f6d4c971ba5e60b695f04f46b23277d750d8b2c75960d6b1f166",
+  "summary_after": {
+    "cases": 60,
+    "successes": 59,
+    "lane_matches": 59,
+    "seconds": 817.046,
+    "model_calls": 64,
+    "by_stage": {
+      "route": 55,
+      "answer": 9
+    },
+    "tokens": {
+      "prompt_tokens": 580021,
+      "completion_tokens": 18560,
+      "total_tokens": 598581
+    },
+    "known_tokens": {
+      "prompt_tokens": 580021,
+      "completion_tokens": 18560,
+      "total_tokens": 598581
+    },
+    "calls_missing_usage": 0,
+    "by_lane": {
+      "calculate": {
+        "cases": 4,
+        "successes": 4,
+        "lane_matches": 4,
+        "model_calls": 3,
+        "median_seconds": 2.192
+      },
+      "describe_input": {
+        "cases": 8,
+        "successes": 8,
+        "lane_matches": 8,
+        "model_calls": 8,
+        "median_seconds": 13.658
+      },
+      "explain": {
+        "cases": 8,
+        "successes": 8,
+        "lane_matches": 8,
+        "model_calls": 8,
+        "median_seconds": 13.383
+      },
+      "lookup": {
+        "cases": 6,
+        "successes": 6,
+        "lane_matches": 6,
+        "model_calls": 12,
+        "median_seconds": 12.697
+      },
+      "needs_information": {
+        "cases": 8,
+        "successes": 7,
+        "lane_matches": 7,
+        "model_calls": 8,
+        "median_seconds": 17.983
+      },
+      "options": {
+        "cases": 8,
+        "successes": 8,
+        "lane_matches": 8,
+        "model_calls": 7,
+        "median_seconds": 12.595
+      },
+      "reply": {
+        "cases": 6,
+        "successes": 6,
+        "lane_matches": 6,
+        "model_calls": 6,
+        "median_seconds": 18.939
+      },
+      "unsupported": {
+        "cases": 4,
+        "successes": 4,
+        "lane_matches": 4,
+        "model_calls": 4,
+        "median_seconds": 19.331
+      },
+      "view": {
+        "cases": 8,
+        "successes": 8,
+        "lane_matches": 8,
+        "model_calls": 8,
+        "median_seconds": 10.232
+      }
+    }
+  },
+  "remaining_observed_misses": [
+    {
+      "id": "missing_biclique_sides",
+      "question": "Find all maximal bicliques.",
+      "expected_lane": "needs_information",
+      "lane_chosen": "unsupported",
+      "lane_match": false,
+      "operation_match": true,
+      "behavior_match": false,
+      "execution_completed": false,
+      "error": null
+    }
+  ],
+  "measurement_notes": [
+    "Same frozen 60 assistant-authored regression questions, fixtures, model, reasoning budget, temperature and seed; this is not a held-out or human-rated accuracy claim.",
+    "One attempt per question, with product retries and answer composition counted. All model calls returned token usage.",
+    "Measured seconds sum timed question handling and exclude saved-result fixture setup. Cache and shared-server conditions are not controlled.",
+    "Expanded routing context adds requirements, profiles, removal reasons, lookup choices, and citation sources. Total tokens rose while calls and latency fell.",
+    "The first isolated launch used the deliberately empty development model credential; model-unavailable.json preserves that diagnostic run and is excluded from comparisons.",
+    "initial-comparison.json preserves the 49-case interrupted investigation. It was stopped to fix wide-field profiling and clarify view-action selection before the final frozen measurement.",
+    "The remaining missing_biclique_sides error is a router lane choice: unsupported instead of needs_information. It does not execute a calculation; generic code-owned clarification mapping belongs to Phase 3.",
+    "After the backend measurement, the UI confirmation buttons were corrected to carry saved snapshot references; seven live browser cases and frontend checks passed on that final UI. Backend source files remain identical to the frozen measurement."
+  ],
+  "native_abi_changed": false,
+  "native_implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+  "deployment": {
+    "service": "graphmine-devlopment-agent.service",
+    "active": true,
+    "home_http": 200,
+    "asset_path": "/assets/246d2205d1354928fba774fd.js",
+    "asset_http": 200,
+    "protected_capabilities_http": 401,
+    "protected_endpoint_requires_sign_in": true,
+    "served_bundle_contains_current_ui": true,
+    "two_option_ui_present": true,
+    "live_llm_enabled_in_configuration": false
+  },
+  "environment_configuration_unchanged": true,
+  "deferred": [
+    "Phase 3 general clarification state and structured validation-gap mapping",
+    "Phase 4 five-sample routing, calibrated confidence, and full parameter editor",
+    "Phase 5 independent citation checking"
+  ],
+  "adapter_and_sources_scope": "Adapter configuration is provided; no new adapter weights were trained. Reply citations currently use local docs and operation contracts; no web-search provider was added in this phase."
+}

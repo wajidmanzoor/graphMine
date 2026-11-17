@@ -1,0 +1,19 @@
+{
+  "before": {
+    "exit_code": 2,
+    "error": {
+      "code": "invalid_input",
+      "message": "Missing required parameter: left_partition"
+    },
+    "seconds": 0.11837
+  },
+  "after": {
+    "exit_code": 0,
+    "bicliques": 40,
+    "seconds": 0.007527
+  },
+  "explicit_result_unchanged": true,
+  "operation_ids_unchanged": true,
+  "operation_count": 82,
+  "vertex_count": 80
+}

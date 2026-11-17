@@ -67,7 +67,8 @@ def test_drawers_trap_focus_and_restore_the_trigger(loading_browser, loading_ser
     close.click()
     assert browser.switch_to.active_element.get_attribute("id") == "toggle-tools"
     browser.find_element(By.ID, "toggle-activity").click()
-    assert browser.find_element(By.ID, "activity-status").is_displayed()
+    assert browser.find_element(By.ID, "activity-list").is_displayed()
+    assert not browser.find_elements(By.ID, "activity-status")
     browser.switch_to.active_element.send_keys(Keys.ESCAPE)
     assert browser.switch_to.active_element.get_attribute("id") == "toggle-activity"
     assert not browser.find_element(By.ID, "panel-backdrop").is_displayed()

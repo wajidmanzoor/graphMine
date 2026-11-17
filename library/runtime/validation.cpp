@@ -2,6 +2,7 @@
 #include "record_query.hpp"
 #include "representation_cache.hpp"
 #include "structured_input.hpp"
+#include "bipartite_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
@@ -118,6 +119,9 @@ void validate_parameters(const json::object& card, const json::object& parameter
     for (const auto& spec : specs)
       require(!spec.value().as_object().at("required").as_bool() || parameters.contains(spec.key()),
               "Missing required parameter: " + std::string(spec.key()));
+  if (!partial && card.at("id") == "maximal-bicliques")
+    require(parameters.contains("left_partition") == parameters.contains("right_partition"),
+            "Supply both left_partition and right_partition, or omit both to use attributes.side");
 }
 
 json::object inspect_input(const std::string& kind, const json::value& value, Work& work) {
@@ -173,8 +177,11 @@ json::object validate_request(const json::object& request) {
     result["input_fingerprint"] = inspected.at("input_fingerprint");
     if (kind == "graph") {
       const auto graph = cached_graph(request.at("graph"), work);
+      const auto resolved = operation == "maximal-bicliques" &&
+                                    !boolean(request, "partial_parameters", false)
+                                ? resolve_biclique_parameters(*graph, parameters) : parameters;
       if (policy == "gpu") {
-        const auto reason = gpu_support_reason(operation, *graph, parameters);
+        const auto reason = gpu_support_reason(operation, *graph, resolved);
         if (!reason.empty()) throw Failure("unsupported_input", reason);
         if (!boolean(request, "partial_parameters", false)) {
           bool supported = false;
@@ -183,7 +190,7 @@ json::object validate_request(const json::object& request) {
             const auto& backend = entry.as_object();
             if (backend.at("device") != "gpu" || !backend.at("compiled").as_bool()) continue;
             const auto why = backend_support_reason(operation, string(backend.at("id"), "backend"),
-                                                     *graph, parameters, work);
+                                                     *graph, resolved, work);
             if (why.empty()) { supported = true; break; }
             rejection = why;
           }
@@ -191,7 +198,7 @@ json::object validate_request(const json::object& request) {
         }
       }
       if (!boolean(request, "partial_parameters", false))
-        validate_query_parameters(operation, *graph, parameters, work);
+        validate_query_parameters(operation, *graph, resolved, work);
     }
   }
   return result;

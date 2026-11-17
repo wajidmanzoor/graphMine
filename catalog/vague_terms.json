@@ -1,0 +1,21 @@
+{
+  "status": "draft_for_review",
+  "active": false,
+  "purpose": "Proposed clarification vocabulary. This file does not drive routing until reviewed and explicitly enabled.",
+  "terms": [
+    {"term": "important", "question": "What kind of importance matters here?", "interpretations": [
+      {"operation": "degree-centrality", "label": "The most direct connections"},
+      {"operation": "pagerank", "label": "Connections from other influential vertices"},
+      {"operation": "betweenness-centrality", "label": "Bridges on shortest paths"}
+    ]},
+    {"term": "groups", "question": "What should make records belong to a group?", "interpretations": [
+      {"operation": "maximal-cliques", "label": "Everyone is connected to everyone else"},
+      {"operation": "k-core", "label": "Everyone has enough neighbors within the group"},
+      {"operation": "community-detection", "label": "More connections within groups than between them"}
+    ]},
+    {"term": "similar", "question": "Which kind of similarity are you looking for?", "interpretations": [
+      {"operation": "simrank", "label": "Vertices with similar network neighborhoods"},
+      {"operation": "link-prediction", "label": "Pairs likely to have a missing connection"}
+    ]}
+  ]
+}

@@ -9,6 +9,7 @@ import jsonschema
 from referencing import Registry
 
 from .analytics_examples import digest
+from .answer_grounding import Evidence, answer_schema, fact_sources
 from .errors import AnalyticsError
 
 SCHEMAS = ("AnalyticsRoute", "AnalyticsPlan", "AnalyticsPlanNormalized", "AnalyticsAnswer")
@@ -20,9 +21,14 @@ def schema_for(name, context):
     from .analytics_answers import choice_schema
     from .analytics_planning import generation_plan_schema, plan_schema, route_schema
     if name == "AnalyticsAnswer":
+        if "sources" in context:
+            evidence = Evidence(context.get("turn_id", "studio-preview")).record("studio_context", context["sources"])
+            return answer_schema(evidence, data_answer=context.get("data_answer", True))
         return choice_schema(context["facts"])
     if name == "AnalyticsRoute":
-        return route_schema(context["cards"], facts=context.get("facts", []), targets=context.get("targets"))
+        return route_schema(context["cards"], facts=context.get("facts", []), targets=context.get("targets"),
+                            descriptions=context.get("input_facts", []), lookups=context.get("lookup_choices", []),
+                            sources=context.get("reply_sources", []), gap_cards=context.get("gap_cards", context["cards"]))
     if name in {"AnalyticsPlan", "AnalyticsPlanNormalized"}:
         schema = plan_schema(context["cards"], context["aliases"], context["device"])
         return generation_plan_schema(schema) if name == "AnalyticsPlan" else schema
@@ -35,7 +41,26 @@ def validate_target(name, output, context):
     if name in {"AnalyticsPlan", "AnalyticsPlanNormalized"}:
         if (output["status"] == "ready") != (output["plan"] is not None):
             raise ValueError("Only a ready plan may contain executable steps")
-    if name == "AnalyticsAnswer" or (name == "AnalyticsRoute" and output.get("intent") == "explain"):
+    sources, identifiers, text, data_answer = None, [], "", True
+    if name == "AnalyticsAnswer" and "sources" in context:
+        sources, identifiers, text = context["sources"], output["source_ids"], output["text"]
+        data_answer = context.get("data_answer", True)
+    elif name == "AnalyticsRoute" and output.get("intent") == "reply":
+        sources, identifiers, text = context["reply_sources"], output["source_ids"], output["message"]
+        data_answer = False
+    elif name == "AnalyticsRoute" and output.get("intent") == "explain" and all("statement" in row for row in context.get("facts", [])):
+        sources = fact_sources(context["facts"], workflow_id=context.get("workflow_id", "captured"), revision=context.get("revision", 1))
+        identifiers, text = output["fact_ids"], output["message"]
+    if sources is not None:
+        # Offline review validates the recorded context; it neither executes
+        # tools nor claims that imported evidence was freshly retrieved.
+        turn = context.get("turn_id", "studio-preview")
+        evidence = Evidence(turn).record("studio_context", sources)
+        answer = evidence.render(evidence.answer(text, identifiers), data_answer=data_answer)
+        errors = evidence.check(answer, turn_id=turn, data_answer=data_answer)
+        if errors:
+            raise ValueError(" ".join(errors))
+    elif name == "AnalyticsAnswer" or (name == "AnalyticsRoute" and output.get("intent") == "explain"):
         lead = output.get("lead", output.get("message", ""))
         if re.search(r"\d", lead):
             raise ValueError("Answer figures must come from saved facts, not the lead sentence")

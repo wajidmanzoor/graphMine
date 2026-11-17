@@ -1,0 +1,330 @@
+{
+  "demo": {
+    "profile": {
+      "input_kind": "graph",
+      "directed": true,
+      "weighted": true,
+      "bipartite": false,
+      "temporal": false,
+      "vertices_count": 8,
+      "edges_count": 10,
+      "vertex_types": [
+        "Account"
+      ],
+      "vertex_type_count": {
+        "Account": 8
+      },
+      "weight_candidates": [
+        "attributes.amount"
+      ],
+      "canonical_weights_complete": true
+    },
+    "operation_requirements": 82,
+    "eligible_operations": 66,
+    "removed_operations": [
+      {
+        "operation": "graph-learning",
+        "reason": "Requires graph collection input."
+      },
+      {
+        "operation": "hypergraph-node-learning",
+        "reason": "Requires hypergraph input."
+      },
+      {
+        "operation": "graph-edit-distance",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "maximum-common-subgraph",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "frequent-subgraphs",
+        "reason": "Requires graph collection input."
+      },
+      {
+        "operation": "temporal-motifs",
+        "reason": "Every event needs a timestamp."
+      },
+      {
+        "operation": "knn-graph",
+        "reason": "Requires feature vectors input."
+      },
+      {
+        "operation": "hypergraph-partitioning",
+        "reason": "Requires hypergraph input."
+      },
+      {
+        "operation": "subgraph-isomorphism",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "motif-counting",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "network-alignment",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "temporal-paths",
+        "reason": "Every event needs a timestamp."
+      },
+      {
+        "operation": "maximal-bicliques",
+        "reason": "Bipartite sides are missing or some edges do not cross between the declared sides."
+      },
+      {
+        "operation": "butterfly-counting",
+        "reason": "Bipartite sides are missing or some edges do not cross between the declared sides."
+      },
+      {
+        "operation": "bipartite-matching",
+        "reason": "Bipartite sides are missing or some edges do not cross between the declared sides."
+      },
+      {
+        "operation": "maximal-biclique-counting",
+        "reason": "Bipartite sides are missing or some edges do not cross between the declared sides."
+      }
+    ]
+  },
+  "demo_undirected": {
+    "profile": {
+      "input_kind": "graph",
+      "directed": false,
+      "weighted": true,
+      "bipartite": false,
+      "temporal": false,
+      "vertices_count": 8,
+      "edges_count": 10,
+      "vertex_types": [
+        "Account"
+      ],
+      "vertex_type_count": {
+        "Account": 8
+      },
+      "weight_candidates": [
+        "attributes.amount"
+      ],
+      "canonical_weights_complete": true
+    },
+    "operation_requirements": 82,
+    "eligible_operations": 66,
+    "removed_operations": [
+      {
+        "operation": "graph-learning",
+        "reason": "Requires graph collection input."
+      },
+      {
+        "operation": "hypergraph-node-learning",
+        "reason": "Requires hypergraph input."
+      },
+      {
+        "operation": "graph-edit-distance",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "maximum-common-subgraph",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "frequent-subgraphs",
+        "reason": "Requires graph collection input."
+      },
+      {
+        "operation": "temporal-motifs",
+        "reason": "Every event needs a timestamp."
+      },
+      {
+        "operation": "knn-graph",
+        "reason": "Requires feature vectors input."
+      },
+      {
+        "operation": "hypergraph-partitioning",
+        "reason": "Requires hypergraph input."
+      },
+      {
+        "operation": "subgraph-isomorphism",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "motif-counting",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "network-alignment",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "temporal-paths",
+        "reason": "Every event needs a timestamp."
+      },
+      {
+        "operation": "maximal-bicliques",
+        "reason": "Bipartite sides are missing or some edges do not cross between the declared sides."
+      },
+      {
+        "operation": "butterfly-counting",
+        "reason": "Bipartite sides are missing or some edges do not cross between the declared sides."
+      },
+      {
+        "operation": "bipartite-matching",
+        "reason": "Bipartite sides are missing or some edges do not cross between the declared sides."
+      },
+      {
+        "operation": "maximal-biclique-counting",
+        "reason": "Bipartite sides are missing or some edges do not cross between the declared sides."
+      }
+    ]
+  },
+  "yelp": {
+    "profile": {
+      "input_kind": "graph",
+      "directed": true,
+      "weighted": true,
+      "bipartite": true,
+      "temporal": false,
+      "vertices_count": 20,
+      "edges_count": 69,
+      "vertex_types": [
+        "Business",
+        "User"
+      ],
+      "vertex_type_count": {
+        "User": 10,
+        "Business": 10
+      },
+      "weight_candidates": [
+        "attributes.weight"
+      ],
+      "canonical_weights_complete": true
+    },
+    "operation_requirements": 82,
+    "eligible_operations": 70,
+    "removed_operations": [
+      {
+        "operation": "graph-learning",
+        "reason": "Requires graph collection input."
+      },
+      {
+        "operation": "hypergraph-node-learning",
+        "reason": "Requires hypergraph input."
+      },
+      {
+        "operation": "graph-edit-distance",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "maximum-common-subgraph",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "frequent-subgraphs",
+        "reason": "Requires graph collection input."
+      },
+      {
+        "operation": "temporal-motifs",
+        "reason": "Every event needs a timestamp."
+      },
+      {
+        "operation": "knn-graph",
+        "reason": "Requires feature vectors input."
+      },
+      {
+        "operation": "hypergraph-partitioning",
+        "reason": "Requires hypergraph input."
+      },
+      {
+        "operation": "subgraph-isomorphism",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "motif-counting",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "network-alignment",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "temporal-paths",
+        "reason": "Every event needs a timestamp."
+      }
+    ]
+  },
+  "yelp_undirected": {
+    "profile": {
+      "input_kind": "graph",
+      "directed": false,
+      "weighted": true,
+      "bipartite": true,
+      "temporal": false,
+      "vertices_count": 20,
+      "edges_count": 69,
+      "vertex_types": [
+        "Business",
+        "User"
+      ],
+      "vertex_type_count": {
+        "User": 10,
+        "Business": 10
+      },
+      "weight_candidates": [
+        "attributes.weight"
+      ],
+      "canonical_weights_complete": true
+    },
+    "operation_requirements": 82,
+    "eligible_operations": 70,
+    "removed_operations": [
+      {
+        "operation": "graph-learning",
+        "reason": "Requires graph collection input."
+      },
+      {
+        "operation": "hypergraph-node-learning",
+        "reason": "Requires hypergraph input."
+      },
+      {
+        "operation": "graph-edit-distance",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "maximum-common-subgraph",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "frequent-subgraphs",
+        "reason": "Requires graph collection input."
+      },
+      {
+        "operation": "temporal-motifs",
+        "reason": "Every event needs a timestamp."
+      },
+      {
+        "operation": "knn-graph",
+        "reason": "Requires feature vectors input."
+      },
+      {
+        "operation": "hypergraph-partitioning",
+        "reason": "Requires hypergraph input."
+      },
+      {
+        "operation": "subgraph-isomorphism",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "motif-counting",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "network-alignment",
+        "reason": "A separate query or comparison graph is required."
+      },
+      {
+        "operation": "temporal-paths",
+        "reason": "Every event needs a timestamp."
+      }
+    ]
+  }
+}

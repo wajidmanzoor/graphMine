@@ -1,0 +1,53 @@
+{
+  "status": "completed",
+  "graph_vertices": 20,
+  "graph_edges": 69,
+  "planning_seconds": 33.023,
+  "model_calls": [
+    {
+      "stage": "route",
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 14656,
+        "total_tokens": 15100,
+        "completion_tokens": 444,
+        "completion_tokens_details": {
+          "reasoning_tokens": 383
+        }
+      },
+      "outcome": "ok",
+      "seconds": 15.57
+    },
+    {
+      "stage": "plan",
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 12091,
+        "total_tokens": 12586,
+        "completion_tokens": 495,
+        "completion_tokens_details": {
+          "reasoning_tokens": 350
+        }
+      },
+      "outcome": "ok",
+      "seconds": 17.19
+    }
+  ],
+  "confirmation_seconds": 0.251,
+  "confirmation_model_calls": 0,
+  "bicliques": 33,
+  "oracle_bicliques": 33,
+  "native_seconds": 0.000882941,
+  "partition_sizes": {
+    "left_partition": 10,
+    "right_partition": 10
+  },
+  "original_unchanged": true,
+  "native_implementation": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+  "temporary_store": "/tmp/graphmine-phase0-live-is0kczik",
+  "workflow_id": "4ded0f92-09b1-48a4-aedc-f8173b92997b",
+  "conversion_prompt": "These connections are directed, but maximal bicliques requires undirected connections. Use an undirected copy for this analysis?",
+  "message": "Completed maximal bicliques on an explicitly confirmed undirected copy; the original directed snapshot is unchanged."
+}

@@ -201,7 +201,12 @@ def conversation_page(database, session_id, *, before=None, limit=30, analytics=
             # Completed reasoning contains the full text. Earlier delta chunks
             # are redundant for display, but remain in the source event ledger.
             for row in db.execute(f"""SELECT e.* FROM events e INDEXED BY events_turn WHERE e.session_id=? AND json_extract(e.payload,'$.turn_id') IN ({marks})
-                AND (e.type!='workflow.reasoning.delta' OR (NOT EXISTS (
+                AND (e.type!='workflow.reasoning.delta' OR (
+                  json_extract(e.payload,'$.call_id') IS NOT NULL AND NOT EXISTS (
+                    SELECT 1 FROM events done WHERE done.session_id=e.session_id AND done.type='workflow.reasoning'
+                      AND json_extract(done.payload,'$.turn_id')=json_extract(e.payload,'$.turn_id')
+                      AND json_extract(done.payload,'$.call_id')=json_extract(e.payload,'$.call_id')))
+                  OR (json_extract(e.payload,'$.call_id') IS NULL AND NOT EXISTS (
                   SELECT 1 FROM events answer WHERE answer.session_id=e.session_id AND answer.type='workflow.chat'
                     AND json_extract(answer.payload,'$.turn_id')=json_extract(e.payload,'$.turn_id') AND json_extract(answer.payload,'$.role')='assistant')
                   AND e.sequence>coalesce((SELECT max(done.sequence) FROM events done WHERE done.session_id=e.session_id

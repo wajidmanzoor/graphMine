@@ -39,6 +39,21 @@ std::vector<bool> partition(const Graph& graph, const json::object& args, bool e
   return left;
 }
 }  // namespace
+json::object resolve_biclique_parameters(const Graph& graph, const json::object& args) {
+  if (args.contains("left_partition") || args.contains("right_partition")) {
+    require(args.contains("left_partition") && args.contains("right_partition"),
+            "Supply both left_partition and right_partition, or omit both to use attributes.side");
+    return args;
+  }
+  const auto sides = partition(graph, args, false);
+  json::array left, right;
+  for (VertexIndex v = 0; v < graph.vertex_count(); ++v)
+    (sides[v] ? left : right).push_back(id_json(graph.external_id(v)));
+  auto resolved = args;
+  resolved["left_partition"] = std::move(left);
+  resolved["right_partition"] = std::move(right);
+  return resolved;
+}
 BipartiteInput bipartite_input(const Graph& graph, const json::object& args, BipartiteTopology kind, Work& work) {
   const bool butterfly=kind==BipartiteTopology::butterflies;
   const auto validated=partition(graph,args,!butterfly);

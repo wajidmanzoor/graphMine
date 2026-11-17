@@ -1,0 +1,653 @@
+{
+  "phase": 5,
+  "status": "implemented_with_followups",
+  "created_at": "2026-11-17T16:06:57.957132+00:00",
+  "scope": "Checked data and conceptual answers, citation UI, and public Google search with explicit failure handling. No native ABI, CLI, operation ID or native result JSON changes.",
+  "changes": [
+    "Current-turn tool evidence registry; public answers have text and citation id/kind/ref triples.",
+    "Complete sourced sentences are checked, preserving case-sensitive names and exact numeric text; unsupported paraphrases, stale references and web citations in data answers fail.",
+    "Data output grammar permits only code-owned source placeholders and neutral introductions, never literal vertex IDs. Code renders facts on separate lines.",
+    "One repair attempt after a rejected draft, then bare facts. Service failures fall back immediately. Every actual model request is captured separately.",
+    "Saved result reads are revision-bound. Input descriptions, scalar results and selected fact follow-ups avoid an extra writer request.",
+    "Sources drawer, visible citation provenance, no repeated answer/plan or repeated fact list, short traces, and admin-only Expert working notes.",
+    "Public Google search uses no API key, stops at bot checks, labels bounded result excerpts, and provides an open-search link when blocked."
+  ],
+  "files_changed_this_phase": {
+    "backend": [
+      "agent/graphmine_agent/answer_grounding.py",
+      "agent/graphmine_agent/google_search.py",
+      "agent/graphmine_agent/analytics_answers.py",
+      "agent/graphmine_agent/analytics.py",
+      "agent/graphmine_agent/analytics_planning.py",
+      "agent/pyproject.toml"
+    ],
+    "ui": [
+      "agent/graphmine_agent/static/analytics-ui.js",
+      "agent/graphmine_agent/static/analytics-chat.css"
+    ],
+    "measurement_and_docs": [
+      "tools/evaluate_lane_baseline.py",
+      "docs/ANALYTICS_WORKSPACE.md"
+    ],
+    "tests": [
+      "agent/tests/test_answer_grounding.py",
+      "agent/tests/test_google_search.py",
+      "agent/tests/test_grounded_lanes.py",
+      "agent/tests/test_analytics_answers.py",
+      "agent/tests/test_analytics_planning.py",
+      "agent/tests/test_training_capture.py",
+      "agent/tests/test_lane_baseline.py",
+      "agent/browser_tests/test_analytics_workspace.py",
+      "agent/browser_tests/test_workspace_grounding.py"
+    ]
+  },
+  "source_files": {
+    "agent/graphmine_agent/answer_grounding.py": "debc7b3cf193cd9c88d51cb45db2f57dab0f99cc3a730851cf64d3dae2aa9d5b",
+    "agent/graphmine_agent/google_search.py": "140581e267e6df7659c9ac1097c683183b98f11a41eaa792cac839b2fe1a7a10",
+    "agent/graphmine_agent/analytics_answers.py": "bdd09e3bb852b372b9cfa0a958fec332fa24d27be394d5bf84aed71f8951a208",
+    "agent/graphmine_agent/analytics.py": "c9139f78b2b9a2ee236abc9194787c446a2b9cc0c36a71dd31eafba9ae4411ef",
+    "agent/graphmine_agent/analytics_planning.py": "03557b1895b5f0d1434cf05d92b22c4ba7b0315a7a037fa11dee306037b816c3",
+    "agent/pyproject.toml": "f385384d6b7875d2c7dd81acc49dea1e79dc624fa4c750dc565c6c9ffae448cc",
+    "agent/graphmine_agent/static/analytics-ui.js": "04b4538b22aacd25b5a1cff2e95c2bdf5fd3466763887819aafa79d311cf430b",
+    "agent/graphmine_agent/static/analytics-chat.css": "582c4f371f6a7926c50dded70e8160e9da4ea0e69881314c008eab825236eabb",
+    "tools/evaluate_lane_baseline.py": "bf6eeaa79bd951cc66e16d26f7f5a6133c0730b5dbbd49f9f2685c1eb88260c2",
+    "docs/ANALYTICS_WORKSPACE.md": "22287a418e8178a6f81c8442774f66fab0c2093ab924cb85131ef5c733bbf42c",
+    "agent/tests/test_answer_grounding.py": "6e4e67a10e11da622c63b660ece0ecc83845e42efcfe941ba30bd206007abe58",
+    "agent/tests/test_google_search.py": "de9e2d07a3f27b905aff90d024b6c4c62d6e413f672f034b16fd18e1257fa8f4",
+    "agent/tests/test_grounded_lanes.py": "00a7d48c521483f10385ee5ed6db0a60adcfd354c7c44f13ac981aab0dc00e19",
+    "agent/tests/test_analytics_answers.py": "c55d476b254e5ded8778efa2c9e309cef698c13f9c7476d39de2b54ad43fc2bb",
+    "agent/tests/test_analytics_planning.py": "c7852963154fa5cab97dee8890565e910cb2987d117185e3952f78b93b104b44",
+    "agent/tests/test_training_capture.py": "e160152f75fda39a8bb9fddf66b11c25cfd697aeb924e25d285a629e0ee1e6e4",
+    "agent/tests/test_lane_baseline.py": "4c80b3d1a2d01334a57ef5292d81e4dc96e4eba77f8e4b831a9b8f8cde192afc",
+    "agent/browser_tests/test_analytics_workspace.py": "9477a0c0774d7d29302fd91b6eab70f8eb0a4ea98cb52819e3aaf8e6a55ca798",
+    "agent/browser_tests/test_workspace_grounding.py": "e3d8572f61a4dc1e986fdf6e34b8d56d8b6fa1d93809828e8a96a47886dd1839"
+  },
+  "tests_added": [
+    "Wrong names (including case-only changes), counts, units, sign, precision, negation and invented causes.",
+    "Current-turn citations, wrong revision/ref/kind/ID, uncited claims and forbidden web citations for data.",
+    "One repair versus bare-facts fallback, network failures, code-owned data grammar and Qwen-compatible decoding schema.",
+    "Lowercase fact sentence boundaries, revision-bound result reads and zero-call selected fact follow-ups.",
+    "Google success, bot check and unavailable responses; no credentials and no hidden graph context in queries.",
+    "Input/explain/view/reply integration, evidence-event auditing and actual writer-call activity.",
+    "Browser duplicate prevention, source inspection, reload persistence, safe web links/text, and 320/390/1200 pixel source layouts."
+  ],
+  "verification": {
+    "comparison_scope_python_passed": 351,
+    "unique_browser_checks_passed": 61,
+    "test_artifacts": {
+      "python-final-tree.xml": {
+        "tests": 347,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "1447117f2261f79ec8518af2d6fd40727b28c66dbe440151ee973947bbdbd302"
+      },
+      "gpu-policy-final-tree.xml": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "2727ed2d6a471f7960021cc334e5643a5600658454cb87a95de94082ca6cc1c6"
+      },
+      "workspace-browser-final-tree.xml": {
+        "tests": 60,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "665d2c358af0b63f45ed4ce556a38a3e02ad43b1ca81a3d25b1740165806ecaf"
+      },
+      "browser-sources-accessibility.xml": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "sha256": "5a67d74dd5502c72644270be7ff7e7b1c44bf5930c2b757ec74224967c2ad3c4"
+      }
+    },
+    "frontend": {
+      "javascript_tests_passed": 18,
+      "typescript": "passed",
+      "api_contracts": "passed"
+    },
+    "native_implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+    "native_implementation_unchanged": true,
+    "native_oracles": {
+      "suite_sha256": "1b372ed31e58f6d4c971ba5e60b695f04f46b23277d750d8b2c75960d6b1f166",
+      "implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+      "passed": 34,
+      "cases": [
+        {
+          "id": "lookup_los_agaves",
+          "operation": "node-lookup",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_grid",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "calculate_picked_components",
+          "operation": "connected-components",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_triangles",
+          "operation": "triangle-counting",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_search_tracy",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_highlight_ada",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_bicliques_output",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_yelp_bicliques",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_maximal_cliques",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "lookup_ada",
+          "operation": "node-lookup",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "lookup_most_connections",
+          "operation": "degree-centrality",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_pagerank",
+          "operation": "pagerank",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "lookup_ada_neighbors",
+          "operation": "neighbors",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_core",
+          "operation": "k-core",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_components",
+          "operation": "connected-components",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_clique_count",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_clique_guarantee",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_largest_clique",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_open_results",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_maximum_clique",
+          "operation": "maximum-clique",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "calculate_picked_triangles",
+          "operation": "triangle-counting",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_clique_members",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_all_cliques",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_degrees",
+          "operation": "degree-centrality",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_components",
+          "operation": "connected-components",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "lookup_tracy",
+          "operation": "node-lookup",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_bicliques",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "options_triangles",
+          "operation": "triangle-counting",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "calculate_picked_maximum",
+          "operation": "maximum-clique",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_yelp_guarantee",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "lookup_us_accounts",
+          "operation": "node-lookup",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "explain_yelp_triangles",
+          "operation": "triangle-counting",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "calculate_picked_bicliques",
+          "operation": "maximal-bicliques",
+          "checks": [
+            true
+          ]
+        },
+        {
+          "id": "view_circle",
+          "operation": "maximal-cliques",
+          "checks": [
+            true
+          ]
+        }
+      ]
+    },
+    "final_backend_matches_live_measurement": true,
+    "browser_note": "The full 60-check browser run preceded only the source-drawer typography adjustment. Six source-specific checks then passed on the final CSS, adding the 320-pixel case; the union is 61 distinct checks.",
+    "development_smoke": {
+      "home_http": 200,
+      "asset_http": 200,
+      "asset_path": "/assets/cb04cfc9a461c5c3f7b9cefe.js",
+      "build_id": "7e37d631e506a0f1615e",
+      "expected_build_id": "7e37d631e506a0f1615e",
+      "served_bundle_matches_final_sources": true,
+      "sources_drawer": true,
+      "google_search_link": true,
+      "admin_expert_notes": true,
+      "config_sha256": "0724505bc7917b9a85385e939c9bffcdb5d5a3cc5bb33d05c14e15c3a7cf0b51",
+      "development_llm_enabled": "false",
+      "protected_api_http": 401
+    },
+    "google_live": {
+      "status": "blocked",
+      "sources": [],
+      "search_url": "https://www.google.com/search?q=k+core+k+truss+graph+difference&udm=14",
+      "query": "k core k truss graph difference",
+      "checked_at": "2026-11-17T16:11:18.921204+00:00",
+      "scope": "Final direct public Google check from this server; no API key or bot-check bypass."
+    }
+  },
+  "comparison": {
+    "phase4": {
+      "cases": 60,
+      "successes": 60,
+      "lane_matches": 60,
+      "seconds": 958.0,
+      "model_calls": 78,
+      "model_samples": 110,
+      "by_stage": {
+        "route": 55,
+        "answer": 9,
+        "clarify": 6,
+        "candidates": 8
+      },
+      "tokens": {
+        "prompt_tokens": 673454,
+        "completion_tokens": 22229,
+        "total_tokens": 695683
+      },
+      "known_tokens": {
+        "prompt_tokens": 673454,
+        "completion_tokens": 22229,
+        "total_tokens": 695683
+      },
+      "calls_missing_usage": 0,
+      "by_lane": {
+        "calculate": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 3,
+          "median_seconds": 2.215
+        },
+        "describe_input": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 13.677
+        },
+        "explain": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 15.255
+        },
+        "lookup": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 12,
+          "median_seconds": 12.139
+        },
+        "needs_information": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 14,
+          "median_seconds": 21.901
+        },
+        "options": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 15,
+          "median_seconds": 27.736
+        },
+        "reply": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 6,
+          "median_seconds": 19.523
+        },
+        "unsupported": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 4,
+          "median_seconds": 18.669
+        },
+        "view": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 10.069
+        }
+      },
+      "median_question_seconds": 15.34
+    },
+    "phase5": {
+      "cases": 60,
+      "successes": 58,
+      "grounding": {
+        "required": 40,
+        "passed": 40,
+        "fallbacks": 0
+      },
+      "lane_matches": 58,
+      "seconds": 957.46,
+      "model_calls": 80,
+      "model_samples": 120,
+      "by_stage": {
+        "route": 55,
+        "answer": 10,
+        "clarify": 5,
+        "candidates": 10
+      },
+      "tokens": {
+        "prompt_tokens": 701993,
+        "completion_tokens": 21855,
+        "total_tokens": 723848
+      },
+      "known_tokens": {
+        "prompt_tokens": 701993,
+        "completion_tokens": 21855,
+        "total_tokens": 723848
+      },
+      "calls_missing_usage": 0,
+      "by_lane": {
+        "calculate": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 3,
+          "median_seconds": 1.538
+        },
+        "describe_input": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 16.984
+        },
+        "explain": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 10.486
+        },
+        "lookup": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 12,
+          "median_seconds": 11.319
+        },
+        "needs_information": {
+          "cases": 8,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 15,
+          "median_seconds": 23.559
+        },
+        "options": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 15,
+          "median_seconds": 27.575
+        },
+        "reply": {
+          "cases": 6,
+          "successes": 6,
+          "lane_matches": 6,
+          "model_calls": 7,
+          "median_seconds": 15.12
+        },
+        "unsupported": {
+          "cases": 4,
+          "successes": 4,
+          "lane_matches": 4,
+          "model_calls": 4,
+          "median_seconds": 18.934
+        },
+        "view": {
+          "cases": 8,
+          "successes": 8,
+          "lane_matches": 8,
+          "model_calls": 8,
+          "median_seconds": 10.296
+        }
+      },
+      "median_question_seconds": 16.312
+    }
+  },
+  "lane_mismatches": [
+    {
+      "id": "ambiguous_importance",
+      "question": "Who is important in this network?",
+      "expected_lane": "needs_information",
+      "lane_chosen": "options",
+      "status": "options",
+      "error": null
+    },
+    {
+      "id": "missing_path_endpoints",
+      "question": "Find the shortest path between two accounts.",
+      "expected_lane": "needs_information",
+      "lane_chosen": "options",
+      "status": "options",
+      "error": null
+    }
+  ],
+  "broader_repository_run": {
+    "tests": 1208,
+    "failures": 5,
+    "errors": 0,
+    "skipped": 32,
+    "sha256": "ea8fd2f1c8f2b381d30af8f9250320f910e06c97198d6a3da5b0477565e8c5fd",
+    "passed": 1171,
+    "stopped_after_failures": 5,
+    "failed_tests": [
+      {
+        "module": "tests.test_database_sync",
+        "test": "test_synchronous_sync_has_private_durable_filterable_idempotent_history"
+      },
+      {
+        "module": "tests.test_database_sync",
+        "test": "test_sync_failure_survives_synchronous_response_and_history"
+      },
+      {
+        "module": "tests.test_native_uploads",
+        "test": "test_upload_uses_cudf_and_preserves_original_bytes"
+      },
+      {
+        "module": "tests.test_native_uploads",
+        "test": "test_upload_endpoint_returns_graph_constructed_by_cpp"
+      },
+      {
+        "module": "tests.test_native_uploads",
+        "test": "test_unavailable_cudf_does_not_use_a_python_reader"
+      }
+    ],
+    "relevant_subsystems_match_phase4_hashes": {
+      "api.py": true,
+      "config.py": true,
+      "database_sync.py": true,
+      "database_jobs.py": true,
+      "database.py": true,
+      "graph_store.py": true,
+      "csv_ingestion.py": true,
+      "conversation_timeline.py": true
+    },
+    "note": "This is a broader, partial run using isolated settings. Database-sync history and legacy native CSV expectations failed. Those subsystem files match the Phase 4 hashes; they were not changed as part of grounded answers. This report does not claim the entire repository suite passes."
+  },
+  "diagnostic_runs_retained": {
+    "baseline.json": "Completed first run: Qwen rejected uniqueItems in the writer grammar; data answers fell back to facts. Token totals are unknown for failed HTTP requests. Not the final comparison.",
+    "baseline-final.json": "Interrupted deliberately after a valid lowercase fact was merged with its introduction and rejected. The final renderer separates statements, and the data grammar prevents literal data drafts.",
+    "qwen-data-grammar.json": "Live synthetic-fact smoke: supported Qwen grammar, one request, checked output, no fallback."
+  },
+  "measurement_limits": [
+    "Frozen assistant-labelled development set, not a held-out accuracy study; labels were not changed to hide lane mismatches.",
+    "Grounding audits use the same conservative checker against actual evidence events, independently of the application checked flag. This is not human semantic review.",
+    "The checker accepts complete source sentences, not arbitrary natural-language paraphrases. Grounded does not mean that a web source is independently true.",
+    "Calls count HTTP requests; samples count independent completions. Candidate requests use n=5, and token usage is not multiplied by five.",
+    "Wall-clock measurements include server cache/load conditions and concurrent local verification; this is not a controlled speed benchmark.",
+    "Public Google retrieval was blocked by Google on this deployment network. Successful retrieval/parsing integration is covered by fixtures, not claimed as a successful live search."
+  ],
+  "pending": [
+    "Review the two lane mismatches against the frozen labels: importance and shortest-path questions offered selectable options instead of a required clarification. Neither executed a calculation.",
+    "Review the five failures in the broader database-sync/native-CSV test run before claiming an all-repository green suite.",
+    "Google must accept the deployment network before live public search can return evidence; the current bot-check path and user-opened link work.",
+    "catalog/vague_terms.json remains a draft for user review; broader held-out confidence validation remains outstanding from earlier phases.",
+    "Production promotion is outside this phase. Development was refreshed, while its existing live-LLM-disabled configuration stayed unchanged."
+  ]
+}

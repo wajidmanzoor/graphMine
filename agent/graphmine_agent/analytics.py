@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import copy
-import functools
 import json
 import logging
 import math
@@ -555,6 +554,8 @@ class AnalyticsService:
 
     async def capabilities(self, refresh=False):
         result = copy.deepcopy(await self._native_capabilities(refresh))
+        from .analytics_eligibility import attach_requirements
+        attach_requirements(result["operations"], self.settings.repository_root)
         from .result_views import profile
         for operation in result["operations"]:
             operation["visualization"] = profile(operation["id"])
@@ -1092,6 +1093,7 @@ class AnalyticsService:
         return None
 
     def _labels(self, record):
+        from .graph_context import display_name
         try:
             inputs = json.loads((self._directory(record) / "inputs.json").read_text())
         except (OSError, ValueError):
@@ -1100,9 +1102,9 @@ class AnalyticsService:
         for descriptor in inputs.values():
             data = descriptor.get("data") if isinstance(descriptor, dict) else None
             for vertex in (data or {}).get("vertices", []):
-                if isinstance(vertex, dict) and vertex.get("label") is not None:
+                if isinstance(vertex, dict) and "id" in vertex:
                     labels[json.dumps(vertex.get("id"), sort_keys=True)] = str(
-                        vertex["label"]
+                        display_name(vertex)
                     )
         return labels
 
@@ -1118,12 +1120,14 @@ class AnalyticsService:
             compose,
             default_fact_ids,
             suggested_questions,
+            writer_observers,
         )
+        from .answer_grounding import Evidence, fact_sources
 
         try:
             caps = await self.capabilities()
             titles = {card["id"]: card["title"] for card in caps["operations"]}
-            saved = await asyncio.to_thread(self.result, record["id"])
+            saved = await asyncio.to_thread(self.result, record["id"], expected_revision=record['revision'])
             capture = self.database.capture
             if capture:
                 await asyncio.to_thread(
@@ -1134,6 +1138,10 @@ class AnalyticsService:
             facts = build_facts(saved, titles, labels)
             if not facts:
                 return
+            turn_id = record.get('planning_turn_id') or f"workflow:{record['id']}:{record['revision']}"
+            evidence = Evidence(turn_id).record('build_facts', fact_sources(facts, workflow_id=record['id'], revision=record['revision']))
+            await self.events.publish(record['session_id'], 'workflow.evidence',
+                {'turn_id': turn_id, 'tool': 'build_facts', 'sources': list(evidence.sources.values())})
             question = self._question(record)
             # A single scalar result already has a complete, grounded answer.
             completed = [step["result"] for step in saved.get("steps", {}).values() if step.get("status") == "completed" and step.get("result")]
@@ -1150,19 +1158,23 @@ class AnalyticsService:
                 "suggestions": suggested_questions(saved, facts),
                 # The browser shows that an introduction is still being written.
                 "pending": composing,
+                **evidence.facts(default_fact_ids(facts)),
+                'sources': evidence.public_sources(default_fact_ids(facts)),
+                'grounding': {'checked': True, 'fallback': False, 'attempts': 0},
             }
+            assert not evidence.check(answer, turn_id=turn_id, data_answer=True)
             await self.events.publish(record["session_id"], "workflow.answer", answer)
             if not composing:
                 return
             try:
                 choice = await compose(
-                    self.settings, question, facts,
-                    on_call=functools.partial(
-                        capture.model_call, record["session_id"], stage="answer",
-                        turn_id=record.get("planning_turn_id"), workflow_id=record["id"],
-                    ) if capture else None,
+                    self.settings, question, facts, evidence=evidence,
+                    **writer_observers(self.settings, self.events, self.database, record['session_id'], turn_id,
+                                       workflow_id=record['id'], revision=record['revision']),
                 )
-                answer.update(lead=choice["lead"], fact_ids=choice["fact_ids"], source="model")
+                if not evidence.check(choice, turn_id=turn_id, data_answer=True):
+                    answer.update(choice)
+                    answer['sources'] = evidence.public_sources(row['id'] for row in answer['citations'])
             except Exception as exc:  # noqa: BLE001 - the facts still answer
                 _logger.info("answer composition skipped: %s", exc)
             answer["pending"] = False

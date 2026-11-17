@@ -11,6 +11,7 @@ from threading import Event
 import pytest
 
 from graphmine_agent.analytics import AnalyticsError
+from graphmine_agent.database import RecordNotFound
 from graphmine_agent.database_reconciliation import change_summary, plan_changes, read_state
 from graphmine_agent.database_sources import sql_connection
 from graphmine_agent.database_jobs import DatabaseJobs
@@ -109,7 +110,7 @@ def test_sync_without_mappings_is_rejected_before_queue_or_graph_changes(workspa
     assert not workspace.client.get('/api/database-jobs?kind=sync').json()['items']
 
 
-def test_synchronous_sync_has_private_durable_filterable_idempotent_history(workspace, monkeypatch):
+def test_synchronous_sync_has_private_temporary_idempotent_receipt(workspace, monkeypatch):
     summary = {'source_id': 'demo', 'nodes': 3, 'relationships': 2, 'changes': {'nodes': {'created': 1, 'updated': 1, 'deleted': 0, 'unchanged': 1}},
                'schema_change': {'changed': False}, 'mapped_content_sha256': 'a'*64}
     calls = []
@@ -122,21 +123,28 @@ def test_synchronous_sync_has_private_durable_filterable_idempotent_history(work
     assert workspace.client.post('/api/database-sources/demo/sync', headers={'Idempotency-Key': 'synchronous-sync'}).json() == saved
     assert len(calls) == 1
     history = workspace.client.get('/api/database-jobs?kind=sync&source_id=demo').json()['items']
-    assert len(history) == 1 and history[0]['synchronization'] == summary
-    assert 'owner_id' not in history[0] and 'source_fingerprint' not in history[0]
-    assert DatabaseJobs(workspace.runtime).get(saved['job_id'])['synchronization'] == summary
+    assert history == []  # The queue lists active work; terminal receipts are memory-only.
+    receipt = workspace.client.get(f"/api/database-jobs/{saved['job_id']}").json()
+    assert receipt['synchronization'] == summary and receipt['status'] == 'completed'
+    assert 'owner_id' not in receipt and 'source_fingerprint' not in receipt
+    with pytest.raises(RecordNotFound):
+        DatabaseJobs(workspace.runtime).get(saved['job_id'])
     assert not workspace.client.get('/api/database-jobs?kind=query').json()['items']
     assert workspace.client.get('/api/database-jobs?kind=invalid').status_code == 422
 
 
-def test_sync_failure_survives_synchronous_response_and_history(workspace, monkeypatch):
+def test_sync_failure_is_delivered_without_persistent_history(workspace, monkeypatch):
     def synchronize(*_): raise AnalyticsError('Review the changed table mapping.', 'database_schema', 409)
     monkeypatch.setattr('graphmine_agent.database_sync.sync_source', synchronize)
     response = workspace.client.post('/api/database-sources/demo/sync')
     assert response.status_code == 409 and response.json()['error']['code'] == 'database_schema'
     history = workspace.client.get('/api/database-jobs?kind=sync').json()['items']
-    assert history[0]['status'] == 'failed' and history[0]['error']['code'] == 'database_schema'
-    assert response.json()['error']['details']['job_id'] == history[0]['id']
+    assert history == []
+    identifier = response.json()['error']['details']['job_id']
+    receipt = workspace.client.get(f'/api/database-jobs/{identifier}').json()
+    assert receipt['status'] == 'failed' and receipt['error']['code'] == 'database_schema'
+    with pytest.raises(RecordNotFound):
+        DatabaseJobs(workspace.runtime).get(identifier)
 
 
 def test_sync_request_without_async_preference_serializes_with_existing_background_work(workspace, monkeypatch):

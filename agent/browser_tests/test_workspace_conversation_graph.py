@@ -9,6 +9,7 @@ import pytest
 import test_workspace_loading as loading_fixtures
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from test_analytics_workspace import capture
 from test_workspace_loading import WORKFLOW, wait_for
 
 loading_browser = loading_fixtures.loading_browser
@@ -156,7 +157,13 @@ def assert_latest_user_visible(browser):
     """)
 
 
-def test_all_questions_reasoning_retries_and_validation_survive_reload(
+def enable_admin_working_notes(browser):
+    # This transport fixture isolates UI visibility. Real API authorization is
+    # exercised separately in test_activity_visibility.py.
+    browser.execute_script("window.GraphMineAccount.user = {role: 'admin'}; document.querySelector('[data-mode=expert]').click()")
+
+
+def test_admin_expert_notes_are_collapsed_and_survive_reload(
     loading_browser, loading_server
 ):
     browser, server = loading_browser, loading_server
@@ -173,6 +180,8 @@ def test_all_questions_reasoning_retries_and_validation_survive_reload(
             )
         browser.find_element(By.ID, "toggle-activity").click()
         assert browser.find_element(By.ID, "reasoning-count").text == "7"
+        assert not browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-turn")
+        enable_admin_working_notes(browser)
         assert (
             len(
                 browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-turn")
@@ -188,35 +197,88 @@ def test_all_questions_reasoning_retries_and_validation_survive_reload(
             )
             == 2
         )
-        assert (
-            len(
-                browser.find_elements(
-                    By.CSS_SELECTOR,
-                    '#activity-list [data-turn="second"] [data-stage="validation"].failed',
-                )
-            )
-            == 2
-        )
+        notes = browser.find_elements(By.CSS_SELECTOR, "#activity-list details.reasoning-turn")
+        assert all(not note.get_attribute("open") for note in notes)
+        for note in notes:
+            note.find_element(By.TAG_NAME, "summary").click()
+        assert browser.execute_script("return GraphMineWorkspace.state.events.filter(e => e.type==='workflow.planning' && e.payload.stage==='validation' && e.payload.status==='failed').length") == 2
         assert (
             browser.find_element(By.ID, "chat-status").text == "Waiting for your reply"
         )
-        # Each question's reasoning sits inside that question's own timeline.
         assert browser.execute_script(
-            "return document.querySelectorAll('#activity-list .activity-turn > .turn-reasoning').length === 2"
+            "return document.querySelectorAll('#activity-list .activity-turn > .reasoning-turn').length === 2"
         )
         assert_latest_user_visible(browser)
-    for turn in ("first", "second"):
-        browser.find_element(
-            By.CSS_SELECTOR,
-            f'.activity-turn[data-turn="{turn}"] .turn-reasoning > summary',
-        ).click()
-    browser.find_element(
-        By.CSS_SELECTOR,
-        '[data-turn="first"] .turn-reasoning .reasoning-record > summary',
-    ).click()
     activity = browser.find_element(By.ID, "activity-list").text
     assert "Reasoning for first" in activity
-    assert "attempt 2" in activity
+    assert "Call 4" in activity
+    assert "Decision for" in activity
+    assert "Reasoning for" not in browser.find_element(By.ID, "messages").text
+
+
+@pytest.mark.parametrize("width", [1440, 390])
+def test_chat_answer_and_each_model_call_survive_reload(loading_browser, loading_server, width):
+    browser, server = loading_browser, loading_server
+    browser.browsing_context.set_viewport(
+        context=browser.current_window_handle, viewport={"width": width, "height": 1000}
+    )
+    saved_network(server)
+    question = "Find the communities"
+    explanation = "The calculation groups vertices connected by review edges."
+    event(server, "chat", "first", role="user", message=question, mode="normal")
+    texts = ["Raw routing text\n  with original spacing.", "Partial text before timeout.", "Raw text from the retry."]
+    for index, stage in enumerate(["route", "plan", "plan"]):
+        call = {"call_id": f"call-{index}", "stage": stage, "model": "Authored test model"}
+        event(server, "model_call", "first", **call)
+        event(server, "planning", "first", stage=stage, status="running", message="Building a valid plan")
+        event(server, "reasoning.delta", "first", **call, text=texts[index])
+        if index != 1:
+            event(server, "reasoning", "first", **call, text=texts[index])
+        event(server, "diagnostics", "first", **call, outcome="failed" if index == 1 else "ok")
+    event(server, "chat", "first", role="assistant", status="ready", message=explanation)
+    call = {"call_id": "answer-call", "stage": "answer", "workflow_id": "saved-analysis", "revision": 1}
+    event(server, "answer", "first", workflow_id="saved-analysis", revision=1, pending=True)
+    event(server, "model_call", "first", **call)
+    event(server, "diagnostics", "first", **call, outcome="ok")
+    event(server, "answer", "first", workflow_id="saved-analysis", revision=1, pending=False,
+          source="model", lead="The network contains two communities.", fact_ids=["f1"],
+          facts=[{"id": "f1", "statement": "Each community has 3 members."}])
+    open_saved(browser, server)
+    for reload in [False, True]:
+        if reload:
+            browser.refresh()
+            wait_for(browser, "GraphMineWorkspace.state.result && !GraphMineWorkspace.state.busy")
+        messages = browser.find_element(By.ID, "messages").text
+        assert "The network contains two communities." in messages
+        assert "Each community has 3 members." in messages
+        assert "Explanation" in messages
+        for hidden in [explanation, "How this was planned", "Model reasoning", "Building a valid plan", *texts]:
+            assert hidden not in messages
+        assert len(browser.find_elements(By.CSS_SELECTOR, "#messages .result-link")) == 1
+        details = browser.find_element(By.CSS_SELECTOR, "#messages .answer-explanation")
+        assert not details.get_attribute("open")
+        details.find_element(By.TAG_NAME, "summary").click()
+        assert explanation in details.text
+        details.find_element(By.TAG_NAME, "summary").click()
+        if not reload:
+            capture(browser, f"chat-{width}.png")
+        browser.find_element(By.ID, "toggle-activity").click()
+        assert browser.find_element(By.ID, "reasoning-count").text == "4"
+        assert browser.find_element(By.CSS_SELECTOR, "#activity-list .model-call-count").text == "4 model calls"
+        assert not browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-record")
+        enable_admin_working_notes(browser)
+        notes = browser.find_element(By.CSS_SELECTOR, "#activity-list details.reasoning-turn")
+        assert not notes.get_attribute("open")
+        assert "not checked" in notes.find_element(By.TAG_NAME, "summary").text
+        notes.find_element(By.TAG_NAME, "summary").click()
+        entries = browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-record")
+        assert len(entries) == 4
+        assert [entry.find_element(By.TAG_NAME, "h4").text for entry in entries] == [f"Call {i}" for i in range(1, 5)]
+        assert [entry.find_element(By.TAG_NAME, "pre").get_attribute("textContent") for entry in entries[:3]] == texts
+        assert "No reasoning was returned for this call." in entries[-1].text
+        assert "Building a valid plan" in browser.find_element(By.ID, "activity-list").text
+        if not reload:
+            capture(browser, f"activity-{width}.png")
 
 
 def test_delayed_old_events_cannot_hide_new_followup(loading_browser, loading_server):
@@ -756,6 +818,7 @@ def test_reasoning_streams_while_a_stage_runs(loading_browser, loading_server):
     event(server, "reasoning.delta", "live", stage="family", text="Hubs suggest ")
     event(server, "reasoning.delta", "live", stage="family", text="centrality.")
     open_saved(browser, server)
+    enable_admin_working_notes(browser)
     live = '#activity-list [data-live="family"] pre'
     wait_for(
         browser,
@@ -973,9 +1036,8 @@ def test_display_request_opens_the_largest_clique_without_a_calculation(
     assert browser.current_url.endswith(
         "#workspace/saved-session/results/saved-analysis"
     )
-    assert Select(
-        browser.find_element(By.ID, "graph-group")
-    ).first_selected_option.text.startswith("Clique 1")
+    # Read the selected label atomically while result polling may replace options.
+    wait_for(browser, "document.getElementById('graph-group')?.selectedOptions[0]?.textContent.startsWith('Clique 1')")
     assert len(server.workflows) == 1  # Nothing new was planned or run.
     # The reply keeps a way back to the same view.
     browser.find_element(By.ID, "back-to-chat").click()
@@ -1091,6 +1153,7 @@ def test_suggested_follow_ups_are_asked_about_their_analysis(
 
     server.plan_handler = plan
     open_saved(browser, server)
+    browser.find_element(By.CSS_SELECTOR, "#messages .answer-explanation > summary").click()
     chips = browser.find_elements(By.CSS_SELECTOR, "[data-suggestion]")
     assert [chip.text for chip in chips] == suggestions
     chips[1].click()

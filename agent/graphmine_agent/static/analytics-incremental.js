@@ -38,6 +38,48 @@ window.GraphMineEventIndex = () => {
     answer: record => answers.get(JSON.stringify([record.id, record.revision]))?.payload};
 };
 
+// One entry per actual model-call attempt, including calls without reasoning.
+// Old conversations have no call IDs; pair their reasoning and diagnostics in
+// stage order, without counting planning/validation messages as model calls.
+window.GraphMineModelCalls = events => {
+  const calls = [], identified = new Map(), legacy = new Map();
+  function create(key, payload) {
+    const call = {key, stage: payload.stage, model: payload.model || "", text: "", samples: payload.samples || 1,
+      workflow_id: payload.workflow_id, revision: payload.revision, running: true};
+    calls.push(call); return call;
+  }
+  for (const event of events) {
+    if (!["workflow.model_call", "workflow.reasoning.delta", "workflow.reasoning", "workflow.diagnostics"].includes(event.type)) continue;
+    const payload = event.payload, full = event.type === "workflow.reasoning", delta = event.type === "workflow.reasoning.delta";
+    let call;
+    if (payload.call_id) {
+      call = identified.get(payload.call_id);
+      if (!call) { call = create(payload.call_id, payload); identified.set(payload.call_id, call); }
+    } else {
+      call = legacy.get(payload.stage);
+      if (!call || call.closed || (full || delta) && call.final) {
+        call = create(`legacy-${event.sequence}`, payload); legacy.set(payload.stage, call);
+      }
+    }
+    if (payload.model) call.model = payload.model;
+    if (delta && !call.final) call.text += payload.text || "";
+    if (full) { call.text = payload.text || ""; call.final = true; call.running = false; }
+    if (event.type === "workflow.diagnostics") { call.running = false; call.closed = true; call.outcome = payload.outcome; }
+  }
+  // Earlier versions saved answer completion but not its call diagnostics.
+  const answers = new Map();
+  for (const event of events.filter(event => event.type === "workflow.answer")) {
+    const payload = event.payload, key = `${payload.workflow_id}:${payload.revision}`;
+    if (payload.pending || payload.source === "model" || answers.has(key)) answers.set(key, payload);
+  }
+  for (const [key, answer] of answers) {
+    if (calls.some(call => call.stage === "answer" && (!call.workflow_id || call.workflow_id === answer.workflow_id && call.revision === answer.revision))) continue;
+    const call = create(`legacy-answer-${key}`, {stage: "answer", ...answer});
+    call.running = Boolean(answer.pending); call.unrecorded = true;
+  }
+  return calls;
+};
+
 // Reuse unchanged DOM nodes and insert only new/changed entries. Reading an
 // unrelated update must not detach a focused control or an expanded disclosure.
 window.GraphMineKeyedNodes = () => {

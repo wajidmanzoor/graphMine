@@ -43,10 +43,11 @@ def test_new_reasoning_preserves_other_turn_dom_focus_and_expanded_details(loadi
     """)
     event(server, "reasoning.delta", "second", stage="planning", text="Additional live detail")
     browser.execute_script("window.dispatchEvent(new Event('online'))")
-    wait_for(browser, "GraphMineWorkspace.state.events.length===7 && originalSecond !== document.querySelector('#messages .assistant[data-turn=\"second\"]')")
+    wait_for(browser, "GraphMineWorkspace.state.events.length===7 && document.querySelector('#activity-list [data-turn=\"second\"] [data-live]')")
     assert browser.execute_script("""return originalUser===document.querySelector('#messages .user[data-turn="first"]')
       && originalAnswer===document.querySelector('#messages .assistant[data-turn="first"]')
       && originalActivity===document.querySelector('#activity-list [data-turn="first"]')
+      && originalSecond===document.querySelector('#messages .assistant[data-turn="second"]')
       && document.activeElement===originalFocus
       && [...originalAnswer.querySelectorAll('details')].every(d=>d.open)""")
     assert len(browser.find_elements(By.CSS_SELECTOR, "#messages .chat-message[data-turn]")) == 4

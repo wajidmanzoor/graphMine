@@ -2,7 +2,6 @@ import json
 from dataclasses import replace
 
 import httpx
-import jsonschema
 import pytest
 from graphmine_agent.analytics import AnalyticsService
 from graphmine_agent.analytics_answers import (
@@ -203,12 +202,10 @@ def _reply(content):
 
 
 @pytest.mark.asyncio
-async def test_model_chooses_facts_but_cannot_write_numbers(settings, monkeypatch):
+async def test_model_selects_facts_and_code_renders_cited_numbers(settings, monkeypatch):
     facts = build_facts(SAVED, TITLES, LABELS)
     replies = [
-        {"lead": "Here are the tightest groups.", "fact_ids": ["f1", "f2", "f1"]},
-        {"lead": "There are two groups.", "fact_ids": ["f1"]},
-        {"lead": "Invented fact.", "fact_ids": ["f99"]},
+        {"text": "Here are the results.\n{{f1}}\n{{f2}}", "source_ids": ["f1", "f2"]},
     ]
     original = httpx.AsyncClient
     monkeypatch.setattr(
@@ -218,12 +215,12 @@ async def test_model_chooses_facts_but_cannot_write_numbers(settings, monkeypatc
             **kwargs,
         ),
     )
-    configured = replace(settings, llm_base_url="http://model.test/v1")
+    configured = replace(settings, llm_enabled=True, llm_base_url="http://model.test/v1")
     chosen = await compose(configured, "Which groups are tight?", facts)
-    assert chosen == {"lead": "Here are the tightest groups.", "fact_ids": ["f1", "f2"]}
-    assert (await compose(configured, "How many?", facts))["lead"] == ""
-    with pytest.raises(jsonschema.ValidationError):
-        await compose(configured, "Anything?", facts)
+    assert chosen["text"] == "Here are the results.\n" + facts[0]["text"] + "\n" + facts[1]["text"]
+    assert chosen["fact_ids"] == ["f1", "f2"]
+    assert [c["id"] for c in chosen["citations"]] == ["f1", "f2"]
+    assert chosen["source"] == "model" and chosen["grounding"]["attempts"] == 1
 
 
 @pytest.mark.asyncio
@@ -240,15 +237,18 @@ async def test_completed_workflow_publishes_an_answer(
             "operations": [{"id": key, "title": value} for key, value in TITLES.items()]
         }
 
-    async def chosen(_settings, question, facts, **_options):
+    def respond(request):
         if not model_works:
             raise httpx.ConnectError("model offline")
-        assert question == "Find tight groups"
-        return {"lead": "The tightest groups are below.", "fact_ids": ["f1"]}
+        payload = json.loads(json.loads(request.content)["messages"][1]["content"])
+        assert payload["question"] == "Find tight groups"
+        return _reply({"text": "Here are the results.\n{{f1}}", "source_ids": ["f1"]})
 
     monkeypatch.setattr(service, "capabilities", capabilities)
-    monkeypatch.setattr(service, "result", lambda _id: SAVED)
-    monkeypatch.setattr("graphmine_agent.analytics_answers.compose", chosen)
+    monkeypatch.setattr(service, "result", lambda _id, **_kwargs: SAVED)
+    original = httpx.AsyncClient
+    monkeypatch.setattr("graphmine_agent.analytics_answers.httpx.AsyncClient", lambda **kwargs: original(
+        transport=httpx.MockTransport(respond), **kwargs))
     await service.events.publish(
         session.id,
         "workflow.chat",
@@ -273,7 +273,48 @@ async def test_completed_workflow_publishes_an_answer(
     assert answer["source"] == ("model" if model_works else "facts")
     assert answer["facts"][0]["statement"].startswith("Maximal cliques: found 2")
     if model_works:
-        assert answer["lead"] == "The tightest groups are below."
+        assert answer["text"].startswith("Here are the results.\nfound 2 cliques")
         assert answer["fact_ids"] == ["f1"]
     else:
         assert answer["lead"] == "" and answer["fact_ids"][0] == "f1"
+    started = [event.payload for event in database.events(session.id) if event.type == "workflow.model_call"]
+    diagnostics = [event.payload for event in database.events(session.id) if event.type == "workflow.diagnostics"]
+    assert len(started) == len(diagnostics) == 1
+    assert started[0]["call_id"] == diagnostics[0]["call_id"]
+    assert diagnostics[0]["stage"] == "answer" and diagnostics[0]["turn_id"] == "t1"
+    assert diagnostics[0]["outcome"] == ("ok" if model_works else "failed")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("reasoning_field", [None, "reasoning", "reasoning_content"])
+async def test_answer_activity_records_the_actual_model_call_without_training_capture(
+    settings, database, graph_store, session, monkeypatch, reasoning_field
+):
+    service = AnalyticsService(replace(settings, llm_enabled=True, llm_base_url="http://model.test/v1"),
+                               database, graph_store, EventBus(database))
+    async def capabilities():
+        return {"operations": [{"id": key, "title": value} for key, value in TITLES.items()]}
+    monkeypatch.setattr(service, "capabilities", capabilities)
+    monkeypatch.setattr(service, "result", lambda _id, **_kwargs: SAVED)
+    raw = "Raw model text\n  preserved exactly."
+    message = {"content": json.dumps({"text": "Here are the results.\n{{f1}}", "source_ids": ["f1"]})}
+    if reasoning_field:
+        message[reasoning_field] = raw
+    original = httpx.AsyncClient
+    monkeypatch.setattr("graphmine_agent.analytics_answers.httpx.AsyncClient", lambda **kwargs: original(
+        transport=httpx.MockTransport(lambda _request: httpx.Response(200, json={
+            "choices": [{"finish_reason": "stop", "message": message}],
+            "usage": {"prompt_tokens": 20, "completion_tokens": 10, "total_tokens": 30}})), **kwargs))
+    await service.events.publish(session.id, "workflow.chat", {"turn_id": "t1", "role": "user", "message": "Find groups"})
+    await service._answer({"id": "w1", "session_id": session.id, "revision": 1, "planning_turn_id": "t1"})
+    events = database.events(session.id)
+    starts = [e.payload for e in events if e.type == "workflow.model_call"]
+    ends = [e.payload for e in events if e.type == "workflow.diagnostics"]
+    reasoning = [e.payload for e in events if e.type == "workflow.reasoning"]
+    assert database.capture is None and len(starts) == len(ends) == 1
+    assert starts[0]["call_id"] == ends[0]["call_id"]
+    assert ends[0]["stage"] == "answer" and ends[0]["outcome"] == "ok"
+    assert ends[0]["usage"]["total_tokens"] == 30
+    assert [r["text"] for r in reasoning] == ([raw] if reasoning_field else [])
+    if reasoning:
+        assert reasoning[0]["call_id"] == starts[0]["call_id"]

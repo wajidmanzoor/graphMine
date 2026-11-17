@@ -100,3 +100,4 @@ def test_entities_are_found_across_the_full_input_not_only_samples():
     # Short IDs need to be named as vertices; plain numbers are not entities.
     assert matched_entities("Find groups of 3", inputs) == []
     assert [row["id"] for row in matched_entities("Start at vertex 3", inputs)] == [3]
+    assert [row["id"] for row in matched_entities("Start at vertex 3.", inputs)] == [3]

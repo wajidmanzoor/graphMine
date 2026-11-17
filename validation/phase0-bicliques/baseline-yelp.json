@@ -1,0 +1,35 @@
+{
+  "session_id": "session_306605ee15714aff95043401a74e8443",
+  "calls": [
+    {
+      "stage": "route",
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 14535,
+        "total_tokens": 14875,
+        "completion_tokens": 340,
+        "completion_tokens_details": {
+          "reasoning_tokens": 283
+        }
+      },
+      "outcome": "ok",
+      "seconds": 17.26
+    },
+    {
+      "stage": "plan",
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "finish_reason": "length",
+      "usage": {
+        "prompt_tokens": 11926,
+        "total_tokens": 14998,
+        "completion_tokens": 3072,
+        "completion_tokens_details": {
+          "reasoning_tokens": 3072
+        }
+      },
+      "outcome": "planner_truncated",
+      "seconds": 111.62
+    }
+  ]
+}

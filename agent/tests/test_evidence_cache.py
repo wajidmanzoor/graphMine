@@ -136,7 +136,7 @@ async def test_native_workers_reuse_hashes_but_reject_changed_sources(
             settings,
             repository_root=repository,
             runtime_repository_root=repository,
-            analytics_python=source / ".venv-analytics/bin/python",
+            analytics_python=settings.analytics_python or source / ".venv-analytics/bin/python",
         ),
         database,
         graph_store,

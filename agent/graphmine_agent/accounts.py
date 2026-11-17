@@ -958,9 +958,9 @@ async def _metered(client, path, payload, max_tokens):
         return
     # Count before inference, then reserve the actual prompt plus maximum output.
     # The model slot bounds both tokenization and inference across all users.
-    output = max_tokens or payload.get(
+    output = (max_tokens or payload.get(
         "max_completion_tokens", payload.get("max_tokens", 3072)
-    )
+    )) * max(1, payload.get("n", 1))
     try:
         # Wait in line briefly rather than failing when every model slot is busy.
         lease = await principal.accounts.wait_slot(
@@ -1050,7 +1050,7 @@ async def model_stream(client, path, *, json, on_reasoning, max_tokens=None):
 
 
 async def _collect_stream(response, on_reasoning):
-    content, reasoning, finish, usage = [], [], None, None
+    choices, usage = {}, None
     async for line in response.aiter_lines():
         if not line.startswith("data:"):
             continue
@@ -1060,13 +1060,18 @@ async def _collect_stream(response, on_reasoning):
         chunk = json_module.loads(data)
         usage = chunk.get("usage") or usage
         for choice in chunk.get("choices") or []:
+            index = choice.get("index", 0)
+            collected = choices.setdefault(index, {"index": index, "message": {"content": "", "reasoning": ""},
+                                                   "finish_reason": None})
             delta = choice.get("delta") or {}
             text = delta.get("reasoning_content") or delta.get("reasoning")
             if text:
-                reasoning.append(text)
+                collected["message"]["reasoning"] += text
                 await on_reasoning(text)
             if delta.get("content"):
-                content.append(delta["content"])
-            finish = choice.get("finish_reason") or finish
-    message = {"content": "".join(content), "reasoning": "".join(reasoning)}
-    return {"choices": [{"message": message, "finish_reason": finish}], "usage": usage}
+                collected["message"]["content"] += delta["content"]
+            collected["finish_reason"] = choice.get("finish_reason") or collected["finish_reason"]
+            if choice.get("logprobs") is not None:
+                probabilities = collected.setdefault("logprobs", {"content": []})
+                probabilities["content"].extend(choice["logprobs"].get("content") or [])
+    return {"choices": [choices[index] for index in sorted(choices)], "usage": usage}

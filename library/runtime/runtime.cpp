@@ -10,6 +10,7 @@
 #include "catalog_data.hpp"
 #include "internal.hpp"
 #include "representation_cache.hpp"
+#include "bipartite_input.hpp"
 
 namespace graphmine::runtime {
 namespace {
@@ -88,10 +89,12 @@ json::object execute(const json::object& request) {
   std::shared_ptr<const Graph> graph;
   if (input_kind == "graph") graph = cached_graph(request.at("graph"), work);
   work.input_graph = graph.get();
-  const auto parameters = request.contains("parameters")
+  auto parameters = request.contains("parameters")
                               ? object(request.at("parameters"), "parameters")
                               : json::object{};
   validate_parameters(card, parameters);
+  if (operation == "maximal-bicliques")
+    parameters = resolve_biclique_parameters(*graph, parameters);
   const auto gpu_reason = graph ? gpu_support_reason(operation, *graph, parameters)
                                 : "This structured-input profile has a native CPU implementation";
   std::string selection_reason = gpu_reason;

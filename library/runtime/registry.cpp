@@ -799,11 +799,12 @@ const std::vector<Operation>& definitions() {
          quasi_cliques},
         {card("maximal-bicliques", "maximal_biclique_enumeration",
               "Find completely connected groups across two sides",
-              "Exact inclusion-maximal bicliques with nonempty sides. Explicit disjoint partitions "
-              "must cover every vertex. Undirected input; loops discarded and duplicate edges "
+              "Exact inclusion-maximal bicliques with nonempty sides. Supply both disjoint partitions "
+              "covering every vertex, or omit both to use every vertex's attributes.side=left|right. "
+              "Undirected input; loops discarded and duplicate edges "
               "collapsed. Capped memberships are marked incomplete.",
-              {{"left_partition", parameter("array", nullptr, true)},
-               {"right_partition", parameter("array", nullptr, true)},
+              {{"left_partition", parameter("array", nullptr)},
+               {"right_partition", parameter("array", nullptr)},
                {"minimum_left_size", positive(1)},
                {"minimum_right_size", positive(1)},
                {"result_limit", positive(nullptr, true)}},

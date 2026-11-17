@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="101" time="57.407" timestamp="2026-11-16T19:46:09.474431-05:00" hostname="guoglambda01"><testcase classname="tests.test_analytics_planning" name="test_cancelled_planning_answers_the_question_for_retry" time="0.358" /><testcase classname="tests.test_analytics_planning" name="test_a_person_can_stop_planning_and_still_get_a_reply" time="0.342" /><testcase classname="tests.test_analytics_planning" name="test_suggested_follow_ups_need_no_model_call" time="0.448" /><testcase classname="tests.test_analytics_planning" name="test_first_question_titles_an_untitled_conversation" time="0.404" /><testcase classname="tests.test_analytics_planning" name="test_identical_validation_is_reused_between_planning_and_saving" time="0.129" /><testcase classname="tests.test_analytics_planning" name="test_follow_up_sees_earlier_results_selection_and_named_entities" time="0.495" /><testcase classname="tests.test_analytics_planning" name="test_follow_up_routes_in_one_call" time="0.503"><failure message="AssertionError: assert {'calculate',... 'reply', ...} == {'calculate',...'unsupported'}&#10;  &#10;  Extra items in the left set:&#10;  'options'&#10;  'lookup'&#10;  'reply'&#10;  'describe_input'&#10;  Use -v to get more diff">setup = (Settings(repository_root=PosixPath('/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher'), data_root=Po..._id=None, selection=None, action=None, intent=None, operations=[], parameters={}, option_id=None, option_turn_id=None))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x745ce0e92c90&gt;
+
+    async def test_follow_up_routes_in_one_call(setup, monkeypatch):
+        settings, analytics, events, session, body = setup
+        original = analytics.get
+        earlier = {
+            "id": "earlier",
+            "session_id": session,
+            "validation": {"plan": {"steps": [{"operation": "triangle-counting"}]}},
+            "input_files": {},
+        }
+        monkeypatch.setattr(
+            analytics, "get", lambda wid: earlier if wid == "earlier" else original(wid)
+        )
+        planner = ReplayPlanner(
+            settings,
+            analytics,
+            events,
+            responses=[route("triangle-counting"), proposal()],
+        )
+        monkeypatch.setattr(planner, "_saved_result", lambda wid: None)
+        body.previous_workflow_id = "earlier"
+        result = await planner.plan(session, body)
+        assert result["status"] == "ready"
+        assert [stage for stage, _, _ in planner.calls] == ["route", "plan"]
+        assert result["trace"][0]["stage"] == "route"
+        # Without a saved result there is nothing to show or explain.
+        intents = {v["properties"]["intent"]["const"] for v in planner.calls[0][2]["oneOf"]}
+&gt;       assert intents == {"calculate", "needs_information", "unsupported"}
+E       AssertionError: assert {'calculate',... 'reply', ...} == {'calculate',...'unsupported'}
+E         
+E         Extra items in the left set:
+E         'options'
+E         'lookup'
+E         'reply'
+E         'describe_input'
+E         Use -v to get more diff
+
+agent/tests/test_analytics_planning.py:251: AssertionError</failure></testcase><testcase classname="tests.test_analytics_planning" name="test_display_request_is_carried_out_without_planning" time="0.345" /><testcase classname="tests.test_analytics_planning" name="test_questions_about_a_saved_result_are_answered_from_its_facts[These are the groups it found.-These are the groups it found.]" time="0.345" /><testcase classname="tests.test_analytics_planning" name="test_questions_about_a_saved_result_are_answered_from_its_facts[It found 7 groups.-Here is what the saved result shows.]" time="0.346" /><testcase classname="tests.test_analytics_planning" name="test_clarifying_questions_offer_clickable_choices" time="0.345" /><testcase classname="tests.test_analytics_planning" name="test_restart_answers_questions_left_planning" time="0.100" /><testcase classname="tests.test_analytics_planning" name="test_lookup_family_routes_nested_filters_through_real_preflight" time="0.513" /><testcase classname="tests.test_analytics_planning" name="test_explicit_count_uses_native_validation_without_a_model" time="0.510" /><testcase classname="tests.test_analytics_planning" name="test_planner_preserves_device_policy_through_native_validation[cpu]" time="0.491" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_routing_decisions_cannot_satisfy_schema[decision0]" time="0.004" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_routing_decisions_cannot_satisfy_schema[decision1]" time="0.003" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_routing_decisions_cannot_satisfy_schema[decision2]" time="0.003" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_routing_decisions_cannot_satisfy_schema[decision3]" time="0.003" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_routing_decisions_cannot_satisfy_schema[decision4]" time="0.003" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_routing_decisions_cannot_satisfy_schema[decision5]" time="0.003" /><testcase classname="tests.test_analytics_planning" name="test_contradictory_routing_decisions_cannot_satisfy_schema[decision6]" time="0.003" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_cover_calculation_display_answers_and_questions[decision0]" time="0.009" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_cover_calculation_display_answers_and_questions[decision1]" time="0.007" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_cover_calculation_display_answers_and_questions[decision2]" time="0.007" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_cover_calculation_display_answers_and_questions[decision3]" time="0.008" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_cover_calculation_display_answers_and_questions[decision4]" time="0.007" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_cover_calculation_display_answers_and_questions[decision5]" time="0.008" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_cover_calculation_display_answers_and_questions[decision6]" time="0.007" /><testcase classname="tests.test_analytics_planning" name="test_routing_states_cover_calculation_display_answers_and_questions[decision7]" time="0.007" /><testcase classname="tests.test_analytics_planning" name="test_display_changes_are_limited_to_what_the_result_has[view0]" time="0.007" /><testcase classname="tests.test_analytics_planning" name="test_display_changes_are_limited_to_what_the_result_has[view1]" time="0.007" /><testcase classname="tests.test_analytics_planning" name="test_display_changes_are_limited_to_what_the_result_has[view2]" time="0.007" /><testcase classname="tests.test_analytics_planning" name="test_display_changes_are_limited_to_what_the_result_has[view3]" time="0.007" /><testcase classname="tests.test_analytics_planning" name="test_display_changes_are_limited_to_what_the_result_has[view4]" time="0.007" /><testcase classname="tests.test_analytics_planning" name="test_display_targets_follow_the_page_labels_and_layout_rules" time="0.000" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[False-missing]" time="0.373" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[False-answer]" time="0.373" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[False-future]" time="0.374" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[True-missing]" time="0.513" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[True-answer]" time="0.569" /><testcase classname="tests.test_analytics_planning" name="test_invalid_step_references_receive_one_bounded_repair[True-future]" time="0.519" /><testcase classname="tests.test_analytics_planning" name="test_one_routing_call_then_real_library_validation_and_execution" time="0.699" /><testcase classname="tests.test_analytics_planning" name="test_family_hint_cannot_hide_an_operation[importance-True]" time="0.506" /><testcase classname="tests.test_analytics_planning" name="test_family_hint_cannot_hide_an_operation[patterns-False]" time="0.490" /><testcase classname="tests.test_analytics_planning" name="test_ambiguity_or_unsupported_request_stops_after_routing[needs_information]" time="0.342" /><testcase classname="tests.test_analytics_planning" name="test_ambiguity_or_unsupported_request_stops_after_routing[unsupported]" time="0.339" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[intent]" time="0.340" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[unknown_operation]" time="0.345" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[code]" time="0.355" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[wrong_device]" time="0.352" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[unknown_parameter]" time="0.348" /><testcase classname="tests.test_analytics_planning" name="test_untrusted_decisions_cannot_escape_allowlists[omitted_objective]" time="0.399" /><testcase classname="tests.test_analytics_planning" name="test_repair_preserves_selected_operation_and_is_bounded[True]" time="0.633" /><testcase classname="tests.test_analytics_planning" name="test_repair_preserves_selected_operation_and_is_bounded[False]" time="0.641" /><testcase classname="tests.test_analytics_planning" name="test_all_current_profiles_have_one_family_and_valid_plan_schemas" time="23.161" /><testcase classname="tests.test_analytics_planning" name="test_planner_failures_are_classified_and_recorded[reply0-planner_truncated]" time="0.134" /><testcase classname="tests.test_analytics_planning" name="test_planner_failures_are_classified_and_recorded[reply1-planner_timeout]" time="0.128" /><testcase classname="tests.test_analytics_planning" name="test_planner_failures_are_classified_and_recorded[reply2-planner_unavailable]" time="0.128" /><testcase classname="tests.test_analytics_planning" name="test_interrupted_model_call_preserves_its_unflushed_reasoning" time="0.157" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[None-None]" time="0.116" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[None-native-workflow-adapter]" time="0.116" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[0-None]" time="0.119" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[0-native-workflow-adapter]" time="0.118" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[1536-None]" time="0.120" /><testcase classname="tests.test_analytics_planning" name="test_model_transport_uses_constrained_new_contract_and_validates_response[1536-native-workflow-adapter]" time="0.121" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_executes_dependent_native_plan" time="0.432"><failure message="RuntimeError: coroutine raised StopIteration">request = &lt;Request('POST', 'http://127.0.0.1:8001/v1/chat/completions')&gt;
+
+    def reply(request):
+        content = json.loads(request.content)
+        payload = json.loads(content["messages"][1]["content"])
+        stage = payload["stage"]
+        calls.append(stage)
+        if stage == "route":
+            system = content["messages"][0]["content"]
+            catalog = json.loads(system.split("operations:\n", 1)[1])
+            listed = {op["id"]: op for f in catalog for op in f["operations"]}
+            assert {"node-lookup", "query-subgraph", "triangle-counting"} &lt;= set(listed)
+            assert all(
+                "execution" not in op and "parameters" not in op
+                for op in listed.values()
+            )
+            response = route("node-lookup", "query-subgraph", "triangle-counting")
+        else:
+            schema = content["response_format"]["json_schema"]["schema"]
+&gt;           selected = next(row for row in payload["parameter_choices"] if row["operation"] == "node-lookup"
+                            and row["parameter"] == "vertices" and "all entities explicitly named" in row["description"])
+E           StopIteration
+
+agent/tests/test_analytics_planning.py:1148: StopIteration
+
+The above exception was the direct cause of the following exception:
+
+setup = (Settings(repository_root=PosixPath('/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher'), data_root=Po..._id=None, selection=None, action=None, intent=None, operations=[], parameters={}, option_id=None, option_turn_id=None))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x745ce03daae0&gt;
+
+    @pytest.mark.asyncio
+    async def test_generation_transport_executes_dependent_native_plan(setup, monkeypatch):
+        settings, analytics, events, session, body = setup
+        planner = AnalyticsPlanner(replace(settings, llm_enabled=True), analytics, events)
+        body.message = "Look up vertices 0 and 1, extract their induced subgraph, then count triangles."
+        wire = {
+            "status": "ready",
+            "message": "Count triangles among the selected vertices.",
+            "plan": {
+                "version": 1,
+                "device": "cpu",
+                "steps": [
+                    {
+                        "operation": "node-lookup",
+                        "input": {"source": "input", "input": "main"},
+                        "arguments": [{"name": "vertices", "value": {"literal": [0, 1]}}],
+                    },
+                    {
+                        "operation": "query-subgraph",
+                        "input": {"source": "input", "input": "main"},
+                        "arguments": [
+                            {
+                                "name": "vertices",
+                                "value": {
+                                    "binding": {
+                                        "source": "step",
+                                        "step_index": 0,
+                                        "port": "vertices",
+                                    }
+                                },
+                            }
+                        ],
+                    },
+                    {
+                        "operation": "triangle-counting",
+                        "input": {"source": "step", "step_index": 1, "port": "graph"},
+                        "arguments": [],
+                    },
+                ],
+            },
+        }
+        calls = []
+    
+        def reply(request):
+            content = json.loads(request.content)
+            payload = json.loads(content["messages"][1]["content"])
+            stage = payload["stage"]
+            calls.append(stage)
+            if stage == "route":
+                system = content["messages"][0]["content"]
+                catalog = json.loads(system.split("operations:\n", 1)[1])
+                listed = {op["id"]: op for f in catalog for op in f["operations"]}
+                assert {"node-lookup", "query-subgraph", "triangle-counting"} &lt;= set(listed)
+                assert all(
+                    "execution" not in op and "parameters" not in op
+                    for op in listed.values()
+                )
+                response = route("node-lookup", "query-subgraph", "triangle-counting")
+            else:
+                schema = content["response_format"]["json_schema"]["schema"]
+                selected = next(row for row in payload["parameter_choices"] if row["operation"] == "node-lookup"
+                                and row["parameter"] == "vertices" and "all entities explicitly named" in row["description"])
+                wire["plan"]["steps"][0]["arguments"][0]["value"] = {"choice": selected["id"]}
+                jsonschema.validate(wire, schema)
+                response = wire
+            return httpx.Response(
+                200,
+                json={
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps(response),
+                                "reasoning": "Recorded test reasoning for " + stage,
+                            }
+                        }
+                    ]
+                },
+            )
+    
+        original = httpx.AsyncClient
+        monkeypatch.setattr(
+            "graphmine_agent.analytics_planning.httpx.AsyncClient",
+            lambda **kwargs: original(transport=httpx.MockTransport(reply), **kwargs),
+        )
+        decoded = decoded_plan(wire)
+        assert "arguments" in wire["plan"]["steps"][0]  # No mutation of model evidence.
+        assert decoded["plan"]["steps"][1]["parameters"] == {}
+        assert decoded["plan"]["steps"][1]["bindings"] == {
+            "vertices": {"step": "step_1", "port": "vertices"}
+        }
+&gt;       planned = await planner.plan(session, body)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+agent/tests/test_analytics_planning.py:1178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+agent/graphmine_agent/analytics_planning.py:1175: in plan
+    response = await work
+               ^^^^^^^^^^
+agent/graphmine_agent/analytics_planning.py:1757: in _plan
+    proposal = await self._generate("plan", planning, schema)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+agent/graphmine_agent/analytics_planning.py:999: in _generate
+    body = await model_stream(
+agent/graphmine_agent/accounts.py:1037: in model_stream
+    async with client.stream("POST", path, json=request) as response:
+/usr/lib/python3.12/contextlib.py:210: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/httpx/_client.py:1583: in stream
+    response = await self.send(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1629: in send
+    response = await self._send_handling_auth(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1657: in _send_handling_auth
+    response = await self._send_handling_redirects(
+.venv/lib/python3.12/site-packages/httpx/_client.py:1694: in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;httpx.AsyncClient object at 0x745ce040f050&gt;
+request = &lt;Request('POST', 'http://127.0.0.1:8001/v1/chat/completions')&gt;
+
+    async def _send_single_request(self, request: Request) -&gt; Response:
+        """
+        Sends a single request, without handling any redirections.
+        """
+        transport = self._transport_for_url(request.url)
+        start = time.perf_counter()
+    
+        if not isinstance(request.stream, AsyncByteStream):
+            raise RuntimeError(
+                "Attempted to send an sync request with an AsyncClient instance."
+            )
+    
+        with request_context(request=request):
+&gt;           response = await transport.handle_async_request(request)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           RuntimeError: coroutine raised StopIteration
+
+.venv/lib/python3.12/site-packages/httpx/_client.py:1730: RuntimeError</failure></testcase><testcase classname="tests.test_analytics_planning" name="test_domain_clarification_history_and_workflow_link_are_saved" time="0.854" /><testcase classname="tests.test_analytics_planning" name="test_generation_schema_prevents_self_forward_and_missing_references" time="4.893" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_rejects_conflicting_or_invalid_arguments[two_sources]" time="0.345" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_rejects_conflicting_or_invalid_arguments[duplicate_name]" time="0.416"><failure message="assert 'supplied more than once' in &quot;{'version': 1, 'device': 'cpu', 'steps': [{'operation': 'breadth-first-search', 'input': {'source': 'input', 'input':...]}},\n                              {'name': 'sources',\n                               'value': {'literal': [1]}}]}]}&quot;&#10; +  where &quot;{'version': 1, 'device': 'cpu', 'steps': [{'operation': 'breadth-first-search', 'input': {'source': 'input', 'input':...]}},\n                              {'name': 'sources',\n                               'value': {'literal': [1]}}]}]}&quot; = str(&lt;ValidationError: &quot;{'version': 1, 'device': 'cpu', 'steps': [{'operation': 'breadth-first-search', 'input': {'source':...e': {'literal': [0]}}, {'name': 'sources', 'value': {'literal': [1]}}]}]} is not valid under any of the given schemas&quot;&gt;)&#10; +    where &lt;ValidationError: &quot;{'version': 1, 'device': 'cpu', 'steps': [{'operation': 'breadth-first-search', 'input': {'source':...e': {'literal': [0]}}, {'name': 'sources', 'value': {'literal': [1]}}]}]} is not valid under any of the given schemas&quot;&gt; = AnalyticsError('The question planner could not return a valid decision. Try a more specific question or use Expert mode.').__cause__&#10; +      where AnalyticsError('The question planner could not return a valid decision. Try a more specific question or use Expert mode.') = &lt;ExceptionInfo AnalyticsError('The question planner could not return a valid decision. Try a more specific question or use Expert mode.') tblen=2&gt;.value">setup = (Settings(repository_root=PosixPath('/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher'), data_root=Po..._id=None, selection=None, action=None, intent=None, operations=[], parameters={}, option_id=None, option_turn_id=None))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x745ce0e09ee0&gt;
+attack = 'duplicate_name'
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "attack",
+        [
+            "two_sources",
+            "duplicate_name",
+            "unknown_name",
+            "boolean_binding",
+            "unknown_port",
+        ],
+    )
+    async def test_generation_transport_rejects_conflicting_or_invalid_arguments(
+        setup, monkeypatch, attack
+    ):
+        settings, analytics, events, _session, _body = setup
+        planner = AnalyticsPlanner(replace(settings, llm_enabled=True), analytics, events)
+        caps = await analytics.capabilities()
+        cards = [c for c in caps["operations"] if c["id"] == "breadth-first-search"]
+        schema = plan_schema(cards, ["main"], "cpu")
+        wire = proposal("breadth-first-search")
+        step = wire["plan"]["steps"][0]
+        del step["id"], step["parameters"], step["bindings"]
+        step["input"] = {"source": "input", "input": "main"}
+        step["arguments"] = [{"name": "sources", "value": {"literal": [0]}}]
+        if attack == "two_sources":
+            step["arguments"][0]["value"]["binding"] = {
+                "source": "input",
+                "input": "main",
+            }
+        elif attack == "duplicate_name":
+            step["arguments"].append(
+                {
+                    "name": "sources",
+                    "value": {"literal": [1]},
+                }
+            )
+        elif attack == "unknown_name":
+            step["arguments"][0]["name"] = "execute_python"
+        elif attack == "unknown_port":
+            second = deepcopy(step)
+            second["arguments"][0]["value"] = {
+                "binding": {"source": "step", "step_index": 0, "port": "invented_output"}
+            }
+            wire["plan"]["steps"].append(second)
+        else:
+            step["arguments"].append(
+                {
+                    "name": "return_predecessors",
+                    "value": {"binding": {"source": "input", "input": "main"}},
+                }
+            )
+    
+        def reply(request):
+            return httpx.Response(
+                200, json={"choices": [{"message": {"content": json.dumps(wire)}}]}
+            )
+    
+        original = httpx.AsyncClient
+        monkeypatch.setattr(
+            "graphmine_agent.analytics_planning.httpx.AsyncClient",
+            lambda **kwargs: original(transport=httpx.MockTransport(reply), **kwargs),
+        )
+        with pytest.raises(
+            AnalyticsError, match="could not return a valid decision"
+        ) as caught:
+            await planner._generate("plan", {"operations": cards}, schema)
+        if attack == "duplicate_name":
+&gt;           assert "supplied more than once" in str(caught.value.__cause__)
+E           assert 'supplied more than once' in "{'version': 1, 'device': 'cpu', 'steps': [{'operation': 'breadth-first-search', 'input': {'source': 'input', 'input':...]}},\n                              {'name': 'sources',\n                               'value': {'literal': [1]}}]}]}"
+E            +  where "{'version': 1, 'device': 'cpu', 'steps': [{'operation': 'breadth-first-search', 'input': {'source': 'input', 'input':...]}},\n                              {'name': 'sources',\n                               'value': {'literal': [1]}}]}]}" = str(&lt;ValidationError: "{'version': 1, 'device': 'cpu', 'steps': [{'operation': 'breadth-first-search', 'input': {'source':...e': {'literal': [0]}}, {'name': 'sources', 'value': {'literal': [1]}}]}]} is not valid under any of the given schemas"&gt;)
+E            +    where &lt;ValidationError: "{'version': 1, 'device': 'cpu', 'steps': [{'operation': 'breadth-first-search', 'input': {'source':...e': {'literal': [0]}}, {'name': 'sources', 'value': {'literal': [1]}}]}]} is not valid under any of the given schemas"&gt; = AnalyticsError('The question planner could not return a valid decision. Try a more specific question or use Expert mode.').__cause__
+E            +      where AnalyticsError('The question planner could not return a valid decision. Try a more specific question or use Expert mode.') = &lt;ExceptionInfo AnalyticsError('The question planner could not return a valid decision. Try a more specific question or use Expert mode.') tblen=2&gt;.value
+
+agent/tests/test_analytics_planning.py:1445: AssertionError</failure></testcase><testcase classname="tests.test_analytics_planning" name="test_generation_transport_rejects_conflicting_or_invalid_arguments[unknown_name]" time="0.322" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_rejects_conflicting_or_invalid_arguments[boolean_binding]" time="0.324" /><testcase classname="tests.test_analytics_planning" name="test_generation_transport_rejects_conflicting_or_invalid_arguments[unknown_port]" time="0.321" /><testcase classname="tests.test_analytics_planning" name="test_reasoning_budget_preserves_room_for_the_json_plan[-1]" time="0.002" /><testcase classname="tests.test_analytics_planning" name="test_reasoning_budget_preserves_room_for_the_json_plan[3072]" time="0.001" /><testcase classname="tests.test_analytics_planning" name="test_reasoning_budget_preserves_room_for_the_json_plan[True]" time="0.001" /><testcase classname="tests.test_analytics_planning" name="test_disabled_planner_has_no_silent_semantic_fallback" time="0.340" /><testcase classname="tests.test_analytics_planning" name="test_previous_plan_must_belong_to_current_workspace" time="0.515" /><testcase classname="tests.test_analytics_planning" name="test_graph_collection_context_and_pattern_selector_schema" time="0.444"><failure message="AssertionError: assert 'needs_information' == 'ready'&#10;  &#10;  - ready&#10;  + needs_information">setup = (Settings(repository_root=PosixPath('/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher'), data_root=Po..._id=None, selection=None, action=None, intent=None, operations=[], parameters={}, option_id=None, option_turn_id=None))
+triangle_graph = b'{"graph": {"id": "triangle", "directed": false, "allows_self_loops": false, "allows_parallel_edges": false}, "vertic...id": "01", "source": 0, "target": 1}, {"id": "12", "source": 1, "target": 2}, {"id": "02", "source": 0, "target": 2}]}'
+
+    @pytest.mark.asyncio
+    async def test_graph_collection_context_and_pattern_selector_schema(
+        setup, triangle_graph
+    ):
+        settings, analytics, events, session, _ = setup
+        members = []
+        for i in range(10):
+            member = json.loads(triangle_graph)
+            member["graph"]["id"] = f"transaction-{i}"
+            member["vertices"].extend({"id": v, "type": "isolated"} for v in range(3, 10))
+            members.append(member)
+        file = analytics.graph_store.ingest(
+            session_id=session,
+            role=FileRole.attachment,
+            filename="transactions.json",
+            content=json.dumps({"dataset_id": "test", "graphs": members}).encode(),
+        )
+        body = PlanningRequest(
+            message="Find patterns shared by at least half of the graphs.",
+            device="cpu",
+            inputs={"main": {"file_id": file.id, "kind": "graph_collection"}},
+        )
+        planner = ReplayPlanner(
+            settings,
+            analytics,
+            events,
+            responses=[
+                route("frequent-subgraphs"),
+                proposal(
+                    "frequent-subgraphs",
+                    {"minimum_support_fraction": 0.5, "maximum_edges": 2},
+                ),
+            ],
+        )
+        result = await planner.plan(session, body)
+&gt;       assert result["status"] == "ready"
+E       AssertionError: assert 'needs_information' == 'ready'
+E         
+E         - ready
+E         + needs_information
+
+agent/tests/test_analytics_planning.py:1555: AssertionError</failure></testcase><testcase classname="tests.test_analytics_planning" name="test_malformed_collection_never_reaches_model[members0]" time="0.345" /><testcase classname="tests.test_analytics_planning" name="test_malformed_collection_never_reaches_model[members1]" time="0.384" /><testcase classname="tests.test_analytics_planning" name="test_malformed_collection_never_reaches_model[members2]" time="0.342" /><testcase classname="tests.test_analytics_bicliques" name="test_cypher_side_confirmation_runs_all_80_vertices[None]" time="0.919" /><testcase classname="tests.test_analytics_bicliques" name="test_cypher_side_confirmation_runs_all_80_vertices[User]" time="0.845" /><testcase classname="tests.test_analytics_bicliques" name="test_cypher_side_confirmation_runs_all_80_vertices[Business]" time="0.846" /><testcase classname="tests.test_analytics_bicliques" name="test_missing_sides_stops_before_planning" time="0.342" /><testcase classname="tests.test_analytics_bicliques" name="test_missing_required_value_is_not_a_reasoning_retry" time="0.360" /><testcase classname="tests.test_analytics_bicliques" name="test_biclique_uses_selected_input_not_first_alias" time="0.542" /><testcase classname="tests.test_analytics_bicliques" name="test_side_inference_checks_records_beyond_preview[same_side]" time="0.376" /><testcase classname="tests.test_analytics_bicliques" name="test_side_inference_checks_records_beyond_preview[partial_side]" time="0.383" /><testcase classname="tests.test_analytics_bicliques" name="test_side_inference_checks_records_beyond_preview[unknown_type]" time="0.382" /><testcase classname="tests.test_analytics_bicliques" name="test_directed_confirmation_preserves_original_and_resumes_without_model[True]" time="0.950" /><testcase classname="tests.test_analytics_bicliques" name="test_directed_confirmation_preserves_original_and_resumes_without_model[False]" time="0.451" /><testcase classname="tests.test_analytics_bicliques" name="test_conversion_confirmation_cannot_apply_to_different_inputs" time="0.473" /><testcase classname="tests.test_analytics_bicliques" name="test_conversion_changes_only_biclique_steps_in_shared_input_workflow" time="0.928" /><testcase classname="tests.test_analytics_bicliques" name="test_inference_preserves_mixed_ids_and_declared_sides" time="0.000" /><testcase classname="tests.test_analytics_context" name="test_port_summaries_keep_the_facts_a_follow_up_needs" time="0.000" /><testcase classname="tests.test_analytics_context" name="test_result_summaries_shrink_to_fit_the_budget" time="0.002" /><testcase classname="tests.test_analytics_context" name="test_selection_is_resolved_from_the_saved_result" time="0.000" /><testcase classname="tests.test_analytics_context" name="test_entities_are_found_across_the_full_input_not_only_samples" time="0.025" /></testsuite></testsuites>

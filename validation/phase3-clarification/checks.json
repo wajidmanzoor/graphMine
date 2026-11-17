@@ -1,0 +1,459 @@
+{
+  "phase": 3,
+  "status": "passed",
+  "source_files": {
+    "agent/graphmine_agent/analytics_clarification.py": "20841769337ac298d3d2f3ad616c261887e3abb73311149a21669ecc977d9156",
+    "agent/graphmine_agent/analytics_lanes.py": "de7fc7826177b883ed2942b53f8d268bc02fdf1ac4636de5721e1c5c7a06af31",
+    "agent/graphmine_agent/analytics_lane_choices.py": "ae7e10bdd00c8d48d61891eb80d783a7c1e32fd2642b2189b0accd58db410922",
+    "agent/graphmine_agent/analytics_bipartite.py": "ae5e2b194f4c37285b12e8568c5bf12c78e929751eed0c9092ce84eddf8a0b92",
+    "agent/graphmine_agent/analytics_planning.py": "d791aefbd6e901048be45479172c42af1b714263cca7f61f70114f1ea204a8a0",
+    "agent/graphmine_agent/static/analytics-ui.js": "e2433515f2186c6fbdf648df4a88b23d2c97ebdecbf2652623e4ecc47de0c36a",
+    "agent/graphmine_agent/static/analytics-chat.css": "848d3748b43cd86df06ec4c1434b385ccb09832f1ea5b6ade4953496a3660fee",
+    "agent/graphmine_agent/static/analytics.html": "e77dc7cf0217c6cceb5a23bf797c3363f84a05056e69414bda2df179b11eb56b",
+    "agent/frontend/generated/api.d.ts": "0e135163b10b5c7a3a54ad4f2b381d0944295833d376f3f586c5c2ebd78a3a9a",
+    "catalog/vague_terms.json": "765df8dea055a573a7b6b964f7a6d10459dd15d2b14391add89f4180228b7775",
+    "agent/tests/test_analytics_clarification.py": "a3b8d49477f58e92dde9070be95345b8cd1ada5413ae68c67e03309583914fb5",
+    "agent/tests/test_analytics_lanes.py": "9d327b40089634d0a8ad0656d02e5b49e1239d660fe360106cdc6fc7183446fc",
+    "agent/tests/test_analytics_bicliques.py": "d21a72cc65b098f21ad4e7cce5ab436e4ff067eb1bd67c2b9878622a59853ab9",
+    "agent/tests/test_analytics_planning.py": "9ff6119aafaae631331918160a8dd8bba8dbe99ab2ed6deebe1643482fb0167c",
+    "agent/browser_tests/test_analytics_workspace.py": "7cc9f61347ee564b1df7e3c8e4606d3175f1f520b4b004005f6489852405a338",
+    "tools/evaluate_lane_baseline.py": "c5845f63cbfd8a73095048187492506bccc841400e44d37313f8149fd05ca827"
+  },
+  "test_artifacts": {
+    "unit-release.xml": {
+      "tests": 203,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "device-final.xml": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "integration.xml": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "continuation-final.xml": {
+      "tests": 23,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser-complete.xml": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "browser-regressions.xml": {
+      "tests": 48,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "python_tests_passed": 218,
+  "browser_tests_passed": 58,
+  "browser_note": "48 workspace regression cases, plus 10 focused browser/API/native cases on the final composer. The final CSS change only styled the new clarification component; the 10 focused cases were rerun afterward.",
+  "frontend": {
+    "api_contracts": "passed",
+    "typescript": "passed",
+    "javascript_tests_passed": 17
+  },
+  "environment_configuration_sha256": "0724505bc7917b9a85385e939c9bffcdb5d5a3cc5bb33d05c14e15c3a7cf0b51",
+  "development_smoke_check": {
+    "home_http": 200,
+    "studio_http": 302,
+    "asset_path": "/assets/c89aea529993bd19daf8737d.js",
+    "asset_http": 200,
+    "clarification_panel_in_html": true,
+    "clarification_ui_in_bundle": true,
+    "served_bundle_contains_current_ui": true,
+    "protected_capabilities_http": 401,
+    "environment_configuration_sha256": "0724505bc7917b9a85385e939c9bffcdb5d5a3cc5bb33d05c14e15c3a7cf0b51",
+    "development_llm_enabled": "false"
+  },
+  "native_abi_changed": false,
+  "native_implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+  "native_oracle_cases_passed": 34,
+  "frozen_suite_sha256": "1b372ed31e58f6d4c971ba5e60b695f04f46b23277d750d8b2c75960d6b1f166",
+  "live_regression_successes": 60,
+  "continuation_only_changes_after_baseline": [
+    "agent/graphmine_agent/analytics_clarification.py",
+    "agent/graphmine_agent/analytics_planning.py"
+  ],
+  "continuation_validation": "The frozen 60 cases each ask one new question. After that run, three additional tests exposed duplicate-name bugs on clarification replies: selected identities were lost on DAG continuation and explicit typed source arrays were rejected. The final patch changes only reply continuations, adds a private continuation argument (default None), and is covered by continuation-final.xml. The initial-question evaluation is retained with its exact source hashes; it is not represented as a hash-identical final-tree run.",
+  "live_biclique_conversation": {
+    "scope": "One isolated live-model conversation using the frozen directed Yelp fixture, including free-prose confirmation and real native execution. Not part of the 60-question aggregate.",
+    "status": "passed",
+    "question": {
+      "status": "needs_information",
+      "lane": "needs_information",
+      "message": "Should I use an undirected copy of the graph for the biclique search, keeping the original directed snapshot intact?",
+      "choices": [
+        "Treat these connections as undirected and find the maximal bicliques.",
+        "Keep the graph directed and do not run bicliques."
+      ],
+      "plan": null,
+      "pending_question": {
+        "id": "ac578840-d690-4d6c-bad2-c9e929f0584a",
+        "gap": "clarification",
+        "kind": "direction",
+        "message": "Should I use an undirected copy of the graph for the biclique search, keeping the original directed snapshot intact?",
+        "choices": [
+          {
+            "action": "undirected",
+            "label": "Treat these connections as undirected and find the maximal bicliques.",
+            "id": "choice_1"
+          },
+          {
+            "action": "cancel",
+            "label": "Keep the graph directed and do not run bicliques.",
+            "id": "choice_2"
+          }
+        ],
+        "key": "direction",
+        "context": {
+          "question": "Find all maximal bicliques.",
+          "operations": [
+            "maximal-bicliques"
+          ],
+          "parameters": {},
+          "alias": "main",
+          "selected": false,
+          "entities": [],
+          "asked": [
+            "direction"
+          ]
+        },
+        "question": "Find all maximal bicliques.",
+        "operations": [
+          "maximal-bicliques"
+        ],
+        "inputs": {
+          "main": {
+            "file_id": "file_72b2d7c7b05f4287af81122fa7fc4e9a",
+            "kind": "graph"
+          }
+        },
+        "device": "cpu",
+        "mode": "normal"
+      },
+      "trace": [
+        {
+          "stage": "route",
+          "status": "options",
+          "message": "The request maps directly to the exact maximal-bicliques operation, which enumerates all inclusion-maximal complete cross-side groups on the undirected projection of this bipartite User–Business graph.",
+          "operations": [
+            "maximal-bicliques"
+          ]
+        }
+      ],
+      "turn_id": "ad0ca344-ee42-4654-a294-01ef3e9efd96"
+    },
+    "reply": {
+      "status": "options",
+      "lane": "options",
+      "message": "Choose the result you want to calculate.",
+      "question": "Find all maximal bicliques.",
+      "options": [
+        {
+          "id": "option_1",
+          "operations": [
+            "maximal-bicliques"
+          ],
+          "parameters": {},
+          "input": "prepared_1",
+          "title": "Find completely connected groups across two sides",
+          "quality": "exact",
+          "description": "Exact inclusion-maximal bicliques with nonempty sides. Supply both disjoint partitions covering every vertex, or omit both to use every vertex's attributes.side=left|right. Undirected input; loops discarded and duplicate edges collapsed. Capped memberships are marked incomplete.",
+          "rank": 1,
+          "match": "Suggested",
+          "promotions": [
+            {
+              "kind": "sides",
+              "types": [
+                "Business",
+                "User"
+              ],
+              "label": "Use Business / User as the two sides?"
+            }
+          ],
+          "explanation": "Matches the requested calculation."
+        },
+        {
+          "id": "option_2",
+          "operations": [
+            "butterfly-counting"
+          ],
+          "parameters": {},
+          "input": "prepared_1",
+          "title": "Count four-way connections between two sides",
+          "quality": "exact",
+          "description": "Exact 2-by-2 biclique counts, participation and alpha/beta cores. Every vertex requires attributes.side=left|right. Reject directed input, loops and same-side edges; collapse duplicates. Core thresholds explicitly use degree or butterfly participation.",
+          "rank": 2,
+          "match": "Alternative",
+          "promotions": [
+            {
+              "kind": "sides",
+              "types": [
+                "Business",
+                "User"
+              ],
+              "label": "Use Business / User as the two sides?"
+            }
+          ],
+          "explanation": "Computes a different result; choose it only if that is what you want."
+        }
+      ],
+      "plan": null,
+      "clarification_context": {
+        "question": "Find all maximal bicliques.",
+        "operations": [
+          "maximal-bicliques"
+        ],
+        "parameters": {},
+        "alias": "prepared_1",
+        "selected": false,
+        "entities": [],
+        "asked": [
+          "direction"
+        ],
+        "answered": [
+          "direction"
+        ]
+      },
+      "inputs": {
+        "main": {
+          "file_id": "file_72b2d7c7b05f4287af81122fa7fc4e9a",
+          "kind": "graph"
+        },
+        "prepared_1": {
+          "file_id": "file_cf157dc85cf44831a9cd04de0679c5b5",
+          "kind": "graph"
+        }
+      },
+      "turn_id": "6f324c98-3fdf-4d95-ab04-c0b0785d302c"
+    },
+    "selected": {
+      "status": "ready",
+      "lane": "calculate",
+      "message": "The selected calculation is ready.",
+      "plan": {
+        "version": 1,
+        "device": "cpu",
+        "steps": [
+          {
+            "id": "answer",
+            "operation": "maximal-bicliques",
+            "input": {
+              "input": "prepared_1"
+            },
+            "parameters": {
+              "left_partition": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944"
+              ],
+              "right_partition": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:28569"
+              ]
+            },
+            "bindings": {},
+            "device": "cpu",
+            "budget": {
+              "max_output_items": 100000,
+              "max_candidates": 2000000,
+              "timeout_seconds": 60.0
+            }
+          }
+        ]
+      },
+      "validation": {
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "answer",
+              "operation": "maximal-bicliques",
+              "input": {
+                "input": "prepared_1"
+              },
+              "parameters": {
+                "left_partition": [
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944"
+                ],
+                "right_partition": [
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:28569"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "order": [
+          "answer"
+        ],
+        "inputs": {
+          "main": {
+            "kind": "graph",
+            "fingerprint": "3632dc83695821211654f262a7c4c8983ca74a1f7ddb016c826d8446e330052f"
+          },
+          "prepared_1": {
+            "kind": "graph",
+            "fingerprint": "4763a2872a9aab8142776ed7ab09cc2394d213311f276d26cb653ee6a9faf54f"
+          }
+        },
+        "workflow_hash": "d917b4d7f8a8a8298c1eefcdc19a2ec409e9ae88363b5344a9fe1443281638b2",
+        "implementation_sha256": "e675347d88121b06a005539d2aca1e9e9b11f4c159b041bcc056f143f5cae27f",
+        "environment": {
+          "native_abi": 1,
+          "native_library_sha256": "f618513ad0a13d7529068b36114e9ce49108c963c34c104b3cef4303515e0645",
+          "wrapper_sha256": "4268693ac90997172fda11b19e1520e9ab599cb17faff191db9658a7cf08a604",
+          "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+        }
+      },
+      "trace": [
+        {
+          "stage": "route",
+          "status": "calculate",
+          "message": "Using the explicitly selected calculation.",
+          "operations": [
+            "maximal-bicliques"
+          ],
+          "source": "selected"
+        }
+      ],
+      "turn_id": "dd684ac6-0561-4a7a-9b32-c20d40ab212c"
+    },
+    "total_bicliques": 33,
+    "workflow_status": "completed",
+    "original_preserved": true,
+    "same_operation_resumed": true,
+    "model_call_stages": [
+      "route",
+      "clarify",
+      "clarify",
+      "answer"
+    ],
+    "activity_model_call_count": 4,
+    "calls": [
+      {
+        "stage": "route",
+        "model": "Qwen/Qwen3.8-27B-FP8",
+        "seconds": 17.667,
+        "outcome": "ok",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 10831,
+          "total_tokens": 11273,
+          "completion_tokens": 442,
+          "completion_tokens_details": {
+            "reasoning_tokens": 383
+          }
+        },
+        "turn_id": "ad0ca344-ee42-4654-a294-01ef3e9efd96",
+        "intent": "options",
+        "operations": [
+          "maximal-bicliques"
+        ]
+      },
+      {
+        "stage": "clarify",
+        "model": "Qwen/Qwen3.8-27B-FP8",
+        "seconds": 6.651,
+        "outcome": "ok",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 395,
+          "total_tokens": 589,
+          "completion_tokens": 194,
+          "completion_tokens_details": {
+            "reasoning_tokens": 165
+          }
+        },
+        "turn_id": "ad0ca344-ee42-4654-a294-01ef3e9efd96"
+      },
+      {
+        "stage": "clarify",
+        "model": "Qwen/Qwen3.8-27B-FP8",
+        "seconds": 7.294,
+        "outcome": "ok",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 404,
+          "total_tokens": 617,
+          "completion_tokens": 213,
+          "completion_tokens_details": {
+            "reasoning_tokens": 202
+          }
+        },
+        "turn_id": "6f324c98-3fdf-4d95-ab04-c0b0785d302c"
+      },
+      {
+        "stage": "answer",
+        "model": "Qwen/Qwen3.8-27B-FP8",
+        "seconds": 1.568,
+        "outcome": "ok",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 235,
+          "total_tokens": 279,
+          "completion_tokens": 44,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "turn_id": "dd684ac6-0561-4a7a-9b32-c20d40ab212c"
+      }
+    ],
+    "seconds": 34.092
+  }
+}

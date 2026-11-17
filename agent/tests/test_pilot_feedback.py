@@ -9,9 +9,13 @@ from graphmine_agent.api import create_app
 AUTH = {"Authorization": "Bearer test-secret"}
 
 
-def test_reasoning_endpoint_returns_only_recorded_local_model_output(settings):
-    with TestClient(create_app(settings)) as client:
-        session = client.post("/api/sessions", headers=AUTH, json={}).json()["id"]
+def test_reasoning_endpoint_returns_only_recorded_local_model_output_to_admin(settings):
+    from test_accounts import PASSWORD, login
+    configured = replace(settings, accounts_enabled=True, account_cookie_secure=False)
+    with TestClient(create_app(configured)) as client:
+        client.app.state.runtime.accounts.create_user("alice", PASSWORD, admin=True)
+        auth = login(client)
+        session = client.post("/api/sessions", headers=auth, json={}).json()["id"]
         history = client.app.state.runtime.database.history
         with history.scope(session, "chat", {"message": "A planning request"}):
             history.current(
@@ -49,7 +53,7 @@ def test_reasoning_endpoint_returns_only_recorded_local_model_output(settings):
                     ),
                 },
             )
-        response = client.get(f"/api/sessions/{session}/reasoning", headers=AUTH)
+        response = client.get(f"/api/sessions/{session}/reasoning", headers=auth)
         assert response.status_code == 200
         assert len(response.json()) == 1
         assert (
