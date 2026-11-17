@@ -1,0 +1,1020 @@
+{
+  "scope": "Assistant-authored frozen local evaluations, not a public NLP benchmark. Descriptions and cases were unchanged between runs.",
+  "family_metric": "Use the final explicit family decision when available; otherwise infer it from the first selected operation. The previous flat router had no explicit family output. A clarification without an identifiable family counts as a miss.",
+  "semantic_42": {
+    "before": {
+      "family_correct": 38,
+      "family_total": 42,
+      "operation_correct": 38,
+      "operation_total": 39,
+      "per_family": {
+        "records": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "paths": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "connectivity": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "dense": {
+          "family_correct": 2,
+          "family_total": 3,
+          "operation_correct": 2,
+          "operation_total": 2
+        },
+        "communities": {
+          "family_correct": 2,
+          "family_total": 3,
+          "operation_correct": 2,
+          "operation_total": 2
+        },
+        "importance": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "similarity": {
+          "family_correct": 2,
+          "family_total": 3,
+          "operation_correct": 2,
+          "operation_total": 2
+        },
+        "motifs": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "patterns": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "selection": {
+          "family_correct": 2,
+          "family_total": 3,
+          "operation_correct": 2,
+          "operation_total": 3
+        },
+        "preparation": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "spectral": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "statistics": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "learning": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        }
+      },
+      "mean_first_catalog_characters": 21169,
+      "mean_total_catalog_characters": 21169,
+      "mean_calls": 1,
+      "sources_unchanged": true
+    },
+    "after": {
+      "family_correct": 42,
+      "family_total": 42,
+      "operation_correct": 39,
+      "operation_total": 39,
+      "per_family": {
+        "records": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "paths": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "connectivity": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "dense": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 2,
+          "operation_total": 2
+        },
+        "communities": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 2,
+          "operation_total": 2
+        },
+        "importance": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "similarity": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 2,
+          "operation_total": 2
+        },
+        "motifs": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "patterns": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "selection": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "preparation": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "spectral": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "statistics": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        },
+        "learning": {
+          "family_correct": 3,
+          "family_total": 3,
+          "operation_correct": 3,
+          "operation_total": 3
+        }
+      },
+      "mean_first_catalog_characters": 5990,
+      "mean_total_catalog_characters": 8328.857142857143,
+      "mean_calls": 3,
+      "sources_unchanged": true
+    },
+    "operation_scoring": "Three deliberately vague questions are family-only. For the other 39, selected operations must include an accepted exact operation ID.",
+    "regressed_families": []
+  },
+  "planner_20": {
+    "before": {
+      "family_correct": 16,
+      "family_total": 17,
+      "required_families_covered": 16,
+      "operation_correct": 16,
+      "operation_total": 17,
+      "legacy_grader_passed": 4,
+      "legacy_grader_total": 20,
+      "sources_unchanged": true,
+      "per_family": {
+        "records": {
+          "cases": 7,
+          "operation_correct": 6
+        },
+        "paths": {
+          "cases": 3,
+          "operation_correct": 3
+        },
+        "connectivity": {
+          "cases": 2,
+          "operation_correct": 2
+        },
+        "dense": {
+          "cases": 1,
+          "operation_correct": 1
+        },
+        "communities": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "importance": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "similarity": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "motifs": {
+          "cases": 3,
+          "operation_correct": 3
+        },
+        "patterns": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "selection": {
+          "cases": 2,
+          "operation_correct": 2
+        },
+        "preparation": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "spectral": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "statistics": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "learning": {
+          "cases": 0,
+          "operation_correct": 0
+        }
+      },
+      "cases": [
+        {
+          "id": "triangles",
+          "question": "How many undirected triangles are in the whole network? Return the count only.",
+          "expected_operations": [
+            "triangle-counting"
+          ],
+          "routed_operations": [
+            "triangle-counting"
+          ],
+          "expected_families": [
+            "motifs"
+          ],
+          "selected_family": "motifs",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "maximum_clique",
+          "question": "Return one maximum clique: I need the globally largest complete group, not merely a maximal one.",
+          "expected_operations": [
+            "maximum-clique"
+          ],
+          "routed_operations": [
+            "maximum-clique"
+          ],
+          "expected_families": [
+            "dense"
+          ],
+          "selected_family": "dense",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "independent_optimum",
+          "question": "Find an exact maximum independent set of the full undirected graph.",
+          "expected_operations": [
+            "maximum-independent-set"
+          ],
+          "routed_operations": [
+            "maximum-independent-set"
+          ],
+          "expected_families": [
+            "selection"
+          ],
+          "selected_family": "selection",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "cover_optimum",
+          "question": "Find an exact minimum vertex cover, with no bound k.",
+          "expected_operations": [
+            "minimum-vertex-cover"
+          ],
+          "routed_operations": [
+            "minimum-vertex-cover"
+          ],
+          "expected_families": [
+            "selection"
+          ],
+          "selected_family": "selection",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "components",
+          "question": "Give the weakly connected components of this graph, including isolated vertices.",
+          "expected_operations": [
+            "connected-components"
+          ],
+          "routed_operations": [
+            "connected-components"
+          ],
+          "expected_families": [
+            "connectivity"
+          ],
+          "selected_family": "connectivity",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "bfs",
+          "question": "Run breadth-first search from string ID station-7267 on the whole graph without a depth limit.",
+          "expected_operations": [
+            "breadth-first-search"
+          ],
+          "routed_operations": [
+            "breadth-first-search"
+          ],
+          "expected_families": [
+            "paths"
+          ],
+          "selected_family": "paths",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "weighted_distance",
+          "question": "Compute single-source shortest paths from string ID station-7267. Edge weights are travel costs; use them, with no cutoff.",
+          "expected_operations": [
+            "single-source-shortest-paths"
+          ],
+          "routed_operations": [
+            "single-source-shortest-paths"
+          ],
+          "expected_families": [
+            "paths"
+          ],
+          "selected_family": "paths",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "filtered_records",
+          "question": "Show all edge records with attributes.amount greater than or equal to 50.",
+          "expected_operations": [
+            "edge-filter"
+          ],
+          "routed_operations": [
+            "edge-filter"
+          ],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "incoming_records",
+          "question": "Return every neighbor of station-3720 at one hop, excluding that vertex itself. Respect the graph's undirected edges.",
+          "expected_operations": [
+            "neighbors"
+          ],
+          "routed_operations": [
+            "neighbors"
+          ],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "ready",
+          "error": null
+        },
+        {
+          "id": "vertex_filter",
+          "question": "Return all vertices with attributes.zone equal to blue.",
+          "expected_operations": [
+            "node-lookup"
+          ],
+          "routed_operations": [
+            "node-lookup"
+          ],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "ready",
+          "error": null
+        },
+        {
+          "id": "aggregate",
+          "question": "Sum attributes.amount over all edge records as one overall total; do not group the rows.",
+          "expected_operations": [
+            "graph-aggregate"
+          ],
+          "routed_operations": [
+            "graph-aggregate"
+          ],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "numeric_identity",
+          "question": "Look up just the vertex whose ID is the integer 0. Return its full record.",
+          "expected_operations": [
+            "node-lookup"
+          ],
+          "routed_operations": [
+            "node-lookup"
+          ],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "string_identity",
+          "question": "Look up just the vertex whose ID is the string \"0\". Return its full record.",
+          "expected_operations": [
+            "node-lookup"
+          ],
+          "routed_operations": [],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": null,
+          "family_correct": false,
+          "required_families_covered": false,
+          "operation_correct": false,
+          "status": null,
+          "error": "A routing sample was truncated."
+        },
+        {
+          "id": "flow_capacity",
+          "question": "Compute exact maximum flow from supply to demand using directed edge weights as capacities, and return the cut side.",
+          "expected_operations": [
+            "max-flow-min-cut"
+          ],
+          "routed_operations": [
+            "max-flow-min-cut"
+          ],
+          "expected_families": [
+            "connectivity"
+          ],
+          "selected_family": "connectivity",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "needs_information",
+          "error": null
+        },
+        {
+          "id": "derived_network",
+          "question": "Use query-subgraph in vertex mode to induce the graph on station-7267, station-9446, station-8405, station-8641, then count triangles in that derived graph only.",
+          "expected_operations": [
+            "query-subgraph",
+            "triangle-counting"
+          ],
+          "routed_operations": [
+            "query-subgraph",
+            "triangle-counting"
+          ],
+          "expected_families": [
+            "motifs",
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "followup_scope",
+          "question": "Keep that BFS source and the same input, but limit the search to two hops.",
+          "expected_operations": [
+            "breadth-first-search"
+          ],
+          "routed_operations": [
+            "breadth-first-search"
+          ],
+          "expected_families": [
+            "paths"
+          ],
+          "selected_family": "paths",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "needs_information",
+          "error": null
+        },
+        {
+          "id": "wrong_family_recovery",
+          "question": "Count all triangles in this undirected graph. Only the exact count is needed.",
+          "expected_operations": [
+            "triangle-counting"
+          ],
+          "routed_operations": [
+            "triangle-counting"
+          ],
+          "expected_families": [
+            "motifs"
+          ],
+          "selected_family": "motifs",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        }
+      ]
+    },
+    "after": {
+      "family_correct": 16,
+      "family_total": 17,
+      "required_families_covered": 15,
+      "operation_correct": 15,
+      "operation_total": 17,
+      "legacy_grader_passed": 4,
+      "legacy_grader_total": 20,
+      "sources_unchanged": true,
+      "per_family": {
+        "records": {
+          "cases": 7,
+          "operation_correct": 5
+        },
+        "paths": {
+          "cases": 3,
+          "operation_correct": 3
+        },
+        "connectivity": {
+          "cases": 2,
+          "operation_correct": 2
+        },
+        "dense": {
+          "cases": 1,
+          "operation_correct": 1
+        },
+        "communities": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "importance": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "similarity": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "motifs": {
+          "cases": 3,
+          "operation_correct": 2
+        },
+        "patterns": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "selection": {
+          "cases": 2,
+          "operation_correct": 2
+        },
+        "preparation": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "spectral": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "statistics": {
+          "cases": 0,
+          "operation_correct": 0
+        },
+        "learning": {
+          "cases": 0,
+          "operation_correct": 0
+        }
+      },
+      "cases": [
+        {
+          "id": "triangles",
+          "question": "How many undirected triangles are in the whole network? Return the count only.",
+          "expected_operations": [
+            "triangle-counting"
+          ],
+          "routed_operations": [
+            "triangle-counting"
+          ],
+          "expected_families": [
+            "motifs"
+          ],
+          "selected_family": "motifs",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "maximum_clique",
+          "question": "Return one maximum clique: I need the globally largest complete group, not merely a maximal one.",
+          "expected_operations": [
+            "maximum-clique"
+          ],
+          "routed_operations": [
+            "maximum-clique"
+          ],
+          "expected_families": [
+            "dense"
+          ],
+          "selected_family": "dense",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "independent_optimum",
+          "question": "Find an exact maximum independent set of the full undirected graph.",
+          "expected_operations": [
+            "maximum-independent-set"
+          ],
+          "routed_operations": [
+            "maximum-independent-set"
+          ],
+          "expected_families": [
+            "selection"
+          ],
+          "selected_family": "selection",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "cover_optimum",
+          "question": "Find an exact minimum vertex cover, with no bound k.",
+          "expected_operations": [
+            "minimum-vertex-cover"
+          ],
+          "routed_operations": [
+            "minimum-vertex-cover"
+          ],
+          "expected_families": [
+            "selection"
+          ],
+          "selected_family": "selection",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "components",
+          "question": "Give the weakly connected components of this graph, including isolated vertices.",
+          "expected_operations": [
+            "connected-components"
+          ],
+          "routed_operations": [
+            "connected-components"
+          ],
+          "expected_families": [
+            "connectivity"
+          ],
+          "selected_family": "connectivity",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "bfs",
+          "question": "Run breadth-first search from string ID station-7267 on the whole graph without a depth limit.",
+          "expected_operations": [
+            "breadth-first-search"
+          ],
+          "routed_operations": [
+            "breadth-first-search"
+          ],
+          "expected_families": [
+            "paths"
+          ],
+          "selected_family": "paths",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "weighted_distance",
+          "question": "Compute single-source shortest paths from string ID station-7267. Edge weights are travel costs; use them, with no cutoff.",
+          "expected_operations": [
+            "single-source-shortest-paths"
+          ],
+          "routed_operations": [
+            "single-source-shortest-paths"
+          ],
+          "expected_families": [
+            "paths"
+          ],
+          "selected_family": "paths",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "filtered_records",
+          "question": "Show all edge records with attributes.amount greater than or equal to 50.",
+          "expected_operations": [
+            "edge-filter"
+          ],
+          "routed_operations": [
+            "edge-filter"
+          ],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "incoming_records",
+          "question": "Return every neighbor of station-3720 at one hop, excluding that vertex itself. Respect the graph's undirected edges.",
+          "expected_operations": [
+            "neighbors"
+          ],
+          "routed_operations": [
+            "neighbors"
+          ],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "ready",
+          "error": null
+        },
+        {
+          "id": "vertex_filter",
+          "question": "Return all vertices with attributes.zone equal to blue.",
+          "expected_operations": [
+            "node-lookup"
+          ],
+          "routed_operations": [
+            "node-lookup"
+          ],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "ready",
+          "error": null
+        },
+        {
+          "id": "aggregate",
+          "question": "Sum attributes.amount over all edge records as one overall total; do not group the rows.",
+          "expected_operations": [
+            "graph-aggregate"
+          ],
+          "routed_operations": [
+            "graph-aggregate"
+          ],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "numeric_identity",
+          "question": "Look up just the vertex whose ID is the integer 0. Return its full record.",
+          "expected_operations": [
+            "node-lookup"
+          ],
+          "routed_operations": [
+            "node-lookup"
+          ],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": "records",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        },
+        {
+          "id": "string_identity",
+          "question": "Look up just the vertex whose ID is the string \"0\". Return its full record.",
+          "expected_operations": [
+            "node-lookup"
+          ],
+          "routed_operations": [],
+          "expected_families": [
+            "records"
+          ],
+          "selected_family": null,
+          "family_correct": false,
+          "required_families_covered": false,
+          "operation_correct": false,
+          "status": null,
+          "error": "A routing sample was truncated."
+        },
+        {
+          "id": "flow_capacity",
+          "question": "Compute exact maximum flow from supply to demand using directed edge weights as capacities, and return the cut side.",
+          "expected_operations": [
+            "max-flow-min-cut"
+          ],
+          "routed_operations": [
+            "max-flow-min-cut"
+          ],
+          "expected_families": [
+            "connectivity"
+          ],
+          "selected_family": "connectivity",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "needs_information",
+          "error": null
+        },
+        {
+          "id": "derived_network",
+          "question": "Use query-subgraph in vertex mode to induce the graph on station-7267, station-9446, station-8405, station-8641, then count triangles in that derived graph only.",
+          "expected_operations": [
+            "query-subgraph",
+            "triangle-counting"
+          ],
+          "routed_operations": [],
+          "expected_families": [
+            "motifs",
+            "records"
+          ],
+          "selected_family": "motifs",
+          "family_correct": true,
+          "required_families_covered": false,
+          "operation_correct": false,
+          "status": "needs_information",
+          "error": null
+        },
+        {
+          "id": "followup_scope",
+          "question": "Keep that BFS source and the same input, but limit the search to two hops.",
+          "expected_operations": [
+            "breadth-first-search"
+          ],
+          "routed_operations": [
+            "breadth-first-search"
+          ],
+          "expected_families": [
+            "paths"
+          ],
+          "selected_family": "paths",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "needs_information",
+          "error": null
+        },
+        {
+          "id": "wrong_family_recovery",
+          "question": "Count all triangles in this undirected graph. Only the exact count is needed.",
+          "expected_operations": [
+            "triangle-counting"
+          ],
+          "routed_operations": [
+            "triangle-counting"
+          ],
+          "expected_families": [
+            "motifs"
+          ],
+          "selected_family": "motifs",
+          "family_correct": true,
+          "required_families_covered": true,
+          "operation_correct": true,
+          "status": "options",
+          "error": null
+        }
+      ]
+    },
+    "scoring": "Seventeen cases specify operations; exact operation-set equality is required, including all dependencies. A family is correct if it belongs to a required step. Three clarification cases are excluded from routing denominators. Multi-family workflows contribute to each required family in the per-family operation table.",
+    "operation_regressions": [
+      {
+        "id": "derived_network",
+        "question": "Use query-subgraph in vertex mode to induce the graph on station-7267, station-9446, station-8405, station-8641, then count triangles in that derived graph only.",
+        "expected_operations": [
+          "query-subgraph",
+          "triangle-counting"
+        ],
+        "routed_operations": [],
+        "expected_families": [
+          "motifs",
+          "records"
+        ],
+        "selected_family": "motifs",
+        "family_correct": true,
+        "required_families_covered": false,
+        "operation_correct": false,
+        "status": "needs_information",
+        "error": null
+      }
+    ],
+    "limitations": [
+      "derived_network: the model chose motifs, then unnecessarily asked whether explicitly requested query-subgraph extraction should happen outside that family. Later cross-family planning was never reached. The cross-family transport and workflow contract tests pass.",
+      "string_identity: the routing sample was truncated in both baseline and candidate.",
+      "The unchanged legacy end-to-end grader remained 4/20. It expects ready immediately, while normal mode often returns options pending a choice. This is not counted as a passing release gate."
+    ]
+  },
+  "context_measurement": "Catalog text characters, not tokens. Three sequential selection calls replace one. The first after study shared the model with the 20-case study, so wall times are not a latency benchmark.",
+  "excluded_attempt": {
+    "path": "routing-after-attempt1.json",
+    "reason": "A browser fixture changed during its broad source-integrity window. Runtime source files did not change. The complete run was repeated on frozen sources."
+  },
+  "post_evaluation_changes": "After the final evaluation completed, only the unrelated incremental-browser fixture was corrected to enable existing admin Expert-mode working notes. No evaluated runtime source changed."
+}

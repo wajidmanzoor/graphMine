@@ -71,17 +71,36 @@ _logger = logging.getLogger(__name__)
 # Displayed capabilities may lag evidence edits by this long; execution always
 # re-verifies evidence before admitting a workflow.
 CAPABILITY_CACHE_SECONDS = 300
-# Exact searches whose work can grow quickly with graph size.
-SEARCH_FAMILIES = {
-    "cliques",
-    "community",
-    "comparison",
-    "dense_structures",
-    "independent_sets",
-    "optimization",
-    "partitioning",
-    "pattern_mining",
-    "topology",
+# Preserve the existing large-search warning for these operations. Cost advice
+# is independent of the families used to organize the catalog.
+SEARCH_OPERATIONS = {
+    "balanced-partitioning",
+    "butterfly-counting",
+    "densest-k-subgraph",
+    "densest-subgraph",
+    "frequent-subgraphs",
+    "graph-edit-distance",
+    "graphlet-counting",
+    "group-steiner-tree",
+    "hypergraph-partitioning",
+    "k-cliques",
+    "maximal-biclique-counting",
+    "maximal-bicliques",
+    "maximal-cliques",
+    "maximal-independent-set",
+    "maximum-clique",
+    "maximum-common-subgraph",
+    "maximum-independent-set",
+    "minimum-vertex-cover",
+    "motif-counting",
+    "network-alignment",
+    "overlapping-communities",
+    "persistent-homology",
+    "quasi-cliques",
+    "signed-balance",
+    "single-graph-frequent-subgraphs",
+    "subgraph-isomorphism",
+    "temporal-motifs",
 }
 LARGE_SEARCH_EDGES = 5000
 # Longer outputs reach the browser in pages instead of all at once.
@@ -642,8 +661,8 @@ class AnalyticsService:
                 ),
                 "quality": cards.get(step["operation"], {}).get("quality"),
                 "device": step.get("device"),
-                "search": cards.get(step["operation"], {}).get("family")
-                in SEARCH_FAMILIES,
+                "search": step["operation"] in cards
+                and step["operation"] in SEARCH_OPERATIONS,
             }
             for step in record["validation"]["plan"]["steps"]
         ]

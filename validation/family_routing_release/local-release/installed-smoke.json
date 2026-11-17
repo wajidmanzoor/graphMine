@@ -1,0 +1,25 @@
+{
+  "scope": "Fresh wheel installation with existing verified native artifacts; isolated account, data and CPU workflows; bounded synthetic HTTP load",
+  "package": "/tmp/graphmine-family-installed-check/lib/python3.12/site-packages/graphmine_agent/__init__.py",
+  "checks": {
+    "packaged_assets": true,
+    "local_commands_without_data_or_model_tokens": true,
+    "cpu_csv_reuse_and_native_workflow": true,
+    "template_review": true,
+    "reproducible_report": true,
+    "project_snapshot_and_revocable_link": true,
+    "readonly_database_import": true,
+    "isolated_http_load_and_auth": true
+  },
+  "load": {
+    "requests": 64,
+    "concurrency": 8,
+    "statuses": {
+      "200": 45,
+      "401": 13,
+      "429": 6
+    },
+    "median_seconds": 0.019556176848709583,
+    "max_seconds": 0.5486561637371778
+  }
+}

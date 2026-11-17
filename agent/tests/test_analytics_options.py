@@ -68,6 +68,17 @@ def test_two_distinct_cards_and_unsampled_runner_is_low():
     assert all(option["cost_hint"] and option["difference"] and option["interpretation"] for option in options)
 
 
+def test_one_problem_with_one_compatible_calculation_does_not_need_an_unrelated_alternative():
+    cards = [card()]
+    menu = candidate_menu(cards, {"main": PROFILE}, "Compute PageRank.")
+    ranked = rank_candidates(menu, samples(menu, [5]), {"high": {"threshold": .9}})
+    options = make_cards(ranked, cards, {"main": PROFILE}, "Compute PageRank.", allow_single=True)
+    assert len(options) == 1
+    assert options[0]["operations"] == [cards[0]["id"]]
+    assert options[0]["parameters"] == menu[0]["parameters"]
+    assert options[0]["preselected"]
+
+
 def test_merge_identical_choices_and_reject_invented_choices():
     menu = candidate_menu([card(), card("degree-centrality")], {"main": PROFILE}, "Rank people")
     votes = samples(menu, [3, 2])

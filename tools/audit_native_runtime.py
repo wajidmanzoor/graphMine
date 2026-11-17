@@ -601,7 +601,7 @@ def audit(
         "python_on_path": False,
     }
     taxonomy = json.loads(
-        (ROOT / "library/manifests/problem_families.json").read_text()
+        (ROOT / "library/manifests/problems.json").read_text()
     )
     problems = {row["id"]: row for row in taxonomy["problems"]}
     contracts = [
@@ -614,8 +614,13 @@ def audit(
     references = json.loads(
         (ROOT / "catalog/python_analytics_coverage.json").read_text()
     )["operations"]
+    from family_catalog import taxonomy as load_taxonomy
+    families = load_taxonomy(ROOT)["families"]
+    operation_families = {
+        operation: family["id"] for family in families for operation in family["operations"]
+    }
     assert all(
-        card["family"] == problems[card["problem_id"]]["family"] for card in references
+        card["family"] == operation_families[card["id"]] for card in references
     )
     return {
         "schema_version": 1,
@@ -641,7 +646,8 @@ def audit(
         "native_dependency_sha256": dependencies,
         "native_gpu_hardware": hardware,
         "wrapper_sha256": sha(ROOT / "python/graphmine/graphmine/native/__init__.py"),
-        "family_catalog_sha256": sha(ROOT / "library/manifests/problem_families.json"),
+        "family_catalog_sha256": sha(ROOT / "catalog/family.json"),
+        "problem_catalog_sha256": sha(ROOT / "catalog/problems.json"),
     }
 
 

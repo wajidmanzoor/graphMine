@@ -1,0 +1,123 @@
+........................................................................ [ 24%]
+........................................................................ [ 48%]
+................................................F....................... [ 73%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+=================================== FAILURES ===================================
+____ test_new_reasoning_preserves_other_turn_dom_focus_and_expanded_details ____
+
+browser = <selenium.webdriver.firefox.webdriver.WebDriver (session="9f248e18-6b01-4d94-a4b2-04473ed970b5")>
+expression = 'GraphMineWorkspace.state.events.length===7 && document.querySelector(\'#activity-list [data-turn="second"] [data-live]\')'
+
+    def wait_for(browser, expression):
+        try:
+>           return WebDriverWait(browser, 5, poll_frequency=0.05).until(
+                lambda driver: driver.execute_script(f"return {expression}")
+            )
+
+agent/browser_tests/test_workspace_loading.py:324: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <selenium.webdriver.support.wait.WebDriverWait (session="9f248e18-6b01-4d94-a4b2-04473ed970b5")>
+method = <function wait_for.<locals>.<lambda> at 0x73d6ae8c4860>, message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -> T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            >>> from selenium.webdriver.common.by import By
+            >>> from selenium.webdriver.support.wait import WebDriverWait
+            >>> from selenium.webdriver.support import expected_conditions as EC
+            >>>
+            >>> # Wait until an element is visible on the page
+            >>> wait = WebDriverWait(driver, 10)
+            >>> element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            >>> print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() > end_time:
+                break
+            time.sleep(self._poll)
+>       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message:
+
+.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:121: TimeoutException
+
+During handling of the above exception, another exception occurred:
+
+loading_browser = <selenium.webdriver.firefox.webdriver.WebDriver (session="9f248e18-6b01-4d94-a4b2-04473ed970b5")>
+loading_server = namespace(responses=[namespace(started=<threading.Event at 0x73d6aced1550: set>, release=<threading.Event at 0x73d6ace...group_graph=None, group_requests=[], port_requests=[], port_page=None, events_status=200, url='http://127.0.0.1:45741')
+
+    def test_new_reasoning_preserves_other_turn_dom_focus_and_expanded_details(loading_browser, loading_server):
+        browser, server = loading_browser, loading_server
+        saved_network(server)
+        for turn in ("first", "second"):
+            event(server, "chat", turn, role="user", message=f"Question {turn}")
+            event(server, "reasoning", turn, stage="planning", text=f"Reasoning {turn}")
+            event(server, "chat", turn, role="assistant", message=f"Answer {turn}", view={"workflow_id": "saved-analysis"})
+        open_saved(browser, server)
+        browser.execute_script("""
+          window.originalUser=document.querySelector('#messages .user[data-turn="first"]');
+          window.originalAnswer=document.querySelector('#messages .assistant[data-turn="first"]');
+          window.originalActivity=document.querySelector('#activity-list [data-turn="first"]');
+          window.originalSecond=document.querySelector('#messages .assistant[data-turn="second"]');
+          for (const details of originalAnswer.querySelectorAll('details')) details.open=true;
+          document.querySelector('#messages [data-view="first"]').focus();
+          window.originalFocus=document.activeElement;
+        """)
+        event(server, "reasoning.delta", "second", stage="planning", text="Additional live detail")
+        browser.execute_script("window.dispatchEvent(new Event('online'))")
+>       wait_for(browser, "GraphMineWorkspace.state.events.length===7 && document.querySelector('#activity-list [data-turn=\"second\"] [data-live]')")
+
+agent/browser_tests/test_workspace_incremental.py:46: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+browser = <selenium.webdriver.firefox.webdriver.WebDriver (session="9f248e18-6b01-4d94-a4b2-04473ed970b5")>
+expression = 'GraphMineWorkspace.state.events.length===7 && document.querySelector(\'#activity-list [data-turn="second"] [data-live]\')'
+
+    def wait_for(browser, expression):
+        try:
+            return WebDriverWait(browser, 5, poll_frequency=0.05).until(
+                lambda driver: driver.execute_script(f"return {expression}")
+            )
+        except TimeoutException:
+>           pytest.fail(
+                str(
+                    browser.execute_script(
+                        "return {status: document.getElementById('connection-state').textContent, notice: document.getElementById('notice').textContent, errors: window.testErrors}"
+                    )
+                )
+            )
+E           Failed: {'status': '', 'notice': '', 'errors': None}
+
+agent/browser_tests/test_workspace_loading.py:328: Failed
+- generated xml file: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/browser.xml -
+=========================== short test summary info ============================
+FAILED agent/browser_tests/test_workspace_incremental.py::test_new_reasoning_preserves_other_turn_dom_focus_and_expanded_details
+1 failed, 293 passed in 1291.88s (0:21:31)

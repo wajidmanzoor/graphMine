@@ -6,7 +6,7 @@ from urllib.parse import parse_qs, urlsplit
 import pytest
 from selenium.webdriver.common.by import By
 
-from test_workspace_conversation_graph import event, open_saved, saved_network
+from test_workspace_conversation_graph import enable_admin_working_notes, event, open_saved, saved_network
 from test_workspace_loading import SESSION, loading_browser, loading_server, wait_for
 
 
@@ -32,6 +32,7 @@ def test_new_reasoning_preserves_other_turn_dom_focus_and_expanded_details(loadi
         event(server, "reasoning", turn, stage="planning", text=f"Reasoning {turn}")
         event(server, "chat", turn, role="assistant", message=f"Answer {turn}", view={"workflow_id": "saved-analysis"})
     open_saved(browser, server)
+    enable_admin_working_notes(browser)
     browser.execute_script("""
       window.originalUser=document.querySelector('#messages .user[data-turn="first"]');
       window.originalAnswer=document.querySelector('#messages .assistant[data-turn="first"]');

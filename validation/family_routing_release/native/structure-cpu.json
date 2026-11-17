@@ -1,0 +1,34 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 14,
+    "failed": 0,
+    "implementation_sha256": "2715d4ca84ff2be4a767acb7f0dfd7313da9a1561b5a7b66d496942f014b6914"
+  },
+  {
+    "suite": "truss",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 5135,
+    "failed": 0,
+    "implementation_sha256": "2715d4ca84ff2be4a767acb7f0dfd7313da9a1561b5a7b66d496942f014b6914"
+  },
+  {
+    "suite": "blocks",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 1027,
+    "failed": 0,
+    "implementation_sha256": "2715d4ca84ff2be4a767acb7f0dfd7313da9a1561b5a7b66d496942f014b6914"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 37,
+    "failed": 0,
+    "implementation_sha256": "2715d4ca84ff2be4a767acb7f0dfd7313da9a1561b5a7b66d496942f014b6914"
+  }
+]

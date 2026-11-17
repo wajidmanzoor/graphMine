@@ -6,10 +6,15 @@ results belong to the C++/CUDA library. Python transports requests and results
 through a versioned C ABI. Native applications and the command-line executable
 run without Python.
 
-The shared taxonomy is `library/manifests/problem_families.json`. It assigns
-all 70 formal problems and the record-query utilities to families. The native
-catalog embeds this file; the Python wrapper obtains its catalog from that
-binary. Family membership does not establish implementation or verification.
+The shared taxonomy uses `catalog/family.json` for family descriptions and
+`catalog/problems.json` for the problems and operation IDs within each family.
+It assigns all 70 formal problems and the record-query utility problem to
+14 families. [The generated family reference](FAMILIES.md) lists every problem
+and its description. The native build validates and embeds these files; the
+Python wrapper obtains its catalog from that binary. `catalog/algo.json` is
+generated from existing native implementation profiles, keyed by problem and
+then `operation/backend` to distinguish repeated backend IDs. It does not
+select implementations or establish verification.
 All formal contracts now have an executable native profile. Compilation and
 evidence admission remain separate states.
 
@@ -25,49 +30,49 @@ evidence before the agent admits it. The
 added after the 26-problem checkpoint. GPU dispatch calls native libraries or
 isolated native CUDA workers:
 
-| Operation | Family | GPU implementation |
-| --- | --- | --- |
-| Breadth-first search | traversal | libcugraph |
-| Single-source shortest paths | traversal | libcugraph, bounded float64 costs |
-| Many-source shortest paths | traversal | libcugraph, bounded float64 costs |
-| Topological sort | traversal | CPU profile |
-| Spanning tree/forest | trees | libcugraph, minimum and maximum |
-| Connected components | connectivity | libcugraph and ECL-SCC, weak and strong |
-| Biconnected edge blocks | connectivity | CPU profile |
-| PageRank | centrality | libcugraph |
-| Degree centrality | centrality | CPU profile |
-| Betweenness centrality | centrality | libcugraph and original TurboBC; unweighted paths |
-| Personalized PageRank | centrality | libcugraph; kPAR with explicit approximate quality, one seed and restart probability 0.2 |
-| Local link prediction | similarity | libcugraph Jaccard; eight CPU measures |
-| Maximum flow/minimum cut | flow | Original ECL-MaxFlow CUDA worker, integral capacities totaling at most 1e9 |
-| General weighted matching | matching | CPU weighted Blossom profile |
-| Bipartite matching/assignment | matching | Original Hungarian CUDA worker for complete square minimum-cost perfect assignment |
-| Triangle counting/listing | motifs | Original ToT and WeTriC CUDA backends |
-| Maximal cliques | cliques | Original RDMCE, MCE-GPU and G2-AIMD counts; bounded native materialization |
-| Maximum clique | cliques | Original CUDA-MS, GPUMaximumClique and Maximum-Clique-on-GPU witnesses; native optimality check |
-| Fixed-size cliques | cliques | Original GraphSet, repaired GAMMA and repaired KCGPU counts |
-| Core decomposition | cores | Native libcugraph and original KCoreGPU |
-| Truss decomposition | cores | Native libcugraph and AccTD |
-| Maximum independent set | independent_sets | Original maximum-clique kernels on the native complement, with optimality check |
-| Minimum vertex cover | independent_sets | Exact complement reduction using the same maximum-clique kernels |
-| Maximal independent set | independent_sets | Direct libcugraph C++ interface; independence and maximality checked in C++ |
-| Vertex coloring | coloring | Direct libcugraph C++ interface; distance-1 and distance-2 conflict graphs |
-| Random walk generation | sampling | Native libcugraph uniform and weighted walks; weighted node2vec uses CPU |
-| Neighborhood sampling | sampling | CPU profile with exact weighted draws, typed fanouts and temporal cutoff |
-| Induced/ego subgraphs | subgraphs | Native libcugraph BFS for ego discovery; C++ preserves original records |
-| Community detection | communities | gLeiden, parallel Louvain, parallel Leiden and parallel Leiden Plus; unweighted heuristic modularity |
-| Quasi-cliques | dense_structures | cuQC; maximal sets, gamma in [0.5, 1], minimum size at least 2 |
-| Maximal bicliques | dense_structures | cuMBE; uncapped enumeration |
-| Maximal biclique counting | dense_structures | MBE-GPU; vertices declare attributes.side=left\|right |
-| Dynamic triangle counting | motifs | EDTC; batch deletions followed by insertions |
-| Motif counting | pattern_mining | GraphMiner, GraphSet and DuMato; supported connected undirected 3/4-vertex patterns |
-| Subgraph isomorphism | pattern_mining | gMatch; simple non-induced graphs without predicates or output caps |
-| Temporal motifs | pattern_mining | Everest and Mayura; strict ordered A→B, B→C, A→C events and integral timestamps |
-| Transitive closure | traversal | GDlog; directed reflexive reachability, at most 1024 vertices |
-| Butterfly counting | pattern_mining | GraphMiner and GAMMA; checked bipartite topology |
-| Densest subgraph | dense_structures | CDS; exact unweighted clique density, minimum_vertices=1 |
-| Group Steiner tree | optimization | GPU4GST; nonnegative integral edge weights and at most 16 groups including required vertices |
-| Influence maximization | centrality | SuperFuser; explicit heuristic independent cascade, no optimum guarantee |
+| Operation | GPU implementation |
+| --- | --- |
+| Breadth-first search | libcugraph |
+| Single-source shortest paths | libcugraph, bounded float64 costs |
+| Many-source shortest paths | libcugraph, bounded float64 costs |
+| Topological sort | CPU profile |
+| Spanning tree/forest | libcugraph, minimum and maximum |
+| Connected components | libcugraph and ECL-SCC, weak and strong |
+| Biconnected edge blocks | CPU profile |
+| PageRank | libcugraph |
+| Degree centrality | CPU profile |
+| Betweenness centrality | libcugraph and original TurboBC; unweighted paths |
+| Personalized PageRank | libcugraph; kPAR with explicit approximate quality, one seed and restart probability 0.2 |
+| Local link prediction | libcugraph Jaccard; eight CPU measures |
+| Maximum flow/minimum cut | Original ECL-MaxFlow CUDA worker, integral capacities totaling at most 1e9 |
+| General weighted matching | CPU weighted Blossom profile |
+| Bipartite matching/assignment | Original Hungarian CUDA worker for complete square minimum-cost perfect assignment |
+| Triangle counting/listing | Original ToT and WeTriC CUDA backends |
+| Maximal cliques | Original RDMCE, MCE-GPU and G2-AIMD counts; bounded native materialization |
+| Maximum clique | Original CUDA-MS, GPUMaximumClique and Maximum-Clique-on-GPU witnesses; native optimality check |
+| Fixed-size cliques | Original GraphSet, repaired GAMMA and repaired KCGPU counts |
+| Core decomposition | Native libcugraph and original KCoreGPU |
+| Truss decomposition | Native libcugraph and AccTD |
+| Maximum independent set | Original maximum-clique kernels on the native complement, with optimality check |
+| Minimum vertex cover | Exact complement reduction using the same maximum-clique kernels |
+| Maximal independent set | Direct libcugraph C++ interface; independence and maximality checked in C++ |
+| Vertex coloring | Direct libcugraph C++ interface; distance-1 and distance-2 conflict graphs |
+| Random walk generation | Native libcugraph uniform and weighted walks; weighted node2vec uses CPU |
+| Neighborhood sampling | CPU profile with exact weighted draws, typed fanouts and temporal cutoff |
+| Induced/ego subgraphs | Native libcugraph BFS for ego discovery; C++ preserves original records |
+| Community detection | gLeiden, parallel Louvain, parallel Leiden and parallel Leiden Plus; unweighted heuristic modularity |
+| Quasi-cliques | cuQC; maximal sets, gamma in [0.5, 1], minimum size at least 2 |
+| Maximal bicliques | cuMBE; uncapped enumeration |
+| Maximal biclique counting | MBE-GPU; vertices declare attributes.side=left\|right |
+| Dynamic triangle counting | EDTC; batch deletions followed by insertions |
+| Motif counting | GraphMiner, GraphSet and DuMato; supported connected undirected 3/4-vertex patterns |
+| Subgraph isomorphism | gMatch; simple non-induced graphs without predicates or output caps |
+| Temporal motifs | Everest and Mayura; strict ordered A→B, B→C, A→C events and integral timestamps |
+| Transitive closure | GDlog; directed reflexive reachability, at most 1024 vertices |
+| Butterfly counting | GraphMiner and GAMMA; checked bipartite topology |
+| Densest subgraph | CDS; exact unweighted clique density, minimum_vertices=1 |
+| Group Steiner tree | GPU4GST; nonnegative integral edge weights and at most 16 groups including required vertices |
+| Influence maximization | SuperFuser; explicit heuristic independent cascade, no optimum guarantee |
 
 The original `Graph` and typed external IDs are reused. Existing native APIs
 remain available for compatibility. Original triangle, mining and centrality backends are included when building from the
@@ -158,7 +163,7 @@ or rebuild against the deployment prefix.
 from graphmine.native import NativeLibrary
 
 library = NativeLibrary("build/native-rapids/libgraphmine_runtime.so")
-result = library.family("traversal").breadth_first_search(
+result = library.family("paths").breadth_first_search(
     canonical_graph,
     parameters={"sources": [0], "depth_limit": 3},
     device="gpu",

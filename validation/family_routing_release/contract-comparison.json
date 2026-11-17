@@ -1,0 +1,8 @@
+{
+  "operation_count_before": 82,
+  "operation_count_after": 82,
+  "changed_operation_contracts": [],
+  "abi_unchanged": true,
+  "excluded_field": "family",
+  "native_implementation_sha256": "2715d4ca84ff2be4a767acb7f0dfd7313da9a1561b5a7b66d496942f014b6914"
+}

@@ -1,0 +1,107 @@
+........................................................................ [  8%]
+........................................................................ [ 17%]
+.........................................ss............................. [ 26%]
+................................................ss...................... [ 35%]
+..s..................................................................... [ 44%]
+........................................................................ [ 52%]
+........................................................................ [ 61%]
+........................................................................ [ 70%]
+........................................................................ [ 79%]
+........................................................................ [ 88%]
+........................................................................ [ 96%]
+..........................                                               [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_studio_exchange.py::test_exchange_retains_attribution_schema_and_exact_execution_evidence
+  /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/lib/python3.12/site-packages/_pytest/unraisableexception.py:67: PytestUnraisableExceptionWarning: Exception ignored in: <coroutine object BaseSubprocessTransport._connect_pipes at 0x7c8d5c13df10>
+  
+  Traceback (most recent call last):
+    File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 251, in _init_core_attrs
+      self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 55, in _getattr_no_parents
+      raise AttributeError(attribute)
+  AttributeError: __pydantic_core_schema__
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "/usr/lib/python3.12/asyncio/base_events.py", line 1658, in connect_write_pipe
+      await waiter
+  GeneratorExit
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "/usr/lib/python3.12/asyncio/base_subprocess.py", line 162, in _connect_pipes
+      _, pipe = await loop.connect_write_pipe(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/usr/lib/python3.12/asyncio/base_events.py", line 1660, in connect_write_pipe
+      transport.close()
+    File "/usr/lib/python3.12/asyncio/unix_events.py", line 767, in close
+      self.write_eof()
+    File "/usr/lib/python3.12/asyncio/unix_events.py", line 753, in write_eof
+      self._loop.call_soon(self._call_connection_lost, None)
+    File "/usr/lib/python3.12/asyncio/base_events.py", line 795, in call_soon
+      self._check_closed()
+    File "/usr/lib/python3.12/asyncio/base_events.py", line 541, in _check_closed
+      raise RuntimeError('Event loop is closed')
+  RuntimeError: Event loop is closed
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "/usr/lib/python3.12/asyncio/base_subprocess.py", line 189, in _connect_pipes
+      waiter.set_exception(exc)
+    File "/usr/lib/python3.12/asyncio/base_events.py", line 795, in call_soon
+      self._check_closed()
+    File "/usr/lib/python3.12/asyncio/base_events.py", line 541, in _check_closed
+      raise RuntimeError('Event loop is closed')
+  RuntimeError: Event loop is closed
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnraisableExceptionWarning(msg))
+
+tests/test_studio_exchange.py::test_changed_or_unreviewed_execution_cannot_be_exported[revision]
+  /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/lib/python3.12/site-packages/_pytest/unraisableexception.py:67: PytestUnraisableExceptionWarning: Exception ignored in: <coroutine object AnalyticsService._load_capabilities at 0x7c8d5d874ba0>
+  
+  Traceback (most recent call last):
+    File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 251, in _init_core_attrs
+      self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/lib/python3.12/site-packages/pydantic/type_adapter.py", line 55, in _getattr_no_parents
+      raise AttributeError(attribute)
+  AttributeError: __pydantic_core_schema__
+  
+  During handling of the above exception, another exception occurred:
+  
+  Traceback (most recent call last):
+    File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics.py", line 554, in _load_capabilities
+      result = await self._call({"command": "capabilities"})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics.py", line 445, in _call
+      process = await asyncio.create_subprocess_exec(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/usr/lib/python3.12/asyncio/subprocess.py", line 224, in create_subprocess_exec
+      transport, protocol = await loop.subprocess_exec(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "/usr/lib/python3.12/asyncio/base_events.py", line 1744, in subprocess_exec
+      transport = await self._make_subprocess_transport(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  RuntimeError: coroutine ignored GeneratorExit
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnraisableExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/backend.xml -
+=========================== short test summary info ============================
+SKIPPED [2] agent/tests/test_analytics_projection.py:18: Set GRAPHMINE_ANALYTICS_TEST_GPUS for GPU table-loading checks
+SKIPPED [2] agent/tests/test_analytics_workflows.py:954: Set GRAPHMINE_ANALYTICS_TEST_GPUS to two GPU UUIDs for application GPU checks
+SKIPPED [1] agent/tests/test_benchmark_instances_integration.py:14: requires the verified local Yelp and MovieLens instances
+813 passed, 5 skipped, 3 warnings in 778.64s (0:12:58)

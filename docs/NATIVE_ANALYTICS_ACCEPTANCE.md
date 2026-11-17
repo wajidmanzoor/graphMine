@@ -1,5 +1,85 @@
 # Native library and workspace acceptance
 
+The current routing contract is family → up to two ranked problems → exact
+operation and existing implementation selection. The first call's catalog context is only
+`catalog/family.json`; the second receives only the selected family's entries
+in `catalog/problems.json`. Required cross-family dependencies are resolved in
+later planning. One family reroute and the existing validation repair remain
+bounded. Native coverage is now 82 operations in 14 families; see
+[the generated reference](FAMILIES.md). Current measurements and earlier releases are distinguished below.
+
+## Family and problem routing — 2026-11-17
+
+The catalog now contains 14 families, 70 formal problems plus one record-query
+utility problem, and 82 operations. Family metadata and problem membership live
+in `catalog/family.json` and `catalog/problems.json`; implementation metadata in
+`catalog/algo.json` is generated from the native profiles.
+
+The frozen 42-question study includes three cases per family. Three deliberately
+vague questions are graded only for family selection. These are authored local
+cases, not a public NLP benchmark. The previous flat router did not emit a
+family: its family score is inferred from its selected operation. The new router
+emits its family explicitly; clarifications without an identifiable family count
+as misses. Both versions are scored in the current taxonomy.
+
+| Measure | Before | After |
+| --- | --- | --- |
+| Family selection, 42-question study | 38/42 (90.5%) | 42/42 (100%) |
+| Exact operation, 39 scorable questions | 38/39 (97.4%) | 39/39 (100%) |
+| Family selection, existing planner suite | 16/17 (94.1%) | 16/17 (94.1%) |
+| Complete operation set, existing planner suite | 16/17 (94.1%) | 15/17 (88.2%) |
+| Unchanged legacy end-to-end grader | 4/20 | 4/20 |
+
+| Family | Family before | Family after | Operation before | Operation after |
+| --- | --- | --- | --- | --- |
+| Look up records | 3/3 | 3/3 | 3/3 | 3/3 |
+| Paths & reachability | 3/3 | 3/3 | 3/3 | 3/3 |
+| Connectivity, cuts & trees | 3/3 | 3/3 | 3/3 | 3/3 |
+| Cliques & dense subgraphs | 2/3 | 3/3 | 2/2 | 2/2 |
+| Communities & partitions | 2/3 | 3/3 | 2/2 | 2/2 |
+| Importance & influence | 3/3 | 3/3 | 3/3 | 3/3 |
+| Similarity & comparison | 2/3 | 3/3 | 2/2 | 2/2 |
+| Counting motifs | 3/3 | 3/3 | 3/3 | 3/3 |
+| Pattern matching & mining | 3/3 | 3/3 | 3/3 | 3/3 |
+| Assignment & selection | 2/3 | 3/3 | 2/3 | 3/3 |
+| Prepare, sample & draw | 3/3 | 3/3 | 3/3 | 3/3 |
+| Spectral & topology | 3/3 | 3/3 | 3/3 | 3/3 |
+| Statistics & anomalies | 3/3 | 3/3 | 3/3 | 3/3 |
+| Learning & embeddings | 3/3 | 3/3 | 3/3 | 3/3 |
+
+No family regressed in the 42-question study. The existing planner suite did
+regress on the explicit workflow “use query-subgraph in vertex mode, then count
+triangles in the derived graph.” The model correctly selected motifs, but then
+asked whether the stated extraction step should happen outside that family.
+It did not reach later planning. This loses complete-operation coverage for
+both the records and motifs steps. The cross-family code path passes authored
+transport and workflow tests; that does not erase this live-model miss.
+
+The string-ID lookup case produced a truncated routing sample in both versions.
+The legacy grader also expects an immediately ready plan, whereas current normal
+mode commonly offers option cards pending a user choice. Its 4/20 score is
+retained as a limitation and is not represented as a passing release gate.
+
+The first catalog context is 5,990 characters versus 21,169 previously (71.7%
+smaller). Across the three selection calls, mean catalog context is 8,328.9
+characters. These are catalog characters, not total prompt tokens; the new flow
+adds two sequential calls. Context reduction does not establish a latency gain.
+
+All evaluated runtime sources and frozen cases stayed unchanged during the final
+runs. An earlier after-run was excluded because a browser fixture changed during
+its broad integrity window; the complete study was repeated. Descriptions were
+not adjusted against the results. A separate stale browser fixture was corrected
+after evaluation to opt into the existing admin Expert-mode working notes.
+
+The rebuilt native evidence retains all 141 admitted operation/backend pairs and
+all previously admitted devices. The 82 operation cards are identical apart from
+family, and the C ABI is unchanged. Detailed measurements and known misses are
+in [the routing comparison](../validation/family_routing_release/routing-comparison.json),
+with [admission comparison](../validation/family_routing_runtime/admission-comparison.json)
+and [contract comparison](../validation/family_routing_release/contract-comparison.json).
+
+## Earlier acceptance reports
+
 Planner follow-up, 2026-10-11: the four original planning failures are repaired.
 The original suite now passes **20/20** as a regression replay, and **81
 application checks pass** (two physical-GPU checks skipped). Thirteen fresh

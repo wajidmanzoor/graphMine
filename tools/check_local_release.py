@@ -42,6 +42,8 @@ BACKEND = [
     "test_conversation_timeline",
     "test_analytics_workflows",
     "test_analytics_planning",
+    "test_analytics_taxonomy",
+    "test_catalog_and_planning",
     "test_analytics_group_views",
     "test_analytics_projection",
     "test_accounts",
@@ -182,6 +184,9 @@ def inventory():
         ROOT / "tools/smoke_installed_workspace.py",
         ROOT / "agent/pyproject.toml",
         ROOT / "catalog/native_execution_evidence.json",
+        ROOT / "catalog/family.json",
+        ROOT / "catalog/problems.json",
+        ROOT / "catalog/algo.json",
     ]
     return {
         str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -247,6 +252,12 @@ def main(output, *, databases=False, benchmarks=False, gpus=False):
             ],
         )
         report["steps"][-1]["tests"] = junit_summary(output / "backend.xml")
+        run(
+            "taxonomy",
+            [sys.executable, "-m", "pytest", "-q", "library/tests/test_family_taxonomy.py",
+             "--junitxml", str(output / "taxonomy.xml")],
+        )
+        report["steps"][-1]["tests"] = junit_summary(output / "taxonomy.xml")
         run(
             "browser",
             [

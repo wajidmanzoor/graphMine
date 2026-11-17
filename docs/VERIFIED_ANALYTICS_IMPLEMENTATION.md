@@ -624,8 +624,9 @@ the existing Python implementations as native CPU coverage.
   without Python on PATH and with GPUs hidden. The CPU shared library has no
   Python or CUDA linkage. Original `Graph` storage and native triangle backends
   are reused.
-- One embedded taxonomy assigns all 70 formal problems and record queries to
-  31 families. The thin Python binding obtains operations, parameters and
+- The checkpoint embedded a module-based taxonomy. The current
+  [family reference](FAMILIES.md) derives 14 families from `catalog/family.json`
+  and `catalog/problems.json`. The thin Python binding obtains operations, parameters and
   family membership from that native catalog. CPU/GPU selection and algorithm
   execution occur inside C++. Unmigrated problems remain explicitly pending.
 - Native CPU breadth-first search and triangle counting are implemented.

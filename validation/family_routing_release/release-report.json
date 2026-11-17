@@ -1,0 +1,189 @@
+{
+  "scope": "Shared taxonomy and family \u2192 ranked problems \u2192 existing operation/implementation planning. Development validation is complete; deployment is recorded separately by the environment controller.",
+  "taxonomy": {
+    "families": 14,
+    "formal_problems": 70,
+    "utility_problems": 1,
+    "operations": 82,
+    "sources": [
+      "catalog/family.json",
+      "catalog/problems.json"
+    ],
+    "generated_algorithms": "catalog/algo.json"
+  },
+  "native_admission": {
+    "before_profiles": 141,
+    "after_profiles": 141,
+    "lost_profiles": [],
+    "lost_devices": [],
+    "verification_issues": [],
+    "implementation_sha256": "2715d4ca84ff2be4a767acb7f0dfd7313da9a1561b5a7b66d496942f014b6914"
+  },
+  "contract_comparison": {
+    "operation_count_before": 82,
+    "operation_count_after": 82,
+    "changed_operation_contracts": [],
+    "abi_unchanged": true,
+    "excluded_field": "family",
+    "native_implementation_sha256": "2715d4ca84ff2be4a767acb7f0dfd7313da9a1561b5a7b66d496942f014b6914"
+  },
+  "checks": {
+    "backend": {
+      "collected": 818,
+      "passed": 813,
+      "failed": 0,
+      "skipped": 5
+    },
+    "taxonomy": {
+      "collected": 33,
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0
+    },
+    "browser": {
+      "unique_cases_with_passing_results": 294,
+      "initial_passed": 293,
+      "initial_failed": 1,
+      "corrected_module": {
+        "collected": 7,
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0
+      },
+      "resolved_failures": [
+        "browser_tests.test_workspace_incremental.test_new_reasoning_preserves_other_turn_dom_focus_and_expanded_details"
+      ],
+      "note": "The original full gate failed on a pre-existing fixture that did not enable admin Expert mode before asserting working notes. Its seven-case module passed after correcting that fixture. Product UI source did not change; all other passing results were retained."
+    },
+    "native_cpu_contracts": {
+      "collected": 168,
+      "passed": 168,
+      "failed": 0,
+      "skipped": 0
+    },
+    "native_gpu_0_original": {
+      "collected": 33,
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0
+    },
+    "native_gpu_1_original": {
+      "collected": 34,
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0
+    },
+    "native_bindings": {
+      "collected": 148,
+      "passed": 148,
+      "failed": 0,
+      "skipped": 0
+    },
+    "native_oracles": {
+      "reports": 46,
+      "passed_requests": {
+        "cpu": 129073,
+        "gpu-0": 44884,
+        "gpu-1": 44884
+      },
+      "total": 218841
+    },
+    "package_and_fresh_install": {
+      "passed": true,
+      "report": "local-release/package-summary.json",
+      "checks": {
+        "packaged_assets": true,
+        "local_commands_without_data_or_model_tokens": true,
+        "cpu_csv_reuse_and_native_workflow": true,
+        "template_review": true,
+        "reproducible_report": true,
+        "project_snapshot_and_revocable_link": true,
+        "readonly_database_import": true,
+        "isolated_http_load_and_auth": true
+      }
+    }
+  },
+  "routing": "routing-comparison.json",
+  "limitations": [
+    "The original 20-case planner study lost one complete-operation match (derived_network); details and examples are in routing-comparison.json. The legacy end-to-end grader stayed 4/20 and is not represented as passing.",
+    "Five opt-in checks were skipped in the broad backend gate: two GPU table-loading checks, two GPU application checks, and a local benchmark-instance integration check. Native physical GPU proof was run separately.",
+    "A preliminary GPU coloring proof timed out under concurrent model load. The final pinned-runtime proof passed with model requests idle; all 141 prior profiles and their devices remain admitted."
+  ],
+  "historical_reports": "removed-historical-reports.json",
+  "steps": [
+    {
+      "step": 1,
+      "files": [
+        "catalog/family.json",
+        "catalog/problems.json",
+        "catalog/algo.json",
+        "tools/family_catalog.py",
+        "tools/generate_families.py",
+        "tools/validate_families.py",
+        "library/tests/test_family_taxonomy.py"
+      ],
+      "tests": "33 taxonomy tests; generated metadata and retirement checks",
+      "differences": "The user subsequently requested separate family/problem/algorithm JSON files. No coarse old-to-new mapping exceptions were found; membership follows the operation table."
+    },
+    {
+      "step": 2,
+      "files": [
+        "library/runtime/registry.cpp",
+        "library/runtime/CMakeLists.txt",
+        "python/graphmine/graphmine/native/__init__.py",
+        "python/graphmine/graphmine/_families.py",
+        "catalog/native_execution_evidence.json"
+      ],
+      "tests": "Pinned native oracle, binding, CPU/GPU contract and admission reports",
+      "differences": "Family source metadata participates in the native implementation hash, so evidence was rebuilt. No profile or admitted device was lost."
+    },
+    {
+      "step": 3,
+      "files": [
+        "problems/*/problem.json",
+        "library/manifests/problems.json"
+      ],
+      "tests": "Category-only comparisons and generation checks",
+      "differences": "Kept spec.category because readers exist, replacing it with the generated family ID. Problem IDs and contract paths remain unchanged."
+    },
+    {
+      "step": 4,
+      "files": [
+        "agent/graphmine_agent/_families.py",
+        "agent/graphmine_agent/analytics_taxonomy.py",
+        "agent/graphmine_agent/analytics_planning.py",
+        "agent/graphmine_agent/analytics_lanes.py",
+        "agent/graphmine_agent/analytics_options.py",
+        "agent/graphmine_agent/analytics.py",
+        "catalog/vague_terms.json"
+      ],
+      "tests": "Planner, transport, catalog isolation, bounded reroute, cross-family dependency and browser tests",
+      "differences": "One or two ranked problem candidates are alternatives. The first two catalog contexts stay narrow; required cross-family dependencies are available later. The live cross-family miss is retained in the evaluation report."
+    },
+    {
+      "step": 5,
+      "files": [
+        "docs/catalog.json",
+        "docs/FAMILIES.md",
+        "docs/app.js",
+        "docs/ANALYTICS_WORKSPACE.md",
+        "docs/NATIVE_CORE_MIGRATION.md",
+        "docs/NATIVE_ANALYTICS_ACCEPTANCE.md",
+        "docs/ENVIRONMENTS.md"
+      ],
+      "tests": "Generated catalog/reference checks; frontend checks; native inventory audits",
+      "differences": "Removed 55 historical reports containing retired family identifiers at the user\u2019s request; original contents remain in Git history."
+    },
+    {
+      "step": 6,
+      "files": [
+        "agent/evaluation/family_routing_cases.json",
+        "agent/tests/test_analytics_taxonomy.py",
+        "tools/evaluate_family_routing.py",
+        "validation/family_routing_release"
+      ],
+      "tests": "Frozen before/after 42-case routing and unchanged 20-case planner evaluations",
+      "differences": "The first after study was excluded because a browser fixture changed during its broad source-integrity window. The complete study was repeated with unchanged sources. Descriptions were not tuned against results."
+    }
+  ]
+}

@@ -25,9 +25,9 @@ The workspace root is `/home/wajid/projects/graphDatabaseAgent`.
 | Development | `graphMine-database-cypher` | 18002 / 8879 | Loopback; SSH forwarding |
 | Testing | `graphMine-testing` | 18001 / 8878 | Loopback; SSH forwarding |
 
-`graphMine-runtime-20261117-grounding` is the detached, pinned native-runtime
-checkout for the grounded analytics release, including the optional biclique
-partition contract. Its compiled CPU/GPU engine and execution evidence are
+`graphMine-runtime-20261117-families` is the detached, pinned native-runtime
+checkout for the shared family taxonomy and family/problem routing release.
+Its compiled CPU/GPU engine and execution evidence are
 promoted together with the application. The existing
 `graphMine-repo` checkout still supplies the analytics Python and vLLM
 environments. Do not develop in these pinned checkouts or install packages into
@@ -37,10 +37,11 @@ verified runtime; changing an app branch alone does not replace native binaries.
 The build reuses the unchanged Kokkos/KokkosKernels installation under
 `graphMine-runtime-20261116-views/library/build/native-dependencies/` and the
 existing research workers. Keep those pinned dependencies available. Build
-settings, dependency versions, source hashes and validation reports are recorded
-in `validation/phase5-runtime-release/`; the earlier graph-view migration remains
-documented in `validation/native_views_release/`. Later GPU graph-view migration
-steps remain separate work; this release retains the existing GPU adapters.
+settings, source hashes, device-specific admission and validation reports for
+this runtime are recorded in `validation/family_routing_runtime/`. Earlier
+reports with retired family labels were removed at the user's request; their
+original contents remain in Git history. This release retains the existing
+algorithms, GPU adapters and optional biclique partition contract.
 
 `GRAPHMINE_GOOGLE_SEARCH_ENABLED=false` is explicit in all three host
 environments and is also the application default. The prototype is retained for

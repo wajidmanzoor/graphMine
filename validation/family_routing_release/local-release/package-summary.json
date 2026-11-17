@@ -1,0 +1,981 @@
+{
+  "scope": "Remaining syntax, packaging and fresh-install checks from check_local_release.py; backend and browser results are reported separately.",
+  "sources": {
+    "agent/browser_tests/test_accounts_browser.py": "3a5a11073063234d5f4969e8698ad9f1686e6457ae957b5d396d80e13ffbc7fd",
+    "agent/browser_tests/test_analytics_workspace.py": "da2da50e396b84f9477e2805514dce1197d61e036d39b826b051e05a49bea16e",
+    "agent/browser_tests/test_browser_e2e.py": "dd965f924b2f7781646ee6e4a97ae88966413a42b853ab9b3ef52c60312619b6",
+    "agent/browser_tests/test_connection_setup.py": "3776faf1368e2e494a292bc02d6f06b51f092b8ef9056617a67363fcc3bdc834",
+    "agent/browser_tests/test_curated_dataset_picker.py": "661af2651dd6760125a023813ee5e28642e60cfa373d2426294294cbd45989e9",
+    "agent/browser_tests/test_data_source_workspace.py": "eeb59fc46db6c1ade4504d08be6a217bd00e4c4c043d15463075a69a99662b5c",
+    "agent/browser_tests/test_database_jobs.py": "0f87c90ff63081a8d09f41dde2edd7140b8ff24d3917119d6ba199acf367a4fc",
+    "agent/browser_tests/test_database_query_editor.py": "98aba47b05f3c125f8e5b4c8583988050a88fbe4327a46e0993e7442a573b750",
+    "agent/browser_tests/test_database_roundtrip.py": "03ae25b8ef3053a7f4b70e4c4cf03375f567ef727eb87aeb7d56fbd7400f03db",
+    "agent/browser_tests/test_projects_and_connectors.py": "3fd7b6bebe89405568256fa1556570e96d79c6bdb71ff32b6fdac031403e89a5",
+    "agent/browser_tests/test_query_drafts.py": "b85510f1ae9df53eb11367489f861d64ec4eba3ceb5c038eacc68406b81ae7f9",
+    "agent/browser_tests/test_query_editor.py": "a495df2305aca69230464fbfc3ea750bb2a69e59c41507e12c04b452f73e05f0",
+    "agent/browser_tests/test_query_previews.py": "ff33439fb4f8176defdf08630f57e216378ed394e3b4ff7c9e34bbbd1ff71b0a",
+    "agent/browser_tests/test_query_tables.py": "c0d5d131da40881e46ffde594f66f872e404d6d5cf042948f9868b28278cb8c4",
+    "agent/browser_tests/test_result_exploration.py": "da5e65600bda6e9afbbee99a9567d235726b51197b296eea1d618bc07a66e07e",
+    "agent/browser_tests/test_workspace_accessibility.py": "4acb1eac5ca5dd48e310c6ea63a2d5a650054d793fea44fae16b8631c414db34",
+    "agent/browser_tests/test_workspace_biclique_views.py": "5c3741ce468e95cfe8ded4ab9b88e073a25bcdb90cf0ad8b9d8ca99c78737fc1",
+    "agent/browser_tests/test_workspace_commands.py": "4e4c6a25c7ab475fb2e7da52b53fb387d0ae530f895bb47c5cbd9b8445449d71",
+    "agent/browser_tests/test_workspace_conversation_graph.py": "0af38e8df416ae5037c53a8c9d19bafbfb5bdb4e71bd675abf17f26198bba622",
+    "agent/browser_tests/test_workspace_data_layout.py": "2ea13a669db741502c8e0a71fc8bb44d2501c59b829d1b16ac0cfbe2e59fce9d",
+    "agent/browser_tests/test_workspace_dataset_paging.py": "6929856eaa090f6034d79491f9d53781a70f0e1338b957c5eff7c10bc82b48dc",
+    "agent/browser_tests/test_workspace_device_quality.py": "c341b437059fa2a7e84f192db42f7a04d6706a9709aaa6f423b3e3e4233b9311",
+    "agent/browser_tests/test_workspace_expert.py": "6f675f5361437f43f47245af5c00a0de63c69fbc7ee35326828669d58232c471",
+    "agent/browser_tests/test_workspace_exploration.py": "7338053ea0930b53c450c489f8e9c9f932bdc83ea3c8062c9f837fde9e83283b",
+    "agent/browser_tests/test_workspace_grounding.py": "5f240b0bf92e8aeab0d2e2050003295db1bc89885a17c128ecb6cf44ec6aa4ff",
+    "agent/browser_tests/test_workspace_history.py": "623b7d02a0c885349a12a19befb24c0cb060526cdc3d7c55675d3989d12af4cc",
+    "agent/browser_tests/test_workspace_home.py": "d7417e16b4eea2d2e58cc10538bc25e204868569dc4f7353ccff5c10847fba81",
+    "agent/browser_tests/test_workspace_incremental.py": "4ed5fcd8f55d465095342ce67c733859392c9453c1fd865dc793f7c3273c7df6",
+    "agent/browser_tests/test_workspace_library.py": "59f178b3eeb439ee52ca6402c66f42356fe1055196e098f6d6076fe9cb44a4e8",
+    "agent/browser_tests/test_workspace_loading.py": "45b4c6c054655c750bc84b36f23202ac6227b40c152cc4cc7dd3a7138a204390",
+    "agent/browser_tests/test_workspace_navigation.py": "907ddbab55797adff8dcfbd855091d7af8b1962990ae1e183e0b5b322a1b6d4b",
+    "agent/browser_tests/test_workspace_options.py": "4e160902eddfe1ee9e3ff91fd8c39064a01e1fc9f764626abaccecb5d180d7ee",
+    "agent/browser_tests/test_workspace_polling.py": "6a4c808d39d445b6229b4f010c36d41bbfd0998fdba73b11a64e5a247ecf6f3c",
+    "agent/browser_tests/test_workspace_recovery_views.py": "bc1d0a28bc58b9fb3bd358c30b0873aaeddcd83c1d9c95f75ca9699c70e753a7",
+    "agent/browser_tests/test_workspace_result_context.py": "353b2c98ee7053e15d0ed9350f1d556b650b18ee0790e45320f7d9c81e1f91f8",
+    "agent/browser_tests/test_workspace_shell.py": "0bdb876ff5e6a858166cc6c06d97d40cb6a832af4e01d5a97945fcee97e22b10",
+    "agent/browser_tests/test_workspace_sources.py": "9afe73919ae8532873dff734f2ab6382e2e77e918039f59e9d87822830baa1f8",
+    "agent/browser_tests/test_workspace_studio.py": "d63bb5412abd6f347c2df6c18c2c3d8fa1bec3f0c9a3137bc6b91b7f31ff425f",
+    "agent/browser_tests/test_workspace_templates.py": "856517236c6d784da30b49cfd6590cbd26187da27464568a0c7979ec85f510f3",
+    "agent/browser_tests/workspace_browser_helpers.py": "c7f254685213f63c2e88259d865a1ab2e8cb042df80dd2036298e7a4bb34edf4",
+    "agent/frontend/build.mjs": "68af2109e1123635530ce184cd665de1dfe93d0c361d72b7d9a0364ec916623d",
+    "agent/frontend/generate-contracts.mjs": "c0e17a1cb34fcbd50f1c12d1e122d0aace2d80832553d18d1c6a11ac54b40b99",
+    "agent/frontend/generated/api.d.ts": "0e135163b10b5c7a3a54ad4f2b381d0944295833d376f3f586c5c2ebd78a3a9a",
+    "agent/frontend/package-lock.json": "435883f60c87cb67839a3a6c821274a70167832cbed5909935418a23696aa020",
+    "agent/frontend/package.json": "996032e6813b0a13e359ef7203dd358f831f27d1bbc8defc8ef32cef9018c6f3",
+    "agent/frontend/tests/contracts.ts": "091d40c7ef121b223d2f2d27aa6320bb93354210cca9d6f14b7dafa7d0207680",
+    "agent/frontend/tests/model-activity.test.cjs": "2907707090965b8beb9d09b82002b56e5f81e89bc783be2097a4b3982c3bc2da",
+    "agent/frontend/tests/transport.test.cjs": "262ee22a58694309b2d0773a4cf83ac123e91be2fb40aa9d319a47a5f479d359",
+    "agent/frontend/tsconfig.json": "5c51cb9da2df918e97fd99e0a42ddcc2966356cbc03b5a7f491da293409346af",
+    "agent/frontend/types/browser.d.ts": "ed48eadcee21caaa07798abbbb777f7a5c0abec0a6efc968d7ec4da11ea2dc33",
+    "agent/frontend/types/client.d.ts": "29d32d4f805484c8775aacb225a28416255a3c92a2597070f62a1e98ef8a4722",
+    "agent/frontend/types/workspace.d.ts": "755f40751b1c57e28dad37950913f9058598c74649ce3130931ffe99ea286e85",
+    "agent/graphmine_agent/__init__.py": "8059d39218be1587366d977a6d7ff946fc36d19169d7a9285803ac6b3a3345de",
+    "agent/graphmine_agent/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "agent/graphmine_agent/_families.py": "f5519ac4018902b60bbd0085323e5470d81d8969a573122b2cc912a3c7bb9aad",
+    "agent/graphmine_agent/account_api.py": "02fbc146b2f37577114b9eceec9247c9aa918e15ed9d1d21d34038f930395b17",
+    "agent/graphmine_agent/accounts.py": "31f902fbef0f30a5f2bb201eaf11701741e8a6a1b7d4156014de21052771c1cc",
+    "agent/graphmine_agent/accounts_cli.py": "319be9156ac12cf5fcfcc365822ef33b59c5a371fc376ba4ddded651ce840eda",
+    "agent/graphmine_agent/activity_visibility.py": "68779accc314c8d2eaac6e682759d40755cdc66117f2140cec52789c1307fb56",
+    "agent/graphmine_agent/adapter_server.py": "e28d4cba1d1b561c344ce89a64a9703f3345b0358a728b3a38c0fd4c90b2f3d5",
+    "agent/graphmine_agent/agent_service.py": "c8592e12d0fee2d367c537c69092dbb23776ad1b817ba443f85b6411982bfadd",
+    "agent/graphmine_agent/analysis.py": "9bf1da63fbea61f9006b6297eeb4997dd446efef34b118c7d99e692cba20473c",
+    "agent/graphmine_agent/analytics.py": "2d4154b8d78ac87cca5b20a160d8cc0dbb4b742ec432c6d7a7d5b38a7e8041db",
+    "agent/graphmine_agent/analytics_answers.py": "03e42e9b376526752c989a5cb9513e831e0009263e85ad3adce8162037a1f25d",
+    "agent/graphmine_agent/analytics_bipartite.py": "3bc3e810eeb8361c4ba797a13b9212c711e3fb2f63be124e0aff611a206c01bd",
+    "agent/graphmine_agent/analytics_clarification.py": "fc944948ece698a41cf9fcdd9b47a1c0060c62ae993e1042bbe3f70bad3784d3",
+    "agent/graphmine_agent/analytics_context.py": "996c966acf34384b0876b6c451deb9fe88bf735cd6490948cb629bb691618182",
+    "agent/graphmine_agent/analytics_eligibility.py": "0c84919e3df8988c3605bba60bb1edb37650d28b7ee5860c65e447c73c4ba866",
+    "agent/graphmine_agent/analytics_examples.py": "2571352681f7639d8ada8c887a6e6ae4e2d13cc9840c04588ffebdc4852a52e3",
+    "agent/graphmine_agent/analytics_exports.py": "a31560373d7ae3d347122e5fdeaf69e27924fa44d83c693ac4b3954a5903b95e",
+    "agent/graphmine_agent/analytics_lane_choices.py": "c1b7cc9de99cc9da3737f85e029da2f25dbce24e0fee25d1af3b6c2d0688f632",
+    "agent/graphmine_agent/analytics_lanes.py": "b8bbd468ee1d54f4d6eac1fa21fd3d3f267638ede23f8e3054a372130c02f042",
+    "agent/graphmine_agent/analytics_options.py": "e099c88e90f5e992d6b9b828d5a8fde140c896225fee4111896fe9b485be0007",
+    "agent/graphmine_agent/analytics_parameter_choices.py": "5fd1c757c75c92341f5aced3354ff59835e7028c43c176e773c75c9e491cb51e",
+    "agent/graphmine_agent/analytics_partitions.py": "258078fb6831dd6a7021c1fb5f3f13cf07ea2547ab3a2c7eb1c16b348318a05f",
+    "agent/graphmine_agent/analytics_planning.py": "82d43aa3e77d25da2a7b38d0da08902d18ec891f008d8bb7d30e3b46de77d5e5",
+    "agent/graphmine_agent/analytics_projection.py": "fd990a95749cb84b5338651c5a2585fb335df187d8897e9c5708ef860aa46424",
+    "agent/graphmine_agent/analytics_scheduler.py": "be9f2abff9123b5813dfbd56ab189df1d146d06e8c0ddedf4761df373f8fba80",
+    "agent/graphmine_agent/analytics_studio.py": "195ccbd00548e9873dfab33388a383a00e345d129214bc6e7f2e404aebed2547",
+    "agent/graphmine_agent/analytics_taxonomy.py": "9b76f70e3a16ffe899fbe049a253b52a43f4a227290c32f63a49b858515d530c",
+    "agent/graphmine_agent/answer_grounding.py": "debc7b3cf193cd9c88d51cb45db2f57dab0f99cc3a730851cf64d3dae2aa9d5b",
+    "agent/graphmine_agent/answers.py": "ade789d9aa26f6328189b745bd3d77d2a2407b8faa6765d106339883207c8d9a",
+    "agent/graphmine_agent/api.py": "c3afa97b4d34e1bf85d71348b56fac610a19e2743c34886308943c950cbbcef4",
+    "agent/graphmine_agent/api_errors.py": "e7ae0a185667b94daaaf61f6edbe4782d1402baaacc3c8195dd290f40a4c7ef2",
+    "agent/graphmine_agent/backup.py": "04f054c514f10895b0c2383db13124e0e8f74e060fa75d05f40c3aaa2b130602",
+    "agent/graphmine_agent/benchmark_datasets.py": "35cae337cb91e6809ad33a150232a487392029bd167591a2b1e783c7423afbf9",
+    "agent/graphmine_agent/benchmark_mappings.py": "b4b85aecd17aa93f1bce06304fbf10b3c9e248c88168e0e38c3c9a4f19658848",
+    "agent/graphmine_agent/benchmarking.py": "ba5c66d9b97554d6153d5aaf0b6b297a9302f1e888253fcf3851aa4ac4b6abe0",
+    "agent/graphmine_agent/capture.py": "72ed476b83935bf03223d8dddad3b748715d8f5785741d9f21fae00efc6a948f",
+    "agent/graphmine_agent/catalog.py": "1946a9134f7457dde6a16e6d234037302bac44e4273a2ce53d7c3300be938fb7",
+    "agent/graphmine_agent/cli.py": "2bbb2818718e044d2dee6b55f77e042cb3945770cd29856d76094a7fe79221dd",
+    "agent/graphmine_agent/commands.py": "c13d73c454ae46a378559cf622d44e6ca3e040f5ab550be408d0397dee34a7d6",
+    "agent/graphmine_agent/config.py": "cb0cd1084f0edb83f1095923ac649868992a4f9f48180312f8a9e64c4ef1d9e9",
+    "agent/graphmine_agent/connectors.py": "b655321cacadee5ef91059202c5d66b3b15a082743bdbc339523e52842de9611",
+    "agent/graphmine_agent/conversation_timeline.py": "d030a9abc6bb70864e82cdaa89ca0e3420f6461fe1f978644a806e72adb28e53",
+    "agent/graphmine_agent/csv_ingestion.py": "75191c894cfa96f0a1b480760b7f5fe0b55ed7744c916cec79071ab151f5f2a1",
+    "agent/graphmine_agent/data_sources.py": "f872a66f01a0e4160bc08ccaafa5be8ed7c91e7f28c63b79b19818fcbe4175ae",
+    "agent/graphmine_agent/database.py": "ee0a7257463226e88b0d5a7b27bc79a410d5b6e50e8c88d7a98a7d0465018a65",
+    "agent/graphmine_agent/database_connections.py": "426a223a09a661bfd634c194347503c0feb549bea33ce6dad40d4ce8db28f024",
+    "agent/graphmine_agent/database_datasets.py": "9be5a954e7fc87bcb7a8c5d6395d447d93cb5956a4633633fc9cd01cddedd2f3",
+    "agent/graphmine_agent/database_enrichment.py": "09df58b634e229a22554074d06bce2b206e086b1a7894cccfca70857776e2cd8",
+    "agent/graphmine_agent/database_job_context.py": "e937e9d307852f181e36e1bf2bf037100beb24cee3f6cf9bee5881510d637d11",
+    "agent/graphmine_agent/database_jobs.py": "29efec697d7c77d8880232e44fa1c0c7556956407ffc18651b266420258f0301",
+    "agent/graphmine_agent/database_pools.py": "5d15da2e3a2c3b891e493b80471ff4d4f5637d63ae91643650851794225f908e",
+    "agent/graphmine_agent/database_queries.py": "d3dc8f6ef652240ad046e1b964ca9c8ecfbaaefc4b5a2ff9efe617bfb83101df",
+    "agent/graphmine_agent/database_reconciliation.py": "339a7f763d16f4dabffd863c5359237803f73444a1aad588ae40069fc2d17089",
+    "agent/graphmine_agent/database_schema.py": "372fd43b60c4cd3f4ed9ec4dbc55dfd9fdffbd8a42f93d659b82cc8b009bb5ef",
+    "agent/graphmine_agent/database_sources.py": "e318315b3e18c89c26799901f15275eb8147a3d51ab7330314cb1c2aa9efde14",
+    "agent/graphmine_agent/database_sync.py": "59141b49796ca9f54724a357bd963e40a6e6489f61ab29a32b8635c041818e59",
+    "agent/graphmine_agent/dataset_index.py": "f15cc6a53d24b8fa7d5a5df9e658373f973e41c050b398840fdd561578a0a084",
+    "agent/graphmine_agent/datasets.py": "99be19bb087f69038e5729ad505a0aab2ae5cad8168bd9dfb4799a315062278a",
+    "agent/graphmine_agent/errors.py": "e9a6fb4a6e9249c5a7ed3f42b0b2260a9adc4e53995bcc80febc2f0dbdb149e9",
+    "agent/graphmine_agent/evaluation.py": "76aa2a3693626f38df228c8268d3fb61d1380b873eac3b4d599eccdbfcd6017b",
+    "agent/graphmine_agent/evidence_cache.py": "8ce1d94e37897f2a30304c53134c34d3da5991f5716dd59a579cac1d50692329",
+    "agent/graphmine_agent/execution.py": "d19a87e6ca71a2f2ad2e2e3fc77ebffb9a6c8169464b5dbab2f116ad663233f5",
+    "agent/graphmine_agent/exploration.py": "dd251718bec3270b512a964c858096d3394a02891fc79cbf661b0c5089891d45",
+    "agent/graphmine_agent/export_streams.py": "a04b8d4a558179aea249dd00ba6db6b027cd7d6da077c1d059bd21d47a70d724",
+    "agent/graphmine_agent/google_search.py": "04dc7d349e4c05166ab86ece7fd58385909cc87564688960ccf9099790e8ab2c",
+    "agent/graphmine_agent/graph_context.py": "9a3f6d28f58015220861de2bc570b7195a78c168b14d23cbb779851b30b85e55",
+    "agent/graphmine_agent/graph_store.py": "cbb6ebf529b82e8f6c3ac641e5b58db51e4ec18310a3d51b53c756f6ee5daada",
+    "agent/graphmine_agent/history.py": "6bb81310e0393bf8748d04a86697d3d0db503cebe785a9b3231a497856be7201",
+    "agent/graphmine_agent/identity.py": "acb78ea263f9f1e99f149ab962752eb9ec7606ea26a44e1e66b334efd2fb5c22",
+    "agent/graphmine_agent/import_preview.py": "4a65cdf50846784e7cf9f90c6595044e8bbbf1a40a8edd384e23063fcc41124c",
+    "agent/graphmine_agent/jobs.py": "337af31c90c9ea0b13b1e99d1e31299d3e317b062208df30cfc9aee702901e35",
+    "agent/graphmine_agent/learning/__init__.py": "18ddf5f2ec79711640cab59ce8da25a7ac4f51be8b239a1c0236714f094eca22",
+    "agent/graphmine_agent/learning/adapter_eval.py": "7746a5a21eff011159112d2446795d6d01f150ff01d6e77ef9172d03b63713f4",
+    "agent/graphmine_agent/learning/adapter_holdout.py": "e7312abd87246a461cd199fe793672de0e9314bf6df4947c2a040756630644d9",
+    "agent/graphmine_agent/learning/adapter_review.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "agent/graphmine_agent/learning/adapter_workflow_review.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+    "agent/graphmine_agent/learning/adapter_workflows.py": "983fe356689dd1b42457a5edeceaa84b6a05a0539c3f7766324350901f31d01a",
+    "agent/graphmine_agent/learning/analytics_queries.py": "19a460a4cc7bbe50ad5a79c22f762fd222e2c261baddc3a043b783de9dfee1b1",
+    "agent/graphmine_agent/learning/business_curriculum.py": "30341939f429dd9537772dcce46ca95b94264cad1adb723dc495e11a519cfc1e",
+    "agent/graphmine_agent/learning/business_eval.py": "79690c067c8970134844756eb940a985b0bad8801876fc2d0c1effb214ea9e35",
+    "agent/graphmine_agent/learning/business_questions.py": "be434b7d19de01af6fb1efa6d0a7d440a8cb2145b064695b11870f57b0e18c91",
+    "agent/graphmine_agent/learning/business_workflows.py": "4a6a7cad745154b7cb0adc3f17df360099312a3ee3c3c00a888a7c0eae03296b",
+    "agent/graphmine_agent/learning/catalog_audit.py": "04a4e92c23c4f53a894ef510b80251cdf6b99db044cb268b7b5bf375f14adb1e",
+    "agent/graphmine_agent/learning/catalog_compare.py": "a40d8614263fdbf7256b45c4589a24c4f6b692ebd68a408d9caceec7a7b98a4c",
+    "agent/graphmine_agent/learning/catalog_grade.py": "fbba5b4aaa25b42f49fa2d7492a089973553623841a60c76e1a7ff3751ab27e1",
+    "agent/graphmine_agent/learning/catalog_reference.py": "f25f1eb15140657f20890eb28a24c6ad04489d1dc3a6193120fcf241e16748d6",
+    "agent/graphmine_agent/learning/catalog_replay.py": "ef402b3622b4637d54489c79d0fa6c3423bfc8ab479a8924bef9cb034352d71d",
+    "agent/graphmine_agent/learning/catalog_suite.py": "d4bce53394f5179106949d20c58e937958b4ac8ec615f81a37104b34589d43ed",
+    "agent/graphmine_agent/learning/cli.py": "b40522f3a6b6ec8fff7636d0cbe46739bdb189091ad79df01a9746c880cce488",
+    "agent/graphmine_agent/learning/codex.py": "e54bec1c8b27e8d29cd993057056c8f3bfe2d2884be6fe7db4cab666e3fc2488",
+    "agent/graphmine_agent/learning/collection_only.py": "77e964f823962d10f1ebaebf63b33491dc232cd35cb18a602491e9eae9eb2b78",
+    "agent/graphmine_agent/learning/corpus.py": "28426df22611b633b670b352bdbd8b463246c086c6a24ca33bb1603f06f8dbb5",
+    "agent/graphmine_agent/learning/data_selection.py": "dd46a5df60414326adf2e49d8ff1e723969e7974f0c6b518a2d6d08997ad61b4",
+    "agent/graphmine_agent/learning/dual_conversations.py": "b1306f9c23262ee3b807ab3abe72d652af447a6388a7cbbbaca39d26ea52b83c",
+    "agent/graphmine_agent/learning/dual_corpus.py": "88f51d46e8c45e87ea43581d5bc288d788dd91cb66e2c89b35cd610406dc7e77",
+    "agent/graphmine_agent/learning/dual_eval.py": "be116d0fc960328021797967612b45d29a507fff37607236f7c964bf5c65c277",
+    "agent/graphmine_agent/learning/dual_finetune.py": "741dba75a00ad6e6cb316719c0a89c322a6b36201e72bd6d31f6c32309997cde",
+    "agent/graphmine_agent/learning/dual_questions.py": "386bb9ecd3a6c7cd274edf5c6b1e3a06bf6125819081895cbfcaea45aee1dbce",
+    "agent/graphmine_agent/learning/dual_recovery.py": "6acdfecf8dce283cdd5ac8587b4bb6e413cae1c907892b7d17072c653e8ea890",
+    "agent/graphmine_agent/learning/dual_review.py": "da314beb58340cb25b782cdd0c6db370dac03c43e3f072e7e353711e48676b38",
+    "agent/graphmine_agent/learning/dual_teacher.py": "38f2bf9cde59cdad39c2f1380c4473912f63f3a0d59e517bfdc1831e4dd9eac3",
+    "agent/graphmine_agent/learning/dual_workflows.py": "4809730d157aac5b2cc558cc839b098461cda6a619347629c54f30af51d26696",
+    "agent/graphmine_agent/learning/failure_candidates.py": "0ecd4bd56d60a9ac2298497d4ee86a4093bd6a5f2ce2febd036aa93e7a6cd6cd",
+    "agent/graphmine_agent/learning/finetune.py": "eb82044cbfcffd93298b13a9b5ea8fd007b50111c8d34c89f1c0edbe0f039c77",
+    "agent/graphmine_agent/learning/full_corpus.py": "b79e36f6588ae5eeb8e17956026ca28f59fb60502c8078e4de9af6c2e0ad585d",
+    "agent/graphmine_agent/learning/full_cycle.py": "465fad192d370b70ae44a42bc765f628b83c728c4bd1084d04281c2ccdcac6d5",
+    "agent/graphmine_agent/learning/full_train.py": "f4067dc7b8e416a4d10aeba3c5a5949add24dfc2d623e6a00ac73d4ce19803e6",
+    "agent/graphmine_agent/learning/inference.py": "3023803c04ccd7f531b3c86e6053c83451686e25fd2552f09a59e7609d1e1ded",
+    "agent/graphmine_agent/learning/meaning.py": "3c311efeda051b8bebdc0469e4e6cc95baa5afbcb296b7ef38bd115597823a62",
+    "agent/graphmine_agent/learning/oracles.py": "1fc123db7341013db41fdb16a2f82057b9e1374efb8d735cbe868e6241f415a2",
+    "agent/graphmine_agent/learning/pipeline.py": "48530cd37e6c7bd55ecb326650074eaf76b0a7c3aa4732ab06bb69ba579c4545",
+    "agent/graphmine_agent/learning/presentation_checks.py": "af7ba952b04b0eb3867c24308351159227a622220d136b475ea2fc51f2dfb6d3",
+    "agent/graphmine_agent/learning/proposals.py": "a84400738575e9e7a596b9a407c1fc96d0a68dbcf6c8de0bb3a10b3a2361c9a8",
+    "agent/graphmine_agent/learning/realworld.py": "abab014d564a29f0cadea7cf3d4258f7b18f2f88531cb2a911b6ff0510d1a821",
+    "agent/graphmine_agent/learning/realworld_cases.py": "b5102f1f7e0f69a1c62ab786282d8fc46bec187c5a785d3e773935be1b46d1a0",
+    "agent/graphmine_agent/learning/realworld_eval.py": "0a67a79a71b82cc556df2dc65974870da8307c21910c0275acf176e1f4c3d8b0",
+    "agent/graphmine_agent/learning/reusable_data.py": "8b0027db41f5ae8e65bd9fc4b4191afc6ae1d9f3181c3f9ff59c3384c11013a4",
+    "agent/graphmine_agent/learning/review.py": "6d80d189514e402b0313076c08c52b4332d5955e7da420f4f5fdb0522f738ee0",
+    "agent/graphmine_agent/learning/review_export.py": "3f6ea7880fad4113a1df506f7566960fd160a2fbd9ebec333117f3feb6bde9ed",
+    "agent/graphmine_agent/learning/serving_adapter.py": "485b15c324c194596f24f526a77944fa84858e14bd85c2f20fa5ce6764dbd507",
+    "agent/graphmine_agent/learning/teacher.py": "ff1ff2960631abfc02d410af5ea7fefd6a6a28f22ebd48d7d9ceaa9e1255d819",
+    "agent/graphmine_agent/learning/workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+    "agent/graphmine_agent/legacy_exports.py": "f425c18bc3374dab08111e1c905e282fe5dd50cdc2a1c333c6dc21654998a73e",
+    "agent/graphmine_agent/llm.py": "cab9d7f7aaa1d7ed379874addabfa09de218450f83843560073af148bd036b7d",
+    "agent/graphmine_agent/managed_connectors.py": "3ba1dd9760fd38031be76423d7295ce0daf0cb71fb3662d68f55294959710eb9",
+    "agent/graphmine_agent/mcp.py": "45d593f9d774bb52a57ae6cf46c015a82c94a728aceb2ec13ea8863aedaec536",
+    "agent/graphmine_agent/mcp_database.py": "7680078ec59e76c996b914a4f52d59925facc8a238895b866db5be3ed9946c58",
+    "agent/graphmine_agent/mcp_downloads.py": "adaee483a2982e4fad7f920255f6d3f993845e2dfec57af30b709ff775fd58d8",
+    "agent/graphmine_agent/models.py": "82d246711fa37fa746d37f90e0153944a0c468a730d574b0b1dabbd8734cf26b",
+    "agent/graphmine_agent/native_ingestion.py": "1f3d9c8fcf958aebf2f70e823d9247620ac2cbd513c169e8c55bb7362b3a642c",
+    "agent/graphmine_agent/neo4j_registry.py": "4d77a78cb78d1d3b45b7ae883ca1ff5fc3cc197824e93ed4a9ea25f46f461e25",
+    "agent/graphmine_agent/neo4j_schema.py": "05bfd2d99d0a928e13d43aa8daf7e5a300947e47924f5ff240774201caaa1369",
+    "agent/graphmine_agent/ownership.py": "e3b086cd8539514b6cc702a802d9d528ab7c461d4ab20de5c34364bd360f03ea",
+    "agent/graphmine_agent/planning.py": "bcbf32fff78b72a62bad018d9e4b2b4047e74dc6598d21c148a93e537c963d43",
+    "agent/graphmine_agent/presentation.py": "9e64444b889753fb2d7102477d01301b95fe5b26e93f81f29ca47b5e369153a9",
+    "agent/graphmine_agent/profiles.py": "2ea7583b8814a7fe75c8bc3a73147f3203a2c1812bd5b294321bd8efb659944f",
+    "agent/graphmine_agent/projects.py": "979000df9ceb5f61eff0096926cfa934d2bfdf785162943b909c16ddde3ee4f0",
+    "agent/graphmine_agent/query_previews.py": "e5ec92405744ceee87ce705aa4588be7295cc7611ba05c3380c7afc66df3df17",
+    "agent/graphmine_agent/query_results.py": "a0020598d1b7a9b582325624c92f33a1dddef05bb2c1ba5cd96476a5b7819dfa",
+    "agent/graphmine_agent/reporting.py": "95c84f950c9b5b9621a6342b03e94d1a12850be8617eabea2ff229e403281905",
+    "agent/graphmine_agent/result_cache.py": "0f29afaffbcc575fa437d5ab2afb535294d5590529d1f266398f02b5afb55c40",
+    "agent/graphmine_agent/result_index.py": "2c180999969fceeefe6c96a1a7579038336305da2b13a62b4d46c1d582067999",
+    "agent/graphmine_agent/result_views.py": "f705d8e9c680298e7ba93a34b9337736e1bab9d44f28f5653673231de4680ee0",
+    "agent/graphmine_agent/results.py": "28f0acb4135b5c541647a1a2984eb54e16e18094f48b1d12099d4361c52e5a50",
+    "agent/graphmine_agent/selector.py": "9df8959a0c33f9c645360285cb19ef60df0a0fa2edf5e37a3e6e83876244e68d",
+    "agent/graphmine_agent/smoke.py": "f00c6794494ccd502b3475bc7013e35689178a17d9ac18b85b86844f53ac7f14",
+    "agent/graphmine_agent/static/account.css": "5791a7f91681aa1ee15cef674dddada5fbb4127dcdec9467ee02114b45a1fe31",
+    "agent/graphmine_agent/static/account.js": "aa17689b55016b1aa50539763d2d352ef7cef0b3f0973ee6bf7a38333fe8dd08",
+    "agent/graphmine_agent/static/analytics-accessibility.css": "2c66430c9509c2052be714a281bf134a99fb4fd1dd7ae175a81beafa71860f39",
+    "agent/graphmine_agent/static/analytics-async.js": "098643bcd3a651c9430f223f3d2efb3027a620f231c848d11227141b1a8fe37a",
+    "agent/graphmine_agent/static/analytics-benchmark-datasets.js": "bb87e08ab9d3a20e5d562fc1810c6202f595651756f84fc44a3519fdbcfcc724",
+    "agent/graphmine_agent/static/analytics-chat.css": "582c4f371f6a7926c50dded70e8160e9da4ea0e69881314c008eab825236eabb",
+    "agent/graphmine_agent/static/analytics-client.js": "916cb288282f1d97fe5797616c73e2449569f1af6b85bf00bb0a8f88c59aa92b",
+    "agent/graphmine_agent/static/analytics-commands.js": "42a399bace0a09604775b79a6c8076c08e94c6aac9ea5c5c3f46641352eb04d4",
+    "agent/graphmine_agent/static/analytics-connection-settings.js": "f58f13ea8c500bfaf6707479696d5d5ef2e8c47fc77ffaf193724aa240e7c34d",
+    "agent/graphmine_agent/static/analytics-connectors.js": "6d0130a8de7198422e7227f0e4369c875d1814bcaf10c995588134390a3e9d4b",
+    "agent/graphmine_agent/static/analytics-controls.js": "e5318495a2f03f26767a2f76765a2fa37d9bd7b8c68be887c49e9bbd15021feb",
+    "agent/graphmine_agent/static/analytics-cypher-tools.js": "3eefcd03dedd34b04135c9e4c4acbb2d1255b52e297bb91244db3614b71d6642",
+    "agent/graphmine_agent/static/analytics-data-layout.js": "34c741860bfbe9a6b636a95604d7c705d98093e2caf4c8fc83b445727828216c",
+    "agent/graphmine_agent/static/analytics-data-source.js": "7f37b3e731fb7b6f79de3f333880a3db804e184e87fb37680f7967bf3bf061b3",
+    "agent/graphmine_agent/static/analytics-database.css": "309283fde2832c06b24e7338ddf44ddeef90cbd369184c0a053aea2aac766f6f",
+    "agent/graphmine_agent/static/analytics-database.js": "9954032bc5d702503c231ec4701440d66979759358ed01905165edb2688c6c90",
+    "agent/graphmine_agent/static/analytics-editor.js": "5b4c5f60ba60b7f675794f8d65d291ab783e5144a5338c1aba0073092a88e236",
+    "agent/graphmine_agent/static/analytics-exploration.js": "465201716552c294be878a0cc534b88b1edb60e5007037c9075c642055935b1b",
+    "agent/graphmine_agent/static/analytics-explorer.js": "2327f8491cacf54a5dabba1faa7678dab4e83eecf095fccf63aa9be82373588d",
+    "agent/graphmine_agent/static/analytics-graph-library.js": "d1d6d1c1d01adbbeec2779107358d44527a22814b3379e2351e90484c3457492",
+    "agent/graphmine_agent/static/analytics-home.css": "410f4dcabd7d6a1c58c11de38de6e951d2135312131bdf69f9442138d279330f",
+    "agent/graphmine_agent/static/analytics-home.js": "4bb5207550a73ea5b6e893841f8aebf57d6d79181bdfde9c0a62b5c62460c560",
+    "agent/graphmine_agent/static/analytics-import.js": "209c65507736deab628a228f190ad2b90542919fee32a768157dbc192c0917bc",
+    "agent/graphmine_agent/static/analytics-incremental.js": "706d4b49a193bc22f32835372dcb50f61e5e9cb19d290030a62e056186f81ea2",
+    "agent/graphmine_agent/static/analytics-library.js": "0619a4e14ec21dfd99e1f9c40bb498978bdd5018fe8b992b7ef0d6b3d70d061f",
+    "agent/graphmine_agent/static/analytics-navigation.js": "dd284e28a83afee41ef0877b932c2e4901161d8825c500b9b555a0a72078afdd",
+    "agent/graphmine_agent/static/analytics-options.js": "fe2aa315e5f211077c811d0dac0d5bd85fd3d7ba09a3d29b5af1422bd09ecacc",
+    "agent/graphmine_agent/static/analytics-outputs.js": "9207c09d3db61302cdc09050e327ddf4796c8cf01fd1d93c9d875b19ba04e2e7",
+    "agent/graphmine_agent/static/analytics-polling.js": "213457a38eecbb80af1d87e616f5fb17160342998e47e977d8dfd4dcfd9043e0",
+    "agent/graphmine_agent/static/analytics-projects.js": "e1c18ab3d761153fb4e7319d25dc78082decc9a87a8ccd102d9235c54ac41eed",
+    "agent/graphmine_agent/static/analytics-query-drafts.js": "a532da2744ed4ec54e9a475e575571de6bf31e3f95aabb948d895bbaf6729224",
+    "agent/graphmine_agent/static/analytics-query-editor.js": "55c2091a5f46d7f6306d10de1d92caa6c3f80175cf8986f48e53402a4ab0a95d",
+    "agent/graphmine_agent/static/analytics-query-progress.js": "2159ed937f76006f4d976bc45a2a4cf010f4bc848d6f53cd70818be73daa6af7",
+    "agent/graphmine_agent/static/analytics-query-table.js": "c92aaea19639495c773b7f35d7c51ba30abe12316105e7761dc5c64fa6a439ce",
+    "agent/graphmine_agent/static/analytics-release.js": "bfd597084f6b8b0822dd0d4720d04de0cb5fbe460709f89ddfe2ae4518f60193",
+    "agent/graphmine_agent/static/analytics-rendering.js": "036ac0e968fc2e542b75e1e46c600e3c2bf953e7959fc9108c8cc2202b4508b3",
+    "agent/graphmine_agent/static/analytics-result-context.css": "9b1d9d4ad82d831e8e47b57a1be186117f23ebf1df2933e1d767cfc34d01d34f",
+    "agent/graphmine_agent/static/analytics-result-context.js": "e62cfaf339a16974ce124e3581e011c728e258139236a12768281d08e54c53fe",
+    "agent/graphmine_agent/static/analytics-result-views.js": "3e236510a6ea4e567e7969bcc2d514de4b2b28a6637f4195cf6d1d895b1e30ad",
+    "agent/graphmine_agent/static/analytics-sessions.js": "abf77a55c560b45622e196521ed2604567173b4a67ba03279f0bd3ebec496ecf",
+    "agent/graphmine_agent/static/analytics-shell.css": "fd2c3e9103bcf50ee634027c0b32fa8dbdfbe952d8136b0408ae745ced2e0c20",
+    "agent/graphmine_agent/static/analytics-shell.js": "d03a4e5e2f2119b614e9e9c4cfee244c0de999441587a89c21840101ab13409b",
+    "agent/graphmine_agent/static/analytics-source-settings.js": "d97a0d8dba8d4f1bbaff7384fa96a2e38a17c91a57a39c102d8add4ff11f5ee1",
+    "agent/graphmine_agent/static/analytics-table-mappings.js": "299cb69745e0898a73a7ae65273ebcbef6d8efb13ee81ebdfe1722012473bcb5",
+    "agent/graphmine_agent/static/analytics-templates.js": "53313aac3ad4a0b6a5768b15cfe2ad947f76047da6083c83a66b3dd388727887",
+    "agent/graphmine_agent/static/analytics-transport.js": "9d8dc35f34937a01c9cb3bdd834df29fe46696e17085ff386dbc49d29ca64cb1",
+    "agent/graphmine_agent/static/analytics-ui.js": "4e5145e412c9273de80ec3e30ea47a2dc147f936313c946368345e8837afcab6",
+    "agent/graphmine_agent/static/analytics-wire.js": "fedd9f5c24aa812d9d682fb3099b1c3c3878287ad2d5f1b79af2badac8e04e9d",
+    "agent/graphmine_agent/static/analytics.css": "e091fde575483e07f07e51e98f5e515e53c762d1cf4e0ed46352185d115eca68",
+    "agent/graphmine_agent/static/analytics.html": "21c70b02da203e7f56eea1edd9d7731e6271d9a68782947936e8ec427fa66eda",
+    "agent/graphmine_agent/static/app.js": "5f7fc0aef00cab66545263cf74b861206c095bf0e326130a7a5304f273488274",
+    "agent/graphmine_agent/static/index.html": "ad92cea096c97d9b2e2bd79872e9204bc771b44b8db6865e27ed800005889b42",
+    "agent/graphmine_agent/static/project-viewer.js": "ef890e10c24740bd4fce4fcf38b25ea749b4c28958c2ceb065e321a28db5b766",
+    "agent/graphmine_agent/static/projects.css": "c3939826eab8690cac004b360905cce8019e639c19be4a0413d40e743638cf50",
+    "agent/graphmine_agent/static/projects.html": "2786419abd4da1b836d68f578a629ec2f1cd252e89228ad7d906530b20b6c07c",
+    "agent/graphmine_agent/static/projects.js": "44c8e618d4bc73781493c862e5d12a03354465043496f6fa587727f45784e22a",
+    "agent/graphmine_agent/static/shared.html": "9c16977ce2144305c0825ad39f0bf834157b485a4eee82d2e826e6de75ee864a",
+    "agent/graphmine_agent/static/shared.js": "5c494d3ca0afb90d6bf2fde2a6d3571fd363f4f8a57aab8de3e89c7b858a852b",
+    "agent/graphmine_agent/static/styles.css": "4a075c8f16d38d917ff26a2ea4d2d064f92b2a4fc75ea1ac071a1b33a3bc00f1",
+    "agent/graphmine_agent/static/vendor/cytoscape.min.js": "5f3b5b529546d5af1fc5628590af033b74511a5b6f789f5f4682845863228b91",
+    "agent/graphmine_agent/static/vendor/vega-embed.min.js": "b1455caba2fb1a72fb46025ba0ba1316e2dbc7f0dd40a3f6040172bf9c08ba91",
+    "agent/graphmine_agent/static/vendor/vega-lite.min.js": "35a9821df838825b05a6a73e9414b58747a1b18321583858ed903c66393a5c7e",
+    "agent/graphmine_agent/static/vendor/vega.min.js": "8f6a3587cf8d4f42c7e08120e3eb05d067e746d554e39d2dcf52acc0bd5ba28f",
+    "agent/graphmine_agent/table_artifacts.py": "74208f22e1366d03239d246bf6f4fd03ee5ccab73023538dd8897564fb96dabf",
+    "agent/graphmine_agent/terminal.py": "dfeaa4b4c8f9ca5460f1b3a8d425e5d24a3e49b31eb71e60e1fcd3c7bf181d5b",
+    "agent/graphmine_agent/usability.py": "23f31bb2e0d39ce626ec30e44c47f8b19f47614a44c9db4d8f4a512838db80a5",
+    "agent/graphmine_agent/visualization.py": "ad2f3f96812b5d0db128e0ecdb3313342d1b7adb0ede75437d1a0963edaad71c",
+    "agent/graphmine_agent/web_assets.py": "c6719409de8284c9ea6590b02e92bc92f74f66fd0c71a52a8ac7d96435a80aab",
+    "agent/graphmine_agent/workflow_api.py": "a3befc8584c3aa584a5ef97d6b1290084da9636772c3e1697322744e23763606",
+    "agent/graphmine_agent/workflow_index.py": "a44d1d40b0d2fbfed0c00ef814a9fe84820736a458c93e3fd6f8ad45273ce4f9",
+    "agent/graphmine_agent/workflow_templates.py": "fdb5b5259d7ec106ecf27f3850310c6c1febc98204e3a7cd9713f2fc34503c80",
+    "agent/graphmine_agent/workspace_recent.py": "2d2ab63e9c18ccb19422dc7944ba12ba9870cd5219aa7de4de066d28c3632c13",
+    "agent/pyproject.toml": "f385384d6b7875d2c7dd81acc49dea1e79dc624fa4c750dc565c6c9ffae448cc",
+    "agent/tests/conftest.py": "a414db05d7bb0a5c1217dd258aadf20d29ea86cf2dd9566a0e3db4bd970b5f86",
+    "agent/tests/test_accounts.py": "990339433ca86f0359ed050d4bf0915730a7929d592a335cb82642c62fbcf854",
+    "agent/tests/test_activity_visibility.py": "f54d16cc8b1638398f5211944790f37c5d0258792cafdb38186564b15693e372",
+    "agent/tests/test_adapter_eval.py": "bd60dbd58ed17d9491e47bb0287445b8c7cdb5de1b08d1e2193dd75459f1bbe1",
+    "agent/tests/test_adapter_holdout.py": "50cc76ddaefe05df3f35ff28ba92feb8e06a06fec5c87dbc354078bbc301190c",
+    "agent/tests/test_adapter_server.py": "2726b8c2fb3c4166bb33e3355c07f00861894d94d4677622f98bbe15b7ad9284",
+    "agent/tests/test_adapter_workflow_review.py": "2b4518f1e79532238871e3e2a5a7397049fe70a4e15b6239a4c8a329b18aea7b",
+    "agent/tests/test_adapter_workflows.py": "14e5e93f05758da003b498fad0f545129b74b3957ead8b7b0484757a56b0bc25",
+    "agent/tests/test_analytics_answers.py": "c55d476b254e5ded8778efa2c9e309cef698c13f9c7476d39de2b54ad43fc2bb",
+    "agent/tests/test_analytics_bicliques.py": "d21a72cc65b098f21ad4e7cce5ab436e4ff067eb1bd67c2b9878622a59853ab9",
+    "agent/tests/test_analytics_clarification.py": "0b1343d2dec3d4a39c688973ed1f3892af5d1ca0cca0f7a525b4e1fda8a6471b",
+    "agent/tests/test_analytics_context.py": "9eb8514f2098e07115d66385f3dd81ade9aabbe10a67fc515a345ccd8acb6be0",
+    "agent/tests/test_analytics_eligibility.py": "c97229de877367d89d57c90b1c577acbf36e83af9e62630b0e9727cd79e01575",
+    "agent/tests/test_analytics_group_views.py": "201e1116317b51c810f67e7f7dd7dd86de76c928ca7c90ecf1739cc7ea0ea29c",
+    "agent/tests/test_analytics_hardware.py": "6134d60297fa346904051bf97186dc8236773d35ace75a697398339dc5d36a77",
+    "agent/tests/test_analytics_lanes.py": "72bee7ebf157737eaf67a853331d3c1ab480897c974925a0c583cbf0728f6161",
+    "agent/tests/test_analytics_mcp_examples.py": "ec162934c17f009ede1ce82e3e7459f3d3a13f43dbe46056867c4a2836ac50aa",
+    "agent/tests/test_analytics_options.py": "8e868c63b44cc0f4c675d71b3d0c7089a5bc38d39f2cd556bee2c655df794e57",
+    "agent/tests/test_analytics_parameter_choices.py": "98a53569bc64223af1dac984fe7b8a01410ba911223d86d2fb84128fc8128170",
+    "agent/tests/test_analytics_partitions.py": "371ba36831d29d36eb38d3de179b1fc443155d8d990335b8a7231d98df5e150a",
+    "agent/tests/test_analytics_planning.py": "88d4835a1a1ea4ede1752bc00cbc6a4d7e18cea850c00dc2fb8c59eb6e6cae2a",
+    "agent/tests/test_analytics_projection.py": "12f4cd96b9e46e665cbdeeb6d4a61edae3bab5fb3e88001f3111c349c0ea6acd",
+    "agent/tests/test_analytics_query_evaluation.py": "eb02c78c1809d3637bb95416aec87d27c06b7deca44ea7eced83d7a808d06305",
+    "agent/tests/test_analytics_scheduler.py": "f8b973718ceefef5273bf97a5540e4650ab911ace50f0ec08ef34b32d1bd45a5",
+    "agent/tests/test_analytics_taxonomy.py": "6219aa4b09c3ac7eb7b9915994331e052bba769025c8207cb0449b63200ad4ae",
+    "agent/tests/test_analytics_workflows.py": "c5b102195609e06214c0847252d8cdd598b03cda362e1cdf72fb9b5de5340d23",
+    "agent/tests/test_answer_determinism.py": "e0251f68a3cef29ad7a7fcb0a3288e33425e684d5d3cc586a80b33dbe81bc98f",
+    "agent/tests/test_answer_grounding.py": "6e4e67a10e11da622c63b660ece0ecc83845e42efcfe941ba30bd206007abe58",
+    "agent/tests/test_api_contracts.py": "dcab0f2bae4ccb3cfe535688d638dfb286bcdd13ea1f77d735b44543def01ef9",
+    "agent/tests/test_api_flow.py": "a16fbcaee4bdeaf5495be35f50f052053e23d811be66d7ea3468486c85a73551",
+    "agent/tests/test_application_fixtures.py": "c73c2632e390f7327e103a585b6e025601ffd5c151c6c712b213cb3fa76a6d89",
+    "agent/tests/test_backup_recovery.py": "08f4636117d65a4455b02c6d4680c34f2fd16f63977ff6ee9bf842ceec1aa297",
+    "agent/tests/test_benchmark_datasets.py": "4c4c01576d13ee79ef2ded1f42dd94e94439eee38d5a022e849e2488793b59a6",
+    "agent/tests/test_benchmark_instances_integration.py": "535782cf148531d1c251084b1b3d3e1f8ac1e4b1a711f6da42b294599b296c76",
+    "agent/tests/test_benchmark_mappings.py": "b17ded63afc9b762257985842284d2111dfaa41eaca93d15c6bdb422facf89a2",
+    "agent/tests/test_business_curriculum.py": "42d8fe949f0fa29c7d1a90cd4ad13fac24f030aed02b46927d959cfaea418465",
+    "agent/tests/test_business_eval.py": "5efad23a89e2ffec7fb61a14e5438174a2772429775f00a76a925eaf23a2a14b",
+    "agent/tests/test_business_workflows.py": "a49086f7684a358640f654490cc07ad7d0489b528c5e9d87d95088e4bc68070d",
+    "agent/tests/test_catalog_and_planning.py": "379b3c38c699377ae3309f537256feb2e0633a7eccffde311f731601b47abb19",
+    "agent/tests/test_catalog_compare.py": "3bfd41c2ae51af0b315eb15adc770bca2b4b78bfa3c1833900ea231791b26f03",
+    "agent/tests/test_catalog_grade.py": "ffb085e21d09a1ab5283b9a86af00c8fd1fd52426a55094e18735e28d3a30f37",
+    "agent/tests/test_catalog_reference.py": "dd503b06e0cb229f960990187812c99f60eb825800ed3e6bfa4421a7e45ffdc5",
+    "agent/tests/test_catalog_replay.py": "1d8402394dd7bd960c3750dfa36409f1a4f290ab3b217e5f2955a695e03a331b",
+    "agent/tests/test_connectors.py": "a44fdfedcaea2346574481590e4b7d0fefe61750c25a4c9d0c4d24730e902415",
+    "agent/tests/test_conversation_context.py": "a3f062eee22c22c251f3f37a88004c30c2043e8b34fce549ad738cfd49489855",
+    "agent/tests/test_conversation_timeline.py": "f881d89444ff7fbf290a4f83239338ec7aad47a11d4b1b6eb24621400913e30a",
+    "agent/tests/test_conversation_workflows.py": "1cae5891f8cb689c79e4741485091102969b7b2595c798a2123476510017045a",
+    "agent/tests/test_csv_import.py": "a8fa6c2fdfd400be54885dcf8e32f63b2103adb788480d6f1aeda7cc2a08b14f",
+    "agent/tests/test_curated_datasets.py": "e799cd1a3afdc29256d214adbcebeea690a01023abfb03c9852172657dc1e239",
+    "agent/tests/test_current_catalog_suite.py": "36e2002638fd353420b59fed96fd677573945f73eddcf062a2e7cd8caf2bd1f7",
+    "agent/tests/test_database_connections.py": "6af781ccac0d7b17d33cf5ff452e2a61f93da79f82ac5e10ce4a5ce190048b7d",
+    "agent/tests/test_database_datasets.py": "ea8b19f46a4e156a882f5935497bd381381ab63f8268ad5ad3575cd552944733",
+    "agent/tests/test_database_independent_sources.py": "c5821f97bdac4ca03bb2827b8c59aaaec4a22072978e6b6d53bc6f881c2c8641",
+    "agent/tests/test_database_integration.py": "441801dc6a6ed54986c98c5887d993bf9f305b616238b8ad2566ecb681a8ef90",
+    "agent/tests/test_database_jobs.py": "9bcc55a8a6391e74f59fdd0b7c33868be75c6c865fdba0cec6d436eca7d7f5a7",
+    "agent/tests/test_database_mcp.py": "6b6d55f4671ea62735de6a8963893d81719dda0822b2a1aa589fc051c44b4ad6",
+    "agent/tests/test_database_pool_integration.py": "296ef90bd29bb224056772f5e0ceff5d8e9aa2371c241f4578fa78863423b4ef",
+    "agent/tests/test_database_pools.py": "fe43d45ac2f0d0b8a319c6e8d8edf0e5b403793aec6b790899a3436d02cae9f5",
+    "agent/tests/test_database_query_editor.py": "8eded243d00b368e017312e56d52c8223ab7b04556468c2a094dd05c258f5777",
+    "agent/tests/test_database_query_projection.py": "dc32c2fdaba226597aebc1ca264085849924a5c52d5b56c9a633657da923ebcf",
+    "agent/tests/test_database_schema.py": "0f40439a3320b283b935ef1988040b97b052ccc67d22fd402609f066b072d9a8",
+    "agent/tests/test_database_sync.py": "d4d711ea12f2bc593805f91fa53827a776980b7380be883a7f32382fceb79803",
+    "agent/tests/test_database_sync_integration.py": "6a340ac74601464baced71219a9e5a1e84023a364d868e41b1d015b431909c6e",
+    "agent/tests/test_database_workspace.py": "541248be6d6f6f400dccd299cdf4ac716c45186a12985f3db5ddb8e8c50888f6",
+    "agent/tests/test_dataset_paging.py": "ecf147f57e808a2cf4db7c047f2610f6b91f0aee738b600530a367d2f019364b",
+    "agent/tests/test_datasets.py": "3932bc4394e0fc868db8964886eb7ac2fb63b60c9b49a790e1a1f9c6950c978c",
+    "agent/tests/test_deploy_launchers.py": "d52a07704b2b398f24d32c176a14d8aa6de92e6c27d5eb14cfe3091acf73ac57",
+    "agent/tests/test_domain_answers.py": "96d79f311063268efc623d5dd0fb4b930365a860f29135d26f699831d6023e40",
+    "agent/tests/test_domain_ingestion_reports.py": "644c0d6708b9e926bb8ca7dbac9e490849574de4591140b53a264d77ef53ed18",
+    "agent/tests/test_dual_adapters.py": "be4ed1a669a868a05f92de0cdfcae8ea3a6d151265cc540606352b72e15daf65",
+    "agent/tests/test_dual_eval.py": "3f4430d59ca24fbb16e459d717f254a7002370c839f24011e885b0277f62b8d9",
+    "agent/tests/test_dual_training_integrity.py": "58f6f92d6e9be1e4168deb242c336cc9eddc5d648323cc796c822d39e8478277",
+    "agent/tests/test_dual_workflows.py": "25f59823c1b42c0c5011e9b723f4619eb68e1ef891fef8405554499c0719c83d",
+    "agent/tests/test_evidence_cache.py": "362c85822b35dafb00288c12ffc6e2eef304cfcb9a43ef3c3fe5ab68b2bed716",
+    "agent/tests/test_expansion_contracts.py": "418d1bd8caeb84e8cbac8404b0e766cbdd399f9b76621addb6b68ad00156e7a6",
+    "agent/tests/test_exploration.py": "f494f23d825eece007c1e0e4bbf32550273734788f2bd8074bcbf5fff9591e0f",
+    "agent/tests/test_export_streams.py": "cb25f750092b7fab72a955afe7b59278ffa6e1319ee7c30ca8bf6ec48c750764",
+    "agent/tests/test_exports_and_activity.py": "90e65c0a311be42f6de21392fa5cb04c09bc832bbeee96193f7f5bdcc77b099a",
+    "agent/tests/test_failure_candidates.py": "ec53cfa303b9d9245560fdd89dfa0333ffcc10ae3c423726fefda875b372c6fe",
+    "agent/tests/test_finetune.py": "f7510db8f8de5f50c915e2c2546094ff46663163aaad32c54e9b989e8864bad2",
+    "agent/tests/test_full_training_data.py": "7852c3b1c33b0dc1bfdfae80ff1747af484b04ee3118730ca5aae23cc2225f9d",
+    "agent/tests/test_google_search.py": "b8aa1945dc44a31c257a65f6d792fe2746879b6db7b06db407aa6083a790e42f",
+    "agent/tests/test_graph_store_and_database.py": "2342bdf17a6ffbe4aa41183d153cc8b724ce92ac893a99fee821fbc6e745841e",
+    "agent/tests/test_grounded_lanes.py": "dde5948c1711e922bce6b254c3c3fec974dc1b3c84aaf0976f8928ddab3a979f",
+    "agent/tests/test_history_and_terminal.py": "f9c6deb595675a4ddf010b12d0e9cfaf1041bfa7cba65085b063e46c6430bc32",
+    "agent/tests/test_lane_baseline.py": "4c80b3d1a2d01334a57ef5292d81e4dc96e4eba77f8e4b831a9b8f8cde192afc",
+    "agent/tests/test_learning.py": "ffb1b0fb5fdd6b0caf11454365738039a82b7ca2e9274c993dd716c3ba361697",
+    "agent/tests/test_learning_codex.py": "b8e7d912dd1585deef2993b81b2002deacba3e78c29e15df101e81906cb05a34",
+    "agent/tests/test_learning_realworld.py": "71f4860490946f5be82339eead52e7d8daf9f6815f87afa9ac4ce18a1bd7d819",
+    "agent/tests/test_learning_review.py": "295209837d3615e4024eed6cfd8e8da3f80e32a51f2b69fcb4effdd0170dae7a",
+    "agent/tests/test_llm.py": "d52a5ac764b884db913e76a2eb6fecd8061665a3ebef4c3b6e29f45a4b64fd3c",
+    "agent/tests/test_managed_connectors.py": "699bad34ce0733ca175398672e68a9f7c9e54e9c34e822dd064f8f8a4d6e3698",
+    "agent/tests/test_native_uploads.py": "b4f8ddef22f8669c9c659e845d9d3a846c17648159d6ef93c5be63e39f21dc53",
+    "agent/tests/test_parameter_expansion.py": "c8c473dae4ca3df2f680f88927d85a0c28c33b560c017904f2f16d73a5088512",
+    "agent/tests/test_pilot_feedback.py": "e8b3531b8cf4bf02fc448ef5297df54fbd2e791db2ce3f9538ef516059281b9c",
+    "agent/tests/test_planning_recovery.py": "18c017d934b52a979dcc6054dbcbfff6958f36c519573ea5832896374146cd26",
+    "agent/tests/test_projects.py": "dfbacfeb962703a76a6a66fcdbb534c5020986bf9ef79f308f6b7761e9a639a1",
+    "agent/tests/test_query_previews.py": "03db68d266e601f7e9e7ecfac376312769fe8536a0bf3245982e603cdfcdfa71",
+    "agent/tests/test_query_tables.py": "d0a06a8e9770f657419dacd701807e284fa101ac120c6a1dc639d3222bc48a74",
+    "agent/tests/test_queue_capacity.py": "2af5b3fb1e14539a4dc2cc27b3ec8e3d05beb0b9c5df2f22247fcea460e35174",
+    "agent/tests/test_realworld_fixes.py": "d6fe7757f36dc8e76be149d4555274a49f4be34fe3a894faf3bdc578a63f620a",
+    "agent/tests/test_release_artifacts.py": "52ff92a7e604c97022e0a0cd2a5cedbe479ca40c235122fd245162e4c0d9f6e4",
+    "agent/tests/test_release_gate.py": "faace3618190ab287190cb45e55ddf407d9a0f8df082d70add5020a08d7ee46d",
+    "agent/tests/test_repaired_contracts.py": "4cdfb0aac0c043ba65621d54112bb205cc29ff8dbd1a6cb5e75ae4c68ecd590c",
+    "agent/tests/test_result_cache.py": "fbc8c02e63d27ac300221310500a8b0a76a647da8d2bf46ebf2d09b7629b3455",
+    "agent/tests/test_result_context.py": "bedba3c39c4f8ee480a387644190c5d36d2eb52663c83b8086e08fd4ef959899",
+    "agent/tests/test_result_index.py": "25642a073dcb856e8b302211e79dc6f31ca17f145b402b24e43677c746806e03",
+    "agent/tests/test_result_presentation.py": "b11630ad295fbecde82a9997549c45628e7b6ac88f706a442a26b197a46c3390",
+    "agent/tests/test_result_resources.py": "0666e73fb955370ebdf96a8953b35195b430e2b728907b204a407f6837dd7aa5",
+    "agent/tests/test_result_views.py": "c455086c75328158a970be67b5a22ab0d505d69749001344c6dc8d12369eb054",
+    "agent/tests/test_results.py": "04a81c0bcffa144eb5321c1ce8e3d62c3b7ec46dbdc30073379e2c1b49ad75fa",
+    "agent/tests/test_review_regressions.py": "399b8f7b2c9e8f51de4e5fc7750af659a4368bd999c8d35b3b309fe08da07654",
+    "agent/tests/test_rich_analysis.py": "5dba0a1da6de740b7ce0b89a7508f5b21c980c09e8207ef1de4156ad12dd75ea",
+    "agent/tests/test_selector_and_benchmarking.py": "5b92d4cf225ac786db2666e072fc68289e4d9b234022f81c09dee86f79c43603",
+    "agent/tests/test_serving_adapter.py": "2c0bf71d9e9878d30737a3f6d6100197afbfa99e4c6aed61b8c9e53e5644be8a",
+    "agent/tests/test_session_search.py": "40cefe523521fad87c9af1013acd1bed5759e8402e72b8662dc49bee4e9c145b",
+    "agent/tests/test_storage_recovery.py": "8757faf7d5184c5af55ccebfccf326438f00de58dc3117d597351f3119342e7a",
+    "agent/tests/test_studio_exchange.py": "fdcea31cf51e37888c6b716742dd624d7b619ce8b6c8a404227b3250d2895768",
+    "agent/tests/test_training_capture.py": "e160152f75fda39a8bb9fddf66b11c25cfd697aeb924e25d285a629e0ee1e6e4",
+    "agent/tests/test_unlimited_query_graphs.py": "d9a78d4ee873dc7f7f73450d7ab461ceca2758e841b5daea463d9a01b3a948be",
+    "agent/tests/test_upload_resources.py": "5332fc80657221ee13cb215c49b4f339ef894e3d673d0f247dd5c2239754ab3e",
+    "agent/tests/test_workflow_templates.py": "144d6d66484ae84aed7d7490fec05edf84064e120360d35634474d7652bc44b8",
+    "agent/tests/test_workspace_commands.py": "76d0593231dc184c8e88c819f2e375d3a0564fdbb0d8723e4f672ce1aa0395c4",
+    "agent/tests/test_workspace_recent.py": "9cd3ef70dec7a7737d1a01537587410f4d683d14804c11609760e1026037c629",
+    "agent/tests/test_yelp_instance_integration.py": "6b288c74e5f1a20c34bdf535a3dc797e6b94a6497cfe5e0921c05a1bf82e2d31",
+    "catalog/algo.json": "dadb9edcb2c8eac545a854d81bb14722ccff574140c5d5fef60b03a885942b5e",
+    "catalog/family.json": "8348ae2558c518b6c6b51114938498fae85b36eceada790a1a151c163dee1b4f",
+    "catalog/native_execution_evidence.json": "63bd23b918271c79cff9cfce10c4460a3a8e740c1de011fe4f93c36286211d62",
+    "catalog/problems.json": "e47a98cc5fb722b78d0ba37cf19ef8ac1e5e870673bc3313b3be30350632d7c3",
+    "tools/check_local_release.py": "378cbfdeec4b70ebc2305af4ff2f088ed46da1c7282f10ddf726eaa0f979d6d1",
+    "tools/export_api_schema.py": "9c5e26e22c5ca7bc619e9fa1aade8d737a325c7c2e1f2a912dca697220633216",
+    "tools/smoke_installed_workspace.py": "e292d03f6aa1c15cea56daf4d3bc5df438f4e6ec10ad419d71a3b93d62bb5e96"
+  },
+  "steps": [
+    {
+      "name": "account",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/account.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-async",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-async.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-benchmark-datasets",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-benchmark-datasets.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-client",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-client.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-commands",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-commands.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-connection-settings",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-connection-settings.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-connectors",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-connectors.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-controls",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-controls.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-cypher-tools",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-cypher-tools.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-data-layout",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-data-layout.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-data-source",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-data-source.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-database",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-database.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-editor",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-editor.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-exploration",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-exploration.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-explorer",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-explorer.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-graph-library",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-graph-library.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-home",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-home.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-import",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-import.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-incremental",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-incremental.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-library",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-library.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-navigation",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-navigation.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-options",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-options.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-outputs",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-outputs.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-polling",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-polling.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-projects",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-projects.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-query-drafts",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-query-drafts.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-query-editor",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-query-editor.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-query-progress",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-query-progress.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-query-table",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-query-table.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-release",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-release.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-rendering",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-rendering.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-result-context",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-result-context.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-result-views",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-result-views.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-sessions",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-sessions.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-shell",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-shell.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-source-settings",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-source-settings.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-table-mappings",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-table-mappings.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-templates",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-templates.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-transport",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-transport.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-ui",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-ui.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "analytics-wire",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/analytics-wire.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "app",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/app.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "project-viewer",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/project-viewer.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "projects",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/projects.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "shared",
+      "command": [
+        "/home/wajid/.nvm/versions/node/v24.18.0/bin/node",
+        "--check",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/static/shared.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02
+    },
+    {
+      "name": "build-agent",
+      "command": [
+        "/home/wajid/.local/bin/uv",
+        "build",
+        "agent",
+        "--wheel",
+        "--out-dir",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/wheels"
+      ],
+      "exit_code": 0,
+      "seconds": 0.54
+    },
+    {
+      "name": "build-library",
+      "command": [
+        "/home/wajid/.local/bin/uv",
+        "build",
+        "python/graphmine",
+        "--wheel",
+        "--out-dir",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/wheels"
+      ],
+      "exit_code": 0,
+      "seconds": 0.25
+    },
+    {
+      "name": "create-environment",
+      "command": [
+        "/home/wajid/.local/bin/uv",
+        "venv",
+        "--python",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/bin/python",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/installed"
+      ],
+      "exit_code": 0,
+      "seconds": 0.04
+    },
+    {
+      "name": "install-wheels",
+      "command": [
+        "/home/wajid/.local/bin/uv",
+        "pip",
+        "install",
+        "--constraint",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/requirements.lock",
+        "--python",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/installed/bin/python",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/wheels/graphmine-2.0.0.dev0-py3-none-any.whl",
+        "graphmine-agent[databases] @ file:///home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/wheels/graphmine_agent-1.0.0-py3-none-any.whl"
+      ],
+      "exit_code": 0,
+      "seconds": 0.5
+    },
+    {
+      "name": "create-external-environment",
+      "command": [
+        "/home/wajid/.local/bin/uv",
+        "venv",
+        "--python",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/bin/python",
+        "/tmp/graphmine-family-installed-check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01
+    },
+    {
+      "name": "install-external-wheels",
+      "command": [
+        "/home/wajid/.local/bin/uv",
+        "pip",
+        "install",
+        "--constraint",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/requirements.lock",
+        "--python",
+        "/tmp/graphmine-family-installed-check/bin/python",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/wheels/graphmine-2.0.0.dev0-py3-none-any.whl",
+        "graphmine-agent[databases] @ file:///home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/wheels/graphmine_agent-1.0.0-py3-none-any.whl"
+      ],
+      "exit_code": 0,
+      "seconds": 0.09
+    },
+    {
+      "name": "installed-smoke",
+      "command": [
+        "/tmp/graphmine-family-installed-check/bin/python",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/tools/smoke_installed_workspace.py",
+        "--repository",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher",
+        "--output",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/family_routing_release/local-release/installed-smoke.json"
+      ],
+      "exit_code": 0,
+      "seconds": 12.07
+    },
+    {
+      "name": "installed-packages",
+      "command": [
+        "/home/wajid/.local/bin/uv",
+        "pip",
+        "freeze",
+        "--python",
+        "/tmp/graphmine-family-installed-check/bin/python"
+      ],
+      "exit_code": 0,
+      "seconds": 0.04
+    }
+  ],
+  "passed": true,
+  "resolved_attempts": [
+    {
+      "step": "installed-smoke",
+      "reason": "The initial virtual environment was under the checkout; the smoke isolation guard correctly rejected that location. Recreate it outside the checkout."
+    }
+  ],
+  "sources_unchanged": true,
+  "wheel_hashes": {
+    "graphmine_agent-1.0.0-py3-none-any.whl": "1dea63306901212e5aeb139bd9e0f994eda7f9753d55684d0da44eb2bd2879fb",
+    "graphmine-2.0.0.dev0-py3-none-any.whl": "188b38c14cbbc9ea53c825605220c34d031dac017f1c6f8d19e21a88419d2fda"
+  },
+  "resumed_after_interruption": "Installed smoke completed successfully before the tool-server restart. Only package inventory and report finalization were resumed."
+}

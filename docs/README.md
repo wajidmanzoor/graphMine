@@ -24,7 +24,7 @@ python3 tools/build_site_catalog.py --check
 The default binary is `library/build/runtime/graphmine-native`. For another
 build, pass `--binary build/native/graphmine-native`. The script reads the
 native `catalog` response, the authoritative taxonomy in
-`library/manifests/problem_families.json`, each formal `problem.json`, and
+`catalog/family.json`, `catalog/problems.json`, generated `catalog/algo.json`, each formal `problem.json`, and
 `catalog/artifact_sources.json`. It checks their relationships and records
 source hashes and the native implementation fingerprint. It does not run any
 algorithms or modify the runtime catalogs.
@@ -44,7 +44,7 @@ python3 -m http.server 8000
 
 Open <http://localhost:8000/docs/>. Serving `docs/` as the web root also works.
 Check family navigation, problem deep links, search, CPU/GPU filters, algorithm
-details and narrow screens. Useful links include `#family/cliques` and
+details and narrow screens. Useful links include `#family/dense` and
 `#problem/maximum_clique`.
 
 ## Publish with GitHub Pages

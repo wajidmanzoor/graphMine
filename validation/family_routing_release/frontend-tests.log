@@ -1,0 +1,30 @@
+
+> test
+> node --test tests/*.test.cjs
+
+✔ three model calls produce three entries, not one per event or code stage (1.050103ms)
+✔ a retry keeps the failed call's partial text separate from the successful call (0.152069ms)
+✔ legacy reasoning and diagnostics pair, while repeated attempts remain separate (0.154052ms)
+✔ historical answer calls are counted without inventing or duplicating reasoning (0.318139ms)
+✔ a new answer call remains live after the planner's assistant message (0.765244ms)
+✔ code-only work and scalar fact answers do not invent a model call (0.116756ms)
+✔ one parallel completion records five samples without inventing five requests (0.111118ms)
+✔ transport keeps exact IDs, authorization and structured API errors (18.092435ms)
+✔ aborting during a concurrency retry stops its timer and prevents a second request (16.784944ms)
+✔ mutations never repeat automatically even when read retries are requested (0.863942ms)
+✔ unreadable proxy errors retain status and retry timing (0.840828ms)
+✔ a superseded read rejects late data even if transport ignores cancellation (0.700757ms)
+✔ a superseded read rejects late errors even if transport ignores cancellation (0.558993ms)
+✔ an invalid read scope never starts HTTP work (0.548967ms)
+✔ client encodes path and query values while retaining bigint JSON bodies (0.987729ms)
+✔ empty responses, binary exports and multipart uploads preserve their contracts (1.555596ms)
+✔ retry hints are bounded and completed delay listeners are removed (1.761666ms)
+✔ entity labels quote string IDs only where they could be misread (0.715088ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.043688

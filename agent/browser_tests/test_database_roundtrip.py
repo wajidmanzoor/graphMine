@@ -54,6 +54,14 @@ def database_server(tmp_path, monkeypatch):
 
     async def generated(self, stage, payload, schema, catalog=None):
         calls.append((stage, payload))
+        if stage in {"family", "problem"}:
+            from graphmine_agent._families import OPERATION_FAMILY, PROBLEMS
+            family = OPERATION_FAMILY["densest-subgraph"]
+            if stage == "family":
+                return {"family_id": family, "reason": "Authored density selection."}
+            identifier = next(key for key, row in PROBLEMS[family].items() if "densest-subgraph" in row["operation_ids"])
+            return {"status": "selected", "candidates": [{"problem_id": identifier, "reason": "Densest group."}],
+                    "requires_cross_family_steps": False, "message": "Find the densest group."}
         if stage == "route":
             return {
                 "intent": "calculate",

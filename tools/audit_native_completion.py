@@ -11,6 +11,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from validate_families import registry_operations
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -47,7 +49,7 @@ def main():
             )
         )
         assert not caps["verification_issues"], caps["verification_issues"]
-        assert len(caps["operations"]) == 80
+        assert {card["id"] for card in caps["operations"]} == set(registry_operations(ROOT))
         assert all(card["execution"]["cpu"] for card in caps["operations"])
         builds[name] = {
             "native_library": str(library.resolve()),

@@ -1,12 +1,12 @@
 # Algorithm and agent catalog expansion — 2026-10-04
 
 **Historical expansion record.** The subsequent [repair integration](../library/docs/repaired_algorithms.md)
-now exposes 24 operations, 22 supported families and 38 backend choices. Both
+then exposed 24 operations, 22 supported problems and 38 backend choices. Both
 repaired maximum-clique backends have passed the application re-audit. The counts
 and quarantine statements below describe the earlier 2026-10-04 expansion.
 
 The agent now recognizes **all 37 problem definitions**. It exposes **18
-operations covering 17 problem families**; the other **20 families** remain
+operations covering 17 problems**; the other **20 problems** remain
 recognized but unavailable. The runtime registers 31 backend choices. Existing
 agent exclusions for CUDA-MS and Maximum-Clique-on-GPU are preserved.
 

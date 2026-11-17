@@ -10,7 +10,7 @@ import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from graphmine import list_algorithms
+from graphmine.reference import list_algorithms
 from graphmine.backends.cugraph import OPERATIONS
 
 ROOT = Path(__file__).resolve().parents[1]

@@ -1,0 +1,226 @@
+{
+  "authorization": "User requested removal of historical reports containing retired family identifiers. Original contents remain in Git history.",
+  "archive_commit": "d4b59e7c",
+  "files": [
+    {
+      "path": "validation/graph_views/step1/admission.json",
+      "sha256": "ab6cc69da7c5b6e38f4854fe8f5f4d00c09d4740a1ea87575de838dd0e3a04d3"
+    },
+    {
+      "path": "validation/graph_views/step2/admission.json",
+      "sha256": "43e37e45e802769eae47047cc1a96fe6bf351d88bf98e9b11c7f76e98688b29c"
+    },
+    {
+      "path": "validation/graph_views/step3/00-view-extensions/admission.json",
+      "sha256": "229f88d63600b6107e1c3f22efdce23eb280adf06c3f9816a7e0ee1f6ee2bba4"
+    },
+    {
+      "path": "validation/graph_views/step3/01-traversal/admission.json",
+      "sha256": "dc594f59d143571317cca20d8ced45c2b4581f82f7debae44c9d16bfe41bb573"
+    },
+    {
+      "path": "validation/graph_views/step3/02-weighted-paths/admission.json",
+      "sha256": "87f0737f9f0f6718015c7898e486a60e39b3c513051b2f5da718e85c1c757ccc"
+    },
+    {
+      "path": "validation/graph_views/step3/03-connectivity/admission.json",
+      "sha256": "16a6f23446dcf8e9deab7d44770ed99e87b1c6e8044091ec2fd53bd9344e3c33"
+    },
+    {
+      "path": "validation/graph_views/step3/04-cliques/admission.json",
+      "sha256": "8c5fdd8e789c8657a9a300d3b0b2d572c7cec6daae4a7d4098bfdb2fe2951780"
+    },
+    {
+      "path": "validation/graph_views/step3/05-reachability/admission.json",
+      "sha256": "b6ac2c28c7e2f506da424ea95421290bcba5ec0a28216d2a37eaa02fb0ea8b6e"
+    },
+    {
+      "path": "validation/graph_views/step3/06-density/admission.json",
+      "sha256": "9b9b3d137b82c7e2ec7bcadbf5b119836e91fc1802009e417a9b0bf14675371e"
+    },
+    {
+      "path": "validation/graph_views/step3/07-centrality/admission.json",
+      "sha256": "613f9f9a437ac2ba09dd835a0c0141b08730169573758159afd37c42f586ee38"
+    },
+    {
+      "path": "validation/graph_views/step3/08-coloring/admission.json",
+      "sha256": "35de5f750574a0ffe1189b7bb240ad1055b12185456d0995e9943ced3555ae0a"
+    },
+    {
+      "path": "validation/graph_views/step3/09-similarity/admission.json",
+      "sha256": "1629532846f63d4ff878fcc458c1ab6379f170ab1079ea5e5c01059f9f16aa35"
+    },
+    {
+      "path": "validation/graph_views/step3/10-patterns/admission.json",
+      "sha256": "90fba77e35db98991964590eb2b0ace60b5fe6a3e77e805438873ecfa76dc58a"
+    },
+    {
+      "path": "validation/graph_views/step3/11-partitioning/admission.json",
+      "sha256": "5052076684550752035eacc1b9aa743f4d769efbc6629113ad1e082df0c2cc77"
+    },
+    {
+      "path": "validation/graph_views/step3/12-spectral/admission.json",
+      "sha256": "ac4c02741325c970167005ffdf410f4b9db4f3fa25b310ffe704a0c77b4cb3d4"
+    },
+    {
+      "path": "validation/graph_views/step3/13-alignment/admission.json",
+      "sha256": "d04157f33a74707375851156d5775707328dca06766d7ce8321119883c5dfada"
+    },
+    {
+      "path": "validation/graph_views/step3/14-local-community/admission.json",
+      "sha256": "c3b2b424e40c6dab03dd124ebc86916f213cdad4af3f3f218ad4ce85aab96b37"
+    },
+    {
+      "path": "validation/graph_views/step3/15-geolocation/admission.json",
+      "sha256": "ef8511eb93cd52b7b08869c73d2843370bb182354384580333745bd7cc14d83b"
+    },
+    {
+      "path": "validation/graph_views/step3/16-condensation/admission.json",
+      "sha256": "7b09ad7f2a2a5cdcc4604341d93bb29c06353fc0f60ecc5cda19ba4e1b7db279"
+    },
+    {
+      "path": "validation/graph_views/step3/17-record-queries/admission.json",
+      "sha256": "296353bf5c62c04b9432b74ea270bdb2d1c8087b9a6c5e91133124d5da30e09e"
+    },
+    {
+      "path": "validation/graph_views/step3/18-layout/admission.json",
+      "sha256": "e48c6c7b10346bcb422a22fc1e6bd732b01590c9c13381e5b1aa936e98382080"
+    },
+    {
+      "path": "validation/graph_views/step3/19-subgraph-matching/admission.json",
+      "sha256": "7b2788c012a3da12e3b398a79dc16744f665f2a593a6b40127c0ab3d4054474f"
+    },
+    {
+      "path": "validation/graph_views/step3/20-structure/admission.json",
+      "sha256": "6ebb555d5bb538288f0c2e81bfa0db8d1ad994ed1e3272d9adcd4b1b58532d25"
+    },
+    {
+      "path": "validation/graph_views/step3/21-influence/admission.json",
+      "sha256": "c538d87f7554df96be14713dff302add66a0d1a492f7367abc52d29c95c5f76c"
+    },
+    {
+      "path": "validation/graph_views/step3/22-steiner/admission.json",
+      "sha256": "fd31204a8de3099f9797b33636e5f845bf304eb119f217810ca0c3ba1d04de5c"
+    },
+    {
+      "path": "validation/graph_views/step3/23-coarsening/admission.json",
+      "sha256": "4aa6bbc909f1c5020faa90f63ca3981b8ca29b6acbccccca28f77da3ef552def"
+    },
+    {
+      "path": "validation/graph_views/step3/24-walks/admission.json",
+      "sha256": "d028e9fa5d01429e4faa66503d6ce7a0da97e824c83628cf1b4742b6013c7381"
+    },
+    {
+      "path": "validation/graph_views/step3/25-null-models/admission.json",
+      "sha256": "c9899c703a78a669979f5975c602059878fb3d63b59b2b154972c371f06f28c9"
+    },
+    {
+      "path": "validation/graph_views/step3/26-topology/admission.json",
+      "sha256": "6c698f8aac3b89fbc012accea2654d32ed2dbb4492cbc6f7ec38b0f69f9537d3"
+    },
+    {
+      "path": "validation/graph_views/step3/27-signed-balance/admission.json",
+      "sha256": "63d3a4612075556c0f4e25f22c374d36670d75ce14e0782e143a8feaec91c959"
+    },
+    {
+      "path": "validation/graph_views/step3/28-general-matching/admission.json",
+      "sha256": "252d58dbededabe986663ec854e13c211d3b617d9ffd4d0bf95de4153bb2128a"
+    },
+    {
+      "path": "validation/graph_views/step3/29-entity-resolution/admission.json",
+      "sha256": "5dada7a25db8a8c023aee007fba3339d728aba4218110be32e2a37ad56c4b327"
+    },
+    {
+      "path": "validation/graph_views/step3/30-path-profiles/admission.json",
+      "sha256": "c4962087f2271c2398706ed445c0b93725c4a796838781e12e9aebb6fb126afa"
+    },
+    {
+      "path": "validation/graph_views/step3/31-induced-subgraph/admission.json",
+      "sha256": "2bddc7bcaccc9b1f2968d6265c56e52e227d161a26023b37f18e401ed1c0b85d"
+    },
+    {
+      "path": "validation/graph_views/step3/32-enumeration/admission.json",
+      "sha256": "393262cae920b65e7d2559121c01bf95bedcda599d5cd4bb2afb85fb53fa40c9"
+    },
+    {
+      "path": "validation/graph_views/step3/33-node-learning/admission.json",
+      "sha256": "af9cdf2d57a7a41cfcb081544c4d07afedc351cc0d1bfee263621d48c29baa7d"
+    },
+    {
+      "path": "validation/graph_views/step3/34-graph-learning/admission.json",
+      "sha256": "2810e98a2408b15b7267f4b0e03207e2f5b09162f0be97ad7ba55698e58c16ba"
+    },
+    {
+      "path": "validation/graph_views/step3/35-knn/admission.json",
+      "sha256": "4aa90fec26cacb240e45e840a59899b5b9543936e0ae64cda5291228b5ded2df"
+    },
+    {
+      "path": "validation/graph_views/step3/36-hypergraphs/admission.json",
+      "sha256": "65b13e555c7c6efee5b15c2a20fa4b1b02169e2be617460b36251d55059c3fa9"
+    },
+    {
+      "path": "validation/graph_views/step3/37-dynamic-triangles/admission.json",
+      "sha256": "d01a66965ff2c031ab1515a90cbc91b35915b78a73564f4f101acc18b1e12154"
+    },
+    {
+      "path": "validation/graph_views/step3/38-embeddings/admission.json",
+      "sha256": "932c940871640ce3b38d19ead26f4cec78531f36bc37cb3c662ba9abe1cd7ab7"
+    },
+    {
+      "path": "validation/graph_views/step3/39-sparsification/admission.json",
+      "sha256": "703d586246e38323a26717fe2fc32f6dd5849d44508f5379e05f6ec6db203e6b"
+    },
+    {
+      "path": "validation/graph_views/step3/40-flow/admission.json",
+      "sha256": "134ec2c6e34d6820dc18115f1d1db2a651c7ced8ad75ac0cc5f3819941c93e7b"
+    },
+    {
+      "path": "validation/graph_views/step3/41-anomalies/admission.json",
+      "sha256": "e9180749c44a79fda9ebc022583402a5defea1c156c1000d3b8e26f45ad4d23c"
+    },
+    {
+      "path": "validation/graph_views/step3/42-sampling/admission.json",
+      "sha256": "984d34b99455bf86838c901d70b677a2c3b0ce5fb8aa5ff48ba53a72284e08e5"
+    },
+    {
+      "path": "validation/graph_views/step3/43-temporal-paths/admission.json",
+      "sha256": "ab2b757bdead65483cc955e3a4e3a2d4f983261eb2994eae45bebc844fd7c7a1"
+    },
+    {
+      "path": "validation/graph_views/step3/44-temporal-motifs/admission.json",
+      "sha256": "d63c259e8662b52c6b76cd272ce07882d8ef49bf961409f8864b2526c8b2d0a9"
+    },
+    {
+      "path": "validation/graph_views/step3/45-comparison/admission.json",
+      "sha256": "1d61a3da4ef0b129712e5259f5fef726502919d17afec4b7b8195ca847a11e12"
+    },
+    {
+      "path": "validation/graph_views/step3/46-frequent/admission.json",
+      "sha256": "e00d4ca4a09051abb5fa3e377ab792ae486778503118d30f92b7fe1e2aececed"
+    },
+    {
+      "path": "validation/graph_views/step3/47-bipartite/admission.json",
+      "sha256": "5549cf69d5e1b0e18bf63b145673c9a74071ce1a8e5dd7a53c408207f8a603f6"
+    },
+    {
+      "path": "validation/native_optimization/known-failures/invalid-parameter-admission/build.json",
+      "sha256": "0c7a26829d7c7735f6e5f68f774f1d71177dec8b98cf194e282dc7dc23225a35"
+    },
+    {
+      "path": "validation/native_views_release/capabilities.json",
+      "sha256": "ba6b5b79ba1f1d579a0ec439797f3946c53b72866565aeb53f73211f164555ee"
+    },
+    {
+      "path": "validation/native_views_release/catalog.json",
+      "sha256": "6435a26e02c259055e1d46be7d1f8d650a290b974756578b0c044de7ab86a4f5"
+    },
+    {
+      "path": "validation/native_views_release/preliminary-missing-pggc/catalog.json",
+      "sha256": "f0a534c39ae673b8a0a11d56ac19a94251e198f19b588f64aec0474de658faf7"
+    },
+    {
+      "path": "validation/phase5-runtime-release/admission.json",
+      "sha256": "3cd11a82d52ff119bd3e45573ef6190f6bdc867b56c38c512706546509e63f1d"
+    }
+  ]
+}

@@ -267,17 +267,17 @@ def cost_hint(operation, profile):
     return f"Processes {n:,} vertices and {m:,} connections; iteration and output limits affect runtime."
 
 
-def make_cards(ranked, cards, profiles, question):
+def make_cards(ranked, cards, profiles, question, *, allow_single=False):
     if not ranked:
         return []
     first = ranked[0]
     second = next((row for row in ranked[1:] if distinct(first, row)), None)
-    if second is None:
+    if second is None and not allow_single:
         return []
     by_id, result = {card["id"]: card for card in cards}, []
-    for index, candidate in enumerate((first, second)):
+    for index, candidate in enumerate((first, second) if second else (first,)):
         card = by_id[candidate["operation"]]
-        other = by_id[(second if index == 0 else first)["operation"]]
+        other = by_id[(second if index == 0 and second else first)["operation"]]
         operations = candidate.get("operations", [candidate["operation"]])
         values = candidate["parameters"] if len(operations) == 1 else candidate["parameters"].get(operations[0], {})
         qualities = {op: (values if len(operations) == 1 else candidate["parameters"].get(op, {})).get("solution_quality", by_id[op]["quality"]) for op in operations}
@@ -288,8 +288,9 @@ def make_cards(ranked, cards, profiles, question):
             "interpretation": candidate["interpretation"] or f"Another way to explore “{question[:180]}”: {card['title']}",
             "match": candidate["match"], "score": candidate["score"], "match_evidence": candidate["match_evidence"],
             "cost_hint": " ".join(dict.fromkeys(cost_hint(op, profiles[candidate["input"]]) for op in operations)),
-            "difference": (f"{card['title']}: {card['description']} Compared with {other['title']}."
+            "difference": ("Only one compatible calculation is available for the selected problem." if second is None else
+                           f"{card['title']}: {card['description']} Compared with {other['title']}."
                            if card["id"] != other["id"] else f"Uses different settings: {json.dumps({key: value for key, value in values.items() if key in KEY_PARAMETERS})}."),
             "parameter_fields": parameter_fields(cards, candidate),
-            "preselected": index == 0 and candidate["match"] == "High" and first["score"] - second["score"] >= .25})
+            "preselected": index == 0 and candidate["match"] == "High" and (second is None or first["score"] - second["score"] >= .25)})
     return result

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="7.553" timestamp="2026-11-17T18:18:34.083767-05:00" hostname="guoglambda01"><testcase classname="browser_tests.test_workspace_incremental" name="test_new_reasoning_preserves_other_turn_dom_focus_and_expanded_details" time="7.415"><failure message="Failed: {'status': '', 'notice': '', 'errors': None}">agent/browser_tests/test_workspace_loading.py:324: in wait_for
+    return WebDriverWait(browser, 5, poll_frequency=0.05).until(
+.venv/lib/python3.12/site-packages/selenium/webdriver/support/wait.py:121: in until
+    raise TimeoutException(message, screen, stacktrace)
+E   selenium.common.exceptions.TimeoutException: Message:
+
+During handling of the above exception, another exception occurred:
+agent/browser_tests/test_workspace_incremental.py:46: in test_new_reasoning_preserves_other_turn_dom_focus_and_expanded_details
+    wait_for(browser, "GraphMineWorkspace.state.events.length===7 &amp;&amp; document.querySelector('#activity-list [data-turn=\"second\"] [data-live]')")
+agent/browser_tests/test_workspace_loading.py:328: in wait_for
+    pytest.fail(
+E   Failed: {'status': '', 'notice': '', 'errors': None}</failure></testcase></testsuite></testsuites>

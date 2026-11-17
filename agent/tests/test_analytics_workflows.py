@@ -570,13 +570,13 @@ async def test_plan_preview_flags_large_exact_searches_and_slow_past_runs(
                     "id": "maximal-cliques",
                     "title": "Maximal cliques",
                     "quality": "exact",
-                    "family": "cliques",
+                    "family": "dense",
                 },
                 {
                     "id": "pagerank",
                     "title": "PageRank",
                     "quality": "numerical",
-                    "family": "centrality",
+                    "family": "importance",
                 },
             ]
         }
@@ -623,6 +623,38 @@ async def test_plan_preview_flags_large_exact_searches_and_slow_past_runs(
     preview = await service._preview(rank, small)
     assert preview["past_runs"] == {"count": 1, "median_seconds": 300.0}
     assert "took about 5 minutes" in preview["reasons"][0]
+
+
+@pytest.mark.parametrize("operation, available, expected", [
+    ("maximal-cliques", True, True),
+    ("k-core", True, False),
+    ("persistent-homology", True, True),
+    ("laplacian-eigenpairs", True, False),
+    ("maximal-cliques", False, False),
+])
+async def test_preview_warning_stays_specific_to_operations_after_family_merges(
+    settings, database, graph_store, monkeypatch, operation, available, expected
+):
+    service = _service(settings, database, graph_store)
+    from graphmine_agent._families import FAMILIES as families
+    family = next(row["id"] for row in families if operation in row["operations"])
+
+    async def capabilities():
+        return {"operations": [{"id": operation, "family": family}] if available else []}
+
+    monkeypatch.setattr(service, "capabilities", capabilities)
+    record = {
+        "id": "preview", "session_id": "s", "revision": 1,
+        "validation": {"plan": {"steps": [{"id": "answer", "operation": operation, "device": "cpu"}]}},
+    }
+    inputs = {"main": {"kind": "graph", "data": {
+        "vertices": [{"id": 0}, {"id": 1}],
+        "edges": [{"source": 0, "target": 1}] * 6000,
+    }}}
+    service._write(service._directory(record) / "inputs.json", inputs)
+    preview = await service._preview(record, inputs)
+    assert preview["steps"][0]["search"] is expected
+    assert preview["expensive"] is expected
 
 
 def test_group_graph_reads_members_from_the_full_input(

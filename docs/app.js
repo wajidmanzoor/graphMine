@@ -34,11 +34,7 @@ const displayValue = (value) =>
   typeof value === "object" ? JSON.stringify(value) : String(value);
 const sourceLink = (path) =>
   `https://github.com/wajidmanzoor/graphMine/blob/main/${path}`;
-const familyTitle = (family) =>
-  ({
-    community: "Overlapping communities",
-    communities: "Community detection",
-  })[family.id] || family.title;
+const familyTitle = (family) => family.title;
 const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
 const qualityTitle = (value) =>
   ({
@@ -90,7 +86,7 @@ function familyCard(family, problems) {
     .map((p) => p.name)
     .join(" · ");
   return `<a class="family-card" href="#family/${family.id}" data-family="${family.id}">
-    <span class="family-card-top"><span class="family-symbol" aria-hidden="true">◈</span><span>${plural(problems.length, family.id === "query" ? "utility group" : "problem")}</span></span>
+    <span class="family-card-top"><span class="family-symbol" aria-hidden="true">◈</span><span>${plural(problems.length, problems.every((p) => !p.contract) ? "utility group" : "problem")}</span></span>
     <h3>${escapeHtml(familyTitle(family))}</h3><p>${escapeHtml(names)}${problems.length > 3 ? "…" : ""}</p>
     <span class="family-card-bottom">${plural(count, "algorithm operation")} <span aria-hidden="true">→</span></span>
   </a>`;

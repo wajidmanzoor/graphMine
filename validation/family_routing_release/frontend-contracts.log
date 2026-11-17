@@ -1,0 +1,5 @@
+
+> contracts:check
+> node generate-contracts.mjs --check
+
+API contracts match the current routes and models.

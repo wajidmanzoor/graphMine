@@ -47,7 +47,9 @@ class AnalyticsLanes(Clarifications):
 
     async def _offer_options(self, body, inputs, cards, operations, values, alias, entities, context):
         profiles = self._profiles(inputs)
-        menu = candidate_menu(cards, profiles, body.message, entities, selected=operations,
+        allowed = context.get("candidate_operations")
+        candidates = cards if allowed is None else [card for card in cards if card["id"] in allowed]
+        menu = candidate_menu(candidates, profiles, body.message, entities, selected=operations,
                               supplied=context.get("operation_parameters", values), alias=alias)
         if not menu:
             return self._gap("No eligible calculation matches this input. What result would you like to find?")
@@ -64,10 +66,10 @@ class AnalyticsLanes(Clarifications):
             **({"confirmed_operations": operations} if context.get("answered") else {})}, schema)
         calibration = load_calibration(self.settings, cards)
         ranked = rank_candidates(menu, samples, calibration)
-        options = make_cards(ranked, cards, profiles, body.message)
+        options = make_cards(ranked, cards, profiles, body.message, allow_single=allowed is not None)
         evidence = {"samples": samples, "candidates": [{key: row[key] for key in ("id", "operation", "score", "match", "match_evidence")} for row in ranked],
                     "calibrated": bool(calibration)}
-        if len(options) != 2:
+        if not options or allowed is None and len(options) != 2:
             return {**self._gap("Only one distinct compatible calculation is available. What other result would be useful?"), "option_evidence": evidence}
         if all(option["match"] == "Low" for option in options):
             choices = [{"action": "operation", "operation": card["id"], "label": f"Use {card['title']}."}
@@ -168,7 +170,7 @@ class AnalyticsLanes(Clarifications):
             raise AnalyticsError("This preparation requires a new explicit calculation choice.")
         return {**result, "inputs": refs}
 
-    async def _operation_lane(self, session_id, body, inputs, cards, operations, parameters=None, *, selected=False, alias=None, entities=(), clarification=None, clarify_only=False):
+    async def _operation_lane(self, session_id, body, inputs, cards, operations, parameters=None, *, selected=False, alias=None, entities=(), clarification=None, clarify_only=False, candidate_operations=None):
         by_id = {card["id"]: card for card in cards}
         if not operations or len(operations) != len(set(operations)) or any(op not in by_id for op in operations):
             raise AnalyticsError("Choose operations available on this server and device.")
@@ -186,6 +188,8 @@ class AnalyticsLanes(Clarifications):
                    "alias": alias, "selected": selected, "entities": list(entities),
                    **(deepcopy(clarification) if clarification else {})}
         context.update(parameters=values, alias=alias, selected=selected)
+        if candidate_operations is not None:
+            context["candidate_operations"] = list(candidate_operations)
         if len(operations) > 1 and any(isinstance((parameters or {}).get(op), dict) for op in operations):
             context["operation_parameters"] = deepcopy(parameters)
         missing = detect_gap(primary, inputs, values, alias, entities, body.mode,

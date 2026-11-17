@@ -21,6 +21,11 @@ class SelectLane(AnalyticsPlanner):
         self.calls.append(deepcopy(payload))
         return self.select(payload)
 
+    async def _route_problems(self, body, routing, cards, eligible_cards, **_context):
+        # These authored fixtures isolate intent-lane behavior. Catalog narrowing
+        # and real transport are covered by the taxonomy and planning suites.
+        return await self._generate("route", routing, {}), None
+
 
 @pytest.fixture
 async def normal(setup):

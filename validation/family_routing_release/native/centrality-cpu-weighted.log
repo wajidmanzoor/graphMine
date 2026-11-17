@@ -1,0 +1,6 @@
+Validated 500 centrality requests
+Validated 1000 centrality requests
+Validated 1500 centrality requests
+Validated 2000 centrality requests
+Validated 2500 centrality requests
+{"suite":"weighted","backend":"cpp","gpu_device":0,"passed_requests":2916,"failed":0,"implementation_sha256":"2715d4ca84ff2be4a767acb7f0dfd7313da9a1561b5a7b66d496942f014b6914"}

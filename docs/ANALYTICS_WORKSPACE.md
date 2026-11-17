@@ -10,8 +10,20 @@ the remaining starting points. The selected domain is saved with the conversatio
 vocabulary to the planner. Questions, clarification replies, planning decisions
 and model-returned reasoning are saved as authenticated workspace events.
 Follow-ups receive bounded conversation context; evaluation requests exclude it.
-The task-family picker is removed from the UI; the planner's routing call sees
-operations grouped by family.
+The task-family picker is removed from the UI. The first model call's catalog
+context is only `catalog/family.json`: the 14 family titles, descriptions and
+deciding questions. The second receives only the chosen family's entries from
+`catalog/problems.json`, and selects up to two ranked problem candidates.
+Both receive the question and, for follow-ups, at most four conversation
+messages capped at 1,000 characters each. Plans, input samples and result
+records enter only later planning stages.
+These are alternatives, not a request to execute both. The existing operation,
+implementation and parameter planning then uses their operation contracts.
+When the question explicitly needs steps across families, those dependencies
+are available in the later operation stage. One family reroute is allowed;
+a second failure asks for clarification. Confirmed choices and saved UI actions
+retain their existing direct paths. [Families and problems](FAMILIES.md) is
+generated from the same catalogs.
 
 Returning users see **Recent analyses** and **Recent datasets**
 on home. Each section loads four private summaries independently, with **Show
@@ -66,7 +78,7 @@ the short 320-pixel viewport checks follow the
 [reflow guidance](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
 
 The message composer provides three modes over the same validated workflow API.
-Normal offers two calculation cards and runs the selected, validated plan.
+Normal offers up to two calculation cards and runs the selected, validated plan.
 Interactive also asks answer-changing questions and saves the plan for inspection
 and explicit approval. Expert accepts an explicit JSON workflow with validator
 errors shown directly. Editing increments the revision and
@@ -746,15 +758,16 @@ source files, linked dependencies, operation profile and, for GPU execution,
 physical GPU UUID. Missing or stale evidence disables the profile. Reproduce
 native tests and run `tools/build_native_execution_evidence.py` for each build;
 its `--help` documents required reports. `tools/audit_native_completion.py`
-generates the 70-contract inventory through that same gate. Historical reports
-and failed attempts remain archived but do not establish admission.
+generates the 70-contract inventory through that same gate. Superseded reports
+containing retired family identifiers are available in Git history and do not
+establish current admission.
 
 The native planner uses `GRAPHMINE_LLM_MODEL` by default. A compatible model or
 adapter can be selected with `GRAPHMINE_ANALYTICS_PLANNER_MODEL`. Native planning
 uses `GRAPHMINE_ANALYTICS_REASONING_EFFORT=medium` by default. The legacy V1
-planner/analyst adapter settings remain scoped to the old protocol. One
-routing call chooses the operations, and a separate constrained stage builds the
-workflow, followed by the same actual-input validation used for manually edited
+planner/analyst adapter settings remain scoped to the old protocol. Family and
+problem selection narrow the catalog before operation selection. A separate
+constrained stage builds the workflow, followed by the same actual-input validation used for manually edited
 plans. Routing can also return a display change or an answer from the saved
 result's facts; neither computes anything. Routing may
 request clarification; model accuracy is reported separately from executable
