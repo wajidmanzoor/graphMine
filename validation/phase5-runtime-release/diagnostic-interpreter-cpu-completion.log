@@ -1,0 +1,67 @@
+
+==================================== ERRORS ====================================
+____________ ERROR collecting library/tests/test_native_extended.py ____________
+ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261117-grounding/library/tests/test_native_extended.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+library/tests/test_native_extended.py:19: in <module>
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'
+____________ ERROR collecting library/tests/test_native_learning.py ____________
+ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261117-grounding/library/tests/test_native_learning.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+library/tests/test_native_learning.py:9: in <module>
+    import numpy as np
+E   ModuleNotFoundError: No module named 'numpy'
+_________ ERROR collecting library/tests/test_native_record_queries.py _________
+ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261117-grounding/library/tests/test_native_record_queries.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+library/tests/test_native_record_queries.py:9: in <module>
+    import test_native_extended
+library/tests/test_native_extended.py:19: in <module>
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'
+_____ ERROR collecting library/tests/test_native_application_contracts.py ______
+ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261117-grounding/library/tests/test_native_application_contracts.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+library/tests/test_native_application_contracts.py:14: in <module>
+    import test_native_extended
+library/tests/test_native_extended.py:19: in <module>
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'
+________ ERROR collecting library/tests/test_native_table_projection.py ________
+ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261117-grounding/library/tests/test_native_table_projection.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+library/tests/test_native_table_projection.py:9: in <module>
+    import test_native_extended
+library/tests/test_native_extended.py:19: in <module>
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'
+- generated xml file: /home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261117-grounding/validation/phase5-runtime-release/cpu-completion.xml -
+=========================== short test summary info ============================
+ERROR library/tests/test_native_extended.py
+ERROR library/tests/test_native_learning.py
+ERROR library/tests/test_native_record_queries.py
+ERROR library/tests/test_native_application_contracts.py
+ERROR library/tests/test_native_table_projection.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 5 errors during collection !!!!!!!!!!!!!!!!!!!!
+5 errors in 0.60s

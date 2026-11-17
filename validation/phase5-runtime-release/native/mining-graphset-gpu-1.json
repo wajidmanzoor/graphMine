@@ -1,0 +1,26 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "graphset",
+    "gpu_device": 1,
+    "passed_requests": 4,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  },
+  {
+    "suite": "fixed",
+    "backend": "graphset",
+    "gpu_device": 1,
+    "passed_requests": 792,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "graphset",
+    "gpu_device": 1,
+    "passed_requests": 64,
+    "failed": 0,
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7"
+  }
+]

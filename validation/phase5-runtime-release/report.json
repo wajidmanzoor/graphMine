@@ -1,0 +1,60 @@
+{
+  "status": "passed",
+  "completed_at": "2026-11-17T17:49:08.338723+00:00",
+  "runtime_root": "/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261117-grounding",
+  "source_commit": "bb0e68e64b5a7b9f2924fb7ddb77ae703c7d3882",
+  "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7",
+  "binary_sha256": "cbae089654cbb0646fa1cc4bcfde127706553542bced76177fd88eacd59d21df",
+  "admitted_cpu_operations": 82,
+  "admitted_gpu_profiles": 59,
+  "admitted_gpu_operations": 36,
+  "native_oracle_requests": {
+    "cpu": 129073,
+    "gpu-0": 44884,
+    "gpu-1": 44884
+  },
+  "tests": {
+    "ctest": {
+      "tests": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "cpu-completion": {
+      "tests": 134,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "cpu-original": {
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "gpu-1-original": {
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "gpu-0-original": {
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "native-binding": {
+      "tests": 140,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "notes": [
+    "Finite independent oracle checks do not establish correctness for every possible input.",
+    "GPU 0 original-backend tests exclude mbe-gpu: its fixed 10.64 GiB scratch does not fit while production vLLM is loaded. GPU 1 passed that backend; admission retains only GPU 1 for mbe-gpu, as in the prior release.",
+    "Diagnostic reports retain test-launch setup errors: missing NetworkX in the app interpreter, missing binding build variables, and using a GPU build for the CPU-only negative contract. Corrected runs passed without changing native code.",
+    "The build reuses unchanged pinned Kokkos dependencies and research workers. Production model and database services remained running."
+  ]
+}

@@ -1,0 +1,67 @@
+..................................                                       [100%]
+34 passed in 8.02s
++------------------------------+---------------+
+| Memory Allocation Details    | Size (bytes)  |
++------------------------------+---------------+
+| Candidate Set                | 36            |
+| Candidate Offset             | 16            |
+| Edge Offset                  | 4096          |
+| Candidate Graph Offset       | 48            |
+| Candidate Graph Array        | 36            |
+| Bitmap Offset                | 4096          |
+| Bitmap Array                 | 36            |
++------------------------------+---------------+
+| Total (bytes)                | 8364          |
+| Total (KB)                   | 8.17          |
++------------------------------+---------------+
+3 beginning partial results have been moved to the GPU.
+BFS kernel theoretical occupancy 83.33%
+BFS extended to level 3. #Partial matchings: 1. Expected initial number: 1e+06. Memory consumption: 0.01 KB. Allocated block: 6.00 KB.
+# BFS Finished, time (ms): 0(host), 0(kernel)
++-----------------------------------------+
+| Memory Pool Information                 |
++-----------------------+-----------------+
+| Head Address          | 0x78e218000000  |
+| Maximum Block Address | 0x78e238000000  |
+| Block Number          | 262144          |
+| Block Size (bytes)    | 2048            |
+| Used Blocks           | 3               |
+| Used Memory (MB)      | 0               |
++-----------------------+-----------------+
+# Processing, time (ms): 0(host), 0(kernel)
+computing the maximum degree
+Found 2 devices
+  Device[0]: NVIDIA RTX 6000 Ada Generation
+  Compute capability: 8.9
+  Warp size: 32
+  Total # SM: 142
+Unknown device type
+  Total # CUDA cores: 0
+  Total amount of shared memory per block: 49152 bytes
+  Total # registers per block: 65536
+  Total amount of constant memory: 65536 bytes
+  Total global memory: 47.4 GB
+  Memory Clock Rate: 9.54 GHz
+  Memory Bus Width: 384 bits
+  Peak Memory Bandwidth: 960.10 GB/s
+
+  Device[1]: NVIDIA RTX 6000 Ada Generation
+  Compute capability: 8.9
+  Warp size: 32
+  Total # SM: 142
+Unknown device type
+  Total # CUDA cores: 0
+  Total amount of shared memory per block: 49152 bytes
+  Total # registers per block: 65536
+  Total amount of constant memory: 65536 bytes
+  Total global memory: 47.4 GB
+  Memory Clock Rate: 9.54 GHz
+  Memory Bus Width: 384 bits
+  Peak Memory Bandwidth: 960.10 GB/s
+
+GPU_total_mem = 47 GB, graph_mem = 0 GB
+Time on generating the edgelist: 1e-06 sec
+4-motif: max_blocks_per_SM = 4
+CUDA 4-motif listing (3 CTAs, 256 threads/CTA)
+frontier list size: 0 MB
+runtime [cuda_base] = 0.000426 sec
