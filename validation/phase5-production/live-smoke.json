@@ -1,0 +1,3742 @@
+{
+  "version": "lane-baseline-v1",
+  "status": "completed",
+  "created_at": "2026-11-17T17:55:01.943276+00:00",
+  "scope": "One frozen regression from each lane plus both previous failures and an explicit disabled-search check. Separate acceptance subset; the original frozen 60-case suite is unchanged.",
+  "suite_sha256": "a5c95cee0be3d95c470630788c6e2347a8b41e58e39c86ec2ad09bde010d90c5",
+  "source_files": {
+    "tools/evaluate_lane_baseline.py": "bf6eeaa79bd951cc66e16d26f7f5a6133c0730b5dbbd49f9f2685c1eb88260c2",
+    "validation/phase5-production/smoke-suite/questions.json": "ed8df675e37e1d16c8d8252e107eb74169677316035a9c8fa6dc52daed6b08a0",
+    "agent/graphmine_agent/__init__.py": "8059d39218be1587366d977a6d7ff946fc36d19169d7a9285803ac6b3a3345de",
+    "agent/graphmine_agent/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "agent/graphmine_agent/account_api.py": "02fbc146b2f37577114b9eceec9247c9aa918e15ed9d1d21d34038f930395b17",
+    "agent/graphmine_agent/accounts.py": "31f902fbef0f30a5f2bb201eaf11701741e8a6a1b7d4156014de21052771c1cc",
+    "agent/graphmine_agent/accounts_cli.py": "319be9156ac12cf5fcfcc365822ef33b59c5a371fc376ba4ddded651ce840eda",
+    "agent/graphmine_agent/activity_visibility.py": "68779accc314c8d2eaac6e682759d40755cdc66117f2140cec52789c1307fb56",
+    "agent/graphmine_agent/adapter_server.py": "e28d4cba1d1b561c344ce89a64a9703f3345b0358a728b3a38c0fd4c90b2f3d5",
+    "agent/graphmine_agent/agent_service.py": "c8592e12d0fee2d367c537c69092dbb23776ad1b817ba443f85b6411982bfadd",
+    "agent/graphmine_agent/analysis.py": "9bf1da63fbea61f9006b6297eeb4997dd446efef34b118c7d99e692cba20473c",
+    "agent/graphmine_agent/analytics.py": "c9139f78b2b9a2ee236abc9194787c446a2b9cc0c36a71dd31eafba9ae4411ef",
+    "agent/graphmine_agent/analytics_answers.py": "03e42e9b376526752c989a5cb9513e831e0009263e85ad3adce8162037a1f25d",
+    "agent/graphmine_agent/analytics_bipartite.py": "3bc3e810eeb8361c4ba797a13b9212c711e3fb2f63be124e0aff611a206c01bd",
+    "agent/graphmine_agent/analytics_clarification.py": "fc944948ece698a41cf9fcdd9b47a1c0060c62ae993e1042bbe3f70bad3784d3",
+    "agent/graphmine_agent/analytics_context.py": "996c966acf34384b0876b6c451deb9fe88bf735cd6490948cb629bb691618182",
+    "agent/graphmine_agent/analytics_eligibility.py": "0c84919e3df8988c3605bba60bb1edb37650d28b7ee5860c65e447c73c4ba866",
+    "agent/graphmine_agent/analytics_examples.py": "2571352681f7639d8ada8c887a6e6ae4e2d13cc9840c04588ffebdc4852a52e3",
+    "agent/graphmine_agent/analytics_exports.py": "a31560373d7ae3d347122e5fdeaf69e27924fa44d83c693ac4b3954a5903b95e",
+    "agent/graphmine_agent/analytics_lane_choices.py": "c1b7cc9de99cc9da3737f85e029da2f25dbce24e0fee25d1af3b6c2d0688f632",
+    "agent/graphmine_agent/analytics_lanes.py": "37383dacde6f3e800275233a8e71b7ecc0dbb7e6375b8246daa6e76629c735d1",
+    "agent/graphmine_agent/analytics_options.py": "8fc60b64da4e324db0e223e64743361725f797b4fe32d31f044aef01d19a1ed4",
+    "agent/graphmine_agent/analytics_parameter_choices.py": "5fd1c757c75c92341f5aced3354ff59835e7028c43c176e773c75c9e491cb51e",
+    "agent/graphmine_agent/analytics_partitions.py": "258078fb6831dd6a7021c1fb5f3f13cf07ea2547ab3a2c7eb1c16b348318a05f",
+    "agent/graphmine_agent/analytics_planning.py": "34568d5435dbe8c5c0b5a5b720216bb55161e3eb89fa2b0d3cd99331c9d75808",
+    "agent/graphmine_agent/analytics_projection.py": "fd990a95749cb84b5338651c5a2585fb335df187d8897e9c5708ef860aa46424",
+    "agent/graphmine_agent/analytics_scheduler.py": "be9f2abff9123b5813dfbd56ab189df1d146d06e8c0ddedf4761df373f8fba80",
+    "agent/graphmine_agent/analytics_studio.py": "195ccbd00548e9873dfab33388a383a00e345d129214bc6e7f2e404aebed2547",
+    "agent/graphmine_agent/answer_grounding.py": "debc7b3cf193cd9c88d51cb45db2f57dab0f99cc3a730851cf64d3dae2aa9d5b",
+    "agent/graphmine_agent/answers.py": "ade789d9aa26f6328189b745bd3d77d2a2407b8faa6765d106339883207c8d9a",
+    "agent/graphmine_agent/api.py": "c3afa97b4d34e1bf85d71348b56fac610a19e2743c34886308943c950cbbcef4",
+    "agent/graphmine_agent/api_errors.py": "e7ae0a185667b94daaaf61f6edbe4782d1402baaacc3c8195dd290f40a4c7ef2",
+    "agent/graphmine_agent/backup.py": "04f054c514f10895b0c2383db13124e0e8f74e060fa75d05f40c3aaa2b130602",
+    "agent/graphmine_agent/benchmark_datasets.py": "35cae337cb91e6809ad33a150232a487392029bd167591a2b1e783c7423afbf9",
+    "agent/graphmine_agent/benchmark_mappings.py": "b4b85aecd17aa93f1bce06304fbf10b3c9e248c88168e0e38c3c9a4f19658848",
+    "agent/graphmine_agent/benchmarking.py": "ba5c66d9b97554d6153d5aaf0b6b297a9302f1e888253fcf3851aa4ac4b6abe0",
+    "agent/graphmine_agent/capture.py": "72ed476b83935bf03223d8dddad3b748715d8f5785741d9f21fae00efc6a948f",
+    "agent/graphmine_agent/catalog.py": "1946a9134f7457dde6a16e6d234037302bac44e4273a2ce53d7c3300be938fb7",
+    "agent/graphmine_agent/cli.py": "2bbb2818718e044d2dee6b55f77e042cb3945770cd29856d76094a7fe79221dd",
+    "agent/graphmine_agent/commands.py": "c13d73c454ae46a378559cf622d44e6ca3e040f5ab550be408d0397dee34a7d6",
+    "agent/graphmine_agent/config.py": "cb0cd1084f0edb83f1095923ac649868992a4f9f48180312f8a9e64c4ef1d9e9",
+    "agent/graphmine_agent/connectors.py": "b655321cacadee5ef91059202c5d66b3b15a082743bdbc339523e52842de9611",
+    "agent/graphmine_agent/conversation_timeline.py": "d030a9abc6bb70864e82cdaa89ca0e3420f6461fe1f978644a806e72adb28e53",
+    "agent/graphmine_agent/csv_ingestion.py": "75191c894cfa96f0a1b480760b7f5fe0b55ed7744c916cec79071ab151f5f2a1",
+    "agent/graphmine_agent/data_sources.py": "f872a66f01a0e4160bc08ccaafa5be8ed7c91e7f28c63b79b19818fcbe4175ae",
+    "agent/graphmine_agent/database.py": "ee0a7257463226e88b0d5a7b27bc79a410d5b6e50e8c88d7a98a7d0465018a65",
+    "agent/graphmine_agent/database_connections.py": "426a223a09a661bfd634c194347503c0feb549bea33ce6dad40d4ce8db28f024",
+    "agent/graphmine_agent/database_datasets.py": "9be5a954e7fc87bcb7a8c5d6395d447d93cb5956a4633633fc9cd01cddedd2f3",
+    "agent/graphmine_agent/database_enrichment.py": "09df58b634e229a22554074d06bce2b206e086b1a7894cccfca70857776e2cd8",
+    "agent/graphmine_agent/database_job_context.py": "e937e9d307852f181e36e1bf2bf037100beb24cee3f6cf9bee5881510d637d11",
+    "agent/graphmine_agent/database_jobs.py": "29efec697d7c77d8880232e44fa1c0c7556956407ffc18651b266420258f0301",
+    "agent/graphmine_agent/database_pools.py": "5d15da2e3a2c3b891e493b80471ff4d4f5637d63ae91643650851794225f908e",
+    "agent/graphmine_agent/database_queries.py": "d3dc8f6ef652240ad046e1b964ca9c8ecfbaaefc4b5a2ff9efe617bfb83101df",
+    "agent/graphmine_agent/database_reconciliation.py": "339a7f763d16f4dabffd863c5359237803f73444a1aad588ae40069fc2d17089",
+    "agent/graphmine_agent/database_schema.py": "372fd43b60c4cd3f4ed9ec4dbc55dfd9fdffbd8a42f93d659b82cc8b009bb5ef",
+    "agent/graphmine_agent/database_sources.py": "e318315b3e18c89c26799901f15275eb8147a3d51ab7330314cb1c2aa9efde14",
+    "agent/graphmine_agent/database_sync.py": "59141b49796ca9f54724a357bd963e40a6e6489f61ab29a32b8635c041818e59",
+    "agent/graphmine_agent/dataset_index.py": "f15cc6a53d24b8fa7d5a5df9e658373f973e41c050b398840fdd561578a0a084",
+    "agent/graphmine_agent/datasets.py": "99be19bb087f69038e5729ad505a0aab2ae5cad8168bd9dfb4799a315062278a",
+    "agent/graphmine_agent/errors.py": "e9a6fb4a6e9249c5a7ed3f42b0b2260a9adc4e53995bcc80febc2f0dbdb149e9",
+    "agent/graphmine_agent/evaluation.py": "76aa2a3693626f38df228c8268d3fb61d1380b873eac3b4d599eccdbfcd6017b",
+    "agent/graphmine_agent/evidence_cache.py": "8ce1d94e37897f2a30304c53134c34d3da5991f5716dd59a579cac1d50692329",
+    "agent/graphmine_agent/execution.py": "d19a87e6ca71a2f2ad2e2e3fc77ebffb9a6c8169464b5dbab2f116ad663233f5",
+    "agent/graphmine_agent/exploration.py": "dd251718bec3270b512a964c858096d3394a02891fc79cbf661b0c5089891d45",
+    "agent/graphmine_agent/export_streams.py": "a04b8d4a558179aea249dd00ba6db6b027cd7d6da077c1d059bd21d47a70d724",
+    "agent/graphmine_agent/google_search.py": "04dc7d349e4c05166ab86ece7fd58385909cc87564688960ccf9099790e8ab2c",
+    "agent/graphmine_agent/graph_context.py": "9a3f6d28f58015220861de2bc570b7195a78c168b14d23cbb779851b30b85e55",
+    "agent/graphmine_agent/graph_store.py": "cbb6ebf529b82e8f6c3ac641e5b58db51e4ec18310a3d51b53c756f6ee5daada",
+    "agent/graphmine_agent/history.py": "6bb81310e0393bf8748d04a86697d3d0db503cebe785a9b3231a497856be7201",
+    "agent/graphmine_agent/identity.py": "acb78ea263f9f1e99f149ab962752eb9ec7606ea26a44e1e66b334efd2fb5c22",
+    "agent/graphmine_agent/import_preview.py": "4a65cdf50846784e7cf9f90c6595044e8bbbf1a40a8edd384e23063fcc41124c",
+    "agent/graphmine_agent/jobs.py": "337af31c90c9ea0b13b1e99d1e31299d3e317b062208df30cfc9aee702901e35",
+    "agent/graphmine_agent/learning/__init__.py": "18ddf5f2ec79711640cab59ce8da25a7ac4f51be8b239a1c0236714f094eca22",
+    "agent/graphmine_agent/learning/adapter_eval.py": "7746a5a21eff011159112d2446795d6d01f150ff01d6e77ef9172d03b63713f4",
+    "agent/graphmine_agent/learning/adapter_holdout.py": "e7312abd87246a461cd199fe793672de0e9314bf6df4947c2a040756630644d9",
+    "agent/graphmine_agent/learning/adapter_review.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "agent/graphmine_agent/learning/adapter_workflow_review.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+    "agent/graphmine_agent/learning/adapter_workflows.py": "983fe356689dd1b42457a5edeceaa84b6a05a0539c3f7766324350901f31d01a",
+    "agent/graphmine_agent/learning/analytics_queries.py": "19a460a4cc7bbe50ad5a79c22f762fd222e2c261baddc3a043b783de9dfee1b1",
+    "agent/graphmine_agent/learning/business_curriculum.py": "30341939f429dd9537772dcce46ca95b94264cad1adb723dc495e11a519cfc1e",
+    "agent/graphmine_agent/learning/business_eval.py": "79690c067c8970134844756eb940a985b0bad8801876fc2d0c1effb214ea9e35",
+    "agent/graphmine_agent/learning/business_questions.py": "be434b7d19de01af6fb1efa6d0a7d440a8cb2145b064695b11870f57b0e18c91",
+    "agent/graphmine_agent/learning/business_workflows.py": "4a6a7cad745154b7cb0adc3f17df360099312a3ee3c3c00a888a7c0eae03296b",
+    "agent/graphmine_agent/learning/catalog_audit.py": "04a4e92c23c4f53a894ef510b80251cdf6b99db044cb268b7b5bf375f14adb1e",
+    "agent/graphmine_agent/learning/catalog_compare.py": "a40d8614263fdbf7256b45c4589a24c4f6b692ebd68a408d9caceec7a7b98a4c",
+    "agent/graphmine_agent/learning/catalog_grade.py": "fbba5b4aaa25b42f49fa2d7492a089973553623841a60c76e1a7ff3751ab27e1",
+    "agent/graphmine_agent/learning/catalog_reference.py": "f25f1eb15140657f20890eb28a24c6ad04489d1dc3a6193120fcf241e16748d6",
+    "agent/graphmine_agent/learning/catalog_replay.py": "ef402b3622b4637d54489c79d0fa6c3423bfc8ab479a8924bef9cb034352d71d",
+    "agent/graphmine_agent/learning/catalog_suite.py": "d4bce53394f5179106949d20c58e937958b4ac8ec615f81a37104b34589d43ed",
+    "agent/graphmine_agent/learning/cli.py": "b40522f3a6b6ec8fff7636d0cbe46739bdb189091ad79df01a9746c880cce488",
+    "agent/graphmine_agent/learning/codex.py": "e54bec1c8b27e8d29cd993057056c8f3bfe2d2884be6fe7db4cab666e3fc2488",
+    "agent/graphmine_agent/learning/collection_only.py": "77e964f823962d10f1ebaebf63b33491dc232cd35cb18a602491e9eae9eb2b78",
+    "agent/graphmine_agent/learning/corpus.py": "28426df22611b633b670b352bdbd8b463246c086c6a24ca33bb1603f06f8dbb5",
+    "agent/graphmine_agent/learning/data_selection.py": "dd46a5df60414326adf2e49d8ff1e723969e7974f0c6b518a2d6d08997ad61b4",
+    "agent/graphmine_agent/learning/dual_conversations.py": "b1306f9c23262ee3b807ab3abe72d652af447a6388a7cbbbaca39d26ea52b83c",
+    "agent/graphmine_agent/learning/dual_corpus.py": "88f51d46e8c45e87ea43581d5bc288d788dd91cb66e2c89b35cd610406dc7e77",
+    "agent/graphmine_agent/learning/dual_eval.py": "be116d0fc960328021797967612b45d29a507fff37607236f7c964bf5c65c277",
+    "agent/graphmine_agent/learning/dual_finetune.py": "741dba75a00ad6e6cb316719c0a89c322a6b36201e72bd6d31f6c32309997cde",
+    "agent/graphmine_agent/learning/dual_questions.py": "386bb9ecd3a6c7cd274edf5c6b1e3a06bf6125819081895cbfcaea45aee1dbce",
+    "agent/graphmine_agent/learning/dual_recovery.py": "6acdfecf8dce283cdd5ac8587b4bb6e413cae1c907892b7d17072c653e8ea890",
+    "agent/graphmine_agent/learning/dual_review.py": "da314beb58340cb25b782cdd0c6db370dac03c43e3f072e7e353711e48676b38",
+    "agent/graphmine_agent/learning/dual_teacher.py": "38f2bf9cde59cdad39c2f1380c4473912f63f3a0d59e517bfdc1831e4dd9eac3",
+    "agent/graphmine_agent/learning/dual_workflows.py": "4809730d157aac5b2cc558cc839b098461cda6a619347629c54f30af51d26696",
+    "agent/graphmine_agent/learning/failure_candidates.py": "0ecd4bd56d60a9ac2298497d4ee86a4093bd6a5f2ce2febd036aa93e7a6cd6cd",
+    "agent/graphmine_agent/learning/finetune.py": "eb82044cbfcffd93298b13a9b5ea8fd007b50111c8d34c89f1c0edbe0f039c77",
+    "agent/graphmine_agent/learning/full_corpus.py": "b79e36f6588ae5eeb8e17956026ca28f59fb60502c8078e4de9af6c2e0ad585d",
+    "agent/graphmine_agent/learning/full_cycle.py": "465fad192d370b70ae44a42bc765f628b83c728c4bd1084d04281c2ccdcac6d5",
+    "agent/graphmine_agent/learning/full_train.py": "f4067dc7b8e416a4d10aeba3c5a5949add24dfc2d623e6a00ac73d4ce19803e6",
+    "agent/graphmine_agent/learning/inference.py": "3023803c04ccd7f531b3c86e6053c83451686e25fd2552f09a59e7609d1e1ded",
+    "agent/graphmine_agent/learning/meaning.py": "3c311efeda051b8bebdc0469e4e6cc95baa5afbcb296b7ef38bd115597823a62",
+    "agent/graphmine_agent/learning/oracles.py": "1fc123db7341013db41fdb16a2f82057b9e1374efb8d735cbe868e6241f415a2",
+    "agent/graphmine_agent/learning/pipeline.py": "48530cd37e6c7bd55ecb326650074eaf76b0a7c3aa4732ab06bb69ba579c4545",
+    "agent/graphmine_agent/learning/presentation_checks.py": "af7ba952b04b0eb3867c24308351159227a622220d136b475ea2fc51f2dfb6d3",
+    "agent/graphmine_agent/learning/proposals.py": "a84400738575e9e7a596b9a407c1fc96d0a68dbcf6c8de0bb3a10b3a2361c9a8",
+    "agent/graphmine_agent/learning/realworld.py": "abab014d564a29f0cadea7cf3d4258f7b18f2f88531cb2a911b6ff0510d1a821",
+    "agent/graphmine_agent/learning/realworld_cases.py": "b5102f1f7e0f69a1c62ab786282d8fc46bec187c5a785d3e773935be1b46d1a0",
+    "agent/graphmine_agent/learning/realworld_eval.py": "0a67a79a71b82cc556df2dc65974870da8307c21910c0275acf176e1f4c3d8b0",
+    "agent/graphmine_agent/learning/reusable_data.py": "8b0027db41f5ae8e65bd9fc4b4191afc6ae1d9f3181c3f9ff59c3384c11013a4",
+    "agent/graphmine_agent/learning/review.py": "6d80d189514e402b0313076c08c52b4332d5955e7da420f4f5fdb0522f738ee0",
+    "agent/graphmine_agent/learning/review_export.py": "3f6ea7880fad4113a1df506f7566960fd160a2fbd9ebec333117f3feb6bde9ed",
+    "agent/graphmine_agent/learning/serving_adapter.py": "485b15c324c194596f24f526a77944fa84858e14bd85c2f20fa5ce6764dbd507",
+    "agent/graphmine_agent/learning/teacher.py": "ff1ff2960631abfc02d410af5ea7fefd6a6a28f22ebd48d7d9ceaa9e1255d819",
+    "agent/graphmine_agent/learning/workflows.py": "bbb58f99068116fc8324961bea1ba9fc545ecff8607e175f895e2bc2e1435bab",
+    "agent/graphmine_agent/legacy_exports.py": "f425c18bc3374dab08111e1c905e282fe5dd50cdc2a1c333c6dc21654998a73e",
+    "agent/graphmine_agent/llm.py": "cab9d7f7aaa1d7ed379874addabfa09de218450f83843560073af148bd036b7d",
+    "agent/graphmine_agent/managed_connectors.py": "3ba1dd9760fd38031be76423d7295ce0daf0cb71fb3662d68f55294959710eb9",
+    "agent/graphmine_agent/mcp.py": "45d593f9d774bb52a57ae6cf46c015a82c94a728aceb2ec13ea8863aedaec536",
+    "agent/graphmine_agent/mcp_database.py": "7680078ec59e76c996b914a4f52d59925facc8a238895b866db5be3ed9946c58",
+    "agent/graphmine_agent/mcp_downloads.py": "adaee483a2982e4fad7f920255f6d3f993845e2dfec57af30b709ff775fd58d8",
+    "agent/graphmine_agent/models.py": "82d246711fa37fa746d37f90e0153944a0c468a730d574b0b1dabbd8734cf26b",
+    "agent/graphmine_agent/native_ingestion.py": "1f3d9c8fcf958aebf2f70e823d9247620ac2cbd513c169e8c55bb7362b3a642c",
+    "agent/graphmine_agent/neo4j_registry.py": "4d77a78cb78d1d3b45b7ae883ca1ff5fc3cc197824e93ed4a9ea25f46f461e25",
+    "agent/graphmine_agent/neo4j_schema.py": "05bfd2d99d0a928e13d43aa8daf7e5a300947e47924f5ff240774201caaa1369",
+    "agent/graphmine_agent/ownership.py": "e3b086cd8539514b6cc702a802d9d528ab7c461d4ab20de5c34364bd360f03ea",
+    "agent/graphmine_agent/planning.py": "bcbf32fff78b72a62bad018d9e4b2b4047e74dc6598d21c148a93e537c963d43",
+    "agent/graphmine_agent/presentation.py": "9e64444b889753fb2d7102477d01301b95fe5b26e93f81f29ca47b5e369153a9",
+    "agent/graphmine_agent/profiles.py": "2ea7583b8814a7fe75c8bc3a73147f3203a2c1812bd5b294321bd8efb659944f",
+    "agent/graphmine_agent/projects.py": "979000df9ceb5f61eff0096926cfa934d2bfdf785162943b909c16ddde3ee4f0",
+    "agent/graphmine_agent/query_previews.py": "e5ec92405744ceee87ce705aa4588be7295cc7611ba05c3380c7afc66df3df17",
+    "agent/graphmine_agent/query_results.py": "a0020598d1b7a9b582325624c92f33a1dddef05bb2c1ba5cd96476a5b7819dfa",
+    "agent/graphmine_agent/reporting.py": "95c84f950c9b5b9621a6342b03e94d1a12850be8617eabea2ff229e403281905",
+    "agent/graphmine_agent/result_cache.py": "0f29afaffbcc575fa437d5ab2afb535294d5590529d1f266398f02b5afb55c40",
+    "agent/graphmine_agent/result_index.py": "2c180999969fceeefe6c96a1a7579038336305da2b13a62b4d46c1d582067999",
+    "agent/graphmine_agent/result_views.py": "f705d8e9c680298e7ba93a34b9337736e1bab9d44f28f5653673231de4680ee0",
+    "agent/graphmine_agent/results.py": "28f0acb4135b5c541647a1a2984eb54e16e18094f48b1d12099d4361c52e5a50",
+    "agent/graphmine_agent/selector.py": "9df8959a0c33f9c645360285cb19ef60df0a0fa2edf5e37a3e6e83876244e68d",
+    "agent/graphmine_agent/smoke.py": "f00c6794494ccd502b3475bc7013e35689178a17d9ac18b85b86844f53ac7f14",
+    "agent/graphmine_agent/table_artifacts.py": "74208f22e1366d03239d246bf6f4fd03ee5ccab73023538dd8897564fb96dabf",
+    "agent/graphmine_agent/terminal.py": "dfeaa4b4c8f9ca5460f1b3a8d425e5d24a3e49b31eb71e60e1fcd3c7bf181d5b",
+    "agent/graphmine_agent/usability.py": "23f31bb2e0d39ce626ec30e44c47f8b19f47614a44c9db4d8f4a512838db80a5",
+    "agent/graphmine_agent/visualization.py": "ad2f3f96812b5d0db128e0ecdb3313342d1b7adb0ede75437d1a0963edaad71c",
+    "agent/graphmine_agent/web_assets.py": "c6719409de8284c9ea6590b02e92bc92f74f66fd0c71a52a8ac7d96435a80aab",
+    "agent/graphmine_agent/workflow_api.py": "a3befc8584c3aa584a5ef97d6b1290084da9636772c3e1697322744e23763606",
+    "agent/graphmine_agent/workflow_index.py": "a44d1d40b0d2fbfed0c00ef814a9fe84820736a458c93e3fd6f8ad45273ce4f9",
+    "agent/graphmine_agent/workflow_templates.py": "fdb5b5259d7ec106ecf27f3850310c6c1febc98204e3a7cd9713f2fc34503c80",
+    "agent/graphmine_agent/workspace_recent.py": "2d2ab63e9c18ccb19422dc7944ba12ba9870cd5219aa7de4de066d28c3632c13",
+    "python/graphmine/graphmine/__init__.py": "11da274baf41d6792c3f0b32f8039a3cffc754e3b226a6596b7b28762ae24316",
+    "python/graphmine/graphmine/algorithms/__init__.py": "53382699408e6aa2062563bd8280220201846569a525274a82950f27ff621c1a",
+    "python/graphmine/graphmine/algorithms/_common.py": "fd974d78455c777830efc2a0265d40d199723ed8d242ad9fa05d1632c5adfcd0",
+    "python/graphmine/graphmine/algorithms/_events.py": "53f7711903989cd7ddc00d02b4a7ac2fc74b248b310892596f07a0e225597e42",
+    "python/graphmine/graphmine/algorithms/_milp.py": "3942312b3c5a8e0854f76b89f6de96ecdf122dba57a6e0467aeaac258240a87e",
+    "python/graphmine/graphmine/algorithms/_numeric.py": "910e25f7ce398c5fd18a15d19a31cd2c9f949ba614314fea1d192c79ba501d65",
+    "python/graphmine/graphmine/algorithms/alignment.py": "917b266f9660135e2df9c459cb400eb2f98fe326b0eeb298516ad13ba5e9725c",
+    "python/graphmine/graphmine/algorithms/anomalies.py": "fd77dc80020c0cc76a69d5734d5067bfc9cc3ae88a4fc26f6594650a2805fb2b",
+    "python/graphmine/graphmine/algorithms/bipartite.py": "7af9026ad525e507c5594df6913e4b2b5c6a5542d6d456b2aab336de9b51fc35",
+    "python/graphmine/graphmine/algorithms/centrality.py": "8e70c8b96c0f36208b3ab5124d20ca337310e51aa02acbe66cdee7914a7136f3",
+    "python/graphmine/graphmine/algorithms/construction.py": "cd6d33f24bf75751192f6a3d364d3c7fb3e454ea47237041cfc47a040f7d16b2",
+    "python/graphmine/graphmine/algorithms/density.py": "9274f8c8ce8d14423261e7427cc036b7cef74104bfc845b6068715eee10c5d8f",
+    "python/graphmine/graphmine/algorithms/entity_resolution.py": "78f26cfcdafbb569407c4742a0dad2da6c72767dac6d1d998a38bfebc596ef41",
+    "python/graphmine/graphmine/algorithms/enumeration.py": "c92fb5d533d768155c8aa9afe5c8b9b6b73c052fedf6790d8fba6a8f7b5cb492",
+    "python/graphmine/graphmine/algorithms/frequent_patterns.py": "f7077de60ce37359a1f157c5ff91c9fa65b3a3b506dcb6b2b3f2fe19355a70e8",
+    "python/graphmine/graphmine/algorithms/graph_comparison.py": "df82800175521aab69cdc5ea6d0e34dc9d5defd6603c0eedc7196dfe7ace69f6",
+    "python/graphmine/graphmine/algorithms/hypergraphs.py": "a88790678adae5ee40e4902040bf04ea738e51261d98c186d62022d33605cffc",
+    "python/graphmine/graphmine/algorithms/influence.py": "428e7dc393d7281bb39e7d7386714b3fc01572617116e097bc5ac36b53e9a57d",
+    "python/graphmine/graphmine/algorithms/layout.py": "05511701f51b1ace8e924261bc4bb5377e0783a02b54e55398954ef30efb985b",
+    "python/graphmine/graphmine/algorithms/local_community.py": "e29bfdc24e821b1cd442ae473c7de7ab6cdf628315fdd9a889d8950a46e225a6",
+    "python/graphmine/graphmine/algorithms/null_models.py": "beb8c732d8459e2c624b29bcfeb1cdd8366dd0167bdcb01cedfd10631fd3b6d1",
+    "python/graphmine/graphmine/algorithms/optimization.py": "04b073aa8013fb6c62f7461b02896260ea86439ec8356cc36e2f99d6e00ed4b7",
+    "python/graphmine/graphmine/algorithms/partitioning.py": "8d68ad980a08a23af8021379aeafac01d484dd3816910704aca55dcbc090639b",
+    "python/graphmine/graphmine/algorithms/paths.py": "2fdc38504435bc0dca9efedf5daa598e58c0d8af0265a3033ca3b082be85a69f",
+    "python/graphmine/graphmine/algorithms/patterns.py": "8619604ba57740e1198582996569fc1687416c7afb399299d7674db5b8ceda0b",
+    "python/graphmine/graphmine/algorithms/queries.py": "8a25e27627573ae7f0e1616da6076719157802516fdf434544de85747636bfdd",
+    "python/graphmine/graphmine/algorithms/sampling.py": "db808b36f75e62bf4b3a92111a8363fade067c9190d2fce2fbef3eb4429684e2",
+    "python/graphmine/graphmine/algorithms/similarity.py": "53d58c37ff897c35ddeeeac7598f8dc6d1cd6dd90096361a6e2fdcc8b8b53597",
+    "python/graphmine/graphmine/algorithms/sparsification.py": "418677691e1675ab08f4377910a66af1067ee9e27dda796c9fae63caa7e26721",
+    "python/graphmine/graphmine/algorithms/spectral.py": "a1b84c6e43c850353f86d399512205d2b924ec68a3b9baa0dca58fc3bc01ee7a",
+    "python/graphmine/graphmine/algorithms/steiner.py": "f3a3ff0d105a691c50ac4e15a5ec3e0ca8283b28682d2513b675c92698bbddbd",
+    "python/graphmine/graphmine/algorithms/structure.py": "2f441a0dc6bd48467fe60585d9553f3e608ad80ffee002bdc9da7de0a0ce8081",
+    "python/graphmine/graphmine/algorithms/temporal.py": "9e4af1f8a17a0bebf83ed1c2ab5916aa2dd27614a97ef1d79b21e0546e71ab64",
+    "python/graphmine/graphmine/algorithms/topology.py": "57392761c3d2f209c82114e7dd1b6257b79f02860e7a08e925e6c143cbfbefe7",
+    "python/graphmine/graphmine/algorithms/traversal.py": "9a62af954a4aebb4be6864161eafc8778bbf434264203d1222275200a08330d7",
+    "python/graphmine/graphmine/backends/__init__.py": "b218e3f7e9db44250d8f6e2f805af2dff1526574fcd1e9f1bbed76cffcffc8e4",
+    "python/graphmine/graphmine/backends/cugraph.py": "145f976f162db2a8831be5e5f8f136c416288a811b8bc863d2516dd52fb3bf30",
+    "python/graphmine/graphmine/cli.py": "93501ecc8f8753c8c26b0edf0d58e92771ad5b15a5f5aa5c693eaf087b9ba712",
+    "python/graphmine/graphmine/contracts.py": "21fcc3ed6b8465d399569fc5a14f02ed655fb9bb89055e43d907b50f296ece33",
+    "python/graphmine/graphmine/dispatch.py": "08296749e416d5d6bc05c0c43591b2b847ae182bda481389f43d7c1ad4e5559b",
+    "python/graphmine/graphmine/evidence.py": "0a2043c5c67f758903291503fc27ba8d8ca9ca92ac5c6672d07c3e6fcf4a334f",
+    "python/graphmine/graphmine/exceptions.py": "2423cd49b2285fae98567483de16c9268907fe2b6dd3c340da511223da7b75c1",
+    "python/graphmine/graphmine/graph.py": "9ef0915bf8d66c4c9bee7723b75550e090b97b1a4dd815ae970295bc0c9742a0",
+    "python/graphmine/graphmine/inputs.py": "3333f3a6d0c1201c2f4923c8342a95aa61da0029baf50c7905fcd4f9526f2b7a",
+    "python/graphmine/graphmine/native/__init__.py": "7d8defc9511a58fbe1ddf291696bbc20df7170ffe4330369745af4f55329d5d6",
+    "python/graphmine/graphmine/native_inputs.py": "b94e7cc495149c25d7049930bab35a59c6b6b813a6b51b941dc27699590e357b",
+    "python/graphmine/graphmine/ports.py": "6e16c06604a3c1e2f715d283d02847f5a4ce69ab22932b898fce1f5c57ca89a0",
+    "python/graphmine/graphmine/reference.py": "9e929c54b882302311af714340e2cc043e5377dab0ccaa0d497788bec43e0513",
+    "python/graphmine/graphmine/reference_evidence.py": "ce68235b89d14e8d89054cbaebea6340ff766ae712f235d7a29c2e0c50a03fd9",
+    "python/graphmine/graphmine/reference_workflows.py": "a17488623315c07559f567fa92e1e8e6d613b697e1ee1f0133c2e899912f99b4",
+    "python/graphmine/graphmine/registry.py": "3eb0cf8c72992881efc5d1e3a94ee0e33a62f423ac1cad92c11dbb0a173e5d7d",
+    "python/graphmine/graphmine/worker.py": "b4385e29ac858cd8953104419c5e940882ec73858c5ca30173b7ebc9ba915f75",
+    "python/graphmine/graphmine/workflows.py": "65ce6beb68808d5d76d9d8db46b8c8c0139774ef8cf7815ccb0562148677de8c",
+    "catalog/native_execution_evidence.json": "7c71ac2fd4ed7acaf536df3223c355caac60d96ca4ab3e83e510ffeee9ea3668",
+    "catalog/operation_requirements.json": "0bb8fe4da8598aa6b57963575ef45250922c3ac84846547f7bd42da7dbafca01",
+    "catalog/agent_concepts.json": "edaf3893afe3f6f4480314d85fd67d2eb80fdf505a011c7f815092468cba9a5f",
+    "catalog/vague_terms.json": "765df8dea055a573a7b6b964f7a6d10459dd15d2b14391add89f4180228b7775",
+    "catalog/option_calibration.json": "b9b668383acf32fa8344e0e52d1a85116adf17a2e91a41444c8831d678f4ff95"
+  },
+  "oracle_verification": {
+    "suite_sha256": "a5c95cee0be3d95c470630788c6e2347a8b41e58e39c86ec2ad09bde010d90c5",
+    "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7",
+    "passed": 5,
+    "cases": [
+      {
+        "id": "lookup_los_agaves",
+        "operation": "node-lookup",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "calculate_picked_bicliques",
+        "operation": "maximal-bicliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "view_grid",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "explain_triangles",
+        "operation": "triangle-counting",
+        "checks": [
+          true
+        ]
+      },
+      {
+        "id": "options_maximal_cliques",
+        "operation": "maximal-cliques",
+        "checks": [
+          true
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "lookup_los_agaves",
+      "question": "Show the full Business record for Los Agaves.",
+      "fixture": "yelp",
+      "expected_lane": "lookup",
+      "started_at": "2026-11-17T17:55:07.232734+00:00",
+      "seconds": 15.604,
+      "setup_seconds": 0.027,
+      "status": "ready",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 9.273,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 11248,
+            "total_tokens": 11438,
+            "completion_tokens": 190,
+            "completion_tokens_details": {
+              "reasoning_tokens": 163
+            }
+          },
+          "turn_id": "64de4cc8-2bc1-4d74-b8b6-47e86b203a1c",
+          "intent": "lookup",
+          "operations": []
+        },
+        {
+          "stage": "answer",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 1.756,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 320,
+            "total_tokens": 369,
+            "completion_tokens": 49,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "turn_id": "64de4cc8-2bc1-4d74-b8b6-47e86b203a1c"
+        }
+      ],
+      "model_calls": 2,
+      "model_samples": 2,
+      "by_stage": {
+        "route": 1,
+        "answer": 1
+      },
+      "tokens": {
+        "prompt_tokens": 11568,
+        "completion_tokens": 239,
+        "total_tokens": 11807
+      },
+      "known_tokens": {
+        "prompt_tokens": 11568,
+        "completion_tokens": 239,
+        "total_tokens": 11807
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "lookup",
+      "operations": [
+        "node-lookup"
+      ],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": true,
+      "result_checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "passed": true
+        }
+      ],
+      "success": true,
+      "response": {
+        "status": "ready",
+        "lane": "lookup",
+        "message": "Return the full record for Los Agaves in main.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "answer",
+              "operation": "node-lookup",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "vertices": [
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 2000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "answer",
+                "operation": "node-lookup",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "vertices": [
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 2000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "answer"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "3632dc83695821211654f262a7c4c8983ca74a1f7ddb016c826d8446e330052f"
+            }
+          },
+          "workflow_hash": "e6209278db9a53295a67f6258f0140de5455b17838a6eb43bb4df060747df14f",
+          "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "cbae089654cbb0646fa1cc4bcfde127706553542bced76177fd88eacd59d21df",
+            "wrapper_sha256": "4268693ac90997172fda11b19e1520e9ab599cb17faff191db9658a7cf08a604",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "route",
+            "status": "lookup",
+            "message": "Showing the full Business record for Los Agaves.",
+            "operations": [
+              "node-lookup"
+            ],
+            "source": "code"
+          }
+        ],
+        "turn_id": "64de4cc8-2bc1-4d74-b8b6-47e86b203a1c"
+      },
+      "error": null,
+      "grounding": {
+        "required": true,
+        "answers_checked": 1,
+        "passed": true,
+        "errors": [],
+        "fallback": false,
+        "attempts": 1
+      },
+      "workflow_status": "completed",
+      "result_sha256": "a0472d3bba6e717f0c97cb89758a22aa72d63af370a21da838396891285cdcea"
+    },
+    {
+      "id": "ambiguous_importance",
+      "question": "Who is important in this network?",
+      "fixture": "yelp",
+      "expected_lane": "needs_information",
+      "started_at": "2026-11-17T17:55:22.864859+00:00",
+      "seconds": 17.478,
+      "setup_seconds": 0.026,
+      "status": "needs_information",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 17.394,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 11105,
+            "total_tokens": 11533,
+            "completion_tokens": 428,
+            "completion_tokens_details": {
+              "reasoning_tokens": 383
+            }
+          },
+          "turn_id": "6832efb4-3ac6-4a23-a176-c6d06f23c0a0",
+          "intent": "needs_information",
+          "operations": []
+        }
+      ],
+      "model_calls": 1,
+      "model_samples": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": 11105,
+        "completion_tokens": 428,
+        "total_tokens": 11533
+      },
+      "known_tokens": {
+        "prompt_tokens": 11105,
+        "completion_tokens": 428,
+        "total_tokens": 11533
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "needs_information",
+      "operations": [],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": true,
+      "response": {
+        "status": "needs_information",
+        "lane": "needs_information",
+        "message": "What do you mean by important?",
+        "choices": [
+          "Use PageRank influence scores.",
+          "Use PageRank influence scores.",
+          "Use PageRank influence scores.",
+          "Use PageRank influence scores."
+        ],
+        "plan": null,
+        "pending_question": {
+          "id": "125ea045-22ff-4c95-98ef-92df9328baa6",
+          "gap": "clarification",
+          "kind": "objective",
+          "message": "What do you mean by important?",
+          "choices": [
+            {
+              "action": "operation",
+              "operation": "pagerank",
+              "label": "Use PageRank influence scores.",
+              "id": "choice_1"
+            },
+            {
+              "action": "operation",
+              "operation": "pagerank",
+              "label": "Use PageRank influence scores.",
+              "id": "choice_2"
+            },
+            {
+              "action": "operation",
+              "operation": "pagerank",
+              "label": "Use PageRank influence scores.",
+              "id": "choice_3"
+            },
+            {
+              "action": "operation",
+              "operation": "pagerank",
+              "label": "Use PageRank influence scores.",
+              "id": "choice_4"
+            }
+          ],
+          "key": "objective",
+          "context": {
+            "question": "Who is important in this network?",
+            "operations": [],
+            "parameters": {},
+            "alias": null,
+            "entities": [],
+            "selected": false,
+            "asked": [
+              "objective"
+            ]
+          },
+          "question": "Who is important in this network?",
+          "operations": [],
+          "inputs": {
+            "main": {
+              "file_id": "file_c9d2dea44edd45b0ac3594b71bb852c4",
+              "kind": "graph"
+            }
+          },
+          "device": "cpu",
+          "mode": "normal"
+        },
+        "trace": [
+          {
+            "stage": "route",
+            "status": "needs_information",
+            "message": "What do you mean by important?"
+          }
+        ],
+        "turn_id": "6832efb4-3ac6-4a23-a176-c6d06f23c0a0"
+      },
+      "error": null,
+      "grounding": {
+        "required": false,
+        "answers_checked": 0,
+        "passed": true,
+        "errors": [],
+        "fallback": false,
+        "attempts": 0
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "missing_path_endpoints",
+      "question": "Find the shortest path between two accounts.",
+      "fixture": "demo",
+      "expected_lane": "needs_information",
+      "started_at": "2026-11-17T17:55:40.358701+00:00",
+      "seconds": 23.362,
+      "setup_seconds": 0.013,
+      "status": "needs_information",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 18.373,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 10246,
+            "total_tokens": 10712,
+            "completion_tokens": 466,
+            "completion_tokens_details": {
+              "reasoning_tokens": 383
+            }
+          },
+          "turn_id": "274cf5cd-c591-42ab-b7a1-830a91d50fc7",
+          "intent": "calculate",
+          "operations": [
+            "single-source-shortest-paths"
+          ]
+        },
+        {
+          "stage": "clarify",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 4.896,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 633,
+            "total_tokens": 770,
+            "completion_tokens": 137,
+            "completion_tokens_details": {
+              "reasoning_tokens": 117
+            }
+          },
+          "turn_id": "274cf5cd-c591-42ab-b7a1-830a91d50fc7"
+        }
+      ],
+      "model_calls": 2,
+      "model_samples": 2,
+      "by_stage": {
+        "route": 1,
+        "clarify": 1
+      },
+      "tokens": {
+        "prompt_tokens": 10879,
+        "completion_tokens": 603,
+        "total_tokens": 11482
+      },
+      "known_tokens": {
+        "prompt_tokens": 10879,
+        "completion_tokens": 603,
+        "total_tokens": 11482
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "needs_information",
+      "operations": [
+        "single-source-shortest-paths"
+      ],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": true,
+      "response": {
+        "status": "needs_information",
+        "lane": "needs_information",
+        "message": "Which account should I use as the source for the shortest path?",
+        "choices": [
+          "Ada · Account · ID 1 · main",
+          "Ben · Account · ID 2 · main",
+          "Chen · Account · ID 3 · main",
+          "Dia · Account · ID 4 · main",
+          "Elena · Account · ID 5 · main",
+          "Finn · Account · ID 6 · main",
+          "Gio · Account · ID 7 · main",
+          "Hana · Account · ID 8 · main"
+        ],
+        "plan": null,
+        "pending_question": {
+          "id": "ab4671cb-67ef-432b-9d7b-55d8702914ce",
+          "gap": "clarification",
+          "kind": "parameter",
+          "message": "Which account should I use as the source for the shortest path?",
+          "choices": [
+            {
+              "label": "Ada · Account · ID 1 · main",
+              "value": 1,
+              "alias": "main",
+              "name": "Ada",
+              "action": "vertex",
+              "id": "choice_1"
+            },
+            {
+              "label": "Ben · Account · ID 2 · main",
+              "value": 2,
+              "alias": "main",
+              "name": "Ben",
+              "action": "vertex",
+              "id": "choice_2"
+            },
+            {
+              "label": "Chen · Account · ID 3 · main",
+              "value": 3,
+              "alias": "main",
+              "name": "Chen",
+              "action": "vertex",
+              "id": "choice_3"
+            },
+            {
+              "label": "Dia · Account · ID 4 · main",
+              "value": 4,
+              "alias": "main",
+              "name": "Dia",
+              "action": "vertex",
+              "id": "choice_4"
+            },
+            {
+              "label": "Elena · Account · ID 5 · main",
+              "value": 5,
+              "alias": "main",
+              "name": "Elena",
+              "action": "vertex",
+              "id": "choice_5"
+            },
+            {
+              "label": "Finn · Account · ID 6 · main",
+              "value": 6,
+              "alias": "main",
+              "name": "Finn",
+              "action": "vertex",
+              "id": "choice_6"
+            },
+            {
+              "label": "Gio · Account · ID 7 · main",
+              "value": 7,
+              "alias": "main",
+              "name": "Gio",
+              "action": "vertex",
+              "id": "choice_7"
+            },
+            {
+              "label": "Hana · Account · ID 8 · main",
+              "value": 8,
+              "alias": "main",
+              "name": "Hana",
+              "action": "vertex",
+              "id": "choice_8"
+            }
+          ],
+          "parameter": "source",
+          "spec": {
+            "kind": "vertex_id",
+            "required": true,
+            "nullable": false
+          },
+          "key": "parameter:single-source-shortest-paths:source",
+          "context": {
+            "question": "Find the shortest path between two accounts.",
+            "operations": [
+              "single-source-shortest-paths"
+            ],
+            "parameters": {},
+            "alias": "main",
+            "selected": false,
+            "entities": [],
+            "asked": [
+              "parameter:single-source-shortest-paths:source"
+            ]
+          },
+          "question": "Find the shortest path between two accounts.",
+          "operations": [
+            "single-source-shortest-paths"
+          ],
+          "inputs": {
+            "main": {
+              "file_id": "file_435c2f50e0dd43a6875e8b18a5e32bb2",
+              "kind": "graph"
+            }
+          },
+          "device": "cpu",
+          "mode": "normal"
+        },
+        "trace": [
+          {
+            "stage": "route",
+            "status": "options",
+            "message": "The request asks for the weighted shortest path between two specific accounts on a directed weighted graph, which is exactly what single-source-shortest-paths computes (nonnegative edge weights, exact on CPU); the destination is then read from the resulting distance table.",
+            "operations": [
+              "single-source-shortest-paths"
+            ]
+          }
+        ],
+        "turn_id": "274cf5cd-c591-42ab-b7a1-830a91d50fc7"
+      },
+      "error": null,
+      "grounding": {
+        "required": false,
+        "answers_checked": 0,
+        "passed": true,
+        "errors": [],
+        "fallback": false,
+        "attempts": 0
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "calculate_picked_bicliques",
+      "question": "I pick the maximal-bicliques option.",
+      "fixture": "yelp_undirected",
+      "expected_lane": "calculate",
+      "started_at": "2026-11-17T17:56:03.748908+00:00",
+      "seconds": 5.694,
+      "setup_seconds": 0.026,
+      "status": "ready",
+      "calls": [
+        {
+          "stage": "answer",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 1.156,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 261,
+            "total_tokens": 292,
+            "completion_tokens": 31,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "turn_id": "b955bb7d-1ef9-409b-9ad8-ce82fa0a2e6a"
+        }
+      ],
+      "model_calls": 1,
+      "model_samples": 1,
+      "by_stage": {
+        "answer": 1
+      },
+      "tokens": {
+        "prompt_tokens": 261,
+        "completion_tokens": 31,
+        "total_tokens": 292
+      },
+      "known_tokens": {
+        "prompt_tokens": 261,
+        "completion_tokens": 31,
+        "total_tokens": 292
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "calculate",
+      "operations": [
+        "maximal-bicliques"
+      ],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": true,
+      "result_checks": [
+        {
+          "operation": "maximal-bicliques",
+          "port": "bicliques",
+          "passed": true
+        }
+      ],
+      "success": true,
+      "response": {
+        "status": "ready",
+        "lane": "calculate",
+        "message": "The selected calculation is ready.",
+        "plan": {
+          "version": 1,
+          "device": "cpu",
+          "steps": [
+            {
+              "id": "answer",
+              "operation": "maximal-bicliques",
+              "input": {
+                "input": "main"
+              },
+              "parameters": {
+                "left_partition": [
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944"
+                ],
+                "right_partition": [
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                  "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:28569"
+                ]
+              },
+              "bindings": {},
+              "device": "cpu",
+              "budget": {
+                "max_output_items": 100000,
+                "max_candidates": 20000000,
+                "timeout_seconds": 60.0
+              }
+            }
+          ]
+        },
+        "validation": {
+          "plan": {
+            "version": 1,
+            "device": "cpu",
+            "steps": [
+              {
+                "id": "answer",
+                "operation": "maximal-bicliques",
+                "input": {
+                  "input": "main"
+                },
+                "parameters": {
+                  "left_partition": [
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944"
+                  ],
+                  "right_partition": [
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                    "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:28569"
+                  ]
+                },
+                "bindings": {},
+                "device": "cpu",
+                "budget": {
+                  "max_output_items": 100000,
+                  "max_candidates": 20000000,
+                  "timeout_seconds": 60.0
+                }
+              }
+            ]
+          },
+          "order": [
+            "answer"
+          ],
+          "inputs": {
+            "main": {
+              "kind": "graph",
+              "fingerprint": "7ef1aaca845748d9a45c93c2aecc533724def410230f251c487744f05c716f40"
+            }
+          },
+          "workflow_hash": "5c3196bd203afdeca94dbeba8d0c2f4031c3f92f74130868411a1409eed68254",
+          "implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7",
+          "environment": {
+            "native_abi": 1,
+            "native_library_sha256": "cbae089654cbb0646fa1cc4bcfde127706553542bced76177fd88eacd59d21df",
+            "wrapper_sha256": "4268693ac90997172fda11b19e1520e9ab599cb17faff191db9658a7cf08a604",
+            "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+          }
+        },
+        "trace": [
+          {
+            "stage": "route",
+            "status": "calculate",
+            "message": "Using the explicitly selected calculation.",
+            "operations": [
+              "maximal-bicliques"
+            ],
+            "source": "selected"
+          }
+        ],
+        "turn_id": "b955bb7d-1ef9-409b-9ad8-ce82fa0a2e6a"
+      },
+      "error": null,
+      "grounding": {
+        "required": true,
+        "answers_checked": 1,
+        "passed": true,
+        "errors": [],
+        "fallback": false,
+        "attempts": 1
+      },
+      "workflow_status": "completed",
+      "result_sha256": "ae7e503733f987cbe376a60a2bf749f3504cc9a83d8701d2156c40e8be3524ec"
+    },
+    {
+      "id": "reply_exact_approx",
+      "question": "What do exact and approximate results mean in this graph library?",
+      "fixture": "demo",
+      "expected_lane": "reply",
+      "started_at": "2026-11-17T17:56:09.461498+00:00",
+      "seconds": 11.302,
+      "setup_seconds": 0.015,
+      "status": "answered",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 11.205,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 9926,
+            "total_tokens": 10174,
+            "completion_tokens": 248,
+            "completion_tokens_details": {
+              "reasoning_tokens": 228
+            }
+          },
+          "turn_id": "67614caa-6325-452d-82bf-584652b80435",
+          "intent": "reply",
+          "operations": []
+        }
+      ],
+      "model_calls": 1,
+      "model_samples": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": 9926,
+        "completion_tokens": 248,
+        "total_tokens": 10174
+      },
+      "known_tokens": {
+        "prompt_tokens": 9926,
+        "completion_tokens": 248,
+        "total_tokens": 10174
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "reply",
+      "operations": [],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": true,
+      "response": {
+        "status": "answered",
+        "lane": "reply",
+        "message": "Exact means the declared mathematical result is established when execution completes. A heuristic does not guarantee an optimum. Numerical results have their declared tolerances; stochastic and learned results have different guarantees. Complete output means no requested result rows were omitted; it does not make a heuristic exact. Check each operation's quality and solution_quality contract.",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "route",
+            "status": "reply",
+            "message": "{{doc.quality}}"
+          },
+          {
+            "stage": "grounding",
+            "status": "passed",
+            "message": "Answered from recorded sources.",
+            "checked": true,
+            "attempts": 1,
+            "fallback": false
+          }
+        ],
+        "answer": {
+          "text": "Exact means the declared mathematical result is established when execution completes. A heuristic does not guarantee an optimum. Numerical results have their declared tolerances; stochastic and learned results have different guarantees. Complete output means no requested result rows were omitted; it does not make a heuristic exact. Check each operation's quality and solution_quality contract.",
+          "citations": [
+            {
+              "id": "doc.quality",
+              "kind": "doc",
+              "ref": "catalog/agent_concepts.json#quality"
+            }
+          ],
+          "source": "model",
+          "grounding": {
+            "checked": true,
+            "attempts": 1,
+            "fallback": false
+          },
+          "sources": [
+            {
+              "id": "doc.quality",
+              "kind": "doc",
+              "ref": "catalog/agent_concepts.json#quality",
+              "title": "Result guarantees",
+              "text": "Exact means the declared mathematical result is established when execution completes. A heuristic does not guarantee an optimum. Numerical results have their declared tolerances; stochastic and learned results have different guarantees. Complete output means no requested result rows were omitted; it does not make a heuristic exact. Check each operation's quality and solution_quality contract.",
+              "turn_id": "67614caa-6325-452d-82bf-584652b80435",
+              "tool": "reply_sources"
+            }
+          ]
+        },
+        "turn_id": "67614caa-6325-452d-82bf-584652b80435"
+      },
+      "error": null,
+      "grounding": {
+        "required": true,
+        "answers_checked": 1,
+        "passed": true,
+        "errors": [],
+        "fallback": false,
+        "attempts": 1
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "describe_yelp_users",
+      "question": "How many Users are in this loaded snapshot?",
+      "fixture": "yelp",
+      "expected_lane": "describe_input",
+      "started_at": "2026-11-17T17:56:20.792336+00:00",
+      "seconds": 16.994,
+      "setup_seconds": 0.026,
+      "status": "answered",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 16.91,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 11043,
+            "total_tokens": 11449,
+            "completion_tokens": 406,
+            "completion_tokens_details": {
+              "reasoning_tokens": 383
+            }
+          },
+          "turn_id": "799db59d-a3b5-4e9b-bb3f-6bd39528b6d5",
+          "intent": "describe_input",
+          "operations": []
+        }
+      ],
+      "model_calls": 1,
+      "model_samples": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": 11043,
+        "completion_tokens": 406,
+        "total_tokens": 11449
+      },
+      "known_tokens": {
+        "prompt_tokens": 11043,
+        "completion_tokens": 406,
+        "total_tokens": 11449
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "describe_input",
+      "operations": [],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": true,
+      "response": {
+        "status": "answered",
+        "lane": "describe_input",
+        "message": "",
+        "answer": {
+          "text": "main contains 10 User records.",
+          "facts": [
+            {
+              "id": "input_3",
+              "input": "main",
+              "property": "vertex_type_count.User",
+              "value": 10,
+              "statement": "main contains 10 User records."
+            }
+          ],
+          "citations": [
+            {
+              "id": "input_3",
+              "kind": "fact",
+              "ref": "input:file_aee10caa40184f56bc5ee58ffb53fcff:vertex_type_count.User"
+            }
+          ],
+          "sources": [
+            {
+              "id": "input_3",
+              "kind": "fact",
+              "ref": "input:file_aee10caa40184f56bc5ee58ffb53fcff:vertex_type_count.User",
+              "title": "Input fact",
+              "text": "main contains 10 User records.",
+              "turn_id": "799db59d-a3b5-4e9b-bb3f-6bd39528b6d5",
+              "tool": "describe_input"
+            }
+          ],
+          "grounding": {
+            "checked": true,
+            "fallback": false,
+            "attempts": 0
+          }
+        },
+        "plan": null,
+        "trace": [
+          {
+            "stage": "route",
+            "status": "describe_input",
+            "message": "{{input_3}}"
+          }
+        ],
+        "turn_id": "799db59d-a3b5-4e9b-bb3f-6bd39528b6d5"
+      },
+      "error": null,
+      "grounding": {
+        "required": true,
+        "answers_checked": 1,
+        "passed": true,
+        "errors": [],
+        "fallback": false,
+        "attempts": 0
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "view_grid",
+      "question": "Arrange the saved graph in a grid.",
+      "fixture": "demo_undirected",
+      "expected_lane": "view",
+      "started_at": "2026-11-17T17:56:42.288846+00:00",
+      "seconds": 8.974,
+      "setup_seconds": 4.499,
+      "status": "view",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 8.884,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 10776,
+            "total_tokens": 10953,
+            "completion_tokens": 177,
+            "completion_tokens_details": {
+              "reasoning_tokens": 146
+            }
+          },
+          "turn_id": "9edaa373-a7ca-4518-9e61-861d5f409cba",
+          "intent": "view",
+          "operations": []
+        }
+      ],
+      "model_calls": 1,
+      "model_samples": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": 10776,
+        "completion_tokens": 177,
+        "total_tokens": 10953
+      },
+      "known_tokens": {
+        "prompt_tokens": 10776,
+        "completion_tokens": 177,
+        "total_tokens": 10953
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "view",
+      "operations": [],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": true,
+      "response": {
+        "status": "view",
+        "message": "Switching the graph layout to Grid.",
+        "answer": {
+          "text": "Switching the graph layout to Grid.",
+          "citations": [
+            {
+              "id": "view.selection",
+              "kind": "fact",
+              "ref": "workflow:16c7eddf-1165-45e8-a862-523388ade9bf:revision:1:view"
+            }
+          ],
+          "sources": [
+            {
+              "id": "view.selection",
+              "kind": "fact",
+              "ref": "workflow:16c7eddf-1165-45e8-a862-523388ade9bf:revision:1:view",
+              "title": "Selected result view",
+              "text": "Switching the graph layout to Grid.",
+              "turn_id": "9edaa373-a7ca-4518-9e61-861d5f409cba",
+              "tool": "resolve_view"
+            }
+          ],
+          "grounding": {
+            "checked": true,
+            "fallback": false,
+            "attempts": 0
+          }
+        },
+        "view": {
+          "kind": "layout",
+          "workflow_id": "16c7eddf-1165-45e8-a862-523388ade9bf",
+          "layout": "grid"
+        },
+        "trace": [
+          {
+            "stage": "route",
+            "status": "view",
+            "message": "Switching the saved clique result to a grid layout.",
+            "view": {
+              "kind": "layout",
+              "workflow_id": "16c7eddf-1165-45e8-a862-523388ade9bf",
+              "layout": "grid"
+            }
+          }
+        ],
+        "plan": null,
+        "turn_id": "9edaa373-a7ca-4518-9e61-861d5f409cba"
+      },
+      "error": null,
+      "grounding": {
+        "required": true,
+        "answers_checked": 1,
+        "passed": true,
+        "errors": [],
+        "fallback": false,
+        "attempts": 0
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "explain_triangles",
+      "question": "How many triangles did the completed analysis count?",
+      "fixture": "demo_undirected",
+      "expected_lane": "explain",
+      "started_at": "2026-11-17T17:56:55.807747+00:00",
+      "seconds": 9.804,
+      "setup_seconds": 4.542,
+      "status": "answered",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 9.717,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 10515,
+            "total_tokens": 10721,
+            "completion_tokens": 206,
+            "completion_tokens_details": {
+              "reasoning_tokens": 183
+            }
+          },
+          "turn_id": "d238997d-0cff-4464-bb14-436c957fc64b",
+          "intent": "explain",
+          "operations": []
+        }
+      ],
+      "model_calls": 1,
+      "model_samples": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": 10515,
+        "completion_tokens": 206,
+        "total_tokens": 10721
+      },
+      "known_tokens": {
+        "prompt_tokens": 10515,
+        "completion_tokens": 206,
+        "total_tokens": 10721
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "explain",
+      "operations": [],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": true,
+      "response": {
+        "status": "answered",
+        "message": "count is 4.",
+        "answer": {
+          "text": "count is 4.",
+          "citations": [
+            {
+              "id": "f1",
+              "kind": "fact",
+              "ref": "workflow:02c86e71-1587-48b3-b827-735a84bdb124:revision:1:step:answer:f1"
+            },
+            {
+              "id": "f3",
+              "kind": "fact",
+              "ref": "workflow:02c86e71-1587-48b3-b827-735a84bdb124:revision:1:step:answer:f3"
+            }
+          ],
+          "source": "model",
+          "grounding": {
+            "checked": true,
+            "attempts": 1,
+            "fallback": false
+          },
+          "sources": [
+            {
+              "id": "f1",
+              "kind": "fact",
+              "ref": "workflow:02c86e71-1587-48b3-b827-735a84bdb124:revision:1:step:answer:f1",
+              "title": "Count or list triangles",
+              "text": "count is 4.",
+              "turn_id": "d238997d-0cff-4464-bb14-436c957fc64b",
+              "tool": "build_facts"
+            },
+            {
+              "id": "f3",
+              "kind": "fact",
+              "ref": "workflow:02c86e71-1587-48b3-b827-735a84bdb124:revision:1:step:answer:f3",
+              "title": "Count or list triangles",
+              "text": "exact, so it establishes the declared result.",
+              "turn_id": "d238997d-0cff-4464-bb14-436c957fc64b",
+              "tool": "build_facts"
+            }
+          ],
+          "workflow_id": "02c86e71-1587-48b3-b827-735a84bdb124",
+          "facts": [
+            {
+              "id": "f1",
+              "kind": "value",
+              "step": "answer",
+              "operation_title": "Count or list triangles",
+              "statement": "Count or list triangles: count is 4.",
+              "text": "count is 4."
+            },
+            {
+              "id": "f3",
+              "kind": "quality",
+              "step": "answer",
+              "operation_title": "Count or list triangles",
+              "statement": "Count or list triangles: exact, so it establishes the declared result.",
+              "text": "exact, so it establishes the declared result."
+            }
+          ]
+        },
+        "trace": [
+          {
+            "stage": "grounding",
+            "status": "passed",
+            "message": "Answered from recorded sources.",
+            "checked": true,
+            "attempts": 1,
+            "fallback": false
+          },
+          {
+            "stage": "route",
+            "status": "explain",
+            "message": "{{f1}}",
+            "fact_ids": [
+              "f1",
+              "f3"
+            ]
+          }
+        ],
+        "plan": null,
+        "lane": "explain",
+        "turn_id": "d238997d-0cff-4464-bb14-436c957fc64b"
+      },
+      "error": null,
+      "grounding": {
+        "required": true,
+        "answers_checked": 1,
+        "passed": true,
+        "errors": [],
+        "fallback": false,
+        "attempts": 1
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "unsupported_crossing_number",
+      "question": "Compute the exact crossing number of this graph.",
+      "fixture": "demo_undirected",
+      "expected_lane": "unsupported",
+      "started_at": "2026-11-17T17:57:05.631613+00:00",
+      "seconds": 17.328,
+      "setup_seconds": 0.017,
+      "status": "unsupported",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 17.245,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 9820,
+            "total_tokens": 10245,
+            "completion_tokens": 425,
+            "completion_tokens_details": {
+              "reasoning_tokens": 383
+            }
+          },
+          "turn_id": "617886aa-8e8a-4949-9544-2a5feb8fd56e",
+          "intent": "unsupported",
+          "operations": []
+        }
+      ],
+      "model_calls": 1,
+      "model_samples": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": 9820,
+        "completion_tokens": 425,
+        "total_tokens": 10245
+      },
+      "known_tokens": {
+        "prompt_tokens": 9820,
+        "completion_tokens": 425,
+        "total_tokens": 10245
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "unsupported",
+      "operations": [],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": true,
+      "response": {
+        "status": "unsupported",
+        "message": "No listed operation computes the crossing number of a graph. The crossing number (minimum edge crossings over all planar drawings) is not available in the current catalog.",
+        "choices": [],
+        "trace": [
+          {
+            "stage": "route",
+            "status": "unsupported",
+            "message": "No listed operation computes the crossing number of a graph. The crossing number (minimum edge crossings over all planar drawings) is not available in the current catalog."
+          }
+        ],
+        "plan": null,
+        "lane": "unsupported",
+        "alternatives": [
+          {
+            "operation": "breadth-first-search",
+            "title": "Connections within a number of steps",
+            "quality": "exact"
+          },
+          {
+            "operation": "degree-centrality",
+            "title": "Rank vertices by their number of connections",
+            "quality": "exact"
+          }
+        ],
+        "turn_id": "617886aa-8e8a-4949-9544-2a5feb8fd56e"
+      },
+      "error": null,
+      "grounding": {
+        "required": false,
+        "answers_checked": 0,
+        "passed": true,
+        "errors": [],
+        "fallback": false,
+        "attempts": 0
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "options_maximal_cliques",
+      "question": "Find all maximal cliques.",
+      "fixture": "demo_undirected",
+      "expected_lane": "options",
+      "started_at": "2026-11-17T17:57:22.977460+00:00",
+      "seconds": 23.011,
+      "setup_seconds": 0.015,
+      "status": "options",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 8.041,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 10126,
+            "total_tokens": 10287,
+            "completion_tokens": 161,
+            "completion_tokens_details": {
+              "reasoning_tokens": 119
+            }
+          },
+          "turn_id": "bce67202-dfe5-40ee-97cf-2395b00637bc",
+          "intent": "calculate",
+          "operations": [
+            "maximal-cliques"
+          ]
+        },
+        {
+          "stage": "candidates",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 5,
+          "seconds": 14.849,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 10761,
+            "total_tokens": 11112,
+            "completion_tokens": 351,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0
+            }
+          },
+          "turn_id": "bce67202-dfe5-40ee-97cf-2395b00637bc"
+        }
+      ],
+      "model_calls": 2,
+      "model_samples": 6,
+      "by_stage": {
+        "route": 1,
+        "candidates": 1
+      },
+      "tokens": {
+        "prompt_tokens": 20887,
+        "completion_tokens": 512,
+        "total_tokens": 21399
+      },
+      "known_tokens": {
+        "prompt_tokens": 20887,
+        "completion_tokens": 512,
+        "total_tokens": 21399
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "options",
+      "operations": [
+        "maximal-cliques"
+      ],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": false,
+      "result_checks": [
+        {
+          "operation": "maximal-cliques",
+          "port": "groups",
+          "passed": false
+        }
+      ],
+      "success": true,
+      "response": {
+        "status": "options",
+        "lane": "options",
+        "message": "Choose the result you want to calculate.",
+        "question": "Find all maximal cliques.",
+        "options": [
+          {
+            "id": "option_1",
+            "operations": [
+              "maximal-cliques"
+            ],
+            "parameters": {
+              "minimum_clique_size": 1,
+              "result_limit": null
+            },
+            "input": "main",
+            "title": "Find complete groups that cannot be extended",
+            "quality": "exact",
+            "operation_qualities": {
+              "maximal-cliques": "exact"
+            },
+            "description": "Exact maximal cliques in an undirected simple projection. Drop loops and duplicate edges; ignore weights. Original GPU kernels supply a count, with bounded C++ materialization and explicit list completeness.",
+            "rank": 1,
+            "interpretation": "I will enumerate every complete group of vertices in your network that cannot be enlarged, treating the connections as simple and undirected.",
+            "match": "High",
+            "score": 0.999961,
+            "match_evidence": {
+              "votes": 5,
+              "samples": 5,
+              "operation_logprobs": [
+                {
+                  "sum": -0.0004665322848609321,
+                  "tokens": 4,
+                  "mean": -0.00011663307121523303
+                },
+                {
+                  "sum": -0.0004417445306330592,
+                  "tokens": 4,
+                  "mean": -0.0001104361326582648
+                },
+                {
+                  "sum": -0.0004665322848609321,
+                  "tokens": 4,
+                  "mean": -0.00011663307121523303
+                },
+                {
+                  "sum": -0.0004417445306330592,
+                  "tokens": 4,
+                  "mean": -0.0001104361326582648
+                },
+                {
+                  "sum": -0.0004211245467899971,
+                  "tokens": 4,
+                  "mean": -0.00010528113669749928
+                }
+              ],
+              "missing_parameters": [],
+              "calibrated": true
+            },
+            "cost_hint": "Potentially expensive; exact search or enumeration can grow rapidly with graph density.",
+            "difference": "Find complete groups that cannot be extended: Exact maximal cliques in an undirected simple projection. Drop loops and duplicate edges; ignore weights. Original GPU kernels supply a count, with bounded C++ materialization and explicit list completeness. Compared with Find the largest fully connected group.",
+            "parameter_fields": [
+              {
+                "operation": "maximal-cliques",
+                "name": "minimum_clique_size",
+                "label": "minimum clique size",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "required": false,
+                "kind": "integer",
+                "has_value": true,
+                "value": 1,
+                "default": 1,
+                "description": "",
+                "application_filled": false
+              },
+              {
+                "operation": "maximal-cliques",
+                "name": "result_limit",
+                "label": "result limit",
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "required": false,
+                "kind": "integer",
+                "has_value": true,
+                "value": null,
+                "default": null,
+                "description": "",
+                "application_filled": false
+              }
+            ],
+            "preselected": true
+          },
+          {
+            "id": "option_2",
+            "operations": [
+              "maximum-clique"
+            ],
+            "parameters": {
+              "return_all_ties": false
+            },
+            "input": "main",
+            "title": "Find the largest fully connected group",
+            "quality": "exact",
+            "operation_qualities": {
+              "maximum-clique": "exact"
+            },
+            "description": "Exact maximum clique, optionally all tied optima. Undirected simple projection; loops, duplicate edges and weights ignored. Original GPU witnesses are checked by native coloring or exact search; ties use native materialization.",
+            "rank": 2,
+            "interpretation": "Another way to explore “Find all maximal cliques.”: Find the largest fully connected group",
+            "match": "Low",
+            "score": 0,
+            "match_evidence": {
+              "votes": 0,
+              "samples": 5,
+              "operation_logprobs": [],
+              "missing_parameters": [],
+              "calibrated": true
+            },
+            "cost_hint": "Potentially expensive; exact search or enumeration can grow rapidly with graph density.",
+            "difference": "Find the largest fully connected group: Exact maximum clique, optionally all tied optima. Undirected simple projection; loops, duplicate edges and weights ignored. Original GPU witnesses are checked by native coloring or exact search; ties use native materialization. Compared with Find complete groups that cannot be extended.",
+            "parameter_fields": [
+              {
+                "operation": "maximum-clique",
+                "name": "return_all_ties",
+                "label": "return all ties",
+                "schema": {
+                  "type": "boolean"
+                },
+                "required": false,
+                "kind": "boolean",
+                "has_value": true,
+                "value": false,
+                "default": false,
+                "description": "",
+                "application_filled": false
+              }
+            ],
+            "preselected": false
+          }
+        ],
+        "plan": null,
+        "clarification_context": {
+          "question": "Find all maximal cliques.",
+          "operations": [
+            "maximal-cliques"
+          ],
+          "parameters": {},
+          "alias": "main",
+          "selected": false,
+          "entities": []
+        },
+        "option_evidence": {
+          "samples": [
+            {
+              "decision": {
+                "operation": "maximal-cliques",
+                "parameter_choice": "choice_b0abf230ef8e95e8",
+                "interpretation": "I will enumerate every complete group of vertices in your network that cannot be enlarged, treating the connections as simple and undirected."
+              },
+              "operation_logprob": {
+                "sum": -0.0004665322848609321,
+                "tokens": 4,
+                "mean": -0.00011663307121523303
+              }
+            },
+            {
+              "decision": {
+                "operation": "maximal-cliques",
+                "parameter_choice": "choice_b0abf230ef8e95e8",
+                "interpretation": "Find every largest possible group of entities where every pair is directly connected, and no additional entity can be added to that group."
+              },
+              "operation_logprob": {
+                "sum": -0.0004417445306330592,
+                "tokens": 4,
+                "mean": -0.0001104361326582648
+              }
+            },
+            {
+              "decision": {
+                "operation": "maximal-cliques",
+                "parameter_choice": "choice_b0abf230ef8e95e8",
+                "interpretation": "I will find every complete group of connected entities that cannot be made any larger, exactly as requested."
+              },
+              "operation_logprob": {
+                "sum": -0.0004665322848609321,
+                "tokens": 4,
+                "mean": -0.00011663307121523303
+              }
+            },
+            {
+              "decision": {
+                "operation": "maximal-cliques",
+                "parameter_choice": "choice_b0abf230ef8e95e8",
+                "interpretation": "Use the exact maximal clique enumeration to find every complete group of vertices that cannot be extended by adding another vertex."
+              },
+              "operation_logprob": {
+                "sum": -0.0004417445306330592,
+                "tokens": 4,
+                "mean": -0.0001104361326582648
+              }
+            },
+            {
+              "decision": {
+                "operation": "maximal-cliques",
+                "parameter_choice": "choice_b0abf230ef8e95e8",
+                "interpretation": "I selected the exact maximal-cliques algorithm because your question asks for all maximal cliques, which this operation enumerates precisely on the undirected simple projection of the graph."
+              },
+              "operation_logprob": {
+                "sum": -0.0004211245467899971,
+                "tokens": 4,
+                "mean": -0.00010528113669749928
+              }
+            }
+          ],
+          "candidates": [
+            {
+              "id": "choice_b0abf230ef8e95e8",
+              "operation": "maximal-cliques",
+              "score": 0.999961,
+              "match": "High",
+              "match_evidence": {
+                "votes": 5,
+                "samples": 5,
+                "operation_logprobs": [
+                  {
+                    "sum": -0.0004665322848609321,
+                    "tokens": 4,
+                    "mean": -0.00011663307121523303
+                  },
+                  {
+                    "sum": -0.0004417445306330592,
+                    "tokens": 4,
+                    "mean": -0.0001104361326582648
+                  },
+                  {
+                    "sum": -0.0004665322848609321,
+                    "tokens": 4,
+                    "mean": -0.00011663307121523303
+                  },
+                  {
+                    "sum": -0.0004417445306330592,
+                    "tokens": 4,
+                    "mean": -0.0001104361326582648
+                  },
+                  {
+                    "sum": -0.0004211245467899971,
+                    "tokens": 4,
+                    "mean": -0.00010528113669749928
+                  }
+                ],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_2ea9a9916cd1ee35",
+              "operation": "maximum-clique",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_11359be47979c5d9",
+              "operation": "densest-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_15432d085c23635b",
+              "operation": "group-steiner-tree",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "groups"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_22d28555f82369ba",
+              "operation": "community-detection",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_28d28daa5f4422e4",
+              "operation": "maximal-independent-set",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_2c1713bfbaa7cc22",
+              "operation": "triangle-counting",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_2e8031e35bc1fae3",
+              "operation": "graphlet-counting",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "graphlet_sizes"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_30070276329283ac",
+              "operation": "signed-balance",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "task"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_360f7991e3edf4c4",
+              "operation": "signed-balance",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "task"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_405b230895dafd28",
+              "operation": "seeded-local-community",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "seeds"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_40c15cccb1887608",
+              "operation": "k-core",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_42f76259e9095996",
+              "operation": "community-detection",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_4b5a466ec022291e",
+              "operation": "densest-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_4b974eb041477b81",
+              "operation": "k-truss",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_4ff77a2e6199445f",
+              "operation": "link-prediction",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_5ac2c947d2987cb6",
+              "operation": "triangle-counting",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_5c8030830470a11e",
+              "operation": "vertex-coloring",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_5fc8d5de7acb716a",
+              "operation": "spanning-tree-forest",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_60b7134ea8df1a6e",
+              "operation": "k-cliques",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "k"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_633051939ca72ad3",
+              "operation": "weighted-matching",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_6e2bde123a093b82",
+              "operation": "minimum-vertex-cover",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_7300c254f06bdc30",
+              "operation": "spectral-sparsification",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "edge_budget"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_7371fe55e4a418aa",
+              "operation": "spanning-tree-forest",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_768e1a239a925d2e",
+              "operation": "graph-geolocation",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "method_family",
+                  "seed_locations",
+                  "method_definition"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_77de1a658d1a155a",
+              "operation": "single-graph-frequent-subgraphs",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "minimum_image_support",
+                  "max_pattern_edges"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_7d4ee3b82ba66fd7",
+              "operation": "biconnected-components",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_8338b14e522fa5af",
+              "operation": "quasi-cliques",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "gamma",
+                  "minimum_size"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_8b9d07d3c5c927d6",
+              "operation": "laplacian-eigenpairs",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "num_eigenpairs"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_9223cbe635da68d6",
+              "operation": "group-steiner-tree",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "groups"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_94624bb85e6e7b59",
+              "operation": "weighted-matching",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_9ca2e720c8321c64",
+              "operation": "graph-signal-denoising",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "observed_signal",
+                  "regularization_strength"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_9f317eda0a37c578",
+              "operation": "graph-coarsening",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_a285f7b6e06fae37",
+              "operation": "balanced-partitioning",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "num_parts"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_b1fc01c8bd367a2a",
+              "operation": "signed-balance",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "task"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_b787c85454915b7f",
+              "operation": "overlapping-communities",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "k"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_b9f671d13f0681a4",
+              "operation": "minimum-vertex-cover",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_baf93fea7db0f9f4",
+              "operation": "community-detection",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_bcb74af6cca89152",
+              "operation": "persistent-homology",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_bf8343576bcb339f",
+              "operation": "balanced-partitioning",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "num_parts"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_cfe352ca02768bf3",
+              "operation": "maximum-independent-set",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_d982fe72f211e70e",
+              "operation": "k-cliques",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "k"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_db548e1659cc76e0",
+              "operation": "balanced-partitioning",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "num_parts"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_e3bb8655599f1109",
+              "operation": "densest-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_e5c76c718b1268c5",
+              "operation": "densest-k-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "k"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_f2712d5794a5cf86",
+              "operation": "densest-k-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "k"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_f3573ae31cd3f728",
+              "operation": "dynamic-triangle-counting",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "updates"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_f52da96bb1a72b9a",
+              "operation": "graph-condensation",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "synthetic_vertex_budget",
+                  "method"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_fa80b6f9d98a9499",
+              "operation": "densest-k-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "k"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_032e5b8cecd4af75",
+              "operation": "personalized-pagerank",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "seed_vertices"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_04c725632632a03f",
+              "operation": "query-paths",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "source",
+                  "target"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_07179a56e03ce585",
+              "operation": "max-flow-min-cut",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "source",
+                  "sink"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_077f8b98b453afaa",
+              "operation": "node-lookup",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_101eb56cf3898c6b",
+              "operation": "node-embedding",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "model",
+                  "dimensions",
+                  "training_parameters"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_13b8d01b2a0495b7",
+              "operation": "pagerank",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_1765f9663dad790c",
+              "operation": "entity-resolution",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "task",
+                  "blocking_rules"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_1e5ca03d585bd43a",
+              "operation": "induced-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "mode",
+                  "vertices_or_seeds"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_306c8c4ed45b332c",
+              "operation": "force-directed-layout",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_331559586bf42745",
+              "operation": "neighbors",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "entity"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_35db4a36f1d68cc5",
+              "operation": "induced-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "mode",
+                  "vertices_or_seeds"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_36753f7b4829bc15",
+              "operation": "graph-aggregate",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_38b0449138ee315a",
+              "operation": "simrank",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "query_mode"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_4aea5546a2944dd7",
+              "operation": "personalized-pagerank",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "seed_vertices"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_507cbb6cf4d77d6b",
+              "operation": "force-directed-layout",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_50a420c47a14f315",
+              "operation": "transitive-closure",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_67da09716b0e8fe3",
+              "operation": "query-paths",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "source",
+                  "target"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_68094b22ded7481c",
+              "operation": "betweenness-centrality",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_6a7f1fed75f01928",
+              "operation": "personalized-pagerank",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "seed_vertices"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_6a97c0eb4f90341c",
+              "operation": "induced-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "vertices_or_seeds"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_6c5fea7e6a494e34",
+              "operation": "many-source-shortest-paths",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_705358b2cf14d0d5",
+              "operation": "query-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_7606496e2e433b5d",
+              "operation": "max-flow-min-cut",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "source",
+                  "sink"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_7649eed4327af9be",
+              "operation": "neighborhood-sampling",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "seeds",
+                  "fanouts"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_799b380b3e02d36a",
+              "operation": "breadth-first-search",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "sources"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_813d115b57572a77",
+              "operation": "random-walks",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "start_vertices",
+                  "length"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_821f150b4285af37",
+              "operation": "max-flow-min-cut",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "source",
+                  "sink"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_866ebfe9e6c596c8",
+              "operation": "common-neighbors",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "source",
+                  "target"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_920da2e6b959ed46",
+              "operation": "single-source-shortest-paths",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "source"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_95a18d132a05cb8a",
+              "operation": "null-model-significance",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "statistic_definition",
+                  "sample_count"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_95c3ef8c510f8d47",
+              "operation": "degree-centrality",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_96e09be7b1186ed1",
+              "operation": "betweenness-centrality",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_9b20182256a44275",
+              "operation": "force-directed-layout",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_9b68651f727fc4ce",
+              "operation": "graph-anomalies",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "anomaly_target",
+                  "feature_definitions",
+                  "normality_reference",
+                  "scoring_definition",
+                  "top_k"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_9dff37429185120e",
+              "operation": "simrank",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "query_mode"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_9fb4e1b73cf56f2d",
+              "operation": "degree-centrality",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_a234d375cb2eef11",
+              "operation": "query-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_a9e86deb308e963c",
+              "operation": "degree-centrality",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_b1e471aebeace426",
+              "operation": "induced-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "mode",
+                  "vertices_or_seeds"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_ba0c9836834c7122",
+              "operation": "edge-filter",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_c08dc8b112c10e7c",
+              "operation": "degree-centrality",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_c74689987a964bcc",
+              "operation": "induced-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "vertices_or_seeds"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_ca2b81e4825e65ef",
+              "operation": "knowledge-graph-embedding",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "model",
+                  "dimensions",
+                  "training_triples",
+                  "training_parameters"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_ca3ce8f5f6bf9ded",
+              "operation": "personalized-pagerank",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "seed_vertices"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_d7006f29b903ff94",
+              "operation": "widest-paths",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "source_vertex"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_d7a1fb50c2516b6d",
+              "operation": "many-source-shortest-paths",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_db4fc589b63e9ca0",
+              "operation": "connected-components",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_e467fbf40a9d5c27",
+              "operation": "entity-resolution",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "task",
+                  "blocking_rules"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_e84d40cf4cfb0d1e",
+              "operation": "personalized-pagerank",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "seed_vertices"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_eb898277327f503a",
+              "operation": "simrank",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "query_mode"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_eef33ff6ebe9e5a3",
+              "operation": "node-learning",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "task",
+                  "vertex_features",
+                  "training_labels",
+                  "split",
+                  "model_definition"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_f60c3fc6093b9723",
+              "operation": "query-subgraph",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_fa1feb28e5e57250",
+              "operation": "pagerank",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_268cfed8a94e6a97",
+              "operation": "influence-maximization",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "diffusion_model",
+                  "seed_set_size"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_2a6428e85c84caf2",
+              "operation": "bounded-paths-cycles",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "task",
+                  "max_hops"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_3638ab2ce4e08010",
+              "operation": "influence-maximization",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "diffusion_model",
+                  "seed_set_size"
+                ],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_aa557fc419e480d4",
+              "operation": "topological-sort",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [],
+                "calibrated": true
+              }
+            },
+            {
+              "id": "choice_bcff60d08847fc13",
+              "operation": "top-k-critical-paths",
+              "score": 0,
+              "match": "Low",
+              "match_evidence": {
+                "votes": 0,
+                "samples": 5,
+                "operation_logprobs": [],
+                "missing_parameters": [
+                  "k"
+                ],
+                "calibrated": true
+              }
+            }
+          ],
+          "calibrated": true
+        },
+        "trace": [
+          {
+            "stage": "route",
+            "status": "options",
+            "message": "The request asks for all maximal cliques, which maps directly to the exact maximal-cliques operation on the undirected graph.",
+            "operations": [
+              "maximal-cliques"
+            ]
+          }
+        ],
+        "turn_id": "bce67202-dfe5-40ee-97cf-2395b00637bc"
+      },
+      "error": null,
+      "grounding": {
+        "required": false,
+        "answers_checked": 0,
+        "passed": true,
+        "errors": [],
+        "fallback": false,
+        "attempts": 0
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    },
+    {
+      "id": "google_search_disabled",
+      "question": "Search Google for the latest k-core research.",
+      "fixture": "demo",
+      "expected_lane": "reply",
+      "started_at": "2026-11-17T17:57:46.006481+00:00",
+      "seconds": 17.802,
+      "setup_seconds": 0.014,
+      "status": "answered",
+      "calls": [
+        {
+          "stage": "route",
+          "model": "Qwen/Qwen3.8-27B-FP8",
+          "samples": 1,
+          "seconds": 17.716,
+          "outcome": "ok",
+          "finish_reason": "stop",
+          "usage": {
+            "prompt_tokens": 10234,
+            "total_tokens": 10675,
+            "completion_tokens": 441,
+            "completion_tokens_details": {
+              "reasoning_tokens": 383
+            }
+          },
+          "turn_id": "0577a26f-7c3b-42d9-96b1-97f6ec953a5e",
+          "intent": "reply",
+          "operations": []
+        }
+      ],
+      "model_calls": 1,
+      "model_samples": 1,
+      "by_stage": {
+        "route": 1
+      },
+      "tokens": {
+        "prompt_tokens": 10234,
+        "completion_tokens": 441,
+        "total_tokens": 10675
+      },
+      "known_tokens": {
+        "prompt_tokens": 10234,
+        "completion_tokens": 441,
+        "total_tokens": 10675
+      },
+      "calls_missing_usage": 0,
+      "lane_chosen": "reply",
+      "operations": [],
+      "lane_match": true,
+      "operation_match": true,
+      "behavior_match": true,
+      "execution_completed": false,
+      "result_checks": [],
+      "success": true,
+      "response": {
+        "status": "answered",
+        "lane": "reply",
+        "message": "Web search is currently disabled.",
+        "plan": null,
+        "trace": [
+          {
+            "stage": "route",
+            "status": "reply",
+            "message": "A k-core is the maximal subgraph in which every vertex has at least k neighbors within that subgraph, found by iteratively peeling vertices with degree below k. {{doc.core-truss}}"
+          }
+        ],
+        "answer": {
+          "text": "Web search is currently disabled.",
+          "citations": [
+            {
+              "id": "google.status",
+              "kind": "fact",
+              "ref": "tool:google_search"
+            }
+          ],
+          "sources": [
+            {
+              "id": "google.status",
+              "kind": "fact",
+              "ref": "tool:google_search",
+              "title": "Google search status",
+              "text": "Web search is currently disabled.",
+              "turn_id": "0577a26f-7c3b-42d9-96b1-97f6ec953a5e",
+              "tool": "google_search"
+            }
+          ],
+          "grounding": {
+            "checked": true,
+            "fallback": true,
+            "attempts": 0
+          },
+          "web_search": {
+            "status": "disabled",
+            "search_url": null
+          }
+        },
+        "turn_id": "0577a26f-7c3b-42d9-96b1-97f6ec953a5e"
+      },
+      "error": null,
+      "grounding": {
+        "required": true,
+        "answers_checked": 1,
+        "passed": true,
+        "errors": [],
+        "fallback": true,
+        "attempts": 0
+      },
+      "workflow_status": null,
+      "result_sha256": null
+    }
+  ],
+  "serial_requests": true,
+  "measurement_notes": [
+    "One attempt per question, including product retries and answer composition; fixture setup is timed separately.",
+    "Real current lanes are recorded without translating calculation into lookup or options.",
+    "Selected-card request fields are sent unchanged; an unsupported request contract counts as a failure.",
+    "Data answers require structured evidence; prose semantics and general explanation quality are not human-reviewed.",
+    "Phase 5 grounding separately verifies final answer text against tool-evidence events from the same turn, without trusting checked flags.",
+    "No production writes, training captures, or persistent development configuration changes.",
+    "Observed timings include local server/cache conditions and are not controlled performance benchmarks."
+  ],
+  "model": {
+    "router": "Qwen/Qwen3.8-27B-FP8",
+    "planner": "Qwen/Qwen3.8-27B-FP8",
+    "answer": "Qwen/Qwen3.8-27B-FP8",
+    "reasoning_effort": "medium",
+    "route_thinking_token_budget": 384,
+    "plan_thinking_token_budget": null,
+    "max_completion_tokens": 3072,
+    "direct_plans": true,
+    "temperature": 0,
+    "seed": 0,
+    "options": {
+      "samples": 5,
+      "temperature": 0.7,
+      "logprobs": true,
+      "transport": "one parallel n=5 completion request"
+    }
+  },
+  "native_implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7",
+  "summary": {
+    "cases": 11,
+    "successes": 11,
+    "grounding": {
+      "required": 7,
+      "passed": 7,
+      "fallbacks": 1
+    },
+    "lane_matches": 11,
+    "seconds": 167.353,
+    "model_calls": 14,
+    "model_samples": 18,
+    "by_stage": {
+      "route": 10,
+      "answer": 2,
+      "clarify": 1,
+      "candidates": 1
+    },
+    "tokens": {
+      "prompt_tokens": 117014,
+      "completion_tokens": 3716,
+      "total_tokens": 120730
+    },
+    "known_tokens": {
+      "prompt_tokens": 117014,
+      "completion_tokens": 3716,
+      "total_tokens": 120730
+    },
+    "calls_missing_usage": 0,
+    "by_lane": {
+      "calculate": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 1,
+        "median_seconds": 5.694
+      },
+      "describe_input": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 1,
+        "median_seconds": 16.994
+      },
+      "explain": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 1,
+        "median_seconds": 9.804
+      },
+      "lookup": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 2,
+        "median_seconds": 15.604
+      },
+      "needs_information": {
+        "cases": 2,
+        "successes": 2,
+        "lane_matches": 2,
+        "model_calls": 3,
+        "median_seconds": 20.42
+      },
+      "options": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 2,
+        "median_seconds": 23.011
+      },
+      "reply": {
+        "cases": 2,
+        "successes": 2,
+        "lane_matches": 2,
+        "model_calls": 2,
+        "median_seconds": 14.552
+      },
+      "unsupported": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 1,
+        "median_seconds": 17.328
+      },
+      "view": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 1,
+        "median_seconds": 8.974
+      }
+    }
+  },
+  "sources_unchanged_during_run": true,
+  "fixtures_unchanged_during_run": true,
+  "finished_at": "2026-11-17T17:58:03.833977+00:00"
+}

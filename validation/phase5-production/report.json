@@ -1,0 +1,179 @@
+{
+  "status": "validated_for_promotion",
+  "created_at": "2026-11-17T18:09:53.637195+00:00",
+  "tested_code_commit": "17f32638bf8b0d62a0b8ed5ac0511f9395ed3431",
+  "previous_production_commit": "99cb552f597c85581980a17459b9f80c4e7a19b1",
+  "native_runtime_pin": "7929558a60be7b9adab6d129bd00d6bd8106b9a3",
+  "native_implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7",
+  "google_search_enabled": false,
+  "deferred_work": "docs/DEFERRED_GOOGLE_SEARCH.md",
+  "agent_regressions": {
+    "tests": 1647,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 50,
+    "passed": 1597
+  },
+  "unique_agent_tests": 1647,
+  "tests": {
+    "python-0": {
+      "tests": 412,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 12,
+      "passed": 400
+    },
+    "python-1": {
+      "tests": 412,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 16,
+      "passed": 396
+    },
+    "python-2": {
+      "tests": 412,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 16,
+      "passed": 396
+    },
+    "python-3": {
+      "tests": 411,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 6,
+      "passed": 405
+    },
+    "library-python": {
+      "tests": 29800,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 29800
+    },
+    "browser": {
+      "tests": 64,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 64
+    },
+    "deploy-studio": {
+      "tests": 82,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 82
+    }
+  },
+  "live_acceptance": {
+    "cases": 11,
+    "successes": 11,
+    "grounding": {
+      "required": 7,
+      "passed": 7,
+      "fallbacks": 1
+    },
+    "lane_matches": 11,
+    "seconds": 167.353,
+    "model_calls": 14,
+    "model_samples": 18,
+    "by_stage": {
+      "route": 10,
+      "answer": 2,
+      "clarify": 1,
+      "candidates": 1
+    },
+    "tokens": {
+      "prompt_tokens": 117014,
+      "completion_tokens": 3716,
+      "total_tokens": 120730
+    },
+    "known_tokens": {
+      "prompt_tokens": 117014,
+      "completion_tokens": 3716,
+      "total_tokens": 120730
+    },
+    "calls_missing_usage": 0,
+    "by_lane": {
+      "calculate": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 1,
+        "median_seconds": 5.694
+      },
+      "describe_input": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 1,
+        "median_seconds": 16.994
+      },
+      "explain": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 1,
+        "median_seconds": 9.804
+      },
+      "lookup": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 2,
+        "median_seconds": 15.604
+      },
+      "needs_information": {
+        "cases": 2,
+        "successes": 2,
+        "lane_matches": 2,
+        "model_calls": 3,
+        "median_seconds": 20.42
+      },
+      "options": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 2,
+        "median_seconds": 23.011
+      },
+      "reply": {
+        "cases": 2,
+        "successes": 2,
+        "lane_matches": 2,
+        "model_calls": 2,
+        "median_seconds": 14.552
+      },
+      "unsupported": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 1,
+        "median_seconds": 17.328
+      },
+      "view": {
+        "cases": 1,
+        "successes": 1,
+        "lane_matches": 1,
+        "model_calls": 1,
+        "median_seconds": 8.974
+      }
+    }
+  },
+  "native_validation": "validation/phase5-runtime-release/report.json",
+  "limitations": [
+    "The original 60-case Phase 5 measurement remains historical. This release runs a separately identified 11-case acceptance subset covering all nine lanes and disabled search.",
+    "The one live grounding fallback is the expected deterministic disabled-search status, with zero writer attempts and checked current-turn provenance.",
+    "Physical-GPU and disposable-database application integration suites remain opt-in and are explicitly skipped; the separate native runtime release has actual CPU/GPU oracle evidence.",
+    "The existing GPU 0 mbe-gpu memory restriction remains; that backend is admitted on GPU 1."
+  ],
+  "diagnostics": [
+    "Initial Studio fixtures inherited the development capture path; the isolated rerun passed all 82 tests.",
+    "The first combined Python collection used the app interpreter for numerical-library tests; separate component interpreters passed.",
+    "An initial agent run inherited development LLM=false and failed two adapter-settings tests. Clean settings passed those tests and are used by all final batches.",
+    "The clean serial agent run was interrupted to run the same collected suite in four independent batches. Every collected test is accounted for exactly once in final totals.",
+    "The first new disabled-search smoke case encoded zero allowed operation alternatives instead of one allowed empty set. Its response was correct; the corrected case and all other acceptance cases passed. Original reports and fixture are retained."
+  ],
+  "deployment": "Promotion still requires gm-env begin-testing, verify-testing, and promote --push. The controller records the exact promoted commit, verified data backup and health result outside Git."
+}

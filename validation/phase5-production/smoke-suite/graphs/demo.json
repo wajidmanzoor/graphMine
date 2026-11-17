@@ -1,0 +1,212 @@
+{
+  "graph": {
+    "id": "transfers-demo-seed",
+    "directed": true,
+    "allows_self_loops": false,
+    "allows_parallel_edges": false
+  },
+  "vertices": [
+    {
+      "id": 1,
+      "type": "Account",
+      "attributes": {
+        "name": "Ada",
+        "country": "GB",
+        "risk_score": 85,
+        "segment": "business"
+      }
+    },
+    {
+      "id": 2,
+      "type": "Account",
+      "attributes": {
+        "name": "Ben",
+        "country": "US",
+        "risk_score": 73,
+        "segment": "business"
+      }
+    },
+    {
+      "id": 3,
+      "type": "Account",
+      "attributes": {
+        "name": "Chen",
+        "country": "SG",
+        "risk_score": 91,
+        "segment": "business"
+      }
+    },
+    {
+      "id": 4,
+      "type": "Account",
+      "attributes": {
+        "name": "Dia",
+        "country": "DE",
+        "risk_score": 60,
+        "segment": "personal"
+      }
+    },
+    {
+      "id": 5,
+      "type": "Account",
+      "attributes": {
+        "name": "Elena",
+        "country": "ES",
+        "risk_score": 12,
+        "segment": "personal"
+      }
+    },
+    {
+      "id": 6,
+      "type": "Account",
+      "attributes": {
+        "name": "Finn",
+        "country": "IE",
+        "risk_score": 8,
+        "segment": "personal"
+      }
+    },
+    {
+      "id": 7,
+      "type": "Account",
+      "attributes": {
+        "name": "Gio",
+        "country": "IT",
+        "risk_score": 5,
+        "segment": "personal"
+      }
+    },
+    {
+      "id": 8,
+      "type": "Account",
+      "attributes": {
+        "name": "Hana",
+        "country": "JP",
+        "risk_score": 3,
+        "segment": "personal"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": 101,
+      "source": 1,
+      "target": 2,
+      "type": "TRANSFER",
+      "weight": 10.0,
+      "attributes": {
+        "amount": 10.0,
+        "reason": "invoice",
+        "occurred_at": "2026-10-01T09:00:00Z"
+      }
+    },
+    {
+      "id": 102,
+      "source": 1,
+      "target": 3,
+      "type": "TRANSFER",
+      "weight": 50.0,
+      "attributes": {
+        "amount": 50.0,
+        "reason": "invoice",
+        "occurred_at": "2026-10-01T09:01:00Z"
+      }
+    },
+    {
+      "id": 103,
+      "source": 1,
+      "target": 4,
+      "type": "TRANSFER",
+      "weight": 12.0,
+      "attributes": {
+        "amount": 12.0,
+        "reason": "refund",
+        "occurred_at": "2026-10-01T09:02:00Z"
+      }
+    },
+    {
+      "id": 104,
+      "source": 2,
+      "target": 3,
+      "type": "TRANSFER",
+      "weight": 10.0,
+      "attributes": {
+        "amount": 10.0,
+        "reason": "invoice",
+        "occurred_at": "2026-10-01T09:03:00Z"
+      }
+    },
+    {
+      "id": 105,
+      "source": 2,
+      "target": 4,
+      "type": "TRANSFER",
+      "weight": 13.0,
+      "attributes": {
+        "amount": 13.0,
+        "reason": "invoice",
+        "occurred_at": "2026-10-01T09:04:00Z"
+      }
+    },
+    {
+      "id": 106,
+      "source": 3,
+      "target": 4,
+      "type": "TRANSFER",
+      "weight": 10.0,
+      "attributes": {
+        "amount": 10.0,
+        "reason": "refund",
+        "occurred_at": "2026-10-01T09:05:00Z"
+      }
+    },
+    {
+      "id": 107,
+      "source": 4,
+      "target": 5,
+      "type": "TRANSFER",
+      "weight": 5.0,
+      "attributes": {
+        "amount": 5.0,
+        "reason": "subscription",
+        "occurred_at": "2026-10-01T09:06:00Z"
+      }
+    },
+    {
+      "id": 108,
+      "source": 5,
+      "target": 6,
+      "type": "TRANSFER",
+      "weight": 5.0,
+      "attributes": {
+        "amount": 5.0,
+        "reason": "subscription",
+        "occurred_at": "2026-10-01T09:07:00Z"
+      }
+    },
+    {
+      "id": 109,
+      "source": 6,
+      "target": 7,
+      "type": "TRANSFER",
+      "weight": 5.0,
+      "attributes": {
+        "amount": 5.0,
+        "reason": "subscription",
+        "occurred_at": "2026-10-01T09:08:00Z"
+      }
+    },
+    {
+      "id": 110,
+      "source": 7,
+      "target": 8,
+      "type": "TRANSFER",
+      "weight": 5.0,
+      "attributes": {
+        "amount": 5.0,
+        "reason": "subscription",
+        "occurred_at": "2026-10-01T09:09:00Z"
+      }
+    }
+  ]
+}

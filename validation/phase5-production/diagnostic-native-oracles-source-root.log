@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/tools/validate_native_runtime.py", line 320, in <module>
+    main()
+  File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/tools/validate_native_runtime.py", line 316, in main
+    future.result()
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/tools/validate_native_runtime.py", line 56, in validate
+    sources = source_snapshot(build)
+              ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/tools/validate_native_runtime.py", line 23, in source_snapshot
+    return {str(path.resolve().relative_to(ROOT)): sha(path) for path in files}
+                                                   ^^^^^^^^^
+  File "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/tools/validate_native_runtime.py", line 27, in sha
+    with path.open("rb") as handle:
+         ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/build/gmatch-generated/candidate.cu'

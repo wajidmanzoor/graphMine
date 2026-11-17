@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "request": "Search Google for the latest k-core research.",
+  "response": "Web search is currently disabled.",
+  "web_search": {
+    "status": "disabled",
+    "search_url": null
+  },
+  "executed_operations": [],
+  "model_calls_by_stage": {
+    "route": 1
+  },
+  "current_turn_grounding_verified": true,
+  "note": "The deterministic disabled-status response is recorded as a grounding fallback with zero writer attempts; it is expected availability behavior."
+}

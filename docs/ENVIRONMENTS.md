@@ -25,21 +25,26 @@ The workspace root is `/home/wajid/projects/graphDatabaseAgent`.
 | Development | `graphMine-database-cypher` | 18002 / 8879 | Loopback; SSH forwarding |
 | Testing | `graphMine-testing` | 18001 / 8878 | Loopback; SSH forwarding |
 
-`graphMine-runtime-20261116-views` is the detached, pinned native-runtime
-checkout for the completed CPU graph-view migration. Its compiled engine and
-execution evidence are promoted together with the application. The existing
+`graphMine-runtime-20261117-grounding` is the detached, pinned native-runtime
+checkout for the grounded analytics release, including the optional biclique
+partition contract. Its compiled CPU/GPU engine and execution evidence are
+promoted together with the application. The existing
 `graphMine-repo` checkout still supplies the analytics Python and vLLM
 environments. Do not develop in these pinned checkouts or install packages into
 their runtime environments. Native engine changes need a separately built and
 verified runtime; changing an app branch alone does not replace native binaries.
 
-The new native build keeps its Kokkos/KokkosKernels dependencies under
-`library/build/native-dependencies/` in its pinned checkout. These dependencies
-must remain available for rebuilding; the previous temporary installation under
-`/tmp/pggc-deps` had been cleared. The release's build settings, dependency
-versions, source hashes and validation reports are recorded in
-`validation/native_views_release/`. Later GPU graph-view migration steps remain
-separate work; this release retains the existing GPU adapters.
+The build reuses the unchanged Kokkos/KokkosKernels installation under
+`graphMine-runtime-20261116-views/library/build/native-dependencies/` and the
+existing research workers. Keep those pinned dependencies available. Build
+settings, dependency versions, source hashes and validation reports are recorded
+in `validation/phase5-runtime-release/`; the earlier graph-view migration remains
+documented in `validation/native_views_release/`. Later GPU graph-view migration
+steps remain separate work; this release retains the existing GPU adapters.
+
+`GRAPHMINE_GOOGLE_SEARCH_ENABLED=false` is explicit in all three host
+environments and is also the application default. The prototype is retained for
+later development; see [Deferred Google search](DEFERRED_GOOGLE_SEARCH.md).
 
 Each application environment has its own Python environment, data store,
 accounts, captures, history, backups, Studio workspace, and login cookie names.
@@ -152,15 +157,18 @@ The future Studio design that reads original captures and stores edits by
 reference is recorded in `latter plans.md`; this environment setup does not
 implement that separate feature.
 
-## Baseline validation limitations
+## Validation and opt-in checks
 
-The initial full agent regression run identified eight existing failures in
-`agent/tests/test_native_uploads.py`, reproduced against the original deployed
-checkout. Those tests require the older native cuDF upload path; the current
-CSV upload path uses `csv_ingestion.py`. This environment change preserves the
-current behavior. Resolve that test/implementation mismatch separately; the
-full agent suite is not currently green.
+The earlier native-upload test mismatch was resolved during Phase 5: ordinary
+CSV uploads use the existing CPU ingestion path, while explicit native-reader
+transport failures retain separate coverage. Current application, browser,
+library, live-model and native runtime evidence is recorded in
+`validation/phase5-production/` and `validation/phase5-runtime-release/`.
 
 The deployment gate runs the controller, account, capture, backup/recovery,
-Studio exchange, Dataset Studio, chart compiler, and frontend checks. Hardware
-and disposable-database integration tests require their separate opt-in setup.
+Studio exchange, Dataset Studio, database-source, grounding, clarification,
+options, partition, disabled-search, result-view and frontend checks. Frontend
+tests, TypeScript and API contracts must pass. Physical-GPU application and
+disposable-database integration tests require their separate opt-in setup;
+their skips are reported explicitly. The pinned native runtime has separate
+CPU and physical-GPU oracle evidence, including device-specific admission.

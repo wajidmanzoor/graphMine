@@ -1,0 +1,35 @@
+...................................FFF.................................. [ 87%]
+..........                                                               [100%]
+=================================== FAILURES ===================================
+_____ test_each_model_call_is_a_row_with_its_exact_input_and_the_feedback ______
+dataset-studio/tests/test_graphmine_captures.py:140: in test_each_model_call_is_a_row_with_its_exact_input_and_the_feedback
+    assert {stage: (ex["schema"], ex["adapter"]) for stage, ex in rows.items()} == {
+E   AssertionError: assert {} == {'answer': ('...', 'planner')}
+E     
+E     Right contains 3 more items:
+E     {'answer': ('AnalyticsAnswer', 'analyst'),
+E      'plan': ('AnalyticsPlan', 'planner'),
+E      'route': ('AnalyticsRoute', 'planner')}
+E     Use -v to get more diff
+----------------------------- Captured stdout call -----------------------------
+[studio] indexed 0 rows from /tmp/pytest-of-wajid/pytest-1293/test_each_model_call_is_a_row_0/workspace/graphmine-captures/graphmine-captures__acct_ana in 0.0s
+_ test_edits_are_checked_as_graphmine_checks_the_model_and_later_steps_are_held_back _
+dataset-studio/tests/test_graphmine_captures.py:163: in test_edits_are_checked_as_graphmine_checks_the_model_and_later_steps_are_held_back
+    result = store.update(rows["plan"]["id"], {"output": invented}, rows["plan"]["revision"])
+                          ^^^^^^^^^^^^
+E   KeyError: 'plan'
+----------------------------- Captured stdout call -----------------------------
+[studio] indexed 0 rows from /tmp/pytest-of-wajid/pytest-1293/test_edits_are_checked_as_grap0/workspace/graphmine-captures/graphmine-captures__acct_ana in 0.0s
+_______ test_new_questions_and_late_feedback_arrive_without_losing_edits _______
+dataset-studio/tests/test_graphmine_captures.py:190: in test_new_questions_and_late_feedback_arrive_without_losing_edits
+    route = by_stage(store)["route"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'route'
+----------------------------- Captured stdout call -----------------------------
+[studio] indexed 0 rows from /tmp/pytest-of-wajid/pytest-1293/test_new_questions_and_late_fe0/workspace/graphmine-captures/graphmine-captures__acct_ana in 0.0s
+- generated xml file: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/phase5-production/deploy-studio.xml -
+=========================== short test summary info ============================
+FAILED dataset-studio/tests/test_graphmine_captures.py::test_each_model_call_is_a_row_with_its_exact_input_and_the_feedback
+FAILED dataset-studio/tests/test_graphmine_captures.py::test_edits_are_checked_as_graphmine_checks_the_model_and_later_steps_are_held_back
+FAILED dataset-studio/tests/test_graphmine_captures.py::test_new_questions_and_late_feedback_arrive_without_losing_edits
+3 failed, 79 passed in 15.67s

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="10" failures="0" skipped="0" tests="10" time="1.707" timestamp="2026-11-17T12:50:06.427493-05:00" hostname="guoglambda01"><testcase classname="" name="test_comparison_data_oracles" time="0.000"><error message="collection failure">ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/python/graphmine/tests/test_comparison_data_oracles.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/graphmine/tests/test_comparison_data_oracles.py:9: in &lt;module&gt;
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'</error></testcase><testcase classname="" name="test_diffusion_geometry" time="0.000"><error message="collection failure">ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/python/graphmine/tests/test_diffusion_geometry.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/graphmine/tests/test_diffusion_geometry.py:9: in &lt;module&gt;
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'</error></testcase><testcase classname="" name="test_extended_oracles" time="0.000"><error message="collection failure">ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/python/graphmine/tests/test_extended_oracles.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/graphmine/tests/test_extended_oracles.py:15: in &lt;module&gt;
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'</error></testcase><testcase classname="" name="test_frequent_patterns" time="0.000"><error message="collection failure">ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/python/graphmine/tests/test_frequent_patterns.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/graphmine/tests/test_frequent_patterns.py:12: in &lt;module&gt;
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'</error></testcase><testcase classname="" name="test_graph_comparison" time="0.000"><error message="collection failure">ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/python/graphmine/tests/test_graph_comparison.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/graphmine/tests/test_graph_comparison.py:10: in &lt;module&gt;
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'</error></testcase><testcase classname="" name="test_numerical_construction" time="0.000"><error message="collection failure">ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/python/graphmine/tests/test_numerical_construction.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/graphmine/tests/test_numerical_construction.py:7: in &lt;module&gt;
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'</error></testcase><testcase classname="" name="test_small_graph_oracles" time="0.000"><error message="collection failure">ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/python/graphmine/tests/test_small_graph_oracles.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/graphmine/tests/test_small_graph_oracles.py:12: in &lt;module&gt;
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'</error></testcase><testcase classname="" name="test_temporal_sampling" time="0.000"><error message="collection failure">ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/python/graphmine/tests/test_temporal_sampling.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/graphmine/tests/test_temporal_sampling.py:10: in &lt;module&gt;
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'</error></testcase><testcase classname="" name="test_weighted_directed" time="0.000"><error message="collection failure">ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/python/graphmine/tests/test_weighted_directed.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/graphmine/tests/test_weighted_directed.py:6: in &lt;module&gt;
+    import numpy as np
+E   ModuleNotFoundError: No module named 'numpy'</error></testcase><testcase classname="" name="test_workflows" time="0.000"><error message="collection failure">ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/python/graphmine/tests/test_workflows.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python/graphmine/tests/test_workflows.py:6: in &lt;module&gt;
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'</error></testcase></testsuite></testsuites>

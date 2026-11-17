@@ -1,0 +1,836 @@
+{
+  "version": "graphmine-phase5-production-smoke-v1",
+  "scope": "One frozen regression from each lane plus both previous failures and an explicit disabled-search check. Separate acceptance subset; the original frozen 60-case suite is unchanged.",
+  "label_policy": {
+    "reply": "Conceptual answer with citations; no plan/run.",
+    "describe_input": "Full-snapshot metadata/count, no algorithm workflow; structured property/value evidence.",
+    "explain": "Existing saved facts answer the question; no new plan/run.",
+    "view": "Exact saved-result display action; no new plan/run.",
+    "lookup": "Small code-built query or ranking, verified through result ports.",
+    "needs_information": "One required or answer-changing gap; no executable plan.",
+    "options": "Normal-mode computation request: exactly two distinct choices and no run.",
+    "calculate": "Explicit picked-card payload from the requested Phase 4 API, followed by validated execution.",
+    "unsupported": "No listed native backend computes the requested result."
+  },
+  "oracle_provenance": {
+    "demo": "Exhaustive subsets for cliques and triangles; direct seed-record lookup and adjacency for queries.",
+    "yelp": "Exhaustive nonempty User subsets and closure for bicliques; direct counts/degrees; analytic PageRank balance for the one-way User-to-Business graph.",
+    "grading": "Exact lane and allowed operation set plus structural behavior and independent complete-result checks. General explanation semantics are not human-scored; citations are required."
+  },
+  "fixtures": {
+    "demo": {
+      "path": "graphs/demo.json",
+      "sha256": "fedd96c41ef1861e3ac8128919cd06a487319c7a20b7c23f8efe5a8027816d7e",
+      "origin": "deploy/database-workspace/seed.sql",
+      "origin_sha256": "17639303fc29221da1f84ea6034324f07bfd6e22eafdf78c5d8ffea8e7b2702e",
+      "construction": "All eight account rows and all ten transfer rows, retaining IDs, attributes, direction, and amounts as weights."
+    },
+    "demo_undirected": {
+      "path": "graphs/demo.json",
+      "sha256": "fedd96c41ef1861e3ac8128919cd06a487319c7a20b7c23f8efe5a8027816d7e",
+      "undirected_projection": true,
+      "construction": "Explicit benchmark projection of the demo: only graph.directed becomes false."
+    },
+    "yelp": {
+      "path": "graphs/yelp.json",
+      "sha256": "99cb1a89442fc1f49c65d8f116ba71c1da37f9b07cdeb5e41271d0bff800a532",
+      "origin": "Saved Yelp review snapshot from the Phase 0 failing conversation",
+      "origin_sha256": "99cb1a89442fc1f49c65d8f116ba71c1da37f9b07cdeb5e41271d0bff800a532",
+      "construction": "Byte-for-byte copy of the original 20-vertex, 69-edge directed snapshot."
+    },
+    "yelp_undirected": {
+      "path": "graphs/yelp.json",
+      "sha256": "99cb1a89442fc1f49c65d8f116ba71c1da37f9b07cdeb5e41271d0bff800a532",
+      "undirected_projection": true,
+      "side_types": {
+        "User": "left",
+        "Business": "right"
+      },
+      "construction": "Explicit benchmark projection: undirected reviews, Users left and Businesses right; original snapshot remains unchanged."
+    }
+  },
+  "cases": [
+    {
+      "id": "lookup_los_agaves",
+      "fixture": "yelp",
+      "question": "Show the full Business record for Los Agaves.",
+      "expected": {
+        "lane": "lookup",
+        "operations": [
+          [
+            "node-lookup"
+          ]
+        ]
+      },
+      "reference": {
+        "operation": "node-lookup",
+        "parameters": {
+          "vertices": [
+            "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349"
+          ]
+        }
+      },
+      "checks": [
+        {
+          "operation": "node-lookup",
+          "port": "vertices",
+          "kind": "set",
+          "value": [
+            "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ambiguous_importance",
+      "fixture": "yelp",
+      "question": "Who is important in this network?",
+      "expected": {
+        "lane": "needs_information",
+        "operations": null,
+        "rationale": "Importance has multiple answer-changing meanings."
+      }
+    },
+    {
+      "id": "missing_path_endpoints",
+      "fixture": "demo",
+      "question": "Find the shortest path between two accounts.",
+      "expected": {
+        "lane": "needs_information",
+        "operations": null,
+        "rationale": "Both path endpoints are missing."
+      }
+    },
+    {
+      "id": "calculate_picked_bicliques",
+      "fixture": "yelp_undirected",
+      "question": "I pick the maximal-bicliques option.",
+      "expected": {
+        "lane": "calculate",
+        "operations": [
+          [
+            "maximal-bicliques"
+          ]
+        ],
+        "rationale": "The selected-card payload from Phase 4; calculate this choice without rerouting."
+      },
+      "reference": {
+        "operation": "maximal-bicliques",
+        "parameters": {}
+      },
+      "checks": [
+        {
+          "operation": "maximal-bicliques",
+          "port": "bicliques",
+          "kind": "bicliques",
+          "value": [
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:28569",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:100376",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:19908",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:1934",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:145143",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:101797",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:125844",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            },
+            {
+              "left_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:150857",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:163944",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:166460",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:195622",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:244685",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:410880",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:437889",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:492041",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:671026"
+              ],
+              "right_vertices": [
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:139786",
+                "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:41952"
+              ]
+            }
+          ]
+        }
+      ],
+      "selected_option": {
+        "intent": "calculate",
+        "operations": [
+          "maximal-bicliques"
+        ],
+        "parameters": {}
+      }
+    },
+    {
+      "id": "reply_exact_approx",
+      "fixture": "demo",
+      "question": "What do exact and approximate results mean in this graph library?",
+      "expected": {
+        "lane": "reply",
+        "operations": [
+          []
+        ],
+        "rationale": "Conceptual explanation, with citations to available contracts or documentation; no graph calculation."
+      }
+    },
+    {
+      "id": "describe_yelp_users",
+      "fixture": "yelp",
+      "question": "How many Users are in this loaded snapshot?",
+      "expected": {
+        "lane": "describe_input",
+        "operations": [
+          []
+        ],
+        "property": "vertex_type_count.User",
+        "value": 10,
+        "rationale": "Input metadata or a full-snapshot count can answer without an algorithm plan."
+      }
+    },
+    {
+      "id": "view_grid",
+      "fixture": "demo_undirected",
+      "question": "Arrange the saved graph in a grid.",
+      "expected": {
+        "lane": "view",
+        "operations": [
+          []
+        ],
+        "view": {
+          "kind": "layout",
+          "layout": "grid"
+        }
+      },
+      "previous": {
+        "operation": "maximal-cliques",
+        "parameters": {}
+      },
+      "previous_checks": [
+        {
+          "operation": "maximal-cliques",
+          "port": "groups",
+          "kind": "groups",
+          "value": [
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              1,
+              2,
+              3,
+              4
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "explain_triangles",
+      "fixture": "demo_undirected",
+      "question": "How many triangles did the completed analysis count?",
+      "expected": {
+        "lane": "explain",
+        "operations": [
+          []
+        ],
+        "fact_patterns": [
+          "\\bcount is 4\\b"
+        ]
+      },
+      "previous": {
+        "operation": "triangle-counting",
+        "parameters": {}
+      },
+      "previous_checks": [
+        {
+          "operation": "triangle-counting",
+          "port": "count",
+          "kind": "equal",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "id": "unsupported_crossing_number",
+      "fixture": "demo_undirected",
+      "question": "Compute the exact crossing number of this graph.",
+      "expected": {
+        "lane": "unsupported",
+        "operations": [
+          []
+        ],
+        "rationale": "No listed native backend implements the requested calculation."
+      }
+    },
+    {
+      "id": "options_maximal_cliques",
+      "fixture": "demo_undirected",
+      "question": "Find all maximal cliques.",
+      "expected": {
+        "lane": "options",
+        "operations": [
+          [
+            "maximal-cliques"
+          ]
+        ],
+        "rationale": "Normal mode must offer two ranked choices before a new calculation."
+      },
+      "reference": {
+        "operation": "maximal-cliques",
+        "parameters": {}
+      },
+      "checks": [
+        {
+          "operation": "maximal-cliques",
+          "port": "groups",
+          "kind": "groups",
+          "value": [
+            [
+              4,
+              5
+            ],
+            [
+              5,
+              6
+            ],
+            [
+              6,
+              7
+            ],
+            [
+              7,
+              8
+            ],
+            [
+              1,
+              2,
+              3,
+              4
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "google_search_disabled",
+      "fixture": "demo",
+      "question": "Search Google for the latest k-core research.",
+      "expected": {
+        "lane": "reply",
+        "operations": [
+          []
+        ],
+        "rationale": "Reply without any executed operation. The outer list enumerates permitted operation sets."
+      }
+    }
+  ]
+}
