@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """Reviewed contracts for additional research problems; no runtime registration."""
+import sys
+
 from acquire import ROOT, write_json
 
+sys.path.insert(0, str(ROOT.parent / "tools"))
+from generate_families import problem_family_ids
+
+PROBLEM_FAMILY_IDS = problem_family_ids()
 _MISSING = object()
 
 
@@ -19,12 +25,12 @@ def output(name, type_, description):
 
 
 def define(number, id_, name, statement, inputs, outputs, rules, cases, *,
-           category='community_and_structural_analysis', direction='undirected',
+           direction='undirected',
            weights='ignored', attributes='ignored', schema='graph_input',
            normalization=None, exactness='Exact mathematical objective; implementations must declare approximation and termination status.',
            semantics=None, intents=None):
     folder = ROOT / f'{number:02d}_{id_}'
-    spec = dict(schema_version='1.0.0', problem_id=id_, name=name, category=category,
+    spec = dict(schema_version='1.0.0', problem_id=id_, name=name, category=PROBLEM_FAMILY_IDS[id_],
                 problem_statement=statement,
                 graph_input=dict(format={'graph_input': 'canonical_graph_v1',
                                          'hypergraph_input': 'canonical_hypergraph_v1',
@@ -156,7 +162,7 @@ def main():
             'Reproduce inference on a small hypergraph using the same parameters; do not require trained models to have identical accuracy.'],
            ['Singleton hyperedges and isolated vertices are legal with a declared model convention.', 'Variable-size hyperedges cannot be silently replaced by ordinary pairwise edges.'],
            schema='hypergraph_input', direction='undirected_hypergraph', weights='optional_nonnegative_hyperedge_weights',
-           attributes='required_features_and_split_specific_targets', category='graph_machine_learning',
+           attributes='required_features_and_split_specific_targets',
            normalization=['Preserve every hyperedge incidence set and vertex ID.', 'Reject repeated vertices inside one hyperedge.'],
            exactness='Statistical learning with declared split, seed and tolerance; no deterministic optimum claim.',
            intents=['hypergraph node classification', 'hypergraph neural network', 'learn hypergraph labels'])
@@ -210,7 +216,7 @@ def main():
             'Do not substitute transaction support, number of embeddings, or edge-disjoint support for MNI.',
             'Count-only upstream releases cannot satisfy the patterns output mode without an adapter change.'],
            ['Repeated labels do not identify distinct host vertices.', 'A single host graph differs from a database of graph transactions.', 'A threshold exceeding the host vertex count yields no frequent patterns.'],
-           attributes='required_discrete_vertex_labels', category='pattern_mining',
+           attributes='required_discrete_vertex_labels',
            intents=['single graph frequent subgraphs', 'minimum image support', 'mni frequent patterns'])
 
     define(69, 'minimum_vertex_cover', 'Minimum Vertex Cover',
@@ -249,7 +255,7 @@ def main():
             'Verify finite features, valid labels, and adjacency under the declared symmetry/weight convention.'],
            ['Condensation need not preserve original edges or graph cuts.', 'Very small budgets may not represent every class.', 'A utility estimate does not prove an exact structural approximation.'],
            weights='optional_nonnegative_adjacency_weights', attributes='required_features_labels_and_splits',
-           category='graph_machine_learning', exactness='Learned approximation measured by held-out downstream utility, with no structural equivalence claim.',
+           exactness='Learned approximation measured by held-out downstream utility, with no structural equivalence claim.',
            intents=['graph condensation', 'synthetic training graph', 'condense graph dataset'])
 
 

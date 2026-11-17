@@ -68,7 +68,6 @@ def _graph(graph, left, *, loop_policy="reject", objective=None):
 @register(
     id="maximal-bicliques",
     problem_id="maximal_biclique_enumeration",
-    family="dense_structures",
     title="Find maximal completely connected groups across two sides",
     description="A clique reduction followed by NetworkX maximal-clique enumeration; both biclique sides must be nonempty.",
     parameters={
@@ -131,7 +130,6 @@ def _butterflies(g, left, work):
 @register(
     id="butterfly-counting",
     problem_id="butterfly_counting_bipartite",
-    family="pattern_mining",
     title="Count four-way connections between two sides",
     description="Exact 2-by-2 biclique counts and participation. Core mode declares whether thresholds apply to ordinary degree or butterfly participation.",
     parameters={
@@ -255,7 +253,6 @@ def butterflies(graph, args, work, backend="networkx"):
 @register(
     id="bipartite-matching",
     problem_id="bipartite_matching_assignment",
-    family="matching",
     title="Match items on two sides by count, value, or cost",
     description="NetworkX maximum-weight matching with explicit cardinality and coverage semantics. Minimum-cost without required coverage may legitimately choose an empty matching.",
     parameters={

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "graph_classification_regression",
   "name": "Graph Classification and Regression",
-  "category": "graph_learning",
+  "category": "learning",
   "problem_statement": "Predict one categorical label or numerical target for each graph in a collection.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from . import list_algorithms, list_families, run
 from .exceptions import GraphMineError
+from .native import NativeError
 
 
 def main():
@@ -14,7 +15,8 @@ def main():
         description="Validated graph algorithm inputs and explicit CPU/GPU dispatch"
     )
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("list")
+    listing = commands.add_parser("list")
+    listing.add_argument("--family", help="Select a family from the native catalog")
     commands.add_parser("families")
     execute = commands.add_parser("run")
     execute.add_argument("operation")
@@ -30,7 +32,7 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == "list":
-            result = list_algorithms()
+            result = list_algorithms(family=args.family)
         elif args.command == "families":
             result = list_families()
         else:
@@ -45,7 +47,7 @@ def main():
                 gpu_device=args.gpu_device,
             )
         print(json.dumps(result, ensure_ascii=False, allow_nan=False))
-    except (GraphMineError, OSError, json.JSONDecodeError) as exc:
+    except (GraphMineError, NativeError, OSError, json.JSONDecodeError) as exc:
         print(
             json.dumps(
                 {

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "frequent_subgraph_mining",
   "name": "Frequent Subgraph Mining",
-  "category": "pattern_and_motif_mining",
+  "category": "patterns",
   "problem_statement": "Given a collection of graphs, discover unique subgraph patterns appearing in at least a specified fraction of the collection.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

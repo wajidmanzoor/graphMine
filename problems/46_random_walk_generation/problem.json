@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "random_walk_generation",
   "name": "Graph Random-Walk Generation",
-  "category": "sampling_and_representation_learning",
+  "category": "preparation",
   "problem_statement": "Generate vertex sequences sampled from a declared graph transition process.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

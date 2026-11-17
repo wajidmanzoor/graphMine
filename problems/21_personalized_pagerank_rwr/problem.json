@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "personalized_pagerank_rwr",
   "name": "Personalized PageRank and Random Walk with Restart",
-  "category": "community_and_structural_analysis",
+  "category": "importance",
   "problem_statement": "Given one or more seed vertices, compute each vertex's steady-state visitation probability under a random walk that restarts to the seed distribution with fixed probability, and rank vertices by that score relative to the seeds.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

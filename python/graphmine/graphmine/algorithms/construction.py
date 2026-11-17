@@ -19,7 +19,6 @@ from ._numeric import float64
 @register(
     id="knn-graph",
     problem_id="knn_graph_construction",
-    family="construction",
     input_kind="feature_vectors",
     title="Build a graph from nearby feature vectors",
     description="Exact all-pairs SciPy distance search with explicit self-exclusion, metric and symmetrization. Equal-distance ties follow original vector order.",
@@ -116,7 +115,6 @@ def knn_graph(vectors, args, work, backend="networkx"):
 @register(
     id="graph-coarsening",
     problem_id="graph_coarsening",
-    family="construction",
     title="Group vertices and build their weighted quotient graph",
     description="Use a supplied partition or NetworkX maximal matching, then aggregate all fine-edge weights and numeric vertex feature vectors by the declared rule.",
     parameters={

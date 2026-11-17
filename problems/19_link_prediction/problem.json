@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "link_prediction",
   "name": "Link Prediction",
-  "category": "predictive_and_unusual_structure_mining",
+  "category": "similarity",
   "problem_statement": "Score and rank currently unconnected vertex pairs according to a declared structural link-prediction measure.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

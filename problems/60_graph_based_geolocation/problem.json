@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "graph_based_geolocation",
   "name": "Graph-Based Geolocation",
-  "category": "graph_signal_processing",
+  "category": "learning",
   "problem_statement": "Infer geographic coordinates for unlocated vertices using declared graph propagation or supervised graph-learning models.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

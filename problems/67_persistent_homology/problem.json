@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "persistent_homology",
   "name": "Flag-Complex Persistent Homology",
-  "category": "community_and_structural_analysis",
+  "category": "spectral",
   "problem_statement": "Compute persistence intervals over a declared prime field for the flag-complex filtration induced by nonnegative undirected edge filtration values.",
   "graph_input": {
     "format": "canonical_graph_v1",

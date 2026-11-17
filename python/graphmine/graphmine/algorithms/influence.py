@@ -18,7 +18,6 @@ from ._events import number
 @register(
     id="influence-maximization",
     problem_id="influence_maximization",
-    family="centrality",
     title="Choose starting points that maximize expected diffusion",
     description="Exact rational enumeration of seed sets and live-edge states using NetworkX reachability. Supports independent cascade and uniform-random linear threshold; supplied fixed thresholds use progressive activation. Parallel IC probabilities combine as 1-product(1-p); LT weights sum. Exponential reference method with explicit work budgets, no sampling or unsupported statistical promises.",
     parameters={

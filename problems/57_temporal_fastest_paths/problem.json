@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "temporal_fastest_paths",
   "name": "Temporal Fastest and Earliest-Arrival Paths",
-  "category": "traversal_and_paths",
+  "category": "paths",
   "problem_statement": "Find time-respecting journeys minimizing elapsed duration or arrival time in a directed temporal graph.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

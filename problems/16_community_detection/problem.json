@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "community_detection",
   "name": "Disjoint Community Detection",
-  "category": "community_and_structural_analysis",
+  "category": "communities",
   "problem_statement": "Partition all graph vertices into nonoverlapping communities that maximize a declared within-community quality function.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

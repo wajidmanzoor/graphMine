@@ -170,7 +170,6 @@ def _transaction_candidates(host, args, work):
 @register(
     id="frequent-subgraphs",
     problem_id="frequent_subgraph_mining",
-    family="pattern_mining",
     title="Frequent patterns across graphs",
     description=(
         "Exhaustive simple directed/undirected transaction mining. Support counts graphs, "
@@ -315,7 +314,6 @@ def _connected_candidates(host, maximum_edges, induced, work):
 @register(
     id="single-graph-frequent-subgraphs",
     problem_id="single_graph_frequent_subgraph_mining",
-    family="pattern_mining",
     title="Frequent labeled patterns within one graph",
     description=(
         "Exact connected labeled patterns, including single-vertex patterns, in an "

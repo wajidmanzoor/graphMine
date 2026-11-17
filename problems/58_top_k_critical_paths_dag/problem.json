@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "top_k_critical_paths_dag",
   "name": "Top-k Critical Paths in DAGs",
-  "category": "traversal_and_paths",
+  "category": "paths",
   "problem_statement": "Return up to k distinct source-to-sink paths of greatest total edge delay in a directed acyclic graph.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

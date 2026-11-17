@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "graph_motif_counting",
   "name": "Graph Motif Counting",
-  "category": "pattern_and_motif_mining",
+  "category": "motifs",
   "problem_statement": "Count occurrences of one or more supplied small structural patterns in a directed or undirected graph.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

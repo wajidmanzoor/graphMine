@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "graph_condensation",
   "name": "Learned Graph Condensation",
-  "category": "graph_machine_learning",
+  "category": "learning",
   "problem_statement": "Learn a smaller synthetic attributed graph whose supervised training utility approximates that of the original training graph.",
   "graph_input": {
     "format": "canonical_graph_v1",

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "node_embedding",
   "name": "Node Embedding",
-  "category": "sampling_and_representation_learning",
+  "category": "learning",
   "problem_statement": "Learn a vector for every vertex under a declared graph representation-learning objective.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

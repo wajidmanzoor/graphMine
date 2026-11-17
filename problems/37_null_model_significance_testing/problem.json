@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "null_model_significance_testing",
   "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
-  "category": "pattern_and_motif_mining",
+  "category": "statistics",
   "problem_statement": "Given an observed graph and a declared structural statistic, determine how unusual the statistic's observed value is by comparing it against its distribution over an ensemble of randomized graphs sampled from a declared null model, typically one preserving the degree sequence.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

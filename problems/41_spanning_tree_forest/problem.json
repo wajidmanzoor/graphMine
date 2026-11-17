@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "spanning_tree_forest",
   "name": "Minimum and Maximum Spanning Trees and Forests",
-  "category": "graph_optimization",
+  "category": "connectivity",
   "problem_statement": "Select an acyclic spanning subgraph minimizing or maximizing total edge weight independently within each connected component.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

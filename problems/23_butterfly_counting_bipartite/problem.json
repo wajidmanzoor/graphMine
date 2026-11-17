@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "butterfly_counting_bipartite",
   "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
-  "category": "pattern_and_motif_mining",
+  "category": "motifs",
   "problem_statement": "Given a bipartite graph, count butterflies (complete 2x2 bicliques) globally and per vertex/edge, and optionally compute maximal vertex sets satisfying separate left/right thresholds. core_measure explicitly distinguishes conventional degree-based (alpha,beta)-cores from the butterfly-participation variant.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

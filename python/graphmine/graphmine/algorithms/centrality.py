@@ -103,7 +103,6 @@ def _pagerank(
 @register(
     id="pagerank",
     problem_id="centrality_influential_node_mining",
-    family="centrality",
     title="Rank overall influence",
     description="Converged global PageRank with a checked fixed-point residual.",
     parameters={
@@ -136,7 +135,6 @@ def pagerank(graph, args, work, backend="networkx"):
 @register(
     id="personalized-pagerank",
     problem_id="personalized_pagerank_rwr",
-    family="centrality",
     title="Rank connections around selected starting points",
     description="Converged personalized PageRank with explicit direction, dangling-node behavior and residual checks.",
     parameters={
@@ -213,7 +211,6 @@ def personalized_pagerank(graph, args, work, backend="networkx"):
 @register(
     id="betweenness-centrality",
     problem_id="centrality_influential_node_mining",
-    family="centrality",
     title="Find bridges between people or places",
     description="All-source betweenness centrality; optional weights are positive path lengths.",
     parameters={
@@ -261,7 +258,6 @@ def betweenness(graph, args, work, backend="networkx"):
 @register(
     id="degree-centrality",
     problem_id="centrality_influential_node_mining",
-    family="centrality",
     title="Rank the number of connections",
     description="Degree centrality or raw degree with explicit direction.",
     parameters={
@@ -288,7 +284,6 @@ def degree(graph, args, work, backend="networkx"):
 @register(
     id="link-prediction",
     problem_id="link_prediction",
-    family="similarity",
     title="Score possible connections",
     description="Exact local similarity scores for explicit pairs or all currently absent undirected edges.",
     parameters={

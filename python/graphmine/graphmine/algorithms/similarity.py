@@ -16,7 +16,6 @@ def _id_order(value):
 @register(
     id="simrank",
     problem_id="simrank_vertex_similarity",
-    family="similarity",
     title="Compare vertices by the similarity of their neighbors",
     description="SciPy solves the SimRank fixed-point equations with a separately recomputed residual and contraction error bound. Direction and output-pair scope are explicit.",
     parameters={

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "maximum_clique",
   "name": "Maximum Clique",
-  "category": "dense_structure_mining",
+  "category": "dense",
   "problem_statement": "Given an undirected graph, find a clique with the largest possible number of vertices.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

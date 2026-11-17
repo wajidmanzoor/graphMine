@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "subgraph_isomorphism",
   "name": "Subgraph Isomorphism and Pattern Matching",
-  "category": "pattern_and_motif_mining",
+  "category": "patterns",
   "problem_statement": "Find injective mappings from the vertices of a query graph to a data graph that preserve required edges, direction, and requested attribute predicates.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

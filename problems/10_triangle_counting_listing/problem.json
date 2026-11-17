@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "triangle_counting_listing",
   "name": "Triangle Counting and Listing",
-  "category": "pattern_and_motif_mining",
+  "category": "motifs",
   "problem_statement": "Count all unordered triples of vertices connected by all three possible edges and optionally list the triples or their per-vertex and per-edge participation counts.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

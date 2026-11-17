@@ -60,16 +60,44 @@ std::string read(const std::string& path) {
   if (input.bad()) throw std::runtime_error("Input read failed");
   return result;
 }
+
+void filter_family(boost::json::object& catalog, const std::string& selected) {
+  namespace json = boost::json;
+  bool known = false;
+  std::string valid;
+  for (const auto& row : catalog.at("families").as_array()) {
+    const auto id = graphmine::runtime::string(row.as_object().at("id"), "family");
+    if (!valid.empty()) valid += ", ";
+    valid += id;
+    known = known || id == selected;
+  }
+  if (!known)
+    throw std::runtime_error("Unknown native family '" + selected + "'. Valid families: " + valid);
+  for (const auto* key : {"families", "operations", "problems"}) {
+    json::array rows;
+    const auto* field = std::string(key) == "families" ? "id" : "family";
+    for (const auto& row : catalog.at(key).as_array()) {
+      const auto* family = row.as_object().if_contains(field);
+      if (family && family->as_string() == selected) rows.push_back(row);
+    }
+    catalog[key] = std::move(rows);
+  }
+}
 }  // namespace
 int main(int argc, char** argv) {
   namespace json = boost::json;
   try {
     ProtocolOutput protocol;
     json::object request;
+    std::optional<std::string> family;
     const std::string command = argc > 1 ? argv[1] : "";
-    if ((command == "list" || command == "families" || command == "catalog") && argc == 2)
+    if (command == "list" || command == "families" || command == "catalog") {
       request = {{"command", "catalog"}};
-    else if (command == "request" && argc == 2) {
+      if (argc == 4 && std::string(argv[2]) == "--family")
+        family = argv[3];
+      else if (argc != 2)
+        throw std::runtime_error("Usage: graphmine-native " + command + " [--family ID]");
+    } else if (command == "request" && argc == 2) {
       const auto response = graphmine::runtime::request(read("-"));
       protocol.emit(response);
       return json::parse(response).as_object().contains("error") ? 2 : 0;
@@ -113,7 +141,7 @@ int main(int argc, char** argv) {
       }
     } else
       throw std::runtime_error(
-          "Usage: graphmine-native catalog|list|families|request; run OP GRAPH.json [--parameters "
+          "Usage: graphmine-native catalog|list|families [--family ID]; request; run OP GRAPH.json [--parameters "
           "PARAMS.json] [--device cpu|gpu|auto] [--backend ID] [--gpu-device N] [--budget "
           "BUDGET.json]; read-csv FILE [--columns NAMES.json] [--gpu-device N] [--max-rows N]; "
           "read-graph FILE.csv|FILE.txt [--source-column NAME] [--target-column NAME] [--directed "
@@ -123,6 +151,7 @@ int main(int argc, char** argv) {
       protocol.emit(json::serialize(response));
       return 2;
     }
+    if (family) filter_family(response, *family);
     if (command == "list")
       protocol.emit(json::serialize(response.at("operations")));
     else if (command == "families")

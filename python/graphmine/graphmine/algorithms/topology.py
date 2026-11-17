@@ -12,7 +12,6 @@ from ._numeric import float64
 @register(
     id="persistent-homology",
     problem_id="persistent_homology",
-    family="topology",
     title="Track components, loops and higher-dimensional holes across edge thresholds",
     description="GUDHI flag-complex persistence over a declared prime field. Includes essential H0 intervals and enough cofaces to compute deaths in every requested homology dimension.",
     parameters={

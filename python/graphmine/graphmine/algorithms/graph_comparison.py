@@ -430,7 +430,6 @@ def _edit_script(a, b, mapping, costs, work):
 @register(
     id="graph-edit-distance",
     problem_id="graph_edit_distance_mcs",
-    family="comparison",
     title="Minimum graph edit cost",
     description="Exact reference edit distance between simple directed/undirected graphs using NetworkX rational shortest paths over partial correspondences. Exact vertex-label replacement costs insertion+deletion; equal selected labels cost zero. Edge relabeling competes with deletion+insertion. Weights/times/unselected attributes are ignored. Returns an ordered edit script on normalized graphs with stable handles and original IDs. Exponential work is budgeted; no timed-out or approximate result is advertised as optimal.",
     parameters={
@@ -539,7 +538,6 @@ def graph_edit_distance(graph, args, work, backend):
 @register(
     id="maximum-common-subgraph",
     problem_id="graph_edit_distance_mcs",
-    family="comparison",
     title="Largest common subgraph by vertex count",
     description="Exact maximum vertex count, with a checked graph and injective correspondence. Induced matching uses NetworkX VF2 on successively smaller subsets. Non-induced matching permits disconnected/edgeless results and uses maximum label-compatible matching; it does not maximize the number of edges. Preserves direction and selected categorical labels; ignores weights/times. Exponential induced search is budgeted.",
     parameters={**_PARAMETERS, "induced": P("boolean", True)},

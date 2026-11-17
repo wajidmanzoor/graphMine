@@ -640,7 +640,7 @@ def test_queries_obey_work_limits_and_never_claim_gpu(operation, parameters):
 
 
 def test_query_cards_are_declared_with_nested_filter_schemas():
-    cards = [card for card in list_algorithms() if card["family"] == "query"]
+    cards = [card for card in list_algorithms() if card["family"] == "records"]
     assert len(cards) == 7
     assert all(card["library"] == "python" for card in cards)
     for card in cards:

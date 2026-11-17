@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "graph_coarsening",
   "name": "Graph Coarsening and Quotient Construction",
-  "category": "community_and_structural_analysis",
+  "category": "preparation",
   "problem_statement": "Map every vertex to a nonempty coarse cluster and construct the weighted quotient graph with declared edge and feature aggregation.",
   "graph_input": {
     "format": "canonical_graph_v1",

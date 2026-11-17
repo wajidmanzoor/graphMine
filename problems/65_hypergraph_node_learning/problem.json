@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "hypergraph_node_learning",
   "name": "Hypergraph Node Classification and Regression",
-  "category": "graph_machine_learning",
+  "category": "learning",
   "problem_statement": "Train or evaluate a declared hypergraph neural model to predict vertex labels or targets while preserving hyperedge incidence.",
   "graph_input": {
     "format": "canonical_hypergraph_v1",

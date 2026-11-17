@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "minimum_vertex_cover",
   "name": "Minimum Vertex Cover",
-  "category": "community_and_structural_analysis",
+  "category": "selection",
   "problem_statement": "Find a smallest set of vertices touching every edge, or decide whether a cover of size at most k exists.",
   "graph_input": {
     "format": "canonical_graph_v1",

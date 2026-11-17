@@ -51,9 +51,10 @@ def native_completion_evidence(request):
         for name in (
             "graphlet_atlas.json",
             "native_parameter_schemas.json",
-            "problem_families.json",
+            "problems.json",
         )
     ]
+    files += [ROOT / "catalog" / name for name in ("family.json", "problems.json")]
     files += [Path(item.path) for item in request.session.items]
     # The shared view builder now lives in the standalone core. Track the full
     # compiled source inventory so an edit there also invalidates this evidence.

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "maximal_clique_enumeration",
   "name": "Maximal Clique Enumeration",
-  "category": "dense_structure_mining",
+  "category": "dense",
   "problem_statement": "Given an undirected graph, enumerate every vertex set that forms a clique and is not a proper subset of another clique.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

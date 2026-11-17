@@ -1,0 +1,72 @@
+{
+  "records": {
+    "title": "Look up records",
+    "description": "Which stored records or connections match my request? Look up, filter and summarize stored vertex and edge records, including bounded connection queries and extraction by record selectors. Path queries overlap with paths, and graph extraction overlaps with preparation; choose this family when the goal is retrieving records satisfying a request.",
+    "deciding_question": "Which stored records or connections match my request?"
+  },
+  "paths": {
+    "title": "Paths & reachability",
+    "description": "How do I get from A to B, what can reach what, or in what order? Search, optimize or enumerate routes, compute reachability, or order dependencies. Bounded path queries also exist in records; choose this family when the goal is route analysis or dependency order.",
+    "deciding_question": "How do I get from A to B, what can reach what, or in what order?"
+  },
+  "connectivity": {
+    "title": "Connectivity, cuts & trees",
+    "description": "Is it connected, where does it break, or what is the cheapest way to connect it? Find components and biconnected blocks, identify capacity bottlenecks with flow and cuts, or connect vertices and required groups with trees.",
+    "deciding_question": "Is it connected, where does it break, or what is the cheapest way to connect it?"
+  },
+  "dense": {
+    "title": "Cliques & dense subgraphs",
+    "description": "Which tightly connected groups exist? Clique: every pair connected. Biclique: every cross pair connected. k-core: at least k neighbours each. k-truss: each edge in at least k−2 triangles. Densest: most edges per vertex, or the declared weighted or higher-order clique density. Quasi-clique: a minimum internal-degree fraction. These operations select subgraphs satisfying a structural definition; they do not require a partition of all vertices.",
+    "deciding_question": "Which tightly connected groups exist?"
+  },
+  "communities": {
+    "title": "Communities & partitions",
+    "description": "How should vertices be grouped or partitioned? Find communities, balanced partitions or signed-network group structure. Full partitions assign vertices to groups; local and overlapping communities may cover only part of the graph. Unlike dense, the organizing question is group membership or partition structure, rather than selecting a subgraph by a clique, core, truss or density definition.",
+    "deciding_question": "How should vertices be grouped or partitioned?"
+  },
+  "importance": {
+    "title": "Importance & influence",
+    "description": "Which vertices matter most, or which seeds spread furthest? Measure vertex centrality, rank vertices globally or relative to chosen seeds, or select seeds for an explicitly defined spreading process.",
+    "deciding_question": "Which vertices matter most, or which seeds spread furthest?"
+  },
+  "similarity": {
+    "title": "Similarity & comparison",
+    "description": "How alike are two vertices or two graphs, or which link is missing? Compare network neighborhoods, score possible missing links, or compare and align graphs through edit distance, common subgraphs or vertex correspondences.",
+    "deciding_question": "How alike are two vertices or two graphs, or which link is missing?"
+  },
+  "motifs": {
+    "title": "Counting motifs",
+    "description": "How many small shapes (triangles, butterflies, graphlets, motifs, timed motifs) are there? Count or list the supported shapes, including updates to triangle counts and ordered temporal events. Bipartite and temporal input requirements determine eligibility, not separate families.",
+    "deciding_question": "How many small shapes (triangles, butterflies, graphlets, motifs, timed motifs) are there?"
+  },
+  "patterns": {
+    "title": "Pattern matching & mining",
+    "description": "Where does a given pattern occur, or which patterns are frequent? Match a supplied pattern or mine frequent subgraphs in one graph or a graph collection, using the operation's declared matching and support semantics.",
+    "deciding_question": "Where does a given pattern occur, or which patterns are frequent?"
+  },
+  "selection": {
+    "title": "Assignment & selection",
+    "description": "Pick non-conflicting pairs or items, cover every edge, or colour without conflicts. Match pairs or assign workers to tasks, select independent vertices, cover connections with vertices, or assign colours under the declared conflict rules.",
+    "deciding_question": "Pick non-conflicting pairs or items, cover every edge, or colour without conflicts."
+  },
+  "preparation": {
+    "title": "Prepare, sample & draw",
+    "description": "Build, clean, shrink, sample, extract or draw a graph before analysis. Resolve entities, construct or reduce graphs, sample neighborhoods or walks, and compute layouts. Graph extraction overlaps with records; choose this family when the goal is preparing a graph for subsequent analysis.",
+    "deciding_question": "Build, clean, shrink, sample, extract or draw a graph before analysis."
+  },
+  "spectral": {
+    "title": "Spectral & topology",
+    "description": "Eigenvectors, smoothing signals over the graph, or shape across thresholds. Compute Laplacian eigenpairs, denoise graph signals, or track topological features through a filtration.",
+    "deciding_question": "Eigenvectors, smoothing signals over the graph, or shape across thresholds."
+  },
+  "statistics": {
+    "title": "Statistics & anomalies",
+    "description": "Is this unusual compared with a baseline or a random graph? Detect graph anomalies under an explicit baseline or assess significance against a declared null-model ensemble.",
+    "deciding_question": "Is this unusual compared with a baseline or a random graph?"
+  },
+  "learning": {
+    "title": "Learning & embeddings",
+    "description": "Learn from features and labels, or learn vectors for vertices or triples. Train vertex, graph or hypergraph predictors, condense training data, infer locations under a declared model, or learn node and knowledge-graph embeddings. Hypergraph inputs are an eligibility requirement, not a separate family.",
+    "deciding_question": "Learn from features and labels, or learn vectors for vertices or triples."
+  }
+}

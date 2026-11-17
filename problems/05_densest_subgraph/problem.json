@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "densest_subgraph",
   "name": "Densest Subgraph",
-  "category": "dense_structure_mining",
+  "category": "dense",
   "problem_statement": "Find a nonempty vertex subset maximizing its induced k-clique count divided by the number of selected vertices. Clique order k=2 gives ordinary edge density; the k=2 weighted variant uses total induced edge weight. Clique order does not constrain result cardinality.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

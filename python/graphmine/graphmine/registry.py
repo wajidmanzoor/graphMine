@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .contracts import Algorithm
 from .exceptions import UnsupportedOperation
+from ._families import FAMILIES, OPERATION_FAMILY
 
 _algorithms: dict[str, Algorithm] = {}
 _loaded = False
@@ -11,7 +12,6 @@ def register(
     *,
     id,
     problem_id,
-    family,
     title,
     description,
     parameters=None,
@@ -27,7 +27,7 @@ def register(
         _algorithms[id] = Algorithm(
             id,
             problem_id,
-            family,
+            OPERATION_FAMILY[id],
             title,
             description,
             parameters or {},
@@ -89,6 +89,11 @@ def reference_algorithm(operation: str) -> Algorithm:
 
 
 def reference_algorithms(*, family: str | None = None) -> list[dict]:
+    valid = [row["id"] for row in FAMILIES]
+    if family is not None and family not in valid:
+        raise UnsupportedOperation(
+            f"Unknown reference family {family!r}. Valid families: {', '.join(valid)}"
+        )
     _load()
     return [
         a.card()
@@ -100,8 +105,9 @@ def reference_algorithms(*, family: str | None = None) -> list[dict]:
 def reference_families() -> list[dict]:
     values = reference_algorithms()
     return [
-        {"id": name, "operation_count": sum(a["family"] == name for a in values)}
-        for name in sorted({a["family"] for a in values})
+        {"id": row["id"], "operation_count": sum(a["family"] == row["id"] for a in values)}
+        for row in FAMILIES
+        if any(a["family"] == row["id"] for a in values)
     ]
 
 

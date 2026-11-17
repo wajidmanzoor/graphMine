@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "hop_constrained_cycle_path_enumeration",
   "name": "Hop-Constrained Simple Path and Cycle Enumeration",
-  "category": "pattern_and_motif_mining",
+  "category": "paths",
   "problem_statement": "Given a directed graph and a hop bound k, enumerate every simple (vertex-disjoint except endpoints) s-t path with at most k edges, or every simple cycle through a given vertex or edge with at most k edges.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

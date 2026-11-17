@@ -14,7 +14,6 @@ from ._numeric import float64, laplacian, require_positive_tolerance
 @register(
     id="laplacian-eigenpairs",
     problem_id="graph_laplacian_eigenpairs",
-    family="spectral",
     title="Compute graph Laplacian eigenvalues and eigenvectors",
     description="SciPy symmetric eigensolver with explicit residual and orthogonality checks. The direct solver has no max_iterations parameter.",
     parameters={
@@ -74,7 +73,6 @@ def eigenpairs(graph, args, work, backend="networkx"):
 @register(
     id="graph-signal-denoising",
     problem_id="graph_signal_denoising",
-    family="spectral",
     title="Smooth noisy measurements over a graph",
     description="Minimize one-half squared observation error plus a declared Laplacian, total-variation or graph-trend penalty. Numerical accuracy is checked with stationarity or a feasible dual bound.",
     parameters={

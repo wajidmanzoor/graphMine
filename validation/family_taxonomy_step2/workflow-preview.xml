@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.494" timestamp="2026-11-17T15:05:33.578420-05:00" hostname="guoglambda01"><testcase classname="tests.test_analytics_workflows" name="test_plan_preview_flags_large_exact_searches_and_slow_past_runs" time="0.132"><failure message="assert (False)">agent/tests/test_analytics_workflows.py:608: in test_plan_preview_flags_large_exact_searches_and_slow_past_runs
+    assert preview["steps"][0]["search"] and preview["expensive"]
+E   assert (False)</failure></testcase></testsuite></testsuites>

@@ -792,7 +792,7 @@
         "schema_version": "1.0.0",
         "problem_id": "maximal_clique_enumeration",
         "name": "Maximal Clique Enumeration",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Given an undirected graph, enumerate every vertex set that forms a clique and is not a proper subset of another clique.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -890,7 +890,7 @@
         "schema_version": "1.0.0",
         "problem_id": "maximum_clique",
         "name": "Maximum Clique",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Given an undirected graph, find a clique with the largest possible number of vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -987,7 +987,7 @@
         "schema_version": "1.0.0",
         "problem_id": "k_clique_counting_enumeration",
         "name": "k-Clique Counting and Enumeration",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Given an undirected graph and integer k, count or enumerate every complete vertex set containing exactly k vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -1095,7 +1095,7 @@
         "schema_version": "1.0.0",
         "problem_id": "quasi_clique_mining",
         "name": "Quasi-Clique Mining",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Find vertex subsets whose induced subgraphs satisfy a minimum internal-degree fraction, allowing dense groups that are not complete cliques.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -1201,7 +1201,7 @@
         "schema_version": "1.0.0",
         "problem_id": "densest_subgraph",
         "name": "Densest Subgraph",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Find a nonempty vertex subset maximizing its induced k-clique count divided by the number of selected vertices. Clique order k=2 gives ordinary edge density; the k=2 weighted variant uses total induced edge weight. Clique order does not constrain result cardinality.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -1341,7 +1341,7 @@
         "schema_version": "1.0.0",
         "problem_id": "k_core_decomposition",
         "name": "k-Core Decomposition",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Assign every vertex its largest k for which it belongs to the maximal induced subgraph whose vertices all have internal degree at least k.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -1436,7 +1436,7 @@
         "schema_version": "1.0.0",
         "problem_id": "k_truss_decomposition",
         "name": "k-Truss Decomposition",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Assign every edge the largest k for which it belongs to a maximal subgraph where each edge participates in at least k-2 triangles within that subgraph.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -1531,7 +1531,7 @@
         "schema_version": "1.0.0",
         "problem_id": "maximal_biclique_enumeration",
         "name": "Maximal Biclique Enumeration",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Given a bipartite graph, enumerate complete bipartite subgraphs that cannot be extended by adding a vertex to either side.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -1649,7 +1649,7 @@
         "schema_version": "1.0.0",
         "problem_id": "triangle_counting_listing",
         "name": "Triangle Counting and Listing",
-        "category": "pattern_and_motif_mining",
+        "category": "motifs",
         "problem_statement": "Count all unordered triples of vertices connected by all three possible edges and optionally list the triples or their per-vertex and per-edge participation counts.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -1766,7 +1766,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_motif_counting",
         "name": "Graph Motif Counting",
-        "category": "pattern_and_motif_mining",
+        "category": "motifs",
         "problem_statement": "Count occurrences of one or more supplied small structural patterns in a directed or undirected graph.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -1888,7 +1888,7 @@
         "schema_version": "1.0.0",
         "problem_id": "subgraph_isomorphism",
         "name": "Subgraph Isomorphism and Pattern Matching",
-        "category": "pattern_and_motif_mining",
+        "category": "patterns",
         "problem_statement": "Find injective mappings from the vertices of a query graph to a data graph that preserve required edges, direction, and requested attribute predicates.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2007,7 +2007,7 @@
         "schema_version": "1.0.0",
         "problem_id": "temporal_motif_mining",
         "name": "Temporal Motif Mining",
-        "category": "pattern_and_motif_mining",
+        "category": "motifs",
         "problem_statement": "Count occurrences of a small ordered edge pattern whose matched events occur in the required order within a bounded time window.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2133,7 +2133,7 @@
         "schema_version": "1.0.0",
         "problem_id": "community_detection",
         "name": "Disjoint Community Detection",
-        "category": "community_and_structural_analysis",
+        "category": "communities",
         "problem_statement": "Partition all graph vertices into nonoverlapping communities that maximize a declared within-community quality function.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2267,7 +2267,7 @@
         "schema_version": "1.0.0",
         "problem_id": "centrality_influential_node_mining",
         "name": "Centrality and Influential-Node Mining",
-        "category": "community_and_structural_analysis",
+        "category": "importance",
         "problem_statement": "Compute a declared centrality score for graph vertices and rank the most structurally influential vertices under that definition.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2422,7 +2422,7 @@
         "schema_version": "1.0.0",
         "problem_id": "personalized_pagerank_rwr",
         "name": "Personalized PageRank and Random Walk with Restart",
-        "category": "community_and_structural_analysis",
+        "category": "importance",
         "problem_statement": "Given one or more seed vertices, compute each vertex's steady-state visitation probability under a random walk that restarts to the seed distribution with fixed probability, and rank vertices by that score relative to the seeds.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2603,7 +2603,7 @@
         "schema_version": "1.0.0",
         "problem_id": "max_flow_min_cut",
         "name": "Maximum Flow and Minimum s-t Cut",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "connectivity",
         "problem_statement": "Given a capacitated graph and distinct source and sink vertices, compute a maximum feasible flow and a minimum-capacity separating cut. With optional vertex capacities, the cut can contain both original edges and capacity-limited vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2766,7 +2766,7 @@
         "schema_version": "1.0.0",
         "problem_id": "butterfly_counting_bipartite",
         "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
-        "category": "pattern_and_motif_mining",
+        "category": "motifs",
         "problem_statement": "Given a bipartite graph, count butterflies (complete 2x2 bicliques) globally and per vertex/edge, and optionally compute maximal vertex sets satisfying separate left/right thresholds. core_measure explicitly distinguishes conventional degree-based (alpha,beta)-cores from the butterfly-participation variant.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2912,7 +2912,7 @@
         "schema_version": "1.0.0",
         "problem_id": "group_steiner_tree",
         "name": "Group Steiner Tree",
-        "category": "dense_structure_mining",
+        "category": "connectivity",
         "problem_statement": "Given an edge-weighted graph and a collection of potentially overlapping vertex groups, find a minimum-weight connected subtree that includes at least one vertex from every group.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -3033,7 +3033,7 @@
         "schema_version": "1.0.0",
         "problem_id": "influence_maximization",
         "name": "Influence Maximization under Diffusion Models",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "importance",
         "problem_statement": "Given a directed graph with edge-level influence probabilities and a declared stochastic diffusion model, select a seed set of a given size that maximizes the expected number of vertices eventually activated.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -3179,7 +3179,7 @@
         "schema_version": "1.0.0",
         "problem_id": "bipartite_matching_assignment",
         "name": "Bipartite Matching and Linear Assignment",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "selection",
         "problem_statement": "Given a bipartite graph, find a matching (a set of edges with no shared endpoints) that is optimal under a declared objective: maximum cardinality, maximum total weight, or minimum total cost.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -3324,7 +3324,7 @@
         "schema_version": "1.0.0",
         "problem_id": "transitive_closure_reachability",
         "name": "Transitive Closure and Reachability Indexing",
-        "category": "pattern_and_motif_mining",
+        "category": "paths",
         "problem_statement": "Given a directed graph, determine for queried vertex pairs whether the target is reachable from the source via a directed path, and optionally materialize or index full reachability to answer many such queries efficiently.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -3447,7 +3447,7 @@
         "schema_version": "1.0.0",
         "problem_id": "connected_components",
         "name": "Connected Components (Weakly and Strongly Connected)",
-        "category": "community_and_structural_analysis",
+        "category": "connectivity",
         "problem_statement": "Partition all vertices into maximal groups such that every pair of vertices within a group is connected according to a declared connectivity definition: weak (undirected) connectivity, or strong (directed, mutual-reachability) connectivity.",
         "graph_input": {
           "format": "canonical_edge_list_v1",

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "graph_layout_force_directed",
   "name": "Force-Directed Graph Layout",
-  "category": "predictive_and_unusual_structure_mining",
+  "category": "preparation",
   "problem_statement": "Given a graph, compute a position for every vertex in 2 or 3 dimensions under a declared force model, so that connected vertices are pulled together and all vertices repel each other, producing a drawing that visually reveals clusters and hubs.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

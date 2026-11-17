@@ -743,7 +743,7 @@
   "problem_index": {
     "maximal_clique_enumeration": {
       "name": "Maximal Clique Enumeration",
-      "category": "dense_structure_mining",
+      "category": "dense",
       "library_status": "validated",
       "operation_ids": [
         "maximal-cliques"
@@ -752,7 +752,7 @@
     },
     "maximum_clique": {
       "name": "Maximum Clique",
-      "category": "dense_structure_mining",
+      "category": "dense",
       "library_status": "validated",
       "operation_ids": [
         "maximum-clique"
@@ -761,7 +761,7 @@
     },
     "k_clique_counting_enumeration": {
       "name": "k-Clique Counting and Enumeration",
-      "category": "dense_structure_mining",
+      "category": "dense",
       "library_status": "validated",
       "operation_ids": [
         "k-cliques"
@@ -770,7 +770,7 @@
     },
     "quasi_clique_mining": {
       "name": "Quasi-Clique Mining",
-      "category": "dense_structure_mining",
+      "category": "dense",
       "library_status": "validated",
       "operation_ids": [
         "quasi-cliques"
@@ -779,7 +779,7 @@
     },
     "densest_subgraph": {
       "name": "Densest Subgraph",
-      "category": "dense_structure_mining",
+      "category": "dense",
       "library_status": "validated",
       "operation_ids": [
         "densest-subgraph"
@@ -788,14 +788,14 @@
     },
     "densest_k_subgraph": {
       "name": "Densest k-Subgraph",
-      "category": "dense_structure_mining",
+      "category": "dense",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/5"
     },
     "k_core_decomposition": {
       "name": "k-Core Decomposition",
-      "category": "dense_structure_mining",
+      "category": "dense",
       "library_status": "validated",
       "operation_ids": [
         "k-core"
@@ -804,7 +804,7 @@
     },
     "k_truss_decomposition": {
       "name": "k-Truss Decomposition",
-      "category": "dense_structure_mining",
+      "category": "dense",
       "library_status": "validated",
       "operation_ids": [
         "k-truss"
@@ -813,7 +813,7 @@
     },
     "maximal_biclique_enumeration": {
       "name": "Maximal Biclique Enumeration",
-      "category": "dense_structure_mining",
+      "category": "dense",
       "library_status": "validated",
       "operation_ids": [
         "maximal-bicliques",
@@ -823,7 +823,7 @@
     },
     "triangle_counting_listing": {
       "name": "Triangle Counting and Listing",
-      "category": "pattern_and_motif_mining",
+      "category": "motifs",
       "library_status": "validated",
       "operation_ids": [
         "triangle-counting",
@@ -833,7 +833,7 @@
     },
     "graph_motif_counting": {
       "name": "Graph Motif Counting",
-      "category": "pattern_and_motif_mining",
+      "category": "motifs",
       "library_status": "validated",
       "operation_ids": [
         "graph-motifs"
@@ -842,14 +842,14 @@
     },
     "graphlet_counting": {
       "name": "Graphlet Counting",
-      "category": "pattern_and_motif_mining",
+      "category": "motifs",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/11"
     },
     "subgraph_isomorphism": {
       "name": "Subgraph Isomorphism and Pattern Matching",
-      "category": "pattern_and_motif_mining",
+      "category": "patterns",
       "library_status": "validated",
       "operation_ids": [
         "subgraph-isomorphism"
@@ -858,14 +858,14 @@
     },
     "frequent_subgraph_mining": {
       "name": "Frequent Subgraph Mining",
-      "category": "pattern_and_motif_mining",
+      "category": "patterns",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/13"
     },
     "temporal_motif_mining": {
       "name": "Temporal Motif Mining",
-      "category": "pattern_and_motif_mining",
+      "category": "motifs",
       "library_status": "validated",
       "operation_ids": [
         "temporal-motif-mining"
@@ -874,7 +874,7 @@
     },
     "community_detection": {
       "name": "Disjoint Community Detection",
-      "category": "community_and_structural_analysis",
+      "category": "communities",
       "library_status": "validated",
       "operation_ids": [
         "community-detection"
@@ -883,14 +883,14 @@
     },
     "overlapping_community_detection": {
       "name": "Overlapping Community Detection by k-Clique Percolation",
-      "category": "community_and_structural_analysis",
+      "category": "communities",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/16"
     },
     "centrality_influential_node_mining": {
       "name": "Centrality and Influential-Node Mining",
-      "category": "community_and_structural_analysis",
+      "category": "importance",
       "library_status": "validated",
       "operation_ids": [
         "betweenness-centrality"
@@ -899,21 +899,21 @@
     },
     "link_prediction": {
       "name": "Link Prediction",
-      "category": "predictive_and_unusual_structure_mining",
+      "category": "similarity",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/18"
     },
     "graph_anomaly_detection": {
       "name": "Graph Anomaly Detection",
-      "category": "predictive_and_unusual_structure_mining",
+      "category": "statistics",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/19"
     },
     "personalized_pagerank_rwr": {
       "name": "Personalized PageRank and Random Walk with Restart",
-      "category": "community_and_structural_analysis",
+      "category": "importance",
       "library_status": "validated",
       "operation_ids": [
         "personalized-pagerank"
@@ -922,7 +922,7 @@
     },
     "max_flow_min_cut": {
       "name": "Maximum Flow and Minimum s-t Cut",
-      "category": "predictive_and_unusual_structure_mining",
+      "category": "connectivity",
       "library_status": "validated",
       "operation_ids": [
         "max-flow-min-cut"
@@ -931,7 +931,7 @@
     },
     "butterfly_counting_bipartite": {
       "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
-      "category": "pattern_and_motif_mining",
+      "category": "motifs",
       "library_status": "validated",
       "operation_ids": [
         "butterfly-counting"
@@ -940,28 +940,28 @@
     },
     "graph_edit_distance_mcs": {
       "name": "Graph Edit Distance and Maximum Common Subgraph",
-      "category": "predictive_and_unusual_structure_mining",
+      "category": "similarity",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/23"
     },
     "network_alignment": {
       "name": "Pairwise Network Alignment",
-      "category": "predictive_and_unusual_structure_mining",
+      "category": "similarity",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/24"
     },
     "hop_constrained_cycle_path_enumeration": {
       "name": "Hop-Constrained Simple Path and Cycle Enumeration",
-      "category": "pattern_and_motif_mining",
+      "category": "paths",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/25"
     },
     "group_steiner_tree": {
       "name": "Group Steiner Tree",
-      "category": "dense_structure_mining",
+      "category": "connectivity",
       "library_status": "validated",
       "operation_ids": [
         "group-steiner-tree"
@@ -970,7 +970,7 @@
     },
     "influence_maximization": {
       "name": "Influence Maximization under Diffusion Models",
-      "category": "predictive_and_unusual_structure_mining",
+      "category": "importance",
       "library_status": "validated",
       "operation_ids": [
         "influence-maximization"
@@ -979,21 +979,21 @@
     },
     "simrank_vertex_similarity": {
       "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
-      "category": "community_and_structural_analysis",
+      "category": "similarity",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/28"
     },
     "balanced_graph_partitioning": {
       "name": "Balanced k-Way Graph Partitioning",
-      "category": "community_and_structural_analysis",
+      "category": "communities",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/29"
     },
     "bipartite_matching_assignment": {
       "name": "Bipartite Matching and Linear Assignment",
-      "category": "predictive_and_unusual_structure_mining",
+      "category": "selection",
       "library_status": "validated",
       "operation_ids": [
         "linear-assignment"
@@ -1002,14 +1002,14 @@
     },
     "signed_network_structural_balance": {
       "name": "Signed Network Structural Balance and Frustration Minimization",
-      "category": "community_and_structural_analysis",
+      "category": "communities",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/31"
     },
     "transitive_closure_reachability": {
       "name": "Transitive Closure and Reachability Indexing",
-      "category": "pattern_and_motif_mining",
+      "category": "paths",
       "library_status": "validated",
       "operation_ids": [
         "transitive-closure"
@@ -1018,14 +1018,14 @@
     },
     "entity_resolution_blocking": {
       "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
-      "category": "predictive_and_unusual_structure_mining",
+      "category": "preparation",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/33"
     },
     "connected_components": {
       "name": "Connected Components (Weakly and Strongly Connected)",
-      "category": "community_and_structural_analysis",
+      "category": "connectivity",
       "library_status": "validated",
       "operation_ids": [
         "connected-components"
@@ -1034,245 +1034,245 @@
     },
     "graph_layout_force_directed": {
       "name": "Force-Directed Graph Layout",
-      "category": "predictive_and_unusual_structure_mining",
+      "category": "preparation",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/35"
     },
     "null_model_significance_testing": {
       "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
-      "category": "pattern_and_motif_mining",
+      "category": "statistics",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/36"
     },
     "breadth_first_search": {
       "name": "Breadth-First Search and Unweighted Shortest Paths",
-      "category": "traversal_and_paths",
+      "category": "paths",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/37"
     },
     "single_source_shortest_paths": {
       "name": "Weighted Single-Source Shortest Paths",
-      "category": "traversal_and_paths",
+      "category": "paths",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/38"
     },
     "many_source_shortest_paths": {
       "name": "Many-Source and All-Pairs Shortest Distances",
-      "category": "traversal_and_paths",
+      "category": "paths",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/39"
     },
     "spanning_tree_forest": {
       "name": "Minimum and Maximum Spanning Trees and Forests",
-      "category": "graph_optimization",
+      "category": "connectivity",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/40"
     },
     "maximal_independent_set": {
       "name": "Maximal Independent Set",
-      "category": "graph_optimization",
+      "category": "selection",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/41"
     },
     "vertex_coloring": {
       "name": "Vertex Coloring",
-      "category": "graph_optimization",
+      "category": "selection",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/42"
     },
     "general_graph_weighted_matching": {
       "name": "General-Graph Weighted Matching",
-      "category": "graph_optimization",
+      "category": "selection",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/43"
     },
     "topological_sort": {
       "name": "Topological Sorting and DAG Levels",
-      "category": "traversal_and_paths",
+      "category": "paths",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/44"
     },
     "random_walk_generation": {
       "name": "Graph Random-Walk Generation",
-      "category": "sampling_and_representation_learning",
+      "category": "preparation",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/45"
     },
     "neighborhood_sampling": {
       "name": "Neighborhood Sampling",
-      "category": "sampling_and_representation_learning",
+      "category": "preparation",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/46"
     },
     "induced_subgraph_ego_extraction": {
       "name": "Induced Subgraph and Ego-Network Extraction",
-      "category": "graph_transformations",
+      "category": "preparation",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/47"
     },
     "seeded_local_community_detection": {
       "name": "Seeded Local Community Detection",
-      "category": "community_and_structural_analysis",
+      "category": "communities",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/48"
     },
     "node_embedding": {
       "name": "Node Embedding",
-      "category": "sampling_and_representation_learning",
+      "category": "learning",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/49"
     },
     "knowledge_graph_embedding": {
       "name": "Knowledge-Graph Embedding",
-      "category": "sampling_and_representation_learning",
+      "category": "learning",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/50"
     },
     "node_classification_regression": {
       "name": "Node Classification and Regression",
-      "category": "graph_learning",
+      "category": "learning",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/51"
     },
     "graph_classification_regression": {
       "name": "Graph Classification and Regression",
-      "category": "graph_learning",
+      "category": "learning",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/52"
     },
     "hypergraph_partitioning": {
       "name": "Balanced Hypergraph Partitioning",
-      "category": "community_and_structural_analysis",
+      "category": "communities",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/53"
     },
     "spectral_graph_sparsification": {
       "name": "Spectral Graph Sparsification",
-      "category": "graph_transformations",
+      "category": "preparation",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/54"
     },
     "biconnected_components": {
       "name": "Biconnected Components, Articulation Points and Bridges",
-      "category": "connectivity_and_resilience",
+      "category": "connectivity",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/55"
     },
     "temporal_fastest_paths": {
       "name": "Temporal Fastest and Earliest-Arrival Paths",
-      "category": "traversal_and_paths",
+      "category": "paths",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/56"
     },
     "top_k_critical_paths_dag": {
       "name": "Top-k Critical Paths in DAGs",
-      "category": "traversal_and_paths",
+      "category": "paths",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/57"
     },
     "graph_signal_denoising": {
       "name": "Graph Signal Denoising and Trend Filtering",
-      "category": "graph_signal_processing",
+      "category": "spectral",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/58"
     },
     "graph_based_geolocation": {
       "name": "Graph-Based Geolocation",
-      "category": "graph_signal_processing",
+      "category": "learning",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/59"
     },
     "widest_paths": {
       "name": "Single-Source Widest Paths",
-      "category": "community_and_structural_analysis",
+      "category": "paths",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/60"
     },
     "graph_coarsening": {
       "name": "Graph Coarsening and Quotient Construction",
-      "category": "community_and_structural_analysis",
+      "category": "preparation",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/61"
     },
     "graph_laplacian_eigenpairs": {
       "name": "Graph Laplacian Eigenpairs",
-      "category": "community_and_structural_analysis",
+      "category": "spectral",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/62"
     },
     "knn_graph_construction": {
       "name": "k-Nearest-Neighbor Graph Construction",
-      "category": "community_and_structural_analysis",
+      "category": "preparation",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/63"
     },
     "hypergraph_node_learning": {
       "name": "Hypergraph Node Classification and Regression",
-      "category": "graph_machine_learning",
+      "category": "learning",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/64"
     },
     "maximum_independent_set": {
       "name": "Maximum Independent Set",
-      "category": "community_and_structural_analysis",
+      "category": "selection",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/65"
     },
     "persistent_homology": {
       "name": "Flag-Complex Persistent Homology",
-      "category": "community_and_structural_analysis",
+      "category": "spectral",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/66"
     },
     "single_graph_frequent_subgraph_mining": {
       "name": "Frequent Subgraphs in One Labeled Graph",
-      "category": "pattern_mining",
+      "category": "patterns",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/67"
     },
     "minimum_vertex_cover": {
       "name": "Minimum Vertex Cover",
-      "category": "community_and_structural_analysis",
+      "category": "selection",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/68"
     },
     "graph_condensation": {
       "name": "Learned Graph Condensation",
-      "category": "graph_machine_learning",
+      "category": "learning",
       "library_status": "no_validated_backend",
       "operation_ids": [],
       "problem_ref": "#/problems/69"
@@ -1571,7 +1571,7 @@
         "schema_version": "1.0.0",
         "problem_id": "maximal_clique_enumeration",
         "name": "Maximal Clique Enumeration",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Given an undirected graph, enumerate every vertex set that forms a clique and is not a proper subset of another clique.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -1785,7 +1785,7 @@
         "schema_version": "1.0.0",
         "problem_id": "maximum_clique",
         "name": "Maximum Clique",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Given an undirected graph, find a clique with the largest possible number of vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2125,7 +2125,7 @@
         "schema_version": "1.0.0",
         "problem_id": "k_clique_counting_enumeration",
         "name": "k-Clique Counting and Enumeration",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Given an undirected graph and integer k, count or enumerate every complete vertex set containing exactly k vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2373,7 +2373,7 @@
         "schema_version": "1.0.0",
         "problem_id": "quasi_clique_mining",
         "name": "Quasi-Clique Mining",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Find vertex subsets whose induced subgraphs satisfy a minimum internal-degree fraction, allowing dense groups that are not complete cliques.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2566,7 +2566,7 @@
         "schema_version": "1.0.0",
         "problem_id": "densest_subgraph",
         "name": "Densest Subgraph",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Find a nonempty vertex subset maximizing its induced k-clique count divided by the number of selected vertices. Clique order k=2 gives ordinary edge density; the k=2 weighted variant uses total induced edge weight. Clique order does not constrain result cardinality.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -2726,7 +2726,7 @@
         "schema_version": "1.0.0",
         "problem_id": "densest_k_subgraph",
         "name": "Densest k-Subgraph",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Given an undirected graph and integer k, find exactly k vertices maximizing the total value of edges induced by those vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -3404,7 +3404,7 @@
         "schema_version": "1.0.0",
         "problem_id": "k_core_decomposition",
         "name": "k-Core Decomposition",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Assign every vertex its largest k for which it belongs to the maximal induced subgraph whose vertices all have internal degree at least k.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -3658,7 +3658,7 @@
         "schema_version": "1.0.0",
         "problem_id": "k_truss_decomposition",
         "name": "k-Truss Decomposition",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Assign every edge the largest k for which it belongs to a maximal subgraph where each edge participates in at least k-2 triangles within that subgraph.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -3838,7 +3838,7 @@
         "schema_version": "1.0.0",
         "problem_id": "maximal_biclique_enumeration",
         "name": "Maximal Biclique Enumeration",
-        "category": "dense_structure_mining",
+        "category": "dense",
         "problem_statement": "Given a bipartite graph, enumerate complete bipartite subgraphs that cannot be extended by adding a vertex to either side.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -4087,7 +4087,7 @@
         "schema_version": "1.0.0",
         "problem_id": "triangle_counting_listing",
         "name": "Triangle Counting and Listing",
-        "category": "pattern_and_motif_mining",
+        "category": "motifs",
         "problem_statement": "Count all unordered triples of vertices connected by all three possible edges and optionally list the triples or their per-vertex and per-edge participation counts.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -4466,7 +4466,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_motif_counting",
         "name": "Graph Motif Counting",
-        "category": "pattern_and_motif_mining",
+        "category": "motifs",
         "problem_statement": "Count occurrences of one or more supplied small structural patterns in a directed or undirected graph.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -4609,7 +4609,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graphlet_counting",
         "name": "Graphlet Counting",
-        "category": "pattern_and_motif_mining",
+        "category": "motifs",
         "problem_statement": "Classify and count small connected induced subgraphs by their unlabeled isomorphism class, optionally including per-vertex orbit participation.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -4911,7 +4911,7 @@
         "schema_version": "1.0.0",
         "problem_id": "subgraph_isomorphism",
         "name": "Subgraph Isomorphism and Pattern Matching",
-        "category": "pattern_and_motif_mining",
+        "category": "patterns",
         "problem_statement": "Find injective mappings from the vertices of a query graph to a data graph that preserve required edges, direction, and requested attribute predicates.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -5050,7 +5050,7 @@
         "schema_version": "1.0.0",
         "problem_id": "frequent_subgraph_mining",
         "name": "Frequent Subgraph Mining",
-        "category": "pattern_and_motif_mining",
+        "category": "patterns",
         "problem_statement": "Given a collection of graphs, discover unique subgraph patterns appearing in at least a specified fraction of the collection.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -5251,7 +5251,7 @@
         "schema_version": "1.0.0",
         "problem_id": "temporal_motif_mining",
         "name": "Temporal Motif Mining",
-        "category": "pattern_and_motif_mining",
+        "category": "motifs",
         "problem_statement": "Count occurrences of a small ordered edge pattern whose matched events occur in the required order within a bounded time window.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -5708,7 +5708,7 @@
         "schema_version": "1.0.0",
         "problem_id": "community_detection",
         "name": "Disjoint Community Detection",
-        "category": "community_and_structural_analysis",
+        "category": "communities",
         "problem_statement": "Partition all graph vertices into nonoverlapping communities that maximize a declared within-community quality function.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -5862,7 +5862,7 @@
         "schema_version": "1.0.0",
         "problem_id": "overlapping_community_detection",
         "name": "Overlapping Community Detection by k-Clique Percolation",
-        "category": "community_and_structural_analysis",
+        "category": "communities",
         "problem_statement": "Find overlapping communities formed by connected components of the clique-adjacency graph, where two k-cliques are adjacent when they share k-1 vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -6150,7 +6150,7 @@
         "schema_version": "1.0.0",
         "problem_id": "centrality_influential_node_mining",
         "name": "Centrality and Influential-Node Mining",
-        "category": "community_and_structural_analysis",
+        "category": "importance",
         "problem_statement": "Compute a declared centrality score for graph vertices and rank the most structurally influential vertices under that definition.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -6326,7 +6326,7 @@
         "schema_version": "1.0.0",
         "problem_id": "link_prediction",
         "name": "Link Prediction",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "similarity",
         "problem_statement": "Score and rank currently unconnected vertex pairs according to a declared structural link-prediction measure.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -6493,7 +6493,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_anomaly_detection",
         "name": "Graph Anomaly Detection",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "statistics",
         "problem_statement": "Rank graph entities by how strongly their declared structural or temporal features deviate from a specified normality reference.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -6689,7 +6689,7 @@
         "schema_version": "1.0.0",
         "problem_id": "personalized_pagerank_rwr",
         "name": "Personalized PageRank and Random Walk with Restart",
-        "category": "community_and_structural_analysis",
+        "category": "importance",
         "problem_statement": "Given one or more seed vertices, compute each vertex's steady-state visitation probability under a random walk that restarts to the seed distribution with fixed probability, and rank vertices by that score relative to the seeds.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -6960,7 +6960,7 @@
         "schema_version": "1.0.0",
         "problem_id": "max_flow_min_cut",
         "name": "Maximum Flow and Minimum s-t Cut",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "connectivity",
         "problem_statement": "Given a capacitated graph and distinct source and sink vertices, compute a maximum feasible flow and a minimum-capacity separating cut. With optional vertex capacities, the cut can contain both original edges and capacity-limited vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -7229,7 +7229,7 @@
         "schema_version": "1.0.0",
         "problem_id": "butterfly_counting_bipartite",
         "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
-        "category": "pattern_and_motif_mining",
+        "category": "motifs",
         "problem_statement": "Given a bipartite graph, count butterflies (complete 2x2 bicliques) globally and per vertex/edge, and optionally compute maximal vertex sets satisfying separate left/right thresholds. core_measure explicitly distinguishes conventional degree-based (alpha,beta)-cores from the butterfly-participation variant.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -7432,7 +7432,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_edit_distance_mcs",
         "name": "Graph Edit Distance and Maximum Common Subgraph",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "similarity",
         "problem_statement": "Given two graphs, compute either the minimum total cost of vertex/edge insertions, deletions, and substitutions transforming one graph into the other (graph edit distance), or a largest common induced or non-induced subgraph shared by both (maximum common subgraph).",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -7660,7 +7660,7 @@
         "schema_version": "1.0.0",
         "problem_id": "network_alignment",
         "name": "Pairwise Network Alignment",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "similarity",
         "problem_statement": "Given two graphs and optional vertex-similarity priors, find a vertex mapping between them that maximizes conserved topology (and prior similarity, when supplied), either as a global one-to-one mapping or a local many-to-one set of high-scoring alignments.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -7854,7 +7854,7 @@
         "schema_version": "1.0.0",
         "problem_id": "hop_constrained_cycle_path_enumeration",
         "name": "Hop-Constrained Simple Path and Cycle Enumeration",
-        "category": "pattern_and_motif_mining",
+        "category": "paths",
         "problem_statement": "Given a directed graph and a hop bound k, enumerate every simple (vertex-disjoint except endpoints) s-t path with at most k edges, or every simple cycle through a given vertex or edge with at most k edges.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -8090,7 +8090,7 @@
         "schema_version": "1.0.0",
         "problem_id": "group_steiner_tree",
         "name": "Group Steiner Tree",
-        "category": "dense_structure_mining",
+        "category": "connectivity",
         "problem_statement": "Given an edge-weighted graph and a collection of potentially overlapping vertex groups, find a minimum-weight connected subtree that includes at least one vertex from every group.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -8317,7 +8317,7 @@
         "schema_version": "1.0.0",
         "problem_id": "influence_maximization",
         "name": "Influence Maximization under Diffusion Models",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "importance",
         "problem_statement": "Given a directed graph with edge-level influence probabilities and a declared stochastic diffusion model, select a seed set of a given size that maximizes the expected number of vertices eventually activated.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -8502,7 +8502,7 @@
         "schema_version": "1.0.0",
         "problem_id": "simrank_vertex_similarity",
         "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
-        "category": "community_and_structural_analysis",
+        "category": "similarity",
         "problem_statement": "Compute a pairwise structural similarity score between vertices based on the recursive principle that two vertices are similar to the extent their in-neighbors (or neighbors) are similar, for a single source vertex, a query pair, or top-k over all vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -8735,7 +8735,7 @@
         "schema_version": "1.0.0",
         "problem_id": "balanced_graph_partitioning",
         "name": "Balanced k-Way Graph Partitioning",
-        "category": "community_and_structural_analysis",
+        "category": "communities",
         "problem_statement": "Given an undirected graph and a target part count k, assign every vertex to exactly one of k parts of approximately equal size so that the total weight of edges crossing between parts is minimized.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -8971,7 +8971,7 @@
         "schema_version": "1.0.0",
         "problem_id": "bipartite_matching_assignment",
         "name": "Bipartite Matching and Linear Assignment",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "selection",
         "problem_statement": "Given a bipartite graph, find a matching (a set of edges with no shared endpoints) that is optimal under a declared objective: maximum cardinality, maximum total weight, or minimum total cost.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -9178,7 +9178,7 @@
         "schema_version": "1.0.0",
         "problem_id": "signed_network_structural_balance",
         "name": "Signed Network Structural Balance and Frustration Minimization",
-        "category": "community_and_structural_analysis",
+        "category": "communities",
         "problem_statement": "Given a graph whose edges are each labeled positive or negative, determine whether it is structurally balanced (partitionable into two factions so every positive edge stays within a faction and every negative edge crosses factions), and when it is not, find a two-faction assignment minimizing the total weight of frustrated edges.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -9396,7 +9396,7 @@
         "schema_version": "1.0.0",
         "problem_id": "transitive_closure_reachability",
         "name": "Transitive Closure and Reachability Indexing",
-        "category": "pattern_and_motif_mining",
+        "category": "paths",
         "problem_statement": "Given a directed graph, determine for queried vertex pairs whether the target is reachable from the source via a directed path, and optionally materialize or index full reachability to answer many such queries efficiently.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -9559,7 +9559,7 @@
         "schema_version": "1.0.0",
         "problem_id": "entity_resolution_blocking",
         "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "preparation",
         "problem_statement": "Given a collection of candidate entity records and one or more declared blocking rules over record attributes, generate the reduced set of candidate record pairs worth comparing, and optionally confirm matches and merge them into resolved-entity clusters.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -9770,7 +9770,7 @@
         "schema_version": "1.0.0",
         "problem_id": "connected_components",
         "name": "Connected Components (Weakly and Strongly Connected)",
-        "category": "community_and_structural_analysis",
+        "category": "connectivity",
         "problem_statement": "Partition all vertices into maximal groups such that every pair of vertices within a group is connected according to a declared connectivity definition: weak (undirected) connectivity, or strong (directed, mutual-reachability) connectivity.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -9909,7 +9909,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_layout_force_directed",
         "name": "Force-Directed Graph Layout",
-        "category": "predictive_and_unusual_structure_mining",
+        "category": "preparation",
         "problem_statement": "Given a graph, compute a position for every vertex in 2 or 3 dimensions under a declared force model, so that connected vertices are pulled together and all vertices repel each other, producing a drawing that visually reveals clusters and hubs.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -10078,7 +10078,7 @@
         "schema_version": "1.0.0",
         "problem_id": "null_model_significance_testing",
         "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
-        "category": "pattern_and_motif_mining",
+        "category": "statistics",
         "problem_statement": "Given an observed graph and a declared structural statistic, determine how unusual the statistic's observed value is by comparing it against its distribution over an ensemble of randomized graphs sampled from a declared null model, typically one preserving the degree sequence.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -10235,7 +10235,7 @@
         "schema_version": "1.0.0",
         "problem_id": "breadth_first_search",
         "name": "Breadth-First Search and Unweighted Shortest Paths",
-        "category": "traversal_and_paths",
+        "category": "paths",
         "problem_statement": "Compute minimum hop distances and optional predecessor paths from one or more source vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -10361,7 +10361,7 @@
         "schema_version": "1.0.0",
         "problem_id": "single_source_shortest_paths",
         "name": "Weighted Single-Source Shortest Paths",
-        "category": "traversal_and_paths",
+        "category": "paths",
         "problem_statement": "Compute minimum path-weight sums from one source to every vertex in a graph with nonnegative edge weights.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -10477,7 +10477,7 @@
         "schema_version": "1.0.0",
         "problem_id": "many_source_shortest_paths",
         "name": "Many-Source and All-Pairs Shortest Distances",
-        "category": "traversal_and_paths",
+        "category": "paths",
         "problem_statement": "Compute a matrix of minimum path-weight sums for selected origins and destinations, including all-pairs queries.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -10590,7 +10590,7 @@
         "schema_version": "1.0.0",
         "problem_id": "spanning_tree_forest",
         "name": "Minimum and Maximum Spanning Trees and Forests",
-        "category": "graph_optimization",
+        "category": "connectivity",
         "problem_statement": "Select an acyclic spanning subgraph minimizing or maximizing total edge weight independently within each connected component.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -10704,7 +10704,7 @@
         "schema_version": "1.0.0",
         "problem_id": "maximal_independent_set",
         "name": "Maximal Independent Set",
-        "category": "graph_optimization",
+        "category": "selection",
         "problem_statement": "Find one independent vertex set that cannot be enlarged by adding any remaining vertex.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -10798,7 +10798,7 @@
         "schema_version": "1.0.0",
         "problem_id": "vertex_coloring",
         "name": "Vertex Coloring",
-        "category": "graph_optimization",
+        "category": "selection",
         "problem_statement": "Assign colors so vertices within a declared graph distance receive different colors.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -10905,7 +10905,7 @@
         "schema_version": "1.0.0",
         "problem_id": "general_graph_weighted_matching",
         "name": "General-Graph Weighted Matching",
-        "category": "graph_optimization",
+        "category": "selection",
         "problem_statement": "Find a matching of high total nonnegative edge weight in an undirected graph without a bipartiteness assumption.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -11017,7 +11017,7 @@
         "schema_version": "1.0.0",
         "problem_id": "topological_sort",
         "name": "Topological Sorting and DAG Levels",
-        "category": "traversal_and_paths",
+        "category": "paths",
         "problem_statement": "Determine whether a directed graph is acyclic and return a valid topological vertex order and optional dependency levels.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -11111,7 +11111,7 @@
         "schema_version": "1.0.0",
         "problem_id": "random_walk_generation",
         "name": "Graph Random-Walk Generation",
-        "category": "sampling_and_representation_learning",
+        "category": "preparation",
         "problem_statement": "Generate vertex sequences sampled from a declared graph transition process.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -11246,7 +11246,7 @@
         "schema_version": "1.0.0",
         "problem_id": "neighborhood_sampling",
         "name": "Neighborhood Sampling",
-        "category": "sampling_and_representation_learning",
+        "category": "preparation",
         "problem_statement": "Sample multihop neighborhoods around seed vertices using declared fanouts and neighbor-selection probabilities.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -11387,7 +11387,7 @@
         "schema_version": "1.0.0",
         "problem_id": "induced_subgraph_ego_extraction",
         "name": "Induced Subgraph and Ego-Network Extraction",
-        "category": "graph_transformations",
+        "category": "preparation",
         "problem_statement": "Extract the graph induced by an explicit vertex set or by vertices within a hop radius of declared seeds.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -11512,7 +11512,7 @@
         "schema_version": "1.0.0",
         "problem_id": "seeded_local_community_detection",
         "name": "Seeded Local Community Detection",
-        "category": "community_and_structural_analysis",
+        "category": "communities",
         "problem_statement": "Find a nontrivial low-conductance vertex subset containing a specified seed set.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -11638,7 +11638,7 @@
         "schema_version": "1.0.0",
         "problem_id": "node_embedding",
         "name": "Node Embedding",
-        "category": "sampling_and_representation_learning",
+        "category": "learning",
         "problem_statement": "Learn a vector for every vertex under a declared graph representation-learning objective.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -11756,7 +11756,7 @@
         "schema_version": "1.0.0",
         "problem_id": "knowledge_graph_embedding",
         "name": "Knowledge-Graph Embedding",
-        "category": "sampling_and_representation_learning",
+        "category": "learning",
         "problem_statement": "Learn entity and relation representations from typed directed triples for relational link prediction.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -11888,7 +11888,7 @@
         "schema_version": "1.0.0",
         "problem_id": "node_classification_regression",
         "name": "Node Classification and Regression",
-        "category": "graph_learning",
+        "category": "learning",
         "problem_statement": "Train or apply a graph model to predict categorical labels or numerical targets for specified vertices.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -12017,7 +12017,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_classification_regression",
         "name": "Graph Classification and Regression",
-        "category": "graph_learning",
+        "category": "learning",
         "problem_statement": "Predict one categorical label or numerical target for each graph in a collection.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -12140,7 +12140,7 @@
         "schema_version": "1.0.0",
         "problem_id": "hypergraph_partitioning",
         "name": "Balanced Hypergraph Partitioning",
-        "category": "community_and_structural_analysis",
+        "category": "communities",
         "problem_statement": "Partition vertices of a weighted hypergraph into balanced parts while minimizing a declared hyperedge cut objective.",
         "graph_input": {
           "format": "canonical_hypergraph_v1",
@@ -12264,7 +12264,7 @@
         "schema_version": "1.0.0",
         "problem_id": "spectral_graph_sparsification",
         "name": "Spectral Graph Sparsification",
-        "category": "graph_transformations",
+        "category": "preparation",
         "problem_statement": "Construct a sparse reweighted subgraph approximating the quadratic form of a weighted undirected graph Laplacian.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -12395,7 +12395,7 @@
         "schema_version": "1.0.0",
         "problem_id": "biconnected_components",
         "name": "Biconnected Components, Articulation Points and Bridges",
-        "category": "connectivity_and_resilience",
+        "category": "connectivity",
         "problem_statement": "Compute vertex-biconnected blocks of a simple undirected graph, plus vertices and edges whose removal increases component count.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -12488,7 +12488,7 @@
         "schema_version": "1.0.0",
         "problem_id": "temporal_fastest_paths",
         "name": "Temporal Fastest and Earliest-Arrival Paths",
-        "category": "traversal_and_paths",
+        "category": "paths",
         "problem_statement": "Find time-respecting journeys minimizing elapsed duration or arrival time in a directed temporal graph.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -12615,7 +12615,7 @@
         "schema_version": "1.0.0",
         "problem_id": "top_k_critical_paths_dag",
         "name": "Top-k Critical Paths in DAGs",
-        "category": "traversal_and_paths",
+        "category": "paths",
         "problem_statement": "Return up to k distinct source-to-sink paths of greatest total edge delay in a directed acyclic graph.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -12726,7 +12726,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_signal_denoising",
         "name": "Graph Signal Denoising and Trend Filtering",
-        "category": "graph_signal_processing",
+        "category": "spectral",
         "problem_statement": "Estimate a vertex signal from noisy observations using a declared graph-difference regularizer.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -12859,7 +12859,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_based_geolocation",
         "name": "Graph-Based Geolocation",
-        "category": "graph_signal_processing",
+        "category": "learning",
         "problem_statement": "Infer geographic coordinates for unlocated vertices using declared graph propagation or supervised graph-learning models.",
         "graph_input": {
           "format": "canonical_edge_list_v1",
@@ -12993,7 +12993,7 @@
         "schema_version": "1.0.0",
         "problem_id": "widest_paths",
         "name": "Single-Source Widest Paths",
-        "category": "community_and_structural_analysis",
+        "category": "paths",
         "problem_statement": "For each vertex v, maximize the minimum edge capacity along a directed path from a designated source to v.",
         "graph_input": {
           "format": "canonical_graph_v1",
@@ -13108,7 +13108,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_coarsening",
         "name": "Graph Coarsening and Quotient Construction",
-        "category": "community_and_structural_analysis",
+        "category": "preparation",
         "problem_statement": "Map every vertex to a nonempty coarse cluster and construct the weighted quotient graph with declared edge and feature aggregation.",
         "graph_input": {
           "format": "canonical_graph_v1",
@@ -13257,7 +13257,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_laplacian_eigenpairs",
         "name": "Graph Laplacian Eigenpairs",
-        "category": "community_and_structural_analysis",
+        "category": "spectral",
         "problem_statement": "Compute selected eigenpairs of the combinatorial or symmetric normalized Laplacian of a nonnegative undirected graph.",
         "graph_input": {
           "format": "canonical_graph_v1",
@@ -13414,7 +13414,7 @@
         "schema_version": "1.0.0",
         "problem_id": "knn_graph_construction",
         "name": "k-Nearest-Neighbor Graph Construction",
-        "category": "community_and_structural_analysis",
+        "category": "preparation",
         "problem_statement": "Construct a graph connecting each feature vector to its k nearest distinct input vectors under a declared distance metric.",
         "graph_input": {
           "format": "feature_vectors_v1",
@@ -13569,7 +13569,7 @@
         "schema_version": "1.0.0",
         "problem_id": "hypergraph_node_learning",
         "name": "Hypergraph Node Classification and Regression",
-        "category": "graph_machine_learning",
+        "category": "learning",
         "problem_statement": "Train or evaluate a declared hypergraph neural model to predict vertex labels or targets while preserving hyperedge incidence.",
         "graph_input": {
           "format": "canonical_hypergraph_v1",
@@ -13717,7 +13717,7 @@
         "schema_version": "1.0.0",
         "problem_id": "maximum_independent_set",
         "name": "Maximum Independent Set",
-        "category": "community_and_structural_analysis",
+        "category": "selection",
         "problem_statement": "Find an independent vertex set of maximum cardinality in a simple undirected graph.",
         "graph_input": {
           "format": "canonical_graph_v1",
@@ -13852,7 +13852,7 @@
         "schema_version": "1.0.0",
         "problem_id": "persistent_homology",
         "name": "Flag-Complex Persistent Homology",
-        "category": "community_and_structural_analysis",
+        "category": "spectral",
         "problem_statement": "Compute persistence intervals over a declared prime field for the flag-complex filtration induced by nonnegative undirected edge filtration values.",
         "graph_input": {
           "format": "canonical_graph_v1",
@@ -13980,7 +13980,7 @@
         "schema_version": "1.0.0",
         "problem_id": "single_graph_frequent_subgraph_mining",
         "name": "Frequent Subgraphs in One Labeled Graph",
-        "category": "pattern_mining",
+        "category": "patterns",
         "problem_statement": "Enumerate or count connected labeled patterns meeting a declared minimum-image-support threshold in one labeled host graph.",
         "graph_input": {
           "format": "canonical_graph_v1",
@@ -14121,7 +14121,7 @@
         "schema_version": "1.0.0",
         "problem_id": "minimum_vertex_cover",
         "name": "Minimum Vertex Cover",
-        "category": "community_and_structural_analysis",
+        "category": "selection",
         "problem_statement": "Find a smallest set of vertices touching every edge, or decide whether a cover of size at most k exists.",
         "graph_input": {
           "format": "canonical_graph_v1",
@@ -14264,7 +14264,7 @@
         "schema_version": "1.0.0",
         "problem_id": "graph_condensation",
         "name": "Learned Graph Condensation",
-        "category": "graph_machine_learning",
+        "category": "learning",
         "problem_statement": "Learn a smaller synthetic attributed graph whose supervised training utility approximates that of the original training graph.",
         "graph_input": {
           "format": "canonical_graph_v1",

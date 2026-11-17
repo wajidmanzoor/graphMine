@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "knowledge_graph_embedding",
   "name": "Knowledge-Graph Embedding",
-  "category": "sampling_and_representation_learning",
+  "category": "learning",
   "problem_statement": "Learn entity and relation representations from typed directed triples for relational link prediction.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

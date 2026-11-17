@@ -1,8 +1,28 @@
 #include "catalog_data.hpp"
 #include "internal.hpp"
 
+#include <map>
+
 namespace graphmine::runtime {
 namespace {
+const std::map<std::string, std::string>& operation_families() {
+  static const auto assignments = [] {
+    std::map<std::string, std::string> result;
+    const auto taxonomy = json::parse(taxonomy_json).as_object();
+    for (const auto& value : taxonomy.at("families").as_array()) {
+      const auto& family = value.as_object();
+      const auto id = string(family.at("id"), "family");
+      for (const auto& member : family.at("operations").as_array()) {
+        const auto operation = string(member, "operation");
+        require(result.emplace(operation, id).second,
+                "Native operation belongs to multiple families: " + operation);
+      }
+    }
+    return result;
+  }();
+  return assignments;
+}
+
 json::object parameter(std::string kind, json::value initial, bool required = false,
                        bool nullable = false) {
   json::object result{{"kind", kind}, {"required", required}, {"nullable", nullable}};
@@ -13,15 +33,12 @@ json::object card(const char* id, const char* problem, const char* title, const 
                   json::object parameters, json::object ports, json::array gpu_backends) {
   json::array backends{json::object{{"id", "cpp"}, {"device", "cpu"}, {"compiled", true}}};
   for (const auto& backend : gpu_backends) backends.push_back(backend);
-  static const auto taxonomy = json::parse(taxonomy_json).as_object();
-  std::string family;
-  for (const auto& row : taxonomy.at("problems").as_array())
-    if (row.as_object().at("id").as_string() == problem)
-      family = string(row.as_object().at("family"), "family");
-  require(!family.empty(), "Native operation has no declared problem family");
+  const auto declared = operation_families().find(id);
+  require(declared != operation_families().end(),
+          "Native operation has no declared family: " + std::string(id));
   return {{"id", id},
           {"problem_id", problem},
-          {"family", family},
+          {"family", declared->second},
           {"title", title},
           {"description", description},
           {"input_kind", "graph"},
@@ -1330,18 +1347,22 @@ NativeInputAlgorithm input_operation_handler(const std::string& operation) {
 json::object catalog() {
   auto result = json::parse(taxonomy_json).as_object();
   const auto cards = operation_cards();
-  for (auto& family : result.at("families").as_array()) {
-    json::array operations;
-    for (const auto& op : cards)
-      if (op.as_object().at("family") == family.as_object().at("id"))
-        operations.push_back(op.as_object().at("id"));
-    family.as_object()["operations"] = operations;
-  }
+  require(operation_families().size() == cards.size(),
+          "Family taxonomy contains an unknown native operation");
+  // Family and operation display order comes directly from the shared taxonomy.
   for (auto& problem : result.at("problems").as_array()) {
     json::array operations;
-    for (const auto& op : cards)
-      if (op.as_object().at("problem_id") == problem.as_object().at("id"))
+    std::string family;
+    for (const auto& op : cards) {
+      if (op.as_object().at("problem_id") == problem.as_object().at("id")) {
         operations.push_back(op.as_object().at("id"));
+        const auto assigned = string(op.as_object().at("family"), "family");
+        require(family.empty() || family == assigned,
+                "Native problem has operations in different families");
+        family = assigned;
+      }
+    }
+    if (!family.empty()) problem.as_object()["family"] = family;
     problem.as_object()["operations"] = operations;
     problem.as_object()["runtime_integration"] = operations.empty() ? "pending" : "implemented";
   }

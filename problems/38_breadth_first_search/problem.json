@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "breadth_first_search",
   "name": "Breadth-First Search and Unweighted Shortest Paths",
-  "category": "traversal_and_paths",
+  "category": "paths",
   "problem_statement": "Compute minimum hop distances and optional predecessor paths from one or more source vertices.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

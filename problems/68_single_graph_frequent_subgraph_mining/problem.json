@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "single_graph_frequent_subgraph_mining",
   "name": "Frequent Subgraphs in One Labeled Graph",
-  "category": "pattern_mining",
+  "category": "patterns",
   "problem_statement": "Enumerate or count connected labeled patterns meeting a declared minimum-image-support threshold in one labeled host graph.",
   "graph_input": {
     "format": "canonical_graph_v1",

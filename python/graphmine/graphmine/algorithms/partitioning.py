@@ -51,7 +51,6 @@ def _cpm(g, parts, resolution):
 @register(
     id="community-detection",
     problem_id="community_detection",
-    family="communities",
     title="Divide a network into communities",
     description="Louvain for heuristic modularity; checked binary partition optimization for exact modularity or CPM. CPM is internal edge weight minus resolution times the number of within-community vertex pairs.",
     parameters={
@@ -163,7 +162,6 @@ def community_detection(graph, args, work, backend="networkx"):
 @register(
     id="balanced-partitioning",
     problem_id="balanced_graph_partitioning",
-    family="partitioning",
     title="Split a graph into balanced groups with few crossing edges",
     description="Minimize crossing edge cost under both lower and upper balance limits and nonempty parts. Normalized cut is the sum of each part's boundary cost divided by its declared balance size.",
     parameters={
@@ -339,7 +337,6 @@ def balanced_partitioning(graph, args, work, backend="networkx"):
 @register(
     id="signed-balance",
     problem_id="signed_network_structural_balance",
-    family="partitioning",
     title="Check signed-network balance or minimize frustrated connections",
     description="Structural balance is an exact parity test, independent of edge costs. Frustration minimization uses binary XOR constraints and recomputes the weighted violations.",
     parameters={

@@ -82,7 +82,17 @@ if(GRAPHMINE_NATIVE_OPTIMIZATION)
     FILES_MATCHING PATTERN "LICENSE*" PATTERN "PROVENANCE.json")
 endif()
 
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/problem_families.json" GRAPHMINE_NATIVE_TAXONOMY)
+# Python is a build-time catalog generator only; the native ABI remains standalone.
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+execute_process(
+  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/generate_families.py"
+          --native-json "${CMAKE_CURRENT_BINARY_DIR}/family-catalog.json"
+  RESULT_VARIABLE GRAPHMINE_CATALOG_RESULT
+  ERROR_VARIABLE GRAPHMINE_CATALOG_ERROR)
+if(NOT GRAPHMINE_CATALOG_RESULT EQUAL 0)
+  message(FATAL_ERROR "Invalid family/problem catalog: ${GRAPHMINE_CATALOG_ERROR}")
+endif()
+file(READ "${CMAKE_CURRENT_BINARY_DIR}/family-catalog.json" GRAPHMINE_NATIVE_TAXONOMY)
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/graphlet_atlas.json" GRAPHMINE_NATIVE_ATLAS)
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/native_parameter_schemas.json" GRAPHMINE_NATIVE_PARAMETER_SCHEMAS)
 file(GLOB_RECURSE GRAPHMINE_RUNTIME_HASH_INPUTS CONFIGURE_DEPENDS
@@ -94,7 +104,11 @@ list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS ${GRAPHMINE_VIEW_CORE_INPUTS}
      "${CMAKE_CURRENT_SOURCE_DIR}/../cmake/GraphViews.cmake")
 list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS
      "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt"
-     "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/problem_families.json"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../../catalog/family.json"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../../catalog/problems.json"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/family_catalog.py"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/generate_families.py"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/validate_families.py"
      "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/graphlet_atlas.json"
      "${CMAKE_CURRENT_SOURCE_DIR}/../manifests/native_parameter_schemas.json"
      "${CMAKE_CURRENT_SOURCE_DIR}/../src/core/graph.cpp"
@@ -330,7 +344,8 @@ install(TARGETS graphmine_runtime graphmine_native_cli EXPORT GraphMineRuntimeTa
 install(FILES ../include/graphmine/runtime.hpp ../include/graphmine/runtime_c.h
               ../include/graphmine/graph.hpp ../include/graphmine/views.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/graphmine)
-install(FILES ../manifests/problem_families.json DESTINATION ${CMAKE_INSTALL_DATADIR}/graphmine)
+install(FILES ../../catalog/family.json ../../catalog/problems.json ../../catalog/algo.json
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/graphmine)
 install(EXPORT GraphMineRuntimeTargets NAMESPACE GraphMine:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GraphMineRuntime)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/GraphMineRuntimeConfig.cmake" "include(\"\${CMAKE_CURRENT_LIST_DIR}/GraphMineRuntimeTargets.cmake\")\n")
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GraphMineRuntimeConfig.cmake" DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GraphMineRuntime)

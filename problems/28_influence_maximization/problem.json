@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "influence_maximization",
   "name": "Influence Maximization under Diffusion Models",
-  "category": "predictive_and_unusual_structure_mining",
+  "category": "importance",
   "problem_statement": "Given a directed graph with edge-level influence probabilities and a declared stochastic diffusion model, select a seed set of a given size that maximizes the expected number of vertices eventually activated.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

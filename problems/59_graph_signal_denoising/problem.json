@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "graph_signal_denoising",
   "name": "Graph Signal Denoising and Trend Filtering",
-  "category": "graph_signal_processing",
+  "category": "spectral",
   "problem_statement": "Estimate a vertex signal from noisy observations using a declared graph-difference regularizer.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

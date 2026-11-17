@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "graph_laplacian_eigenpairs",
   "name": "Graph Laplacian Eigenpairs",
-  "category": "community_and_structural_analysis",
+  "category": "spectral",
   "problem_statement": "Compute selected eigenpairs of the combinatorial or symmetric normalized Laplacian of a nonnegative undirected graph.",
   "graph_input": {
     "format": "canonical_graph_v1",

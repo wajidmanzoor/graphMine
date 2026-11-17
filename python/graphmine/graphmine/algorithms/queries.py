@@ -300,7 +300,6 @@ def _register(id, title, description, parameters):
     return register(
         id=id,
         problem_id="graph_record_queries",
-        family="query",
         title=title,
         description=description,
         parameters=parameters,

@@ -1,0 +1,172 @@
+{
+  "step": 3,
+  "status": "complete",
+  "branch": "devlopment",
+  "choice": "Retain category and generate it from catalog/families.json through the native registry operation/problem IDs.",
+  "readers_checked": [
+    {
+      "path": "tools/build_catalog.mjs",
+      "use": "Reads each problem.json, embeds the full spec, and copies category to problem_index."
+    },
+    {
+      "path": "tools/sync_problem_contracts.py",
+      "use": "Keeps embedded specs and category indexes synchronized in all four catalog/manifest copies."
+    },
+    {
+      "path": "agent/graphmine_agent/catalog.py",
+      "use": "Loads the catalog and manifest and validates that their embedded specs agree."
+    },
+    {
+      "path": "library/CMakeLists.txt",
+      "use": "Installs the catalog/manifest copies."
+    },
+    {
+      "path": "problems/_collection/define_new_problems.py",
+      "use": "Writes 10 problem specifications; now obtains categories from the shared generator."
+    }
+  ],
+  "files_changed": [
+    "graphmine_catalog.json",
+    "graphmine_manifest.json",
+    "library/manifests/graphmine_catalog.json",
+    "library/manifests/graphmine_manifest.json",
+    "library/tests/test_family_taxonomy.py",
+    "problems/01_maximal_clique_enumeration/problem.json",
+    "problems/02_maximum_clique/problem.json",
+    "problems/03_k_clique_counting_enumeration/problem.json",
+    "problems/04_quasi_clique_mining/problem.json",
+    "problems/05_densest_subgraph/problem.json",
+    "problems/06_densest_k_subgraph/problem.json",
+    "problems/07_k_core_decomposition/problem.json",
+    "problems/08_k_truss_decomposition/problem.json",
+    "problems/09_maximal_biclique_enumeration/problem.json",
+    "problems/10_triangle_counting_listing/problem.json",
+    "problems/11_graph_motif_counting/problem.json",
+    "problems/12_graphlet_counting/problem.json",
+    "problems/13_subgraph_isomorphism/problem.json",
+    "problems/14_frequent_subgraph_mining/problem.json",
+    "problems/15_temporal_motif_mining/problem.json",
+    "problems/16_community_detection/problem.json",
+    "problems/17_overlapping_community_detection/problem.json",
+    "problems/18_centrality_influential_node_mining/problem.json",
+    "problems/19_link_prediction/problem.json",
+    "problems/20_graph_anomaly_detection/problem.json",
+    "problems/21_personalized_pagerank_rwr/problem.json",
+    "problems/22_max_flow_min_cut/problem.json",
+    "problems/23_butterfly_counting_bipartite/problem.json",
+    "problems/24_graph_edit_distance_mcs/problem.json",
+    "problems/25_network_alignment/problem.json",
+    "problems/26_hop_constrained_cycle_path_enumeration/problem.json",
+    "problems/27_group_steiner_tree/problem.json",
+    "problems/28_influence_maximization/problem.json",
+    "problems/29_simrank_vertex_similarity/problem.json",
+    "problems/30_balanced_graph_partitioning/problem.json",
+    "problems/31_bipartite_matching_assignment/problem.json",
+    "problems/32_signed_network_structural_balance/problem.json",
+    "problems/33_transitive_closure_reachability/problem.json",
+    "problems/34_entity_resolution_blocking/problem.json",
+    "problems/35_connected_components/problem.json",
+    "problems/36_graph_layout_force_directed/problem.json",
+    "problems/37_null_model_significance_testing/problem.json",
+    "problems/38_breadth_first_search/problem.json",
+    "problems/39_single_source_shortest_paths/problem.json",
+    "problems/40_many_source_shortest_paths/problem.json",
+    "problems/41_spanning_tree_forest/problem.json",
+    "problems/42_maximal_independent_set/problem.json",
+    "problems/43_vertex_coloring/problem.json",
+    "problems/44_general_graph_weighted_matching/problem.json",
+    "problems/45_topological_sort/problem.json",
+    "problems/46_random_walk_generation/problem.json",
+    "problems/47_neighborhood_sampling/problem.json",
+    "problems/48_induced_subgraph_ego_extraction/problem.json",
+    "problems/49_seeded_local_community_detection/problem.json",
+    "problems/50_node_embedding/problem.json",
+    "problems/51_knowledge_graph_embedding/problem.json",
+    "problems/52_node_classification_regression/problem.json",
+    "problems/53_graph_classification_regression/problem.json",
+    "problems/54_hypergraph_partitioning/problem.json",
+    "problems/55_spectral_graph_sparsification/problem.json",
+    "problems/56_biconnected_components/problem.json",
+    "problems/57_temporal_fastest_paths/problem.json",
+    "problems/58_top_k_critical_paths_dag/problem.json",
+    "problems/59_graph_signal_denoising/problem.json",
+    "problems/60_graph_based_geolocation/problem.json",
+    "problems/61_widest_paths/problem.json",
+    "problems/62_graph_coarsening/problem.json",
+    "problems/63_graph_laplacian_eigenpairs/problem.json",
+    "problems/64_knn_graph_construction/problem.json",
+    "problems/65_hypergraph_node_learning/problem.json",
+    "problems/66_maximum_independent_set/problem.json",
+    "problems/67_persistent_homology/problem.json",
+    "problems/68_single_graph_frequent_subgraph_mining/problem.json",
+    "problems/69_minimum_vertex_cover/problem.json",
+    "problems/70_graph_condensation/problem.json",
+    "problems/_collection/define_new_problems.py",
+    "tools/generate_families.py",
+    "tools/sync_problem_contracts.py"
+  ],
+  "generated_problem_count": 70,
+  "categories_by_problem_count": {
+    "dense": 9,
+    "motifs": 5,
+    "patterns": 3,
+    "communities": 6,
+    "importance": 3,
+    "similarity": 4,
+    "statistics": 2,
+    "connectivity": 5,
+    "paths": 9,
+    "selection": 6,
+    "preparation": 8,
+    "learning": 7,
+    "spectral": 3
+  },
+  "record_queries_note": "The existing graph_record_queries metadata record has no formal problem.json or contract path. Its seven operation assignments remain in the records family.",
+  "tests": {
+    "pytest": {
+      "tests": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "report": "validation/family_taxonomy_step3/category-contracts.xml",
+    "collection_writer_categories_verified": 10,
+    "contract_copy_sync": "passed",
+    "generation_freshness": "passed",
+    "git_diff_check": "passed"
+  },
+  "preservation": {
+    "problem_noncategory_bytes_unchanged": 70,
+    "embedded_copy_noncategory_bytes_unchanged": 4,
+    "problem_ids_unchanged": true,
+    "native_problem_metadata_and_contract_paths_unchanged": true,
+    "algorithm_parameters_results_and_validation_rules_unchanged": true
+  },
+  "native_admission": {
+    "before_implementation_sha256": "d2f5198934db8c235c07b472c91ef853cdd4283db9fe0833ebe87bd6f83d0532",
+    "after_implementation_sha256": "d2f5198934db8c235c07b472c91ef853cdd4283db9fe0833ebe87bd6f83d0532",
+    "before_admitted_profiles": 141,
+    "after_admitted_profiles": 141,
+    "lost_profiles": [],
+    "lost_device_admission": [],
+    "verification_issues": [],
+    "failed_reports": [],
+    "execution_evidence_file_unchanged": true
+  },
+  "resolved_findings": [
+    "The existing contract synchronizer copied whole specs and reformatted four numeric defaults. Added category-only synchronization and verified that every other byte is preserved.",
+    "The collection spec writer contained old category defaults/arguments. It now derives categories from the same source; all 10 generated specs were checked in a temporary directory."
+  ],
+  "mapping_conflicts": [],
+  "remaining_retired_id_gate": {
+    "references": 5432,
+    "files": 61,
+    "by_area": {
+      "catalog": 190,
+      "docs": 252,
+      "validation": 4990
+    },
+    "scope": "Generated coverage inventories, docs/UI and historical validation records remain for later steps."
+  },
+  "next_step": 4
+}

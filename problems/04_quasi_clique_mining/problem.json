@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "quasi_clique_mining",
   "name": "Quasi-Clique Mining",
-  "category": "dense_structure_mining",
+  "category": "dense",
   "problem_statement": "Find vertex subsets whose induced subgraphs satisfy a minimum internal-degree fraction, allowing dense groups that are not complete cliques.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

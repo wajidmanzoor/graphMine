@@ -162,7 +162,6 @@ def _mapping_rows(graph, query, mapping):
 @register(
     id="subgraph-isomorphism",
     problem_id="subgraph_isomorphism",
-    family="pattern_mining",
     title="Find every match for a supplied graph pattern",
     description="NetworkX VF2 induced or non-induced matching. Preserves direction, loops and distinct parallel edges; declarative predicates constrain vertex and edge attributes.",
     parameters={
@@ -245,7 +244,6 @@ def subgraph_isomorphism(graph, args, work, backend="networkx"):
 @register(
     id="motif-counting",
     problem_id="graph_motif_counting",
-    family="pattern_mining",
     title="Count occurrences of supplied graph motifs",
     description="VF2 embeddings with explicit automorphism identity. Non-induced occurrences sharing a vertex set can still be different motif instances.",
     parameters={
@@ -367,7 +365,6 @@ def _orbits(pattern, work):
 @register(
     id="graphlet-counting",
     problem_id="graphlet_counting",
-    family="pattern_mining",
     title="Count connected induced graph shapes and vertex roles",
     description="Classify induced subgraphs against NetworkX's complete graph atlas through seven vertices, with optional exact automorphism-orbit participation.",
     parameters={

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "hypergraph_partitioning",
   "name": "Balanced Hypergraph Partitioning",
-  "category": "community_and_structural_analysis",
+  "category": "communities",
   "problem_statement": "Partition vertices of a weighted hypergraph into balanced parts while minimizing a declared hyperedge cut objective.",
   "graph_input": {
     "format": "canonical_hypergraph_v1",

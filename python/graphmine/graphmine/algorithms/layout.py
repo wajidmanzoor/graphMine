@@ -42,7 +42,6 @@ def _energy_and_force(positions, edges, k):
 @register(
     id="force-directed-layout",
     problem_id="graph_layout_force_directed",
-    family="layout",
     title="Compute a force-directed drawing of the network",
     description="NetworkX Fruchterman-Reingold force iterations in 2D or 3D, with its explicit 0.01 distance regularization and no final rescaling. Recomputes the matching potential and maximum force. Convergence means a small force residual, not optimality of the drawing. Directed edges project to undirected; loops are removed; parallel weights sum (unweighted duplicates collapse).",
     parameters={

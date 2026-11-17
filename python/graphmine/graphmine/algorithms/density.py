@@ -87,7 +87,6 @@ def _maximum_density_closure(n, terms, work):
 @register(
     id="densest-subgraph",
     problem_id="densest_subgraph",
-    family="dense_structures",
     title="Find the region with the most edges or cliques per vertex",
     description="Maximize induced k-clique count / vertex count. k is clique order, not result size. Weighted density is defined only for k=2.",
     parameters={
@@ -173,7 +172,6 @@ def densest(graph, args, work, backend="networkx"):
 @register(
     id="densest-k-subgraph",
     problem_id="densest_k_subgraph",
-    family="dense_structures",
     title="Find exactly k vertices with the greatest internal edge value",
     description="Binary vertex/edge optimization with an exact cardinality constraint; solver optimality and the recomputed objective are checked.",
     parameters={
@@ -222,7 +220,6 @@ def densest_k(graph, args, work, backend="networkx"):
 @register(
     id="quasi-cliques",
     problem_id="quasi_clique_mining",
-    family="dense_structures",
     title="Find groups meeting a minimum internal-degree fraction",
     description="Enumerate all gamma quasi-cliques via binary feasibility models; maximality is checked against all qualifying larger sets within the size bounds.",
     parameters={

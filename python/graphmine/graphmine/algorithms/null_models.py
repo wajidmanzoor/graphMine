@@ -121,7 +121,6 @@ def configuration_sample(base, rng, work, attempts_remaining):
 @register(
     id="null-model-significance",
     problem_id="null_model_significance_testing",
-    family="statistics",
     title="Compare a declared statistic with a random graph ensemble",
     description="NetworkX uniform G(n,m), or configuration-model rejection sampling conditioned on a simple graph with the exact per-vertex degree sequence. Dense fixed-degree inputs are sampled through their complement. Statistical estimates retain their samples and declared tail convention.",
     parameters={

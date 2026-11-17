@@ -186,6 +186,8 @@ class NativeLibrary:
         return self.request(request)
 
     def list_algorithms(self, *, family=None):
+        if family is not None:
+            self._require_family(family)
         return [
             deepcopy(card)
             for card in self._catalog["operations"]
@@ -196,9 +198,15 @@ class NativeLibrary:
         return deepcopy(self._catalog["families"])
 
     def family(self, family_id):
-        if family_id not in {row["id"] for row in self._catalog["families"]}:
-            raise NativeError("invalid_input", "Unknown native family")
         return Family(self, family_id)
+
+    def _require_family(self, family_id):
+        valid = [row["id"] for row in self._catalog["families"]]
+        if family_id not in valid:
+            raise NativeError(
+                "invalid_input",
+                f"Unknown native family {family_id!r}. Valid families: {', '.join(valid)}",
+            )
 
     def run(
         self,
@@ -232,6 +240,7 @@ class NativeLibrary:
 
 class Family:
     def __init__(self, library, family_id):
+        library._require_family(family_id)
         self._library = library
         self.id = family_id
 

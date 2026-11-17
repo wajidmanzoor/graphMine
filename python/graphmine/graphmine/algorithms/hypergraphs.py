@@ -12,7 +12,6 @@ from ._milp import BinaryModel, integral_balance_row
 @register(
     id="hypergraph-partitioning",
     problem_id="hypergraph_partitioning",
-    family="partitioning",
     input_kind="hypergraph",
     title="Partition a hypergraph while preserving whole-group connections",
     description="Binary assignment and hyperedge-part incidence optimize cut-net or connectivity-minus-one cost without a graph projection. Every part is nonempty and respects the upper weight bound.",

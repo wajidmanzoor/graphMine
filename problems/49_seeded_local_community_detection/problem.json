@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "seeded_local_community_detection",
   "name": "Seeded Local Community Detection",
-  "category": "community_and_structural_analysis",
+  "category": "communities",
   "problem_statement": "Find a nontrivial low-conductance vertex subset containing a specified seed set.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "node_classification_regression",
   "name": "Node Classification and Regression",
-  "category": "graph_learning",
+  "category": "learning",
   "problem_statement": "Train or apply a graph model to predict categorical labels or numerical targets for specified vertices.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

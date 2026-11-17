@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "balanced_graph_partitioning",
   "name": "Balanced k-Way Graph Partitioning",
-  "category": "community_and_structural_analysis",
+  "category": "communities",
   "problem_statement": "Given an undirected graph and a target part count k, assign every vertex to exactly one of k parts of approximately equal size so that the total weight of edges crossing between parts is minimized.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "centrality_influential_node_mining",
   "name": "Centrality and Influential-Node Mining",
-  "category": "community_and_structural_analysis",
+  "category": "importance",
   "problem_statement": "Compute a declared centrality score for graph vertices and rank the most structurally influential vertices under that definition.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

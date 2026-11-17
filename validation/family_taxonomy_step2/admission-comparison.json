@@ -1,0 +1,14 @@
+{
+  "before_implementation_sha256": "464e0e49683279bcf29d4e0843efc44d61829cecfad4a8684a2550df6d459eb7",
+  "after_implementation_sha256": "d2f5198934db8c235c07b472c91ef853cdd4283db9fe0833ebe87bd6f83d0532",
+  "before_admitted_profiles": 141,
+  "after_admitted_profiles": 141,
+  "lost_profiles": [],
+  "added_profiles": [],
+  "lost_device_admission": [],
+  "verification_issues": [],
+  "failed_reports": [],
+  "verified_reports": 49,
+  "cpu_operations": 82,
+  "families": 14
+}

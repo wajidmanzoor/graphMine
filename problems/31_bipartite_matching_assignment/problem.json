@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "bipartite_matching_assignment",
   "name": "Bipartite Matching and Linear Assignment",
-  "category": "predictive_and_unusual_structure_mining",
+  "category": "selection",
   "problem_statement": "Given a bipartite graph, find a matching (a set of edges with no shared endpoints) that is optimal under a declared objective: maximum cardinality, maximum total weight, or minimum total cost.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

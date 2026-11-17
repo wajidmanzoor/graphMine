@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="0.577" timestamp="2026-11-17T15:05:33.993348-05:00" hostname="guoglambda01"><testcase classname="tests.test_queries" name="test_query_cards_are_declared_with_nested_filter_schemas" time="0.525" /></testsuite></testsuites>

@@ -32,7 +32,8 @@ ORIGINAL = Path(
 
 @pytest.fixture(scope="session", autouse=True)
 def record_evidence(request):
-    files = [WRAPPER, Path(__file__), ROOT / "library/manifests/problem_families.json"]
+    files = [WRAPPER, Path(__file__), ROOT / "library/manifests/problems.json",
+             ROOT / "catalog/family.json", ROOT / "catalog/problems.json"]
     files += list((ROOT / "library/runtime").rglob("*.cpp"))
     files += list((ROOT / "library/runtime").rglob("*.hpp"))
     files += list((ROOT / "library/runtime").rglob("*.in"))
@@ -111,6 +112,8 @@ def test_native_catalog_and_python_families_are_identical():
     native = json.loads(subprocess.check_output([CPU / "graphmine-native", "catalog"]))
     assert lib.catalog() == native
     assert lib.list_families() == native["families"]
+    from graphmine._families import FAMILIES
+    assert native["families"] == FAMILIES
     assert lib.list_algorithms() == native["operations"]
     problems = {row["id"]: row for row in native["problems"]}
     assert len(problems) == 71
@@ -120,7 +123,65 @@ def test_native_catalog_and_python_families_are_identical():
     lib.list_algorithms()[0]["family"] = "tampered"
     assert lib.list_algorithms() == native["operations"]
     with pytest.raises(AttributeError):
-        _ = lib.family("traversal").triangle_counting
+        _ = lib.family("paths").triangle_counting
+
+
+@pytest.mark.parametrize("interface", ["method", "filter", "constructor"])
+@pytest.mark.parametrize("empty", [False, True])
+def test_unknown_family_lists_every_valid_family(interface, empty):
+    lib = library()
+    valid = [row["id"] for row in lib.list_families()]
+    unknown = "" if empty else valid[0] + "_removed"
+    with pytest.raises(binding.NativeError) as failure:
+        if interface == "method":
+            lib.family(unknown)
+        elif interface == "filter":
+            lib.list_algorithms(family=unknown)
+        else:
+            binding.Family(lib, unknown)
+    assert failure.value.code == "invalid_input"
+    assert str(failure.value).endswith("Valid families: " + ", ".join(valid))
+
+
+def test_native_cli_family_filters_match_python():
+    lib = library()
+    for family in lib.list_families():
+        identifier = family["id"]
+        result = json.loads(subprocess.check_output(
+            [CPU / "graphmine-native", "catalog", "--family", identifier]
+        ))
+        assert result["families"] == [family]
+        assert result["operations"] == lib.list_algorithms(family=identifier)
+        assert all(row["family"] == identifier for row in result["problems"])
+    unknown = lib.list_families()[0]["id"] + "_removed"
+    failed = subprocess.run(
+        [CPU / "graphmine-native", "list", "--family", unknown],
+        capture_output=True, text=True,
+    )
+    assert failed.returncode == 2
+    error = json.loads(failed.stderr)["error"]
+    assert error["code"] == "invalid_input"
+    assert error["message"].endswith(
+        "Valid families: " + ", ".join(row["id"] for row in lib.list_families())
+    )
+
+
+def test_python_cli_family_filter_and_rejection():
+    lib = library()
+    valid = [row["id"] for row in lib.list_families()]
+    environment = {
+        **os.environ,
+        "PYTHONPATH": str(ROOT / "python/graphmine"),
+        "GRAPHMINE_NATIVE_LIBRARY": str(CPU / "libgraphmine_runtime.so"),
+    }
+    command = [sys.executable, "-m", "graphmine.cli", "list", "--family"]
+    result = subprocess.run(command + [valid[0]], env=environment, capture_output=True, text=True, check=True)
+    assert json.loads(result.stdout) == lib.list_algorithms(family=valid[0])
+    failed = subprocess.run(command + [valid[0] + "_removed"], env=environment, capture_output=True, text=True)
+    assert failed.returncode == 2
+    error = json.loads(failed.stderr)["error"]
+    assert error["code"] == "invalid_input"
+    assert error["message"].endswith("Valid families: " + ", ".join(valid))
 
 
 def test_cpp_cli_python_binding_and_family_method_return_same_results(tmp_path):
@@ -129,7 +190,7 @@ def test_cpp_cli_python_binding_and_family_method_return_same_results(tmp_path):
     direct = lib.run(
         "breadth-first-search", graph(), parameters=parameters, device="cpu"
     )
-    family = lib.family("traversal").breadth_first_search(
+    family = lib.family("paths").breadth_first_search(
         graph(), parameters=parameters, device="cpu"
     )
     request = {
@@ -390,7 +451,7 @@ def test_native_subgraph_port_chains_with_derived_fingerprint():
         device="cpu",
     )
     port = output["ports"]["graph"]
-    result = lib.family("traversal").breadth_first_search(
+    result = lib.family("paths").breadth_first_search(
         port["value"], parameters={"sources": [0]}, device="cpu"
     )
     assert port["input_fingerprint"] == output["input_fingerprint"]
@@ -648,7 +709,7 @@ def test_native_betweenness_backends_match_cli_and_restore_device(
     runtime.cudaSetDevice.argtypes = [ctypes.c_int]
     runtime.cudaGetDevice.argtypes = [ctypes.POINTER(ctypes.c_int)]
     assert runtime.cudaSetDevice(1 - gpu_device) == 0
-    result = lib.family("centrality").betweenness_centrality(
+    result = lib.family("importance").betweenness_centrality(
         value,
         parameters={"normalized": normalized},
         backend=backend,
@@ -733,7 +794,7 @@ def optimization_graph(operation):
                 "weight_mode": "edge_weight",
                 "perfect_matching_required": True,
             },
-            "matching",
+            "selection",
             "objective_value",
             3,
         )
@@ -741,8 +802,8 @@ def optimization_graph(operation):
         edge["weight"] = 2
     if operation == "weighted-matching":
         value["graph"]["directed"] = False
-        return value, {}, "matching", "objective_value", 2
-    return value, {"source": 0, "sink": 9007199254740993}, "flow", "max_flow_value", 2
+        return value, {}, "selection", "objective_value", 2
+    return value, {"source": 0, "sink": 9007199254740993}, "connectivity", "max_flow_value", 2
 
 
 @pytest.mark.parametrize(
@@ -798,7 +859,7 @@ def test_native_flow_vertex_capacities_preserve_typed_identity():
     ]
     result = (
         library(CPU)
-        .family("flow")
+        .family("connectivity")
         .max_flow_min_cut(value, parameters=parameters, device="cpu")
     )
     assert result["result"]["min_cut_vertices"] == ["0"]

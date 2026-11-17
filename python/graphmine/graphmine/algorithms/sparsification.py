@@ -17,7 +17,6 @@ from ._numeric import float64
 @register(
     id="spectral-sparsification",
     problem_id="spectral_graph_sparsification",
-    family="construction",
     title="Reduce edges while measuring Laplacian distortion",
     description="Static effective-resistance sampling with replacement and importance reweighting, using SciPy grounded Laplacian solves. Measures all generalized eigenvalues, not only sampled vectors. An explicit epsilon must pass that numerical check. An edge budget alone permits disclosed distortion. Requires undirected, explicitly weighted simple input; loops and parallel edges are rejected; zero-weight edges can be dropped.",
     parameters={

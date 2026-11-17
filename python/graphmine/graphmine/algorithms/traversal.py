@@ -12,7 +12,6 @@ from ._common import simple, vertex_set
 @register(
     id="breadth-first-search",
     problem_id="breadth_first_search",
-    family="traversal",
     title="Connections within a number of steps",
     description="Exact unweighted distances from independent sources or the nearest supplied source.",
     parameters={
@@ -81,7 +80,6 @@ def bfs(graph, args, work, backend="networkx"):
 @register(
     id="single-source-shortest-paths",
     problem_id="single_source_shortest_paths",
-    family="traversal",
     title="Shortest routes from one starting point",
     description="Exact shortest distances and predecessors with nonnegative edge lengths.",
     parameters={
@@ -123,7 +121,6 @@ def sssp(graph, args, work, backend="networkx"):
 @register(
     id="many-source-shortest-paths",
     problem_id="many_source_shortest_paths",
-    family="traversal",
     title="Shortest routes between selected places",
     description="Exact pairwise distances; absent routes are returned as null.",
     parameters={
@@ -173,7 +170,6 @@ def many_paths(graph, args, work, backend="networkx"):
 @register(
     id="spanning-tree-forest",
     problem_id="spanning_tree_forest",
-    family="trees",
     title="Connect the network with minimum or maximum total weight",
     description="An exact minimum or maximum spanning forest, retaining isolated vertices.",
     parameters={
@@ -231,7 +227,6 @@ def spanning_tree(graph, args, work, backend="networkx"):
 @register(
     id="topological-sort",
     problem_id="topological_sort",
-    family="traversal",
     title="Order tasks by their dependencies",
     description="A topological vertex order for a directed acyclic graph; cycles are rejected.",
 )
@@ -255,7 +250,6 @@ def topological(graph, args, work, backend="networkx"):
 @register(
     id="induced-subgraph",
     problem_id="induced_subgraph_ego_extraction",
-    family="subgraphs",
     title="Explore a selected group or neighborhood",
     description="An induced graph on explicit vertices or a bounded-hop neighborhood, with original IDs and attributes.",
     parameters={
@@ -305,7 +299,6 @@ def induced(graph, args, work, backend="networkx"):
 @register(
     id="transitive-closure",
     problem_id="transitive_closure_reachability",
-    family="traversal",
     title="Find which places can reach each other",
     description="Exact reachability with a zero-length path allowed from each vertex to itself.",
     parameters={

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "network_alignment",
   "name": "Pairwise Network Alignment",
-  "category": "predictive_and_unusual_structure_mining",
+  "category": "similarity",
   "problem_statement": "Given two graphs and optional vertex-similarity priors, find a vertex mapping between them that maximizes conserved topology (and prior similarity, when supplied), either as a global one-to-one mapping or a local many-to-one set of high-scoring alignments.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

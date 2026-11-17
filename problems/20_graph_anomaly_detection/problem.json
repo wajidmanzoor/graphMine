@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "graph_anomaly_detection",
   "name": "Graph Anomaly Detection",
-  "category": "predictive_and_unusual_structure_mining",
+  "category": "statistics",
   "problem_statement": "Rank graph entities by how strongly their declared structural or temporal features deviate from a specified normality reference.",
   "graph_input": {
     "format": "canonical_edge_list_v1",

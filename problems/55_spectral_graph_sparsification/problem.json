@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "problem_id": "spectral_graph_sparsification",
   "name": "Spectral Graph Sparsification",
-  "category": "graph_transformations",
+  "category": "preparation",
   "problem_statement": "Construct a sparse reweighted subgraph approximating the quadratic form of a weighted undirected graph Laplacian.",
   "graph_input": {
     "format": "canonical_edge_list_v1",
