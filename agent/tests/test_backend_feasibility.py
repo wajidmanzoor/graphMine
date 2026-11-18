@@ -312,3 +312,13 @@ def test_gpu0_is_rejected_before_any_native_cuda_preflight(observed_environment,
         worker.run_observed(lambda *a, **k: pytest.fail("Ran on GPU 0"), "triangle-counting", graph,
             context={"leased_gpu_uuid": "GPU-test"}, step_id="count", emit=lambda _: None, device="gpu")
     assert not queries
+
+
+def test_memory_is_rechecked_after_native_support_preflight(observed_environment, monkeypatch):
+    graph, queries = observed_environment
+    snapshots = iter([hardware(free_gpu=100 * GIB), hardware(free_gpu=100)])
+    monkeypatch.setattr(worker, "hardware_snapshot", lambda **kw: next(snapshots))
+    with pytest.raises(ValueError, match="predicted_memory_exceeds_free_memory"):
+        worker.run_observed(lambda *a, **k: pytest.fail("Used stale free memory"), "triangle-counting", graph,
+            context={"leased_gpu_uuid": "GPU-test"}, step_id="count", emit=lambda _: None, device="gpu")
+    assert len(queries) == 1

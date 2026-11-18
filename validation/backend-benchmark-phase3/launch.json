@@ -1,0 +1,9 @@
+{
+  "agent_tests": 197,
+  "sources_unchanged": true,
+  "development_http": "passed",
+  "production_restarted": false,
+  "benchmark_id": "warmstart-20261118-phase3",
+  "tmux_session": "graphmine-backend-warmstart-20261118-phase3",
+  "data_directory": "/data/labdata/wajid/graphmine_data/rlModelData/benchmarks/warmstart-20261118-phase3"
+}

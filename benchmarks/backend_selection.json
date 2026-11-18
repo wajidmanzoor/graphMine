@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "bootstrap_examples_per_operation": 3,
+  "repeats": 3,
+  "timeout_seconds": 1800,
+  "max_candidates": 20000000,
+  "max_output_items": 100000,
+  "generated_grid": {
+    "families": ["erdos_renyi", "power_law", "planted_dense"],
+    "sizes": [1000, 4000, 16000, 64000],
+    "average_degrees": [2, 6, 12],
+    "seed": 1729
+  },
+  "special_graphs": [
+    {"id": "small", "source": "generated", "generator": "erdos_renyi", "n": 16, "average_degree": 3, "seed": 1730, "tags": ["small"]},
+    {"id": "small-dense", "source": "generated", "generator": "planted_dense", "n": 24, "average_degree": 3, "planted_size": 6, "seed": 1731, "tags": ["small"]},
+    {"id": "bipartite", "source": "generated", "generator": "erdos_renyi", "n": 32, "average_degree": 4, "bipartite": true, "seed": 1732, "tags": ["bipartite"]},
+    {"id": "assignment", "source": "generated", "generator": "erdos_renyi", "n": 16, "probability": 1, "bipartite": true, "weights": "integer", "seed": 1733, "tags": ["assignment"]},
+    {"id": "costs", "source": "generated", "generator": "erdos_renyi", "n": 16, "average_degree": 4, "weights": "integer", "seed": 1734, "tags": ["costs"]},
+    {"id": "probabilities", "source": "generated", "generator": "erdos_renyi", "n": 32, "average_degree": 2, "directed": true, "weights": "probability", "seed": 1735, "tags": ["probabilities"]},
+    {"id": "temporal", "source": "generated", "generator": "planted_dense", "n": 16, "average_degree": 2, "planted_size": 3, "directed": true, "timestamps": true, "seed": 1736, "tags": ["temporal"]},
+    {"id": "directed-acyclic", "source": "generated", "generator": "erdos_renyi", "n": 128, "average_degree": 2, "directed": true, "acyclic": true, "seed": 1737, "tags": ["closure"]}
+  ],
+  "neo4j_extracts": {
+    "edge_limits": [1000, 5000, 15000, 30000],
+    "datasets": [
+      {"dataset": "yelp", "query": "MATCH p=(a:User)-[:FRIEND]->(b:User) WITH p SKIP $offset LIMIT $edge_limit RETURN p"},
+      {"dataset": "movielens-32m", "query": "MATCH p=(a:User)-[:RATED]->(b:Movie) WITH p SKIP $offset LIMIT $edge_limit RETURN p"},
+      {"dataset": "movielens-genome", "query": "MATCH p=(a:User)-[:RATED]->(b:Movie) WITH p SKIP $offset LIMIT $edge_limit RETURN p"},
+      {"dataset": "ldbc-snb", "query": "MATCH p=(a:Person)-[:KNOWS]->(b:Person) WITH p SKIP $offset LIMIT $edge_limit RETURN p"}
+    ]
+  },
+  "bootstrap_general_graphs": [
+    "erdos_renyi-1000-2", "power_law-1000-6", "planted_dense-1000-6",
+    "neo4j-yelp-1000", "neo4j-movielens-32m-1000", "neo4j-movielens-genome-1000", "neo4j-ldbc-snb-1000"
+  ],
+  "operations": {
+    "temporal-motifs": {"graph_tag": "temporal", "parameters": {"maximum_duration_seconds": 32}},
+    "subgraph-isomorphism": {"graph_tag": "small"},
+    "motif-counting": {"graph_tag": "small", "parameters": {"list_instances": false}, "parameter_grid": {"induced": [true, false]}, "bootstrap_backends": ["cpp", "graphminer", "dumato"]},
+    "group-steiner-tree": {"graph_tag": "costs"},
+    "influence-maximization": {"graph_tag": "probabilities", "parameters": {"diffusion_model": "independent_cascade", "seed_set_size": 1, "solution_quality": "heuristic", "sample_count": 64}},
+    "community-detection": {"graph_tag": "general", "parameters": {"solution_quality": "heuristic", "seed": 0}, "parameter_grid": {"resolution": [1, 0.5, 1.75]}},
+    "densest-subgraph": {"graph_tag": "small", "parameters": {"clique_order": 2}},
+    "quasi-cliques": {"graph_tag": "small", "parameters": {"gamma": 0.8, "minimum_size": 3}},
+    "maximal-bicliques": {"graph_tag": "bipartite"},
+    "butterfly-counting": {"graph_tag": "bipartite", "parameters": {"mode": "count"}},
+    "transitive-closure": {"graph_tag": "closure"},
+    "breadth-first-search": {"graph_tag": "general"},
+    "triangle-counting": {"graph_tag": "general", "parameters": {"mode": "count"}},
+    "single-source-shortest-paths": {"graph_tag": "general"},
+    "many-source-shortest-paths": {"graph_tag": "general", "parameters": {"weight_mode": "unweighted"}},
+    "spanning-tree-forest": {"graph_tag": "general"},
+    "connected-components": {"graph_tag": "general"},
+    "pagerank": {"graph_tag": "general"},
+    "betweenness-centrality": {"graph_tag": "small"},
+    "personalized-pagerank": {"graph_tag": "closure", "parameters": {"solution_quality": "approximate", "restart_probability": 0.2, "epsilon": 0.01}},
+    "link-prediction": {"graph_tag": "general", "parameters": {"top_k": 10, "exclude_existing_edges": false}},
+    "maximal-independent-set": {"graph_tag": "general"},
+    "vertex-coloring": {"graph_tag": "general"},
+    "random-walks": {"graph_tag": "general", "parameters": {"length": 20, "random_seed": 42}},
+    "induced-subgraph": {"graph_tag": "general", "parameters": {"mode": "ego", "radius": 2}},
+    "max-flow-min-cut": {"graph_tag": "costs", "parameters": {"capacity_mode": "unit_capacity"}},
+    "bipartite-matching": {"graph_tag": "assignment", "parameters": {"objective": "minimum_cost", "weight_mode": "edge_weight", "perfect_matching_required": true}},
+    "maximal-cliques": {"graph_tag": "small"},
+    "maximum-clique": {"graph_tag": "small"},
+    "k-cliques": {"graph_tag": "general", "parameter_grid": {"k": [3, 4, 5]}, "parameters": {"mode": "count"}},
+    "k-truss": {"graph_tag": "general"},
+    "k-core": {"graph_tag": "general"},
+    "maximum-independent-set": {"graph_tag": "small"},
+    "minimum-vertex-cover": {"graph_tag": "small"},
+    "dynamic-triangle-counting": {"graph_tag": "small"},
+    "maximal-biclique-counting": {"graph_tag": "bipartite"}
+  }
+}

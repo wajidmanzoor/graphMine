@@ -480,6 +480,7 @@ class AnalyticsService:
             str(python),
             "-c",
             BOOTSTRAP,
+            pass_fds=self.scheduler.worker_fds(lease),
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,

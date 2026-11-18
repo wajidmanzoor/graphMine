@@ -129,6 +129,11 @@ class AnalyticsScheduler:
         self.settings, self.probe, self.host_memory = settings, probe, host_memory
         self.condition = asyncio.Condition()
         self.leases = {}
+        self.gpu_locks = {}
+
+    def worker_fds(self, lease):
+        lock = self.gpu_locks.get(lease.id) if lease else None
+        return (lock.fd,) if lock else ()
 
     def eligible(self, devices):
         configured = set(self.settings.analytics_gpu_uuids)
@@ -201,14 +206,16 @@ class AnalyticsScheduler:
                     ranked.sort(key=lambda item: (-item[0], item[1]["uuid"]))
                     if ranked and ranked[0][0] >= requested:
                         available, device = ranked[0]
-                        lease = Lease(
-                            str(uuid4()),
-                            "gpu",
-                            device["uuid"],
-                            requested,
-                            available,
-                            device["llm_reserve"],
-                        )
+                        from .backend_learning.leases import GPULock
+
+                        try:
+                            lock = GPULock.acquire(self.settings.backend_data_dir)
+                        except OSError as error:
+                            raise AdmissionError("The shared GPU 1 lease is unavailable") from error
+                        if lock:
+                            lease = Lease(str(uuid4()), "gpu", device["uuid"], requested,
+                                          available, device["llm_reserve"])
+                            self.gpu_locks[lease.id] = lock
                     elif policy == "gpu" and requested > max(
                         device["total"]
                         - device["llm_reserve"]
@@ -218,7 +225,7 @@ class AnalyticsScheduler:
                         raise AdmissionError(
                             "This workflow exceeds every permitted GPU's memory admission limit"
                         )
-                    elif policy != "gpu":
+                    if lease is None and policy != "gpu":
                         cpu = [
                             item
                             for item in self.leases.values()
@@ -251,4 +258,7 @@ class AnalyticsScheduler:
             if lease is not None:
                 async with self.condition:
                     self.leases.pop(lease.id, None)
+                    lock = self.gpu_locks.pop(lease.id, None)
+                    if lock:
+                        lock.close()
                     self.condition.notify_all()

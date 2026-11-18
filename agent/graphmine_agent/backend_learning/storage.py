@@ -17,13 +17,14 @@ from uuid import uuid4
 
 DEFAULT_DATA_DIR = Path("/data/labdata/wajid/graphmine_data/rlModelData")
 DEFAULT_MODEL_DIR = Path("/data/labdata/wajid/graphmine-models/rlModel")
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 LOG = logging.getLogger(__name__)
 SCHEMA = """# Backend run log
 
 Schema history: version 1 added Phase 1 telemetry; version 2 adds Phase 2
-feasibility, native limits, memory predictions and preflight rejections.
-Readers accept both versions. Rows are immutable and contain aggregate data only.
+feasibility, native limits, memory predictions and preflight rejections;
+version 3 adds offline benchmark provenance and resumable attempt identity.
+Readers accept all three versions. Rows contain aggregate data only.
 Corrections append a new run_id with supersedes pointing at the original run_id.
 JSONL is authoritative. A per-file flock serializes writers on the same host;
 O_APPEND plus fsync makes a successfully acknowledged write durable.
@@ -72,6 +73,19 @@ underpredict any held-out peak, and apply only within the training size range.
 OOM observations never enter least-squares fitting: for the same context and
 snapshot they impose a 1.25x lower bound on the previously available memory.
 The workflow scheduler always retains its conservative admission reservation.
+
+Version 3 benchmark fields: benchmark_id, benchmark_mode (bootstrap/full),
+graph_id (configuration name, never a vertex ID), comparison_id (hash of graph,
+parameters, budget and implementation), benchmark_pair_id (also backend),
+benchmark_attempt_key (also repetition), repetition (zero-based),
+attempt_wall_seconds (including worker startup), worker_diagnostic_bytes.
+Benchmark rows use source=benchmark and is_evaluation=false for real warm starts.
+Test collections are marked is_evaluation=true and never enter training.
+Initial bootstrap collection is capped at 1-3 terminal rows per operation across
+benchmark IDs for the same implementation. Full grids require explicit --full.
+Interrupted attempts are recovered from durable aggregate journals; an active
+worker is never restarted. Canonical anonymous graphs and query/generator
+provenance are stored only beneath benchmarks/<id>/graphs. JSONL is authoritative.
 """
 
 
@@ -263,7 +277,7 @@ def read_rows(data_dir, *, since=None, operation=None, include_benchmarks=True):
             for line in handle:
                 try:
                     row = json.loads(line)
-                    if not isinstance(row, dict) or row.get("schema_version") not in (1, SCHEMA_VERSION):
+                    if not isinstance(row, dict) or row.get("schema_version") not in (1, 2, SCHEMA_VERSION):
                         raise ValueError("Unknown run schema")
                     created = datetime.fromisoformat(row["created_at"].replace("Z", "+00:00"))
                     if (not after or created >= after) and (not operation or row["operation"] == operation):

@@ -109,6 +109,10 @@ def run_observed(run, operation, graph, *, context, step_id, emit, **kwargs):
         if kwargs.get("allowed_backends") is not None:
             query["allowed_backends"] = kwargs["allowed_backends"]
         caps = native_request(query)
+        # Support checks can take time and initialize a CUDA context. Admission
+        # uses a fresh snapshot after them, immediately before choosing a backend.
+        hardware = hardware_snapshot(leased_gpu_uuid=context.get("leased_gpu_uuid"))
+        hardware["backend_memory_safety"] = context.get("backend_memory_safety", 0.8)
         caps["candidates"] = filter_candidates(operation, caps["candidates"], features, parameters, hardware,
             output_estimate=budget["max_output_items"], implementation=caps["implementation_sha256"], data_dir=data_dir)
         caps["legacy_backend"] = legacy_choice(caps["candidates"], backend)

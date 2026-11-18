@@ -1,0 +1,1 @@
+{"outcome":"error","code":"backend_failure","detail":"ToT execution failed: radix_sort: failed on 2nd step: cudaErrorInvalidValue: invalid argument","is_evaluation":true,"training_rows_added":0,"gpu_index":1,"operation":"triangle-counting","backend":"tot","rows":1}

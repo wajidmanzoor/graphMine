@@ -82,15 +82,19 @@ Native workflow steps use the native `backend_capabilities` preflight, retaining
 only compiled, evidence-admitted backends with supported inputs and declared
 size/index bounds. Their predicted peak memory must fit within 80% of measured
 free RAM or the leased GPU's free memory. GPU jobs use **physical GPU 1** only;
-the worker sees that UUID as CUDA logical device 0. GPU leases are serial within
-the scheduler. CPU and explicit device choices retain their existing semantics.
+the worker sees that UUID as CUDA logical device 0. A shared filesystem lease
+serializes GPU work across app workers and offline benchmarks for the account,
+independently of their data directories. The lease is runtime state at
+`/run/user/<uid>/graphmine-gpu-1.lock`. Worker processes inherit it so a parent crash cannot
+release it while native work survives. CPU and explicit device choices retain their existing semantics.
 An explicit native backend that fails admission produces an error.
 
 Selection remains `legacy`: first feasible GPU in native order, otherwise `cpp`.
 Aggregate terminal rows, including preflight rejections and failed attempts,
 are appended asynchronously under `backend_data_dir` (default
-`/data/labdata/wajid/graphmine_data/rlModelData`). Run-log schema 2 adds memory
-predictions and exclusion reasons; schema 1 remains readable. `SCHEMA.md` in the
+`/data/labdata/wajid/graphmine_data/rlModelData`). Run-log schema 3 adds benchmark
+provenance to the memory predictions and exclusion reasons in schema 2;
+schemas 1 and 2 remain readable. `SCHEMA.md` in the
 data directory defines the fields. Exports and reports use the authoritative
 JSONL through `graphmine backend-runs export` and `graphmine backend-runs report`.
 
@@ -104,8 +108,52 @@ OOM rows add memory lower bounds for the same snapshot and context. Workflow
 admission still reserves the conservative estimate regardless of fitted weights.
 No additional observations are generated to activate a fit: initial warm-start
 collection is limited to **1–3 examples per algorithm**, with later usage
-providing further observations. Benchmark collection and learned runtime
-selection are subsequent phases; live selection is not enabled in this release.
+providing further observations. Learned runtime selection is a subsequent phase;
+live selection is not enabled in this release.
+
+## Offline backend benchmarks
+
+Run `tools/benchmark_backends.py` with the agent Python environment in a named
+`tmux` session, outside the web app. The default bootstrap records at most three
+terminal attempts **per algorithm across all graphs and benchmark IDs** for the
+same native implementation. `--examples-per-operation 1` or `2` lowers that cap.
+It measures `cpp` first, then admitted GPUs in native order (or a configured
+bootstrap subset for incompatible parameter profiles), repeating only after
+each selected backend has had an opportunity within the cap. Failures and unfinished
+attempts consume the cap. It never generates extra samples to enable a fit.
+
+```bash
+tmux new-session -d -s graphmine-bootstrap \
+  '.venv/bin/python tools/benchmark_backends.py --benchmark-id initial'
+```
+
+`benchmarks/backend_selection.json` describes 60 fixed graph configurations:
+36 seeded Erdos-Renyi, preferential-attachment and planted-dense graphs, eight
+typed small inputs, and 16 bounded extracts from the four verified Neo4j datasets.
+The bootstrap lazily prepares one appropriate snapshot per operation. Neo4j
+reads use the registered read-only path, transaction timeouts, row/byte limits,
+and rollback. Only anonymous simple topology is saved, with its extraction
+query and parameters; source labels, properties and element IDs are discarded.
+
+The full configured workload requires explicit `--full`. It runs every admitted
+backend, including `cpp`, for each applicable graph and parameter combination,
+with three repetitions and a hard 1,800-second deadline per attempt. Physical
+GPU 1 is the only permitted GPU; current free memory is rechecked after support
+preflight. `--is-evaluation` excludes a collection from all training.
+
+Use the same `--benchmark-id` to resume. The manifest pins code, native binary,
+implementation, parameters, and graph hashes. Completed attempts are skipped;
+uncertain attempts are recovered once from their journals, and verified live
+workers are awaited. Changed manifests require a new ID, which still shares
+the bootstrap quota. Paths can be configured with `--data-dir` and `--model-dir`;
+repository and `/tmp` destinations are rejected.
+
+Results live under `backend_data_dir/benchmarks/<id>/`: `runs.jsonl` is the
+append-only authoritative log; `config.json`, canonical `graphs/` and provenance,
+`attempts/` recovery journals, `status.json`, and `summary.json`/`summary.csv` are supporting
+artifacts. The summary reports medians, ranges, spread, fastest observed backends
+and wins for identical inputs, parameters, budgets and implementations. It marks
+incomplete backend coverage explicitly; a tiny bootstrap is not a full oracle.
 
 ## Browser workspace
 

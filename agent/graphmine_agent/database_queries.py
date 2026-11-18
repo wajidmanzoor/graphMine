@@ -308,11 +308,16 @@ class RowGraphCollector(GraphCollector):
         return {"source": {"node": source}, "target": {"node": target}, **properties}
 
 
-def execute_query(source, body, byte_limit=None):
+def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
     # Source limits still govern SQL synchronization/enrichment. Interactive
     # Cypher retains the whole result unless a caller explicitly supplies a cap.
     checkpoint("validating")
     validate_cypher(body.statement)
+    if timeout_seconds is not None and (
+        type(timeout_seconds) not in (int, float)
+        or not 0 < timeout_seconds <= source.timeout_seconds
+    ):
+        raise AnalyticsError("Query timeout must fit the source timeout limit.", "resource_limit")
     if body.weight_property and body.projection == "rows":
         raise AnalyticsError("For source/target rows, return the edge weight as the weight column.", "query_projection")
     try:
@@ -332,7 +337,7 @@ def execute_query(source, body, byte_limit=None):
         with (
             neo4j_session(source) as session,
             # Zero disables the transaction timeout; None inherits the server's.
-            session.begin_transaction(timeout=0) as transaction,
+            session.begin_transaction(timeout=0 if timeout_seconds is None else timeout_seconds) as transaction,
         ):
             explanation = transaction.run(
                 "EXPLAIN " + body.statement, body.parameters

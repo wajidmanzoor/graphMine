@@ -88,3 +88,13 @@ def test_custom_weights_require_every_relationship_to_be_numeric(source, monkeyp
 def test_custom_weights_cannot_conflict_with_row_projection(source):
     with pytest.raises(AnalyticsError, match="weight column"):
         execute_query(source, CypherRequest(statement="RETURN 1", weight_property="amount", projection="rows"), 100_000)
+
+
+def test_benchmark_read_timeout_is_bounded_and_transaction_rolls_back(source, monkeypatch):
+    tx = read_transaction(monkeypatch, [Record({"p": driver_path(source)})])
+    execute_query(source, CypherRequest(statement="MATCH p=()-[]->() RETURN p"), 100_000,
+                  timeout_seconds=source.timeout_seconds)
+    assert tx.options["timeout"] == source.timeout_seconds and tx.rolled_back
+    for timeout in [0, -1, True, float("nan"), source.timeout_seconds + 1]:
+        with pytest.raises(AnalyticsError, match="timeout"):
+            execute_query(source, CypherRequest(statement="RETURN 1"), timeout_seconds=timeout)

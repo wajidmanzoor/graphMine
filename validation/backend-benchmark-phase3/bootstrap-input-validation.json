@@ -1,0 +1,333 @@
+{
+  "operations": 36,
+  "planned_rows": 108,
+  "all_initial_attempts_native_feasible": true,
+  "config_sha256": "f44669783ade13a57a8cb0d25fd42f0c856335eb84437a1550922a4d93a7c680",
+  "selection": [
+    {
+      "operation": "betweenness-centrality",
+      "graph_id": "small",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "turbo-bc"
+      ]
+    },
+    {
+      "operation": "bipartite-matching",
+      "graph_id": "assignment",
+      "planned_backends": [
+        "cpp",
+        "hungarian-cuda",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "breadth-first-search",
+      "graph_id": "erdos_renyi-1000-2",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "butterfly-counting",
+      "graph_id": "bipartite",
+      "planned_backends": [
+        "cpp",
+        "graphminer",
+        "gamma-butterfly"
+      ]
+    },
+    {
+      "operation": "community-detection",
+      "graph_id": "power_law-1000-6",
+      "planned_backends": [
+        "cpp",
+        "gleiden",
+        "parallel-louvain"
+      ]
+    },
+    {
+      "operation": "connected-components",
+      "graph_id": "planted_dense-1000-6",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "ecl-scc"
+      ]
+    },
+    {
+      "operation": "densest-subgraph",
+      "graph_id": "small",
+      "planned_backends": [
+        "cpp",
+        "cds",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "dynamic-triangle-counting",
+      "graph_id": "small",
+      "planned_backends": [
+        "cpp",
+        "edtc",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "group-steiner-tree",
+      "graph_id": "costs",
+      "planned_backends": [
+        "cpp",
+        "gpu4gst",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "induced-subgraph",
+      "graph_id": "neo4j-yelp-1000",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "influence-maximization",
+      "graph_id": "probabilities",
+      "planned_backends": [
+        "cpp",
+        "superfuser",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "k-cliques",
+      "graph_id": "neo4j-movielens-32m-1000",
+      "planned_backends": [
+        "cpp",
+        "graphset",
+        "gamma"
+      ]
+    },
+    {
+      "operation": "k-core",
+      "graph_id": "neo4j-movielens-genome-1000",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "kcore-gpu"
+      ]
+    },
+    {
+      "operation": "k-truss",
+      "graph_id": "neo4j-ldbc-snb-1000",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "acctd"
+      ]
+    },
+    {
+      "operation": "link-prediction",
+      "graph_id": "erdos_renyi-1000-2",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "many-source-shortest-paths",
+      "graph_id": "power_law-1000-6",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "max-flow-min-cut",
+      "graph_id": "costs",
+      "planned_backends": [
+        "cpp",
+        "ecl-maxflow",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "maximal-biclique-counting",
+      "graph_id": "bipartite",
+      "planned_backends": [
+        "cpp",
+        "mbe-gpu",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "maximal-bicliques",
+      "graph_id": "bipartite",
+      "planned_backends": [
+        "cpp",
+        "cumbe",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "maximal-cliques",
+      "graph_id": "small",
+      "planned_backends": [
+        "cpp",
+        "rdmce",
+        "mce-gpu"
+      ]
+    },
+    {
+      "operation": "maximal-independent-set",
+      "graph_id": "planted_dense-1000-6",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "maximum-clique",
+      "graph_id": "small",
+      "planned_backends": [
+        "cpp",
+        "cuda-ms",
+        "gpu-maximum-clique"
+      ]
+    },
+    {
+      "operation": "maximum-independent-set",
+      "graph_id": "small",
+      "planned_backends": [
+        "cpp",
+        "cuda-ms",
+        "gpu-maximum-clique"
+      ]
+    },
+    {
+      "operation": "minimum-vertex-cover",
+      "graph_id": "small",
+      "planned_backends": [
+        "cpp",
+        "cuda-ms",
+        "gpu-maximum-clique"
+      ]
+    },
+    {
+      "operation": "motif-counting",
+      "graph_id": "small",
+      "planned_backends": [
+        "cpp",
+        "graphminer",
+        "dumato"
+      ]
+    },
+    {
+      "operation": "pagerank",
+      "graph_id": "neo4j-yelp-1000",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "personalized-pagerank",
+      "graph_id": "directed-acyclic",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "kpar"
+      ]
+    },
+    {
+      "operation": "quasi-cliques",
+      "graph_id": "small",
+      "planned_backends": [
+        "cpp",
+        "cuqc",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "random-walks",
+      "graph_id": "neo4j-movielens-32m-1000",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "single-source-shortest-paths",
+      "graph_id": "neo4j-movielens-genome-1000",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "spanning-tree-forest",
+      "graph_id": "neo4j-ldbc-snb-1000",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "subgraph-isomorphism",
+      "graph_id": "small",
+      "planned_backends": [
+        "cpp",
+        "gmatch",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "temporal-motifs",
+      "graph_id": "temporal",
+      "planned_backends": [
+        "cpp",
+        "everest",
+        "mayura"
+      ]
+    },
+    {
+      "operation": "transitive-closure",
+      "graph_id": "directed-acyclic",
+      "planned_backends": [
+        "cpp",
+        "gdlog",
+        "cpp"
+      ]
+    },
+    {
+      "operation": "triangle-counting",
+      "graph_id": "erdos_renyi-1000-2",
+      "planned_backends": [
+        "cpp",
+        "tot",
+        "wetric"
+      ]
+    },
+    {
+      "operation": "vertex-coloring",
+      "graph_id": "power_law-1000-6",
+      "planned_backends": [
+        "cpp",
+        "libcugraph",
+        "cpp"
+      ]
+    }
+  ],
+  "full_grid_note": "Motif graphminer/dumato support induced inputs; GraphSet supports non-induced inputs. The full parameter grid includes both, with unsupported attempts recorded explicitly."
+}
