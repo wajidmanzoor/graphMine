@@ -25,10 +25,16 @@ The workspace root is `/home/wajid/projects/graphDatabaseAgent`.
 | Development | `graphMine-database-cypher` | 18002 / 8879 | Loopback; SSH forwarding |
 | Testing | `graphMine-testing` | 18001 / 8878 | Loopback; SSH forwarding |
 
-`graphMine-runtime-20261117-families` is the detached, pinned native-runtime
-checkout for the shared family taxonomy and family/problem routing release.
-Its compiled CPU/GPU engine and execution evidence are
-promoted together with the application. The existing
+`graphMine-runtime-20261118-backends` is the detached native runtime for backend
+telemetry, feasibility and shadow selection. Its verified binaries are copied
+without rebuilding or patching them, and worker paths are relocated in the
+correctness manifest. `deploy/snapshot-backend-runtime.py` verifies every copied
+hash and supplies launchers that load the pinned library and the correct worker
+ABI. `GRAPHMINE_WORKER_DIR` selects its `library/build/runtime/verified-workers`
+for native workflows; `bin/graphmine` selects the separate classic CLI workers.
+Keep the earlier `graphMine-runtime-20261117-families` checkout for rollback.
+The compiled CPU/GPU engine and execution evidence are promoted together with
+the application. The existing
 `graphMine-repo` checkout still supplies the analytics Python and vLLM
 environments. Do not develop in these pinned checkouts or install packages into
 their runtime environments. Native engine changes need a separately built and
@@ -38,10 +44,16 @@ The build reuses the unchanged Kokkos/KokkosKernels installation under
 `graphMine-runtime-20261116-views/library/build/native-dependencies/` and the
 existing research workers. Keep those pinned dependencies available. Build
 settings, source hashes, device-specific admission and validation reports for
-this runtime are recorded in `validation/family_routing_runtime/`. Earlier
+this runtime are recorded in `validation/backend-bandit-phase4/`. Earlier
 reports with retired family labels were removed at the user's request; their
 original contents remain in Git history. This release retains the existing
 algorithms, GPU adapters and optional biclique partition contract.
+
+Backend selection deploys in shadow mode. Graph execution uses CPU and physical
+GPU 1 only; GPU 0 remains reserved for the existing model service. Initial
+collection is capped at three attempts per algorithm. Pooled observations and
+models remain in the configured `/data` roots. The nightly backend-model timer
+fits only those existing observations; it never launches a benchmark sweep.
 
 `GRAPHMINE_GOOGLE_SEARCH_ENABLED=false` is explicit in all three host
 environments and is also the application default. The prototype is retained for

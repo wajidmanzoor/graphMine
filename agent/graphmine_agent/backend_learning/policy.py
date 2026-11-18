@@ -65,7 +65,8 @@ def reserve_exploration(data_dir, operation, decision_id, mode, fraction, *, now
         decisions = {r.get("decision_id", r["run_id"]) for r in rows}
         explored = {r.get("decision_id", r["run_id"]) for r in rows
                     if (r.get("selection_mode") == mode and
-                        (r.get("shadow_reason") if mode == "shadow" else r.get("reason")) == "explore")}
+                        (r.get("shadow_reason") if mode == "shadow" else
+                         r.get("backend_choice_reason") or r.get("reason")) == "explore")}
         explored.update(state["reserved_decisions"])
         limit = math.floor(len(decisions) * fraction + 1e-12)
         allowed = decision_id in explored or len(explored) < limit
@@ -127,7 +128,8 @@ def decide(candidates, row, *, model=None, model_version=None, mode="legacy", li
         if mode == "bandit" and not live_allowed:
             result["policy_warning"] = "rollout_gate_not_met"
         return result  # Native auto ordering and its budget remain unchanged.
-    result.update(chosen_backend=choice, native_backend=choice, reason=reason)
+    result.update(chosen_backend=choice, native_backend=choice, backend_choice_reason=reason,
+                  reason="forced" if requested_device != "auto" else reason)
     return result
 
 

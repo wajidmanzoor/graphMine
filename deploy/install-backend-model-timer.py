@@ -11,13 +11,13 @@ import tempfile
 from pathlib import Path
 
 
-def units(repository, environment, *, config=False, role="production"):
+def units(repository, environment, *, config=False, role="production", python=None):
     spec = importlib.util.spec_from_file_location("service_install", Path(__file__).with_name("install-user-services.py"))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     quote = module.quoted
     if config:
-        command = f'{quote(repository / ".venv/bin/python")} {quote(repository / "deploy/train-backend-models.py")} --config {quote(environment)} --environment {role}'
+        command = f'{quote(python or repository / ".venv/bin/python")} {quote(repository / "deploy/train-backend-models.py")} --config {quote(environment)} --environment {role}'
         settings = ""
     else:
         command = f'/bin/bash {quote(repository / "deploy/train-backend-models.sh")}'
@@ -65,7 +65,13 @@ def main():
     if not environment.is_file() or info.st_uid != os.getuid() or info.st_mode & 0o077:
         parser.error("Environment must be a private file owned by this user (chmod 600)")
     destination = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))) / "systemd/user"
-    contents = units(repository, environment, config=bool(args.config), role=args.environment)
+    python = None
+    if args.config:
+        from environments import load_config
+        python = Path(load_config(environment)["environments"][args.environment]["python"])
+        if not python.is_file():
+            parser.error("The deployed environment's Python executable is missing")
+    contents = units(repository, environment, config=bool(args.config), role=args.environment, python=python)
     if not args.check and not args.replace and any((destination / name).exists() for name in contents):
         parser.error("Backend model units already exist; use --replace after reviewing them")
     # Unit files contain paths only. Run logs and model data remain under /data.

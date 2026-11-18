@@ -202,6 +202,27 @@ def test_thompson_choice_is_reproducible_for_fixed_seed():
         [candidate(), candidate("gpu-first")], record, **options)
 
 
+@pytest.mark.parametrize("device,backend", [("cpu", "cpp"), ("gpu", "gpu-first")])
+def test_forced_device_stays_forced_in_live_telemetry(device, backend):
+    record = observation(backend)
+    decision = policy.decide([candidate(backend)], record, model=fit([record]),
+        mode="bandit", live_allowed=True, requested_device=device, seed=7)
+    assert decision["chosen_backend"] == decision["native_backend"] == backend
+    assert decision["reason"] == "forced" and decision["backend_choice_reason"] == "only_option"
+
+
+def test_exploration_within_forced_device_still_consumes_daily_budget(directories):
+    data, _ = directories
+    now = datetime.now(timezone.utc)
+    path = data / "runs" / now.strftime("%Y/%m/%d") / "runs-fixture.jsonl"
+    for index in range(10):
+        storage.append_row(path, observation(source="application", selection_mode="bandit", reason="forced",
+            requested_device="gpu", decision_id=str(index), backend_choice_reason="explore" if index == 0 else "exploit"))
+    result = policy.reserve_exploration(data, "fixture-operation", "next", "bandit", .1, now=now)
+    assert result["limit"] == result["reserved_explorations"] == 1
+    assert not result["allowed"]
+
+
 def test_daily_budget_is_atomic_and_never_counts_tests_benchmarks_or_fallback_twice(directories):
     data, _ = directories
     now = datetime.now(timezone.utc)

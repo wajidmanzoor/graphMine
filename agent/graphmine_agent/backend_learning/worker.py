@@ -95,7 +95,8 @@ def _decision(operation, candidates, features, parameters, hardware, context, ba
             available = [c["id"] for c in candidates if c["feasible"]]
             predictions = decision["predictions"]
             choice = min(available, key=lambda b: (predictions[b]["p50_seconds"], b)) if predictions else legacy_choice(candidates)
-            decision.update(chosen_backend=choice, native_backend=choice, reason="fallback", selection_mode="bandit")
+            decision.update(chosen_backend=choice, native_backend=choice, reason="fallback",
+                            backend_choice_reason="fallback", selection_mode="bandit")
         decision["policy_warning"] = warning or decision["policy_warning"]
         return decision
     except Exception:
@@ -104,7 +105,7 @@ def _decision(operation, candidates, features, parameters, hardware, context, ba
         decision = policy.decide(candidates, observation, requested_backend=backend, requested_device=requested)
         decision["policy_warning"] = "backend_selector_failed"
         if context.get("attempt_index", 0):
-            decision.update(native_backend=decision["chosen_backend"], reason="fallback")
+            decision.update(native_backend=decision["chosen_backend"], reason="fallback", backend_choice_reason="fallback")
         return decision
 
 
@@ -223,6 +224,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
                    selection_mode=decision.get("selection_mode", context.get("backend_selection", "legacy")),
                    requested_selection_mode=context.get("backend_selection", "legacy"),
                    shadow_choice=decision.get("shadow_choice"), shadow_reason=decision.get("shadow_reason"),
+                   backend_choice_reason=decision.get("backend_choice_reason"),
                    selection_seed=decision.get("selection_seed"), exploration=decision.get("exploration", {}),
                    policy_warning=decision.get("policy_warning"),
                    selector_active=(decision.get("selection_mode") == "bandit" and decision.get("native_backend") not in {None, "auto"}
