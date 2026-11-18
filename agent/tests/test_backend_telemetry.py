@@ -250,7 +250,7 @@ def test_every_native_attempt_emits_one_terminal_row(telemetry_dir, monkeypatch,
     item = terminal[0]
     assert item["outcome"] == outcome and item["censored"] == (outcome == "timeout")
     assert item["chosen_backend"] == "cpp" and item["reason"] == "forced"
-    assert item["is_evaluation"] and item["policy_version"] is None
+    assert item["is_evaluation"] and item["policy_version"] == "feasibility-v1"
     assert "PRIVATE" not in json.dumps(item)
     logger = storage.RunLog(telemetry_dir)
     logger.submit(item)

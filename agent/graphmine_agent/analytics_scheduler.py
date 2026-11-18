@@ -24,7 +24,7 @@ async def gpu_inventory():
     try:
         process = await asyncio.create_subprocess_exec(
             "nvidia-smi",
-            "--query-gpu=uuid,memory.total,memory.free",
+            "--query-gpu=index,uuid,memory.total,memory.free",
             "--format=csv,noheader,nounits",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.DEVNULL,
@@ -34,13 +34,14 @@ async def gpu_inventory():
             return []
         return [
             {
-                "uuid": row[0].strip(),
-                "total": int(row[1]) * MIB,
-                "free": int(row[2]) * MIB,
+                "index": int(row[0]),
+                "uuid": row[1].strip(),
+                "total": int(row[2]) * MIB,
+                "free": int(row[3]) * MIB,
             }
             for row in csv.reader(raw.decode().splitlines())
         ]
-    except (OSError, ValueError, TimeoutError):
+    except (OSError, ValueError, IndexError, TimeoutError):
         return []
     finally:
         if process is not None and process.returncode is None:
@@ -135,6 +136,10 @@ class AnalyticsScheduler:
             configured.add(self.settings.graph_gpu_uuid)
         result = []
         for device in devices:
+            # Physical identity comes from nvidia-smi, independent of CUDA's
+            # logical remapping. Unknown indices are never safe to schedule.
+            if device.get("index") != 1:
+                continue
             if configured and device["uuid"] not in configured:
                 continue
             llm = (
@@ -175,6 +180,8 @@ class AnalyticsScheduler:
                 async with self.condition:
                     ranked = []
                     for device in devices:
+                        if any(item.gpu_uuid == device["uuid"] for item in self.leases.values()):
+                            continue  # One native workflow at a time on GPU 1.
                         reserved = sum(
                             item.reserved_bytes
                             for item in self.leases.values()

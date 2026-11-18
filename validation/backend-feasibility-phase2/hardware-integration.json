@@ -1,0 +1,98 @@
+{
+  "scope": "Serial actual native workers on physical GPU 1, real physical memory probes, LLM exclusion/reservation and cancelled admission waiter; declared estimates are not actual device allocations",
+  "inventory_before": [
+    {
+      "index": 1,
+      "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+      "total": 51527024640,
+      "free": 50856984576
+    }
+  ],
+  "runs": [
+    {
+      "allocation": {
+        "id": "d890904e-ee7f-402c-b2e4-592b03018792",
+        "device": "gpu",
+        "gpu_uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+        "reserved_bytes": 134217728,
+        "available_bytes_at_admission": 50320113664,
+        "llm_reserved_bytes": 0,
+        "estimate_version": "native-workspace-v1"
+      },
+      "backend": {
+        "id": "libcugraph",
+        "device": "gpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false,
+        "version": "26.10.0",
+        "hardware": {
+          "device_ordinal": 0,
+          "name": "NVIDIA RTX 6000 Ada Generation",
+          "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+          "cuda_runtime": 12090,
+          "cuda_driver": 12080
+        }
+      },
+      "started": 15758301.264993204,
+      "finished": 15758302.988275168
+    },
+    {
+      "allocation": {
+        "id": "9bfd6fe6-1b7b-4aec-846d-990f8d2bd762",
+        "device": "gpu",
+        "gpu_uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+        "reserved_bytes": 134217728,
+        "available_bytes_at_admission": 50320113664,
+        "llm_reserved_bytes": 0,
+        "estimate_version": "native-workspace-v1"
+      },
+      "backend": {
+        "id": "libcugraph",
+        "device": "gpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false,
+        "version": "26.10.0",
+        "hardware": {
+          "device_ordinal": 0,
+          "name": "NVIDIA RTX 6000 Ada Generation",
+          "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+          "cuda_runtime": 12090,
+          "cuda_driver": 12080
+        }
+      },
+      "started": 15758303.115046345,
+      "finished": 15758304.818088954
+    },
+    {
+      "allocation": {
+        "id": "686cdf52-8708-4106-b207-c7c4f02814d9",
+        "device": "gpu",
+        "gpu_uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+        "reserved_bytes": 134217728,
+        "available_bytes_at_admission": 9768534016,
+        "llm_reserved_bytes": 41221619712,
+        "estimate_version": "native-workspace-v1"
+      },
+      "backend": {
+        "id": "libcugraph",
+        "device": "gpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false,
+        "version": "26.10.0",
+        "hardware": {
+          "device_ordinal": 0,
+          "name": "NVIDIA RTX 6000 Ada Generation",
+          "uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+          "cuda_runtime": 12090,
+          "cuda_driver": 12080
+        }
+      },
+      "started": 15758304.893969832,
+      "finished": 15758306.592106536
+    }
+  ],
+  "passed": true,
+  "llm_reserved_bytes": 41221619712,
+  "remaining_allocations": [],
+  "test_sha256": "061c4cdd827864ddc3e888e30e508dee1f5303fe5bd75fd6253b96a46de6e659"
+}

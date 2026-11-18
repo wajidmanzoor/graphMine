@@ -454,6 +454,7 @@ class AnalyticsService:
                 GRAPHMINE_BACKEND_RUN_CONTEXT=_json({
                     **telemetry, "job_timeout_seconds": self.settings.job_timeout_seconds,
                     "leased_gpu_uuid": lease.gpu_uuid if lease else self.settings.graph_gpu_uuid,
+                    "backend_memory_safety": self.settings.backend_memory_safety,
                 }),
             )
         native_library = self.settings.native_runtime_library

@@ -1,0 +1,153 @@
+{
+  "phase": 2,
+  "status": "verified_in_development",
+  "created_at": "2026-11-18T01:43:07.342522+00:00",
+  "branch": "devlopment",
+  "production_promoted": false,
+  "implementation_sha256": "c6fe234a9affcb904585af5cdbe1e44bf8f5acb41cc9ea7c5bc5996740ac9a2b",
+  "files_changed": [
+    "agent/graphmine_agent/analytics.py",
+    "agent/graphmine_agent/analytics_scheduler.py",
+    "agent/graphmine_agent/backend_learning/cli.py",
+    "agent/graphmine_agent/backend_learning/feasibility.py",
+    "agent/graphmine_agent/backend_learning/memory.py",
+    "agent/graphmine_agent/backend_learning/storage.py",
+    "agent/graphmine_agent/backend_learning/worker.py",
+    "agent/graphmine_agent/config.py",
+    "agent/graphmine_agent/evidence_cache.py",
+    "agent/tests/test_analytics_hardware.py",
+    "agent/tests/test_analytics_scheduler.py",
+    "agent/tests/test_analytics_workflows.py",
+    "agent/tests/test_backend_feasibility.py",
+    "agent/tests/test_backend_telemetry.py",
+    "catalog/native_execution_evidence.json",
+    "docs/TYPED_ANALYTICS_WORKFLOWS.md",
+    "library/runtime/runtime.cpp"
+  ],
+  "verification_artifacts": "validation/backend-feasibility-phase2",
+  "tests": {
+    "agent-final": {
+      "tests": 113,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 113
+    },
+    "completion-cpu": {
+      "tests": 168,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 168
+    },
+    "original-gpu1": {
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 34
+    }
+  },
+  "agent_tests_passed": 113,
+  "native_correctness": {
+    "cpu": {
+      "passed_requests": 129073,
+      "suites": 42
+    },
+    "gpu_1": {
+      "passed_requests": 44884,
+      "suites": 67
+    }
+  },
+  "operation_count": 82,
+  "compiled_profiles": 141,
+  "admitted_profiles": 141,
+  "unadmitted_compiled_profiles": [],
+  "backend_selection": "legacy",
+  "memory_fit": {
+    "backends": 0,
+    "skipped_rows": 0,
+    "validated_profiles": 0,
+    "completed_rows": 0,
+    "oom_rows": 0
+  },
+  "models_trained_on_real_data": 0,
+  "initial_training_examples_per_algorithm": {
+    "minimum": 1,
+    "maximum": 3
+  },
+  "user_authorized_evidence_refresh": true,
+  "native_execute_function_unchanged": true,
+  "backend_data_dir": "/data/labdata/wajid/graphmine_data/rlModelData",
+  "backend_model_dir": "/data/labdata/wajid/graphmine-models/rlModel",
+  "development_http_checks": "passed",
+  "phase_2_coverage": [
+    "Native-authoritative input support and conservative declared size/index bounds",
+    "Compiled/admitted-only execution, with exclusion reasons and predictions in schema 2 rows",
+    "Peak memory limited to 80% of measured free leased GPU memory or CPU RAM",
+    "Physical GPU 1 only; serial GPU leases, cancellation, and explicit CPU/GPU semantics",
+    "Forced native backend choices remain unchanged or fail admission",
+    "Nonnegative memory fitting with at least 20 completed non-evaluation rows, snapshot holdout and a 25% margin",
+    "Conservative fallback for missing, invalid, unvalidated, out-of-range or different-context memory models",
+    "OOM lower bounds used by the memory fit command; corrected and evaluation rows excluded",
+    "Existing conservative workflow memory reservation retained",
+    "Worker safety installation fails closed while telemetry delivery and writes remain best effort"
+  ],
+  "remaining_phases": [
+    3,
+    4
+  ],
+  "live_rollout_gate": "Disabled: warm start, shadow observation and held-out baseline comparisons remain pending",
+  "historical_test_runs": {
+    "feasibility": {
+      "tests": 65,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 65
+    },
+    "memory-gpu-units": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2
+    },
+    "preflight-deadline": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1
+    },
+    "agent-integration": {
+      "tests": 45,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 45
+    },
+    "completion-cpu": {
+      "tests": 168,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 168
+    },
+    "original-gpu1": {
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 34
+    }
+  },
+  "final_source_inventory_verified": true,
+  "training_isolation": {
+    "logged_rows": 194,
+    "non_evaluation_rows": 0,
+    "gpu_indices": [
+      1
+    ]
+  }
+}

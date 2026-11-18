@@ -17,11 +17,13 @@ from uuid import uuid4
 
 DEFAULT_DATA_DIR = Path("/data/labdata/wajid/graphmine_data/rlModelData")
 DEFAULT_MODEL_DIR = Path("/data/labdata/wajid/graphmine-models/rlModel")
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 LOG = logging.getLogger(__name__)
 SCHEMA = """# Backend run log
 
-Schema version 1 (Phase 1). Rows are immutable and contain aggregate data only.
+Schema history: version 1 added Phase 1 telemetry; version 2 adds Phase 2
+feasibility, native limits, memory predictions and preflight rejections.
+Readers accept both versions. Rows are immutable and contain aggregate data only.
 Corrections append a new run_id with supersedes pointing at the original run_id.
 JSONL is authoritative. A per-file flock serializes writers on the same host;
 O_APPEND plus fsync makes a successfully acknowledged write durable.
@@ -53,6 +55,23 @@ Output: output_size (result item count if known, otherwise null).
 Other: fallback_chain, is_evaluation, source, implementation_sha256,
 prediction_error (null without predictions), telemetry_warnings (fixed codes).
 Evaluation/test rows are never training observations. No user identity is stored.
+
+Version 2: policy_version=feasibility-v1. Each candidate also carries device,
+limits (maximum input n/m, declared conservatively by native preflight),
+native_feasible, predicted_peak_memory_bytes, memory_model_version and
+memory_prediction_reason. predictions contains memory estimates and null runtime
+predictions until Phase 4. output_estimate is the request's max_output_items
+budget, known before execution; actual output_size is never used as an input.
+execution_started=false and failure_stage=preflight identify requests rejected
+before native execution; they are not completed training observations.
+Memory coefficients are nonnegative a+b*n+c*m+d*output_estimate, scoped by
+operation, implementation, hardware model, input kind/flags and safe parameters.
+At least 20 completed non-evaluation rows and 5 distinct snapshots are required.
+The held-out split groups whole snapshots. Fits include a 25% margin, must not
+underpredict any held-out peak, and apply only within the training size range.
+OOM observations never enter least-squares fitting: for the same context and
+snapshot they impose a 1.25x lower bound on the previously available memory.
+The workflow scheduler always retains its conservative admission reservation.
 """
 
 
@@ -62,6 +81,26 @@ def utc_now():
 
 def _json(value):
     return json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(",", ":"))
+
+
+def atomic_json(path, value):
+    """Publish derived metadata, never authoritative run rows."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    temporary = path.with_name(path.name + "." + uuid4().hex)
+    try:
+        with temporary.open("x") as handle:
+            handle.write(_json(value) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+        fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def prepare_directories(data_dir, model_dir, repository_root):
@@ -95,7 +134,15 @@ def prepare_directories(data_dir, model_dir, repository_root):
             os.fsync(handle.fileno())
     except FileExistsError:
         if schema.read_text() != SCHEMA:
-            LOG.warning("backend telemetry: existing schema documentation differs from version %s", SCHEMA_VERSION)
+            temporary = schema.with_name("SCHEMA.md." + uuid4().hex)
+            try:
+                with temporary.open("x") as handle:
+                    handle.write(SCHEMA)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                os.replace(temporary, schema)
+            finally:
+                temporary.unlink(missing_ok=True)
 
 
 def append_row(path, row):
@@ -216,7 +263,7 @@ def read_rows(data_dir, *, since=None, operation=None, include_benchmarks=True):
             for line in handle:
                 try:
                     row = json.loads(line)
-                    if not isinstance(row, dict) or row.get("schema_version") != SCHEMA_VERSION:
+                    if not isinstance(row, dict) or row.get("schema_version") not in (1, SCHEMA_VERSION):
                         raise ValueError("Unknown run schema")
                     created = datetime.fromisoformat(row["created_at"].replace("Z", "+00:00"))
                     if (not after or created >= after) and (not operation or row["operation"] == operation):

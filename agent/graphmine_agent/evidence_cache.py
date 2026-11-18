@@ -26,6 +26,8 @@ from pathlib import Path
 # then run the library worker exactly as ``python -m graphmine.worker`` would.
 BOOTSTRAP = """\
 import importlib.util, os, runpy, sys
+if os.environ.get("GRAPHMINE_REPOSITORY_ROOT"):
+    sys.path.insert(0, os.path.join(os.environ["GRAPHMINE_REPOSITORY_ROOT"], "python", "graphmine"))
 import graphmine.evidence as evidence
 spec = importlib.util.spec_from_file_location(
     "graphmine_evidence_cache", os.environ["GRAPHMINE_EVIDENCE_CACHE_MODULE"]
@@ -34,12 +36,11 @@ cache = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cache)
 cache.install(evidence, os.environ["GRAPHMINE_EVIDENCE_HASH_CACHE"])
 if os.environ.get("GRAPHMINE_BACKEND_TELEMETRY_ROOT"):
-    try:
-        sys.path.insert(0, os.environ["GRAPHMINE_BACKEND_TELEMETRY_ROOT"])
-        from graphmine_agent.backend_learning.worker import install
-        install()
-    except Exception:
-        print("backend telemetry: bootstrap_failed", file=sys.stderr)
+    # This installs admission as well as best-effort logging. A broken safety
+    # gate must fail closed; delivery/write errors remain observational.
+    sys.path.insert(0, os.environ["GRAPHMINE_BACKEND_TELEMETRY_ROOT"])
+    from graphmine_agent.backend_learning.worker import install
+    install()
 runpy.run_module("graphmine.worker", run_name="__main__", alter_sys=True)
 """
 

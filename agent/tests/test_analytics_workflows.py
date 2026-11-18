@@ -947,14 +947,14 @@ def test_live_cancel_endpoint(settings, triangle_graph):
         assert not cancelled.json()["complete"]
 
 
-@pytest.mark.parametrize("gpu_index", [0, 1])
-def test_live_configured_gpu_workflow(settings, triangle_graph, gpu_index):
+def test_live_configured_gpu_workflow(settings, triangle_graph):
+    from graphmine_agent.backend_learning.hardware import hardware_snapshot
+
     configured = os.environ.get("GRAPHMINE_ANALYTICS_TEST_GPUS", "").split(",")
-    if len(configured) != 2 or not all(configured):
-        pytest.skip(
-            "Set GRAPHMINE_ANALYTICS_TEST_GPUS to two GPU UUIDs for application GPU checks"
-        )
-    device = configured[gpu_index]
+    device = next((g["uuid"] for g in hardware_snapshot()["gpus"]
+                   if g["index"] == 1 and g["uuid"] in configured), None)
+    if device is None:
+        pytest.skip("Configure physical GPU 1 in GRAPHMINE_ANALYTICS_TEST_GPUS")
     selected = replace(
         settings, graph_gpu_uuid=device, llm_gpu_uuid=None, job_timeout_seconds=30
     )

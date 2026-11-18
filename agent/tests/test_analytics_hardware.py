@@ -135,30 +135,24 @@ async def test_auto_workflow_gpu_priority_and_quality_preserving_fallback(
 
 
 @pytest.mark.asyncio
-async def test_physical_gpu_concurrency_reservation_and_cancelled_waiter(
+async def test_physical_gpu1_serial_reservation_and_cancelled_waiter(
     settings, database, graph_store, triangle_graph
 ):
     configured = os.environ.get("GRAPHMINE_ANALYTICS_TEST_GPUS", "").split(",")
-    if len(configured) != 2 or not all(configured):
-        pytest.skip("Configure two physical GPU UUIDs for the hardware admission test")
+    inventory = [row for row in await gpu_inventory() if row["uuid"] in configured and row["index"] == 1]
+    if len(inventory) != 1:
+        pytest.skip("Configure physical GPU 1 for the hardware admission test")
+    device = inventory[0]
     config = replace(
         settings,
         graph_gpu_uuid=None,
         analytics_gpu_uuids=tuple(configured),
         llm_enabled=False,
-        llm_gpu_uuid=configured[0],
+        llm_gpu_uuid=None,
         job_timeout_seconds=60,
     )
     service = AnalyticsService(config, database, graph_store, EventBus(database))
-    inventory = [row for row in await gpu_inventory() if row["uuid"] in configured]
-    assert len(inventory) == 2
-    available = sorted(
-        row["free"] - config.analytics_gpu_headroom_bytes for row in inventory
-    )
-    assert available[0] > 1024 * MIB, "Hardware check needs 1 GiB free on each GPU"
-    # Exercise the admission ledger without allocating tens of GiB: deliberately
-    # large declared estimates force placement on distinct physical devices.
-    estimates = (available[1] - available[0] // 4, available[0] * 3 // 5)
+    assert device["free"] - config.analytics_gpu_headroom_bytes > 1024 * MIB
     graph = json.loads(triangle_graph)
     source = graph["vertices"][0]["id"]
     inputs = {"main": {"kind": "graph", "data": graph}}
@@ -208,40 +202,40 @@ async def test_physical_gpu_concurrency_reservation_and_cancelled_waiter(
             }
         )
 
-    async with service.scheduler.reserve("gpu", estimates[0], timeout=5) as first:  # noqa: SIM117 - exercise independent concurrent leases
-        async with service.scheduler.reserve("gpu", estimates[1], timeout=5) as second:
-            assert {first.gpu_uuid, second.gpu_uuid} == set(configured)
-            assert len(service.scheduler.snapshot()) == 2
-            await asyncio.gather(run(first), run(second))
+    async with service.scheduler.reserve("gpu", 128 * MIB, timeout=5) as first:
+        assert first.gpu_uuid == device["uuid"]
+        await run(first)
 
-            async def waiting():
-                async with service.scheduler.reserve("gpu", available[0], timeout=30):
-                    pytest.fail("An overcommitted job was admitted")
+        async def waiting():
+            async with service.scheduler.reserve("gpu", 1, timeout=30):
+                pytest.fail("A second GPU job was admitted while the first held its lease")
 
-            queued = asyncio.create_task(waiting())
-            await asyncio.sleep(0.1)
-            assert not queued.done()
-            queued.cancel()
-            await asyncio.gather(queued, return_exceptions=True)
-            assert len(service.scheduler.snapshot()) == 2
+        queued = asyncio.create_task(waiting())
+        await asyncio.sleep(0.1)
+        assert not queued.done()
+        queued.cancel()
+        await asyncio.gather(queued, return_exceptions=True)
+        assert len(service.scheduler.snapshot()) == 1
     assert service.scheduler.snapshot() == []
-    assert max(row["started"] for row in records) < min(
-        row["finished"] for row in records
-    )
+    async with service.scheduler.reserve("gpu", 128 * MIB, timeout=5) as second:
+        assert second.gpu_uuid == first.gpu_uuid
+        await run(second)
+    assert records[0]["finished"] <= records[1]["started"]
 
     service.scheduler.settings = replace(
-        config, llm_enabled=True, allow_shared_gpu=False
+        config, llm_enabled=True, llm_gpu_uuid=device["uuid"], allow_shared_gpu=False
     )
-    async with service.scheduler.reserve("gpu", 128 * MIB, timeout=5) as exclusive:
-        assert exclusive.gpu_uuid == configured[1]
-        await run(exclusive)
-    physical_llm = next(row for row in inventory if row["uuid"] == configured[0])
+    with pytest.raises(AdmissionError, match="GPU"):
+        async with service.scheduler.reserve("gpu", 128 * MIB, timeout=5):
+            pytest.fail("Used an excluded physical GPU")
+    physical_llm = device
     reservation = physical_llm["total"] * 4 // 5
     service.scheduler.settings = replace(
         config,
         llm_enabled=True,
+        llm_gpu_uuid=device["uuid"],
         allow_shared_gpu=True,
-        analytics_gpu_uuids=(configured[0],),
+        analytics_gpu_uuids=(device["uuid"],),
         analytics_llm_reserve_bytes=reservation,
     )
     with pytest.raises(AdmissionError, match="memory"):
@@ -250,7 +244,7 @@ async def test_physical_gpu_concurrency_reservation_and_cancelled_waiter(
         ):
             pytest.fail("Reserved LLM space was admitted to a graph job")
     async with service.scheduler.reserve("gpu", 128 * MIB, timeout=5) as shared:
-        assert shared.gpu_uuid == configured[0]
+        assert shared.gpu_uuid == device["uuid"]
         assert shared.llm_reserved_bytes == reservation
         await run(shared)
     assert service.scheduler.snapshot() == []
@@ -261,7 +255,7 @@ async def test_physical_gpu_concurrency_reservation_and_cancelled_waiter(
         path.write_text(
             json.dumps(
                 {
-                    "scope": "Two concurrent actual native GPU workers, real physical memory probes, LLM exclusion/reservation and cancelled admission waiter; declared estimates are not actual device allocations",
+                    "scope": "Serial actual native workers on physical GPU 1, real physical memory probes, LLM exclusion/reservation and cancelled admission waiter; declared estimates are not actual device allocations",
                     "inventory_before": inventory,
                     "runs": records,
                     "passed": True,

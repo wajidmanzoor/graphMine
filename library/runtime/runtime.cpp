@@ -72,12 +72,14 @@ json::object backend_capabilities(const json::object& request) {
     require(work.max_candidates && work.max_output_items && std::isfinite(work.timeout_seconds) &&
                 work.timeout_seconds > 0, "Budgets must be finite and positive");
   }
-  const auto parameters = request.contains("parameters") ? object(request.at("parameters"), "parameters") : json::object{};
+  auto parameters = request.contains("parameters") ? object(request.at("parameters"), "parameters") : json::object{};
   validate_parameters(card, parameters);
   std::shared_ptr<const Graph> graph;
   if (card.at("input_kind") == "graph") graph = cached_graph(request.at("graph"), work);
   else inspect_input(string(card.at("input_kind"), "input_kind"), request.at("graph"), work);
   work.input_graph = graph.get();
+  if (operation == "maximal-bicliques")
+    parameters = resolve_biclique_parameters(*graph, parameters);
   const auto gpu_reason = graph ? gpu_support_reason(operation, *graph, parameters)
                                 : "This structured-input profile has a native CPU implementation";
   // CPU requests do not initialize CUDA, even when gathering telemetry.
@@ -92,15 +94,27 @@ json::object backend_capabilities(const json::object& request) {
     const bool compiled = backend.at("compiled").as_bool();
     const bool admitted = !request.contains("allowed_backends") ||
                           std::find(allowed.begin(), allowed.end(), id) != allowed.end();
+    // Conservative preflight bounds in input units. GPU normalization can
+    // symmetrize every edge, so reserve two signed-int32 arc indices per edge.
+    // Individual adapters retain their more specific checks during execution.
+    const std::uint64_t max_vertices = cpu ? UINT32_MAX - 1ULL :
+        id == "ecl-maxflow" ? 1000000ULL : id == "hungarian-cuda" ? 128ULL : INT32_MAX - 1ULL;
+    const std::uint64_t max_edges = cpu ? UINT64_MAX :
+        id == "ecl-maxflow" ? 5000000ULL : (INT32_MAX - 1ULL) / 2;
     std::string reason;
     if (!compiled) reason = "not_compiled";
     else if (!admitted) reason = "not_admitted";
     else if ((policy == "cpu" && !cpu) || (policy == "gpu" && cpu)) reason = "device_policy";
+    else if (graph && (graph->vertex_count() > max_vertices || graph->edge_count() > max_edges))
+      reason = "size_or_index_limit";
     else if (!cpu && !gpu_reason.empty()) reason = gpu_reason;
     else if (!cpu && !available) reason = "gpu_unavailable";
     else if (graph) {
       try {
-        reason = backend_support_reason(operation, id, *graph, parameters, work);
+        // Comparing another candidate must not consume this one's work budget.
+        auto candidate_work = work;
+        candidate_work.started = std::chrono::steady_clock::now();
+        reason = backend_support_reason(operation, id, *graph, parameters, candidate_work);
       } catch (const Failure& failure) {
         reason = failure.code;  // Avoid copying graph-specific error contents.
       }
@@ -108,7 +122,8 @@ json::object backend_capabilities(const json::object& request) {
     const bool feasible = reason.empty();
     candidates.push_back(json::object{{"id", id}, {"device", cpu ? "cpu" : "gpu"},
                                       {"compiled", compiled}, {"admitted", admitted},
-                                      {"feasible", feasible}, {"infeasible_reason", reason}});
+                                      {"feasible", feasible}, {"infeasible_reason", reason},
+                                      {"limits", json::object{{"n", max_vertices}, {"m", max_edges}}}});
     if (id == "cpp") cpu_feasible = feasible;
     if (feasible && ((requested != "auto" && requested == id) ||
                      (requested == "auto" && !cpu && selected.empty()))) selected = id;

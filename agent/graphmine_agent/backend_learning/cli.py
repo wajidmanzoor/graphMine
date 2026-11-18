@@ -18,7 +18,7 @@ from .storage import DEFAULT_DATA_DIR, DEFAULT_MODEL_DIR, prepare_directories, r
 def add_parser(commands):
     runs = commands.add_parser("backend-runs", help="export or summarize the native run log")
     actions = runs.add_subparsers(dest="backend_runs_command", required=True)
-    for name in ("export", "report"):
+    for name in ("export", "report", "fit-memory"):
         command = actions.add_parser(name)
         command.add_argument("--since", help="ISO 8601 UTC date or timestamp")
         command.add_argument("--operation")
@@ -74,6 +74,20 @@ def run_command(arguments, settings=None):
         for row in rows:
             print(json.dumps(row, ensure_ascii=False, allow_nan=False))
         return 0
+    if arguments.backend_runs_command == "fit-memory":
+        from .memory import fit_models, save_models
+
+        # Always rebuild from the complete authoritative history, so a changed
+        # implementation or a correction cannot retain a stale active fit.
+        if arguments.since or arguments.operation:
+            raise ValueError("fit-memory requires the complete run history; omit --since and --operation")
+        models, skipped = fit_models(rows)
+        save_models(data, models)
+        print(json.dumps(dict(backends=len(models), skipped_rows=skipped,
+            validated_profiles=sum(p["validated"] for m in models.values() for p in m["profiles"].values()),
+            completed_rows=sum(p["completed_count"] for m in models.values() for p in m["profiles"].values()),
+            oom_rows=sum(p["oom_count"] for m in models.values() for p in m["profiles"].values())), indent=2))
+        return 0
     summary = report(rows)
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     destination = Path(data) / "reports" / f"{stamp}-backend-report.json"
@@ -94,7 +108,7 @@ def run_command(arguments, settings=None):
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="graphmine backend-runs")
     actions = parser.add_subparsers(dest="backend_runs_command", required=True)
-    for name in ("export", "report"):
+    for name in ("export", "report", "fit-memory"):
         command = actions.add_parser(name)
         command.add_argument("--since")
         command.add_argument("--operation")

@@ -1,4 +1,4 @@
-"""Instrument isolated workflow calls without changing their execution policy.
+"""Enforce preflight admission and instrument isolated native workflow calls.
 
 Terminal rows travel to the supervising agent, whose asynchronous writer survives
 a killed native process. The supervisor synthesizes a terminal row if necessary.
@@ -9,12 +9,13 @@ from __future__ import annotations
 import os
 import sys
 import time
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from uuid import uuid4
 
 from .features import cached_features, safe_parameters
 from .hardware import hardware_snapshot, merge_peaks, process_rss
-from .storage import SCHEMA_VERSION, utc_now
+from .feasibility import filter_candidates, legacy_choice
+from .storage import DEFAULT_DATA_DIR, SCHEMA_VERSION, utc_now
 
 
 def outcome_for(error=None, *, timed_out=False):
@@ -53,9 +54,11 @@ def output_size(result):
 def run_observed(run, operation, graph, *, context, step_id, emit, **kwargs):
     """One start/finish pair around exactly one real native operation call."""
     from graphmine.dispatch import native_request, native_library
+    from graphmine.contracts import Budget
+    from graphmine.exceptions import GraphMineError, ResourceLimit
     from graphmine.registry import algorithm
 
-    started, row = None, None
+    started, row = time.monotonic(), None
 
     def event(value):
         try:
@@ -63,63 +66,112 @@ def run_observed(run, operation, graph, *, context, step_id, emit, **kwargs):
         except Exception:
             print("backend telemetry: event_delivery_failed", file=sys.stderr)
 
+    data = graph.to_canonical() if hasattr(graph, "to_canonical") else graph
+    definition = algorithm(operation)
+    budget_object = kwargs.get("budget") or Budget()
+    budget_object = replace(budget_object, timeout_seconds=min(
+        budget_object.timeout_seconds, context.get("job_timeout_seconds", 1800), 1800))
+    kwargs["budget"] = budget_object
+    budget = asdict(budget_object)
+    requested = context.get("requested_device", kwargs.get("device", "auto"))
+    backend = kwargs.get("backend") or "auto"
+    parameters = safe_parameters(kwargs.get("parameters") or {}, definition.parameters)
+    hardware = hardware_snapshot(leased_gpu_uuid=context.get("leased_gpu_uuid"))
+    hardware["backend_memory_safety"] = context.get("backend_memory_safety", 0.8)
+    data_dir = os.environ.get("GRAPHMINE_BACKEND_DATA_DIR", str(DEFAULT_DATA_DIR))
+    fingerprint = getattr(graph, "fingerprint", None)
     try:
-        data = graph.to_canonical() if hasattr(graph, "to_canonical") else graph
-        definition = algorithm(operation)
-        budget = kwargs.get("budget")
-        budget = asdict(budget) if budget is not None else {}
-        requested = context.get("requested_device", kwargs.get("device", "auto"))
-        backend = kwargs.get("backend") or "auto"
+        features = cached_features(data, data_dir, snapshot_fingerprint=fingerprint,
+                                   input_kind=definition.input_kind) if fingerprint else None
+    except Exception:
+        features = None  # A damaged feature cache cannot prevent an admitted run.
+    if features is None:
+        from .features import graph_features
+        features = graph_features(data, input_kind=definition.input_kind)
+    caps, preparation_error, warnings = {}, None, []
+    try:
+        # The worker's logical device 0 must map to the physical GPU 1 lease.
+        # Without that mapping an automatic request may still use CPU, but must
+        # not initialize CUDA while asking the native API about candidates.
+        gpu_allowed = (hardware.get("leased_gpu_index") == 1
+                       and os.environ.get("CUDA_VISIBLE_DEVICES") in {context.get("leased_gpu_uuid"), "1"}
+                       and kwargs.get("gpu_device", 0) == 0)
+        execution_device = kwargs.get("device", "auto")
+        if not gpu_allowed and execution_device == "gpu":
+            raise GraphMineError("A verified lease on physical GPU 1 is required")
+        if not gpu_allowed and backend not in {"auto", "cpp"}:
+            raise GraphMineError("The requested backend requires a verified lease on physical GPU 1")
+        if not gpu_allowed or backend == "cpp":
+            execution_device = "cpu" if execution_device == "auto" else execution_device
         query = dict(command="backend_capabilities", operation=operation, graph=data,
-                     parameters=kwargs.get("parameters") or {}, device=kwargs.get("device", "auto"),
+                     parameters=kwargs.get("parameters") or {}, device=execution_device,
                      backend=backend, gpu_device=kwargs.get("gpu_device", 0), budget=budget)
         if kwargs.get("allowed_backends") is not None:
             query["allowed_backends"] = kwargs["allowed_backends"]
-        warnings = []
-        try:
-            caps = native_request(query)
-        except Exception:
+        caps = native_request(query)
+        caps["candidates"] = filter_candidates(operation, caps["candidates"], features, parameters, hardware,
+            output_estimate=budget["max_output_items"], implementation=caps["implementation_sha256"], data_dir=data_dir)
+        caps["legacy_backend"] = legacy_choice(caps["candidates"], backend)
+        if caps["legacy_backend"] is None:
+            reasons = sorted({c["infeasible_reason"] for c in caps["candidates"]
+                              if c["infeasible_reason"] and (backend == "auto" or c["id"] == backend)})
+            raise ResourceLimit("No feasible admitted backend: " + "; ".join(reasons or ["backend_not_declared"]))
+        # Keep native auto ordering, restricted to the feasible set. An explicit
+        # backend is unchanged and cannot silently fall back to another one.
+        kwargs["allowed_backends"] = [c["id"] for c in caps["candidates"] if c["feasible"]]
+        kwargs["device"] = execution_device
+    except Exception as exc:
+        preparation_error = exc
+        if not caps:
             warnings.append("native_preflight_failed")
+    try:
+        if not caps:
             card = next(c for c in native_library().catalog()["operations"] if c["id"] == operation)
             admitted = kwargs.get("allowed_backends")
-            caps = dict(candidates=[dict(id=c["id"], compiled=c["compiled"],
+            caps = dict(candidates=[dict(id=c["id"], device=c["device"], compiled=c["compiled"],
                         admitted=admitted is None or c["id"] in admitted,
                         feasible=False, infeasible_reason="preflight_unavailable") for c in card["backends"]],
                         legacy_backend=None)
-        fingerprint = caps.get("input_fingerprint") or getattr(graph, "fingerprint", None)
-        if fingerprint is None:
-            from .features import graph_features
-            features = graph_features(data, input_kind=definition.input_kind)
-        else:
-            features = cached_features(data, os.environ["GRAPHMINE_BACKEND_DATA_DIR"],
-                                       snapshot_fingerprint=fingerprint, input_kind=definition.input_kind)
-        hardware = hardware_snapshot(leased_gpu_uuid=context.get("leased_gpu_uuid"))
         row = dict(schema_version=SCHEMA_VERSION, run_id=str(uuid4()),
                    workflow_id=context.get("workflow_id"), step_id=step_id, created_at=utc_now(),
                    operation=operation, problem_id=definition.problem_id, family=definition.family,
-                   parameters=safe_parameters(kwargs.get("parameters") or {}, definition.parameters),
+                   parameters=parameters,
                    requested_device=requested, requested_backend=backend, candidates=caps["candidates"],
                    chosen_backend=caps.get("legacy_backend"),
                    reason="forced" if requested != "auto" or backend != "auto" else "legacy_auto",
-                   policy_version=None, model_version=None, predictions=None, hardware=hardware,
+                   policy_version="feasibility-v1", model_version=None,
+                   predictions={c["id"]: dict(p50_seconds=None, p90_seconds=None, sampled_value=None,
+                                peak_memory_bytes=c["predicted_peak_memory_bytes"],
+                                memory_model_version=c["memory_model_version"])
+                                for c in caps["candidates"] if c["feasible"]}, hardware=hardware,
                    graph_features=features, outcome=None, error_code=None, runtime_seconds=None,
                    native_elapsed_seconds=None, native_compute_seconds=None, preparation_seconds=None,
                    timeout_seconds=min(budget.get("timeout_seconds", 60), context.get("job_timeout_seconds", 1800)),
                    censored=False, peak_memory=dict(gpu_bytes=None, process_rss_bytes=process_rss(os.getpid()),
                                                     sample_interval_seconds=0.1),
-                   output_size=None, fallback_chain=[],
+                   output_size=None, output_estimate=budget["max_output_items"], fallback_chain=[],
+                   execution_started=preparation_error is None,
+                   failure_stage="preflight" if preparation_error else None,
                    is_evaluation=bool(context.get("is_evaluation") or os.environ.get("PYTEST_CURRENT_TEST")
                                       or os.environ.get("GRAPHMINE_IS_EVALUATION") == "true"),
                    source=context.get("source", "application"), prediction_error=None,
                    implementation_sha256=caps.get("implementation_sha256"),
                    telemetry_warnings=warnings + hardware.get("warnings", []))
-        event({"event": "native_started", "record": dict(row)})
+        if preparation_error is None:
+            event({"event": "native_started", "record": dict(row)})
     except Exception:
-        # Instrumentation is observational. Never replace native results/errors.
+        # Logging failures must not bypass admission or replace native results.
         event({"event": "telemetry_warning", "code": "telemetry_prepare_failed"})
-    started = time.monotonic()
     result, error = None, None
     try:
+        if preparation_error is not None:
+            raise preparation_error
+        remaining = budget_object.timeout_seconds - (time.monotonic() - started)
+        if remaining <= 0:
+            if row is not None:
+                row.update(execution_started=False, failure_stage="preflight")
+            raise TimeoutError("Native preflight exhausted the step execution deadline")
+        kwargs["budget"] = replace(budget_object, timeout_seconds=remaining)
         result = run(operation, graph, **kwargs)
         return result
     except BaseException as exc:

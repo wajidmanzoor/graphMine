@@ -16,8 +16,8 @@ from graphmine_agent.analytics_scheduler import (
 
 async def devices():
     return [
-        {"uuid": name, "total": 16 * 1024 * MIB, "free": 14 * 1024 * MIB}
-        for name in ("GPU-A", "GPU-B")
+        {"index": index, "uuid": name, "total": 16 * 1024 * MIB, "free": 14 * 1024 * MIB}
+        for index, name in enumerate(("GPU-A", "GPU-B"))
     ]
 
 
@@ -37,15 +37,14 @@ def scheduler(settings, **options):
 
 
 @pytest.mark.asyncio
-async def test_memory_leases_assign_two_devices_without_oversubscription(settings):
+async def test_only_physical_gpu1_is_leased_and_runs_are_serial(settings):
     service = scheduler(settings)
     async with service.reserve("gpu", 10 * 1024 * MIB, timeout=1) as first:  # noqa: SIM117 - exercise nested independent leases
-        async with service.reserve("gpu", 10 * 1024 * MIB, timeout=1) as second:
-            assert {first.gpu_uuid, second.gpu_uuid} == {"GPU-A", "GPU-B"}
-            assert len(service.snapshot()) == 2
-            with pytest.raises(AdmissionError, match="waiting"):
-                async with service.reserve("gpu", 10 * 1024 * MIB, timeout=0.02):
-                    pytest.fail("Overcommitted a GPU")
+        assert first.gpu_uuid == "GPU-B"
+        assert len(service.snapshot()) == 1
+        with pytest.raises(AdmissionError, match="waiting"):
+            async with service.reserve("gpu", 1, timeout=0.02):
+                pytest.fail("Started a concurrent GPU job despite the serial policy")
     assert service.snapshot() == []
 
 
@@ -60,7 +59,8 @@ async def test_llm_exclusion_and_memory_reservation(settings):
     service.settings = replace(
         service.settings,
         allow_shared_gpu=True,
-        analytics_gpu_uuids=("GPU-A",),
+        analytics_gpu_uuids=("GPU-B",),
+        llm_gpu_uuid="GPU-B",
         analytics_llm_reserve_bytes=12 * 1024 * MIB,
     )
     with pytest.raises(AdmissionError, match="memory"):
@@ -80,21 +80,33 @@ async def test_cancelled_waiter_and_holder_release_memory(settings):
             entered.set()
             await asyncio.Event().wait()
 
-    first, second = asyncio.Event(), asyncio.Event()
-    running = [asyncio.create_task(job(first)), asyncio.create_task(job(second))]
+    first = asyncio.Event()
+    running = [asyncio.create_task(job(first))]
     await first.wait()
-    await second.wait()
     waiting = asyncio.create_task(job(asyncio.Event()))
     await asyncio.sleep(0)
     waiting.cancel()
     await asyncio.gather(waiting, return_exceptions=True)
-    assert len(service.snapshot()) == 2
+    assert len(service.snapshot()) == 1
     for task in running:
         task.cancel()
     await asyncio.gather(*running, return_exceptions=True)
     assert service.snapshot() == []
     async with service.reserve("gpu", 14 * 1024 * MIB, timeout=1):
         assert len(service.snapshot()) == 1
+
+
+@pytest.mark.asyncio
+async def test_gpu0_and_unknown_indices_are_never_permitted(settings):
+    service = scheduler(settings)
+    service.settings = replace(service.settings, analytics_gpu_uuids=("GPU-A",))
+    with pytest.raises(AdmissionError, match="GPU"):
+        async with service.reserve("gpu", 1, timeout=1):
+            pytest.fail("Scheduled on GPU 0")
+    service.settings = replace(service.settings, analytics_gpu_uuids=())
+    assert service.eligible([{"uuid": "GPU-unknown", "total": 10, "free": 10}]) == []
+    async with service.reserve("auto", 1, timeout=1, allowed_gpu_uuids={"GPU-A"}) as lease:
+        assert lease.device == "cpu"
 
 
 @pytest.mark.asyncio

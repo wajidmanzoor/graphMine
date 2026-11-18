@@ -1,0 +1,6 @@
+{
+  "environment": "devlopment",
+  "http_checks": "passed",
+  "pending_jobs": 0,
+  "production_services_active": true
+}

@@ -1,0 +1,3 @@
+Validated 500 selection requests
+Validated 1000 selection requests
+{"suite":"walks","backend":"libcugraph","gpu_device":0,"passed_requests":1192,"failed":0,"implementation_sha256":"c6fe234a9affcb904585af5cdbe1e44bf8f5acb41cc9ea7c5bc5996740ac9a2b"}

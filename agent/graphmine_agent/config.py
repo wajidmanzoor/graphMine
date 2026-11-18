@@ -187,7 +187,7 @@ class Settings:
             raise ValueError("This telemetry release supports backend_selection=legacy only")
         if not 0 <= self.backend_exploration_budget <= 1:
             raise ValueError("backend_exploration_budget must be between 0 and 1")
-        if not 0 < self.backend_memory_safety <= 1 or self.backend_max_explore_ratio < 1:
+        if not 0 < self.backend_memory_safety <= 0.8 or self.backend_max_explore_ratio < 1:
             raise ValueError("Invalid backend memory safety or exploration ratio")
         if not 0 < self.backend_min_timeout_seconds <= 1800:
             raise ValueError("backend_min_timeout_seconds must be between 1 and 1800")
