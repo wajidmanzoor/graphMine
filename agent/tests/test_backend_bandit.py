@@ -438,7 +438,7 @@ def test_attempt_hard_timeout_kills_child_and_grandchild(directories, monkeypatc
         while True:
             try:
                 status = Path(f"/proc/{pid}/stat").read_text().split(")", 1)[1].strip()
-            except FileNotFoundError:
+            except (FileNotFoundError, ProcessLookupError):
                 break
             if status.startswith("Z"):
                 break

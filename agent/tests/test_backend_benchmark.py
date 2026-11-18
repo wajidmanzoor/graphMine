@@ -293,7 +293,8 @@ async def test_collection_caps_per_operation_across_graphs_and_ids_and_full_is_e
         return {**record, "outcome": "completed", "runtime_seconds": 0.1}
     monkeypatch.setattr(bench, "run_attempt", execute)
     args = SimpleNamespace(registry=None, instances=None, password_file=None, data_dir=data_dir,
-        model_dir=storage.DEFAULT_MODEL_DIR, native_library=ROOT / "library/build/runtime/libgraphmine_runtime.so",
+        model_dir=storage.DEFAULT_MODEL_DIR, native_library=Path(os.environ.get("GRAPHMINE_NATIVE_LIBRARY")
+            or ROOT / "library/build/runtime/libgraphmine_runtime.so"),
         config=ROOT / "benchmarks/backend_selection.json", examples_per_operation=None, is_evaluation=True,
         full=False, benchmark_id="initial", operations=None, python=None)
     assert await bench.collect(args) == 0 and len(executions) == 3
