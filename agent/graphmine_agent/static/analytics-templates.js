@@ -9,18 +9,6 @@ window.GraphMineTemplates = ({state, api, W, node, runAction, notice, card, para
   }
   const open = node("button", {id: "open-templates", type: "button", class: "secondary full-width"}, "Workflow templates");
   $("manual-tools").before(open);
-  const save = node("button", {id: "save-workflow-template", type: "button", class: "quiet"}, "Save as template");
-  $("review-example").after(save);
-  save.onclick = () => runAction(async () => {
-    const record = state.record; if (!record) throw new Error("Open a validated workflow first.");
-    const dialog = makeDialog("save-template-dialog", "Save workflow template"), form = node("form"), name = node("input", {id: "template-name", required: "", maxlength: "160"}), label = node("label", {}, "Template name");
-    label.append(name); form.append(label, node("p", {class: "muted"}, "The steps and settings are saved. Each use binds new inputs and waits for review before running."), node("button", {type: "submit", class: "primary"}, "Save template")); dialog.append(form);
-    form.onsubmit = event => { event.preventDefault(); runAction(async () => {
-      await api("/api/workflow-templates", {method: "POST", body: W.stringify({name: name.value, workflow_id: record.id, expected_revision: record.revision})});
-      dialog.close(); dialog.remove(); notice("Workflow template saved.");
-    }); };
-    dialog.showModal(); name.focus();
-  });
   open.onclick = () => runAction(async () => {
     const sessionId = state.session?.id; if (!sessionId) throw new Error("Open a conversation first.");
     const templates = await api("/api/workflow-templates");

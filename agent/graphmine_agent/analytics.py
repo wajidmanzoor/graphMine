@@ -696,8 +696,11 @@ class AnalyticsService:
         from .analytics_eligibility import attach_requirements
         attach_requirements(result["operations"], self.settings.repository_root)
         from .result_views import profile
+        from ._families import PROBLEMS
         for operation in result["operations"]:
             operation["visualization"] = profile(operation["id"])
+            problem = PROBLEMS.get(operation.get("family"), {}).get(operation.get("problem_id"), {})
+            operation["problem_title"] = problem.get("title", operation.get("problem_id"))
         result["application_limits"] = {
             "input_bytes": self.settings.analytics_max_input_bytes,
             "result_bytes": self.settings.max_result_bytes,

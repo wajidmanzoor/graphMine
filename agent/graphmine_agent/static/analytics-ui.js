@@ -493,7 +493,7 @@
         if (row.status === "options" && row.options?.length) {
           const options = node("div", {class: "calculation-options", "aria-label": "Calculation choices"});
           for (const option of row.options) {
-            options.append(window.GraphMineOptionCard({option, node, wire: W, onChoose: chosen => chooseOption(row, chosen)}));
+            options.append(window.GraphMineOptionCard({option, catalog: state.caps, node, wire: W, onChoose: chosen => chooseOption(row, chosen)}));
           }
           item.bubble.append(options);
         }
@@ -983,7 +983,6 @@
     $("approve-plan").hidden = running || record.status === "completed";
     $("approve-plan").textContent = ["failed", "cancelled", "interrupted"].includes(record.status) ? "Retry reviewed plan" : "Approve and run";
     $("edit-plan").disabled = running;
-    $("review-example").hidden = record.status !== "completed" || !record.complete || Boolean(record.evaluation_id);
     $("workflow-heading").textContent = running ? "Your analysis is running" : record.status === "completed" ? "Analysis complete" : "Review the steps";
   }
   function setDataOpen(open) {
@@ -1807,27 +1806,6 @@
     const result = await api(`/api/sessions/${state.session.id}/projections`, {method: "POST", body: W.stringify({tables: state.tableSources, projection})});
     state.files.push(result.file); state.kinds[result.file.id] = "graph"; state.active = result.file.id; clearResults(); renderFiles(); await previewActive();
     $("projection-dialog").close(); databaseWorkspace?.close(); setDataOpen(false); notice(`Graph ready: ${result.provenance.retained_rows} source records produced ${result.provenance.edge_count} connections. Construction settings are saved with the graph.`);
-  }); });
-  $("review-example").addEventListener("click", () => runAction(async () => {
-    state.exampleSaved = null;
-    state.exampleReview = await api(`/api/workflows/${state.record.id}/example-review`);
-    $("example-question").value = [...state.events].reverse().find(event => event.type === "workflow.chat" && event.payload.turn_id === state.record.planning_turn_id && event.payload.role === "user")?.payload.message || ""; $("example-approved").checked = false; $("example-feedback").textContent = ""; $("example-dialog").showModal();
-  }));
-  $("example-form").addEventListener("submit", event => { event.preventDefault(); runAction(async () => {
-    try {
-      const review = state.exampleReview;
-      const body = W.stringify({question: $("example-question").value, approved: $("example-approved").checked, expected_revision: review.expected_revision, workflow_hash: review.workflow_hash, result_sha256: review.result_sha256});
-      const example = state.exampleSaved?.body === body ? state.exampleSaved.example : await api(`/api/workflows/${review.workflow_id}/example-review`, {method: "POST", body});
-      state.exampleSaved = {body, example};
-      if ($("example-studio").checked) {
-        try {
-          const blob = await api(`/api/workflows/${encodeURIComponent(review.workflow_id)}/studio-export?example_id=${encodeURIComponent(example.id)}&expected_revision=${review.expected_revision}`, {asBlob: true});
-          const url = URL.createObjectURL(blob), link = node("a", {href: url, download: `graphmine-studio-${example.id}.json`});
-          link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-        } catch (error) { $("example-feedback").textContent = `Example saved. Studio download failed: ${error.message}`; return; }
-      }
-      $("example-dialog").close(); notice("Approved example saved for this workspace. Evaluation cases never use reviewed examples.");
-    } catch (error) { $("example-feedback").textContent = error.message; }
   }); });
   $("data-upload").addEventListener("change", () => { const file = $("data-upload").files[0]; if (file) runAction(async () => { await upload(file); $("data-upload").value = ""; }); });
   $("sample-data").addEventListener("click", () => runAction(async () => {

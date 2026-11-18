@@ -1,13 +1,27 @@
 /* Code-supplied parameter contracts; values come from the person or the card. */
 (() => {
   "use strict";
-  window.GraphMineOptionCard = ({option, node, wire, onChoose}) => {
+  window.GraphMineOptionCard = ({option, catalog, node, wire, onChoose}) => {
     const card = node("section", {class: "calculation-option", "data-option": option.id});
     card.classList.toggle("is-preselected", Boolean(option.preselected));
     const heading = node("div", {class: "option-heading"});
     heading.append(node("strong", {class: `match-level match-${String(option.match).toLowerCase()}`}, `${option.match} match`));
     if (option.preselected) heading.append(node("small", {}, "Preselected · awaiting your choice"));
-    card.append(heading, node("h3", {}, option.title), node("p", {class: "option-interpretation"}, option.interpretation || option.description));
+    card.append(heading, node("h3", {}, option.title));
+    for (const id of option.operations) {
+      const operation = catalog?.operations?.find(item => item.id === id);
+      const family = (catalog?.task_families || catalog?.families || []).find(item => item.id === operation?.family);
+      const selection = node("dl", {class: "option-selection", "aria-label": `Selected calculation: ${id}`});
+      const unavailable = catalog ? "Not available in the current catalog" : "Loading catalog…";
+      for (const [label, value] of [
+        ["Problem family", family?.title || operation?.family || unavailable],
+        ["Problem", operation?.problem_title || operation?.problem_id || unavailable],
+      ]) selection.append(node("dt", {}, label), node("dd", {}, value));
+      const name = node("dd"); name.append(node("code", {}, id));
+      selection.append(node("dt", {}, "Operation"), name);
+      card.append(selection);
+    }
+    card.append(node("p", {class: "option-interpretation"}, option.interpretation || option.description));
     const quality = option.quality === "mixed"
       ? Object.entries(option.operation_qualities || {}).map(([operation, value]) => `${operation}: ${value}`).join(" · ")
       : option.quality === "exact" ? "Exact" : `${option.quality} · no exact guarantee`;

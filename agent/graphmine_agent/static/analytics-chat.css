@@ -188,6 +188,11 @@ body { background: #fff; }
 .calculation-option summary { cursor: pointer; }
 .calculation-option.is-preselected { border: 2px solid var(--accent); }
 .option-heading { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+.option-selection { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 10px; margin: 10px 0 14px; font-size: 12px; line-height: 1.5; }
+.option-selection dt { color: var(--muted); }
+.option-selection dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.option-selection code { font-size: inherit; white-space: normal; }
+.option-selection + .option-selection { border-top: 1px solid var(--line); padding-top: 10px; }
 .match-level { font-size: 12px; padding: 3px 8px; border-radius: 12px; background: #edf1ef; }
 .match-high { color: #235e3c; background: #e7f3e9; }
 .match-low { color: #715122; background: #faf0dc; }

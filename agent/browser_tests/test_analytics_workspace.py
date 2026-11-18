@@ -1430,31 +1430,6 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
     capture(browser, "domain-chat-mobile.png")
 
 
-def test_explicit_example_review_does_not_approve_a_successful_run_automatically(
-    browser, tmp_path
-):
-    upload(browser, tmp_path)
-    chat(browser)
-    browser.find_element(By.ID, "question").send_keys("Count triangles in this graph")
-    browser.find_element(By.ID, "plan-question").click()
-    pick_first_option(browser)
-    done(browser)
-    chat(browser)
-    button = browser.find_element(By.ID, "review-example")
-    browser.execute_script("arguments[0].scrollIntoView({block:'center'})", button)
-    button.click()
-    WebDriverWait(browser, 10).until(
-        lambda d: d.find_element(By.ID, "example-dialog").is_displayed()
-    )
-    assert not browser.find_element(By.ID, "example-approved").is_selected()
-    browser.find_element(By.ID, "example-approved").click()
-    browser.find_element(By.CSS_SELECTOR, "#example-form button[type=submit]").click()
-    WebDriverWait(browser, 10).until(
-        lambda d: "Approved example saved" in d.find_element(By.ID, "notice").text
-    )
-    capture(browser, "reviewed-example.png")
-
-
 def test_native_csv_projection_preserves_ids_and_computes_in_browser(browser, tmp_path):
     table = tmp_path / "transfers.csv"
     table.write_text("sender,recipient,capacity\n001,002,4\n001,002,5\n002,003,2\n")
