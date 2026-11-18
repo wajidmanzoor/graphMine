@@ -49,7 +49,10 @@ reports with retired family labels were removed at the user's request; their
 original contents remain in Git history. This release retains the existing
 algorithms, GPU adapters and optional biclique partition contract.
 
-Backend selection deploys in shadow mode. Graph execution uses CPU and physical
+Production uses the current backend models for live selection, as explicitly
+requested by the operator. Its configuration sets `GRAPHMINE_BACKEND_SELECTION=bandit`
+and `GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE=false`; measured rollout metrics
+remain unchanged. Graph execution uses CPU and physical
 GPU 1 only; GPU 0 remains reserved for the existing model service. Initial
 collection is capped at three attempts per algorithm. Pooled observations and
 models remain in the configured `/data` roots. The nightly backend-model timer

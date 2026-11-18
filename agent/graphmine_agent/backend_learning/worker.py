@@ -67,7 +67,10 @@ def _decision(operation, candidates, features, parameters, hardware, context, ba
             version = metadata["model_version"]
             if mode == "bandit":
                 try:
-                    allowed = models.live_permitted(model_dir, operation, metadata, implementation,
+                    # An explicit deployment setting can waive the rollout wait.
+                    # Loading above still verifies the model and implementation;
+                    # native admission, feasibility and policy limits stay in force.
+                    allowed = context.get("backend_require_rollout_evidence", True) is False or models.live_permitted(model_dir, operation, metadata, implementation,
                         context.get("admission_fingerprint"), configuration=dict(
                             exploration_budget=context.get("backend_exploration_budget", 0.10),
                             max_explore_ratio=context.get("backend_max_explore_ratio", 1.5),
@@ -223,6 +226,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
                    execution_isolated=context.get("execution_isolated", False),
                    selection_mode=decision.get("selection_mode", context.get("backend_selection", "legacy")),
                    requested_selection_mode=context.get("backend_selection", "legacy"),
+                   rollout_evidence_required=context.get("backend_require_rollout_evidence", True),
                    shadow_choice=decision.get("shadow_choice"), shadow_reason=decision.get("shadow_reason"),
                    backend_choice_reason=decision.get("backend_choice_reason"),
                    selection_seed=decision.get("selection_seed"), exploration=decision.get("exploration", {}),

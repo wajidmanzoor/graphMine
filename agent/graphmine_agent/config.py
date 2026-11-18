@@ -144,6 +144,7 @@ class Settings:
     backend_data_dir: Path = Path("/data/labdata/wajid/graphmine_data/rlModelData")
     backend_model_dir: Path = Path("/data/labdata/wajid/graphmine-models/rlModel")
     backend_selection: str = "legacy"
+    backend_require_rollout_evidence: bool = True
     backend_exploration_enabled: bool = True
     backend_exploration_budget: float = 0.10
     backend_max_explore_ratio: float = 1.5
@@ -330,6 +331,7 @@ class Settings:
             backend_data_dir=Path(os.getenv("GRAPHMINE_BACKEND_DATA_DIR", "/data/labdata/wajid/graphmine_data/rlModelData")).expanduser().resolve(),
             backend_model_dir=Path(os.getenv("GRAPHMINE_BACKEND_MODEL_DIR", "/data/labdata/wajid/graphmine-models/rlModel")).expanduser().resolve(),
             backend_selection=os.getenv("GRAPHMINE_BACKEND_SELECTION", "legacy"),
+            backend_require_rollout_evidence=_boolean("GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE", True),
             backend_exploration_enabled=_boolean("GRAPHMINE_BACKEND_EXPLORATION_ENABLED", True),
             backend_exploration_budget=float(os.getenv("GRAPHMINE_BACKEND_EXPLORATION_BUDGET", "0.10")),
             backend_max_explore_ratio=float(os.getenv("GRAPHMINE_BACKEND_MAX_EXPLORE_RATIO", "1.5")),

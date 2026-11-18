@@ -223,7 +223,7 @@ Warm-start fit diagnostics are explicitly in-sample and never satisfy a live
 gate. Evaluation records never train a model, grant exploration budget or count
 toward shadow observation.
 
-Live selection requires every multi-backend operation to have at least 14 days
+By default, live selection requires every multi-backend operation to have at least 14 days
 of real shadow history or 200 real shadow decisions, plus measured superiority
 over both non-oracle baselines and worst regret at most 1.5. Comparisons require
 at least five distinct held-out snapshots and two training comparison snapshots.
@@ -237,6 +237,15 @@ Increasing the budget or slowdown cap, or enabling previously disabled
 exploration, returns execution to shadow until evaluated. Tightening limits or
 switching exploration off takes effect immediately without extra training.
 
+An operator can explicitly activate the existing weights before those rollout
+metrics pass by setting `GRAPHMINE_BACKEND_SELECTION=bandit` and
+`GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE=false`. This waives the rollout wait
+and evaluation gate. Model hashes and implementation identity, native correctness
+admission, memory feasibility, forced choices and exploration limits still apply.
+Telemetry records `rollout_evidence_required=false`; the measured readiness
+report remains unchanged. Missing or invalid weights still use native `auto`.
+Nightly publication continues to require held-out nonregression.
+
 When live, only feasible candidates participate in Thompson sampling. Exploration
 must satisfy the 1.5× p50 cap and the completed graph-size range. A head with fewer
 than five runs may instead use its measured benchmark range. Unknown ranges
@@ -247,6 +256,7 @@ budget. Fallback attempts share one decision identity. Defaults and controls:
 | Environment setting | Default |
 | --- | --- |
 | `GRAPHMINE_BACKEND_SELECTION` | `legacy` |
+| `GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE` | `true` |
 | `GRAPHMINE_BACKEND_EXPLORATION_ENABLED` | `true` |
 | `GRAPHMINE_BACKEND_EXPLORATION_BUDGET` | `0.10` |
 | `GRAPHMINE_BACKEND_MAX_EXPLORE_RATIO` | `1.5` (maximum 1.5) |

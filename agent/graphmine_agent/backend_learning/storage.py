@@ -98,6 +98,9 @@ execution_isolated distinguishes killable native child calls from earlier direct
 calls; it is an aggregate runtime-context feature, never a user feature.
 selection_mode is legacy/shadow/bandit; requested_selection_mode records the
 configured mode. An unmet rollout gate executes legacy auto in shadow mode.
+rollout_evidence_required records the deployment setting (default true). An
+explicit false permits live selection from valid existing weights before the
+rollout metrics pass; admission, feasibility and exploration limits still apply.
 shadow_choice/shadow_reason describe the constrained counterfactual choice.
 An explicit device or backend retains reason=forced. For live selection within
 a forced device, backend_choice_reason records exploit/explore/only_option and

@@ -464,6 +464,7 @@ class AnalyticsService:
                     "backend_memory_safety": self.settings.backend_memory_safety,
                     "backend_model_dir": str(self.settings.backend_model_dir),
                     "backend_selection": self.settings.backend_selection,
+                    "backend_require_rollout_evidence": self.settings.backend_require_rollout_evidence,
                     "backend_exploration_enabled": self.settings.backend_exploration_enabled,
                     "backend_exploration_budget": self.settings.backend_exploration_budget,
                     "backend_max_explore_ratio": self.settings.backend_max_explore_ratio,

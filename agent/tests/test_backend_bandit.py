@@ -484,9 +484,11 @@ def test_workflow_forced_backend_validation_hash_and_native_propagation(monkeypa
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("mode,forced", [("shadow", "auto"), ("bandit", "auto"), ("shadow", "cpp")])
-async def test_real_shadow_and_gated_bandit_keep_legacy_backend(
-    directories, settings, database, graph_store, mode, forced
+@pytest.mark.parametrize("mode,forced,require_rollout", [
+    ("shadow", "auto", True), ("bandit", "auto", True), ("shadow", "cpp", True),
+    ("bandit", "auto", False), ("bandit", "cpp", False), ("shadow", "auto", False)])
+async def test_real_shadow_gated_bandit_and_authorized_live_selection(
+    directories, settings, database, graph_store, mode, forced, require_rollout
 ):
     from graphmine.dispatch import implementation_hash
     from graphmine_agent.analytics import AnalyticsService
@@ -501,6 +503,7 @@ async def test_real_shadow_and_gated_bandit_keep_legacy_backend(
     data, directory = directories
     settings = replace(settings, backend_data_dir=data, backend_model_dir=directory,
         backend_selection=mode, backend_exploration_enabled=False, llm_enabled=False,
+        backend_require_rollout_evidence=require_rollout,
         graph_gpu_uuid=None, analytics_gpu_uuids=(uuid,), job_timeout_seconds=60)
     # Use synthetic timing fixtures only inside this isolated evaluation root.
     # The real executed rows below are explicitly marked evaluation.
@@ -533,10 +536,12 @@ async def test_real_shadow_and_gated_bandit_keep_legacy_backend(
         async with service.scheduler.reserve("gpu" if forced == "auto" else "cpu", 1024 ** 3,
                 timeout=10, allowed_gpu_uuids={uuid}) as lease:
             result = await service._call(dict(command="run", plan=plan, inputs=inputs,
-                expected_hash=checked["workflow_hash"], telemetry={"is_evaluation": True}), lease=lease)
+                expected_hash=checked["workflow_hash"], telemetry={"is_evaluation": True,
+                    "backend_require_rollout_evidence": not require_rollout}), lease=lease)
         assert result["status"] == "completed"
         actual = result["steps"]["count"]["result"]["backend"]
-        assert actual["id"] == (legacy if forced == "auto" else forced)
+        live = mode == "bandit" and not require_rollout
+        assert actual["id"] == ("cpp" if live else legacy if forced == "auto" else forced)
         service.run_log.flush()
         records = list(storage.read_rows(data))
         assert len(records) == 1
@@ -544,14 +549,42 @@ async def test_real_shadow_and_gated_bandit_keep_legacy_backend(
         assert row["is_evaluation"] and row["model_version"] and row["execution_isolated"]
         assert row["prediction_error"] is not None
         assert row["chosen_backend"] == actual["id"]
-        if forced == "auto":
+        assert row["rollout_evidence_required"] is require_rollout
+        if live:
+            assert actual["device"] == "cpu" and row["selection_mode"] == "bandit"
+            assert row["selector_active"] is (forced == "auto")
+            assert row["reason"] == ("exploit" if forced == "auto" else "forced")
+            assert not row["policy_warning"]
+        elif forced == "auto":
             assert actual["hardware"]["uuid"] == uuid
             assert row["shadow_choice"] == "cpp" and row["selection_mode"] == "shadow"
         else:
             assert actual["device"] == "cpu" and row["requested_backend"] == "cpp"
         assert not evaluation.shadow_progress(records, selected["id"], implementation_hash())["ready"]
+        assert not json.loads((directory / "release.json").read_text())["ready"]
     finally:
         await service.close()
+
+
+def test_rollout_override_requires_explicit_deployment_configuration(settings, monkeypatch):
+    from graphmine_agent.config import Settings
+    monkeypatch.delenv("GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE", raising=False)
+    assert Settings.from_env(settings.repository_root).backend_require_rollout_evidence is True
+    monkeypatch.setenv("GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE", "false")
+    assert Settings.from_env(settings.repository_root).backend_require_rollout_evidence is False
+
+
+@pytest.mark.parametrize("failure", [FileNotFoundError, ValueError])
+def test_live_override_still_requires_a_valid_model(monkeypatch, failure):
+    def invalid(*args, **kwargs):
+        raise failure("model is missing or invalid")
+    monkeypatch.setattr(models, "load", invalid)
+    record = observation()
+    decision = worker._decision("triangle-counting", [candidate(), candidate("gpu-first")],
+        record["graph_features"], {}, record["hardware"],
+        {"backend_selection": "bandit", "backend_require_rollout_evidence": False}, "auto", "auto", IMPLEMENTATION)
+    assert decision["native_backend"] == "auto" and decision["model_version"] is None
+    assert decision["policy_warning"] == "runtime_model_unavailable_or_invalid"
 
 
 @pytest.fixture
