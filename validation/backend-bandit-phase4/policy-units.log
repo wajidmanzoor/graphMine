@@ -1,0 +1,5 @@
+...............................sss.....                                  [100%]
+- generated xml file: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/backend-bandit-phase4/policy-units.xml -
+=========================== short test summary info ============================
+SKIPPED [3] agent/tests/test_backend_bandit.py:473: Set GRAPHMINE_TELEMETRY_TEST_GPU_UUID to physical GPU 1
+36 passed, 3 skipped in 2.95s

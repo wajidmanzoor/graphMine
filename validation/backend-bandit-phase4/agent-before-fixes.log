@@ -1,0 +1,98 @@
+.......................F................................................ [ 30%]
+........................................................................ [ 60%]
+........................................................................ [ 90%]
+.......................E                                                 [100%]
+==================================== ERRORS ====================================
+_ ERROR at teardown of test_chat_uses_selected_domain_and_rejects_unknown_domain _
+
+request = <SubRequest 'analytics_application_evidence' for <Function test_live_modes_dependent_results_and_pagination[normal]>>
+
+    @pytest.fixture(scope="session", autouse=True)
+    def analytics_application_evidence(request):
+        package = Path(graphmine_agent.__file__).parent
+        repository = Path(__file__).resolve().parents[2]
+    
+        def snapshot():
+            paths = list(package.rglob("*.py")) + [
+                Path(__file__),
+                Path(__file__).with_name("conftest.py"),
+            ]
+            paths += [Path(path) for path in {item.path for item in request.session.items}]
+            paths += [repository / "catalog/native_execution_evidence.json"]
+            native = os.environ.get("GRAPHMINE_NATIVE_LIBRARY")
+            if native:
+                paths.append(Path(native))
+            return {
+                str(path): hashlib.sha256(path.read_bytes()).hexdigest()
+                for path in sorted(paths)
+            }
+    
+        before = snapshot()
+        yield
+        unchanged = before == snapshot()
+        xml = getattr(request.config.option, "xmlpath", None)
+        if xml:
+            metadata = {
+                "scope": "Actual library API workflows, synthetic process/ledger fault injection and authored planning decisions; no browser or LLM accuracy coverage",
+                "python": sys.version,
+                "gpu_test_devices": os.environ.get("GRAPHMINE_ANALYTICS_TEST_GPUS"),
+                "source_files": before,
+                "sources_unchanged_during_run": unchanged,
+                "collected_test_count": len(request.session.items),
+                "test_modules": sorted({str(item.path) for item in request.session.items}),
+                "packages": {
+                    name: importlib.metadata.version(name)
+                    for name in ("fastapi", "pydantic", "httpx", "pytest", "pytest-asyncio")
+                },
+            }
+            Path(str(xml) + ".metadata.json").write_text(
+                json.dumps(metadata, indent=2) + "\n"
+            )
+>       assert unchanged, "Application sources changed during verification"
+E       AssertionError: Application sources changed during verification
+E       assert False
+
+agent/tests/test_analytics_workflows.py:69: AssertionError
+=================================== FAILURES ===================================
+_________________ test_live_evidence_is_rechecked_at_execution _________________
+
+settings = Settings(repository_root=PosixPath('/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher'), data_root=Pos...ckend_exploration_budget=0.1, backend_max_explore_ratio=1.5, backend_memory_safety=0.8, backend_min_timeout_seconds=60)
+triangle_graph = b'{"graph": {"id": "triangle", "directed": false, "allows_self_loops": false, "allows_parallel_edges": false}, "vertic...id": "01", "source": 0, "target": 1}, {"id": "12", "source": 1, "target": 2}, {"id": "02", "source": 0, "target": 2}]}'
+tmp_path = PosixPath('/tmp/pytest-of-wajid/pytest-1358/test_live_evidence_is_rechecke0')
+
+    def test_live_evidence_is_rechecked_at_execution(settings, triangle_graph, tmp_path):
+        app = create_app(settings)
+        with TestClient(app) as client:
+            session, graph = upload(client, triangle_graph)
+            response = client.post(
+                f"/api/sessions/{session}/workflows", headers=AUTH, json=body(graph)
+            )
+            assert response.status_code == 201, response.text
+            record = response.json()
+            # Move only the worker's evidence root to an empty temporary repository.
+            # No real source/report is modified and no verification is bypassed.
+            app.state.runtime.analytics.settings = replace(
+                settings,
+                repository_root=tmp_path,
+                runtime_repository_root=tmp_path,
+                analytics_python=settings.analytics_python or settings.native_repository_root / ".venv-analytics/bin/python",
+            )
+            approve(client, record)
+            final = wait(client, record["id"])
+>           assert final["status"] == "failed" and "evidence" in final["error"]["message"]
+E           AssertionError: assert ('failed' == 'failed'
+E             
+E               failed and 'evidence' in 'Analytics worker exited without a completed response')
+
+agent/tests/test_analytics_workflows.py:931: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/backend-bandit-phase4/agent-final.xml -
+=========================== short test summary info ============================
+ERROR agent/tests/test_database_datasets.py::test_chat_uses_selected_domain_and_rejects_unknown_domain
+FAILED agent/tests/test_analytics_workflows.py::test_live_evidence_is_rechecked_at_execution
+1 failed, 238 passed, 1 warning, 1 error in 249.87s (0:04:09)

@@ -1,0 +1,25 @@
+{
+  "models": 36,
+  "heads": 95,
+  "training_observations": 101,
+  "prior_only_heads": 13,
+  "current_models_verified": true,
+  "live_ready": false,
+  "held_out_comparisons": 0,
+  "warm_start_comparisons": 28,
+  "real_shadow_decisions": 0,
+  "memory": {
+    "backends": 31,
+    "skipped_rows": 0,
+    "validated_profiles": 0
+  },
+  "benchmark_sha256": "85106eed15eace7ef07f1aab94f8ab73a7ae31382f36531a03126b6a411625c3",
+  "initial_fit_report": "/data/labdata/wajid/graphmine_data/rlModelData/reports/phase4-initial-fit-cli.json",
+  "baseline_report": "/data/labdata/wajid/graphmine_data/rlModelData/reports/phase4-baselines-cli.json",
+  "model_directory": "/data/labdata/wajid/graphmine-models/rlModel",
+  "release_configuration": {
+    "exploration_budget": 0.1,
+    "max_explore_ratio": 1.5,
+    "exploration_enabled": true
+  }
+}

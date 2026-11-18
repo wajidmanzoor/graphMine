@@ -1792,16 +1792,17 @@ int main(int argc, char** argv) {
     }
 
     const std::string command = normalized_name(argv[1]);
-    if (command == "backend-runs") {
+    if (command == "backend-runs" || command == "backend-model") {
       const char* configured = std::getenv("GRAPHMINE_ANALYTICS_PYTHON");
       std::string python = configured && *configured ? configured : "python3";
-      std::vector<std::string> values{python, "-m", "graphmine_agent.backend_learning.cli"};
+      std::vector<std::string> values{python, "-m", command == "backend-runs"
+          ? "graphmine_agent.backend_learning.cli" : "graphmine_agent.backend_learning.model_cli"};
       for (int i = 2; i < argc; ++i) values.emplace_back(argv[i]);
       std::vector<char*> args;
       for (auto& value : values) args.push_back(value.data());
       args.push_back(nullptr);
       execvp(python.c_str(), args.data());
-      throw UsageError("Cannot start backend-runs; install graphmine-agent in the configured Python environment");
+      throw UsageError("Cannot start backend tooling; install graphmine-agent in the configured Python environment");
     }
     if (command == "list") {
       Arguments arguments(argc, argv, 2);

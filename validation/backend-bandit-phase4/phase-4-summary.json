@@ -1,0 +1,182 @@
+{
+  "phase": 4,
+  "status": "verified_shadow_in_development",
+  "created_at": "2026-11-18T03:51:51.376552+00:00",
+  "branch": "devlopment",
+  "production_promoted": false,
+  "files_changed": [
+    "agent/graphmine_agent/analytics.py",
+    "agent/graphmine_agent/analytics_scheduler.py",
+    "agent/graphmine_agent/backend_learning/attempt.py",
+    "agent/graphmine_agent/backend_learning/cli.py",
+    "agent/graphmine_agent/backend_learning/compatibility.py",
+    "agent/graphmine_agent/backend_learning/evaluation.py",
+    "agent/graphmine_agent/backend_learning/linear.py",
+    "agent/graphmine_agent/backend_learning/memory.py",
+    "agent/graphmine_agent/backend_learning/model_cli.py",
+    "agent/graphmine_agent/backend_learning/models.py",
+    "agent/graphmine_agent/backend_learning/policy.py",
+    "agent/graphmine_agent/backend_learning/storage.py",
+    "agent/graphmine_agent/backend_learning/worker.py",
+    "agent/graphmine_agent/cli.py",
+    "agent/graphmine_agent/config.py",
+    "agent/tests/test_backend_bandit.py",
+    "agent/tests/test_backend_telemetry.py",
+    "catalog/native_execution_evidence.json",
+    "deploy/install-backend-model-timer.py",
+    "deploy/train-backend-models.py",
+    "deploy/train-backend-models.sh",
+    "docs/TYPED_ANALYTICS_WORKFLOWS.md",
+    "library/src/cli/graphmine.cpp",
+    "python/graphmine/graphmine/evidence.py",
+    "python/graphmine/graphmine/workflows.py"
+  ],
+  "verification_artifacts": "validation/backend-bandit-phase4",
+  "tests": {
+    "agent-final": {
+      "tests": 239,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 239
+    },
+    "completion-cpu": {
+      "tests": 168,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 168
+    },
+    "original-gpu1": {
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 34
+    },
+    "workflow-bindings": {
+      "tests": 374,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 374
+    },
+    "regression-fixes": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2
+    }
+  },
+  "new_agent_test_cases": 42,
+  "final_agent_source_inventory_matches": true,
+  "native_correctness": {
+    "cpu": {
+      "suites": 42,
+      "passed_requests": 129073
+    },
+    "gpu": {
+      "suites": 67,
+      "passed_requests": 44884
+    }
+  },
+  "admission": {
+    "implementation_sha256": "202c5c6189682ae44c352bc61ec66fd41c66ec1bd0e3cea1c1291547529584b1",
+    "admission_sha256": "207913b36afbd1e7ccbd42a626feda1cf62eb3bf54be426bff7ae61775ba25c9",
+    "operations": 82,
+    "compiled_profiles": 141,
+    "admitted_profiles": 141,
+    "compatibility": {
+      "c6fe234a9affcb904585af5cdbe1e44bf8f5acb41cc9ea7c5bc5996740ac9a2b": {
+        "observed_implementation_sha256": "c6fe234a9affcb904585af5cdbe1e44bf8f5acb41cc9ea7c5bc5996740ac9a2b",
+        "current_implementation_sha256": "202c5c6189682ae44c352bc61ec66fd41c66ec1bd0e3cea1c1291547529584b1",
+        "changed_sources": [
+          "library/src/cli/graphmine.cpp"
+        ],
+        "algorithm_sources_sha256": "760611d3d34513f80631e84b14a89ce00df6a045a0cc377a3ac942f9cf1ee872",
+        "previous_cli_sha256": "65ebf1c0a2fc8cb5292183a67086e63a61b44cad854410a0336bff00d13fb38a",
+        "current_cli_sha256": "825215d0565ba7ddf86e6e5d02796567ca36c2228c42f18c5dc4e3ea4c1724f1",
+        "observed_binary_sha256": "15c3e2cc135cef3b70070c279b4fcec9ce447e34584e1079c93bd05db320a695",
+        "current_binary_sha256": "078068628b33888b8769d3264c85c768492c694ed940ec4b6df4f5b82a70b63a",
+        "identical_profiles_workers_dependencies": true,
+        "scope": "Historical benchmark observations only; no native admission or shadow-history exemption"
+      }
+    }
+  },
+  "native_algorithm_sources_unchanged": true,
+  "user_authorized_evidence_refresh": true,
+  "bootstrap": {
+    "algorithms": 36,
+    "attempts": 108,
+    "attempts_per_algorithm": 3,
+    "completed": 101,
+    "errors": 7,
+    "additional_training_examples_collected": 0,
+    "immutable_rows_unchanged": true
+  },
+  "models": {
+    "models": 36,
+    "heads": 95,
+    "training_observations": 101,
+    "prior_only_heads": 13,
+    "current_models_verified": true,
+    "live_ready": false,
+    "held_out_comparisons": 0,
+    "warm_start_comparisons": 28,
+    "real_shadow_decisions": 0,
+    "memory": {
+      "backends": 31,
+      "skipped_rows": 0,
+      "validated_profiles": 0
+    },
+    "benchmark_sha256": "85106eed15eace7ef07f1aab94f8ab73a7ae31382f36531a03126b6a411625c3",
+    "initial_fit_report": "/data/labdata/wajid/graphmine_data/rlModelData/reports/phase4-initial-fit-cli.json",
+    "baseline_report": "/data/labdata/wajid/graphmine_data/rlModelData/reports/phase4-baselines-cli.json",
+    "model_directory": "/data/labdata/wajid/graphmine-models/rlModel",
+    "release_configuration": {
+      "exploration_budget": 0.1,
+      "max_explore_ratio": 1.5,
+      "exploration_enabled": true
+    }
+  },
+  "development": {
+    "created_at": "20261118T034945Z",
+    "environment": "devlopment",
+    "backend_selection": "shadow",
+    "gpu_uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+    "pending_jobs": 0,
+    "http_checks": "passed",
+    "services": {
+      "graphmine-devlopment-agent.service": true,
+      "graphmine-devlopment-studio.service": true
+    },
+    "configuration_backup": "/home/wajid/projects/graphDatabaseAgent/graphmine-data/environments/config/environments.before-backend-bandit-20261118T034944Z.json",
+    "production_changed": false
+  },
+  "coverage": [
+    "Bayesian linear Gaussian posterior and fixed-seed Thompson choices",
+    "Permanent graph holdout and standardized aggregate features without identifiers",
+    "Feasibility, forced device/backend and exploration constraints",
+    "Atomic daily exploration reservations excluding benchmark/evaluation rows",
+    "Killable native attempts, independent whole-step watchdog and one different-backend fallback",
+    "Real shadow and gated-bandit workflows preserve native legacy choice on GPU 1",
+    "Immediate asynchronous OOM memory lower bounds; no OOM runtime observation",
+    "Immutable JSON model versions, text pointers, nonregression gate and rollback",
+    "Exact native admission, model version and evaluated exploration settings gate live execution",
+    "Nightly CPU-only fitting CLI and verified systemd timer installer",
+    "Baseline reports retain missing counterfactuals and label warm-start metrics in-sample"
+  ],
+  "limitations": [
+    "No held-out benchmark comparisons or real shadow history yet; live release is closed",
+    "13 backend heads remain prior-only under the three-attempt-per-algorithm bootstrap cap",
+    "Known ToT failure on the Phase 3 power-law snapshot remains recorded; algorithm code was not changed",
+    "Nightly timer is packaged and verified; production installation belongs to promotion"
+  ],
+  "remaining": [
+    "Verify the testing deployment with GPU 1 and shadow mode",
+    "Promote the verified application and immutable native runtime",
+    "Install the nightly production fit timer and confirm health"
+  ],
+  "optional_tree_model": "Not implemented: insufficient usage, and explicitly optional later"
+}

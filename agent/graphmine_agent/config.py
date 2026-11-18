@@ -183,11 +183,11 @@ class Settings:
         return self.llm_route_model if self.routing_adapter_active else self.llm_model
 
     def __post_init__(self) -> None:
-        if self.backend_selection != "legacy":
-            raise ValueError("This telemetry release supports backend_selection=legacy only")
+        if self.backend_selection not in {"legacy", "shadow", "bandit"}:
+            raise ValueError("backend_selection must be legacy, shadow or bandit")
         if not 0 <= self.backend_exploration_budget <= 1:
             raise ValueError("backend_exploration_budget must be between 0 and 1")
-        if not 0 < self.backend_memory_safety <= 0.8 or self.backend_max_explore_ratio < 1:
+        if not 0 < self.backend_memory_safety <= 0.8 or not 1 <= self.backend_max_explore_ratio <= 1.5:
             raise ValueError("Invalid backend memory safety or exploration ratio")
         if not 0 < self.backend_min_timeout_seconds <= 1800:
             raise ValueError("backend_min_timeout_seconds must be between 1 and 1800")

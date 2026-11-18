@@ -89,12 +89,12 @@ independently of their data directories. The lease is runtime state at
 release it while native work survives. CPU and explicit device choices retain their existing semantics.
 An explicit native backend that fails admission produces an error.
 
-Selection remains `legacy`: first feasible GPU in native order, otherwise `cpp`.
+The safe default is `legacy`: first feasible GPU in native order, otherwise `cpp`.
 Aggregate terminal rows, including preflight rejections and failed attempts,
 are appended asynchronously under `backend_data_dir` (default
-`/data/labdata/wajid/graphmine_data/rlModelData`). Run-log schema 3 adds benchmark
-provenance to the memory predictions and exclusion reasons in schema 2;
-schemas 1 and 2 remain readable. `SCHEMA.md` in the
+`/data/labdata/wajid/graphmine_data/rlModelData`). Run-log schema 4 adds model
+predictions, shadow choices, exploration reservations and fallback identities
+to benchmark provenance and feasibility. Schemas 1–3 remain readable. `SCHEMA.md` in the
 data directory defines the fields. Exports and reports use the authoritative
 JSONL through `graphmine backend-runs export` and `graphmine backend-runs report`.
 
@@ -104,12 +104,13 @@ output-budget coefficients. Each operation/implementation/hardware/parameter
 context needs at least 20 completed observations across five snapshots, an
 independent snapshot holdout with no underprediction, and a 25% safety margin.
 Outside a validated fit's range, the existing conservative estimate applies.
-OOM rows add memory lower bounds for the same snapshot and context. Workflow
+The asynchronous writer immediately adds OOM memory lower bounds for the same
+snapshot and context. Rebuilding under the same lock preserves those bounds. Workflow
 admission still reserves the conservative estimate regardless of fitted weights.
 No additional observations are generated to activate a fit: initial warm-start
 collection is limited to **1–3 examples per algorithm**, with later usage
-providing further observations. Learned runtime selection is a subsequent phase;
-live selection is not enabled in this release.
+providing further observations. Shadow selection is available; live selection
+requires the measured gates described below.
 
 ## Offline backend benchmarks
 
@@ -154,6 +155,113 @@ append-only authoritative log; `config.json`, canonical `graphs/` and provenance
 artifacts. The summary reports medians, ranges, spread, fastest observed backends
 and wins for identical inputs, parameters, budgets and implementations. It marks
 incomplete backend coverage explicitly; a tiny bootstrap is not a full oracle.
+
+## Backend runtime models and shadow rollout
+
+`GRAPHMINE_BACKEND_SELECTION=shadow` predicts a backend but executes the legacy
+native `auto` choice. Workflow steps can name `backend: <id>` explicitly; that
+choice must be compiled, admitted, input-compatible and consistent with the
+device policy. Forced choices are never replaced. An unavailable or corrupt
+model leaves native `auto` in control and records a warning.
+
+Each multi-backend operation has a Bayesian linear model with a separate reward head per
+backend. The reward is `-log(seconds)`. Aggregate graph sizes and shape,
+input flags, safe parameter values/counts, physical GPU 1 memory, busy state and
+model are standardized using training rows only. An isolation flag distinguishes
+older direct benchmark timings from supervised application timings. No user,
+vertex identifier or label is a feature. A newly admitted head has a wide Normal
+prior (intercept variance 25, slope variance 4). Observation variance is fixed
+at 1 in log-seconds; predictive p90 includes that noise. A timeout contributes
+`-log(2 * timeout_seconds)`; an OOM updates memory feasibility only.
+
+Train and report from the existing authoritative history:
+
+```sh
+graphmine backend-model train
+graphmine backend-model report
+graphmine backend-runs report --operation triangle-counting
+graphmine backend-model rollback triangle-counting
+```
+
+The native CLI uses `GRAPHMINE_ANALYTICS_PYTHON` and the configured runtime
+checkout. The agent CLI exposes the same subcommands. Nightly fitting is a
+CPU-only CLI job; it never launches a benchmark or generates more examples.
+`deploy/install-backend-model-timer.py --config <private-environments.json>`
+installs one user timer for the deployed production environment, at 03:15 local
+time with up to 15 minutes jitter. `--check` validates the units without installing
+them. Application shutdown does not interrupt this independent fit job.
+Standalone installs can instead supply `--env-file <private-environment-file>`.
+
+Models live only under `backend_model_dir` (default
+`/data/labdata/wajid/graphmine-models/rlModel`), as
+`<operation>/<UTC-timestamp>-<data-hash>/{model.json,metadata.json}`. Versions are
+immutable plain JSON. `current` and `previous` are atomic text pointers, never
+symlinks. The first model is available for shadow use; subsequent candidates
+replace `current` only after their mean, worst and permitted-exploration regret
+are no worse than the previous weights on the same held-out comparisons. A
+runtime upgrade compares previous weights against current implementation
+measurements, without training on the old implementation's timings. Invalid
+previous files fail closed and remain untouched. Rollback verifies the previous
+files, swaps the two pointers and recomputes rollout eligibility. Workers reload
+when pointers or files change and verify the model hash.
+
+One narrowly checked warm-start exception preserves data across a standalone CLI
+dispatcher change: both evidence inventories must have identical non-CLI sources,
+profiles, isolated workers, dependency binaries and isolated build recipes. The
+current native binary still needs fresh correctness admission. Only historical
+benchmark rows qualify; application shadow history never receives this exemption.
+JSONL retains its original implementation hash. Model metadata records both
+implementations, their binary hashes, the source proof and observation counts.
+Any algorithm/runtime or dependency change excludes the old benchmark timings.
+
+The permanent snapshot split reserves approximately 20% of fingerprints for
+held-out comparisons; repeated runs of a graph cannot enter both partitions.
+Reports require complete feasible backend coverage for a measured oracle.
+Missing comparisons remain missing. Reports include selection accuracy, failure
+rate, mean/worst regret and legacy, fastest-on-average and oracle baselines.
+Warm-start fit diagnostics are explicitly in-sample and never satisfy a live
+gate. Evaluation records never train a model, grant exploration budget or count
+toward shadow observation.
+
+Live selection requires every multi-backend operation to have at least 14 days
+of real shadow history or 200 real shadow decisions, plus measured superiority
+over both non-oracle baselines and worst regret at most 1.5. Comparisons require
+at least five distinct held-out snapshots and two training comparison snapshots.
+The gate also bounds the cost of all exploration choices permitted by the policy,
+instead of trusting one favorable random seed. A release manifest pins every
+current version, the native implementation and correctness admission. Setting
+`GRAPHMINE_BACKEND_SELECTION=bandit` while these gates are incomplete continues
+shadow execution and records the unmet gate.
+Live execution also requires exploration settings covered by that evaluation.
+Increasing the budget or slowdown cap, or enabling previously disabled
+exploration, returns execution to shadow until evaluated. Tightening limits or
+switching exploration off takes effect immediately without extra training.
+
+When live, only feasible candidates participate in Thompson sampling. Exploration
+must satisfy the 1.5× p50 cap and the completed graph-size range. A head with fewer
+than five runs may instead use its measured benchmark range. Unknown ranges
+cannot authorize exploration. Per-operation daily reservations use a locked
+ledger against completed log entries; lost reservations conservatively consume
+budget. Fallback attempts share one decision identity. Defaults and controls:
+
+| Environment setting | Default |
+| --- | --- |
+| `GRAPHMINE_BACKEND_SELECTION` | `legacy` |
+| `GRAPHMINE_BACKEND_EXPLORATION_ENABLED` | `true` |
+| `GRAPHMINE_BACKEND_EXPLORATION_BUDGET` | `0.10` |
+| `GRAPHMINE_BACKEND_MAX_EXPLORE_RATIO` | `1.5` (maximum 1.5) |
+| `GRAPHMINE_BACKEND_MIN_TIMEOUT_SECONDS` | `60` |
+| `GRAPHMINE_BACKEND_MEMORY_SAFETY` | `0.8` |
+
+Each native attempt runs in a killable child. The live timeout is
+`min(1800, remaining_step_budget, job_limit, max(min_timeout, 3 * p90))`.
+A timeout or OOM permits one retry with the next-best feasible backend after
+fresh admission, excluding the previous backend. Other failures are not retried.
+The full step, including preparation and fallback, shares a deadline of at most
+1,800 seconds and retains any smaller reviewed budget. Under 60 seconds remaining,
+fallback is skipped with a clear timeout message. The parent watchdog enforces
+the step deadline even if a worker becomes unresponsive, kills descendants before
+releasing the GPU lease, and records exactly one terminal row per attempt.
 
 ## Browser workspace
 

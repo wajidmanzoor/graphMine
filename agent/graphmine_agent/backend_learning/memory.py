@@ -9,14 +9,17 @@ from __future__ import annotations
 
 import hashlib
 import itertools
+import fcntl
 import json
 import math
 import re
+import os
 from collections import defaultdict
+from contextlib import contextmanager
 from pathlib import Path
 
 from ..analytics_scheduler import estimate_memory
-from .storage import atomic_json, utc_now
+from .storage import atomic_json, utc_now, read_rows
 
 MODEL_SCHEMA = 1
 MIN_COMPLETED = 20
@@ -186,6 +189,53 @@ def save_models(data_dir, models):
         if not _NAME.fullmatch(backend):
             raise ValueError("Invalid backend model name")
         atomic_json(Path(data_dir) / "memory_models" / (backend + ".json"), model)
+
+
+@contextmanager
+def _fit_lock(data_dir):
+    directory = Path(data_dir) / "memory_models"
+    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    fd = os.open(directory / ".fit.lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        yield
+    finally:
+        os.close(fd)
+
+
+def rebuild(data_dir):
+    with _fit_lock(data_dir):
+        fitted, skipped = fit_models(read_rows(data_dir))
+        save_models(data_dir, fitted)
+        return fitted, skipped
+
+
+def note_oom(data_dir, row):
+    """Called by the asynchronous writer after the authoritative append/fsync."""
+    if row.get("outcome") != "oom" or row.get("is_evaluation") is not False:
+        return
+    updates, _ = fit_models([row])
+    with _fit_lock(data_dir):
+        for backend, update in updates.items():
+            path = Path(data_dir) / "memory_models" / (backend + ".json")
+            try:
+                saved = json.loads(path.read_text())
+                if saved["schema_version"] != MODEL_SCHEMA or saved["backend"] != backend:
+                    raise ValueError("Invalid memory model")
+            except (OSError, ValueError, KeyError, TypeError):
+                saved = dict(schema_version=MODEL_SCHEMA, backend=backend, profiles={})
+            for key, new in update["profiles"].items():
+                previous = saved["profiles"].get(key)
+                if previous is None:
+                    saved["profiles"][key] = new
+                    continue
+                floors = previous.setdefault("oom_floors", [])
+                for floor in new["oom_floors"]:
+                    if floor not in floors:
+                        floors.append(floor)
+                previous["oom_count"] = len(floors)
+            saved["version"] = utc_now() + "-oom-" + _digest(saved)[:12]
+            atomic_json(path, saved)
 
 
 def predict_memory(operation, backend, features, parameters, hardware, *, output_estimate,

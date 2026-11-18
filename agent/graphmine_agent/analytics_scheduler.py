@@ -93,17 +93,19 @@ def execution_admission(plan, cards):
     preferred, required = set(), None
     for step in plan["steps"]:
         policy = step.get("device", plan["device"])
-        if policy == "cpu":
+        requested_backend = step.get("backend", "auto")
+        if policy == "cpu" or requested_backend == "cpp":
             continue
         card = by_id[step["operation"]]
         devices = {
             uuid
             for backend in card["backends"]
             if backend["device"] == "gpu" and backend.get("verified")
+            and (requested_backend == "auto" or backend["id"] == requested_backend)
             for uuid in backend.get("verified_devices", [])
         }
         preferred.update(devices)
-        if policy == "gpu" or not card["execution"]["cpu"]:
+        if policy == "gpu" or requested_backend != "auto" or not card["execution"]["cpu"]:
             required = devices if required is None else required & devices
     if required is not None:
         return "gpu", required

@@ -1,0 +1,23 @@
+{
+  "implementation_sha256": "202c5c6189682ae44c352bc61ec66fd41c66ec1bd0e3cea1c1291547529584b1",
+  "admission_sha256": "207913b36afbd1e7ccbd42a626feda1cf62eb3bf54be426bff7ae61775ba25c9",
+  "operations": 82,
+  "compiled_profiles": 141,
+  "admitted_profiles": 141,
+  "compatibility": {
+    "c6fe234a9affcb904585af5cdbe1e44bf8f5acb41cc9ea7c5bc5996740ac9a2b": {
+      "observed_implementation_sha256": "c6fe234a9affcb904585af5cdbe1e44bf8f5acb41cc9ea7c5bc5996740ac9a2b",
+      "current_implementation_sha256": "202c5c6189682ae44c352bc61ec66fd41c66ec1bd0e3cea1c1291547529584b1",
+      "changed_sources": [
+        "library/src/cli/graphmine.cpp"
+      ],
+      "algorithm_sources_sha256": "760611d3d34513f80631e84b14a89ce00df6a045a0cc377a3ac942f9cf1ee872",
+      "previous_cli_sha256": "65ebf1c0a2fc8cb5292183a67086e63a61b44cad854410a0336bff00d13fb38a",
+      "current_cli_sha256": "825215d0565ba7ddf86e6e5d02796567ca36c2228c42f18c5dc4e3ea4c1724f1",
+      "observed_binary_sha256": "15c3e2cc135cef3b70070c279b4fcec9ce447e34584e1079c93bd05db320a695",
+      "current_binary_sha256": "078068628b33888b8769d3264c85c768492c694ed940ec4b6df4f5b82a70b63a",
+      "identical_profiles_workers_dependencies": true,
+      "scope": "Historical benchmark observations only; no native admission or shadow-history exemption"
+    }
+  }
+}

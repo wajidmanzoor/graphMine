@@ -17,14 +17,15 @@ from uuid import uuid4
 
 DEFAULT_DATA_DIR = Path("/data/labdata/wajid/graphmine_data/rlModelData")
 DEFAULT_MODEL_DIR = Path("/data/labdata/wajid/graphmine-models/rlModel")
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 LOG = logging.getLogger(__name__)
 SCHEMA = """# Backend run log
 
 Schema history: version 1 added Phase 1 telemetry; version 2 adds Phase 2
 feasibility, native limits, memory predictions and preflight rejections;
-version 3 adds offline benchmark provenance and resumable attempt identity.
-Readers accept all three versions. Rows contain aggregate data only.
+version 3 adds offline benchmark provenance and resumable attempt identity;
+version 4 adds linear Thompson decisions, shadow predictions and fallback chains.
+Readers accept all four versions. Rows contain aggregate data only.
 Corrections append a new run_id with supersedes pointing at the original run_id.
 JSONL is authoritative. A per-file flock serializes writers on the same host;
 O_APPEND plus fsync makes a successfully acknowledged write durable.
@@ -86,6 +87,31 @@ benchmark IDs for the same implementation. Full grids require explicit --full.
 Interrupted attempts are recovered from durable aggregate journals; an active
 worker is never restarted. Canonical anonymous graphs and query/generator
 provenance are stored only beneath benchmarks/<id>/graphs. JSONL is authoritative.
+
+Version 4: decision_id identifies a step across at most two attempts; attempt_index
+is 0 or 1. Each native attempt still has exactly one terminal row and run_id.
+The final attempt's fallback_chain contains both measured outcomes; an earlier
+row contains the history known when it finished. fallback_skipped explains an
+unavailable retry. The shared step_timeout_seconds includes all preparation and
+fallback time, and never exceeds 1800. A fallback needs at least 60 seconds left.
+execution_isolated distinguishes killable native child calls from earlier direct
+calls; it is an aggregate runtime-context feature, never a user feature.
+selection_mode is legacy/shadow/bandit; requested_selection_mode records the
+configured mode. An unmet rollout gate executes legacy auto in shadow mode.
+shadow_choice/shadow_reason describe the constrained counterfactual choice.
+selection_seed permits replay of Thompson draws. exploration records the
+proposed backend, best p50 backend, blocking limits and daily reservation counts.
+Only authoritative, non-evaluation application decisions grant daily budget;
+in-flight reservations count only in its numerator. Benchmarks grant no budget.
+policy_warning explains model or selector fallback without changing admission.
+predictions add p50_seconds, p90_seconds, sampled_value (reward), reward_mean,
+reward_std and prior_only. prediction_error is log(actual_runtime / predicted_p50)
+for completed runs. Unmeasured counterfactual regret remains unknown.
+The runtime reward is -log(seconds); censored timeouts use -log(2 * timeout).
+OOM never updates the runtime posterior. After append/fsync the asynchronous
+writer updates its memory lower bound; nightly fitting rebuilds from JSONL.
+Model training and held-out comparison group whole snapshot fingerprints with
+a permanent hash split. Evaluation rows enter neither models nor rollout gates.
 """
 
 
@@ -227,6 +253,13 @@ class RunLog:
                 host = re.sub(r"[^A-Za-z0-9_.-]", "_", socket.gethostname())
                 path = self.destination or self.data_dir / "runs" / date.strftime("%Y/%m/%d") / f"runs-{host}.jsonl"
                 append_row(path, row)
+                if row.get("outcome") == "oom" and row.get("is_evaluation") is False:
+                    try:
+                        from .memory import note_oom
+
+                        note_oom(self.data_dir, row)
+                    except Exception:
+                        self._warn("memory_oom_update_failed")
                 features = row.get("graph_features") or {}
                 fingerprint = features.get("snapshot_fingerprint", "")
                 if re.fullmatch(r"[0-9a-f]{64}", fingerprint):
@@ -277,7 +310,7 @@ def read_rows(data_dir, *, since=None, operation=None, include_benchmarks=True):
             for line in handle:
                 try:
                     row = json.loads(line)
-                    if not isinstance(row, dict) or row.get("schema_version") not in (1, 2, SCHEMA_VERSION):
+                    if not isinstance(row, dict) or row.get("schema_version") not in (1, 2, 3, SCHEMA_VERSION):
                         raise ValueError("Unknown run schema")
                     created = datetime.fromisoformat(row["created_at"].replace("Z", "+00:00"))
                     if (not after or created >= after) and (not operation or row["operation"] == operation):

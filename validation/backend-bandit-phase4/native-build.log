@@ -1,0 +1,481 @@
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_json
+[  1%] Built target graphmine_worker_ecl_flow
+[  5%] Built target graphmine_core
+[  6%] Built target graphmine_worker_hungarian
+[  8%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_native_worker_hungarian
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 13%] Built target graphmine_backend_everest
+[ 14%] Built target graphmine_backend_mayura
+[ 16%] Built target graphmine_backend_gleiden
+[ 17%] Built target graphmine_backend_mce_gpu
+[ 22%] Built target graphmine_backend_g2_aimd
+[ 25%] Built target graphmine_backend_rdmce
+[ 28%] Built target graphmine_backend_pggc
+[ 31%] Built target graphmine_backend_kcoregpu
+[ 33%] Built target graphmine_backend_cuda_ms
+[ 35%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 37%] Built target graphmine_backend_gpu_maximum_clique
+[ 39%] Built target graphmine_backend_tot
+[ 39%] Built target graphmine_backend_wetric
+[ 40%] Built target graphmine_backend_edtc
+[ 41%] Built target graphmine_backend_graphset_kclique
+[ 41%] Built target graphmine_backend_kcgpu
+[ 43%] Built target graphmine_backend_gamma_kclique
+[ 43%] Built target graphmine_repaired_algorithms
+[ 44%] Built target graphmine_backend_turbobc
+[ 48%] Built target graphmine_backend_dumato_motif
+[ 51%] Built target graphmine_backend_graphminer_motif
+[ 52%] Built target graphmine_backend_cumbe
+[ 59%] Built target graphmine_backend_graphset_motif
+[ 59%] Built target graphmine_backend_cuqc
+[ 60%] Built target graphmine_temporal_motif_mining
+[ 62%] Built target graphmine_community_detection
+[ 63%] Built target graphmine_triangle_counting
+[ 66%] Built target graphmine_backend_gmatch
+[ 67%] Built target graphmine_dynamic_triangle_counting
+[ 67%] Built target graphmine_graph_motifs
+[ 68%] Built target graphmine_maximal_bicliques
+[ 70%] Built target graphmine_quasi_cliques
+[ 70%] Built target graphmine_subgraph_isomorphism
+[ 71%] Built target graphmine_validated_expansion
+[ 71%] Building CXX object runtime/CMakeFiles/graphmine_runtime.dir/runtime.cpp.o
+[ 71%] Building CXX object runtime/CMakeFiles/graphmine_runtime.dir/registry.cpp.o
+[ 71%] Building CXX object runtime/CMakeFiles/graphmine_runtime.dir/representation_cache.cpp.o
+[ 72%] Building CXX object runtime/CMakeFiles/graphmine_runtime.dir/view_profiles.cpp.o
+[ 72%] Building CXX object runtime/CMakeFiles/graphmine_runtime.dir/families/common.cpp.o
+[ 74%] Building CXX object runtime/CMakeFiles/graphmine_runtime.dir/families/graphlets.cpp.o
+[ 75%] Building CXX object runtime/CMakeFiles/graphmine_runtime.dir/io/cudf_csv.cpp.o
+[ 75%] Linking CXX shared library libgraphmine_runtime.so
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/librt.a' when searching for -lrt
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libpthread.a' when searching for -lpthread
+nvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi0EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi0EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi3ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi2ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi1ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of minnctapersm for entry _Z8iter1GPUILj64ELj64ELi0ELi1EEvPfS0_PhmmPiff is out of range. minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi3ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi2ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi1ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z8iter1GPUILj128ELj128ELi0ELi1EEvPfS0_PhmmPiff is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z16cycle4_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z18triangle_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+ptxas warning : Value of threads per SM for entry _Z15wedge_warp_edgel24GraphMineG2MotifGraphGpuPiiPy is out of range. .minnctapersm will be ignored
+[100%] Built target graphmine_runtime
+gmake: *** No rule to make target 'graphmine-native'.  Stop.
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_json
+[  1%] Built target graphmine_worker_ecl_flow
+[  5%] Built target graphmine_core
+[  6%] Built target graphmine_worker_hungarian
+[  8%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_native_worker_hungarian
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 13%] Built target graphmine_backend_everest
+[ 14%] Built target graphmine_backend_mayura
+[ 17%] Built target graphmine_backend_pggc
+[ 18%] Built target graphmine_backend_gleiden
+[ 20%] Built target graphmine_backend_mce_gpu
+[ 25%] Built target graphmine_backend_g2_aimd
+[ 28%] Built target graphmine_backend_rdmce
+[ 30%] Built target graphmine_backend_kcoregpu
+[ 33%] Built target graphmine_backend_cuda_ms
+[ 34%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 34%] Built target graphmine_backend_wetric
+[ 36%] Built target graphmine_backend_tot
+[ 38%] Built target graphmine_backend_gpu_maximum_clique
+[ 40%] Built target graphmine_backend_edtc
+[ 40%] Built target graphmine_backend_kcgpu
+[ 41%] Built target graphmine_backend_graphset_kclique
+[ 42%] Built target graphmine_backend_gamma_kclique
+[ 44%] Built target graphmine_backend_turbobc
+[ 44%] Built target graphmine_repaired_algorithms
+[ 48%] Built target graphmine_backend_dumato_motif
+[ 50%] Built target graphmine_backend_graphminer_motif
+[ 57%] Built target graphmine_backend_graphset_motif
+[ 57%] Built target graphmine_backend_cuqc
+[ 58%] Built target graphmine_backend_cumbe
+[ 60%] Built target graphmine_temporal_motif_mining
+[ 62%] Built target graphmine_backend_gmatch
+[ 64%] Built target graphmine_community_detection
+[ 65%] Built target graphmine_triangle_counting
+[ 65%] Built target graphmine_graph_motifs
+[ 66%] Built target graphmine_dynamic_triangle_counting
+[ 68%] Built target graphmine_maximal_bicliques
+[ 69%] Built target graphmine_quasi_cliques
+[ 69%] Built target graphmine_subgraph_isomorphism
+[ 70%] Built target graphmine_validated_expansion
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine-native
+[100%] Built target graphmine_native_cli
+[  0%] Built target graphmine_json
+[  1%] Built target graphmine_worker_ecl_flow
+[  1%] Built target graphmine_worker_ecl_scc
+[  5%] Built target graphmine_core
+[  6%] Built target graphmine_worker_hungarian
+[  8%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_native_worker_hungarian
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 13%] Built target graphmine_backend_everest
+[ 14%] Built target graphmine_backend_mayura
+[ 16%] Built target graphmine_backend_gleiden
+[ 18%] Built target graphmine_backend_pggc
+[ 20%] Built target graphmine_backend_mce_gpu
+[ 25%] Built target graphmine_backend_g2_aimd
+[ 28%] Built target graphmine_backend_kcoregpu
+[ 30%] Built target graphmine_backend_cuda_ms
+[ 33%] Built target graphmine_backend_rdmce
+[ 34%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 34%] Built target graphmine_backend_wetric
+[ 36%] Built target graphmine_backend_tot
+[ 38%] Built target graphmine_backend_gpu_maximum_clique
+[ 40%] Built target graphmine_backend_edtc
+[ 41%] Built target graphmine_backend_graphset_kclique
+[ 41%] Built target graphmine_backend_kcgpu
+[ 42%] Built target graphmine_backend_turbobc
+[ 44%] Built target graphmine_backend_gamma_kclique
+[ 44%] Built target graphmine_repaired_algorithms
+[ 48%] Built target graphmine_backend_dumato_motif
+[ 54%] Built target graphmine_backend_graphset_motif
+[ 57%] Built target graphmine_backend_graphminer_motif
+[ 58%] Built target graphmine_backend_cumbe
+[ 58%] Built target graphmine_backend_cuqc
+[ 60%] Built target graphmine_temporal_motif_mining
+[ 62%] Built target graphmine_backend_gmatch
+[ 64%] Built target graphmine_community_detection
+[ 65%] Built target graphmine_triangle_counting
+[ 66%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_graph_motifs
+[ 68%] Built target graphmine_maximal_bicliques
+[ 69%] Built target graphmine_quasi_cliques
+[ 69%] Built target graphmine_subgraph_isomorphism
+[ 70%] Built target graphmine_validated_expansion
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_runtime_test
+[100%] Built target graphmine_runtime_test
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_json
+[  1%] Built target graphmine_worker_ecl_flow
+[  5%] Built target graphmine_core
+[  6%] Built target graphmine_worker_hungarian
+[  8%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_native_worker_hungarian
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 13%] Built target graphmine_backend_everest
+[ 14%] Built target graphmine_backend_mayura
+[ 16%] Built target graphmine_backend_gleiden
+[ 17%] Built target graphmine_backend_mce_gpu
+[ 20%] Built target graphmine_backend_pggc
+[ 25%] Built target graphmine_backend_g2_aimd
+[ 29%] Built target graphmine_backend_cuda_ms
+[ 30%] Built target graphmine_backend_rdmce
+[ 33%] Built target graphmine_backend_kcoregpu
+[ 34%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 34%] Built target graphmine_backend_wetric
+[ 36%] Built target graphmine_backend_tot
+[ 38%] Built target graphmine_backend_gpu_maximum_clique
+[ 40%] Built target graphmine_backend_edtc
+[ 41%] Built target graphmine_backend_graphset_kclique
+[ 41%] Built target graphmine_backend_kcgpu
+[ 42%] Built target graphmine_backend_gamma_kclique
+[ 44%] Built target graphmine_backend_turbobc
+[ 44%] Built target graphmine_repaired_algorithms
+[ 48%] Built target graphmine_backend_dumato_motif
+[ 50%] Built target graphmine_backend_graphminer_motif
+[ 57%] Built target graphmine_backend_graphset_motif
+[ 58%] Built target graphmine_backend_cumbe
+[ 58%] Built target graphmine_backend_cuqc
+[ 60%] Built target graphmine_temporal_motif_mining
+[ 62%] Built target graphmine_backend_gmatch
+[ 64%] Built target graphmine_triangle_counting
+[ 65%] Built target graphmine_community_detection
+[ 66%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_graph_motifs
+[ 68%] Built target graphmine_maximal_bicliques
+[ 69%] Built target graphmine_quasi_cliques
+[ 69%] Built target graphmine_subgraph_isomorphism
+[ 70%] Built target graphmine_validated_expansion
+[ 98%] Built target graphmine_runtime
+[100%] Linking CXX executable graphmine_reference_test
+[100%] Built target graphmine_reference_test
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_worker_ecl_flow
+[  1%] Built target graphmine_json
+[  5%] Built target graphmine_core
+[  6%] Built target graphmine_worker_hungarian
+[  8%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_native_worker_hungarian
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 13%] Built target graphmine_backend_everest
+[ 14%] Built target graphmine_backend_mayura
+[ 16%] Built target graphmine_backend_gleiden
+[ 18%] Built target graphmine_backend_pggc
+[ 20%] Built target graphmine_backend_mce_gpu
+[ 25%] Built target graphmine_backend_g2_aimd
+[ 28%] Built target graphmine_backend_rdmce
+[ 30%] Built target graphmine_backend_kcoregpu
+[ 33%] Built target graphmine_backend_cuda_ms
+[ 34%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 34%] Built target graphmine_backend_wetric
+[ 36%] Built target graphmine_backend_tot
+[ 38%] Built target graphmine_backend_gpu_maximum_clique
+[ 40%] Built target graphmine_backend_edtc
+[ 41%] Built target graphmine_backend_graphset_kclique
+[ 41%] Built target graphmine_backend_kcgpu
+[ 42%] Built target graphmine_backend_gamma_kclique
+[ 44%] Built target graphmine_backend_turbobc
+[ 44%] Built target graphmine_repaired_algorithms
+[ 48%] Built target graphmine_backend_dumato_motif
+[ 50%] Built target graphmine_backend_graphminer_motif
+[ 57%] Built target graphmine_backend_graphset_motif
+[ 58%] Built target graphmine_backend_cumbe
+[ 58%] Built target graphmine_backend_cuqc
+[ 60%] Built target graphmine_temporal_motif_mining
+[ 62%] Built target graphmine_backend_gmatch
+[ 64%] Built target graphmine_community_detection
+[ 65%] Built target graphmine_triangle_counting
+[ 66%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_graph_motifs
+[ 68%] Built target graphmine_maximal_bicliques
+[ 69%] Built target graphmine_quasi_cliques
+[ 69%] Built target graphmine_subgraph_isomorphism
+[ 70%] Built target graphmine_validated_expansion
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_structure_test
+[100%] Built target graphmine_structure_test
+[  0%] Built target graphmine_json
+[  0%] Built target graphmine_worker_ecl_flow
+[  1%] Built target graphmine_worker_ecl_scc
+[  5%] Built target graphmine_core
+[  6%] Built target graphmine_worker_hungarian
+[  8%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_native_worker_hungarian
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 13%] Built target graphmine_backend_everest
+[ 14%] Built target graphmine_backend_mayura
+[ 16%] Built target graphmine_backend_gleiden
+[ 18%] Built target graphmine_backend_pggc
+[ 20%] Built target graphmine_backend_mce_gpu
+[ 25%] Built target graphmine_backend_g2_aimd
+[ 28%] Built target graphmine_backend_rdmce
+[ 31%] Built target graphmine_backend_kcoregpu
+[ 33%] Built target graphmine_backend_cuda_ms
+[ 35%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 35%] Built target graphmine_backend_wetric
+[ 37%] Built target graphmine_backend_gpu_maximum_clique
+[ 39%] Built target graphmine_backend_tot
+[ 40%] Built target graphmine_backend_edtc
+[ 41%] Built target graphmine_backend_graphset_kclique
+[ 41%] Built target graphmine_backend_kcgpu
+[ 43%] Built target graphmine_backend_gamma_kclique
+[ 44%] Built target graphmine_backend_turbobc
+[ 44%] Built target graphmine_repaired_algorithms
+[ 48%] Built target graphmine_backend_dumato_motif
+[ 51%] Built target graphmine_backend_graphminer_motif
+[ 58%] Built target graphmine_backend_graphset_motif
+[ 59%] Built target graphmine_backend_cumbe
+[ 59%] Built target graphmine_backend_cuqc
+[ 60%] Built target graphmine_temporal_motif_mining
+[ 63%] Built target graphmine_backend_gmatch
+[ 64%] Built target graphmine_community_detection
+[ 66%] Built target graphmine_triangle_counting
+[ 67%] Built target graphmine_dynamic_triangle_counting
+[ 67%] Built target graphmine_graph_motifs
+[ 68%] Built target graphmine_maximal_bicliques
+[ 70%] Built target graphmine_quasi_cliques
+[ 70%] Built target graphmine_subgraph_isomorphism
+[ 71%] Built target graphmine_validated_expansion
+[100%] Built target graphmine_runtime
+[100%] Linking CXX executable graphmine_centrality_test
+[100%] Built target graphmine_centrality_test
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_worker_ecl_flow
+[  1%] Built target graphmine_json
+[  5%] Built target graphmine_core
+[  6%] Built target graphmine_worker_hungarian
+[  8%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_native_worker_hungarian
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 13%] Built target graphmine_backend_everest
+[ 14%] Built target graphmine_backend_mayura
+[ 17%] Built target graphmine_backend_pggc
+[ 18%] Built target graphmine_backend_gleiden
+[ 20%] Built target graphmine_backend_mce_gpu
+[ 25%] Built target graphmine_backend_g2_aimd
+[ 28%] Built target graphmine_backend_rdmce
+[ 33%] Built target graphmine_backend_kcoregpu
+[ 33%] Built target graphmine_backend_cuda_ms
+[ 35%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 35%] Built target graphmine_backend_wetric
+[ 36%] Built target graphmine_backend_tot
+[ 39%] Built target graphmine_backend_gpu_maximum_clique
+[ 40%] Built target graphmine_backend_edtc
+[ 41%] Built target graphmine_backend_graphset_kclique
+[ 41%] Built target graphmine_backend_kcgpu
+[ 43%] Built target graphmine_backend_gamma_kclique
+[ 44%] Built target graphmine_backend_turbobc
+[ 44%] Built target graphmine_repaired_algorithms
+[ 48%] Built target graphmine_backend_dumato_motif
+[ 55%] Built target graphmine_backend_graphminer_motif
+[ 58%] Built target graphmine_backend_graphset_motif
+[ 59%] Built target graphmine_backend_cumbe
+[ 59%] Built target graphmine_backend_cuqc
+[ 60%] Built target graphmine_temporal_motif_mining
+[ 62%] Built target graphmine_community_detection
+[ 64%] Built target graphmine_backend_gmatch
+[ 66%] Built target graphmine_triangle_counting
+[ 67%] Built target graphmine_dynamic_triangle_counting
+[ 68%] Built target graphmine_maximal_bicliques
+[ 68%] Built target graphmine_graph_motifs
+[ 70%] Built target graphmine_quasi_cliques
+[ 70%] Built target graphmine_subgraph_isomorphism
+[ 71%] Built target graphmine_validated_expansion
+[100%] Built target graphmine_runtime
+[100%] Linking CXX executable graphmine_matching_test
+[100%] Built target graphmine_matching_test
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_worker_ecl_flow
+[  1%] Built target graphmine_json
+[  5%] Built target graphmine_core
+[  6%] Built target graphmine_worker_hungarian
+[  8%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_native_worker_hungarian
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 13%] Built target graphmine_backend_everest
+[ 14%] Built target graphmine_backend_mayura
+[ 16%] Built target graphmine_backend_gleiden
+[ 17%] Built target graphmine_backend_mce_gpu
+[ 20%] Built target graphmine_backend_pggc
+[ 25%] Built target graphmine_backend_g2_aimd
+[ 28%] Built target graphmine_backend_rdmce
+[ 30%] Built target graphmine_backend_kcoregpu
+[ 33%] Built target graphmine_backend_cuda_ms
+[ 34%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 34%] Built target graphmine_backend_wetric
+[ 36%] Built target graphmine_backend_tot
+[ 38%] Built target graphmine_backend_gpu_maximum_clique
+[ 40%] Built target graphmine_backend_edtc
+[ 41%] Built target graphmine_backend_graphset_kclique
+[ 41%] Built target graphmine_backend_kcgpu
+[ 42%] Built target graphmine_backend_gamma_kclique
+[ 44%] Built target graphmine_backend_turbobc
+[ 44%] Built target graphmine_repaired_algorithms
+[ 48%] Built target graphmine_backend_dumato_motif
+[ 50%] Built target graphmine_backend_graphminer_motif
+[ 57%] Built target graphmine_backend_graphset_motif
+[ 58%] Built target graphmine_backend_cumbe
+[ 58%] Built target graphmine_backend_cuqc
+[ 60%] Built target graphmine_temporal_motif_mining
+[ 62%] Built target graphmine_backend_gmatch
+[ 64%] Built target graphmine_triangle_counting
+[ 65%] Built target graphmine_community_detection
+[ 66%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_graph_motifs
+[ 68%] Built target graphmine_maximal_bicliques
+[ 69%] Built target graphmine_quasi_cliques
+[ 69%] Built target graphmine_subgraph_isomorphism
+[ 70%] Built target graphmine_validated_expansion
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_flow_test
+[100%] Built target graphmine_flow_test
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_json
+[  1%] Built target graphmine_worker_ecl_flow
+[  5%] Built target graphmine_core
+[  6%] Built target graphmine_worker_hungarian
+[  8%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_native_worker_hungarian
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 13%] Built target graphmine_backend_everest
+[ 14%] Built target graphmine_backend_mayura
+[ 16%] Built target graphmine_backend_gleiden
+[ 18%] Built target graphmine_backend_pggc
+[ 20%] Built target graphmine_backend_mce_gpu
+[ 25%] Built target graphmine_backend_g2_aimd
+[ 28%] Built target graphmine_backend_rdmce
+[ 30%] Built target graphmine_backend_kcoregpu
+[ 33%] Built target graphmine_backend_cuda_ms
+[ 34%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 36%] Built target graphmine_backend_tot
+[ 36%] Built target graphmine_backend_wetric
+[ 38%] Built target graphmine_backend_gpu_maximum_clique
+[ 40%] Built target graphmine_backend_edtc
+[ 41%] Built target graphmine_backend_graphset_kclique
+[ 41%] Built target graphmine_backend_kcgpu
+[ 42%] Built target graphmine_backend_gamma_kclique
+[ 44%] Built target graphmine_backend_turbobc
+[ 44%] Built target graphmine_repaired_algorithms
+[ 48%] Built target graphmine_backend_dumato_motif
+[ 50%] Built target graphmine_backend_graphminer_motif
+[ 57%] Built target graphmine_backend_graphset_motif
+[ 57%] Built target graphmine_backend_cuqc
+[ 58%] Built target graphmine_backend_cumbe
+[ 60%] Built target graphmine_temporal_motif_mining
+[ 62%] Built target graphmine_backend_gmatch
+[ 64%] Built target graphmine_community_detection
+[ 65%] Built target graphmine_triangle_counting
+[ 66%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_graph_motifs
+[ 68%] Built target graphmine_maximal_bicliques
+[ 69%] Built target graphmine_quasi_cliques
+[ 69%] Built target graphmine_subgraph_isomorphism
+[ 70%] Built target graphmine_validated_expansion
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_mining_test
+[100%] Built target graphmine_mining_test
+[  1%] Built target graphmine_json
+[  1%] Built target graphmine_worker_ecl_scc
+[  1%] Built target graphmine_worker_ecl_flow
+[  5%] Built target graphmine_core
+[  6%] Built target graphmine_worker_hungarian
+[  8%] Built target graphmine_native_worker_ecl_flow
+[  8%] Built target graphmine_native_worker_hungarian
+[ 12%] Built target graphmine_worker_gdlog_tc
+[ 13%] Built target graphmine_backend_everest
+[ 14%] Built target graphmine_backend_mayura
+[ 16%] Built target graphmine_backend_gleiden
+[ 18%] Built target graphmine_backend_pggc
+[ 20%] Built target graphmine_backend_mce_gpu
+[ 25%] Built target graphmine_backend_g2_aimd
+[ 28%] Built target graphmine_backend_rdmce
+[ 30%] Built target graphmine_backend_kcoregpu
+[ 33%] Built target graphmine_backend_cuda_ms
+[ 34%] Built target graphmine_backend_maximum_clique_on_gpu
+[ 34%] Built target graphmine_backend_wetric
+[ 36%] Built target graphmine_backend_tot
+[ 38%] Built target graphmine_backend_gpu_maximum_clique
+[ 40%] Built target graphmine_backend_edtc
+[ 41%] Built target graphmine_backend_graphset_kclique
+[ 41%] Built target graphmine_backend_kcgpu
+[ 42%] Built target graphmine_backend_gamma_kclique
+[ 44%] Built target graphmine_backend_turbobc
+[ 44%] Built target graphmine_repaired_algorithms
+[ 48%] Built target graphmine_backend_dumato_motif
+[ 50%] Built target graphmine_backend_graphminer_motif
+[ 57%] Built target graphmine_backend_graphset_motif
+[ 58%] Built target graphmine_backend_cumbe
+[ 58%] Built target graphmine_backend_cuqc
+[ 60%] Built target graphmine_temporal_motif_mining
+[ 62%] Built target graphmine_backend_gmatch
+[ 64%] Built target graphmine_community_detection
+[ 65%] Built target graphmine_triangle_counting
+[ 66%] Built target graphmine_dynamic_triangle_counting
+[ 66%] Built target graphmine_graph_motifs
+[ 68%] Built target graphmine_maximal_bicliques
+[ 69%] Built target graphmine_quasi_cliques
+[ 69%] Built target graphmine_subgraph_isomorphism
+[ 70%] Built target graphmine_validated_expansion
+[ 98%] Built target graphmine_runtime
+[ 98%] Linking CXX executable graphmine_selection_test
+[100%] Built target graphmine_selection_test

@@ -1,0 +1,14 @@
+{
+  "created_at": "20261118T034945Z",
+  "environment": "devlopment",
+  "backend_selection": "shadow",
+  "gpu_uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+  "pending_jobs": 0,
+  "http_checks": "passed",
+  "services": {
+    "graphmine-devlopment-agent.service": true,
+    "graphmine-devlopment-studio.service": true
+  },
+  "configuration_backup": "/home/wajid/projects/graphDatabaseAgent/graphmine-data/environments/config/environments.before-backend-bandit-20261118T034944Z.json",
+  "production_changed": false
+}

@@ -364,6 +364,47 @@ async def test_supervisor_writes_one_row_even_after_worker_is_killed(
         await service.close()
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("terminal", ["preflight", "step_timeout", "duplicate"])
+async def test_supervisor_preflight_terminal_and_independent_step_deadline(
+    settings, database, graph_store, telemetry_dir, terminal
+):
+    from graphmine_agent.analytics import AnalyticsError, AnalyticsService
+    from graphmine_agent.jobs import EventBus
+    item = row()
+    item.update(outcome="error", execution_started=False, hardware={"leased_gpu_index": None},
+                telemetry_warnings=[], timeout_seconds=.2, censored=False, peak_memory={})
+    script = telemetry_dir / "fault-worker"
+    started = "print(json.dumps({'event':'step_started','step':'count'}),flush=True)\n"
+    native_start = "print(json.dumps({'event':'native_started','record':row}),flush=True)\n"
+    native_finish = "print(json.dumps({'event':'native_finished','record':row}),flush=True)\n"
+    script.write_text(f"#!{sys.executable}\nimport json,sys,time\nsys.stdin.buffer.read()\n" +
+        f"row=json.loads({json.dumps(item)!r})\n" +
+        (started + native_start + "time.sleep(20)\n" if terminal == "step_timeout" else
+         native_finish * (2 if terminal == "duplicate" else 1) +
+         "print(json.dumps({'event':'complete','result':{}}),flush=True)\n"))
+    script.chmod(0o700)
+    settings = replace(settings, analytics_python=script, job_timeout_seconds=10,
+        backend_data_dir=telemetry_dir, backend_model_dir=storage.DEFAULT_MODEL_DIR)
+    service = AnalyticsService(settings, database, graph_store, EventBus(database))
+    try:
+        request = dict(command="run", plan=dict(device="cpu", steps=[dict(id="count", budget={"timeout_seconds": .2})]))
+        if terminal == "preflight":
+            assert await service._call(request) == {}
+        else:
+            with pytest.raises(AnalyticsError, match="deadline" if terminal == "step_timeout" else "Duplicate"):
+                await service._call(request)
+        service.run_log.flush()
+        records = list(storage.read_rows(telemetry_dir))
+        assert len(records) == 1
+        assert records[0]["outcome"] == ("timeout" if terminal == "step_timeout" else "error")
+        if terminal == "step_timeout":
+            assert records[0]["runtime_seconds"] < 5 and records[0]["censored"]
+            assert len(records[0]["fallback_chain"]) == 1
+    finally:
+        await service.close()
+
+
 def test_export_filters_and_report_artifact(telemetry_dir, capsys):
     from argparse import Namespace
 
@@ -380,7 +421,9 @@ def test_export_filters_and_report_artifact(telemetry_dir, capsys):
     run_command(args)
     assert not capsys.readouterr().out
     args.operation, args.backend_runs_command = None, "report"
+    before = dict(os.environ)
     run_command(args)
+    assert dict(os.environ) == before
     summary = json.loads(capsys.readouterr().out)
     assert summary["groups"][0]["run_count"] == 1
     assert len(list((telemetry_dir / "reports").glob("*-backend-report.json"))) == 1

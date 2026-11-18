@@ -172,7 +172,7 @@ def validate_workflow(plan, inputs):
     for source in plan["steps"]:
         _object(
             source,
-            {"id", "operation", "input", "parameters", "bindings", "device", "budget"},
+            {"id", "operation", "input", "parameters", "bindings", "device", "backend", "budget"},
             "step",
         )
         name = source.get("id")
@@ -199,6 +199,15 @@ def validate_workflow(plan, inputs):
             device != "auto" and policy != device
         ):
             raise GraphMineError("Step device conflicts with the workflow policy")
+        backend = source.get("backend", "auto")
+        declared = {b["id"]: b for b in definition.card()["backends"]}
+        if not isinstance(backend, str) or backend != "auto" and backend not in declared:
+            raise GraphMineError("Step backend must be a declared native backend or auto")
+        if backend != "auto":
+            if not declared[backend]["compiled"]:
+                raise GraphMineError("The requested native backend is not compiled")
+            if policy != "auto" and declared[backend]["device"] != policy:
+                raise GraphMineError("Step backend conflicts with the device policy")
         budget = source.get("budget", {})
         _object(budget, Budget.__dataclass_fields__, "budget")
         steps[name] = {
@@ -210,6 +219,8 @@ def validate_workflow(plan, inputs):
             "device": policy,
             "budget": asdict(Budget(**budget)),
         }
+        if "backend" in source:
+            steps[name]["backend"] = backend
     dependencies = {}
     for name, step in steps.items():
         definition = algorithm(step["operation"])
@@ -439,6 +450,7 @@ def execute_workflow(
                     graph,
                     parameters=parameters,
                     device=execution_device,
+                    backend=step.get("backend"),
                     budget=Budget(**step["budget"]),
                     allowed_backends=None
                     if verified_backends is None

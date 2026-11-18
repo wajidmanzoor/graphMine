@@ -1,0 +1,39 @@
+tests/test_analytics_workflows.py::test_live_modes_dependent_results_and_pagination[normal]
+tests/test_analytics_workflows.py::test_live_modes_dependent_results_and_pagination[interactive]
+tests/test_analytics_workflows.py::test_live_modes_dependent_results_and_pagination[expert]
+tests/test_analytics_workflows.py::test_live_graph_collection_patterns_and_derived_graph
+tests/test_analytics_workflows.py::test_live_graph_pair_fraction_witness_and_common_graph
+tests/test_analytics_workflows.py::test_live_review_revision_and_cache_recovery
+tests/test_analytics_workflows.py::test_live_capabilities_authorization_and_input_scope
+tests/test_analytics_workflows.py::test_live_record_query_to_filtered_graph_to_count[normal]
+tests/test_analytics_workflows.py::test_live_record_query_to_filtered_graph_to_count[interactive]
+tests/test_analytics_workflows.py::test_live_record_query_to_filtered_graph_to_count[expert]
+tests/test_analytics_workflows.py::test_query_input_rejected_before_any_worker_is_queued
+tests/test_analytics_workflows.py::test_plan_preview_flags_large_exact_searches_and_slow_past_runs
+tests/test_analytics_workflows.py::test_preview_warning_stays_specific_to_operations_after_family_merges[maximal-cliques-True-True]
+tests/test_analytics_workflows.py::test_preview_warning_stays_specific_to_operations_after_family_merges[k-core-True-False]
+tests/test_analytics_workflows.py::test_preview_warning_stays_specific_to_operations_after_family_merges[persistent-homology-True-True]
+tests/test_analytics_workflows.py::test_preview_warning_stays_specific_to_operations_after_family_merges[laplacian-eigenpairs-True-False]
+tests/test_analytics_workflows.py::test_preview_warning_stays_specific_to_operations_after_family_merges[maximal-cliques-False-False]
+tests/test_analytics_workflows.py::test_group_graph_reads_members_from_the_full_input
+tests/test_analytics_workflows.py::test_long_outputs_are_summarized_and_paged_with_search_and_sort
+tests/test_analytics_workflows.py::test_health_and_metrics_describe_the_engine_people_use
+tests/test_analytics_workflows.py::test_queue_position_counts_only_earlier_pending_work
+tests/test_analytics_workflows.py::test_capabilities_share_one_verification_until_evidence_changes
+tests/test_analytics_workflows.py::test_live_failed_step_recovery_reuses_only_valid_steps
+tests/test_analytics_workflows.py::test_live_evidence_is_rechecked_at_execution
+tests/test_analytics_workflows.py::test_live_cancel_endpoint
+tests/test_analytics_workflows.py::test_live_configured_gpu_workflow
+tests/test_analytics_workflows.py::test_process_group_cancellation_and_deadline[True]
+tests/test_analytics_workflows.py::test_process_group_cancellation_and_deadline[False]
+tests/test_analytics_workflows.py::test_ledger_restart_and_exclusive_ownership
+tests/test_analytics_workflows.py::test_cpu_process_cannot_see_configured_gpu
+tests/test_analytics_workflows.py::test_missing_worker_does_not_affect_application_start
+
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+31 tests collected in 0.26s

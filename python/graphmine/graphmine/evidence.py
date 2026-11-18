@@ -306,6 +306,11 @@ def require_workflow_evidence(checked, caps):
     cards = {card["id"]: card for card in caps["operations"]}
     for step in checked["plan"]["steps"]:
         card = cards[step["operation"]]
+        requested = step.get("backend", "auto")
+        if requested != "auto" and requested not in card["verified_backends"]:
+            raise GraphMineError(
+                f"Current native correctness evidence is missing or stale for the requested backend {requested}"
+            )
         device = step["device"]
         available = (
             any(card["execution"].values())

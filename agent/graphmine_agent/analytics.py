@@ -396,15 +396,19 @@ class AnalyticsService:
         }
 
     async def _stop_process(self, process):
-        if process.returncode is None:
+        try:
             with suppress(ProcessLookupError):
                 os.killpg(process.pid, signal.SIGTERM)
-            try:
+            if process.returncode is None:
                 await asyncio.wait_for(process.wait(), 2)
-            except TimeoutError:
-                with suppress(ProcessLookupError):
-                    os.killpg(process.pid, signal.SIGKILL)
-                await process.wait()
+        except TimeoutError:
+            pass
+        finally:
+            # A native child can outlive the Python leader. Every attempt stays
+            # in this group; clean it before releasing the shared GPU lease.
+            with suppress(ProcessLookupError):
+                os.killpg(process.pid, signal.SIGKILL)
+            await process.wait()
 
     async def _call(self, request, *, on_event=None, lease=None):
         from .backend_learning.hardware import PeakSampler, merge_peaks
@@ -413,6 +417,8 @@ class AnalyticsService:
         request = dict(request)
         telemetry = request.pop("telemetry", {})
         native_runs = {}
+        terminal_runs = set()
+        step_deadline = None
         terminal_error = None
         timed_out = False
         if request.get("command") == "run":
@@ -451,10 +457,19 @@ class AnalyticsService:
             env.update(
                 GRAPHMINE_BACKEND_TELEMETRY_ROOT=str(Path(__file__).resolve().parents[1]),
                 GRAPHMINE_BACKEND_DATA_DIR=str(self.settings.backend_data_dir),
+                GRAPHMINE_GPU_LEASE_FDS=",".join(str(fd) for fd in self.scheduler.worker_fds(lease)),
                 GRAPHMINE_BACKEND_RUN_CONTEXT=_json({
                     **telemetry, "job_timeout_seconds": self.settings.job_timeout_seconds,
                     "leased_gpu_uuid": lease.gpu_uuid if lease else self.settings.graph_gpu_uuid,
                     "backend_memory_safety": self.settings.backend_memory_safety,
+                    "backend_model_dir": str(self.settings.backend_model_dir),
+                    "backend_selection": self.settings.backend_selection,
+                    "backend_exploration_enabled": self.settings.backend_exploration_enabled,
+                    "backend_exploration_budget": self.settings.backend_exploration_budget,
+                    "backend_max_explore_ratio": self.settings.backend_max_explore_ratio,
+                    "backend_min_timeout_seconds": self.settings.backend_min_timeout_seconds,
+                    "max_result_bytes": self.settings.max_result_bytes,
+                    "execution_isolated": True,
                 }),
             )
         native_library = self.settings.native_runtime_library
@@ -505,6 +520,7 @@ class AnalyticsService:
                     errors.extend(data[: 8192 - len(errors)])
 
         async def receive():
+            nonlocal step_deadline
             final, total = None, 0
             while line := await process.stdout.readline():
                 try:
@@ -522,6 +538,8 @@ class AnalyticsService:
                     continue
                 if message.get("event") == "native_started":
                     row = message["record"]
+                    if row["run_id"] in native_runs or row["run_id"] in terminal_runs:
+                        raise AnalyticsError("Duplicate native attempt identity", "worker_failure", 502)
                     sampler = None
                     try:
                         sampler = PeakSampler(process.pid, row["hardware"]["leased_gpu_index"])
@@ -531,6 +549,9 @@ class AnalyticsService:
                     continue
                 if message.get("event") == "native_finished":
                     row = message["record"]
+                    if row["run_id"] in terminal_runs:
+                        raise AnalyticsError("Duplicate native terminal row", "worker_failure", 502)
+                    terminal_runs.add(row["run_id"])
                     previous = native_runs.pop(row["run_id"], None)
                     if previous:
                         sampler = previous[2]
@@ -540,7 +561,9 @@ class AnalyticsService:
                                 row["telemetry_warnings"].extend(sampler.warnings)
                             except Exception:
                                 row["telemetry_warnings"].append("peak_sampler_failed")
-                        self.run_log.submit(row)
+                    # Preflight failures have a terminal row without a start.
+                    # They must remain visible even when no native kernel ran.
+                    self.run_log.submit(row)
                     continue
                 total += len(line)
                 if len(line) > self.settings.max_result_bytes + 1 or total > self.settings.max_result_bytes * 3:
@@ -553,23 +576,36 @@ class AnalyticsService:
                 if message.get("event") == "complete":
                     final = message["result"]
                 elif message.get("event") in ("step_started", "step_finished"):
+                    if message["event"] == "step_started":
+                        step = next(s for s in request["plan"]["steps"] if s["id"] == message["step"])
+                        step_deadline = time.monotonic() + min(1800, self.settings.job_timeout_seconds,
+                                                              step.get("budget", {}).get("timeout_seconds", 60))
+                    else:
+                        step_deadline = None
                     if on_event:
                         await on_event(message)
                 else:
                     raise AnalyticsError("Unknown worker event", "worker_failure", 502)
             return final
 
+        async def deadlines():
+            while not tasks[2].done():
+                if step_deadline is not None and time.monotonic() >= step_deadline:
+                    raise TimeoutError("Native step exceeded its total execution deadline")
+                await asyncio.sleep(0.05)
+
         try:
             tasks = [
                 asyncio.create_task(send()),
                 asyncio.create_task(diagnostics()),
                 asyncio.create_task(receive()),
+                asyncio.create_task(deadlines()),
             ]
             timeout = (
                 self.settings.job_timeout_seconds if request["command"] == "run" else 60
             )
             async with asyncio.timeout(timeout):
-                _, _, final = await asyncio.gather(*tasks)
+                _, _, final, _ = await asyncio.gather(*tasks)
                 code = await process.wait()
             if code != 0 or final is None:
                 raise AnalyticsError(
@@ -605,6 +641,8 @@ class AnalyticsService:
                 outcome, code = outcome_for(terminal_error or RuntimeError("worker_interrupted"), timed_out=timed_out)
                 row.update(outcome=outcome, error_code=code, censored=outcome == "timeout",
                            runtime_seconds=time.monotonic() - started)
+                row["fallback_chain"] = [*row.get("fallback_chain", []), dict(run_id=row["run_id"],
+                    backend=row.get("chosen_backend"), outcome=outcome, runtime_seconds=row["runtime_seconds"])]
                 if sampler is not None:
                     try:
                         row["peak_memory"] = merge_peaks(row["peak_memory"], sampler.finish())

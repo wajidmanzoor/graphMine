@@ -1,0 +1,34 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "maximum-clique-on-gpu",
+    "gpu_device": 0,
+    "passed_requests": 12,
+    "failed": 0,
+    "implementation_sha256": "202c5c6189682ae44c352bc61ec66fd41c66ec1bd0e3cea1c1291547529584b1"
+  },
+  {
+    "suite": "maximum",
+    "backend": "maximum-clique-on-gpu",
+    "gpu_device": 0,
+    "passed_requests": 132,
+    "failed": 0,
+    "implementation_sha256": "202c5c6189682ae44c352bc61ec66fd41c66ec1bd0e3cea1c1291547529584b1"
+  },
+  {
+    "suite": "optimization",
+    "backend": "maximum-clique-on-gpu",
+    "gpu_device": 0,
+    "passed_requests": 198,
+    "failed": 0,
+    "implementation_sha256": "202c5c6189682ae44c352bc61ec66fd41c66ec1bd0e3cea1c1291547529584b1"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "maximum-clique-on-gpu",
+    "gpu_device": 0,
+    "passed_requests": 25,
+    "failed": 0,
+    "implementation_sha256": "202c5c6189682ae44c352bc61ec66fd41c66ec1bd0e3cea1c1291547529584b1"
+  }
+]
