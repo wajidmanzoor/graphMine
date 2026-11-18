@@ -153,8 +153,8 @@ GRAPHMINE_AGENT_DATA_ROOT="$PWD/.graphmine-agent"
 GRAPHMINE_NATIVE_LIBRARY="$PWD/build/native-cpu/libgraphmine_runtime.so"
 GRAPHMINE_NATIVE_BINARY="$PWD/build/native-cpu/graphmine-native"
 GRAPHMINE_ANALYTICS_PYTHON="$PWD/.venv/bin/python"
-GRAPHMINE_BACKEND_DATA_DIR="$PWD/.graphmine-agent/backend-data"
-GRAPHMINE_BACKEND_MODEL_DIR="$PWD/.graphmine-agent/backend-models"
+GRAPHMINE_BACKEND_DATA_DIR="$PWD/../graphmine-local-data/backend-data"
+GRAPHMINE_BACKEND_MODEL_DIR="$PWD/../graphmine-local-data/backend-models"
 GRAPHMINE_GRAPH_GPU_UUID=
 GRAPHMINE_LLM_GPU_UUID=
 GRAPHMINE_ANALYTICS_GPU_UUIDS=
@@ -163,6 +163,10 @@ GRAPHMINE_GOOGLE_SEARCH_ENABLED=false
 EOF
 chmod 600 agent/.env
 ```
+
+Backend telemetry and model files use the sibling `graphmine-local-data`
+directory. These two paths must be writable and outside any Git repository
+and `/tmp`; the application creates them at startup.
 
 The cookie setting above is for local HTTP. Use
 `GRAPHMINE_ACCOUNT_COOKIE_SECURE=true` when serving through HTTPS. Additional
