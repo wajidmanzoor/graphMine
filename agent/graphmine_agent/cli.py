@@ -66,6 +66,9 @@ def parser() -> argparse.ArgumentParser:
 
     add_accounts_parser(subcommands)
     add_parser(subcommands)
+    from .backend_learning.cli import add_parser as add_backend_runs_parser
+
+    add_backend_runs_parser(subcommands)
     chat = subcommands.add_parser(
         "chat", help="converse with the agent; upload graphs and save feedback"
     )
@@ -186,6 +189,10 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     arguments = parser().parse_args(argv)
     settings = Settings.from_env()
+    if arguments.command == "backend-runs":
+        from .backend_learning.cli import run_command
+
+        return run_command(arguments, settings)
     if arguments.command == "accounts":
         from .accounts_cli import run_accounts
 

@@ -41,6 +41,86 @@ std::string hash(const json::value& value) {
 
 std::string input_fingerprint(const json::value& input) { return hash(input); }
 
+// Read-only preflight for telemetry and the agent's feasibility rules. All
+// input restrictions remain owned by the same native support functions as run.
+json::object backend_capabilities(const json::object& request) {
+  fields(request,
+         {"command", "operation", "graph", "parameters", "device", "backend", "gpu_device",
+          "budget", "allowed_backends"},
+         {"command", "operation", "graph"});
+  const auto operation = string(request.at("operation"), "operation");
+  const auto& card = operation_card(operation);
+  const auto policy = request.contains("device") ? string(request.at("device"), "device") : "auto";
+  require(policy == "cpu" || policy == "gpu" || policy == "auto", "Invalid device policy");
+  const auto ordinal = request.contains("gpu_device") ? uint(request.at("gpu_device"), "gpu_device") : 0;
+  require(ordinal <= INT32_MAX, "gpu_device is out of range");
+  const auto requested = request.contains("backend") ? string(request.at("backend"), "backend") : "auto";
+  std::vector<std::string> allowed;
+  if (request.contains("allowed_backends")) {
+    require(request.at("allowed_backends").is_array(), "allowed_backends must be an array");
+    for (const auto& value : request.at("allowed_backends").as_array())
+      allowed.push_back(string(value, "allowed backend"));
+  }
+  Work work;
+  work.input_fingerprint = hash(request.at("graph"));
+  if (request.contains("budget")) {
+    const auto budget = object(request.at("budget"), "budget");
+    fields(budget, {"max_candidates", "max_output_items", "timeout_seconds"});
+    if (budget.contains("max_candidates")) work.max_candidates = uint(budget.at("max_candidates"), "max_candidates");
+    if (budget.contains("max_output_items")) work.max_output_items = uint(budget.at("max_output_items"), "max_output_items");
+    if (budget.contains("timeout_seconds")) work.timeout_seconds = number(budget.at("timeout_seconds"), "timeout_seconds");
+    require(work.max_candidates && work.max_output_items && std::isfinite(work.timeout_seconds) &&
+                work.timeout_seconds > 0, "Budgets must be finite and positive");
+  }
+  const auto parameters = request.contains("parameters") ? object(request.at("parameters"), "parameters") : json::object{};
+  validate_parameters(card, parameters);
+  std::shared_ptr<const Graph> graph;
+  if (card.at("input_kind") == "graph") graph = cached_graph(request.at("graph"), work);
+  else inspect_input(string(card.at("input_kind"), "input_kind"), request.at("graph"), work);
+  work.input_graph = graph.get();
+  const auto gpu_reason = graph ? gpu_support_reason(operation, *graph, parameters)
+                                : "This structured-input profile has a native CPU implementation";
+  // CPU requests do not initialize CUDA, even when gathering telemetry.
+  const bool available = policy != "cpu" && gpu_available(static_cast<int>(ordinal));
+  json::array candidates;
+  std::string selected;
+  bool cpu_feasible = false;
+  for (const auto& row : card.at("backends").as_array()) {
+    const auto& backend = row.as_object();
+    const auto id = string(backend.at("id"), "backend id");
+    const bool cpu = backend.at("device") == "cpu";
+    const bool compiled = backend.at("compiled").as_bool();
+    const bool admitted = !request.contains("allowed_backends") ||
+                          std::find(allowed.begin(), allowed.end(), id) != allowed.end();
+    std::string reason;
+    if (!compiled) reason = "not_compiled";
+    else if (!admitted) reason = "not_admitted";
+    else if ((policy == "cpu" && !cpu) || (policy == "gpu" && cpu)) reason = "device_policy";
+    else if (!cpu && !gpu_reason.empty()) reason = gpu_reason;
+    else if (!cpu && !available) reason = "gpu_unavailable";
+    else if (graph) {
+      try {
+        reason = backend_support_reason(operation, id, *graph, parameters, work);
+      } catch (const Failure& failure) {
+        reason = failure.code;  // Avoid copying graph-specific error contents.
+      }
+    }
+    const bool feasible = reason.empty();
+    candidates.push_back(json::object{{"id", id}, {"device", cpu ? "cpu" : "gpu"},
+                                      {"compiled", compiled}, {"admitted", admitted},
+                                      {"feasible", feasible}, {"infeasible_reason", reason}});
+    if (id == "cpp") cpu_feasible = feasible;
+    if (feasible && ((requested != "auto" && requested == id) ||
+                     (requested == "auto" && !cpu && selected.empty()))) selected = id;
+  }
+  if (requested == "auto" && selected.empty() && cpu_feasible) selected = "cpp";
+  return {{"operation", operation}, {"problem_id", card.at("problem_id")},
+          {"family", card.at("family")}, {"input_kind", card.at("input_kind")},
+          {"input_fingerprint", work.input_fingerprint}, {"candidates", candidates},
+          {"legacy_backend", selected.empty() ? json::value(nullptr) : json::value(selected)},
+          {"implementation_sha256", implementation_sha256}};
+}
+
 json::object execute(const json::object& request) {
   fields(request,
          {"command", "operation", "graph", "parameters", "device", "backend", "gpu_device",
@@ -201,6 +281,7 @@ std::string request(std::string_view raw) {
       return json::serialize(catalog());
     }
     if (command == "run") return json::serialize(execute(value));
+    if (command == "backend_capabilities") return json::serialize(backend_capabilities(value));
     if (command == "validate") return json::serialize(validate_request(value));
     if (command == "representation_cache")
       return json::serialize(representation_cache_request(value));

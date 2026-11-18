@@ -1000,7 +1000,9 @@ def _sleeping_worker(tmp_path):
 def _not_running(pid):
     try:
         return Path(f"/proc/{pid}/stat").read_text().split(")", 1)[1].split()[0] == "Z"
-    except FileNotFoundError:
+    except (FileNotFoundError, ProcessLookupError):
+        # A process can disappear after /proc/<pid>/stat is opened but before
+        # it is read; Linux reports ESRCH in that race instead of ENOENT.
         return True
 
 

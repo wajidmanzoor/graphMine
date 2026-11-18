@@ -196,6 +196,7 @@ class AnalyticsService:
         self.capability_task = None
         self.closed = False
         self.opened = False
+        self.run_log = None
         with closing(sqlite3.connect(self.path)) as db, db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS workflows (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, document TEXT NOT NULL)"
@@ -208,6 +209,7 @@ class AnalyticsService:
         self.examples = ReviewedExamples(self)
 
     def open(self):
+        self._open_run_log()
         self.owner.acquire()
         self.opened = True
         for record in self._all():
@@ -228,6 +230,8 @@ class AnalyticsService:
         self.closed = True
         self.result_cache.clear()
         if not self.opened:
+            if self.run_log is not None:
+                await asyncio.to_thread(self.run_log.close)
             return
         tasks = list(self.tasks.values()) + list(self.answer_tasks)
         for task in tasks:
@@ -241,6 +245,16 @@ class AnalyticsService:
         self.owner.release()
         self.opened = False
         self.result_cache.clear()
+        if self.run_log is not None:
+            await asyncio.to_thread(self.run_log.close)
+
+    def _open_run_log(self):
+        if self.run_log is None:
+            from .backend_learning.storage import RunLog, prepare_directories
+
+            prepare_directories(self.settings.backend_data_dir, self.settings.backend_model_dir,
+                                self.settings.repository_root)
+            self.run_log = RunLog(self.settings.backend_data_dir)
 
     def _all(self, session_id=None):
         with closing(sqlite3.connect(self.path)) as db:
@@ -393,6 +407,16 @@ class AnalyticsService:
                 await process.wait()
 
     async def _call(self, request, *, on_event=None, lease=None):
+        from .backend_learning.hardware import PeakSampler, merge_peaks
+        from .backend_learning.worker import outcome_for
+
+        request = dict(request)
+        telemetry = request.pop("telemetry", {})
+        native_runs = {}
+        terminal_error = None
+        timed_out = False
+        if request.get("command") == "run":
+            self._open_run_log()
         python = (
             self.settings.analytics_python
             or self.settings.native_repository_root / ".venv-analytics/bin/python"
@@ -423,6 +447,15 @@ class AnalyticsService:
         )
         env.pop("PYTHONPATH", None)
         env.pop("PYTHONHOME", None)
+        if request["command"] == "run":
+            env.update(
+                GRAPHMINE_BACKEND_TELEMETRY_ROOT=str(Path(__file__).resolve().parents[1]),
+                GRAPHMINE_BACKEND_DATA_DIR=str(self.settings.backend_data_dir),
+                GRAPHMINE_BACKEND_RUN_CONTEXT=_json({
+                    **telemetry, "job_timeout_seconds": self.settings.job_timeout_seconds,
+                    "leased_gpu_uuid": lease.gpu_uuid if lease else self.settings.graph_gpu_uuid,
+                }),
+            )
         native_library = self.settings.native_runtime_library
         if native_library is None and not env.get("GRAPHMINE_NATIVE_LIBRARY"):
             binary = self.settings.native_runtime_binary
@@ -452,7 +485,9 @@ class AnalyticsService:
             env=env,
             cwd=self.settings.native_repository_root,
             start_new_session=True,
-            limit=self.settings.max_result_bytes + 1,
+            # Aggregate telemetry has a separate allowance; enabling logging
+            # must not consume the user's native result byte budget.
+            limit=max(self.settings.max_result_bytes + 1, 256 * 1024),
         )
         tasks = []
         errors = bytearray()
@@ -470,11 +505,6 @@ class AnalyticsService:
         async def receive():
             final, total = None, 0
             while line := await process.stdout.readline():
-                total += len(line)
-                if total > self.settings.max_result_bytes * 3:
-                    raise AnalyticsError(
-                        "Worker output exceeded the byte budget", "resource_limit"
-                    )
                 try:
                     message = json.loads(line)
                 except ValueError as exc:
@@ -484,6 +514,36 @@ class AnalyticsService:
                 if final is not None:
                     raise AnalyticsError(
                         "Worker emitted data after completion", "worker_failure", 502
+                    )
+                if message.get("event") == "telemetry_warning":
+                    _logger.warning("Backend worker telemetry warning: %s", message.get("code"))
+                    continue
+                if message.get("event") == "native_started":
+                    row = message["record"]
+                    sampler = None
+                    try:
+                        sampler = PeakSampler(process.pid, row["hardware"]["leased_gpu_index"])
+                    except Exception:
+                        row["telemetry_warnings"].append("peak_sampler_unavailable")
+                    native_runs[row["run_id"]] = row, time.monotonic(), sampler
+                    continue
+                if message.get("event") == "native_finished":
+                    row = message["record"]
+                    previous = native_runs.pop(row["run_id"], None)
+                    if previous:
+                        sampler = previous[2]
+                        if sampler is not None:
+                            try:
+                                row["peak_memory"] = merge_peaks(row["peak_memory"], sampler.finish())
+                                row["telemetry_warnings"].extend(sampler.warnings)
+                            except Exception:
+                                row["telemetry_warnings"].append("peak_sampler_failed")
+                        self.run_log.submit(row)
+                    continue
+                total += len(line)
+                if len(line) > self.settings.max_result_bytes + 1 or total > self.settings.max_result_bytes * 3:
+                    raise AnalyticsError(
+                        "Worker output exceeded the byte budget", "resource_limit"
                     )
                 if message.get("event") == "error":
                     error = message["error"]
@@ -517,20 +577,39 @@ class AnalyticsService:
                 )
             return final
         except TimeoutError as exc:
+            timed_out = True
+            terminal_error = exc
             raise AnalyticsError(
                 "Workflow exceeded its execution deadline", "resource_limit"
             ) from exc
         except (BrokenPipeError, ConnectionResetError, ValueError) as exc:
+            terminal_error = exc
             if isinstance(exc, AnalyticsError):
                 raise
             raise AnalyticsError(
                 "Analytics worker communication failed", "worker_failure", 502
             ) from exc
+        except BaseException as exc:
+            terminal_error = exc
+            raise
         finally:
             for task in tasks:
                 task.cancel()
             await self._stop_process(process)
             await asyncio.gather(*tasks, return_exceptions=True)
+            if b"backend telemetry:" in errors:
+                _logger.warning("Backend worker telemetry warning: diagnostics_reported_failure")
+            for row, started, sampler in native_runs.values():
+                outcome, code = outcome_for(terminal_error or RuntimeError("worker_interrupted"), timed_out=timed_out)
+                row.update(outcome=outcome, error_code=code, censored=outcome == "timeout",
+                           runtime_seconds=time.monotonic() - started)
+                if sampler is not None:
+                    try:
+                        row["peak_memory"] = merge_peaks(row["peak_memory"], sampler.finish())
+                        row["telemetry_warnings"].extend(sampler.warnings)
+                    except Exception:
+                        row["telemetry_warnings"].append("peak_sampler_failed")
+                self.run_log.submit(row)
 
     def _capability_key(self):
         paths = [
@@ -1047,6 +1126,8 @@ class AnalyticsService:
                         "inputs": inputs,
                         "expected_hash": record["approved_hash"],
                         "resume": self._resume(record),
+                        "telemetry": {"workflow_id": workflow_id,
+                                      "is_evaluation": bool(record.get("evaluation_id"))},
                     },
                     on_event=event,
                     lease=lease,

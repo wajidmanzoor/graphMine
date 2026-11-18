@@ -1,0 +1,90 @@
+gpu-1: graphmine_selection_test contracts: 25 passed
+gpu-1: graphmine_selection_test independent: 2200 passed
+gpu-1: graphmine_selection_test coloring: 2200 passed
+gpu-1: graphmine_selection_test subgraphs: 8642 passed
+gpu-1: graphmine_selection_test walks: 1192 passed
+gpu-1: graphmine_selection_test probability: 2 passed
+gpu-1: graphmine_selection_test boundaries: 2 passed
+gpu-1: graphmine_selection_test large: 11 passed
+gpu-1: graphmine_runtime_test bfs: 4608 passed
+gpu-1: graphmine_runtime_test triangles: 2048 passed
+gpu-1: graphmine_reference_test contracts: 30 passed
+gpu-1: graphmine_reference_test paths: 3645 passed
+gpu-1: graphmine_reference_test forests: 1458 passed
+gpu-1: graphmine_reference_test connectivity: 256 passed
+gpu-1: graphmine_reference_test rank: 514 passed
+gpu-1: graphmine_reference_test similarity: 128 passed
+gpu-1: graphmine_structure_test contracts: 9 passed
+gpu-1: graphmine_structure_test truss: 5135 passed
+gpu-1: graphmine_structure_test boundaries: 31 passed
+gpu-1: graphmine_centrality_test contracts: 7 passed
+gpu-1: graphmine_centrality_test betweenness: 2658 passed
+gpu-1: graphmine_centrality_test boundaries: 9 passed
+gpu-1: graphmine_matching_test contracts: 9 passed
+gpu-1: graphmine_matching_test assignment: 721 passed
+gpu-1: graphmine_matching_test boundaries: 21 passed
+gpu-1: graphmine_flow_test contracts: 8 passed
+gpu-1: graphmine_flow_test edges: 1049 passed
+gpu-1: graphmine_flow_test boundaries: 12 passed
+gpu-1: graphmine_centrality_test contracts: 8 passed
+gpu-1: graphmine_centrality_test betweenness: 2048 passed
+gpu-1: graphmine_centrality_test boundaries: 9 passed
+gpu-1: graphmine_mining_test contracts: 4 passed
+gpu-1: graphmine_mining_test maximal: 264 passed
+gpu-1: graphmine_mining_test boundaries: 21 passed
+gpu-1: graphmine_mining_test contracts: 4 passed
+gpu-1: graphmine_mining_test maximal: 264 passed
+gpu-1: graphmine_mining_test boundaries: 21 passed
+gpu-1: graphmine_mining_test contracts: 4 passed
+gpu-1: graphmine_mining_test maximal: 264 passed
+gpu-1: graphmine_mining_test boundaries: 21 passed
+gpu-1: graphmine_mining_test contracts: 12 passed
+gpu-1: graphmine_mining_test maximum: 132 passed
+gpu-1: graphmine_mining_test optimization: 198 passed
+gpu-1: graphmine_mining_test boundaries: 25 passed
+gpu-1: graphmine_mining_test contracts: 12 passed
+gpu-1: graphmine_mining_test maximum: 132 passed
+gpu-1: graphmine_mining_test optimization: 198 passed
+gpu-1: graphmine_mining_test boundaries: 25 passed
+gpu-1: graphmine_mining_test contracts: 12 passed
+gpu-1: graphmine_mining_test maximum: 132 passed
+gpu-1: graphmine_mining_test optimization: 198 passed
+gpu-1: graphmine_mining_test boundaries: 25 passed
+gpu-1: graphmine_mining_test contracts: 4 passed
+gpu-1: graphmine_mining_test fixed: 792 passed
+gpu-1: graphmine_mining_test boundaries: 64 passed
+gpu-1: graphmine_mining_test contracts: 4 passed
+gpu-1: graphmine_mining_test fixed: 990 passed
+gpu-1: graphmine_mining_test boundaries: 79 passed
+gpu-1: graphmine_mining_test contracts: 4 passed
+gpu-1: graphmine_mining_test fixed: 1584 passed
+gpu-1: graphmine_mining_test boundaries: 124 passed
+gpu-1: graphmine_mining_test contracts: 4 passed
+gpu-1: graphmine_mining_test core: 264 passed
+gpu-1: graphmine_mining_test boundaries: 20 passed
+gpu-1: graphmine_mining_test contracts: 4 passed
+gpu-1: graphmine_mining_test core: 264 passed
+gpu-1: graphmine_mining_test boundaries: 20 passed
+GPU 1 native suites passed
+
+==================================== ERRORS ====================================
+__________ ERROR collecting library/tests/test_native_original_gpu.py __________
+ImportError while importing test module '/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/tests/test_native_original_gpu.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+library/tests/test_native_original_gpu.py:16: in <module>
+    import networkx as nx
+E   ModuleNotFoundError: No module named 'networkx'
+- generated xml file: /home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/validation/backend-telemetry-phase1/original-gpu1.xml -
+=========================== short test summary info ============================
+ERROR library/tests/test_native_original_gpu.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.07s
+Traceback (most recent call last):
+  File "<stdin>", line 8, in <module>
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['.venv/bin/python', '-m', 'pytest', '-q', 'library/tests/test_native_original_gpu.py', '--junitxml=validation/backend-telemetry-phase1/original-gpu1.xml']' returned non-zero exit status 2.

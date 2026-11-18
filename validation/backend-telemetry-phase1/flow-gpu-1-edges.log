@@ -1,0 +1,3 @@
+Validated 500 flow requests
+Validated 1000 flow requests
+{"suite":"edges","backend":"ecl-maxflow","gpu_device":0,"passed_requests":1049,"failed":0,"implementation_sha256":"34fc6dbee1362af0e2682593157f593495f76ff4d32b5af7d26d53094e9a0fbb"}

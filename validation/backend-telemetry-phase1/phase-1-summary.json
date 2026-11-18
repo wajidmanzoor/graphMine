@@ -1,0 +1,103 @@
+{
+  "phase": 1,
+  "status": "verified_in_development",
+  "created_at": "2026-11-18T01:10:45.818959+00:00",
+  "branch": "devlopment",
+  "production_promoted": false,
+  "implementation_sha256": "34fc6dbee1362af0e2682593157f593495f76ff4d32b5af7d26d53094e9a0fbb",
+  "files_changed": [
+    "agent/graphmine_agent/analytics.py",
+    "agent/graphmine_agent/backend_learning/__init__.py",
+    "agent/graphmine_agent/backend_learning/cli.py",
+    "agent/graphmine_agent/backend_learning/features.py",
+    "agent/graphmine_agent/backend_learning/hardware.py",
+    "agent/graphmine_agent/backend_learning/storage.py",
+    "agent/graphmine_agent/backend_learning/worker.py",
+    "agent/graphmine_agent/cli.py",
+    "agent/graphmine_agent/config.py",
+    "agent/graphmine_agent/evidence_cache.py",
+    "agent/tests/test_analytics_workflows.py",
+    "agent/tests/test_backend_telemetry.py",
+    "catalog/native_execution_evidence.json",
+    "library/runtime/runtime.cpp",
+    "library/src/cli/graphmine.cpp"
+  ],
+  "verification_artifacts": "validation/backend-telemetry-phase1",
+  "tests": {
+    "telemetry": {
+      "tests": 38,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 38
+    },
+    "agent-integration": {
+      "tests": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 9,
+      "passed": 35
+    },
+    "completion-cpu": {
+      "tests": 168,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 168
+    },
+    "original-gpu1": {
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 34
+    },
+    "worker-budgets": {
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 10
+    }
+  },
+  "native_correctness": {
+    "cpu": {
+      "passed_requests": 129073,
+      "suites": 42
+    },
+    "gpu_1": {
+      "passed_requests": 44884,
+      "suites": 67
+    }
+  },
+  "operation_count": 82,
+  "compiled_profiles": 141,
+  "admitted_profiles": 141,
+  "admitted_profiles_removed": [],
+  "backend_selection": "legacy",
+  "models_trained": 0,
+  "initial_training_examples_per_algorithm": {
+    "minimum": 1,
+    "maximum": 3
+  },
+  "user_authorized_evidence_refresh": true,
+  "backend_data_dir": "/data/labdata/wajid/graphmine_data/rlModelData",
+  "backend_model_dir": "/data/labdata/wajid/graphmine-models/rlModel",
+  "development_http_checks": "passed",
+  "telemetry_coverage": [
+    "Each executed native workflow step; resumed and blocked steps do not generate native-run rows",
+    "Completed, timed-out, out-of-memory, unsupported-input and other terminal failures",
+    "Parent-side terminal recording when a worker is killed",
+    "NVML snapshots and sampled process-tree GPU/RSS memory",
+    "Identifier-free cached graph summaries and parameters",
+    "Asynchronous append/fsync with host-file locking and warnings on logging failures",
+    "graphmine backend-runs export/report"
+  ],
+  "remaining_phases": [
+    2,
+    3,
+    4
+  ],
+  "live_rollout_gate": "Not eligible: warm start, shadow observation, and held-out baseline comparisons remain pending",
+  "skipped_checks": "Nine pre-existing integration cases require two configured GPUs. A new real-worker check verifies physical GPU 1 exclusively."
+}

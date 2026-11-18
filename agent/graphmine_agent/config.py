@@ -141,6 +141,14 @@ class Settings:
     neo4j_datasets_registry: Path | None = None
     neo4j_instances_root: Path | None = None
     neo4j_datasets_password_file: Path | None = None
+    backend_data_dir: Path = Path("/data/labdata/wajid/graphmine_data/rlModelData")
+    backend_model_dir: Path = Path("/data/labdata/wajid/graphmine-models/rlModel")
+    backend_selection: str = "legacy"
+    backend_exploration_enabled: bool = True
+    backend_exploration_budget: float = 0.10
+    backend_max_explore_ratio: float = 1.5
+    backend_memory_safety: float = 0.8
+    backend_min_timeout_seconds: int = 60
 
     @property
     def dual_adapters_active(self) -> bool:
@@ -175,6 +183,14 @@ class Settings:
         return self.llm_route_model if self.routing_adapter_active else self.llm_model
 
     def __post_init__(self) -> None:
+        if self.backend_selection != "legacy":
+            raise ValueError("This telemetry release supports backend_selection=legacy only")
+        if not 0 <= self.backend_exploration_budget <= 1:
+            raise ValueError("backend_exploration_budget must be between 0 and 1")
+        if not 0 < self.backend_memory_safety <= 1 or self.backend_max_explore_ratio < 1:
+            raise ValueError("Invalid backend memory safety or exploration ratio")
+        if not 0 < self.backend_min_timeout_seconds <= 1800:
+            raise ValueError("backend_min_timeout_seconds must be between 1 and 1800")
         for name, maximum in (("database_pool_limit", 128), ("database_pool_size", 32),
                               ("database_pool_wait_seconds", 120), ("database_pool_idle_seconds", 3600)):
             if not 1 <= getattr(self, name) <= maximum:
@@ -311,6 +327,14 @@ class Settings:
         )
         token = os.getenv("GRAPHMINE_API_TOKEN", "").strip() or None
         return cls(
+            backend_data_dir=Path(os.getenv("GRAPHMINE_BACKEND_DATA_DIR", "/data/labdata/wajid/graphmine_data/rlModelData")).expanduser().resolve(),
+            backend_model_dir=Path(os.getenv("GRAPHMINE_BACKEND_MODEL_DIR", "/data/labdata/wajid/graphmine-models/rlModel")).expanduser().resolve(),
+            backend_selection=os.getenv("GRAPHMINE_BACKEND_SELECTION", "legacy"),
+            backend_exploration_enabled=_boolean("GRAPHMINE_BACKEND_EXPLORATION_ENABLED", True),
+            backend_exploration_budget=float(os.getenv("GRAPHMINE_BACKEND_EXPLORATION_BUDGET", "0.10")),
+            backend_max_explore_ratio=float(os.getenv("GRAPHMINE_BACKEND_MAX_EXPLORE_RATIO", "1.5")),
+            backend_memory_safety=float(os.getenv("GRAPHMINE_BACKEND_MEMORY_SAFETY", "0.8")),
+            backend_min_timeout_seconds=_integer("GRAPHMINE_BACKEND_MIN_TIMEOUT_SECONDS", 60),
             database_credentials_file=Path(os.environ["GRAPHMINE_DATABASE_CREDENTIALS_FILE"]).expanduser().absolute()
             if os.getenv("GRAPHMINE_DATABASE_CREDENTIALS_FILE") else None,
             database_dataset_allowlist=tuple(
