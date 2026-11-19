@@ -1,0 +1,357 @@
+{
+  "graph_record_queries": {
+    "formula": "R' = \\{r\\in R : P_1(r)\\land\\cdots\\land P_m(r)\\}",
+    "notation": "R is a collection of original records; each P is a declared predicate.",
+    "question": "Which records have at least ten connections?"
+  },
+  "breadth_first_search": {
+    "formula": "d(s,v)=\\min_{p:s\\leadsto v}|p|",
+    "notation": "The distance is the number of edges in a shortest path; unreachable vertices have no finite distance.",
+    "question": "How many hops connect this person to everyone else?"
+  },
+  "single_source_shortest_paths": {
+    "formula": "d(s,v)=\\min_{p:s\\leadsto v}\\sum_{e\\in p}w(e)",
+    "notation": "Edge weights w are nonnegative path costs.",
+    "question": "What is the lowest-cost route from this location?"
+  },
+  "many_source_shortest_paths": {
+    "formula": "D_{ij}=d(s_i,t_j)",
+    "notation": "D contains shortest-path costs for the requested origins and destinations.",
+    "question": "What are the shortest distances between these locations?"
+  },
+  "widest_paths": {
+    "formula": "b(s,v)=\\max_{p:s\\leadsto v}\\min_{e\\in p}c(e)",
+    "notation": "c is edge capacity; a path is only as wide as its smallest capacity.",
+    "question": "Which route has the largest bottleneck capacity?"
+  },
+  "temporal_fastest_paths": {
+    "formula": "p^*\\in\\arg\\min_{p\\in\\mathcal J(s,t)}\\bigl(t_{\\mathrm{arrival}}(p)-t_{\\mathrm{departure}}(p)\\bigr)",
+    "notation": "The set of journeys J obeys edge times. Earliest-arrival mode minimizes arrival time instead of duration.",
+    "question": "What is the fastest time-respecting journey?"
+  },
+  "top_k_critical_paths_dag": {
+    "formula": "\\operatorname{TopK}_{p:s\\leadsto t}\\;\\sum_{e\\in p}w(e)",
+    "notation": "Paths run from declared sources to sinks in a directed acyclic graph; w is delay.",
+    "question": "Which dependency paths have the greatest total delay?"
+  },
+  "hop_constrained_cycle_path_enumeration": {
+    "formula": "\\mathcal P_k(s,t)=\\{p:s\\leadsto t,\\ p\\text{ simple},\\ \\ell(p)\\le k\\}",
+    "notation": "The hop length is ell. Cycle mode instead closes a simple path through the requested vertex or edge.",
+    "question": "List simple paths between these vertices within four hops."
+  },
+  "transitive_closure_reachability": {
+    "formula": "R_{uv}=\\mathbf1[\\exists p:u\\leadsto v]",
+    "notation": "The contract declares whether zero-length paths count as reachability.",
+    "question": "Can this vertex reach that vertex?"
+  },
+  "topological_sort": {
+    "formula": "\\pi(u)<\\pi(v)\\quad\\forall (u,v)\\in E",
+    "notation": "pi is a vertex ordering; a directed cycle prevents such an ordering.",
+    "question": "In which order can I process these dependencies?"
+  },
+  "connected_components": {
+    "formula": "u\\sim v\\iff u\\leadsto v\\text{ and }v\\leadsto u",
+    "notation": "This defines strong components. Weak components ignore direction before testing connectivity.",
+    "question": "Which groups are disconnected from one another?"
+  },
+  "biconnected_components": {
+    "formula": "B\\text{ remains connected after removing any one vertex}",
+    "notation": "Blocks are maximal sets under this condition; bridges and isolated cases follow the contract.",
+    "question": "Which single vertices or edges hold this network together?"
+  },
+  "max_flow_min_cut": {
+    "formula": "\\max_f |f|=\\min_{(S,T)}c(S,T)",
+    "notation": "Flow respects capacities and conservation. S contains the source and T the sink; optional vertex capacities require the corresponding cut model.",
+    "question": "What is the maximum flow between these terminals?"
+  },
+  "spanning_tree_forest": {
+    "formula": "F^*\\in\\arg\\min_F\\sum_{e\\in F}w(e)",
+    "notation": "F spans each connected component without cycles. Maximum mode replaces the minimum with a maximum.",
+    "question": "Connect every location at minimum total cost."
+  },
+  "group_steiner_tree": {
+    "formula": "\\min_T\\sum_{e\\in T}w(e)\\quad\\text{s.t. }V(T)\\cap G_i\\ne\\varnothing\\ \\forall i",
+    "notation": "T is a connected tree and each G_i is a required group.",
+    "question": "What is the cheapest tree reaching at least one member of each group?"
+  },
+  "maximal_clique_enumeration": {
+    "formula": "\\mathcal C=\\{S:G[S]\\text{ complete},\\ \\nexists T\\supsetneq S\\text{ complete}\\}",
+    "notation": "Maximal means that no vertex can be added; it does not mean largest.",
+    "question": "Find all fully connected groups that cannot be extended."
+  },
+  "maximum_clique": {
+    "formula": "\\omega(G)=\\max_{S:G[S]\\text{ complete}}|S|",
+    "notation": "Every pair of selected vertices must be adjacent; the objective is group size.",
+    "question": "What is the largest fully connected group?"
+  },
+  "k_clique_counting_enumeration": {
+    "formula": "C_k(G)=\\sum_{S\\subseteq V,\\ |S|=k}\\mathbf1[G[S]\\text{ complete}]",
+    "notation": "k is the exact number of vertices in each clique.",
+    "question": "How many fully connected groups of four are there?"
+  },
+  "maximal_biclique_enumeration": {
+    "formula": "A\\subseteq L,\\ B\\subseteq R,\\ A\\times B\\subseteq E",
+    "notation": "A and B form a complete two-sided group and neither side can be enlarged while preserving completeness.",
+    "question": "Which groups of users are each connected to every business in a group?"
+  },
+  "quasi_clique_mining": {
+    "formula": "\\deg_{G[S]}(v)\\ge\\lceil\\gamma(|S|-1)\\rceil\\quad\\forall v\\in S",
+    "notation": "gamma is the required fraction of possible neighbors inside a group; the contract also sets minimum size and maximality.",
+    "question": "Find groups where each member connects to most of the others."
+  },
+  "densest_subgraph": {
+    "formula": "\\max_{\\varnothing\\ne S\\subseteq V}\\frac{C_k(G[S])}{|S|}",
+    "notation": "C_k counts k-cliques. k=2 gives edges per vertex; weighted k=2 uses the sum of edge weights. k does not fix the result size.",
+    "question": "Find the densest subgraph by edges per vertex."
+  },
+  "densest_k_subgraph": {
+    "formula": "\\max_{S\\subseteq V,\\ |S|=k}\\sum_{e\\in E(G[S])}w(e)",
+    "notation": "Here k fixes the number of selected vertices; unweighted edges have unit value.",
+    "question": "Which ten vertices have the greatest induced edge value?"
+  },
+  "k_core_decomposition": {
+    "formula": "c(v)=\\max\\{k:v\\in S,\\ \\min_{u\\in S}\\deg_{G[S]}(u)\\ge k\\}",
+    "notation": "The k-core is the maximal induced subgraph meeting the internal-degree threshold.",
+    "question": "Find the core where everyone has at least three neighbors inside it."
+  },
+  "k_truss_decomposition": {
+    "formula": "\\operatorname{support}_{H}(e)\\ge k-2\\quad\\forall e\\in E(H)",
+    "notation": "Support counts triangles containing an edge within H; a k-truss is maximal under this condition.",
+    "question": "Which edges remain in tightly supported triangle groups?"
+  },
+  "community_detection": {
+    "formula": "\\mathcal P^*\\in\\arg\\max_{\\mathcal P}Q(\\mathcal P;G)",
+    "notation": "P is a partition and Q is the declared community objective. Heuristic profiles do not certify a global optimum.",
+    "question": "Split this network into communities."
+  },
+  "seeded_local_community_detection": {
+    "formula": "\\min_{S\\supseteq S_0}\\phi(S),\\qquad\\phi(S)=\\frac{w(S,V\\setminus S)}{\\min(\\operatorname{vol}(S),\\operatorname{vol}(V\\setminus S))}",
+    "notation": "S_0 is the seed set; a nontrivial feasible set is required and volume follows the contract.",
+    "question": "Find a well-connected community around these seed vertices."
+  },
+  "overlapping_community_detection": {
+    "formula": "C_i\\sim C_j\\iff |C_i\\cap C_j|=k-1",
+    "notation": "Each C_i is a k-clique; connected components of this clique-adjacency graph induce overlapping communities.",
+    "question": "Find overlapping communities joined through shared cliques."
+  },
+  "balanced_graph_partitioning": {
+    "formula": "\\min_{\\mathcal P}\\sum_{(u,v)\\in E}w_{uv}\\mathbf1[\\mathcal P(u)\\ne\\mathcal P(v)]",
+    "notation": "The partition has a declared number of nonempty parts and balance bounds. Other declared objectives use their own normalization.",
+    "question": "Split the graph into four balanced groups with few crossing edges."
+  },
+  "hypergraph_partitioning": {
+    "formula": "\\min_{\\mathcal P}\\sum_{e\\in E_H}w_e\\mathbf1[\\lambda_e>1]",
+    "notation": "lambda_e counts parts touched by hyperedge e. Connectivity mode uses lambda_e minus one instead; parts must satisfy balance bounds.",
+    "question": "Divide this hypergraph into balanced groups."
+  },
+  "signed_network_structural_balance": {
+    "formula": "\\min_{x_v\\in\\{-1,1\\}}\\sum_{(u,v)\\in E}w_{uv}\\mathbf1[x_ux_v\\ne s_{uv}]",
+    "notation": "s is the edge sign. Zero disagreement certifies two-faction balance.",
+    "question": "Can positive and negative relationships be explained by two factions?"
+  },
+  "centrality_influential_node_mining": {
+    "formula": "\\operatorname{rank}(V) = \\operatorname{sort}_{v\\in V} c(v)",
+    "notation": "c is the chosen centrality, such as degree, PageRank, or betweenness; these measure different forms of importance.",
+    "question": "Which vertices have the most direct connections?"
+  },
+  "personalized_pagerank_rwr": {
+    "formula": "p=\\alpha s+(1-\\alpha)P^\\top p",
+    "notation": "s is the seed distribution, alpha the restart probability, and P the declared transition matrix.",
+    "question": "Which vertices are most relevant to these seeds?"
+  },
+  "influence_maximization": {
+    "formula": "\\max_{S\\subseteq V,\\ |S|=k}\\mathbb E[|A(S)|]",
+    "notation": "A(S) is the activated set under the declared diffusion model. Sampling or heuristic selection does not prove the optimum.",
+    "question": "Which seed group is expected to reach the most vertices?"
+  },
+  "simrank_vertex_similarity": {
+    "formula": "s(u,v)=\\frac{C}{|N(u)||N(v)|}\\sum_{a\\in N(u)}\\sum_{b\\in N(v)}s(a,b)",
+    "notation": "Distinct vertices use the recursive neighbor similarity; self-similarity and empty-neighbor cases follow the contract.",
+    "question": "Which vertices have similar relationship patterns?"
+  },
+  "link_prediction": {
+    "formula": "\\operatorname{rank}\\{(u,v)\\notin E\\}\\text{ by }s(u,v)",
+    "notation": "s is the declared structural score, such as common-neighbor count or Jaccard similarity.",
+    "question": "Which currently missing connections score highest?"
+  },
+  "graph_edit_distance_mcs": {
+    "formula": "\\operatorname{GED}(G,H)=\\min_{\\tau:G\\to H}\\sum_{e\\in\\tau}c(e)",
+    "notation": "tau is a sequence of edits. Maximum-common-subgraph mode instead maximizes the size of a common subgraph under the declared matching rules.",
+    "question": "How many edits separate these two graphs?"
+  },
+  "network_alignment": {
+    "formula": "\\max_M\\bigl(\\operatorname{topology}(M)+\\operatorname{prior}(M)\\bigr)",
+    "notation": "M is an admissible vertex mapping; its cardinality, injectivity, weights, and objective are specified by the contract.",
+    "question": "Which vertices correspond between these networks?"
+  },
+  "triangle_counting_listing": {
+    "formula": "T(G)=\\sum_{S\\subseteq V,\\ |S|=3}\\mathbf1[G[S]\\text{ complete}]",
+    "notation": "Each unordered triple is counted once after the contract's normalization.",
+    "question": "How many triangles are in this graph?"
+  },
+  "butterfly_counting_bipartite": {
+    "formula": "B(G)=\\sum_{\\{u,v\\}\\subseteq L}\\binom{|N(u)\\cap N(v)|}{2}",
+    "notation": "Each butterfly has two vertices on each side and all four cross edges.",
+    "question": "How many two-by-two complete groups are in this bipartite graph?"
+  },
+  "graphlet_counting": {
+    "formula": "N_H(G)=|\\{S\\subseteq V:G[S]\\cong H\\}|",
+    "notation": "H is a connected induced graphlet; each vertex subset is counted once by its isomorphism class.",
+    "question": "How many induced graphlets of each shape occur?"
+  },
+  "graph_motif_counting": {
+    "formula": "N_H(G)=|\\operatorname{occurrences}(H,G)|",
+    "notation": "The declared motif, inducedness, and symmetry rules define an occurrence.",
+    "question": "Count occurrences of this small graph pattern."
+  },
+  "temporal_motif_mining": {
+    "formula": "t_1<\\cdots<t_m,\\qquad t_m-t_1\\le\\Delta",
+    "notation": "An occurrence must match the declared event pattern and its time window; profile-specific ordering rules also apply.",
+    "question": "How many ordered interaction patterns occur within this time window?"
+  },
+  "subgraph_isomorphism": {
+    "formula": "f:V_H\\hookrightarrow V_G,\\quad (u,v)\\in E_H\\Rightarrow(f(u),f(v))\\in E_G",
+    "notation": "f is injective; induced mode also preserves nonedges, and declared label predicates must hold.",
+    "question": "Find all matches of this query graph."
+  },
+  "frequent_subgraph_mining": {
+    "formula": "\\operatorname{support}(H)=|\\{G_i:H\\subseteq G_i\\}|",
+    "notation": "A pattern is frequent when its graph-collection support reaches the declared threshold; containment follows the contract.",
+    "question": "Which subgraphs occur in many graphs in this collection?"
+  },
+  "single_graph_frequent_subgraph_mining": {
+    "formula": "\\operatorname{support}_{G}(H)\\ge\\theta",
+    "notation": "Support uses the declared single-host measure and embedding rules, not automatically a graph-collection count.",
+    "question": "Which labeled subgraphs repeat in this graph?"
+  },
+  "bipartite_matching_assignment": {
+    "formula": "\\max_{M\\subseteq E}\\sum_{e\\in M}w(e),\\qquad \\deg_M(v)\\le1",
+    "notation": "M is a matching across declared sides; cardinality and minimum-cost modes have distinct objectives.",
+    "question": "Assign these tasks to workers at minimum cost."
+  },
+  "general_graph_weighted_matching": {
+    "formula": "\\max_{M\\subseteq E}\\sum_{e\\in M}w(e),\\qquad \\deg_M(v)\\le1",
+    "notation": "No bipartite partition is assumed. A heuristic profile need not attain the maximum.",
+    "question": "Choose disjoint pairs with the highest total weight."
+  },
+  "maximal_independent_set": {
+    "formula": "E(G[S])=\\varnothing,\\quad\\forall v\\notin S:\\ N(v)\\cap S\\ne\\varnothing",
+    "notation": "S is independent and cannot be enlarged by one vertex; it need not be largest.",
+    "question": "Find a nonconflicting group that cannot be extended."
+  },
+  "maximum_independent_set": {
+    "formula": "\\alpha(G)=\\max_{S:E(G[S])=\\varnothing}|S|",
+    "notation": "The selected vertices have no edges between them and maximum cardinality is the objective.",
+    "question": "What is the largest group with no internal connections?"
+  },
+  "minimum_vertex_cover": {
+    "formula": "\\min_{S\\subseteq V}|S|\\quad\\text{s.t. }\\{u,v\\}\\cap S\\ne\\varnothing\\ \\forall\\{u,v\\}\\in E",
+    "notation": "Every edge must touch a selected vertex.",
+    "question": "What is the smallest set touching every relationship?"
+  },
+  "vertex_coloring": {
+    "formula": "c(u)\\ne c(v)\\quad\\text{whenever }0<d(u,v)\\le r",
+    "notation": "r is the declared conflict distance. A valid coloring need not use the fewest possible colors.",
+    "question": "Assign nonconflicting colors to connected vertices."
+  },
+  "entity_resolution_blocking": {
+    "formula": "C=\\{(u,v):u\\ne v,\\ \\exists b\\text{ with }b(u)=b(v)\\}",
+    "notation": "Blocking keys b generate candidate pairs; optional confirmation rules determine actual matches.",
+    "question": "Which records should be compared as possible duplicates?"
+  },
+  "graph_coarsening": {
+    "formula": "\\pi:V\\twoheadrightarrow V',\\quad w'_{ab}=\\sum_{\\pi(u)=a,\\pi(v)=b}w_{uv}",
+    "notation": "This shows sum aggregation; the declared profile controls aggregation, loops, and feature handling.",
+    "question": "Collapse these groups into a smaller graph."
+  },
+  "induced_subgraph_ego_extraction": {
+    "formula": "G[S]=(S,\\{(u,v)\\in E:u,v\\in S\\})",
+    "notation": "S is explicit or discovered within the requested hop radius around seeds.",
+    "question": "Show the two-hop neighborhood around this vertex."
+  },
+  "knn_graph_construction": {
+    "formula": "N_k(i)=\\operatorname{arg\\,topk}_{j\\ne i}^{\\min}\\ d(x_i,x_j)",
+    "notation": "The metric, tie handling, and symmetrization are declared parameters.",
+    "question": "Build a nearest-neighbor graph from these vectors."
+  },
+  "spectral_graph_sparsification": {
+    "formula": "(1-\\varepsilon)x^\\top L_Gx\\le x^\\top L_Hx\\le(1+\\varepsilon)x^\\top L_Gx",
+    "notation": "This is the target quadratic-form guarantee for all x. The result must disclose what guarantee its profile actually establishes.",
+    "question": "Make a smaller graph that preserves Laplacian behavior."
+  },
+  "neighborhood_sampling": {
+    "formula": "N_{\\ell+1}=\\operatorname{sample}(\\bigcup_{v\\in N_\\ell}N(v),f_\\ell)",
+    "notation": "f is the fanout per hop; replacement, weights, types, and temporal rules determine the sampling distribution.",
+    "question": "Sample a bounded neighborhood around these seeds."
+  },
+  "random_walk_generation": {
+    "formula": "\\Pr[X_{t+1}=v\\mid X_t=u]=P_{uv}",
+    "notation": "P follows the declared walk rule; biased walks may also depend on the previous vertex.",
+    "question": "Generate random walks starting at these vertices."
+  },
+  "graph_layout_force_directed": {
+    "formula": "X=(x_v)_{v\\in V},\\quad x_v\\in\\mathbb R^d",
+    "notation": "The declared force model updates these positions; a useful drawing is not a structural optimum certificate.",
+    "question": "Draw this graph with connected vertices pulled together."
+  },
+  "graph_laplacian_eigenpairs": {
+    "formula": "Lx_i=\\lambda_i x_i",
+    "notation": "L is the combinatorial or symmetric normalized Laplacian specified by the contract.",
+    "question": "Compute the smallest Laplacian eigenvalues and their vectors."
+  },
+  "graph_signal_denoising": {
+    "formula": "\\min_x\\frac12\\|x-y\\|_2^2+\\lambda R_G(x)",
+    "notation": "y is the observed signal; R is the declared graph-difference regularizer.",
+    "question": "Smooth these vertex measurements while respecting the graph."
+  },
+  "persistent_homology": {
+    "formula": "K_a\\subseteq K_b\\ (a\\le b),\\qquad [b_i,d_i)",
+    "notation": "The flag-complex filtration yields birth/death intervals over the declared prime field.",
+    "question": "When do connected components and holes appear and disappear?"
+  },
+  "graph_anomaly_detection": {
+    "formula": "a(v)=\\operatorname{deviation}(\\phi(v),\\mathcal R)",
+    "notation": "phi is the declared feature vector and R the reference for normal behavior; a score is not proof of wrongdoing.",
+    "question": "Which vertices are structurally unusual?"
+  },
+  "null_model_significance_testing": {
+    "formula": "\\hat p=\\frac{1+\\sum_{i=1}^{m}\\mathbf1[T(G_i)\\ge T(G)]}{m+1}",
+    "notation": "This illustrates an upper-tail empirical test; the declared null model, tail, and correction define the reported statistic.",
+    "question": "Is this graph statistic unusual under a degree-preserving null model?"
+  },
+  "node_classification_regression": {
+    "formula": "\\hat y_v=f_\\theta(G,X)_v",
+    "notation": "The declared graph model produces labels or numerical targets; held-out evaluation determines predictive performance.",
+    "question": "Predict labels for these vertices using the supplied model settings."
+  },
+  "graph_classification_regression": {
+    "formula": "\\hat y_i=f_\\theta(G_i,X_i)",
+    "notation": "Each graph receives a categorical or numerical prediction.",
+    "question": "Predict a label for each graph in this collection."
+  },
+  "hypergraph_node_learning": {
+    "formula": "\\hat y_v=f_\\theta(H,X)_v",
+    "notation": "H preserves hyperedge incidence; predictions follow the declared hypergraph model.",
+    "question": "Predict vertex labels using these multiway relationships."
+  },
+  "graph_condensation": {
+    "formula": "\\widetilde G,\\widetilde X,\\widetilde Y\\ \\approx_{\\mathrm{utility}}\\ G,X,Y",
+    "notation": "The smaller synthetic graph targets supervised utility; it is not an exact topological copy.",
+    "question": "Create a smaller synthetic attributed graph for this prediction task."
+  },
+  "graph_based_geolocation": {
+    "formula": "\\hat z_v\\in\\mathbb R^2",
+    "notation": "Coordinates are inferred from the declared graph model and known locations; they are estimates.",
+    "question": "Estimate locations for vertices without coordinates."
+  },
+  "node_embedding": {
+    "formula": "Z\\in\\mathbb R^{|V|\\times d}",
+    "notation": "Each row is a learned vertex representation under the declared embedding objective.",
+    "question": "Represent each vertex with a vector."
+  },
+  "knowledge_graph_embedding": {
+    "formula": "s(h,r,t)=f(z_h,z_r,z_t)",
+    "notation": "The declared embedding model scores typed directed triples; a score is not a verified relationship.",
+    "question": "Score candidate relationships in this knowledge graph."
+  }
+}
