@@ -40,6 +40,7 @@ def test_service_environment_is_explicit_and_missing_file_fails(tmp_path, compon
     (repository / "agent").mkdir()
     launcher = repository / "deploy" / f"start-{component}.sh"
     shutil.copy2(ROOT / "deploy" / launcher.name, launcher)
+    shutil.copy2(ROOT / "deploy/admin-model-settings.py", repository / "deploy/admin-model-settings.py")
     binary = repository / ".venv/bin/graphmine-agent"
     binary.parent.mkdir(parents=True)
     binary.write_text(
@@ -93,7 +94,7 @@ def model_launcher(tmp_path):
     repository = tmp_path / "model checkout"
     (repository / 'deploy').mkdir(parents=True)
     (repository / 'agent').mkdir()
-    for name in ('start-vllm.sh', 'vllm_sleep_memory.py', 'vllm-power.sh'):
+    for name in ('start-vllm.sh', 'vllm_sleep_memory.py', 'vllm-power.sh', 'admin-model-settings.py'):
         shutil.copy2(ROOT / 'deploy' / name, repository / 'deploy' / name)
     executable = repository / 'fake-vllm'
     executable.write_text('#!/usr/bin/env python3\nimport json,os,sys\nprint(json.dumps({"args":sys.argv[1:],"dev":os.getenv("VLLM_SERVER_DEV_MODE")}))\n')
@@ -109,6 +110,25 @@ def launch_model(fixture, **settings):
     repository, env = fixture
     return subprocess.run(['bash', str(repository / 'deploy/start-vllm.sh')],
                           env={**env, **settings}, capture_output=True, text=True)
+
+
+def test_admin_model_overrides_reach_real_launcher_arguments(model_launcher):
+    import sqlite3
+    repository, _ = model_launcher
+    store = repository / ".graphmine-agent"
+    store.mkdir()
+    with sqlite3.connect(store / "agent.sqlite3") as db:
+        db.execute("CREATE TABLE settings_overrides(key TEXT,value TEXT)")
+        db.executemany("INSERT INTO settings_overrides VALUES (?,?)", [("GRAPHMINE_LLM_SLEEP_MODE", "false"), ("GRAPHMINE_LLM_MAX_NUM_SEQS", "8")])
+    result = launch_model(model_launcher, GRAPHMINE_LLM_SLEEP_MODE="1", GRAPHMINE_LLM_MAX_NUM_SEQS="2")
+    assert result.returncode == 0, result.stderr
+    data = json.loads(result.stdout)
+    assert "--enable-sleep-mode" not in data["args"]
+    assert data["args"][data["args"].index("--max-num-seqs") + 1] == "8"
+    with sqlite3.connect(store / "agent.sqlite3") as db:
+        db.execute("UPDATE settings_overrides SET value=? WHERE key='GRAPHMINE_LLM_MAX_NUM_SEQS'", (json.dumps("$(touch bad)"),))
+    result = launch_model(model_launcher)
+    assert result.returncode != 0 and not result.stdout
 
 
 def test_vllm_sleep_flag_environment_and_unchanged_disabled_command(model_launcher):

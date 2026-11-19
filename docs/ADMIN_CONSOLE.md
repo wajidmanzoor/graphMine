@@ -7,7 +7,8 @@ request to every `/api/admin/*` route receives 403. Browser mutations retain the
 
 Phase 1 provides the shared navigation, Users, Activity, Add/Edit/Delete user,
 password resets, token resets, forced sign-out, Studio sync, and support access.
-The remaining Monitor, Manage, and Configure pages are delivered in subsequent
+Phase 2 adds Overview, Health, the API self-test, incident history, and Model.
+The remaining Manage and Configure pages and Usage are delivered in subsequent
 phase PRs. Empty measurements have an availability explanation; the browser does
 not contain sample account counts or traffic measurements.
 
@@ -97,3 +98,54 @@ agent requires the pre-upgrade database snapshot; older agents reject schema 12.
 Users and Activity pages, all dialogs, support view, mobile layout, and access denial.
 The supplied design link currently presents security verification to the automated
 browser, so artboard comparison remains outstanding.
+
+## Monitoring and model controls
+
+Health probes run on the server in parallel, each bounded to three seconds. The
+console reuses snapshots for ten seconds; a background sampler runs every thirty
+seconds. Red checks open incidents immediately, warnings after fifteen continuous
+minutes, and a healthy observation closes the incident. An unavailable check does
+not falsely close an incident. GPU samples retain twenty-four hours of actual
+measurements, without backfilling missing history.
+
+Set `GRAPHMINE_PUBLIC_URL` and `GRAPHMINE_STUDIO_PUBLIC_URL` for public HTTP probes.
+Studio defaults to `http://127.0.0.1:8877/`; `GRAPHMINE_STUDIO_HEALTH_URL` can select
+the deployed local health URL. Configured Neo4j and Postgres sources receive TCP
+reachability checks, labelled as such; these do not claim database-query success.
+SQLite size includes its WAL and the workflow database. Slow-query counts remain
+unavailable until instrumentation is installed. Email controls are hidden because
+this deployment has no incident-mail integration.
+
+Agent logs and restart controls require a systemd unit whose working directory
+matches this checkout. The agent unit must also have this process as its MainPID.
+The defaults are `graphmine-agent.service` and `graphmine-vllm.service`; override
+them with `GRAPHMINE_ADMIN_AGENT_UNIT` and `GRAPHMINE_ADMIN_MODEL_UNIT`. Restarts use
+an allowlisted service name, require `confirm: true`, and record both the request
+and queued action. A queued restart is not reported as completed. Model launch
+settings are read from its running process, when available, without exposing API
+keys or arbitrary command-line arguments.
+
+The self-test uses the real sign-in, question, upload, workflow, and result APIs.
+Its `selftest` account is marked `login_disabled`, and both password login and
+issued tokens are rejected outside the internal runner. No HTTP header can enable
+that identity. Passwords are random for each run and never returned. The last
+step results persist in SQLite; interrupted runs are marked on startup. This is
+an on-demand test that consumes the normal model and job allowances.
+
+Model settings persist in `settings_overrides` with the actor and update time.
+Idle timeout and thinking switches apply to new calls immediately; enabled thinking
+switches preserve existing provider defaults. Sleep-mode changes require a model
+restart. `deploy/start-vllm.sh` loads the validated saved value over the environment
+and retains the existing free-RAM safeguard. The console's restart action applies
+the matching power-client setting; an out-of-band model restart should be followed
+by an agent restart so both processes reload the same saved settings.
+
+Overview uses UTC calendar days, while account token limits retain their existing
+rolling twenty-four-hour window. Timing percentiles and token totals come from
+recorded events; incomplete provider usage is labelled unavailable. All-time
+operation counts come from saved successful workflow plans. Model call statistics
+cover stored diagnostics; missing historical automatic wake counts remain
+unavailable rather than being inferred from manual admin actions.
+
+[Phase 2 browser evidence](../validation/admin-console/phase-2/README.md) covers
+Overview, Health, Model, and the narrow-screen layout.

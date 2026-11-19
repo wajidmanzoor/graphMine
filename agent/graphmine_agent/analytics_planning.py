@@ -912,6 +912,8 @@ class AnalyticsPlanner(AnalyticsLanes):
             # decision without disabling the reasoning needed for selection.
             # Reasoning tokens dominate planning latency, so routing gets its own.
             request["thinking_token_budget"] = budget
+        from .admin_settings import thinking
+        thinking(self.settings, stage, request)
         context = self.conversation.get()
         call_id = str(uuid4())
         if context:

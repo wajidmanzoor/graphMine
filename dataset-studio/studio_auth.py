@@ -117,7 +117,8 @@ class Auth:
         self._failures: dict[str, list[float]] = {}
         self.users = self._load(self.users_path).get("users", {})
         self.sessions = self._load(self.sessions_path).get("sessions", {})
-        self._drop_expired()
+        with self.lock:
+            self._drop_expired()
 
     # ---------------- storage ----------------
     @staticmethod

@@ -489,6 +489,8 @@ async def compose_sources(settings, question, evidence, *, data_answer=False, fi
             },
         },
     }
+    from .admin_settings import thinking
+    thinking(settings, "analyst", request)
     with power_notice(on_power):
         async with power_request(settings, registry=power, wake=wake):
             for attempt in range(1 if first is not None else 2):

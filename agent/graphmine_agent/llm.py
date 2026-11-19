@@ -567,6 +567,9 @@ class OpenAICompatibleModel:
                 },
             },
         }
+        from .admin_settings import thinking
+        thinking(self.settings, "analyst" if mode == LLMMode.analyst else
+                 "route" if schema is RouteDecision else "clarify" if schema is TurnDecision else "plan", request)
         response: httpx.Response | None = None
         call_id = new_id("llm")
         if self.history:
