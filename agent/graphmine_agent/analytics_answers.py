@@ -182,7 +182,64 @@ def _count(number, noun):
     return f"{number:,} {_singular(noun) if number == 1 else noun}"
 
 
-def build_facts(saved, titles, labels):
+def bipartite_input_context(saved, plan, inputs):
+    """Name sides only when the saved memberships establish one type per side."""
+    context = {}
+    for step in plan.get("steps", []):
+        if step.get("operation") not in {"maximal-bicliques", "maximal-biclique-counting"}:
+            continue
+        graph = inputs.get(step.get("input", {}).get("input"), {}).get("data", {})
+        vertices = graph.get("vertices", [])
+        by_id = {json.dumps(vertex.get("id"), sort_keys=True): vertex for vertex in vertices}
+        output = saved.get("steps", {}).get(step["id"], {}).get("result", {})
+        parameters = output.get("parameters") or step.get("parameters", {})
+        names = []
+        for side in ("left", "right"):
+            members = parameters.get(side + "_partition")
+            if members is None:
+                members = [vertex["id"] for vertex in vertices if vertex.get("attributes", {}).get("side") == side]
+            types = {by_id.get(json.dumps(member, sort_keys=True), {}).get("type") for member in members}
+            if len(types) != 1 or not all(isinstance(name, str) and name for name in types):
+                break
+            names.append(next(iter(types)))
+        if len(names) == 2 and names[0] != names[1]:
+            context[step["id"]] = names
+    return context
+
+
+def result_sentence(result, sides=()):
+    """One deterministic finding shared by chat, the result page and reports."""
+    singular_sides = list(sides)
+    sides = [name + ("es" if name.endswith("s") else "s") for name in sides]
+    ports = result.get("ports", {})
+    operation = result.get("operation")
+    if operation in {"maximal-bicliques", "maximal-biclique-counting"}:
+        port = next((p for p in ports.values() if p.get("type") == "bipartite_groups"), None)
+        scalar = next((p.get("value") for p in ports.values() if p.get("type") == "scalar"), None)
+        rows = port.get("value", []) if port else []
+        count = scalar if scalar is not None else len(rows)
+        verb = "Found" if scalar is not None or port and port.get("complete", result.get("complete", False)) else "Retained"
+        between = " between " + " and ".join(sides) if len(sides) == 2 else ""
+        text = f"{verb} {_number(count)} maximal {'biclique' if count == 1 else 'bicliques'}{between}."
+        if rows:
+            pairs = [(len(r.get("left_vertices", r.get("left", []))), len(r.get("right_vertices", r.get("right", [])))) for r in rows]
+            left, right = max(pairs, key=lambda pair: (sum(pair), pair[0] * pair[1]))
+            nouns = [(singular_sides[i] if count == 1 else sides[i]).lower() for i, count in enumerate((left, right))] if len(sides) == 2 else ["left members", "right members"]
+            text += f" The largest{' retained' if not port.get('complete', result.get('complete', False)) else ''} has {left} {nouns[0]} × {right} {nouns[1]}."
+        return text
+    if operation == "community-detection":
+        port = next((p for p in ports.values() if p.get("type") == "vertex_groups"), None)
+        if port:
+            sizes = [len(row.get("vertices", [])) for row in port.get("value", [])]
+            return f"Found {len(sizes)} communities. The largest has {max(sizes, default=0)} members."
+    if operation == "densest-subgraph":
+        port = next((p for p in ports.values() if p.get("type") == "vertex_set"), None)
+        if port:
+            return f"Found a densest subgraph with {len(port.get('value', []))} vertices." if result.get("quality") == "exact" else f"Found a dense subgraph with {len(port.get('value', []))} vertices."
+    return None
+
+
+def build_facts(saved, titles, labels, input_context=None):
     """Plain statements of what each completed step found, most important first.
 
     Each statement is labelled with its calculation's title, because titles are
@@ -191,6 +248,22 @@ def build_facts(saved, titles, labels):
     facts = []
 
     def add(kind, step, statement):
+        text = statement.removeprefix(method + ": ")
+        if kind in {"quality", "scope"} and text.startswith(tuple(QUALITY.values())):
+            text = "The result is " + text
+            if result.get("quality") == "exact" and result.get("complete"):
+                text = "The result is exact."
+        elif result.get("operation") in {"maximal-bicliques", "maximal-biclique-counting"}:
+            match = re.fullmatch(r"(?:returned (.+) bicliques?|count is (.+))\.", text)
+            if match:
+                count = match[1] or match[2]
+                sides = (input_context or {}).get(step, [])
+                between = " between " + " and ".join(sides) if len(sides) == 2 else ""
+                text = f"Found {count} maximal {'biclique' if count == '1' else 'bicliques'}{between}."
+        primary = result_sentence(result, (input_context or {}).get(step, []))
+        if primary and kind not in {"quality", "scope", "sizes"}:
+            text = primary
+        text = text[:1].upper() + text[1:]
         facts.append(
             {
                 "id": f"f{len(facts) + 1}",
@@ -198,7 +271,7 @@ def build_facts(saved, titles, labels):
                 "step": step,
                 "operation_title": method,
                 "statement": statement,
-                "text": statement.removeprefix(method + ": "),
+                "text": text,
             }
         )
 
@@ -363,13 +436,14 @@ async def _callback(callback, **values):
 
 
 async def compose_sources(settings, question, evidence, *, data_answer=False, first=None,
-                          default_ids=None, on_call=None, on_start=None):
+                          default_ids=None, on_call=None, on_start=None, on_power=None, power=None, wake=True):
     """Check a draft, retry once, then return code-rendered evidence.
 
     With no first draft the Analyst has two attempts. Router replies already
     consumed the first attempt, so repair adds at most one model request.
     """
     from .accounts import model_post
+    from .llm_power import power_notice, power_request
     schema = answer_schema(evidence, data_answer=data_answer)
     # Qwen's deployed grammar engine cannot compile uniqueItems. The complete
     # schema still validates its output locally, including duplicate citations.
@@ -415,55 +489,57 @@ async def compose_sources(settings, question, evidence, *, data_answer=False, fi
             },
         },
     }
-    for attempt in range(1 if first is not None else 2):
-        if errors:
-            request['messages'] = request['messages'][:2] + [{'role': 'user', 'content':
-                'The previous answer failed verification. Use only source placeholders and matching source_ids. ' + ' '.join(errors)}]
-        await _callback(on_start)
-        started, body, data, outcome, error = time.monotonic(), None, None, 'interrupted', None
-        try:
-            async with httpx.AsyncClient(base_url=settings.llm_base_url,
-                    headers={'Authorization': f'Bearer {settings.llm_api_key}'}, timeout=httpx.Timeout(90, connect=5)) as client:
-                response = await model_post(client, '/chat/completions', json=request)
+    with power_notice(on_power):
+        async with power_request(settings, registry=power, wake=wake):
+            for attempt in range(1 if first is not None else 2):
+                if errors:
+                    request['messages'] = request['messages'][:2] + [{'role': 'user', 'content':
+                        'The previous answer failed verification. Use only source placeholders and matching source_ids. ' + ' '.join(errors)}]
+                await _callback(on_start)
+                started, body, data, outcome, error = time.monotonic(), None, None, 'interrupted', None
                 try:
-                    body = response.json()
-                except ValueError:
-                    if response.is_success:
-                        raise
-                response.raise_for_status()
-            choice = body['choices'][0]
-            if choice.get('finish_reason') == 'length':
-                raise ValueError('The answer was truncated.')
-            data = json.loads(choice['message']['content'])
-            jsonschema.Draft202012Validator(schema).validate(data)
-            answer = evidence.render(evidence.answer(data['text'], data['source_ids']), data_answer=data_answer)
-            errors = evidence.check(answer, turn_id=evidence.turn_id, data_answer=data_answer)
-            if errors:
-                raise ValueError(' '.join(errors))
-            outcome = 'ok'
-            return {**answer, 'source': 'model', 'grounding': {'checked': True, 'attempts': attempt + 1 + (first is not None), 'fallback': False}}
-        except (ValueError, KeyError, IndexError, TypeError, jsonschema.ValidationError) as exc:
-            outcome, error = 'grounding_failed', str(exc)[:1000]
-            errors = [error]
-        except Exception as exc:
-            outcome, error = 'failed', f'{type(exc).__name__}: {exc}'[:1000]
-            break  # An unavailable service is not a factual correction attempt.
-        finally:
-            fallback['grounding']['attempts'] = attempt + 1 + (first is not None)
-            await _callback(on_call, request=deepcopy(request), response=body, output=data if outcome == 'ok' else None,
-                            outcome=outcome, seconds=time.monotonic() - started, error=error,
-                            target_schema=schema, output_schema=schema)
-    return fallback
+                    async with httpx.AsyncClient(base_url=settings.llm_base_url,
+                            headers={'Authorization': f'Bearer {settings.llm_api_key}'}, timeout=httpx.Timeout(90, connect=5)) as client:
+                        response = await model_post(client, '/chat/completions', json=request)
+                        try:
+                            body = response.json()
+                        except ValueError:
+                            if response.is_success:
+                                raise
+                        response.raise_for_status()
+                    choice = body['choices'][0]
+                    if choice.get('finish_reason') == 'length':
+                        raise ValueError('The answer was truncated.')
+                    data = json.loads(choice['message']['content'])
+                    jsonschema.Draft202012Validator(schema).validate(data)
+                    answer = evidence.render(evidence.answer(data['text'], data['source_ids']), data_answer=data_answer)
+                    errors = evidence.check(answer, turn_id=evidence.turn_id, data_answer=data_answer)
+                    if errors:
+                        raise ValueError(' '.join(errors))
+                    outcome = 'ok'
+                    return {**answer, 'source': 'model', 'grounding': {'checked': True, 'attempts': attempt + 1 + (first is not None), 'fallback': False}}
+                except (ValueError, KeyError, IndexError, TypeError, jsonschema.ValidationError) as exc:
+                    outcome, error = 'grounding_failed', str(exc)[:1000]
+                    errors = [error]
+                except Exception as exc:
+                    outcome, error = 'failed', f'{type(exc).__name__}: {exc}'[:1000]
+                    break  # An unavailable service is not a factual correction attempt.
+                finally:
+                    fallback['grounding']['attempts'] = attempt + 1 + (first is not None)
+                    await _callback(on_call, request=deepcopy(request), response=body, output=data if outcome == 'ok' else None,
+                                    outcome=outcome, seconds=time.monotonic() - started, error=error,
+                                    target_schema=schema, output_schema=schema)
+            return fallback
 
 
-async def compose(settings, question, facts, *, on_call=None, on_start=None, evidence=None):
+async def compose(settings, question, facts, *, on_call=None, on_start=None, on_power=None, power=None, wake=True, evidence=None):
     evidence = evidence or Evidence('composition').record('build_facts', fact_sources(facts, workflow_id='current', revision=1))
     answer = await compose_sources(settings, question, evidence, data_answer=True,
-        default_ids=default_fact_ids(facts), on_call=on_call, on_start=on_start)
+        default_ids=default_fact_ids(facts), on_call=on_call, on_start=on_start, on_power=on_power, power=power, wake=wake)
     return {**answer, 'lead': '', 'fact_ids': [row['id'] for row in answer['citations']]}
 
 
-def writer_observers(settings, events, database, session_id, turn_id, **context):
+def writer_observers(settings, events, database, session_id, turn_id, *, power=None, **context):
     """One activity/capture entry per actual attempt, including a failed retry."""
     call = {}
     async def on_start():
@@ -471,6 +547,10 @@ def writer_observers(settings, events, database, session_id, turn_id, **context)
         call.update(turn_id=turn_id, call_id=str(uuid4()), stage='answer',
                     model=settings.analytics_answer_model or settings.llm_model, **context)
         await events.publish(session_id, 'workflow.model_call', dict(call))
+    async def on_power(state):
+        await events.publish(session_id, 'workflow.planning',
+            {'turn_id': turn_id, 'stage': 'answer', 'status': 'waking' if state == 'waking' else 'running',
+             'message': 'Waking the model…' if state == 'waking' else 'The model is ready.', **context})
     async def on_call(**observation):
         if database.capture:
             database.capture.model_call(session_id, stage='answer', turn_id=turn_id,
@@ -486,4 +566,4 @@ def writer_observers(settings, events, database, session_id, turn_id, **context)
             await events.publish(session_id, 'workflow.reasoning', {**call, 'text': reasoning[:40000]})
         await events.publish(session_id, 'workflow.diagnostics', {**call, 'outcome': observation['outcome'],
             'seconds': round(observation['seconds'], 3), 'usage': response.get('usage'), 'finish_reason': choice.get('finish_reason')})
-    return {'on_start': on_start, 'on_call': on_call}
+    return {'on_start': on_start, 'on_call': on_call, 'on_power': on_power, 'power': power}

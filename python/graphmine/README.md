@@ -7,8 +7,7 @@ GUDHI, RapidFuzz and igraph on CPU, and cuGraph on GPU. Native GraphMine and age
 
 The agent now exposes evidence-checked, typed workflow endpoints for this library.
 See [workflow modes, bindings, cancellation and reuse](../../docs/TYPED_ANALYTICS_WORKFLOWS.md).
-The default browser workspace uses this path with Normal, Interactive and
-Expert modes, a family-first question planner and predefined linked views.
+The default browser workspace uses this path with Normal and Expert modes, a family-first question planner and predefined linked views.
 The previous native workspace remains available at `/classic`.
 
 The [record-query family](../../docs/RECORD_QUERIES.md) adds seven deterministic

@@ -7,9 +7,7 @@ window.GraphMineTemplates = ({state, api, W, node, runAction, notice, card, para
     close.onclick = () => { dialog.close(); dialog.remove(); };
     header.append(node("h2", {}, title), close); dialog.append(header); document.body.append(dialog); return dialog;
   }
-  const open = node("button", {id: "open-templates", type: "button", class: "secondary full-width"}, "Workflow templates");
-  $("manual-tools").before(open);
-  open.onclick = () => runAction(async () => {
+  const open = async () => {
     const sessionId = state.session?.id; if (!sessionId) throw new Error("Open a conversation first.");
     const templates = await api("/api/workflow-templates");
     const dialog = makeDialog("templates-dialog", "Workflow templates"), choice = node("select", {id: "template-choice", "aria-label": "Workflow template"}), form = node("form", {id: "use-template-form"}), inputs = node("div"), parameters = node("div");
@@ -51,28 +49,6 @@ window.GraphMineTemplates = ({state, api, W, node, runAction, notice, card, para
     }); };
     remove.onclick = () => { if (confirm("Delete this saved template? Existing runs remain available.")) runAction(async () => { await api(`/api/workflow-templates/${choice.value}`, {method: "DELETE"}); dialog.close(); dialog.remove(); notice("Template deleted."); }); };
     dialog.showModal();
-  });
-  const compare = node("button", {id: "compare-runs", type: "button", class: "secondary"}, "Compare saved runs");
-  $("result-actions").append(compare);
-  compare.onclick = () => runAction(async () => {
-    const history = (await api("/api/workflow-history")).filter(r => ["completed", "failed"].includes(r.status));
-    const dialog = makeDialog("comparison-dialog", "Compare saved runs"), form = node("form"), choices = node("div"), output = node("div", {id: "comparison-output", class: "table-wrap"});
-    for (const row of history) {
-      const label = node("label", {class: "check"}), checkbox = node("input", {type: "checkbox", value: row.id, "data-compare-run": row.id});
-      checkbox.checked = row.id === state.record?.id; label.append(checkbox, document.createTextNode(`${row.conversation || "Conversation"} · ${row.operations.join(", ")} · ${row.created_at || row.id}`)); choices.append(label);
-    }
-    form.append(choices, node("button", {type: "submit", class: "primary"}, "Compare selected runs")); dialog.append(form, output);
-    form.onsubmit = event => { event.preventDefault(); runAction(async () => {
-      const ids = [...choices.querySelectorAll("input:checked")].map(input => input.value);
-      if (ids.length < 2 || ids.length > 6) throw new Error("Choose between two and six saved runs.");
-      const comparison = await api("/api/workflows/compare", {method: "POST", body: W.stringify({workflow_ids: ids})});
-      output.replaceChildren(node("p", {}, comparison.note)); const table = node("table"), head = node("tr"); head.append(node("th", {}, "Measure"));
-      for (const run of comparison.runs) head.append(node("th", {}, `${run.id.slice(0, 8)} · revision ${run.revision}`)); table.append(head);
-      for (const [label, value] of [["Status", r => r.status], ["Run time (seconds)", r => r.runtime_seconds ?? "Not recorded"], ["Inputs", r => W.stringify(r.inputs, true)], ["Algorithms, parameters and outputs", r => W.stringify(r.steps, true)], ["Findings", r => r.facts.map(f => f.statement).join("\n")]]) {
-        const row = node("tr"); row.append(node("th", {}, label)); for (const run of comparison.runs) { const cell = node("td"); cell.append(node("pre", {}, String(value(run)))); row.append(cell); } table.append(row);
-      }
-      output.append(table);
-    }); };
-    dialog.showModal();
-  });
+  };
+  return {open};
 };

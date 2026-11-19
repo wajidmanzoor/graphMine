@@ -29,7 +29,7 @@ def test_slash_menu_keyboard_filter_and_pointer(
     assert question.get_attribute("aria-expanded") == "true"
     assert (
         len(browser.find_elements(By.CSS_SELECTOR, "#command-options [role=option]"))
-        == 7
+        == 10  # Seven local commands, templates, calculation picker, and one operation.
     )
     question.send_keys(Keys.ARROW_DOWN, Keys.ENTER)
     assert question.get_attribute("value") == "/feedback "
@@ -41,7 +41,7 @@ def test_slash_menu_keyboard_filter_and_pointer(
     assert browser.switch_to.active_element == question
     question.clear()
     question.send_keys("/", Keys.ARROW_UP)
-    assert question.get_attribute("aria-activedescendant") == "command-option-status"
+    assert question.get_attribute("aria-activedescendant") == browser.find_elements(By.CSS_SELECTOR, "#command-options [role=option]")[-1].get_attribute("id")
     question.send_keys(Keys.ESCAPE)
     assert question.get_attribute("value") == "/"
     assert question.get_attribute("aria-expanded") == "false"
@@ -182,7 +182,9 @@ def test_answer_feedback_dialog_and_restored_controls(loading_browser, loading_s
         and body["rating"] == 5
         and body["category"] == "rating"
     )
-    browser.find_element(By.ID, "toggle-tools").click()
+    browser.find_element(By.ID, "data-page-link").click()
+    wait_for(browser, "document.getElementById('source-files-tab') !== null")
+    browser.find_element(By.ID, "source-files-tab").click()
     browser.find_element(
         By.CSS_SELECTOR, "details:has(#conversation-help) summary"
     ).click()
@@ -198,6 +200,6 @@ def test_answer_feedback_dialog_and_restored_controls(loading_browser, loading_s
         None,
     ) in server.requests
     browser.find_element(By.ID, "conversation-feedback").click()
-    assert not browser.find_element(By.ID, "data-sidebar").is_displayed()
+    assert not browser.find_elements(By.ID, "data-sidebar")
     assert browser.find_element(By.ID, "conversation-feedback-dialog").is_displayed()
     browser.find_element(By.ID, "close-conversation-feedback").click()

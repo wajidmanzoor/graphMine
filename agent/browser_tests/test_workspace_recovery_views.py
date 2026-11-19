@@ -29,7 +29,7 @@ def failed_analysis(server):
         assert path == "/api/workflows/saved-analysis/revise"
         assert body["expected_revision"] == record["revision"]
         record.update(
-            status="awaiting_review",
+            status="ready",
             mode=body["mode"],
             revision=record["revision"] + 1,
             input_files=body["inputs"],
@@ -57,7 +57,7 @@ def test_adjusting_failed_parameters_saves_for_review(loading_browser, loading_s
     )
     method, path, body = server.requests[-1]
     assert method == "POST" and path.endswith("/revise")
-    assert body["mode"] == "interactive"
+    assert body["mode"] == "expert"
     assert body["plan"]["steps"][0]["parameters"]["requested_k"] == 3
     assert body["inputs"]["main"]["file_id"] == "network"
     assert browser.find_element(By.ID, "approve-plan").is_displayed()
@@ -94,7 +94,7 @@ def test_narrowing_replaces_only_chosen_input_and_waits_for_review(
         "GraphMineWorkspace.state.record.revision === 2 && !GraphMineWorkspace.state.busy",
     )
     body = server.requests[-1][2]
-    assert body["mode"] == "interactive" and body["plan"] == original
+    assert body["mode"] == "expert" and body["plan"] == original
     assert body["inputs"] == {
         "main": {"file_id": "smaller", "kind": "graph"},
         "reference": {"file_id": "network", "kind": "graph"},
@@ -109,15 +109,9 @@ def test_mobile_conversation_has_explicit_data_navigation(
     saved_network(server)
     browser.set_window_size(390, 844)
     open_saved(browser, server)
-    assert not browser.find_element(By.ID, "data-sidebar").is_displayed()
-    button = browser.find_element(By.ID, "toggle-tools")
-    assert button.is_displayed() and button.get_attribute("aria-expanded") == "false"
-    button.click()
-    assert browser.find_element(By.ID, "data-sidebar").is_displayed()
-    assert button.get_attribute("aria-expanded") == "true"
-    assert not browser.find_element(By.ID, "active-input").is_displayed()
-    browser.find_element(By.CSS_SELECTOR, "#data-sidebar [data-close-panel]").click()
-    browser.find_element(By.ID, "toggle-data").click()
+    assert not browser.find_elements(By.ID, "data-sidebar")
+    assert not browser.find_elements(By.ID, "toggle-tools")
+    browser.find_element(By.ID, "data-page-link").click()
     wait_for(browser, "document.querySelector('#database-workspace')?.isConnected")
     browser.find_element(By.ID, "source-files-tab").click()
     assert browser.find_element(By.ID, "active-input").is_displayed()

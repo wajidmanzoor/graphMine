@@ -146,12 +146,11 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const file = node("input", {id: "source-file-upload", type: "file", accept: ".json,.csv,.txt", "aria-label": "Choose graph file"});
     const uploadZone = node("label", {class: "source-upload-zone"});
     uploadZone.append(icon("arrow"), node("strong", {}, "Drop a file here, or browse"), node("span", {}, "Graph JSON or a CSV of relationships"), file);
-    const fileKind = node("select", {id: "source-file-kind", "aria-label": "File input kind"});
-    for (const option of $("upload-kind").options) fileKind.append(node("option", {value: option.value}, option.text));
+    const fileKind = $("upload-kind");
     const fileStatus = node("p", {role: "status", class: "source-status"});
     const fileHeading = node("div", {class: "source-file-intro"});
     fileHeading.append(node("h3", {}, "Bring a file to the conversation"), node("p", {}, "Your file becomes the input for questions, calculations and graph exploration."));
-    filePanel.append(fileHeading, uploadZone, label("Input kind", fileKind), fileStatus);
+    filePanel.append(fileHeading, uploadZone, fileStatus);
     if (currentFile) filePanel.append(node("p", {class: "source-current-file"}, `${currentFile.provenance?.kind === "table" ? "Current table" : "Current input"} · ${currentFile.original_name}`));
     const fileDomain = node("select", {id: "file-domain", "aria-label": "File conversation domain"});
     fileDomain.append(...state.domains.map(d => node("option", {value: d.id}, d.name)));

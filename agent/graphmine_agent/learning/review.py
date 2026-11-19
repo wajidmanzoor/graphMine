@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from ..llm_power import model_run_scope
+
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -192,6 +194,7 @@ def load_proposals(corpus: Path, candidates: Path) -> tuple[dict, dict, dict]:
     return manifest, graphs, report
 
 
+@model_run_scope
 async def compare_teachers(
     settings: Settings,
     *,
@@ -413,6 +416,7 @@ def distinct_reviewer(
     )
 
 
+@model_run_scope
 async def review_candidates(
     settings: Settings,
     *,

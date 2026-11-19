@@ -344,6 +344,70 @@ class VisualizationSpec(StrictModel):
     description: str = ""
     vega_lite: dict[str, Any] | None = None
     evidence_ids: list[str] = Field(default_factory=list)
+    view_spec: ViewSpec | None = None
+
+
+class ViewEncoding(StrictModel):
+    """An encoding is data, never an expression or executable chart grammar."""
+
+    field: str | None = Field(default=None, max_length=256)
+    value: str | float | bool | None = None
+    scale: Literal["categorical", "linear", "sqrt", "log1p", "symlog", "sequential", "diverging", "constant"] = "constant"
+    range_px: list[float] = Field(default_factory=list, max_length=2)
+    domain: list[float] = Field(default_factory=list, max_length=2)
+    density: Literal["all", "selected_and_ranked", "none"] = "all"
+    categories: list[dict[str, Any]] = Field(default_factory=list, max_length=256)
+
+
+class ViewLayout(StrictModel):
+    name: Literal["force", "hierarchical", "concentric", "circle", "grid", "clustered", "bipartite", "radial", "computed", "none"] = "force"
+    seed: int = 0
+    sides: list[str] = Field(default_factory=list, max_length=2)
+    positions_source: Literal["browser", "saved", "server"] = "browser"
+    alternates: list[str] = Field(default_factory=list, max_length=3)
+
+
+class ViewChart(StrictModel):
+    id: str = Field(max_length=80)
+    chart: Literal["bar", "histogram", "scatter", "line", "heatmap", "barcode", "route", "metrics", "gallery", "sankey"]
+    title: str = Field(max_length=200)
+    dataset: str = "rows"
+    x: str | None = None
+    y: str | None = None
+    select: Literal["entity", "edge", "item", "group", "pair", "none"] = "item"
+
+
+class ViewLimits(StrictModel):
+    shown_vertices: int = Field(default=0, ge=0)
+    total_vertices: int = Field(default=0, ge=0)
+    shown_edges: int = Field(default=0, ge=0)
+    total_edges: int = Field(default=0, ge=0)
+    sampled: bool = False
+    strategy: str = "recorded witness first, then saved input order"
+    collection_complete: bool = True
+
+
+class ViewSpec(StrictModel):
+    """Versioned presentation of immutable evidence. Old versions stay replayable."""
+
+    schema_version: Literal["1.0.0"] = "1.0.0"
+    rules_version: str = "2026-11-18.3"
+    profile: str
+    view: Literal["graph", "matrix", "meta_graph", "small_multiples", "barcode", "spectrum", "histogram", "coordinates", "mapping", "scatter", "metric", "table"] = "graph"
+    title: str = Field(max_length=200)
+    layout: ViewLayout = Field(default_factory=ViewLayout)
+    nodes: dict[str, ViewEncoding] = Field(default_factory=dict)
+    edges: dict[str, ViewEncoding] = Field(default_factory=dict)
+    legend: list[dict[str, Any]] = Field(default_factory=list, max_length=64)
+    linked: list[ViewChart] = Field(default_factory=list, max_length=8)
+    alternates: list[str] = Field(default_factory=list, max_length=16)
+    emphasis: dict[str, Any] = Field(default_factory=dict)
+    limits: ViewLimits = Field(default_factory=ViewLimits)
+    rules_applied: list[str] = Field(default_factory=list, max_length=64)
+    provenance: dict[str, Any] = Field(default_factory=dict)
+    notes: list[str] = Field(default_factory=list, max_length=24)
+    renderer: Literal["cytoscape", "cytoscape-webgl"] = "cytoscape"
+    field_roles: dict[str, dict[str, Any]] = Field(default_factory=dict)
 
 
 class EvidenceItem(StrictModel):
@@ -410,6 +474,25 @@ class GroundedNarrative(StrictModel):
     charts: list[VegaLiteDraft] = Field(default_factory=list, max_length=4)
     analysis_request: str | None = Field(default=None, max_length=2000)
     analysis_operation_ids: list[str] = Field(default_factory=list, max_length=4)
+
+
+class ChartTemplateRequest(StrictModel):
+    """The analyst can request a bounded template using declared dataset fields."""
+
+    title: str = Field(min_length=1, max_length=200)
+    description: str = Field(default="", max_length=1600)
+    chart: Literal["bar", "histogram", "scatter", "line", "heatmap"]
+    dataset: str = Field(min_length=1, max_length=160)
+    x: str = Field(min_length=1, max_length=256)
+    y: str | None = Field(default=None, max_length=256)
+    color: str | None = Field(default=None, max_length=256)
+    fact_ids: list[str] = Field(min_length=1, max_length=12)
+
+
+class TemplateNarrative(GroundedNarrative):
+    """New inference schema. GroundedNarrative remains for historical replay."""
+
+    charts: list[ChartTemplateRequest] = Field(default_factory=list, max_length=1)
 
 
 class ChatRequest(StrictModel):

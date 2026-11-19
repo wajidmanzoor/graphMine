@@ -76,10 +76,11 @@ class Evidence:
                 raise ValueError('A quoted source must have a current-turn citation.')
             return self.sources[key]['text']
         if data_answer:
-            # A fact may begin in lowercase. Keep code-rendered statements on
-            # separate lines so an introduction cannot merge into its claim.
-            parts = ([remainder] if remainder else []) + [expand(match) for match in SLOT.finditer(text)]
-            return {**answer, 'text': '\n'.join(parts).strip()}
+            # Findings are already complete sentences supplied by code. A
+            # neutral model lead adds no evidence and need not precede them.
+            parts = [expand(match) for match in SLOT.finditer(text)]
+            separator = "\n" if any(part[:1].islower() for part in parts) else " "
+            return {**answer, 'text': separator.join(parts).strip()}
         return {**answer, 'text': SLOT.sub(expand, text).strip()}
 
     def check(self, answer, *, turn_id, data_answer=False):

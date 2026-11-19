@@ -18,7 +18,7 @@ def dataset(index):
 def open_library(browser, server, *, save=False):
     saved_network(server); server.datasets = [dataset(i) for i in range(45)]
     open_saved(browser, server)
-    click(browser, "#toggle-data"); click(browser, "#source-files-tab")
+    click(browser, "#data-page-link"); click(browser, "#source-files-tab")
     click(browser, "#save-dataset-input" if save else "#open-datasets")
     wait_for(browser, "document.getElementById('dataset-dialog').open && document.querySelectorAll('#dataset-list article').length===20")
 

@@ -174,7 +174,7 @@ def check(repository, output):
                 f"/api/sessions/{sessions[1]}/workflows",
                 201,
                 json={
-                    "mode": "interactive",
+                    "mode": "expert",
                     "plan": plan,
                     "inputs": {"main": {"file_id": imported["id"], "kind": "graph"}},
                 },

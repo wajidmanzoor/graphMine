@@ -1,13 +1,12 @@
 /* Workspace routes and page selection; conversation loading is injected. */
 "use strict";
-window.GraphMineNavigation = ({state, $, openSession, openWorkflow, renderGraph, getHome, getDatabase, isSessionLoading, getWorkflowTarget}) => {
+window.GraphMineNavigation = ({state, $, openSession, openWorkflow, renderGraph, getDatabase, isSessionLoading, getWorkflowTarget}) => {
   let routeGeneration = 0, dataReturnRoute = "#";
   function route(page = "chat", workflow = "") {
     return state.session ? `#workspace/${encodeURIComponent(state.session.id)}/${page}${workflow ? `/${encodeURIComponent(workflow)}` : ""}` : page === "data" ? `#data${workflow ? `/${encodeURIComponent(workflow)}` : ""}` : "#";
   }
   function showPage(page) {
     state.view = page;
-    getHome()?.setActive(page === "domains");
     document.title = `GraphMine · ${page === "data" ? "Data workspace" : page === "results" ? "Results" : "Chat workspace"}`;
     window.GraphMineShell.setView(page);
     $("domain-view").hidden = page !== "domains";

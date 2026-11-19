@@ -204,6 +204,8 @@ class LearningModel:
         allow_external: bool = False,
         allow_codex: bool = False,
     ):
+        self.settings = settings
+        self._power_context = None
         self.profile, self.budget = profile, budget
         self.codex = None
         if profile.provider == "codex":
@@ -245,11 +247,23 @@ class LearningModel:
     async def __aenter__(self):
         if self.codex:
             await self.codex.preflight()
+        elif self.profile.provider == "local":
+            from ..llm_power import power_request
+            self._power_context = power_request(self.settings, base=self.profile.base_url)
+            try:
+                await self._power_context.__aenter__()
+            except BaseException:
+                await self.client.aclose()
+                raise
         return self
 
     async def __aexit__(self, *_):
-        if not self.codex:
-            await self.client.aclose()
+        try:
+            if not self.codex:
+                await self.client.aclose()
+        finally:
+            if self._power_context:
+                await self._power_context.__aexit__(*_)
 
     async def generate(
         self, *, system: str, payload: dict, schema: type[BaseModel], artifact: Path

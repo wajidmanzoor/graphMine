@@ -21,8 +21,15 @@ def sha(path):
 
 async def evaluate(args):
     sys.path.insert(0, str(args.application_source))
-    from graphmine_agent.analytics_planning import AnalyticsPlanner, PlanningRequest, family_catalog, route_catalog, route_schema
     from graphmine_agent.config import Settings
+    from graphmine_agent.llm_power import model_run
+    settings = replace(Settings.from_env(ROOT), llm_enabled=True)
+    async with model_run(settings) as power:
+        return await _evaluate(args, settings, power)
+
+
+async def _evaluate(args, settings, power):
+    from graphmine_agent.analytics_planning import AnalyticsPlanner, PlanningRequest, family_catalog, route_catalog, route_schema
 
     suite = json.loads(args.suite.read_text())
     native = json.loads(subprocess.check_output([str(args.binary.resolve()), "catalog"], text=True))
@@ -30,7 +37,6 @@ async def evaluate(args):
     problems = json.loads((ROOT / "catalog/problems.json").read_text())
     operation_family = {op: family for family, group in problems.items()
                         for problem in group.values() for op in problem["operation_ids"]}
-    settings = replace(Settings.from_env(ROOT), llm_enabled=True)
     sources = {str(path): sha(path) for path in args.application_source.rglob("*.py")}
     sources.update({str(args.suite): sha(args.suite), str(Path(__file__)): sha(Path(__file__))})
     report = {"scope": suite["scope"], "pipeline": args.pipeline,
@@ -39,7 +45,7 @@ async def evaluate(args):
               "native_implementation_sha256": native["implementation_sha256"],
               "family_metric": "Explicit family decision for hierarchical routing; family inferred from the selected operation for the previous flat router. Both are scored in the new taxonomy.",
               "cases": []}
-    planner = AnalyticsPlanner(settings, SimpleNamespace(database=SimpleNamespace(capture=None)), None)
+    planner = AnalyticsPlanner(settings, SimpleNamespace(database=SimpleNamespace(capture=None), llm_power=power), None)
     for case in suite["cases"]:
         trace, calls = [], []
         original = planner._generate

@@ -78,6 +78,7 @@ def settings(tmp_path: Path, fake_binary: Path) -> Settings:
         graph_gpu_uuid=os.getenv("GRAPHMINE_TEST_GRAPH_GPU_UUID", "GPU-test-graph"),
         llm_gpu_uuid="GPU-test-llm",
         llm_enabled=False,
+        llm_sleep_mode=False,  # Model fixtures are not a live power-managed vLLM.
         max_upload_bytes=1_000_000,
         job_timeout_seconds=10,
     )

@@ -15,6 +15,7 @@ from uuid import uuid4
 import jsonschema
 
 from .analytics import AnalyticsError, InputReference
+from .analytics_modes import saved_mode
 from .analytics_bipartite import CONVERT_CHOICE, KEEP_CHOICE
 from .analytics_context import matched_entities
 from .graph_context import display_name, fields, identity, infer_bipartition
@@ -50,7 +51,7 @@ def vertex_choices(inputs, aliases, candidates=None):
     return result
 
 
-def parameter_gap(card, name, inputs, aliases, values, *, kind="parameter", error=None):
+def parameter_gap(card, name, inputs, aliases, values, *, error=None):
     spec = card["parameters"][name]
     choices = [{"label": str(value).replace("_", " "), "value": value, "action": "parameter"}
                for value in spec.get("choices", [])]
@@ -70,13 +71,7 @@ def parameter_gap(card, name, inputs, aliases, values, *, kind="parameter", erro
     message = f"What value should I use for {name.replace('_', ' ')}?"
     if name in GRAPH_ARGUMENTS:
         message = f"Which separate input should supply the {name.replace('_', ' ')}?"
-    if kind == "quality":
-        message = "Which solution quality should this calculation use: " + " or ".join(spec["choices"]) + "?"
-    elif kind == "optional":
-        default = spec.get("default")
-        message = f"Which {name.replace('_', ' ')} should this calculation use?" + (
-            f" The default is {str(default).replace('_', ' ')}." if default is not None else "")
-    return gap(kind, message, choices, parameter=name, spec=spec,
+    return gap("parameter", message, choices, parameter=name, spec=spec,
                key=f"parameter:{card['id']}:{name}", **({"validation_error": error} if error else {}))
 
 
@@ -111,7 +106,7 @@ def endpoint_scope(card, question):
     return ()
 
 
-def detect_gap(card, inputs, values, alias, entities, mode, answered=(), bindings=None, *, question=""):
+def detect_gap(card, inputs, values, alias, entities, answered=(), bindings=None, *, question=""):
     """Return the first answer-changing gap in the specified priority order."""
     aliases = [alias] if alias else [key for key, row in inputs.items() if row["kind"] == card["input_kind"]]
     bindings = bindings or {}
@@ -136,26 +131,11 @@ def detect_gap(card, inputs, values, alias, entities, mode, answered=(), binding
         choices = [{"label": f"Use {key}.", "alias": key, "action": "input"} for key in aliases]
         choices.append({"label": "Use the newly selected input.", "action": "current_input"})
         return gap("input", f"Which {card['input_kind'].replace('_', ' ')} input should this calculation use?", choices, key="input")
-    spec = card["parameters"].get("solution_quality", {})
-    qualities = spec.get("choices", [])
-    if (mode == "interactive" and "solution_quality" not in values and "exact" in qualities
-            and any(value in qualities for value in ("approximate", "heuristic"))):
-        return parameter_gap(card, "solution_quality", inputs, [alias], values, kind="quality")
     if "bipartite_side" in card["requirements"]["needs"]:
         graph = inputs[alias]["data"]
         if infer_bipartition(graph) is None and not all(name in values for name in ("left_partition", "right_partition")):
             return gap("sides", "Which records belong on each side? Type two vertex types, or provide left_partition and right_partition as JSON arrays. You can also select a snapshot with valid sides.",
                        [{"label": "Use the newly selected input.", "action": "current_input"}], key="sides")
-    if mode == "interactive":
-        for name, spec in card["parameters"].items():
-            if name in values or name == "solution_quality" or f"parameter:{card['id']}:{name}" in answered:
-                continue
-            if name in {"direction", "direction_mode"} and not inputs[alias]["data"].get("graph", {}).get("directed", True):
-                continue  # The modes select the same neighbors on undirected input.
-            if name == "mode" and card["id"] == "query-subgraph" and ("vertices" in values or "vertices" in bindings):
-                continue  # A supplied vertex set already defines this extraction.
-            if len(spec.get("choices", [])) > 1 or name in {"induced", "perfect_matching_required"}:
-                return parameter_gap(card, name, inputs, [alias], values, kind="optional")
     return None
 
 
@@ -228,7 +208,7 @@ class Clarifications:
             else:
                 answered = [key.removeprefix(step["id"] + ":") for key in (context or {}).get("answered", [])
                             if key.startswith(step["id"] + ":")]
-                missing = detect_gap(card, inputs, step["parameters"], alias, entities, body.mode,
+                missing = detect_gap(card, inputs, step["parameters"], alias, entities,
                                      answered, step["bindings"], question=(context or {}).get("question", body.message))
                 if not missing and card["requirements"]["direction"] == "undirected" and inputs[alias]["data"].get("graph", {}).get("directed"):
                     missing = gap("direction", "Use an undirected copy for this calculation and keep the original snapshot?",
@@ -443,7 +423,7 @@ class Clarifications:
         refs = {key: ref.model_dump() for key, ref in body.inputs.items()}
         # A new input is allowed only for a code-offered input replacement.
         changing = pending["kind"] in {"input", "sides"} or pending.get("parameter") in GRAPH_ARGUMENTS
-        if body.device != pending["device"] or body.mode != pending["mode"] or (refs != pending["inputs"] and not changing):
+        if body.device != pending["device"] or body.mode != saved_mode(pending)["mode"] or (refs != pending["inputs"] and not changing):
             raise AnalyticsError("The inputs, device or mode changed. Cancel this question and ask again.", "stale_clarification", 409)
         saved_refs = {key: InputReference.model_validate(ref) for key, ref in pending["inputs"].items()}
         saved_inputs = await self.analytics.load_inputs(session_id, saved_refs)

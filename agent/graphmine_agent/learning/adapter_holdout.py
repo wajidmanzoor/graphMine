@@ -7,6 +7,8 @@ feeding oracle corrections into subsequent model turns.
 
 from __future__ import annotations
 
+from ..llm_power import model_run_scope
+
 import asyncio
 import json
 import time
@@ -43,6 +45,7 @@ def final_cases(manifest):
     return cases
 
 
+@model_run_scope
 async def evaluate_holdout(
     settings, *, corpus: Path, output: Path, data_dir: Path, repeats=1
 ):

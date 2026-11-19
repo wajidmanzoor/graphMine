@@ -23,6 +23,20 @@ from graphmine_agent.models import (
 from graphmine_agent.visualization import answer_visualizations
 
 
+def test_optional_live_chart_template_cannot_replace_defaults_or_emit_expressions(answer):
+    from graphmine_agent.models import ChartTemplateRequest, TemplateNarrative
+    from graphmine_agent.analysis import template_chart
+    fact = answer["facts"][0]["id"]
+    chart = ChartTemplateRequest(title="Group sizes", chart="bar", dataset="groups", x="group", y="size", fact_ids=[fact])
+    spec = template_chart(chart, answer["analysis_datasets"])
+    assert spec["encoding"]["y"]["field"] == "size"
+    assert "transform" not in spec and "datasets" not in spec
+    bad = chart.model_copy(update={"x": "not_a_saved_field"})
+    narrative = TemplateNarrative(fact_ids=[fact], charts=[bad], view_ids=["made_up_view"])
+    assert validate_narrative(narrative, answer, answer_visualizations(answer), set(), compile_charts=False) == []
+    assert narrative.view_ids == []
+
+
 @pytest.fixture
 def answer():
     graph = {

@@ -251,7 +251,7 @@ def test_context_uses_full_immediate_input_and_default_group_is_explicit():
     view = result_view(service, "w", "mine", "out")
     assert ids(view, "vertices") == [650, 699] and view["index"] == 0
     assert view["vertex_count"] == 2 and view["source_file_ids"] == ["original"]
-    context = result_view(service, "w", "mine", "out", context=True)
+    context = result_view(service, "w", "mine", "out", context=True, vertex_limit=500)
     assert context["vertex_count"] == 700 and context["vertices_truncated"]
     assert context["selected_vertices"] == [650, 699]
     assert {650, 699}.issubset({v["id"] for v in context["vertices"]})

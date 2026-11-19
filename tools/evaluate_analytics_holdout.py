@@ -26,6 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 APP = Path(os.getenv("GRAPHMINE_APPLICATION_SOURCE", str(ROOT / "agent")))
 sys.path.insert(0, str(APP))
+from graphmine_agent.llm_power import model_run_scope
 
 
 def digest(value):
@@ -454,6 +455,7 @@ def validate_oracles(suite, output):
     print("Verified independent answers and port parsing for", len(rows), "cases")
 
 
+@model_run_scope
 async def evaluate(settings, suite, output):
     from graphmine_agent.analytics import AnalyticsService, WorkflowRequest
     from graphmine_agent.analytics_planning import AnalyticsPlanner, PlanningRequest
@@ -493,7 +495,7 @@ async def evaluate(settings, suite, output):
                     await service.create(
                         session.id,
                         WorkflowRequest(
-                            mode="interactive",
+                            mode="expert",
                             plan=case["previous_plan"],
                             inputs=inputs,
                             evaluation_id=evaluation_id,

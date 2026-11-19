@@ -72,7 +72,7 @@ def test_model_uses_placeholders_instead_of_literal_data_or_vertex_ids():
     ledger = evidence()
     raw = ledger.answer('Here are the results.\n{{f1}}', ['f1'])
     rendered = ledger.render(raw, data_answer=True)
-    assert rendered['text'] == 'Here are the results.\nAnn has 3 connections.'
+    assert rendered['text'] == 'Ann has 3 connections.'
     assert not ledger.check(rendered, turn_id='now', data_answer=True)
     with pytest.raises(ValueError, match='placeholders'):
         ledger.render(ledger.answer('Ann has 3 connections.', ['f1']), data_answer=True)
@@ -85,7 +85,7 @@ def test_model_uses_placeholders_instead_of_literal_data_or_vertex_ids():
 def test_introduction_and_lowercase_facts_have_separate_claim_boundaries():
     ledger = Evidence('t').record('facts', [{'id': 'f1', 'kind': 'fact', 'ref': 'workflow:w:f1', 'text': 'found 2 groups.'}])
     answer = ledger.render(ledger.answer('Here are the results. {{f1}}', ['f1']), data_answer=True)
-    assert answer['text'] == 'Here are the results.\nfound 2 groups.'
+    assert answer['text'] == 'found 2 groups.'
     assert not ledger.check(answer, turn_id='t', data_answer=True)
 
 

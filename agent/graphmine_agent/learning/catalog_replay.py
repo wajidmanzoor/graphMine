@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from ..llm_power import model_run_scope
+
 import hashlib
 import json
 import time
@@ -410,6 +412,7 @@ def summarize_report(report):
     return summary
 
 
+@model_run_scope
 async def evaluate_suite(
     settings, *, suite_path, output, data_dir, label, case_ids=None, repeats=1
 ):

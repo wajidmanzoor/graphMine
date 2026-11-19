@@ -87,8 +87,11 @@ async def test_missing_sides_stops_before_planning(setup):
     assert planned["status"] == "needs_information" and planned["plan"] is None
     assert [stage for stage, *_ in planner.calls] == ["route"]
     assert not analytics.list(session)
-    assert any(row["operation"] == "maximal-bicliques" and "sides" in row["reason"]
-               for row in planner.calls[0][1]["removed_operations"])
+    # The current native catalog makes partitions optional, so it remains
+    # eligible while the assistant asks for the user's intended sides.
+    assert not any(row["operation"] == "maximal-bicliques"
+                   for row in planner.calls[0][1]["removed_operations"])
+    assert planner.calls[0][1]["inputs"]["main"]["bipartition"]["available"] is False
 
 
 async def test_missing_required_value_is_not_a_reasoning_retry(setup):

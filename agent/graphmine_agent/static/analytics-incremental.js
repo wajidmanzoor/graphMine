@@ -64,7 +64,7 @@ window.GraphMineModelCalls = events => {
     if (payload.model) call.model = payload.model;
     if (delta && !call.final) call.text += payload.text || "";
     if (full) { call.text = payload.text || ""; call.final = true; call.running = false; }
-    if (event.type === "workflow.diagnostics") { call.running = false; call.closed = true; call.outcome = payload.outcome; }
+    if (event.type === "workflow.diagnostics") { call.running = false; call.closed = true; call.outcome = payload.outcome; call.seconds = payload.seconds; }
   }
   // Earlier versions saved answer completion but not its call diagnostics.
   const answers = new Map();

@@ -5,7 +5,7 @@ PostgreSQL → Neo4j → chat analysis, result-specific graph views, and SQL att
 and relationship lookups from those results.
 
 The browser at `/` keeps searchable conversation history in a collapsible left
-sidebar and saved work above the domain picker. **Explore all domains** reveals
+sidebar, with data and domain starting points on home. **Explore all domains** reveals
 the remaining starting points. The selected domain is saved with the conversation and supplies
 vocabulary to the planner. Questions, clarification replies, planning decisions
 and model-returned reasoning are saved as authenticated workspace events.
@@ -25,26 +25,27 @@ a second failure asks for clarification. Confirmed choices and saved UI actions
 retain their existing direct paths. [Families and problems](FAMILIES.md) is
 generated from the same catalogs.
 
-Returning users see **Recent analyses** and **Recent datasets**
-on home. Each section loads four private summaries independently, with **Show
-more**, refresh, and retry controls. Queued, running and awaiting-review analyses
-appear first; archived conversations stay in searchable history. Analysis links
-open the exact saved workflow for review, progress or results. Opening a plan
-does not approve or rerun it. New users retain the data and domain starting points.
+Calculation choices contain one or two supported alternatives. The second needs
+actual sampling support and a Medium or High match; a zero-vote runner-up is
+kept in diagnostic evidence but is not displayed. A single supported calculation
+still waits for the person's choice. Related calculations with different
+objectives are not added just to fill a second card.
 
-Dataset cards show the latest retained version of each collection, its input
-kind, and any incomplete-source flag. Choose a domain and **Start conversation**
-to copy that exact version into a new conversation. The copy retains its lineage
-and works after the original dataset is removed. Saved tables open column
-selection for building a graph. A failed import removes the newly created empty
-conversation; a failed first read after successful creation leaves a recoverable
-conversation URL. No analysis runs automatically.
+Choice identity includes the input, operations and effective parameter values.
+The native catalog's fixed guarantee takes precedence over a weaker requested
+quality: the current exact densest-subgraph contract accepts approximate requests
+but still uses its exact solver. Those requests form one choice. Contracts with
+real parameter-dependent methods, such as exact/heuristic community detection,
+retain separate choices. Badges use server-supplied guarantees and update after
+quality edits; historical duplicate cards collapse for display while their saved
+requests and event records remain unchanged. Option policy version 2 invalidates
+the earlier calibration; High labels require a matching recalibration.
 
-Home reads only summary fields, without loading dataset contents, full workflow
-documents or query parameters into the browser, and does not wait for native
-capability verification. Leaving home cancels its reads and ignores late responses.
-Returning home, refreshing saved work, or returning to the browser tab refreshes
-the lists. The new routes are `GET /api/workspace/recent/{datasets|queries|analyses}`
+Home does not display recent-analysis or recent-dataset cards. Saved conversations
+remain accessible from the sidebar, with saved analyses and the dataset library
+available inside a conversation. Home does not request recent-work summaries.
+
+The API retains `GET /api/workspace/recent/{datasets|queries|analyses}`
 (default `limit=4`, maximum 12, bounded `offset`) and
 `POST /api/datasets/{version_id}/conversation` with `{"domain_id":"general"}`.
 Both use the existing authentication and owner checks; dataset copying also uses
@@ -77,11 +78,11 @@ zoom, keyboard navigation, and rendered text contrast. Contrast checks use the
 the short 320-pixel viewport checks follow the
 [reflow guidance](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
 
-The message composer provides three modes over the same validated workflow API.
-Normal offers up to two calculation cards and runs the selected, validated plan.
-Interactive also asks answer-changing questions and saves the plan for inspection
-and explicit approval. Expert accepts an explicit JSON workflow with validator
-errors shown directly. Editing increments the revision and
+The message composer provides two modes over the same validated workflow API.
+Normal asks for required information, offers up to two calculation cards, and runs
+the selected, validated plan. Expert saves plans for inspection, editing, and
+explicit approval, including structured JSON workflows with validator errors
+shown directly. Editing increments the revision and
 invalidates prior approval. `/classic` retains the earlier application.
 
 A routed clarification stays pending even when the router suggests an operation:
@@ -93,8 +94,8 @@ endpoints are resolved against the snapshot, and missing endpoints are asked
 one at a time. Explicit all-pairs requests keep the native defaults.
 
 Data and conceptual answers include `text` and `citations`, whose entries contain
-`id`, `kind` (`fact`, `contract`, `doc`, or `web`) and `ref`. The **Sources** drawer
-shows the evidence behind each answer. Tool results are registered for the
+`id`, `kind` (`fact`, `contract`, `doc`, or `web`) and `ref`. The **Sources** step in Activity
+shows the evidence behind each answer. Inline documentation citations open that step. Tool results are registered for the
 current turn; saved results are read again and identified by workflow revision.
 The checker compares complete factual sentences with the cited evidence. This
 conservative check rejects unsupported paraphrases as well as changed names,
@@ -149,19 +150,26 @@ visible during planning and execution. Routes such as
 the selected conversation and result on refresh. Old `#workspace/{session}`
 links still open the conversation. Reasoning streams in while each model stage
 runs and the full text is kept when it finishes; the UI never fabricates numerical findings.
+The [saved-view contract](VISUALIZATION_VIEWS.md) defines the result-first views,
+shared selection, named explorations, exports, display budgets and optional map
+and projection configuration.
 Each question has a request ID. If its HTTP reply is lost, the browser retrieves
 the saved planning outcome from authenticated events without repeating model
 generation. A saved plan retains its original input files and mode for recovery.
-Chat shows short **Chose: …** and **Validated ✓** lines, without repeating the
-operation title on every fact or an identical plan message alongside its answer.
-**Activity** in the conversation header opens a drawer with the full trace and
-each actual model request, including failed verification and its repair.
-Model reasoning is collapsed, labelled **The model's working notes, not checked**,
-and available only to administrators in Expert mode.
-Understanding, operation selection, plan attempts, and validation outcomes appear
-below it, including failed validation and repairs. New planning events retain the
-proposed plan; older saved workflows supply their validated plan. A follow-up is
-shown immediately and stays visible until its matching request ID is acknowledged.
+Chat shows the answer followed by one footer with the recorded guarantee, device,
+validation status, a result link when available, and **Details**. Sources,
+explanations, and calculation traces live in **Activity**. Details opens and
+highlights the matching question; documentation citations open its Sources step.
+Only the latest assistant message shows suggested next questions.
+
+Activity has one question block and one stable, initially collapsed row per step.
+Model reasoning provided by the API renders as Markdown with model and latency
+metadata. Retries stay within the same step. Calculation details include final
+parameters, the immutable input snapshot and its source query, device selection,
+runtime, validation, guarantees, and result counts. Grounding shows the evidence
+supporting the answer; internal IDs have copy buttons. Finished turns cannot leave
+planning steps spinning. A follow-up stays visible until its matching request ID
+is acknowledged. Existing API authorization still controls access to events.
 The chat scroll follows new messages while you are near the latest answer, and
 keeps your reading position while you inspect earlier messages. **Show new
 messages** returns to the latest answer. Conversations initially load the most
@@ -242,7 +250,7 @@ which resends the question with its original inputs.
 Failed, interrupted, cancelled and incomplete analyses offer **Adjust parameters**
 and **Narrow input** in the plan panel. Parameter changes retain bound inputs;
 narrowing replaces one graph input with a smaller uploaded graph while keeping
-the other aliases. Both paths validate and save a new revision in Interactive
+the other aliases. Both paths validate and save a new revision in Expert
 mode, so the user reviews the changed plan before execution. When no smaller
 graph is available, the narrowing dialog offers an upload. Known vertex and
 edge counts exclude replacements that are larger in either dimension.
@@ -255,10 +263,14 @@ contains the dataset library and existing input controls. Routes such as
 the Back control returns to the originating conversation or result. Changing
 steps preserves the draft and preview without running another query.
 
-**Tools** opens compute settings, conversation management and saved analyses.
-New conversations offer sample data and editable question suggestions. The Tools
-and Activity drawers close with Escape or their close button and return keyboard
-focus to the control that opened them.
+The header keeps Chat, Data, and Results tabs with status and Activity on the right.
+The domain subtitle opens the domain picker. Each sidebar conversation has a
+Rename / Archive / Delete menu. Data contains upload settings, a single input-kind
+control, nested derived inputs, dataset and project actions, and saved analyses.
+The composer gear holds per-conversation compute settings. The `/` palette opens
+workflow templates and advanced calculations, searchable by title or operation ID
+with guarantee badges. New conversations offer sample data and editable question
+suggestions. Activity closes with Escape and restores focus to its trigger.
 On phones, the sidebar button opens conversation history while the composer
 stays at the bottom of the chat viewport. Desktop sidebar visibility is saved
 in the browser; Ctrl/Cmd+K focuses conversation search.
@@ -533,7 +545,7 @@ report inputs and individual large rows or strings need working allocations.
 **Save as template** captures the validated steps and settings without approval
 or execution state. **Workflow templates** lets the user bind inputs from the
 current conversation and change literal parameters. Parameters bound to earlier
-steps remain bound. Every use creates a new validated workflow in Interactive
+steps remain bound. Every use creates a new validated workflow in Expert
 mode, requiring approval before execution. Templates are private and survive
 source-conversation deletion.
 
@@ -1043,7 +1055,7 @@ and expire rather than accumulating as history.
 Save or open temporary graph/table snapshots before expiry. List/search saved
 datasets through bounded pages, then inspect provenance or copy the exact version
 into a conversation. Query, import, enrichment and expansion tools do not start
-an analysis. Interactive analysis still requires separate approval of the exact
+an analysis. Expert analysis still requires separate approval of the exact
 reviewed workflow hash and revision. `list_database_jobs` lists active work only;
 this catalog does not submit graph synchronization.
 

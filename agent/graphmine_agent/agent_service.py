@@ -37,6 +37,7 @@ from .models import (
     ExecutionPlan,
     FileRole,
     GroundedNarrative,
+    TemplateNarrative,
     LLMMode,
     PlanDraft,
     PlanningOutcome,
@@ -86,6 +87,8 @@ class AgentService:
         graph_store: GraphStore,
         validator: PlanValidator,
         jobs: JobManager,
+        *,
+        llm_power=None,
     ):
         self.settings = settings
         self.catalog = catalog
@@ -94,7 +97,7 @@ class AgentService:
         self.validator = validator
         self.jobs = jobs
         self.model = (
-            OpenAICompatibleModel(settings, database.history)
+            OpenAICompatibleModel(settings, database.history, power=llm_power)
             if settings.llm_enabled
             else RuleBasedModel()
         )
@@ -123,6 +126,7 @@ class AgentService:
             "TurnDecision": "Checking your follow-up",
             "PlanDraft": "Validating the analysis plan",
             "GroundedNarrative": "Explaining the computed results",
+            "TemplateNarrative": "Explaining the computed results",
         }.get(schema_name, "Preparing your analysis")
         activity_id = new_id("activity")
 
@@ -155,7 +159,11 @@ class AgentService:
             },
         )
         try:
-            result = await self.model.generate(**kwargs)
+            from .llm_power import power_notice
+            async def waking(state):
+                await activity("running", "Waking the model…" if state == "waking" else stage + "…")
+            with power_notice(waking):
+                result = await self.model.generate(**kwargs)
         except Exception:
             await activity(
                 "failed",
@@ -965,6 +973,7 @@ class AgentService:
         result_id: str,
         *,
         user_message: str = "Interpret this result and select useful visualizations.",
+        wake: bool = True,
     ) -> ResultRecord:
         result = self.database.get_result(result_id)
         with self.database.history.scope(
@@ -975,9 +984,9 @@ class AgentService:
                 "message": user_message,
             },
         ):
-            return await self._interpret(result_id, user_message=user_message)
+            return await self._interpret(result_id, user_message=user_message, wake=wake)
 
-    async def _interpret(self, result_id: str, *, user_message: str) -> ResultRecord:
+    async def _interpret(self, result_id: str, *, user_message: str, wake: bool = True) -> ResultRecord:
         result = self.database.get_result(result_id)
         job = self.database.get_job(result.job_id)
         graph_record = self.database.get_file(job.plan.graph_id)
@@ -1036,7 +1045,8 @@ class AgentService:
                 for attempt in range(2):
                     narrative = await self._generate(
                         mode=LLMMode.analyst,
-                        schema=GroundedNarrative,
+                        schema=TemplateNarrative,
+                        wake=wake,
                         user_payload=payload,
                         conversation=self.database.messages(result.session_id),
                     )
@@ -1095,13 +1105,8 @@ class AgentService:
                     "The language model was unavailable or returned an invalid response. These findings and views are computed directly from the result and original data."
                 )
         # Recipes are validated against the same enriched dataset as the facts.
-        selected = generated_views + [
-            view for view in defaults if narrative and view.id in narrative.view_ids
-        ]
-        # Keep the deterministic operation-specific inspection views, including
-        # those belonging to supporting analyses. Narration may prioritize them
-        # but cannot remove access to computed values or linked exploration.
-        selected.extend(view for view in defaults if view not in selected)
+        selected = [*defaults, *generated_views]
+        # Deterministic views lead; an optional validated template follows them.
         safe_views = sanitize_visualizations(
             selected or defaults, {"answer": answer, **result.payload}
         )
@@ -1165,6 +1170,7 @@ class AgentService:
     ) -> ResultRecord:
         return await self.interpret(
             result.id,
+            wake=False,
             user_message=plan.application_intent.objective
             if plan.application_intent
             else "Explain the computed result.",

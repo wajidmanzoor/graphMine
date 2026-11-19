@@ -217,7 +217,7 @@ async def test_model_selects_facts_and_code_renders_cited_numbers(settings, monk
     )
     configured = replace(settings, llm_enabled=True, llm_base_url="http://model.test/v1")
     chosen = await compose(configured, "Which groups are tight?", facts)
-    assert chosen["text"] == "Here are the results.\n" + facts[0]["text"] + "\n" + facts[1]["text"]
+    assert chosen["text"] == facts[0]["text"] + " " + facts[1]["text"]
     assert chosen["fact_ids"] == ["f1", "f2"]
     assert [c["id"] for c in chosen["citations"]] == ["f1", "f2"]
     assert chosen["source"] == "model" and chosen["grounding"]["attempts"] == 1
@@ -273,7 +273,7 @@ async def test_completed_workflow_publishes_an_answer(
     assert answer["source"] == ("model" if model_works else "facts")
     assert answer["facts"][0]["statement"].startswith("Maximal cliques: found 2")
     if model_works:
-        assert answer["text"].startswith("Here are the results.\nfound 2 cliques")
+        assert answer["text"].startswith("Found 2 cliques")
         assert answer["fact_ids"] == ["f1"]
     else:
         assert answer["lead"] == "" and answer["fact_ids"][0] == "f1"
@@ -318,3 +318,27 @@ async def test_answer_activity_records_the_actual_model_call_without_training_ca
     assert [r["text"] for r in reasoning] == ([raw] if reasoning_field else [])
     if reasoning:
         assert reasoning[0]["call_id"] == starts[0]["call_id"]
+
+
+def test_biclique_sentences_name_only_verified_saved_sides():
+    from graphmine_agent.analytics_answers import bipartite_input_context
+    from graphmine_agent.answer_grounding import Evidence, fact_sources
+    saved = {"steps": {"answer": {"status": "completed", "result": {
+        "operation": "maximal-bicliques", "complete": True, "quality": "exact",
+        "parameters": {"left_partition": [1], "right_partition": ["1"]},
+        "ports": {"bicliques": {"type": "bipartite_groups", "value": [{"left": [1], "right": ["1"]}]}},
+    }}}}
+    plan = {"steps": [{"id": "answer", "operation": "maximal-bicliques", "input": {"input": "main"}}]}
+    inputs = {"main": {"data": {"vertices": [{"id": 1, "type": "Business"}, {"id": "1", "type": "User"}]}}}
+    context = bipartite_input_context(saved, plan, inputs)
+    facts = build_facts(saved, {"maximal-bicliques": "Find bicliques"}, {}, context)
+    sentence = "Found 1 maximal biclique between Businesses and Users. The largest has 1 business × 1 user."
+    assert facts[0]["text"] == sentence
+    assert facts[1]["text"] == "The result is exact."
+    ledger = Evidence("turn").record("build_facts", fact_sources(facts, workflow_id="w", revision=1))
+    answer = ledger.render(ledger.answer("Here are the results. {{f1}} {{f2}}", ["f1", "f2"]), data_answer=True)
+    assert answer["text"] == sentence + " The result is exact."
+    assert ledger.check(answer, turn_id="turn", data_answer=True) == []
+    # A count/type match is not enough: use actual typed vertex memberships.
+    saved["steps"]["answer"]["result"]["parameters"]["right_partition"] = [1, "1"]
+    assert bipartite_input_context(saved, plan, inputs) == {}

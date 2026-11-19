@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from ..llm_power import model_run_scope, power_request
+
 import json
 import time
 from pathlib import Path
@@ -47,6 +49,7 @@ def local_endpoint(value: str) -> str:
     return value.rstrip("/")
 
 
+@model_run_scope
 async def generate_teacher_candidates(
     settings: Settings,
     *,
@@ -77,7 +80,7 @@ async def generate_teacher_candidates(
         "candidates": [],
     }
     seen = set()
-    async with httpx.AsyncClient(
+    async with power_request(settings, base=endpoint), httpx.AsyncClient(
         timeout=120,
         follow_redirects=False,
         trust_env=False,

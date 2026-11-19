@@ -21,6 +21,31 @@ vllm_executable="${GRAPHMINE_VLLM_EXECUTABLE:-${repo_dir}/.venv-vllm/bin/vllm}"
 max_model_len="${GRAPHMINE_LLM_MAX_MODEL_LEN:-32768}"
 max_num_seqs="${GRAPHMINE_LLM_MAX_NUM_SEQS:-2}"
 gpu_memory_utilization="${GRAPHMINE_LLM_GPU_MEMORY_UTILIZATION:-0.88}"
+host="${GRAPHMINE_LLM_HOST:-127.0.0.1}"
+sleep_mode="${GRAPHMINE_LLM_SLEEP_MODE:-1}"
+sleep_level="${GRAPHMINE_LLM_SLEEP_LEVEL:-1}"
+if [[ "${sleep_mode}" != 0 && "${sleep_mode}" != 1 ]]; then
+  echo "GRAPHMINE_LLM_SLEEP_MODE must be 0 or 1." >&2
+  exit 1
+fi
+if [[ "${sleep_level}" != 1 ]]; then
+  echo "GRAPHMINE_LLM_SLEEP_LEVEL supports only level 1." >&2
+  exit 1
+fi
+sleep_args=()
+if [[ "${sleep_mode}" == 1 ]]; then
+  if [[ "${host}" != 127.0.0.1 ]]; then
+    echo "Sleep mode requires GRAPHMINE_LLM_HOST=127.0.0.1; development endpoints must stay on loopback." >&2
+    exit 1
+  fi
+  sleep_mode="$(python3 "${repo_dir}/deploy/vllm_sleep_memory.py")"
+fi
+if [[ "${sleep_mode}" == 1 ]]; then
+  export VLLM_SERVER_DEV_MODE=1
+  sleep_args=(--enable-sleep-mode)
+else
+  unset VLLM_SERVER_DEV_MODE
+fi
 revision_args=()
 if [[ -n "${GRAPHMINE_LLM_REVISION:-}" ]]; then
   if [[ ! "${GRAPHMINE_LLM_REVISION}" =~ ^[0-9a-f]{40}$ ]]; then
@@ -97,7 +122,7 @@ if [[ -d "${compat_dir}" ]]; then
 fi
 
 exec "${vllm_executable}" serve "${model}" \
-  --host 127.0.0.1 \
+  --host "${host}" \
   --port 8001 \
   --api-key "${api_key}" \
   --tensor-parallel-size 1 \
@@ -110,4 +135,5 @@ exec "${vllm_executable}" serve "${model}" \
   --language-model-only \
   --enable-prefix-caching \
   "${revision_args[@]}" \
+  "${sleep_args[@]}" \
   "${adapter_args[@]}"

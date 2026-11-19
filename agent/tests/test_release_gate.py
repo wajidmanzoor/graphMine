@@ -16,6 +16,7 @@ def test_local_release_includes_database_and_query_contracts():
     plan = gate.suite_plan()
     assert {
         "test_api_contracts",
+        "test_llm_power", "test_llm_power_api", "test_llm_power_integration",
         "test_studio_exchange",
         "test_database_connections", "test_database_workspace", "test_database_datasets", "test_database_jobs", "test_database_pools", "test_database_independent_sources", "test_database_sync", "test_database_mcp",
         "test_database_query_projection", "test_benchmark_datasets", "test_benchmark_mappings",
@@ -28,7 +29,7 @@ def test_local_release_includes_database_and_query_contracts():
         "test_query_drafts", "test_workspace_navigation", "test_workspace_polling", "test_workspace_history", "test_workspace_incremental",
         "test_query_editor", "test_query_tables", "test_workspace_exploration", "test_workspace_data_layout", "test_workspace_accessibility", "test_workspace_home", "test_workspace_result_context",
         "test_result_exploration", "test_workspace_sources",
-        "test_workspace_studio",
+        "test_workspace_llm_power",
     } <= {Path(path).stem for path in plan["browser"]}
     assert not plan["database_backend"] and not plan["database_browser"] and not plan["gpu"]
     assert "agent/browser_tests/test_data_source_workspace.py" not in plan["browser"]

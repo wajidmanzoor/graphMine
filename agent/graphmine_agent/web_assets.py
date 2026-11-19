@@ -22,11 +22,17 @@ class WebAssets:
         self.build_id = digest.hexdigest()[:20]
         self.bundles = {}
         self.pages = {}
-        vendor = self.files.get("vendor/cytoscape.min.js")
-        if vendor and "analytics-graph-library.js" in self.files:
-            name = f"assets/{hashlib.sha256(vendor).hexdigest()[:24]}.js"
-            self.bundles[name] = vendor
-            self.files["analytics-graph-library.js"] = self.files["analytics-graph-library.js"].replace(b"/vendor/cytoscape.min.js", ("/" + name).encode())
+        for source in ("vendor/cytoscape.min.js", "vendor/graph-layouts.min.js"):
+            vendor = self.files.get(source)
+            if vendor and "analytics-graph-library.js" in self.files:
+                name = f"assets/{hashlib.sha256(vendor).hexdigest()[:24]}.js"
+                self.bundles[name] = vendor
+                self.files["analytics-graph-library.js"] = self.files["analytics-graph-library.js"].replace(("/" + source).encode(), ("/" + name).encode())
+        worker = self.files.get("vendor/layout-worker.min.js")
+        if worker and "analytics-visualization.js" in self.files:
+            name = f"assets/{hashlib.sha256(worker).hexdigest()[:24]}.js"
+            self.bundles[name] = worker
+            self.files["analytics-visualization.js"] = self.files["analytics-visualization.js"].replace(b"/vendor/layout-worker.min.js", ("/" + name).encode())
         for page in ("analytics.html", "index.html"):
             html = self.files[page].decode()
             # Preserve the declared order of classic deferred scripts and CSS.

@@ -121,7 +121,7 @@ class WorkflowTemplates:
             step.setdefault("parameters", {}).update(values)
         record = await self.runtime.analytics.create(
             session_id,
-            WorkflowRequest(mode="interactive", plan=plan, inputs=body.inputs),
+            WorkflowRequest(mode="expert", plan=plan, inputs=body.inputs),
         )
         record["source_template"] = {
             "id": template["id"],

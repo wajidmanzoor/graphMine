@@ -57,7 +57,7 @@ def test_dataset_snapshot_and_import(loading_browser, loading_server, result):
         Select(browser.find_element(By.ID, "graph-group")).select_by_index(2)
         browser.find_element(By.ID, "save-dataset-result").click()
     else:
-        browser.find_element(By.ID, "toggle-data").click()
+        browser.find_element(By.ID, "data-page-link").click()
         wait_for(browser, "document.querySelector('#database-workspace')?.isConnected")
         browser.find_element(By.ID, "source-files-tab").click()
         browser.find_element(By.ID, "save-dataset-input").click()

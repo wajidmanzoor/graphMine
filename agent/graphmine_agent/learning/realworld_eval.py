@@ -6,6 +6,8 @@ evaluation candidates, not automatically approved fine-tuning data.
 
 from __future__ import annotations
 
+from ..llm_power import model_run_scope
+
 import asyncio
 import copy
 import json
@@ -188,6 +190,7 @@ def verify_call(
     return parsed
 
 
+@model_run_scope
 async def prepare_questions(
     settings: Settings,
     *,
@@ -547,6 +550,7 @@ def _fresh_runtime(settings: Settings, output: Path, data_dir: Path) -> None:
         )
 
 
+@model_run_scope
 async def evaluate_realworld(
     settings: Settings,
     *,

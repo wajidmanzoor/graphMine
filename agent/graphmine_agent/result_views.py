@@ -290,6 +290,13 @@ def _members(row):
 
 def view_items(port):
     value = port.get("value")
+    if port.get("type") == "vertex_partition" and isinstance(value, list):
+        groups = {}
+        for row in value:
+            group = next((row[k] for k in ("group", "part", "community") if k in row), None)
+            if group is not None and "vertex" in row:
+                groups.setdefault(_key(group), {"group": group, "vertices": []})["vertices"].append(row["vertex"])
+        return list(groups.values())
     if isinstance(value, list):
         return value
     if port.get("type") in {"motif_instances", "graphlet_instances"} and isinstance(
@@ -309,6 +316,7 @@ def default_index(port, index):
         and port.get("type")
         in {
             "vertex_groups",
+            "vertex_partition",
             "bipartite_groups",
             "pattern_collection",
             "vertex_mappings",
@@ -440,10 +448,12 @@ def focus_graph(graph, result, port_name, index=None):
     ):
         vertices = _members(chosen) if chosen is not None else []
         note = "Selected recorded group or occurrence; edges are the input connections between its members."
+    elif typ == "vertex_predictions":
+        vertices = [r["vertex"] for r in (rows if index is None else [chosen]) if isinstance(r, dict) and "vertex" in r]
+        note = "Recorded predictions on their source entities. Connections show saved input context, not predicted relationships."
     elif typ == "vertex_partition":
         if index is not None:
-            label = chosen.get("part")
-            vertices = [row["vertex"] for row in rows if row.get("part") == label]
+            vertices = chosen["vertices"]
         elif kind == "partition":
             return (
                 graph,
@@ -637,8 +647,8 @@ def result_view(
     *,
     index=None,
     context=False,
-    vertex_limit=500,
-    edge_limit=2000,
+    vertex_limit=2000,
+    edge_limit=5000,
     expected_revision=None,
 ):
     record = service.get(workflow_id)
@@ -650,6 +660,40 @@ def result_view(
     index = default_index(saved["ports"][port], index)
     original = input_graph(service, record, step)
     focused, note, selected, selected_edges = focus_graph(original, saved, port, index)
+    from .view_data import enrich_view
+    frozen_spec = cached_profile = None
+    provenance = {"workflow_id": workflow_id, "revision": record["revision"], "step": step, "port": port}
+    if hasattr(service, "_directory"):
+        manifest_path = service._directory(record) / f"step-{step}.views.json"
+        if not manifest_path.is_file() and hasattr(service, "_write"):
+            # Historical runs acquire a presentation sidecar once; their native
+            # result and saved input remain unchanged.
+            from .view_data import saved_view_manifest
+            try:
+                manifest = saved_view_manifest(service, record, step, {"result": saved})
+                if manifest is not None:
+                    service._write(manifest_path, manifest)
+            except (OSError, ValueError, TypeError, KeyError):
+                import logging
+                logging.getLogger(__name__).warning("Could not cache historical view statistics", exc_info=True)
+        if manifest_path.is_file():
+            manifest = service._read_result(manifest_path)
+            provenance.update(manifest.get("provenance", {}))
+            frozen_spec = manifest.get("ports", {}).get(port, {}).get("spec")
+            from .view_rules import RULES_VERSION
+            if manifest.get("rules_version") == RULES_VERSION and index == default_index(saved["ports"][port], None):
+                cached_profile = manifest.get("ports", {}).get(port, {}).get("profile")
+    def present(value):
+        response = enrich_view(value, saved, port, original, focused, provenance=provenance, cached_profile=cached_profile)
+        response["current_view_spec"] = copy.deepcopy(response["view_spec"])
+        # Presentation bug fixes apply to old saved results too. Native inputs
+        # and outputs remain immutable; explicit view overrides live separately.
+        if frozen_spec:
+            response["view_spec"]["provenance"]["recorded_rules_version"] = frozen_spec.get("rules_version")
+        from .result_summary import summary
+        question = service._question(record) if hasattr(service, "_question") else None
+        response["answer"] = summary(response, saved, record, question)
+        return response
     graph = original if context else focused
     metadata = {
         "profile": profile(saved.get("operation")),
@@ -681,14 +725,14 @@ def result_view(
         focused and focused["vertices"] and metadata["source_file_ids"]
     )
     if graph is None:
-        return {
+        return present({
             **metadata,
             "vertices": [],
             "edges": [],
             "vertex_count": 0,
             "edge_count": 0,
             "graph_available": False,
-        }
+        })
     # Keep the witness in view even when it occurs late in a large input graph.
     selected_keys = {_key(v) for v in selected}
     selected_edge_keys = {_key(e) for e in selected_edges}
@@ -738,7 +782,7 @@ def result_view(
             for i, r in enumerate(flows[:edge_limit])
         ]
         metadata["flow_rows_truncated"] = len(flows) > edge_limit
-    return {
+    return present({
         **metadata,
         "graph": graph["graph"],
         "graph_available": True,
@@ -748,7 +792,7 @@ def result_view(
         "edge_count": len(graph["edges"]),
         "vertices_truncated": len(vertices) < len(graph["vertices"]),
         "edges_truncated": len(edges) < len(graph["edges"]),
-    }
+    })
 
 
 def register_result_view_routes(router):
@@ -761,6 +805,8 @@ def register_result_view_routes(router):
         index: int | None = Query(None, ge=0),
         context: bool = False,
         expected_revision: int | None = Query(None, ge=1),
+        vertex_limit: int = Query(2000, ge=1, le=50000),
+        edge_limit: int = Query(5000, ge=0, le=100000),
     ):
         return await run_in_threadpool(
             result_view,
@@ -771,4 +817,8 @@ def register_result_view_routes(router):
             index=index,
             context=context,
             expected_revision=expected_revision,
+            vertex_limit=vertex_limit,
+            edge_limit=edge_limit,
         )
+    from .view_actions import register_view_action_routes
+    register_view_action_routes(router)

@@ -165,6 +165,32 @@
     directory.append(sidebar, detail);
     const refresh = button("Refresh usage", "account-refresh-users");
     panel.append(heading, notice, create, directory, refresh);
+    const model = make("section", {class: "account-card", id: "account-model-power"});
+    const modelStatus = make("p", {id: "account-model-status", role: "status"}, "Model: checking…");
+    const sleep = button("Sleep now", "account-model-sleep"), wake = button("Wake now", "account-model-wake");
+    sleep.disabled = wake.disabled = true;
+    const powerButtons = make("div", {class: "account-section-heading"}); powerButtons.append(sleep, wake);
+    model.append(make("h3", {}, "Model"), modelStatus, powerButtons); heading.after(model);
+    let powerBusy = false;
+    function showPower(value) {
+      const minutes = Math.max(0, Math.floor((Date.now() - Date.parse(value.last_activity)) / 60000));
+      modelStatus.textContent = value.enabled ? `Model: ${value.sleeping ? "Sleeping" : "Awake"} · last used ${minutes} min ago · sleeps after ${value.idle_sleep_minutes} min idle` : "Model: automatic sleep unavailable";
+      sleep.disabled = powerBusy || !value.enabled || value.sleeping || value.in_flight > 0;
+      wake.disabled = powerBusy || !value.enabled || !value.sleeping;
+    }
+    async function loadPower() {
+      if (identity?.user.role !== "admin" || powerBusy) return;
+      try { showPower(await request("/api/admin/llm/power")); }
+      catch (failure) { modelStatus.textContent = failure.message; sleep.disabled = wake.disabled = true; }
+    }
+    for (const [control, actionName] of [[sleep, "sleep"], [wake, "wake"]]) control.addEventListener("click", async () => {
+      powerBusy = true; sleep.disabled = wake.disabled = true;
+      modelStatus.textContent = actionName === "wake" ? "Waking the model…" : "Putting the model to sleep…";
+      try { const value = await post(`/api/admin/llm/power/${actionName}`); powerBusy = false; showPower(value); }
+      catch (failure) { powerBusy = false; await loadPower(); message(modelStatus, failure.message, true); }
+    });
+    manageUsers.addEventListener("click", loadPower);
+    setInterval(() => { if (settings.open && !panel.hidden) loadPower(); }, 30000);
     const activity = make("details", {id: "account-activity"}), activityRows = make("div"), activityRefresh = button("Refresh activity", "account-refresh-activity"), activityMore = button("Older activity", "account-more-activity");
     activity.append(make("summary", {}, "Administrator activity"), hint("Successful account and allowance changes. Passwords and login credentials are never included."), activityRefresh, activityRows, activityMore); panel.append(activity);
     let activityCursor = null;

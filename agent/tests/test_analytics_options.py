@@ -11,6 +11,7 @@ from graphmine_agent.accounts import _collect_stream
 from graphmine_agent.analytics_options import (
     candidate_menu, catalog_signature, load_calibration, make_cards, match_score,
     operation_logprob, rank_candidates, sampling_contract, validate_edits,
+    semantic_key, SCORE_VERSION,
 )
 
 
@@ -56,14 +57,13 @@ def test_high_requires_calibration_and_actual_logprobs():
     assert rank_candidates(menu, votes, {"high": {"threshold": .5}})[0]["match"] != "High"
 
 
-def test_two_distinct_cards_and_unsampled_runner_is_low():
+def test_unsampled_runner_does_not_become_a_second_card():
     cards = [card(mode={"kind": "string", "default": "rank", "choices": ["rank", "score"]}), card("degree-centrality")]
     menu = candidate_menu(cards, {"main": PROFILE}, "Rank people")
     ranked = rank_candidates(menu, samples(menu, [5, 0, 0]), {"high": {"threshold": .9}})
     options = make_cards(ranked, cards, {"main": PROFILE}, "Who is important?")
-    assert len(options) == 2
-    assert options[0]["preselected"] and not options[1]["preselected"]
-    assert options[1]["match"] == "Low" and options[1]["score"] == 0
+    assert len(options) == 1 and options[0]["preselected"]
+    assert ranked[1]["match"] == "Low" and ranked[1]["score"] == 0
     assert options[0]["parameters"]["mode"] == "rank"
     assert all(option["cost_hint"] and option["difference"] and option["interpretation"] for option in options)
 
@@ -72,11 +72,72 @@ def test_one_problem_with_one_compatible_calculation_does_not_need_an_unrelated_
     cards = [card()]
     menu = candidate_menu(cards, {"main": PROFILE}, "Compute PageRank.")
     ranked = rank_candidates(menu, samples(menu, [5]), {"high": {"threshold": .9}})
-    options = make_cards(ranked, cards, {"main": PROFILE}, "Compute PageRank.", allow_single=True)
+    options = make_cards(ranked, cards, {"main": PROFILE}, "Compute PageRank.")
     assert len(options) == 1
     assert options[0]["operations"] == [cards[0]["id"]]
     assert options[0]["parameters"] == menu[0]["parameters"]
     assert options[0]["preselected"]
+
+
+def test_supported_different_objective_remains_a_second_choice():
+    cards = [card(), card("degree-centrality")]
+    menu = candidate_menu(cards, {"main": PROFILE}, "Rank important people")
+    ranked = rank_candidates(menu, samples(menu, [3, 2]))
+    options = make_cards(ranked, cards, {"main": PROFILE}, "Rank important people")
+    assert len(options) == 2
+    assert [o["operations"] for o in options] == [["pagerank"], ["degree-centrality"]]
+    assert all(o["match"] == "Medium" for o in options)
+
+
+def test_a_low_match_with_high_token_likelihood_cannot_displace_a_supported_choice():
+    cards = [card(op) for op in ["pagerank", "degree-centrality", "other-a", "other-b"]]
+    menu = candidate_menu(cards, {"main": PROFILE}, "Rank people")
+    votes = samples(menu, [1, 2, 1, 1])
+    for sample in votes[1:]:
+        sample["operation_logprob"]["mean"] = -1
+    ranked = rank_candidates(menu, votes)
+    assert ranked[0]["match"] == "Low" and ranked[0]["operation"] == "pagerank"
+    options = make_cards(ranked, cards, {"main": PROFILE}, "Rank people")
+    assert len(options) == 1 and options[0]["operations"] == ["degree-centrality"]
+
+
+def density_card():
+    return card("densest-subgraph", clique_order={"kind": "integer", "default": 2},
+                minimum_vertices={"kind": "integer", "default": 1},
+                weight_mode={"kind": "string", "default": "unweighted", "choices": ["unweighted", "edge_weight"]},
+                solution_quality={"kind": "string", "default": "exact", "choices": ["exact", "approximate"]})
+
+
+def test_densest_subgraph_has_one_exact_recommendation_and_retains_weighted_objective():
+    cards = [density_card()]
+    menu = candidate_menu(cards, {"main": PROFILE}, "find the densest subgraph")
+    assert len(menu) == 2
+    assert {c["parameters"]["weight_mode"] for c in menu} == {"unweighted", "edge_weight"}
+    assert all(c["parameters"]["solution_quality"] == "exact" for c in menu)
+    options = make_cards(rank_candidates(menu, samples(menu, [5, 0])), cards, {"main": PROFILE}, "find the densest subgraph")
+    assert len(options) == 1 and options[0]["quality"] == "exact"
+    assert options[0]["quality_guarantees"]["densest-subgraph"]["by_request"]["approximate"] == "exact"
+    # An explicit weaker request and an old saved card remain legal requests.
+    validate_edits(options[0], {**options[0]["parameters"], "solution_quality": "approximate"})
+    requested = candidate_menu(cards, {"main": PROFILE}, "find the densest subgraph",
+                               selected=["densest-subgraph"], supplied={"solution_quality": "approximate"})
+    assert requested[0]["parameters"]["solution_quality"] == "approximate"
+    chosen = make_cards(rank_candidates(requested, samples(requested, [5, 0])), cards, {"main": PROFILE}, "find the densest subgraph")[0]
+    assert chosen["quality"] == "exact" and chosen["parameters"]["solution_quality"] == "approximate"
+
+
+def test_real_quality_variants_and_input_size_objectives_are_not_merged():
+    community = {**card("community-detection", solution_quality={"kind": "string", "default": "heuristic", "choices": ["exact", "heuristic"]}), "quality": "parameter_dependent"}
+    menu = candidate_menu([community], {"main": PROFILE}, "Find communities")
+    options = make_cards(rank_candidates(menu, samples(menu, [3, 2])), [community], {"main": PROFILE}, "Find communities")
+    assert len(options) == 2 and {o["quality"] for o in options} == {"heuristic", "exact"}
+    c = density_card()
+    first = {"operation": c["id"], "input": "main", "parameters": {}}
+    original = semantic_key(first, [c])
+    assert original != semantic_key({**first, "input": "other"}, [c])
+    assert original != semantic_key({**first, "parameters": {"clique_order": 3}}, [c])
+    assert original != semantic_key({**first, "parameters": {"minimum_vertices": 5}}, [c])
+    assert original == semantic_key({**first, "parameters": {"solution_quality": "approximate"}}, [c])
 
 
 def test_merge_identical_choices_and_reject_invented_choices():
@@ -154,11 +215,14 @@ async def test_stream_keeps_five_choices_separate_and_preserves_logprobs():
 def test_calibration_is_bound_to_model_catalog_and_precision(tmp_path):
     settings = SimpleNamespace(repository_root=tmp_path, analytics_router_model=None, llm_model="router", analytics_router_base_url=None, llm_base_url="http://router/v1")
     cards = [card()]
-    calibration = {"score_version": 1, "samples": 5, "temperature": .7, "model": "router", "server": "http://router/v1", "catalog_sha256": catalog_signature(cards),
+    calibration = {"score_version": SCORE_VERSION, "samples": 5, "temperature": .7, "model": "router", "server": "http://router/v1", "catalog_sha256": catalog_signature(cards),
                    "high": {"count": 7, "precision": 6/7, "threshold": .9}}
     path = tmp_path / "catalog/option_calibration.json"; path.parent.mkdir()
     path.write_text(json.dumps(calibration))
     assert load_calibration(settings, cards)
     assert load_calibration(settings, [card("changed")]) is None
+    assert load_calibration(settings, [{**cards[0], "quality": "parameter_dependent"}]) is None
+    path.write_text(json.dumps({**calibration, "score_version": 1}))
+    assert load_calibration(settings, cards) is None
     calibration["high"]["precision"] = .8; path.write_text(json.dumps(calibration))
     assert load_calibration(settings, cards) is None

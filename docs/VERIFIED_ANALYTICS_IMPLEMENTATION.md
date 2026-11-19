@@ -7,7 +7,7 @@ Branch: `feat/verified-cpu-gpu-workflows`.
 An interface through which people unfamiliar with graph mining can ask about
 their data, select CPU-only, GPU-only, or automatic execution, and receive
 results computed by declared library algorithms and predefined visualizations.
-Normal, Interactive, and Expert modes share the same correctness checks.
+Normal and Expert modes share the same correctness checks.
 Implement the useful review recommendations and commit the work on this branch.
 
 **User architecture clarification (2026-10-10):** the executable algorithm core
@@ -39,13 +39,13 @@ layouts must declare what their results do and do not establish.
 | A3 | Native CPU implementation for all 70 problem contracts and fallbacks for existing operations | Per-contract native coverage inventory, independent result checks, CPU-only runs without GPU access; Python algorithms count only as reference evidence |
 | A4 | cuGraph GPU integrations | Actual GPU execution, independent small-graph oracles, device/version evidence, supported-parameter checks |
 | A5 | Family-first, then exact-problem routing | Separate constrained stages; ambiguity and wrong-family recovery tests; held-out routing evaluation |
-| A6 | Normal / Interactive / Expert modes | Normal executes validated plans; Interactive reviews/edits before execution; Expert accepts explicit validated plans; browser/API tests |
+| A6 | Normal / Expert modes | Normal executes validated plans; Expert reviews and edits validated plans before execution; browser/API tests |
 | A7 | Improved graph/result/workflow visualization without a Node.js runtime | Browser renders predefined views and modes with Node unavailable; visual inspection, accessibility and data-binding checks |
 | R1 | Typed dependent workflows | Static DAG/port checks and runtime checks on actual derived inputs; cancellation; dependent-output numerical tests |
 | R2 | Deterministic lookup, neighbors, filtering, joins, aggregates, bounded paths, subgraphs | Independent expected outputs, typed-ID preservation, direction and empty-result tests |
 | R3 | Capability-aware family/operation cards | Planner sees executable parameters and explicit mathematical objectives; catalog consistency tests |
 | R4 | Curated CPU/GPU reference tier | BFS, SSSP, PageRank, Jaccard, MST and remaining contract integrations with independent tests |
-| R5 | Inspectable/editable plans | Editing revalidates; no execution of an unapproved Interactive plan; clear graph/parameter scope |
+| R5 | Inspectable/editable plans | Editing revalidates; no execution of an unapproved Expert plan; clear graph/parameter scope |
 | R6 | Structured bounded recovery | Preserve requested semantics; retry only affected steps; unsupported inputs remain explicit |
 | R7 | Bounded summaries, full result access, completeness propagation | Truncated or count-only output cannot masquerade as complete input; result pagination/export tests |
 | R8 | Task-aware graph construction from tables | Explicit schema, joins, direction, weight meaning, duplicate aggregation and time-window tests |
@@ -69,7 +69,7 @@ reported score substitutes for local integration tests.
    into that runtime with independent native checks and matching build evidence.
 3. Connect native capabilities and cuDF ingestion to the agent, routing,
    queries, workflows, table projections, recovery, examples and MCP tools.
-4. Implement the three modes and predefined browser visualizations; integrate
+4. Implement Normal and Expert modes and predefined browser visualizations; integrate
    device selection, workflow review, completeness and provenance.
 5. Complete scheduler/cache work, full regression and correctness sweeps,
    browser checks, external scale evaluation, documentation and commits.
@@ -297,7 +297,7 @@ The checkpoints below are historical and do not describe current coverage.
 ### Typed workflows and application API checkpoint
 
 - The application now calls the Python library through isolated workflow
-  workers. New authenticated endpoints support Normal, Interactive and Expert
+  workers. New authenticated endpoints support Normal and Expert
   execution policies, plan revisions, approval hashes, current-revision result
   access, port pagination and cancellation. The existing chat/browser and native
   job API remain on their earlier execution path; browser mode integration is
@@ -348,7 +348,7 @@ The checkpoints below are historical and do not describe current coverage.
 
 ### Browser workspace and family routing checkpoint
 
-- `/` now opens a library-backed workspace with Normal, Interactive and Expert
+- `/` now opens a library-backed workspace with Normal and Expert
   modes. `/classic` retains the earlier native workspace. The new page uses
   local Cytoscape and plain JavaScript/CSS, with no Node runtime or build step.
   Its score/group charts, graph layouts, linked selection and paged tables are
@@ -360,7 +360,7 @@ The checkpoints below are historical and do not describe current coverage.
   parameter schemas. One wrong-family reroute and one contract-based plan repair
   are allowed. Follow-ups receive the previous reviewed plan only within their
   current workspace. Planning does not approve or execute a workflow.
-- Interactive plans expose step settings, dependency sources and input scope.
+- Expert plans expose step settings, dependency sources and input scope.
   Edits create a new revision requiring approval. Expert plans use the same
   engine and checks. Additional uploaded graphs can bind pattern/comparison
   parameters. Workspace changes clear previous results and pending plan text.

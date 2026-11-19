@@ -1,5 +1,25 @@
 # Third-party research artifacts
 
+The result-view browser assets are rebuilt offline from exact versions in
+`agent/frontend/package-lock.json`. Their license texts are retained in
+`agent/graphmine_agent/static/vendor/`.
+
+| Display dependency | Version | License |
+|---|---|---|
+| Cytoscape.js | 3.34.3 | [MIT](agent/graphmine_agent/static/vendor/cytoscape.LICENSE) |
+| cytoscape-fcose | 2.2.0 | [MIT](agent/graphmine_agent/static/vendor/cytoscape-fcose.LICENSE) |
+| cytoscape-elk | 2.4.0 | [MIT](agent/graphmine_agent/static/vendor/cytoscape-elk.LICENSE) |
+| elkjs | 0.12.1 | [EPL-2.0](agent/graphmine_agent/static/vendor/elkjs.LICENSE) |
+| Leaflet | 1.9.4 | [BSD-2-Clause](agent/graphmine_agent/static/vendor/leaflet.LICENSE) |
+| html2canvas | 1.4.1 | [MIT](agent/graphmine_agent/static/vendor/html2canvas.LICENSE) |
+
+The bundled layout-base, cose-base, css-line-break, text-segmentation, utrie and
+base64-arraybuffer dependencies also retain their individual license files in
+that directory. Server PCA uses scikit-learn under its BSD license, with the
+installed package's `COPYING` and bundled dependency notices; no Python binary
+is vendored into the browser. The pinned native runtime and its research-artifact
+licenses below are unchanged by the presentation layer.
+
 GraphMine wraps source paths from the research artifacts below. The repository retains a curated source snapshot for the validated adapters and their bundled dependencies; datasets, generated build trees, logs, and upstream executables are excluded. Some retained sources include small compatibility or library-boundary changes used by the validated implementation.
 
 Each artifact remains subject to its original copyright and license terms. A linked license is preserved beside the corresponding source. **No explicit license detected** means the upstream repository did not expose a license file during collection; users must review the upstream terms before use or redistribution.

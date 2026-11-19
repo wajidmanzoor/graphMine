@@ -1,0 +1,709 @@
+{
+  "description": "Anonymous structure derived from a saved analysis. Numeric results retained; IDs, labels, and type names anonymized. Original attributes and text omitted.",
+  "input": {
+    "graph": {
+      "id": "anonymous",
+      "directed": false
+    },
+    "vertices": [
+      {
+        "id": "entity-0",
+        "label": "Entity 1",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-1",
+        "label": "Entity 2",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-2",
+        "label": "Entity 3",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-3",
+        "label": "Entity 4",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-4",
+        "label": "Entity 5",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-5",
+        "label": "Entity 6",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-6",
+        "label": "Entity 7",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-7",
+        "label": "Entity 8",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-8",
+        "label": "Entity 9",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-9",
+        "label": "Entity 10",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-10",
+        "label": "Entity 11",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-11",
+        "label": "Entity 12",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-12",
+        "label": "Entity 13",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-13",
+        "label": "Entity 14",
+        "type": "Type 1"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-0",
+        "source": "entity-0",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-1",
+        "source": "entity-2",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-2",
+        "source": "entity-2",
+        "target": "entity-3",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-3",
+        "source": "entity-2",
+        "target": "entity-4",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-4",
+        "source": "entity-2",
+        "target": "entity-5",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-5",
+        "source": "entity-2",
+        "target": "entity-6",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-6",
+        "source": "entity-2",
+        "target": "entity-7",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-7",
+        "source": "entity-8",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-8",
+        "source": "entity-4",
+        "target": "entity-5",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-9",
+        "source": "entity-4",
+        "target": "entity-7",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-10",
+        "source": "entity-4",
+        "target": "entity-3",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-11",
+        "source": "entity-4",
+        "target": "entity-9",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-12",
+        "source": "entity-4",
+        "target": "entity-10",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-13",
+        "source": "entity-4",
+        "target": "entity-2",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-14",
+        "source": "entity-4",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-15",
+        "source": "entity-4",
+        "target": "entity-11",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-16",
+        "source": "entity-6",
+        "target": "entity-2",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-17",
+        "source": "entity-6",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-18",
+        "source": "entity-6",
+        "target": "entity-7",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-19",
+        "source": "entity-7",
+        "target": "entity-5",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-20",
+        "source": "entity-7",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-21",
+        "source": "entity-7",
+        "target": "entity-9",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-22",
+        "source": "entity-7",
+        "target": "entity-2",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-23",
+        "source": "entity-7",
+        "target": "entity-4",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-24",
+        "source": "entity-7",
+        "target": "entity-6",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-25",
+        "source": "entity-7",
+        "target": "entity-3",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-26",
+        "source": "entity-9",
+        "target": "entity-7",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-27",
+        "source": "entity-9",
+        "target": "entity-4",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-28",
+        "source": "entity-10",
+        "target": "entity-4",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-29",
+        "source": "entity-10",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-30",
+        "source": "entity-12",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-31",
+        "source": "entity-11",
+        "target": "entity-3",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-32",
+        "source": "entity-11",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-33",
+        "source": "entity-11",
+        "target": "entity-4",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-34",
+        "source": "entity-11",
+        "target": "entity-5",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-35",
+        "source": "entity-3",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-36",
+        "source": "entity-3",
+        "target": "entity-11",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-37",
+        "source": "entity-3",
+        "target": "entity-2",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-38",
+        "source": "entity-3",
+        "target": "entity-4",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-39",
+        "source": "entity-3",
+        "target": "entity-7",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-40",
+        "source": "entity-1",
+        "target": "entity-8",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-41",
+        "source": "entity-1",
+        "target": "entity-3",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-42",
+        "source": "entity-1",
+        "target": "entity-10",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-43",
+        "source": "entity-1",
+        "target": "entity-4",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-44",
+        "source": "entity-1",
+        "target": "entity-0",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-45",
+        "source": "entity-1",
+        "target": "entity-5",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-46",
+        "source": "entity-1",
+        "target": "entity-2",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-47",
+        "source": "entity-1",
+        "target": "entity-12",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-48",
+        "source": "entity-1",
+        "target": "entity-6",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-49",
+        "source": "entity-1",
+        "target": "entity-11",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-50",
+        "source": "entity-1",
+        "target": "entity-7",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-51",
+        "source": "entity-5",
+        "target": "entity-2",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-52",
+        "source": "entity-5",
+        "target": "entity-1",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-53",
+        "source": "entity-5",
+        "target": "entity-7",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-54",
+        "source": "entity-5",
+        "target": "entity-4",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-55",
+        "source": "entity-5",
+        "target": "entity-11",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-56",
+        "source": "entity-5",
+        "target": "entity-13",
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-57",
+        "source": "entity-13",
+        "target": "entity-5",
+        "type": "Type 2"
+      }
+    ]
+  },
+  "result": {
+    "operation": "densest-subgraph",
+    "parameters": {},
+    "ports": {
+      "vertices": {
+        "type": "vertex_set",
+        "value": [
+          "entity-1",
+          "entity-2",
+          "entity-3",
+          "entity-4",
+          "entity-5",
+          "entity-6",
+          "entity-7",
+          "entity-11"
+        ],
+        "complete": true
+      }
+    },
+    "result": {
+      "clique_order": 2,
+      "clique_count": 21,
+      "density": 2.625,
+      "induced_edge_value": 21
+    }
+  },
+  "expected": {
+    "vertices": {
+      "spec": {
+        "schema_version": "1.0.0",
+        "rules_version": "2026-11-18.3",
+        "profile": "subgraph",
+        "view": "graph",
+        "title": "Returned subgraph",
+        "layout": {
+          "name": "force",
+          "seed": 0,
+          "sides": [],
+          "positions_source": "browser",
+          "alternates": [
+            "force",
+            "concentric",
+            "grid"
+          ]
+        },
+        "nodes": {
+          "color": {
+            "field": "vertex_type",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": [
+              {
+                "value": "Type 1",
+                "label": "Type 1",
+                "color": "#0072b2",
+                "count": 8
+              }
+            ]
+          },
+          "size": {
+            "field": "degree",
+            "value": null,
+            "scale": "sqrt",
+            "range_px": [
+              14.0,
+              36.0
+            ],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "label": {
+            "field": "display_name",
+            "value": null,
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "shape": {
+            "field": "role",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          }
+        },
+        "edges": {
+          "color": {
+            "field": "relationship_type",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "width": {
+            "field": "weight",
+            "value": null,
+            "scale": "sqrt",
+            "range_px": [
+              1.0,
+              4.0
+            ],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "style": {
+            "field": "edge_role",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "arrows": {
+            "field": null,
+            "value": false,
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          }
+        },
+        "legend": [
+          {
+            "channel": "color",
+            "field": "vertex_type",
+            "title": "Entity type"
+          },
+          {
+            "channel": "size",
+            "field": "degree",
+            "title": "Connections in input"
+          }
+        ],
+        "linked": [
+          {
+            "id": "metrics",
+            "chart": "metrics",
+            "title": "Result and saved input",
+            "dataset": "metrics",
+            "x": null,
+            "y": null,
+            "select": "none"
+          }
+        ],
+        "alternates": [
+          "matrix",
+          "result_only",
+          "concentric"
+        ],
+        "emphasis": {
+          "item": null,
+          "context_opacity": 0.25
+        },
+        "limits": {
+          "shown_vertices": 8,
+          "total_vertices": 8,
+          "shown_edges": 42,
+          "total_edges": 42,
+          "sampled": false,
+          "strategy": "recorded witness first, then saved input order",
+          "collection_complete": true
+        },
+        "rules_applied": [
+          "profile_subgraph",
+          "dense_small_graph"
+        ],
+        "provenance": {
+          "workflow_id": "fixture",
+          "revision": 1,
+          "step": "analysis",
+          "port": "vertices",
+          "input_fingerprint": "1e9cabcc7586a2b66f68e9a7d8bec04fb4b168f18dd77849882d62237450e6df",
+          "result_fingerprint": "a8b2544ba5affd63536e407b12577eeec7d36146e3c4539875556824e4e7ea16",
+          "recorded_rules_version": "2026-11-18.3"
+        },
+        "notes": [],
+        "renderer": "cytoscape",
+        "field_roles": {
+          "value[]": {
+            "role": "entity",
+            "namespace": "input",
+            "identity": "typed"
+          }
+        }
+      },
+      "facts": {
+        "version": "1.0.0",
+        "operation": "densest-subgraph",
+        "port_type": "vertex_set",
+        "field_roles": {
+          "value[]": {
+            "role": "entity",
+            "namespace": "input",
+            "identity": "typed"
+          }
+        },
+        "input": {
+          "vertices": 14,
+          "edges": 58,
+          "directed": false,
+          "density": 0.31868131868131866,
+          "density_definition": "distinct non-loop connections / possible connections",
+          "parallel_edges": true,
+          "self_loops": false,
+          "vertex_types": {
+            "Type 1": 14
+          },
+          "edge_types": {
+            "Type 2": 58
+          },
+          "named_vertices": 14,
+          "scanned_vertices": 14,
+          "scanned_edges": 58,
+          "statistics_complete": true
+        },
+        "witness": {
+          "vertices": 8,
+          "edges": 42,
+          "directed": false,
+          "density": 0.75,
+          "density_definition": "distinct non-loop connections / possible connections",
+          "parallel_edges": true,
+          "self_loops": false,
+          "vertex_types": {
+            "Type 1": 8
+          },
+          "edge_types": {
+            "Type 2": 42
+          },
+          "named_vertices": 8,
+          "scanned_vertices": 8,
+          "scanned_edges": 42,
+          "statistics_complete": true
+        },
+        "coverage": 0.5714285714285714,
+        "items": 8,
+        "scanned_items": 8,
+        "collection": {
+          "count": 8,
+          "covered_vertices": 0,
+          "largest_members": 0,
+          "largest_sides": null,
+          "median_members": null,
+          "statistics_complete": true
+        },
+        "statistics_complete": true,
+        "groups": {
+          "count": 0,
+          "sizes": [],
+          "overlap": false,
+          "shared_members": 0,
+          "statistics_complete": true,
+          "smallest": 0,
+          "largest": 0
+        },
+        "scores": null,
+        "budget": {
+          "items": 10000,
+          "graph_records": 20000,
+          "memberships": 100000,
+          "scanned_memberships": 0
+        }
+      }
+    }
+  }
+}

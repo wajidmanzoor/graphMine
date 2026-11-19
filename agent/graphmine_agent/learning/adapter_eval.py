@@ -6,6 +6,9 @@ the isolated training environment with evaluation-requirements.txt installed.
 
 from __future__ import annotations
 
+import asyncio
+from ..llm_power import model_run, power_request
+
 import argparse
 import fcntl
 import importlib.metadata
@@ -456,7 +459,7 @@ class LocalRouter:
         return results
 
 
-def serving_generate(case, plan, settings):
+async def serving_generate(case, plan, settings):
     import httpx
 
     if urlparse(settings.llm_base_url).hostname not in {
@@ -492,12 +495,13 @@ def serving_generate(case, plan, settings):
         },
     }
     started = time.monotonic()
-    response = httpx.post(
-        settings.llm_base_url + "/chat/completions",
-        json=body,
-        headers={"Authorization": f"Bearer {settings.llm_api_key}"},
-        timeout=240,
-    )
+    async with power_request(settings), httpx.AsyncClient() as client:
+        response = await client.post(
+            settings.llm_base_url + "/chat/completions",
+            json=body,
+            headers={"Authorization": f"Bearer {settings.llm_api_key}"},
+            timeout=240,
+        )
     response.raise_for_status()
     data = response.json()
     return {
@@ -576,6 +580,13 @@ def summarize(rows, expected_cases, arms):
 
 
 def compare(suite, output, *, arms=ARMS[:2], batch_size=2, resume=False):
+    async def run():
+        async with model_run(Settings.from_env()):
+            return await _compare(suite, output, arms=arms, batch_size=batch_size, resume=resume)
+    return asyncio.run(run())
+
+
+async def _compare(suite, output, *, arms=ARMS[:2], batch_size=2, resume=False):
     if not arms or len(set(arms)) != len(arms) or set(arms) - set(ARMS):
         raise ValueError("Choose distinct known evaluation arms")
     if batch_size < 1 or batch_size > 4:
@@ -663,7 +674,7 @@ def compare(suite, output, *, arms=ARMS[:2], batch_size=2, resume=False):
                         current_cases=[c["id"] for c in pending],
                     )
                     generated = (
-                        [serving_generate(c, plan, settings) for c in pending]
+                        [await serving_generate(c, plan, settings) for c in pending]
                         if arm == "serving_fp8"
                         else router.generate(pending, arm)
                     )

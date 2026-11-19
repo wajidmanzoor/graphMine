@@ -19,7 +19,7 @@ from .analytics_lane_choices import explicit_parameters
 
 SAMPLES = 5
 TEMPERATURE = 0.7
-SCORE_VERSION = 1
+SCORE_VERSION = 2
 KEY_PARAMETERS = {"mode", "objective", "solution_quality", "direction_mode", "weight_mode", "capacity_mode"}
 
 
@@ -28,7 +28,8 @@ def digest(value):
 
 
 def catalog_signature(cards):
-    return digest(sorted(({key: card.get(key) for key in ("id", "parameters", "requirements", "quality")} for card in cards), key=lambda row: row["id"]))
+    return digest(sorted(({**{key: card.get(key) for key in ("id", "parameters", "requirements", "quality")},
+                           "quality_guarantees": quality_guarantees(card)} for card in cards), key=lambda row: row["id"]))
 
 
 def defaults(card, values=None):
@@ -36,6 +37,44 @@ def defaults(card, values=None):
               if "default" in spec and (spec["default"] is not None or spec.get("nullable"))}
     result.update(deepcopy(values or {}))
     return result
+
+
+def effective_quality(card, parameters):
+    """A native contract's fixed guarantee can exceed the requested quality.
+
+    Parameter/backend-dependent contracts retain their actual quality choices;
+    accepting an approximate request does not imply an approximation solver.
+    """
+    quality = card.get("quality", "unspecified")
+    if quality in {"parameter_dependent", "backend_dependent"}:
+        return defaults(card, parameters).get("solution_quality", quality)
+    return quality
+
+
+def quality_guarantees(card):
+    spec = card.get("parameters", {}).get("solution_quality", {})
+    return {"default": effective_quality(card, {}),
+            "by_request": {value: effective_quality(card, {"solution_quality": value})
+                           for value in spec.get("choices", [])},
+            "canonical_requests": {value: effective_parameters(card, {"solution_quality": value})["solution_quality"]
+                                   for value in spec.get("choices", [])}}
+
+
+def effective_parameters(card, parameters):
+    values = defaults(card, parameters)
+    # The native catalog's fixed exact guarantee applies to every admitted
+    # profile. Keep the original request for execution and saved-choice replay.
+    if card.get("quality") == "exact" and values.get("solution_quality") in ("exact", "approximate"):
+        values["solution_quality"] = "exact"
+    return values
+
+
+def semantic_key(candidate, cards):
+    by_id = {card["id"]: card for card in cards}
+    operations = candidate.get("operations", [candidate["operation"]])
+    parameters = candidate["parameters"]
+    return digest([candidate["input"], [[op, effective_parameters(by_id[op],
+        parameters if len(operations) == 1 else parameters.get(op, {}))] for op in operations]])
 
 
 def candidate_menu(cards, profiles, question, entities=(), *, selected=(), supplied=None, alias=None):
@@ -65,13 +104,15 @@ def candidate_menu(cards, profiles, question, entities=(), *, selected=(), suppl
             if requested["exact"] and "exact" in card["parameters"].get("solution_quality", {}).get("choices", []):
                 variants = [{**value, "solution_quality": "exact"} for value in variants]
             for value in variants:
+                candidate = {"operation": card["id"], "input": key, "parameters": value}
+                meaning = semantic_key(candidate, [card])
                 identity = digest([card["id"], key, value])
-                if identity in seen:
+                if meaning in seen:
                     continue
-                seen.add(identity)
+                seen.add(meaning)
                 missing = [name for name, spec in card["parameters"].items()
                            if spec.get("required") and name not in value and spec.get("default") is None]
-                result.append({"id": "choice_" + identity[:16], "operation": card["id"], "input": key,
+                result.append({"id": "choice_" + identity[:16], "semantic_key": meaning, "operation": card["id"], "input": key,
                                "parameters": value, "missing": missing,
                                "hints": score_hints(card, profile, requested)})
     # Preserve a routed multi-step objective as a single selectable choice.
@@ -95,10 +136,12 @@ def candidate_menu(cards, profiles, question, entities=(), *, selected=(), suppl
                     for op in selected:
                         if isinstance(supplied.get(op), dict):
                             values[op].update(supplied[op])
-                result.append({**first, "id": "choice_" + digest([selected, values, first["input"]])[:16],
+                chain = {**first, "id": "choice_" + digest([selected, values, first["input"]])[:16],
                                "operations": list(selected), "parameters": values,
                                "missing": [f"{op}.{name}" for op in selected for name, spec in by_id[op]["parameters"].items()
-                                           if spec.get("required") and name not in values[op] and spec.get("default") is None]})
+                                           if spec.get("required") and name not in values[op] and spec.get("default") is None]}
+                chain["semantic_key"] = semantic_key(chain, cards)
+                result.append(chain)
     return result
 
 
@@ -118,7 +161,8 @@ def sampling_contract(menu, cards):
             if row.get("operations"):
                 return {"id": row["id"], "operations": row["operations"], "missing": row["missing"]}
             return {"id": row["id"], "input": row["input"], "missing": row["missing"],
-                    "settings": {name: value for name, value in values.items() if name in KEY_PARAMETERS}}
+                    "settings": {name: value for name, value in values.items() if name in KEY_PARAMETERS},
+                    "guarantee": effective_quality(card, values)}
         offered.append({"operation": operation, "title": card["title"], "description": card["description"],
                         "quality": card["quality"], "choices": [description(row) for row in choices]})
     return {"oneOf": variants}, offered
@@ -213,9 +257,7 @@ def rank_candidates(menu, samples, calibration=None):
 
 
 def distinct(first, second):
-    if first.get("operations", [first["operation"]]) != second.get("operations", [second["operation"]]):
-        return True
-    return any(first["parameters"].get(key) != second["parameters"].get(key) for key in KEY_PARAMETERS)
+    return first["semantic_key"] != second["semantic_key"]
 
 
 def parameter_fields(cards, candidate):
@@ -226,10 +268,13 @@ def parameter_fields(cards, candidate):
     for operation in operations:
         values = candidate["parameters"] if len(operations) == 1 else candidate["parameters"].get(operation, {})
         for name, spec in by_id[operation]["parameters"].items():
-            result.append({"operation": operation, "name": name, "label": name.replace("_", " "),
+            description = spec.get("description", "")
+            if name == "solution_quality" and by_id[operation].get("quality") == "exact":
+                description = "This implementation returns an exact result for every supported quality request."
+            result.append({"operation": operation, "name": name, "label": "requested solution quality" if name == "solution_quality" else name.replace("_", " "),
                 "schema": parameter_schema(spec), "required": spec.get("required", False),
                 "kind": spec["kind"], "has_value": name in values, "value": deepcopy(values.get(name)),
-                "default": deepcopy(spec.get("default")), "description": spec.get("description", ""),
+                "default": deepcopy(spec.get("default")), "description": description,
                 "application_filled": name in {"left_partition", "right_partition"} and name not in values})
     return result
 
@@ -267,28 +312,32 @@ def cost_hint(operation, profile):
     return f"Processes {n:,} vertices and {m:,} connections; iteration and output limits affect runtime."
 
 
-def make_cards(ranked, cards, profiles, question, *, allow_single=False):
+def make_cards(ranked, cards, profiles, question):
     if not ranked:
         return []
-    first = ranked[0]
-    second = next((row for row in ranked[1:] if distinct(first, row)), None)
-    if second is None and not allow_single:
-        return []
+    supported = [row for row in ranked if row["match"] in {"Medium", "High"}
+                 and row["match_evidence"]["votes"] > 0]
+    # Retain one low candidate only so the lane can ask its existing open
+    # clarification when none is supported; it is never shown as a choice.
+    first = supported[0] if supported else ranked[0]
+    second = next((row for row in supported[1:] if distinct(first, row)), None)
     by_id, result = {card["id"]: card for card in cards}, []
     for index, candidate in enumerate((first, second) if second else (first,)):
         card = by_id[candidate["operation"]]
         other = by_id[(second if index == 0 and second else first)["operation"]]
         operations = candidate.get("operations", [candidate["operation"]])
         values = candidate["parameters"] if len(operations) == 1 else candidate["parameters"].get(operations[0], {})
-        qualities = {op: (values if len(operations) == 1 else candidate["parameters"].get(op, {})).get("solution_quality", by_id[op]["quality"]) for op in operations}
+        qualities = {op: effective_quality(by_id[op], values if len(operations) == 1 else candidate["parameters"].get(op, {})) for op in operations}
         quality = next(iter(qualities.values())) if len(set(qualities.values())) == 1 else "mixed"
         result.append({"id": f"option_{index + 1}", "operations": operations,
             "parameters": candidate["parameters"], "input": candidate["input"], "title": " → ".join(by_id[op]["title"] for op in operations),
-            "quality": quality, "operation_qualities": qualities, "description": " ".join(by_id[op]["description"] for op in operations), "rank": index + 1,
+            "quality": quality, "operation_qualities": qualities,
+            "quality_guarantees": {op: quality_guarantees(by_id[op]) for op in operations},
+            "description": " ".join(by_id[op]["description"] for op in operations), "rank": index + 1,
             "interpretation": candidate["interpretation"] or f"Another way to explore “{question[:180]}”: {card['title']}",
             "match": candidate["match"], "score": candidate["score"], "match_evidence": candidate["match_evidence"],
             "cost_hint": " ".join(dict.fromkeys(cost_hint(op, profiles[candidate["input"]]) for op in operations)),
-            "difference": ("Only one compatible calculation is available for the selected problem." if second is None else
+            "difference": ("Matches your question." if second is None else
                            f"{card['title']}: {card['description']} Compared with {other['title']}."
                            if card["id"] != other["id"] else f"Uses different settings: {json.dumps({key: value for key, value in values.items() if key in KEY_PARAMETERS})}."),
             "parameter_fields": parameter_fields(cards, candidate),

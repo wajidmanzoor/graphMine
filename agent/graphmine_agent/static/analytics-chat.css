@@ -125,7 +125,7 @@ body { background: #fff; }
 .analytics-results .results-toolbar { margin-bottom: 25px; }
 .analytics-results .result-picker { max-width: 650px; margin-bottom: 24px; }
 .analytics-results .evidence-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-.analytics-results #network { height: 460px; }
+.analytics-results #network {  }
 .analytics-results #evidence-panel { margin-top: 0; }
 @media (max-width: 1250px) {
   .chat-workspace { grid-template-columns: 220px minmax(340px, 1fr) 255px; }
@@ -172,7 +172,7 @@ body { background: #fff; }
   .analytics-results { padding: 25px 16px 40px; }
   .analytics-results h1 { font-size: 1.5rem; }
   .analytics-results .results-toolbar { flex-wrap: wrap; gap: 15px; }
-  .analytics-results #network { height: 340px; }
+  .analytics-results #network {  }
 }
 .chat-bubble .answer-lead { margin-top: 12px; font-weight: 600; }
 .chat-bubble .answer-facts { margin: 8px 0 0; padding-left: 18px; line-height: 1.6; }

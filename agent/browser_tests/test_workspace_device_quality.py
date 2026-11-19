@@ -59,11 +59,8 @@ def test_gpu_first_picker_and_quality_are_independent(
     server.responses[0].release.set()
     browser.get(server.url + "/#workspace/saved-session/chat")
     wait_for(browser, "GraphMineWorkspace.state.caps && !GraphMineWorkspace.state.busy")
-    browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
-    browser.find_element(By.ID, "toggle-tools").click()
-    browser.execute_script(
-        "document.getElementById('operation-form').closest('details').open = true"
-    )
+    browser.find_element(By.ID, "question").send_keys("/calculate")
+    browser.find_element(By.ID, "command-option-calculate").click()
     operation = Select(browser.find_element(By.ID, "operation-select"))
     assert "gpu-count" in [
         option.get_attribute("value") for option in operation.options
@@ -86,7 +83,8 @@ def test_gpu_first_picker_and_quality_are_independent(
         "Exact — establishes"
         not in browser.find_element(By.ID, "operation-quality").text
     )
-    browser.execute_script("document.querySelector('.advanced-data').open = true")
+    browser.find_element(By.CSS_SELECTOR, '[data-close="operation-dialog"]').click()
+    browser.find_element(By.CSS_SELECTOR, "#compute-settings > summary").click()
     device = Select(browser.find_element(By.ID, "device"))
     assert device.first_selected_option.text == "Automatic (GPU first)"
     assert "prefers a verified GPU" in browser.find_element(By.ID, "device-note").text
@@ -149,9 +147,9 @@ def test_review_and_chat_label_default_heuristic_and_explicit_exact(
             By.CSS_SELECTOR, '[data-step="exact"] .step-quality'
         ).text
     )
-    summaries = browser.find_elements(By.CSS_SELECTOR, "#messages .step-quality")
-    assert all(not row.is_displayed() for row in summaries)
-    for detail in browser.find_elements(By.CSS_SELECTOR, "#messages .answer-explanation > summary"):
-        detail.click()
-    assert any("Heuristic — no guarantee" in row.text for row in summaries)
-    assert any("Exact — establishes" in row.text for row in summaries)
+    assert not browser.find_elements(By.CSS_SELECTOR, "#messages .step-quality, #messages .answer-explanation")
+    browser.find_element(By.CSS_SELECTOR, "#messages .answer-details").click()
+    calculation = browser.find_element(By.CSS_SELECTOR, '.activity-step[data-stage="calculation"]')
+    calculation.find_element(By.TAG_NAME, "summary").click()
+    assert "Heuristic — no guarantee" in calculation.text
+    assert "Exact — establishes" in calculation.text

@@ -72,7 +72,7 @@
 .source-continue label { flex: 1; margin: 0; }
 .source-continue select { display: block; width: 100%; margin-top: 8px; }
 .source-continue > button { min-height: 40px; }
-#data-file-controls > .upload-zone, #data-file-controls > .eyebrow, #data-file-controls #upload-settings > label:first-of-type { display: none; }
+#data-file-controls > .upload-zone, #data-file-controls > .eyebrow { display: none; }
 #data-file-controls { margin-top: 22px; }
 .source-section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 8px; }
 .source-section-heading h3, .source-file-intro h3 { margin: 0; font-size: var(--text-small); font-weight: 600; }

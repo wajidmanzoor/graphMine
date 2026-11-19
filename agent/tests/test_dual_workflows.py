@@ -25,6 +25,7 @@ from graphmine_agent.models import (
     PlanConfiguration,
     PlanDraft,
     RouteDecision,
+    TemplateNarrative,
 )
 from graphmine_agent.planning import PlanValidator
 from graphmine_agent.terminal import agent_client
@@ -329,9 +330,12 @@ def test_live_harness_injects_one_error_and_exercises_real_agent_recovery(
             history,
         ):
             runtime = client._transport.app.state.runtime
+            offline_generate = runtime.agent.model.generate
 
             async def model(**request):
                 schema = request["schema"]
+                if schema is TemplateNarrative:
+                    return await offline_generate(**request)
                 if schema is RouteDecision:
                     return RouteDecision(
                         problem_id=task["problem_id"],

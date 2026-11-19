@@ -871,8 +871,16 @@
         if (cy.zoom() > 1.5) { cy.zoom(1.5); cy.center(); }
         cy.nodes().filter(node => !!node.data("original")).style("font-size", Math.max(12, 11 / cy.zoom()));
       }
+      if (spec.view_spec && window.GraphMineViewStyle) {
+        const degree = new Map(nodes.map(n => [n.key, 0])); edges.forEach(e => { degree.set(e.source_key, (degree.get(e.source_key) || 0) + 1); if (e.source_key !== e.target_key) degree.set(e.target_key, (degree.get(e.target_key) || 0) + 1); });
+        const shared = window.GraphMineViewStyle, wire = {idKey: id => id, stringify: JSON.stringify}, source = {vertices: nodes.map(n => ({...n, id: n.key, view: {display_name: n.label, group: n.community ?? n.groups?.[0], score: n.score ?? n.core_number, vertex_type: n.type, degree: degree.get(n.key)}})), edges: edges.map((e, i) => ({...e, id: i, source: e.source_key, target: e.target_key, view: {relationship_type: e.type || "Connection", weight: e.weight}}))};
+        cy.nodes('.answer-group').forEach(n => n.data({color: '#edf3ef', shape: 'round-rectangle', size: 24, result: true}));
+        const render = shared.renderData(wire, source, spec.view_spec), originals = new Map(nodes.map(n => [n.key, n]));
+        cy.batch(() => { for (const e of render.elements) { const target = cy.getElementById(e.data.id), original = originals.get(e.data.id); target.data({...e.data, original: original || target.data("original")}); } cy.style([...shared.stylesheet(data.directed ?? answer?.provenance?.directed), {selector: ".selection-muted", style: {opacity: .25}}, {selector: ":selected", style: {"border-width": 3, "border-color": "#253648"}}]); });
+        cy.minZoom(.000001); cy.maxZoom(20); shared.fit(cy); cy.on("zoom", () => shared.screenSizes(cy, selectedEntities(scope)));
+      }
       state.networks.push(cy); container.graphmineNetwork = cy;
-      if (data.directed ?? answer?.provenance?.directed) cy.edges().style({"target-arrow-shape":"triangle","target-arrow-color":"#a8bcb3"});
+      if (data.directed ?? answer?.provenance?.directed) { cy.edges().style("target-arrow-shape", "triangle"); if (!(spec.view_spec && window.GraphMineViewStyle)) cy.edges().style("target-arrow-color", "#a8bcb3"); }
       cy.on("tap", "node, edge", event => {
         const original = event.target.data("original"); if (!original) return;
         selectEntities(scope, event.target.isNode() ? [original.key] : [original.source_key, original.target_key]);

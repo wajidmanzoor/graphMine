@@ -112,7 +112,7 @@ remain separate.
 | A3: all 70 native CPU contracts | `catalog/native_runtime_coverage.json` maps every formal contract. Native completion tests and baseline sweeps run with CUDA hidden on both CPU and GPU-linked builds. |
 | A4/R4: GPU integrations and independent oracles | 44,884 native requests per physical GPU, including declared boundary rejections, plus independent small-graph checks and native provenance. cuGraph and original CUDA workers remain distinct profiles. |
 | A5: family then exact operation | Separate constrained stages, semantic ambiguity checks, one bounded family reroute, and one validation repair. Original real-model acceptance was 16/20; the planner follow-up passes all 20 as regression cases. Unattended language-planning reliability remains unproven; details below and in the follow-up report. |
-| A6/R5: three modes and editable review | Normal executes validated plans; Interactive and Expert require approval. Edits invalidate approval. API and Firefox checks cover all three. |
+| A6/R5: two modes and editable review | Normal executes validated plans; Expert requires approval. Edits invalidate approval. API and Firefox checks cover both modes. |
 | A7: browser without Node | Fourteen Firefox checks with Node absent from server PATH; desktop/mobile screenshots visually inspected; keyboard, labels, overflow and typed-ID binding assertions. |
 | R1/R6: typed dependent workflows and recovery | Static DAG/port validation, native actual-input checks, completeness/namespace checks, persisted affected-step retry, cancellation and reviewed-hash checks. |
 | R2: deterministic record queries | Seven native query operations with typed IDs, exact aggregates, filters, direction, empty results, joins, paths and subgraphs checked independently. |
@@ -238,6 +238,6 @@ execution-admission evidence.
 
 The redesign, native migration and acceptance measurements are complete.
 **Reliable unattended natural-language planning remains unproven**, particularly
-for dependent workflows. Interactive review, explicit task selection and the
+for dependent workflows. Expert review, explicit task selection and the
 Expert workflow editor remain available through the same validated execution
 path. Further model/routing work should be assessed on a fresh evaluation set.

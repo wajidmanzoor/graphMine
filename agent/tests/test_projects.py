@@ -207,6 +207,22 @@ def test_workflow_sharing_is_revision_checked_and_includes_exact_snapshot(recipe
     call(client, bob, "GET", f"/api/project-items/{item['id']}", expected=404)
 
 
+def test_sharing_freezes_the_chosen_view_and_keeps_access_scoped(recipes):
+    client, runtime, alice, bob, sid, file, record, result = recipes
+    graph = runtime.graph_store.read_graph(file["id"], sid)
+    directory = runtime.analytics._directory(record)
+    runtime.analytics._write(directory / "inputs.json", {"main": {"kind": "graph", "data": graph}})
+    runtime.analytics._write(directory / "step-core.json", result["steps"]["core"])
+    view = call(client, alice, "GET", f"/api/workflows/{record['id']}/steps/core/ports/count/view?expected_revision=1")
+    selected = {"scope": {"result": {"workflow_id": record["id"], "revision": 1, "step": "core", "port": "count", "context": False}}, "view_spec": view["view_spec"], "overrides": {"primary": "metric"}, "selected_items": [0]}
+    project = call(client, alice, "POST", "/api/projects", {"name": "Shared view"}, 201)
+    item = call(client, alice, "POST", f"/api/projects/{project['id']}/items", {"name": "Count view", "workflow_id": record["id"], "expected_revision": 1, "view": selected}, 201)
+    saved = call(client, alice, "GET", f"/api/project-items/{item['id']}")["snapshot"]
+    assert saved["view_data"]["view_spec"]["provenance"] == view["view_spec"]["provenance"]
+    assert saved["view"]["selected_items"] == [0] and saved["view"]["overrides"]["primary"] == "metric"
+    call(client, bob, "GET", f"/api/project-items/{item['id']}", expected=404)
+
+
 def test_disabling_owner_invalidates_public_links(library):
     client, runtime, alice, _, _, _ = library
     _, item = shared(library)

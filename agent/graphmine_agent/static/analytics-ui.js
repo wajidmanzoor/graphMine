@@ -4,9 +4,14 @@
   const read = key => { try { return localStorage.getItem(key) || ""; } catch { return ""; } };
   const save = (key, value) => { try { localStorage.setItem(key, value); } catch { /* private browsing */ } };
   const state = {base: read("graphmine.apiBase"), token: read("graphmine.apiToken"), caps: null, session: null, files: [], kinds: {}, active: "", mode: "normal", operation: "", record: null, result: null, cy: null, graph: null, selected: new Set(), port: null, rows: [], filtered: [], page: 0, previews: new Map(), poll: null, epoch: 0, busy: false, domains: [], workflows: [], events: [], eventCursor: 0, eventPoll: null, legacyMessages: [], view: "domains", planning: false, pendingQuestion: null, summaries: new Map()};
+  // One store: an item being viewed is distinct from entities chosen for an action.
+  state.selection = {scope: null, item: null, entities: new Set(), edges: new Set(), items: new Set()};
+  for (const [alias, key] of [["selected", "entities"], ["selectedEdges", "edges"], ["selectedItems", "items"]]) {
+    Object.defineProperty(state, alias, {get: () => state.selection[key], set: value => { state.selection[key] = value || new Set(); }, configurable: true});
+  }
   const api = window.GraphMineTransport({state, W});
   const PAGE = 30;
-  const eventIndex = window.GraphMineEventIndex(), messageNodes = window.GraphMineKeyedNodes(), activityNodes = window.GraphMineKeyedNodes();
+  const eventIndex = window.GraphMineEventIndex(), messageNodes = window.GraphMineKeyedNodes();
   const graphView = window.GraphMineGraphView(W);
   let capabilityVersion = 0;
   let historyPage = null, historyLoading = false, historyError = "", historyRead = null, historyGeneration = 0, unreadMessages = false;
@@ -76,8 +81,8 @@
     return record ? [record.id, record.revision, record.status, record.steps, record.error, progressText(record),
       eventIndex.answer(record), state.summaries.get(record.id), record.id === state.workflows.at(-1)?.id, capabilityVersion].map(value => value ?? null) : null;
   }
-  let commands;
-  let resultViews, databaseWorkspace, exploration, workspaceHome, resultContext;
+  let commands, templates;
+  let resultViews, databaseWorkspace, exploration, resultContext, visualization;
   function viewScope() {
     const step = $("result-step").value, port = $("result-port").value;
     if (state.record && state.result && step && port) return {file_id: null, result: {workflow_id: state.record.id, revision: state.record.revision, step, port, index: state.resultView?.index ?? null, context: Boolean(state.resultView?.context)}};
@@ -90,13 +95,13 @@
   let sessionController = new AbortController(), workflowController = null;
   let projectionSchemaGeneration = 0;
   const navigation = window.GraphMineNavigation({state, $, openSession, openWorkflow, renderGraph,
-    getHome: () => workspaceHome, getDatabase: () => databaseWorkspace,
+    getDatabase: () => databaseWorkspace,
     isSessionLoading: () => sessionLoading, getWorkflowTarget: () => workflowTarget});
   const {route, showPage, go, applyRoute} = navigation;
   const polling = window.GraphMinePolling({state, readScope, getSignal: () => workflowController?.signal || sessionController.signal,
     syncConversation, renderWorkflow, renderConversation, loadSaved, loadResults, showWorkflowSync, go, notice: (...args) => notice(...args)});
   const {pollConversation, pollWorkflow} = polling;
-  const descriptions = {normal: "Ask in your own words, choose a calculation, then GraphMine checks and runs it.", interactive: "Discuss your question, review the plan, then approve the calculation.", expert: "Inspect and edit the workflow yourself before running it."};
+  const descriptions = {normal: "Ask in your own words, choose a calculation, then GraphMine checks and runs it.", expert: "Inspect and edit the workflow yourself before running it."};
   const friendly = {requested_k: "Minimum connections inside the core", k: "Group size (k)", source: "Starting point", source_vertex: "Starting point", sink: "Destination", target: "Destination", target_vertex: "Comparison point", sources: "Starting points", seeds: "Required starting points", seed_vertices: "Starting points", vertices_or_seeds: "Selected vertices or starting points", connectivity_mode: "Meaning of connected", weight_mode: "How to use connection weights", result_limit: "Maximum results to list", mode: "Result to return", radius: "Maximum connection steps", depth_limit: "Maximum connection steps", quality: "Solution quality", objective: "Objective to optimize"};
   const choiceNames = {enumerate: "List each result", count: "Count only", edge_weight: "Use edge weights", unweighted: "Treat each connection equally", weakly_connected: "Connected when direction is ignored", strongly_connected: "Every member can reach every other member", induced: "Connections within the selected vertices", ego: "Neighborhood around the selected vertices", exact: "Exact", heuristic: "Heuristic"};
   const title = value => friendly[value] || String(value).replaceAll("_", " ").replace(/^./, c => c.toUpperCase());
@@ -107,7 +112,7 @@
     await openSession(session.id); history.pushState(null, "", route("chat")); await loadSessions();
   })});
   const {parameterControl, parametersFrom, bindingsFrom} = window.GraphMineControls({state, W, node, refs, title, choiceNames});
-  const sessionHistory = window.GraphMineSessionHistory({state, api, node, notice});
+  const sessionHistory = window.GraphMineSessionHistory({state, api, node, notice, onAction: sessionAction});
   function readScope(signal = sessionController.signal) {
     const epoch = state.epoch;
     return window.GraphMineAsync.readScope({api, signal, current: () => epoch === state.epoch});
@@ -128,6 +133,7 @@
     renderOutput(); renderGraph(state.previews.get(state.active) || null);
   }
   function refs() {
+    if (state.pendingSelectionInput && state.pendingSelectionInput === state.active) return {main: {file_id: state.active, kind: "graph"}};
     const value = {};
     for (const [index, file] of state.files.entries()) {
       if (isTable(file)) continue;
@@ -168,7 +174,10 @@
     else if (requested && requested !== profile) label += `. Requested solution quality: ${title(requested)}`;
     return label;
   }
+  const activity = window.GraphMineActivity({state, api, node, W, methodName, qualityDescriptions, plannedQuality, formatAnswer: answerText, route, notice, onChange: renderActivity});
+  const analysisMode = mode => mode === "normal" ? "normal" : "expert";
   function setMode(mode) {
+    mode = analysisMode(mode);
     state.mode = mode;
     document.querySelectorAll("[data-mode]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.mode === mode)));
     $("mode-description").textContent = descriptions[mode];
@@ -179,7 +188,7 @@
     renderActivity();
   }
   function updateControls() {
-    const controls = ["plan-question", "use-operation", "save-editor", "sample-data", "welcome-sample", "data-upload", "new-session", "nav-new-chat", "session-select", "active-input", "active-kind", "device"];
+    const controls = ["plan-question", "use-operation", "save-editor", "sample-data", "welcome-sample", "data-upload", "chat-domain-label", "nav-new-chat", "active-input", "upload-kind", "device"];
     controls.forEach(id => $(id).disabled = state.busy);
     document.querySelectorAll("[data-mode]").forEach(button => button.disabled = state.busy);
     ["plan-question", "use-operation", "save-editor", "operation-select", "device", "approve-plan"].forEach(id => $(id).disabled = state.busy || !state.caps);
@@ -193,15 +202,27 @@
     if (state.busy) return;
     state.busy = true;
     updateControls();
-    try { await fn(); } catch (error) { if (error.name !== "AbortError") notice(error.message, true); }
+    try { await fn(); notice.clearError?.(); } catch (error) { if (error.name !== "AbortError") notice(error.message, true); }
     finally { state.busy = false; updateControls(); }
   }
   function loadSessions() { return sessionHistory.load(); }
   function renderSessions() { sessionHistory.render(); }
-  async function updateSession(changes) {
-    state.session = await api(`/api/sessions/${encodeURIComponent(state.session.id)}`, {method: "PATCH", body: W.stringify(changes)});
-    await loadSessions();
-    $("workspace-title").textContent = state.session.title || "New conversation";
+  async function sessionAction(session, action) {
+    let changes;
+    if (action === "rename") { const name = prompt("Rename this conversation", session.title || ""); if (name === null) return; changes = {title: name.trim() || null}; }
+    else if (action === "archive") changes = {archived: !session.archived};
+    else if (action === "delete" && !confirm("Delete this conversation with its uploads, results and history? This cannot be undone.")) return;
+    await runAction(async () => {
+      if (action === "delete") {
+        await api(`/api/sessions/${encodeURIComponent(session.id)}`, {method: "DELETE"});
+        if (state.session?.id === session.id) { location.hash = ""; await openSession(""); }
+        notice("The conversation was deleted.");
+      } else {
+        const updated = await api(`/api/sessions/${encodeURIComponent(session.id)}`, {method: "PATCH", body: W.stringify(changes)});
+        if (state.session?.id === session.id) { state.session = updated; $("workspace-title").textContent = updated.title || "New conversation"; $("results-session-title").textContent = updated.title || "Your conversation"; }
+      }
+      await loadSessions();
+    });
   }
   async function ensureSession() {
     if (!state.session) throw new Error("Choose a domain to start your conversation.");
@@ -217,7 +238,7 @@
     state.session = null; state.files = []; state.kinds = {}; state.active = ""; state.record = null; state.previews.clear();
     historyRead?.abort(); historyGeneration++; historyPage = null; historyLoading = false; historyError = ""; unreadMessages = false; turnNumbers = new Map(); historyControls();
     manualWorkflows = null; savedLoaded = false; state.eventBacklog = false;
-    eventIndex.reset(); messageNodes.clear(); activityNodes.clear();
+    eventIndex.reset(); messageNodes.clear();
     state.events = eventIndex.all(); state.workflows = []; state.eventCursor = 0; state.legacyMessages = []; state.pendingQuestion = null; state.lastChatKey = null; state.summaries.clear();
     $("workflow-panel").hidden = true; $("plan-editor").value = "";
     setDataOpen(false);
@@ -236,9 +257,8 @@
       eventIndex.reset(workspace.events); state.events = eventIndex.all();
       state.eventCursor = historyPage?.event_cursor ?? state.events.reduce((latest, event) => event.sequence > latest ? event.sequence : latest, 0);
       const domain = state.domains.find(row => row.id === state.session.domain_id);
-      $("active-domain").textContent = domain?.name || state.session.domain_id;
-      $("active-domain-description").textContent = domain?.description || "";
       $("chat-domain-label").textContent = domain?.name || "Your conversation";
+      $("device").value = read(`graphmine.device.${id}`) || "auto";
       $("workspace-title").textContent = state.session.title || "New conversation";
       $("results-session-title").textContent = state.session.title || "Your conversation";
       try { state.kinds = W.parse(read(`graphmine.inputKinds.${id}`) || "{}"); } catch { state.kinds = {}; }
@@ -288,12 +308,16 @@
     if (!clocks.length) { clearInterval(elapsedTimer); elapsedTimer = null; }
     else if (!elapsedTimer) elapsedTimer = setInterval(tickElapsed, 1000);
   }
+  function modelWaking(turn) {
+    return eventIndex.turn(turn).findLast(event => event.type === "workflow.planning")?.payload.status === "waking";
+  }
   function planningNode(chats) {
     const asked = chats.at(-1)?.payload.role === "user" ? chats.at(-1) : null;
     const turn = state.pendingQuestion?.id || asked?.payload.turn_id || null;
     const started = state.pendingQuestion?.startedAt || Date.parse(asked?.created_at || "") || Date.now();
-    return messageNodes.item("planning", W.stringify([turn, started]), () => {
-      const item = messageElement("assistant", "Working on your question…", "GraphMine");
+    const waking = modelWaking(turn);
+    return messageNodes.item("planning", W.stringify([turn, started, waking]), () => {
+      const item = messageElement("assistant", waking ? "Waking the model…" : "Working on your question…", "GraphMine");
       item.article.classList.add("planning-progress");
       const footer = node("p", {class: "planning-footer"});
       footer.append(node("small", {class: "planning-elapsed", "data-started": String(started)}, elapsedText(started)));
@@ -315,87 +339,68 @@
       notice(error.message, true);
     }
   }
-  function factStatement(fact) {
-    const prefix = (state.caps?.operations || []).map(operation => `${methodName(operation.id)}: `).find(prefix => fact.statement.startsWith(prefix));
-    return prefix ? fact.statement.slice(prefix.length) : fact.statement;
-  }
-  const showWorkingNotes = () => state.mode === "expert" && window.GraphMineAccount?.user?.role === "admin";
-  function appendSources(bubble, answer) {
-    if (!answer?.citations?.length) return;
-    const details = node('details', {class: 'answer-sources'});
-    details.append(node('summary', {}, 'Sources'));
-    const sources = new Map((answer.sources || []).map(source => [source.id, source]));
-    const facts = new Map((answer.facts || []).map(fact => [fact.id, fact]));
-    for (const citation of answer.citations) {
-      const source = sources.get(citation.id), fact = facts.get(citation.id);
-      const row = node('div', {class: 'answer-source', 'data-citation': citation.id});
-      row.append(node('small', {}, ({fact: 'Recorded fact', contract: 'Operation contract', doc: 'Documentation', web: 'Web excerpt'})[citation.kind] || 'Source'));
-      if (citation.kind === 'web' && /^https?:\/\//i.test(citation.ref)) {
-        row.append(node('a', {href: citation.ref, target: '_blank', rel: 'noopener noreferrer'}, source?.title || citation.ref));
-      } else row.append(node('strong', {}, source?.title || citation.id));
-      if (citation.kind !== 'web') row.append(node('small', {class: 'source-ref'}, citation.ref));
-      const text = source?.text || fact?.text || fact?.statement;
-      if (text) row.append(node(citation.kind === 'web' ? 'blockquote' : 'p', {}, text));
-      if (source?.provenance) row.append(node('small', {}, source.provenance));
-      details.append(row);
+  function answerText(answer, record) {
+    if (!answer) return "";
+    let text = answer.text || [answer.lead, ...(answer.facts || []).filter(fact => !answer.fact_ids?.length || answer.fact_ids.includes(fact.id)).map(fact => fact.text || fact.statement)].filter(Boolean).join(" ");
+    const operations = record?.validation?.plan?.steps?.map(step => step.operation) || [];
+    for (const fact of answer.facts || []) {
+      const fragment = fact.text || fact.statement?.replace(`${fact.operation_title}: `, "");
+      if (!fragment) continue;
+      let sentence = fragment;
+      if (/^exact, so it establishes/.test(fragment)) sentence = "The result is exact.";
+      else if (/^(?:a heuristic|approximate|a numerical calculation|randomized)/.test(fragment)) sentence = `The result is ${fragment}`;
+      else if (/^returned (.+) bicliques\.$/.test(fragment) && operations.includes("maximal-bicliques")) sentence = fragment.replace(/^returned (.+) bicliques\.$/, "Found $1 maximal bicliques.");
+      else if (/^count is (.+)\.$/.test(fragment) && operations.includes("maximal-biclique-counting")) sentence = fragment.replace(/^count is (.+)\.$/, "Found $1 maximal bicliques.");
+      else sentence = fragment.replace(/^./, c => c.toUpperCase());
+      text = text.replaceAll(fact.statement || fragment, sentence).replaceAll(fragment, sentence);
     }
-    bubble.append(details);
+    return activity.clean(text, answer).replace(/^Here (?:are the results|is what the saved result shows)\.\s*/i, "").replace(/\n+/g, " ").trim();
   }
-  function traceLines(events, record) {
-    const decisions = events.filter(event => event.type === "workflow.planning").map(event => event.payload);
-    const chosen = decisions.findLast(row => row.operations?.length);
-    const lines = [];
-    const operations = record?.validation?.plan?.steps?.map(step => step.operation) || chosen?.operations;
-    if (operations?.length) lines.push(`Chose: ${[...new Set(operations)].map(methodName).join(" → ")}`);
-    if (record?.validation || decisions.some(row => row.stage === "validation" && row.status === "passed")) lines.push("Validated ✓");
-    return lines;
+  function appendAnswer(bubble, answer, record) {
+    const text = answerText(answer, record);
+    if (text) { const body = activity.markdown(text, answer); body.classList.add("grounded-answer"); bubble.append(body); }
+    const sources = answer?.sources || [];
+    const turn = record?.planning_turn_id || answer?.turn_id;
+    for (const [index, source] of sources.filter(source => ["doc", "web", "contract"].includes(source.kind)).entries()) {
+      const citation = node("button", {type: "button", class: "inline-citation", "aria-label": `Source ${index + 1}: ${source.title || "Documentation"}`}, `[${index + 1}]`);
+      citation.addEventListener("click", () => activity.open(turn, "sources", source.id, citation));
+      (bubble.querySelector(".grounded-answer p:last-child") || bubble).append(citation);
+    }
   }
-  function appendOutcome(bubble, record, explanation = "") {
+  function appendFooter(bubble, record, turn, answer = null) {
+    record ||= state.workflows.find(workflow => workflow.id === answer?.workflow_id);
+    const footer = node("div", {class: "answer-footer"});
+    const results = Object.values(record?.steps || {});
+    const quality = [...new Set(results.map(result => result.quality).filter(Boolean))];
+    const devices = [...new Set(results.map(result => result.backend?.device?.toUpperCase()).filter(Boolean))];
+    const checks = [];
+    if (quality.length) checks.push(quality.map(title).join(" / "));
+    if (devices.length) checks.push(devices.join(" / "));
+    if (record?.validation?.workflow_hash || answer?.grounding?.checked) checks.push("Validated ✓");
+    if (checks.length) footer.append(node("small", {class: "answer-validation"}, checks.join(" · ")));
+    if (record?.status === "completed" || results.some(result => result.status === "completed")) footer.append(node("a", {class: "result-link", href: route("results", record.id)}, "View results →"));
+    if (turn) { const details = node("button", {class: "quiet answer-details", type: "button", "data-activity-turn": turn}, "Details"); details.addEventListener("click", () => activity.open(turn, null, null, details)); footer.append(details); }
+    bubble.append(footer);
+  }
+  function appendSuggestions(bubble, answer, record) {
+    if (!answer?.suggestions?.length || !record) return;
+    const choices = node("div", {class: "reply-choices answer-suggestions", "aria-label": "Suggested next questions"});
+    choices.append(node("small", {}, "Suggested next questions"));
+    for (const suggestion of answer.suggestions) {
+      const text = typeof suggestion === "string" ? suggestion : suggestion.text;
+      const button = node("button", {class: "quiet", type: "button", "data-suggestion": text}, text);
+      button.addEventListener("click", () => askAbout(record, text, typeof suggestion === "string" ? null : suggestion.action || null)); choices.append(button);
+    }
+    bubble.append(choices);
+  }
+  function appendOutcome(bubble, record) {
     const status = {completed: "Analysis complete", awaiting_review: "Ready for your review", ready: "Ready for your review", queued: "Your calculation is queued", running: "Your calculation is running", failed: "The calculation failed", interrupted: "The calculation was interrupted", cancelled: "The calculation was cancelled"}[record.status] || title(record.status);
-    const timing = progressText(record);
     const answer = eventIndex.answer(record);
-    const details = node("details", {class: "answer-explanation", "data-history": `explanation-${record.id}-${record.revision}`});
-    details.append(node("summary", {}, "Explanation"));
-    if (explanation && explanation !== answer?.lead && explanation !== answer?.text) details.append(node("p", {}, explanation));
-    if (answer) {
-      if (answer.text) {
-        bubble.append(node('p', {class: 'grounded-answer'}, answer.text));
-        appendSources(bubble, answer);
-      } else {
-      // Every statement was computed from the result; the model only chose them.
-      if (answer.lead) bubble.append(node("p", {class: "answer-lead"}, answer.lead));
-      const facts = new Map(answer.facts.map(fact => [fact.id, factStatement(fact)])), list = node("ul", {class: "answer-facts"});
-      for (const id of answer.fact_ids) if (facts.has(id)) list.append(node("li", {}, facts.get(id)));
-      bubble.append(list);
-      }
-      // The findings are final; only their introduction is still being written.
-      if (answer.pending) bubble.append(node("p", {class: "answer-pending", role: "status"}, "Writing a summary…"));
-      // Follow-up questions about this result, offered while it is the latest one.
-      if (answer.suggestions?.length && record.id === state.workflows.at(-1)?.id) {
-        const choices = node("div", {class: "reply-choices", "aria-label": "Suggested next questions"});
-        for (const suggestion of answer.suggestions) {
-          // Older answers saved plain text; newer ones may carry a checked action.
-          const text = typeof suggestion === "string" ? suggestion : suggestion.text;
-          const action = typeof suggestion === "string" ? null : suggestion.action || null;
-          const button = node("button", {class: "quiet", type: "button", "data-suggestion": text}, text);
-          button.addEventListener("click", () => askAbout(record, text, action));
-          choices.append(button);
-        }
-        details.append(choices);
-      }
-    } else bubble.append(node("p", {class: "workflow-outcome"}, state.summaries.get(record.id) || `${status}${timing ? ` · ${timing}` : ""}. ${record.error?.message || ""}`));
-    for (const step of record.validation.plan.steps) {
-      const result = record.steps[step.id];
-      const quality = result?.quality ? qualityDescriptions[result.quality] || title(result.quality) : plannedQuality(card(step.operation), step.parameters, step.bindings);
-      const device = result?.backend?.device;
-      details.append(node("small", {class: "step-quality"}, `${quality}${device ? ` · ${device.toUpperCase()}` : ""}.`));
-    }
-    if (details.children.length > 1) bubble.append(details);
-    if (record.status === "completed") bubble.append(node("a", {class: "result-link", href: route("results", record.id)}, "View results & visualizations →"));
-    else {
+    if (answer) { appendAnswer(bubble, answer, record); if (answer.pending) bubble.append(node("p", {class: "answer-pending", role: "status"}, "Writing a summary…")); }
+    else bubble.append(node("p", {class: "workflow-outcome"}, state.summaries.get(record.id) || `${status}. ${record.error?.message || ""}`));
+    if (["ready", "awaiting_review", "failed", "interrupted", "cancelled"].includes(record.status)) {
       const button = node("button", {class: "quiet", type: "button"}, ["ready", "awaiting_review"].includes(record.status) ? "Review this plan" : "Inspect this analysis");
-      button.addEventListener("click", () => runAction(async () => { await openWorkflow(record.id); go("chat"); $("workflow-panel").scrollIntoView({block: "nearest"}); }));
-      bubble.append(button);
+      button.addEventListener("click", () => runAction(async () => { await openWorkflow(record.id); go("chat"); $("workflow-panel").scrollIntoView({block: "nearest"}); })); bubble.append(button);
     }
   }
   let clarificationKey = "", clarificationRow = null;
@@ -458,41 +463,18 @@
       // remains in chat history like every earlier question.
       if (row === clarificationRow) continue;
       const signature = W.stringify([event.sequence, row.role === "assistant" ? capabilityVersion : 0,
-        row.role === "assistant" ? outcomeKey(record) : null, row.role === "assistant" && event === chats.at(-1),
+        row.role === "assistant" ? outcomeKey(record) : null, row.role === "assistant" && event === chats.findLast(event => event.payload.role === "assistant"),
         row.role === "assistant" && state.startingTurn === row.turn_id]);
       const article = messageNodes.item(`event:${event.sequence}`, signature, () => {
       const hasOutcome = row.role === "assistant" && record;
-      const item = messageElement(row.role, hasOutcome ? "" : row.answer?.text || row.message, row.role === "user" ? `${title(row.mode || "normal")} mode` : "GraphMine");
-      if (!hasOutcome && row.answer?.text) item.bubble.querySelector('p')?.classList.add('grounded-answer');
+      const item = messageElement(row.role, hasOutcome || row.role === "assistant" && row.answer ? "" : row.message, row.role === "user" ? `${title(analysisMode(row.mode || "normal"))} mode` : "GraphMine");
+      if (row.role === "assistant" && !hasOutcome && !row.answer) item.bubble.querySelector("p")?.replaceWith(activity.markdown(row.message));
       item.article.dataset.turn = row.turn_id;
       if (row.role === "assistant") {
-        // An answer from the saved result's facts; every statement was computed.
-        if (row.answer?.facts?.length && !row.answer.text) {
-          const list = node("ul", {class: "answer-facts"});
-          for (const fact of row.answer.facts) list.append(node("li", {}, factStatement(fact)));
-          item.bubble.append(list);
-        }
-        if (!record && row.answer?.workflow_id) item.bubble.append(node("a", {class: "result-link", href: route("results", row.answer.workflow_id)}, "View results & visualizations →"));
-        appendSources(item.bubble, row.answer);
-        if (row.answer?.web_search?.status && row.answer.web_search.status !== 'ok') {
-          if (/^https:\/\/www\.google\.com\/search\?/.test(row.answer.web_search.search_url)) item.bubble.append(
-            node('a', {href: row.answer.web_search.search_url, target: '_blank', rel: 'noopener noreferrer'}, 'Open this search in Google'));
-        }
-        if ((row.answer?.sources?.length && !row.answer.citations?.length) || row.alternatives?.length) {
-          const details = node("details", {class: "answer-explanation", "data-history": `sources-${row.turn_id}`});
-          details.append(node("summary", {}, "Explanation"));
-          for (const source of (row.answer?.citations?.length ? [] : row.answer?.sources) || []) {
-            details.append(node("strong", {}, source.title), node("p", {}, source.text));
-          }
-          if (row.alternatives?.length) {
-            details.append(node("p", {}, "Related supported calculations:"));
-            for (const alternative of row.alternatives) details.append(node("p", {}, alternative.title));
-          }
-          item.bubble.append(details);
-        }
+        if (!record && row.answer) appendAnswer(item.bubble, {...row.answer, turn_id: row.turn_id}, null);
         if (row.status === "options" && row.options?.length) {
           const options = node("div", {class: "calculation-options", "aria-label": "Calculation choices"});
-          for (const option of row.options) {
+          for (const option of window.GraphMineDistinctOptions(row.options, state.caps, W)) {
             options.append(window.GraphMineOptionCard({option, catalog: state.caps, node, wire: W, onChoose: chosen => chooseOption(row, chosen)}));
           }
           item.bubble.append(options);
@@ -515,12 +497,10 @@
           button.addEventListener("click", () => retryQuestion(row.turn_id));
           item.bubble.append(button);
         }
-        const lines = traceLines(eventIndex.turn(row.turn_id), record);
-        if (lines.length && row.status !== "options") {
-          const trace = node("div", {class: "chat-trace", "aria-label": "Calculation trace"});
-          for (const line of lines) trace.append(node("span", {}, line));
-          item.bubble.append(trace);
-        }
+        const answer = record ? eventIndex.answer(record) : row.answer;
+        appendFooter(item.bubble, record, row.turn_id, answer);
+        if (event === chats.findLast(event => event.payload.role === "assistant")) appendSuggestions(item.bubble, answer, record);
+
       }
       commands?.decorate(item, row);
       return item.article;
@@ -530,7 +510,7 @@
     for (const record of state.workflows.filter(record => !record.planning_turn_id && (!manualWorkflows || manualWorkflows.has(record.id)))) {
       const article = messageNodes.item(`workflow:${record.id}`, W.stringify(outcomeKey(record)), () => {
         const item = messageElement("assistant", "", "Saved analysis");
-        appendOutcome(item.bubble, record); return item.article;
+        appendOutcome(item.bubble, record); appendFooter(item.bubble, record, `saved-${record.id}`, eventIndex.answer(record)); return item.article;
       });
       ordered.push({article, time: record.created_at || ordered.at(-1)?.time || ""});
     }
@@ -547,6 +527,8 @@
     const awaiting = state.pendingQuestion && !chats.some(e => e.payload.turn_id === state.pendingQuestion.id && e.payload.role === "assistant");
     if (chats.at(-1)?.payload.role === "user" || state.planning && awaiting) rendered.push(planningNode(chats));
     messageNodes.reconcile(container, rendered);
+    const latestAnswer = [...container.querySelectorAll(".chat-message.assistant")].at(-1);
+    for (const chips of container.querySelectorAll(".answer-suggestions")) chips.hidden = !latestAnswer?.contains(chips);
     tickElapsed();
     $("chat-welcome").hidden = Boolean(container.children.length);
     $("chat-content").classList.toggle("is-empty", !container.children.length);
@@ -560,55 +542,16 @@
   }
 
   function renderActivity() {
-    const questions = eventIndex.chats().filter(e => e.payload.role === "user").map(e => e.payload);
-    if (state.pendingQuestion) questions.push({turn_id: state.pendingQuestion.id, message: state.pendingQuestion.message});
-    const latest = questions.at(-1)?.turn_id;
-    const rendered = [], records = workflowIndex();
-    let count = 0, thinking = state.planning, outcome, workflow;
-    const workflowStatus = record => ({completed: "Analysis complete", awaiting_review: "Waiting for your approval", ready: "Waiting for your approval", queued: "Calculation queued", running: "Running the calculation"}[record.status] || title(record.status));
-    for (const [index, question] of questions.entries()) {
-      const events = eventIndex.turn(question.turn_id);
-      const answer = events.findLast(e => e.type === "workflow.chat" && e.payload.role === "assistant")?.payload;
-      const record = records.get(question.turn_id);
-      const decisionsForStatus = new Map(events.filter(event => event.type === "workflow.planning").map(event => [event.payload.stage, event.payload.status]));
-      const calls = window.GraphMineModelCalls(events);
-      count += calls.length;
-      if (question.turn_id === latest) { outcome = answer; workflow = record; thinking ||= !answer && [...decisionsForStatus.values()].includes("running"); }
-      const heading = turnNumbers.has(question.turn_id) ? `Question ${turnNumbers.get(question.turn_id)}` : question.turn_id === state.pendingQuestion?.id && turnNumbers.size ? "New question" : `Question ${index + 1}`;
-      rendered.push(activityNodes.item(`turn:${question.turn_id}`, W.stringify([eventIndex.version(question.turn_id), heading, question.message, outcomeKey(record), showWorkingNotes()]), () => {
-      // Raw returned reasoning, once per call, grouped by the user's question.
-      const reasoning = node("details", {class: "reasoning-turn", "data-turn": question.turn_id});
-      reasoning.append(node("summary", {}, "The model's working notes, not checked"));
-      for (const [index, call] of calls.entries()) {
-        const entry = node("section", {class: "reasoning-record", "data-call": call.key, "data-stage": call.stage,
-          ...(call.running ? {"data-live": call.stage} : {})});
-        entry.append(node("h4", {class: "model-call-label", ...(call.model ? {title: call.model} : {})}, `Call ${index + 1}${call.samples > 1 ? ` · ${call.samples} samples` : ""}`));
-        entry.append(call.text ? node("pre", {}, call.text) : node("p", {class: "muted"}, call.running ? "Waiting for reasoning…" : call.unrecorded ? "No reasoning was recorded for this call." : "No reasoning was returned for this call."));
-        reasoning.append(entry);
-      }
-      const history = node("li", {class: "activity-turn", "data-turn": question.turn_id});
-      history.append(node("h3", {}, heading), node("p", {class: "turn-question"}, question.message),
-        node("small", {class: "model-call-count"}, `${calls.length} model ${calls.length === 1 ? "call" : "calls"}`));
-      const trace = node("ol", {class: "activity-trace"});
-      for (const event of events.filter(event => event.type === "workflow.planning")) {
-        const row = event.payload;
-        const entry = node("li", {}, `${title(row.stage)} · ${row.status || "recorded"}${row.message ? ": " + row.message : ""}`);
-        if (row.plan) {
-          const plan = node("details"); plan.append(node("summary", {}, "Plan"), node("pre", {}, W.stringify(row.plan, true))); entry.append(plan);
-        }
-        trace.append(entry);
-      }
-      for (const line of traceLines(events, record)) trace.append(node("li", {}, line));
-      history.append(trace);
-      if (showWorkingNotes()) history.append(reasoning);
-      return history;
-      }));
+    const questions = eventIndex.chats().filter(event => event.payload.role === "user").map(event => event.payload);
+    if (state.pendingQuestion && !questions.some(question => question.turn_id === state.pendingQuestion.id)) questions.push({turn_id: state.pendingQuestion.id, message: state.pendingQuestion.message});
+    const records = workflowIndex(), chats = eventIndex.chats(), last = chats.at(-1)?.payload;
+    for (const record of state.workflows.filter(record => !record.planning_turn_id && (!manualWorkflows || manualWorkflows.has(record.id)))) {
+      const turn = `saved-${record.id}`; questions.push({turn_id: turn, message: record.validation.plan.steps.map(step => methodName(step.operation)).join(" → ")}); records.set(turn, record);
     }
-    const status = thinking ? "Thinking through your question…" : workflow ? workflowStatus(workflow) : outcome?.status === "options" ? "Choose an option" : outcome?.status === "needs_information" ? "Waiting for your reply" : outcome?.status === "failed" ? "Planning failed" : "Ready for your question";
-    $("chat-status").textContent = thinking ? "Thinking…" : status;
-    $("reasoning-count").textContent = String(count);
-    if (!questions.length) rendered.push(activityNodes.item("empty", "empty", () => node("li", {class: "muted"}, "Model reasoning will appear here, grouped by question.")));
-    activityNodes.reconcile($("activity-list"), rendered);
+    activity.render(questions, turn => eventIndex.turn(turn), records, record => eventIndex.answer(record), turnNumbers);
+    const thinking = Boolean(state.pendingQuestion || last?.role === "user");
+    const record = records.get(last?.turn_id);
+    $("chat-status").textContent = thinking ? modelWaking(state.pendingQuestion?.id || last?.turn_id) ? "Waking the model…" : "Thinking…" : record ? ({completed: "Analysis complete", awaiting_review: "Waiting for your approval", ready: "Waiting for your approval", queued: "Calculation queued", running: "Running the calculation"}[record.status] || title(record.status)) : last?.status === "options" ? "Choose an option" : last?.status === "needs_information" ? "Waiting for your reply" : "Ready for your question";
   }
   async function syncConversation() {
     if (!state.session) return;
@@ -647,19 +590,30 @@
     exploration?.changed();
     databaseWorkspace?.updateContext();
     $("active-input").replaceChildren(node("option", {value: ""}, "Choose an input"));
-    state.files.filter(f => !isTable(f)).forEach(f => $("active-input").append(node("option", {value: f.id}, f.original_name)));
+    const files = state.files.filter(file => !isTable(file)), children = new Map(), seen = new Set();
+    for (const file of files) { const parent = file.provenance?.source_file_id; if (!children.has(parent)) children.set(parent, []); children.get(parent).push(file); }
+    const tree = node("ul", {class: "input-tree-list"});
+    function addInput(file, list, depth = 0) {
+      if (seen.has(file.id)) return; seen.add(file.id);
+      $("active-input").append(node("option", {value: file.id}, `${"  ".repeat(depth)}${depth ? "↳ " : ""}${file.original_name}`));
+      const row = node("li", {"data-file": file.id}), select = node("button", {type: "button", class: "quiet input-tree-button", "aria-current": String(state.active === file.id)}, file.original_name);
+      select.onclick = () => { $("active-input").value = file.id; $("active-input").dispatchEvent(new Event("change")); };
+      row.append(select); if (depth) row.append(node("small", {}, "Derived snapshot"));
+      const derived = children.get(file.id); if (derived?.length) { const nested = node("ul"); for (const child of derived) addInput(child, nested, depth + 1); row.append(nested); }
+      list.append(row);
+    }
+    for (const file of files) if (!files.some(parent => parent.id === file.provenance?.source_file_id)) addInput(file, tree);
+    for (const file of files) if (!seen.has(file.id)) addInput(file, tree);
+    $("input-tree").replaceChildren(tree);
     $("active-input").value = state.active;
     $("remove-input").hidden = !state.active;
-    $("input-aliases").replaceChildren();
-    for (const [alias, value] of Object.entries(refs())) $("input-aliases").append(node("span", {}, `${alias}: ${value.kind}`));
     const f = activeFile();
     const tablesReady = !f && state.files.some(isTable);
     $("welcome-heading").textContent = f ? "Your data. New perspectives." : tablesReady ? "Your table is ready." : "Follow your curiosity.";
     $("chat-welcome").querySelector(":scope > p").textContent = f ? `${f.original_name} is ready. What would you like to explore?` : tablesReady ? "Choose which columns form connections, then explore the resulting graph." : "Add your data, then ask a question. We’ll work through the connections together.";
     $("welcome-data-label").textContent = f ? "Manage your data" : tablesReady ? "Build a graph from tables" : "Add your data";
     $("welcome-data").dataset.action = tablesReady ? "projection" : "source";
-    $("active-kind-label").hidden = f?.role !== "attachment";
-    $("active-kind").value = state.kinds[state.active] || "graph";
+    if (f?.role === "attachment") $("upload-kind").value = state.kinds[state.active] || "graph";
     $("data-summary").textContent = f ? (state.kinds[f.id] === "graph" ? `${f.original_name} · ${f.metadata?.vertex_count ?? "?"} vertices · ${f.metadata?.edge_count ?? "?"} connections. The calculation uses the full input.` : `${f.original_name} · ${title(state.kinds[f.id] || "input")}. The calculation uses the full input.`) : "Your analysis uses the full uploaded input.";
     if (state.session) save(`graphmine.inputKinds.${state.session.id}`, W.stringify(state.kinds));
     renderParameters();
@@ -698,9 +652,12 @@
   }
   function renderOperations() {
     $("operation-select").replaceChildren(node("option", {value: ""}, "Choose a calculation"));
-    for (const selected of (state.caps?.operations || []).filter(capable)) $("operation-select").append(node("option", {value: selected.id}, `${selected.title} · ${plannedQuality(selected).split(" — ")[0]}`));
+    const candidates = (state.caps?.operations || []).filter(capable).filter(c => state.pendingSelectionInput !== state.active || !state.selectionOperationIds || state.selectionOperationIds.has(c.id));
+    if (state.pendingSelectionInput === state.active && !candidates.some(c => c.id === state.operation)) state.operation = "";
+    for (const selected of candidates) $("operation-select").append(node("option", {value: selected.id}, `${selected.title} · ${plannedQuality(selected).split(" — ")[0]}`));
     $("operation-select").value = state.operation;
     renderParameters();
+    if (!candidates.length && state.pendingSelectionInput === state.active) $("operation-description").textContent = "No calculation fits this selection";
   }
   function renderParameters() {
     const selected = card(state.operation);
@@ -737,13 +694,14 @@
     requireCapabilities();
     await ensureSession();
     if (!state.active) throw new Error("Choose an input before saving the plan.");
-    const body = {mode: requestedMode || state.mode, plan, inputs: inputFiles || (revise && state.record ? state.record.input_files : refs())};
+    const body = {mode: analysisMode(requestedMode || state.mode), plan, inputs: inputFiles || (revise && state.record ? state.record.input_files : refs())};
     if (turnId) body.planning_turn_id = turnId;
     let path = `/api/sessions/${state.session.id}/workflows`;
     if (revise && state.record) { path = `/api/workflows/${state.record.id}/revise`; body.expected_revision = state.record.revision; }
     const result = await api(path, {method: "POST", body: W.stringify(body)});
     setDataOpen(false);
-    state.record = result; setMode(result.mode); if (result.input_files.main) { state.active = result.input_files.main.file_id; renderFiles(); } clearResults(result.status === "queued" ? "The calculation is queued; no new result has been produced." : "This plan is awaiting execution; no new result has been produced."); renderWorkflow(); await loadSaved();
+    $("operation-dialog").close();
+    state.record = result; loadEditor(); setMode(result.mode); if (result.input_files.main) { state.active = result.input_files.main.file_id; renderFiles(); } clearResults(result.status === "queued" ? "The calculation is queued; no new result has been produced." : "This plan is awaiting execution; no new result has been produced."); renderWorkflow(); await loadSaved();
     if (state.view === "chat") $("workflow-panel").scrollIntoView({behavior: "smooth", block: "nearest"});
     notice(result.status === "queued" ? "The validated workflow is queued." : "Your plan is ready to review. Execution has not started.");
     if (["queued", "running"].includes(result.status)) pollWorkflow();
@@ -761,7 +719,7 @@
       const pending = row?.pending_question;
       const acceptsInput = pending && (["input", "sides"].includes(pending.kind) || ["query_graph", "other_graph"].includes(pending.parameter));
       await sendQuestion({message, inputs: acceptsInput ? refs() : row?.inputs || refs(), mode: row?.mode || state.mode,
-        previous: state.record?.id || null, device: row?.device || $("device").value, selection: currentSelection(),
+        previous: state.pendingSelectionInput === state.active ? null : state.record?.id || null, device: row?.device || $("device").value, selection: state.pendingSelectionInput === state.active ? null : currentSelection(),
         clarification: row?.pending_question?.id ? {clarification_id: row.pending_question.id} : null});
     });
   }
@@ -815,6 +773,7 @@
   // The group the user is looking at, so "this clique" has a meaning. The server
   // reads its members from the saved result; only the position is sent.
   function currentSelection() {
+    if (state.pendingSelectionInput === state.active) return null;
     if (state.resultView) return resultViews.selection();
     if (!state.record || !state.result || state.port?.type !== "vertex_groups" || !state.groupFilter) return null;
     const group = state.groups.find(group => group.key === state.groupFilter);
@@ -822,11 +781,17 @@
     return {workflow_id: state.record.id, step: $("result-step").value, port: $("result-port").value, index: group.index, label: group.label};
   }
   function renderSelectionChip() {
+    if (state.pendingSelectionNames?.length && state.pendingSelectionInput) {
+      $("selection-chip").hidden = false;
+      $("selection-label").textContent = `Asking about ${state.pendingSelectionNames.join(", ")}`;
+      return;
+    }
     const selection = currentSelection();
     $("selection-chip").hidden = !selection;
     if (selection) $("selection-label").textContent = `Asking about ${selection.label || "the selected group"}`;
   }
   async function sendQuestion({message, inputs, mode, previous, device, selection = null, action = null, choice = null, clarification = null}) {
+    mode = analysisMode(mode);
     const id = requestId();
     state.pendingQuestion = {id, message, mode, startedAt: Date.now()}; state.planning = true;
     notice(""); renderConversation(); renderActivity(); pollConversation();
@@ -931,14 +896,14 @@
     const record = state.record; if (!record) return;
     const recovering = ["failed", "cancelled", "interrupted"].includes(record.status) || record.status === "completed" && record.complete === false;
     $("results-page-link").href = route("results", record.id);
-    $("workflow-panel").hidden = false;
+    $("workflow-panel").hidden = record.status === "completed" && !recovering;
     $("workflow-panel").dataset.review = String(record.mode !== "normal" || ["ready", "awaiting_review"].includes(record.status) || recovering);
     const savedIndex = state.workflows.findIndex(row => row.id === record.id);
     if (savedIndex >= 0) state.workflows[savedIndex] = record;
     renderActivity();
     const timing = progressText(record);
     $("workflow-status").textContent = `${title(record.status)}${timing ? ` · ${timing}` : ""}`;
-    $("workflow-summary").textContent = `Revision ${record.revision} · ${title(record.mode)} mode · ${record.validation.plan.device === "auto" ? "GPU preferred, CPU fallback for each compatible calculation" : record.validation.plan.device.toUpperCase() + " only"}. ${record.error?.message || ""}`;
+    $("workflow-summary").textContent = `Revision ${record.revision} · ${title(analysisMode(record.mode))} mode · ${record.validation.plan.device === "auto" ? "GPU preferred, CPU fallback for each compatible calculation" : record.validation.plan.device.toUpperCase() + " only"}. ${record.error?.message || ""}`;
     renderPreview(record);
     $("recovery-actions").hidden = !recovering;
     $("recovery-hint").textContent = record.status === "completed" ? "This analysis returned incomplete results. Adjust its settings or choose a smaller input, then review the revised plan." : "Adjust the settings or choose a smaller input before trying again. Changes are saved for review.";
@@ -974,7 +939,7 @@
           form.append(parameterControl(key, spec, Object.hasOwn(step.parameters, key) ? step.parameters[key] : spec.default, `edit-${id}`));
         }
         form.append(node("button", {type: "submit", class: "secondary"}, record.mode === "normal" && !recovering ? "Save and run changes" : "Save for review"));
-        form.addEventListener("submit", event => { event.preventDefault(); runAction(async () => { const plan = W.parse(W.stringify(record.validation.plan)), edited = plan.steps.find(s => s.id === id); edited.parameters = parametersFrom(form, selected, step.parameters); edited.bindings = bindingsFrom(form, step.bindings); await submitPlan(plan, true, null, null, recovering ? "interactive" : record.mode); }); });
+        form.addEventListener("submit", event => { event.preventDefault(); runAction(async () => { const plan = W.parse(W.stringify(record.validation.plan)), edited = plan.steps.find(s => s.id === id); edited.parameters = parametersFrom(form, selected, step.parameters); edited.bindings = bindingsFrom(form, step.bindings); await submitPlan(plan, true, null, null, recovering ? "expert" : record.mode); }); });
         edit.append(form); li.append(edit);
       }
     }
@@ -986,7 +951,7 @@
     $("workflow-heading").textContent = running ? "Your analysis is running" : record.status === "completed" ? "Analysis complete" : "Review the steps";
   }
   function setDataOpen(open) {
-    window.GraphMineShell.setPanel("data", open);
+    if (open) go("data", "files");
   }
   function renderNarrowInputs() {
     const recovery = state.recovery, alias = $("narrow-alias").value;
@@ -1008,7 +973,7 @@
     workflowController = new AbortController(); workflowTarget = id;
     const reads = readScope(workflowController.signal);
     try {
-      state.record = await reads.get(`/api/workflows/${id}`); setMode(state.record.mode);
+      state.record = await reads.get(`/api/workflows/${id}`); loadEditor(); setMode(state.record.mode);
       const input = state.record.input_files.main;
       if (input) { state.active = input.file_id; state.kinds[input.file_id] = input.kind; renderFiles(); }
       clearResults();
@@ -1228,6 +1193,8 @@
     return positions;
   }
   function renderGraph(data) {
+    $("network").closest(".graph-card").hidden = !data && !state.resultView?.view_spec;
+    if (data && !state.resultView?.view_spec) visualization?.prepare(null);
     resultContext?.refresh();
     exploration?.beforeGraph();
     if (data && data === state.graph) data = state.graphBase;
@@ -1274,6 +1241,10 @@
     const summary = state.groupSummary || {groups: groups.length, unique_members: counts.length, shared_members: counts.filter(keys => keys.size > 1).length, smallest: sizes.reduce((a, b) => Math.min(a, b), Infinity), largest: sizes.reduce((a, b) => Math.max(a, b), 0)};
     $("group-summary").textContent = groups.length ? `${state.groupsTruncated && !state.groupSummary ? "Loaded groups: " : ""}${summary.groups} ${noun}s · ${summary.unique_members} distinct members · sizes ${summary.smallest}–${summary.largest} · ${summary.shared_members} shared members. Shared members belong to more than one group in the full retained output.${state.groupsTruncated ? " Group colors use loaded groups; search the table to find other members." : ""}` : "";
     $("graph-group").replaceChildren(node("option", {value: ""}, state.resultView ? "Input context" : "Full network")); $("group-legend").replaceChildren();
+    for (const group of groups) {
+      const category = state.resultView?.view_spec?.nodes?.color?.categories?.find(c => W.idKey(c.value) === group.key);
+      if (category) { group.color = category.color; group.label = category.label; }
+    }
     if (groups.length) {
       const all = node("button", {"aria-pressed": String(!filter)}, state.resultView ? "Input context" : `All ${groups.length} ${noun}s`); all.addEventListener("click", () => filterGraphGroup("")); $("group-legend").append(all);
       for (const group of groups) {
@@ -1304,19 +1275,25 @@
     const source = filter && state.groupGraph?.key === filter.key ? databaseWorkspace?.overlayGraph(state.groupGraph.data) || state.groupGraph.data : data;
     window.GraphMineExplorer?.clearTime?.();
     if (!source?.vertices || !window.cytoscape) return;
-    const vertices = source.vertices.filter(v => !filter || filter.vertices.has(W.idKey(v.id))).slice(0, 500), keys = new Set(vertices.map(v => W.idKey(v.id)));
-    const edges = (flows || source.edges).filter(e => keys.has(W.idKey(e.source)) && keys.has(W.idKey(e.target))).slice(0, 2000);
+    const vertices = source.vertices.filter(v => !filter || filter.vertices.has(W.idKey(v.id))).slice(0, state.resultView ? 50000 : 2000), keys = new Set(vertices.map(v => W.idKey(v.id)));
+    const edges = (flows || source.edges).filter(e => keys.has(W.idKey(e.source)) && keys.has(W.idKey(e.target))).slice(0, state.resultView ? 100000 : 5000);
     const positions = graphPositions(vertices), colors = new Map(groups.map(group => [group.key, group.color]));
     // Score results: node size grows with the score (min to max).
     const field = state.port?.type === "vertex_scores" ? state.port.score_field || "score" : null, scores = new Map();
     if (field) for (const row of state.port.value) if (typeof row?.[field] === "number") scores.set(W.idKey(row.vertex), row[field]);
     const low = [...scores.values()].reduce((a, b) => Math.min(a, b), Infinity), high = [...scores.values()].reduce((a, b) => Math.max(a, b), -Infinity);
     const size = key => scores.has(key) && high > low ? 16 + 30 * (scores.get(key) - low) / (high - low) : 25;
-    const elements = vertices.map(v => ({position: positions.get(W.idKey(v.id)), data: {id: W.idKey(v.id), size: size(W.idKey(v.id)), label: String(v.label || v.name || v.id), original: v, entity: v.id, color: filter?.color || colors.get(state.groupMembership?.get(W.idKey(v.id))) || state.colorGroups?.colors.get(W.idKey(v.id)) || "#73a991"}}));
+    let elements = vertices.map(v => ({position: positions.get(W.idKey(v.id)), data: {id: W.idKey(v.id), size: size(W.idKey(v.id)), label: String(v.label || v.name || v.id), original: v, entity: v.id, color: filter?.color || colors.get(state.groupMembership?.get(W.idKey(v.id))) || state.colorGroups?.colors.get(W.idKey(v.id)) || "#73a991"}}));
     edges.forEach((e, index) => elements.push({data: {id: `edge:${index}`, source: W.idKey(e.source), target: W.idKey(e.target), original: e}}));
+    if (state.resultView?.view_spec && window.GraphMineViewStyle) {
+      const styled = window.GraphMineViewStyle.renderData(W, {...source, vertices, edges}, state.resolvedViewSpec || state.resultView.view_spec, state.visualOverrides);
+      elements = styled.elements; for (const element of elements) if (positions.has(element.data.id)) element.position = positions.get(element.data.id);
+      state.viewStyleData = styled;
+    }
     const direction = flowMode || source.graph?.directed ? "triangle" : "none";
     const layout = $("graph-layout").value;
-    const rendered = graphView.render(state.cy, {container: $("network"), elements, minZoom: .08, maxZoom: 5, wheelSensitivity: .2, style: [
+    const webgl = Boolean(state.resultView?.view_spec && vertices.length > 2000 && window.GraphMineViewStyle.canWebGL({edges}));
+    const rendered = graphView.render(state.cy, {container: $("network"), elements, webgl, minZoom: state.resultView?.view_spec ? .8 : .000001, maxZoom: state.resultView?.view_spec ? 1.8 : 20, wheelSensitivity: .2, selectionType: "additive", boxSelectionEnabled: true, style: state.resultView?.view_spec ? window.GraphMineViewStyle.stylesheet(direction === "triangle") : [
       {selector: "node", style: {"background-color": "data(color)", "border-color": "#fff", "border-width": 2, width: "data(size)", height: "data(size)", label: "data(label)", "font-size": 10, color: "#284a42", "text-valign": "bottom", "text-margin-y": 5, "text-background-color": "#fdfefb", "text-background-opacity": .8, "text-background-padding": 2}},
       {selector: "edge", style: {width: flowMode ? 3 : 1.4, "line-color": flowMode ? "#4179b5" : "#adc5b9", "target-arrow-color": flowMode ? "#4179b5" : "#91afa0", "target-arrow-shape": direction, "curve-style": "bezier", opacity: .8}},
       {selector: "node.chosen", style: {"border-color": "#223e34", "border-width": 4}},
@@ -1324,17 +1301,18 @@
       {selector: "edge.chosen", style: {width: 4, "line-color": "#223e34", "target-arrow-color": "#223e34", opacity: 1}},
       {selector: "node.faded", style: {opacity: .45}},
       {selector: "edge.faded", style: {opacity: .1}},
-    ], layout: layoutOptions(positions)}, W.stringify([state.session?.id ?? null, viewScope()]), layout,
+    ], layout: layoutOptions(positions)}, W.stringify([state.session?.id ?? null, viewScope(), webgl]), layout,
     layout === "computed" ? state.port.value : layout === "groups" ? [...positions] : null);
     state.cy = rendered.cy;
     if (!rendered.reused) {
     state.cy.on("tap", "node", event => {
-      state.selected = new Set([event.target.id()]);
+      state.selectedItems = new Set();
+      if (state.resultView?.view_spec || event.originalEvent?.shiftKey || event.originalEvent?.ctrlKey || event.originalEvent?.metaKey) { if (state.selected.has(event.target.id())) state.selected.delete(event.target.id()); else state.selected.add(event.target.id()); }
+      else state.selected = new Set([event.target.id()]);
       state.selectedEdges = new Set();
-      $("selection-detail").textContent = W.stringify(event.target.data("original"), true);
       applySelection();
     });
-    state.cy.on("tap", "edge", event => { const edge = event.target.data("original"); state.selectedEdges = new Set([W.idKey(edge.id)]); state.selected = new Set([W.idKey(edge.source), W.idKey(edge.target)]); $("selection-detail").textContent = W.stringify(edge, true); applySelection(); });
+    state.cy.on("tap", "edge", event => { const edge = event.target.data("original"); state.selectedEdges = new Set([W.idKey(edge.id)]); state.selected = new Set([W.idKey(edge.source), W.idKey(edge.target)]); applySelection(); });
     }
     const n = data.vertex_count ?? data.vertices.length, m = flows ? flows.length : data.edge_count ?? data.edges.length;
     const truncated = data.vertices_truncated || data.edges_truncated || (filter ? vertices.length < filter.vertices.size || edges.length === 2000 && data.edges.length > 2000 : vertices.length < n || edges.length < m);
@@ -1346,15 +1324,18 @@
     applySelection();
     window.GraphMineExplorer?.timeView?.(exploration?.settings()?.filters);
     resultViews?.decorate();
+    visualization?.afterGraph(rendered.reused);
     databaseWorkspace?.decorate();
     exploration?.afterGraph();
   }
   function renderPreviewScope() {
     if (!state.graph) return;
+    if (state.resultView?.view_spec && state.cy) { visualization?.updateCounts(); return; }
     const computed = $("graph-layout").value === "computed" && state.port?.type === "vertex_positions";
     $("preview-scope").textContent = state.previewScope + (state.port?.type === "pattern_collection" ? "Canonical pattern; vertex IDs are local to this pattern. " : "") + (computed ? `Computed coordinates${state.port.value[0]?.coordinates?.length === 3 ? " (XY projection of 3D)" : ""}; display scale is uniform.` : "Layout positions are for display only.");
   }
   function layoutOptions(positions) {
+    if (["force", "hierarchical", "clustered", "bipartite", "radial", "concentric"].includes($("graph-layout").value)) return {name: "preset", positions: n => positions?.get(n.id()) || n.position(), fit: false};
     if ($("graph-layout").value === "groups" && state.groups?.length) {
       const grouped = positions || graphPositions(state.cy.nodes().map(n => n.data("original")));
       return {name: "preset", positions: n => grouped.get(n.id()), animate: false, fit: true, padding: 35};
@@ -1388,17 +1369,12 @@
     return [];
   }
   function selectRow(row, position) {
+    state.selectedItems = new Set([position ?? state.rows.indexOf(row)]);
     if (resultViews && state.resultView) {
       // Give immediate local feedback while the saved graph view is fetched.
       // The response reconciles highlights against the immutable result.
       if (state.port?.type === "pattern_collection") {
         state.patternId = row.pattern_id; state.selected.clear(); renderGraph(row.pattern);
-      } else {
-        const ids = rowVertices(row);
-        state.selected = new Set(ids.map(W.idKey));
-        state.selectedEdges = state.port?.type === "path_set" && Array.isArray(row.edges) ? new Set(row.edges.map(W.idKey)) : null;
-        const visible = ids.filter(id => state.cy?.getElementById(W.idKey(id)).length);
-        $("selection-detail").textContent = `${ids.length} selected: ${ids.map(W.idLabel).join(", ")}${visible.length < ids.length ? `\n${ids.length - visible.length} selected entities are outside this graph preview.` : ""}`;
       }
       applySelection();
       void resultViews.select(position ?? state.rows.indexOf(row)); return;
@@ -1459,21 +1435,22 @@
   function applySelection() {
     exploration?.changed();
     if (state.cy) {
-      state.cy.nodes().forEach(n => { n.toggleClass("chosen", state.selected.has(n.id())); n.toggleClass("faded", state.selected.size > 0 && !state.selected.has(n.id())); n.toggleClass("shared-member", $("highlight-overlap").checked && (state.groupsTruncated ? state.fullMemberships?.get(n.id()) || 0 : state.groupMemberships?.get(n.id())?.size || 0) > 1); });
+      state.cy.nodes().forEach(n => { n.toggleClass("chosen", state.selected.has(n.id())); n.toggleClass("faded", state.resultView?.view_spec ? n.data("original")?.view?.result === false : state.selected.size > 0 && !state.selected.has(n.id())); n.toggleClass("shared-member", $("highlight-overlap").checked && (state.groupsTruncated ? state.fullMemberships?.get(n.id()) || 0 : state.groupMemberships?.get(n.id())?.size || 0) > 1); });
       void loadFullMemberships();
       const path = state.selected.size > 0 && state.selectedEdges;
       state.cy.edges().forEach(e => {
         const onPath = Boolean(path) && path.has(W.idKey(e.data("original")?.id));
         e.toggleClass("chosen", onPath);
-        e.toggleClass("faded", state.selected.size > 0 && (path ? !onPath : !(state.selected.has(e.source().id()) || state.selected.has(e.target().id()))));
+        e.toggleClass("faded", state.resultView?.view_spec ? e.data("original")?.view?.result === false && !onPath : state.selected.size > 0 && (path ? !onPath : !(state.selected.has(e.source().id()) || state.selected.has(e.target().id()))));
       });
     }
     document.querySelectorAll("[data-result-row]").forEach(el => {
       const index = Number(el.dataset.resultRow), remoteRow = state.remote && el.tagName === "TR", row = (remoteRow ? state.pageRows : state.rows)[index], ids = rowVertices(row);
       const position = remoteRow ? state.pagePositions?.[index] ?? index : index;
       const active = state.port?.type === "pattern_collection" ? row?.pattern_id === state.patternId : state.port?.type === "vertex_groups" && state.groupFilter ? W.idKey(row?.group ?? position) === state.groupFilter : ids.length > 0 && ids.every(id => state.selected.has(W.idKey(id)));
-      el.setAttribute(el.tagName === "TR" ? "aria-selected" : "aria-pressed", String(active));
+      el.setAttribute(el.tagName === "TR" ? "aria-selected" : "aria-pressed", String(state.resultView?.view_spec ? state.selection.item?.index === position : active || state.selectedItems?.has(position)));
     });
+    visualization?.selectionChanged();
   }
   function renderOutput() {
     $("metrics").replaceChildren(); $("chart").replaceChildren();
@@ -1591,6 +1568,7 @@
   }
   function tableRows() { return state.remote ? state.pageRows : state.rows; }
   function renderTable() {
+    if (visualization?.renderItemTable()) return;
     const head = $("result-table").querySelector("thead"), body = $("result-table").querySelector("tbody"); head.replaceChildren(); body.replaceChildren();
     const rows = tableRows(), indices = state.remote ? state.filtered : state.filtered.slice(state.page * PAGE, (state.page + 1) * PAGE), objectRows = rows.some(r => r !== null && typeof r === "object" && !Array.isArray(r));
     const keys = objectRows ? [...new Set(rows.flatMap(r => r && typeof r === "object" && !Array.isArray(r) ? Object.keys(r) : ["value"]))] : ["value"];
@@ -1599,9 +1577,10 @@
     indices.forEach(index => {
       const row = rows[index], record = objectRows && row && typeof row === "object" && !Array.isArray(row) ? row : {value: row};
       const tr = node("tr", {"data-result-row": index, "aria-selected": "false"});
+      tr.dataset.viewEntities = W.stringify(rowVertices(row));
       keys.forEach((key, position) => {
         const value = record[key] ?? null, isEntity = ["vertex", "source", "target", state.port?.vertex_field].includes(key) || key === "value" && state.port?.type === "vertex_set";
-        const label = isEntity && state.graph?.vertices?.find(v => W.idKey(v.id) === W.idKey(value))?.label;
+        const label = isEntity && (state.viewLabels?.get(W.idKey(value)) || state.graph?.vertices?.find(v => W.idKey(v.id) === W.idKey(value))?.label);
         // Numbers read as in the chart (≈ when rounded); the full value is the tooltip.
         const text = cliques && key === "group" ? groupLabel(value, state.remote ? state.pagePositions?.[index] ?? index : index) : state.port?.type === "pattern_collection" && key === "pattern" ? `${record.vertex_count} vertices · ${record.edge_count} connections` : label ? String(label) : isEntity && value !== null ? W.idLabel(value) : `${key === "value" && record.rounded && record.exact_value || compact(value) !== display(value) ? "≈ " : ""}${compact(value)}`, td = node("td", {title: label ? `${label} · ${W.idLabel(value)}` : compact(value) !== display(value) ? display(value) : text});
         if (position === 0 && (rowVertices(row).length || state.port?.type === "pattern_collection")) { const button = node("button", {}, state.port?.type === "pattern_collection" ? `View pattern ${index + 1}` : text); button.addEventListener("click", () => selectRow(row, state.remote ? state.pagePositions?.[index] ?? index : index)); td.append(button); } else td.textContent = text;
@@ -1617,6 +1596,7 @@
     if (state.rows.some(row => row?.rounded && row?.exact_value)) $("table-scope").textContent += " Approximate displays use ≈. Exact numerators and denominators are preserved in the table and download.";
     if (state.remote) $("table-scope").textContent += ` This table searches all ${state.remote.total.toLocaleString()} retained rows. Charts use ${state.rows.length.toLocaleString()} loaded rows.${state.resultView ? " The focused graph resolves the full saved output before preview limits." : ""}`;
     resultContext?.refresh();
+    void visualization?.loadLabels(indices.map(i => rows[i])); visualization?.applyFilters();
     applySelection();
   }
   async function loadCapabilities(generation, signal, refresh = false) {
@@ -1626,7 +1606,6 @@
       if (generation !== connectionGeneration) return;
       state.caps = caps; capabilityVersion++;
       const verified = caps.operations.filter(c => c.execution.cpu || c.execution.gpu).length;
-      $("verified-count").textContent = `${verified} verified calculations`;
       $("connection-state").textContent = verified ? "" : "Calculations unavailable";
       $("connection-state").dataset.state = verified ? "ready" : "unavailable";
       const gpuAvailable = caps.device_configuration?.gpu_available ?? caps.device_configuration?.gpu_configured;
@@ -1643,7 +1622,6 @@
       state.caps = null;
       $("connection-state").textContent = "Analysis unavailable";
       $("connection-state").dataset.state = "unavailable";
-      $("verified-count").textContent = "Calculations unavailable";
       $("planner-note").textContent = "Calculations are unavailable. Reconnect to try again.";
       notice("Analysis is unavailable. You can still choose a domain and open saved conversations. Reconnect to try again.", true);
     } finally {
@@ -1651,7 +1629,6 @@
     }
   }
   async function connect(refresh = false) {
-    workspaceHome?.reset();
     const generation = ++connectionGeneration;
     capabilitiesController?.abort();
     capabilitiesController = new AbortController();
@@ -1667,7 +1644,6 @@
     }
     renderDomains();
     $("connection-state").textContent = "Checking calculations…";
-    $("verified-count").textContent = "Checking available calculations…";
     $("planner-note").textContent = "Calculations are loading. You can choose a domain and add data.";
     // Native verification must not hold the domain picker or conversation navigation.
     void loadCapabilities(generation, capabilitiesController.signal, refresh);
@@ -1681,16 +1657,13 @@
   $("connection-button").addEventListener("click", () => { $("api-base").value = state.base; $("api-token").value = state.token; $("connection-dialog").showModal(); });
   $("close-connection").addEventListener("click", () => $("connection-dialog").close());
   $("connection-form").addEventListener("submit", event => { event.preventDefault(); state.base = $("api-base").value.trim().replace(/\/$/, ""); state.token = $("api-token").value.trim(); save("graphmine.apiBase", state.base); save("graphmine.apiToken", state.token); $("connection-dialog").close(); runAction(() => connect(true)); });
-  $("new-session").addEventListener("click", () => { location.hash = ""; });
+  $("chat-domain-label").addEventListener("click", () => { location.hash = ""; });
   $("nav-new-chat").addEventListener("click", () => { if (!state.busy) { location.hash = ""; window.GraphMineShell.setView("domains"); } });
   $("show-all-domains").addEventListener("click", () => {
     const expanded = $("show-all-domains").getAttribute("aria-expanded") !== "true";
     $("show-all-domains").setAttribute("aria-expanded", String(expanded));
     $("show-all-domains").textContent = expanded ? "Show fewer domains ↑" : "Explore all domains ↓";
     $("domain-grid").querySelectorAll(".domain-card").forEach((button, index) => { button.hidden = !expanded && index >= 6; });
-  });
-  $("toggle-data").addEventListener("click", () => {
-    databaseWorkspace.show();
   });
   $("adjust-parameters").addEventListener("click", () => {
     const editors = [...$("workflow-steps").querySelectorAll("[data-parameter-editor]")];
@@ -1721,24 +1694,12 @@
         if (!recovery || recovery.id !== state.record?.id || recovery.revision !== state.record?.revision) throw new Error("This analysis changed. Close this dialog and open Narrow input again.");
         if (!file) throw new Error("Choose a smaller graph first.");
         const inputs = {...recovery.inputs, [$("narrow-alias").value]: {file_id: file, kind: "graph"}};
-        await submitPlan(state.record.validation.plan, true, null, inputs, "interactive");
+        await submitPlan(state.record.validation.plan, true, null, inputs, "expert");
         $("narrow-dialog").close();
       } catch (error) { $("narrow-feedback").textContent = error.message; }
     });
   });
   $("refresh-sessions").addEventListener("click", () => runAction(loadSessions));
-  $("rename-session").addEventListener("click", () => {
-    const title = prompt("Rename this conversation", state.session?.title || "");
-    if (title !== null) runAction(() => updateSession({title: title.trim() || null}));
-  });
-  $("archive-session").addEventListener("click", () => runAction(() => updateSession({archived: !state.session.archived})));
-  $("delete-session").addEventListener("click", () => {
-    if (!confirm("Delete this conversation with its uploads, results and history? This cannot be undone.")) return;
-    runAction(async () => {
-      await api(`/api/sessions/${encodeURIComponent(state.session.id)}`, {method: "DELETE"});
-      location.hash = ""; await openSession(""); await loadSessions(); notice("The conversation was deleted.");
-    });
-  });
   $("remove-input").addEventListener("click", () => {
     const file = activeFile();
     if (!file || !confirm(`Remove ${file.original_name}? Analyses that already finished keep their results.`)) return;
@@ -1752,7 +1713,6 @@
   $("back-to-chat").addEventListener("click", () => go("chat"));
   $("result-select").addEventListener("change", () => { if ($("result-select").value) go("results", $("result-select").value); });
   window.addEventListener("hashchange", () => { applyRoute().catch(error => notice(error.message, true)); });
-  $("session-select").addEventListener("change", () => { location.hash = $("session-select").value ? `#workspace/${encodeURIComponent($("session-select").value)}/chat` : ""; });
   function projectionSettings() {
     const table = $("projection-table").value, source = $("projection-source").value, target = $("projection-target").value;
     if (!table || !source || !target || source === target) throw new Error("Choose a table and two different endpoint columns.");
@@ -1815,11 +1775,13 @@
     await upload(new File([W.stringify(graph)], "example-team.json", {type: "application/json"}), "graph");
   }));
   $("active-input").addEventListener("change", () => runAction(async () => { state.active = $("active-input").value; renderFiles(); await previewActive(); }));
-  $("active-kind").addEventListener("change", () => runAction(async () => { state.kinds[state.active] = $("active-kind").value; renderFiles(); await previewActive(); }));
-  $("device").addEventListener("change", () => { if (state.operation && !capable(card(state.operation))) state.operation = ""; renderOperations(); });
+  $("upload-kind").addEventListener("change", () => { if (activeFile()?.role === "attachment") runAction(async () => { state.kinds[state.active] = $("upload-kind").value; renderFiles(); await previewActive(); }); });
+  $("device").addEventListener("change", () => { if (state.session) save(`graphmine.device.${state.session.id}`, $("device").value); if (state.operation && !capable(card(state.operation))) state.operation = ""; renderOperations(); });
   $("operation-select").addEventListener("change", () => { state.operation = $("operation-select").value; renderParameters(); });
   $("operation-form").addEventListener("submit", event => { event.preventDefault(); runAction(() => submitPlan(planFromOperation())); });
-  commands = window.GraphMineCommands({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls, mergeHistory});
+  commands = window.GraphMineCommands({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls, mergeHistory,
+    operations: () => (state.caps?.operations || []).filter(capable), onTemplates: () => templates.open(),
+    onOperation: id => { requireCapabilities(); state.operation = id || state.operation; renderOperations(); renderParameters(); $("operation-dialog").showModal(); }, quality: selected => plannedQuality(selected).split(" — ")[0]});
   $("question-form").addEventListener("submit", askQuestion);
   $("question").addEventListener("keydown", event => { if (!event.defaultPrevented && event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); if (!state.busy) $("question-form").requestSubmit(); } });
   $("load-editor").addEventListener("click", () => { try { loadEditor(); } catch (error) { notice(error.message, true); } });
@@ -1828,10 +1790,10 @@
   $("approve-plan").addEventListener("click", () => runAction(async () => { const record = state.record; state.record = await api(`/api/workflows/${record.id}/run`, {method: "POST", body: W.stringify({workflow_hash: record.validation.workflow_hash, expected_revision: record.revision})}); clearResults(); renderWorkflow(); pollWorkflow(); }));
   $("cancel-workflow").addEventListener("click", async () => { try { clearTimeout(state.poll); state.epoch++; state.record = await api(`/api/workflows/${state.record.id}`, {method: "DELETE"}); renderWorkflow(); await loadSaved(); await loadResults(); notice("Execution cancelled. Completed step artifacts remain saved."); } catch (error) { notice(error.message, true); } });
   $("result-step").addEventListener("change", () => runAction(selectStep)); $("result-port").addEventListener("change", () => runAction(selectPort));
-  $("graph-layout").addEventListener("change", () => { state.cy?.layout(layoutOptions()).run(); renderPreviewScope(); }); $("fit-graph").addEventListener("click", () => state.cy?.fit(undefined, 35));
+  $("graph-layout").addEventListener("change", () => { if (state.resultView?.view_spec) void visualization?.layout().catch(error => notice(error.message, true)); else state.cy?.layout(layoutOptions()).run(); renderPreviewScope(); }); $("fit-graph").addEventListener("click", () => visualization ? visualization.fit() : state.cy?.fit(undefined, 35));
   $("graph-group").addEventListener("change", () => filterGraphGroup($("graph-group").value));
-  $("clear-question-selection").addEventListener("click", () => { if (state.resultView) resultViews.clearSelection(); else if (state.groupFilter) filterGraphGroup(""); renderSelectionChip(); });
-  $("clear-selection").addEventListener("click", () => { if (state.resultView) resultViews.clearSelection(); else if (state.groupFilter) filterGraphGroup(""); state.selected.clear(); state.selectedEdges = null; $("selection-detail").textContent = "Selection cleared."; applySelection(); });
+  $("clear-question-selection").addEventListener("click", () => { state.pendingSelectionInput = null; state.pendingSelectionNames = []; state.selectionOperationIds = null; if (state.resultView) resultViews.clearSelection(); else if (state.groupFilter) filterGraphGroup(""); renderSelectionChip(); });
+  $("clear-selection").addEventListener("click", () => { if (state.resultView) resultViews.clearSelection(); else if (state.groupFilter) filterGraphGroup(""); state.selected.clear(); state.selectedItems = new Set(); state.selectedEdges = null; $("selection-detail").textContent = "Selection cleared."; applySelection(); });
   $("table-search").addEventListener("input", filterRows);
   for (const id of ["group-min-size", "group-max-size", "group-member"]) $(id).addEventListener("input", filterRows);
   $("clear-group-filters").addEventListener("click", () => {
@@ -1852,34 +1814,47 @@
       cy.resize();
       // Keep a previously fitted overview visible on smaller screens, while
       // preserving a viewport the user deliberately zoomed or panned.
-      if (previouslyFit && (next.width < graphViewport.width || next.height < graphViewport.height)) cy.fit(undefined, 35);
+      const centered = Math.abs((box.x1 + box.x2) / 2 - graphViewport.width / 2) < 24 && Math.abs((box.y1 + box.y2) / 2 - graphViewport.height / 2) < 24;
+      if (centered && previouslyFit && (next.width < graphViewport.width || next.height < graphViewport.height)) {
+        if (state.resultView?.view_spec) visualization?.fit(); else cy.fit(undefined, 35);
+      }
     }
     graphViewport = {width: next.width, height: next.height};
   }).observe($("network"));
   window.GraphMineWorkspace = {state, wire: W};
   resultContext = window.GraphMineResultContext({state, W, node, qualityDescriptions, title, pageSize: PAGE, overlay: () => databaseWorkspace?.settings().overlay_file_id});
-  resultViews = window.GraphMineResultViews({state, api, W, node, renderGraph, applySelection, renderSelectionChip, notice, onContext: () => resultContext.refresh(), savedSelection: (...args) => exploration?.selectionFor(...args)});
+  resultViews = window.GraphMineResultViews({state, api, W, node, renderGraph, applySelection, renderSelectionChip, notice, onContext: () => resultContext.refresh(), onView: async view => { await visualization?.prepare(view); renderTable(); }, onClear: () => visualization?.clear(), onRender: () => visualization?.renderCharts(), savedSelection: (...args) => exploration?.selectionFor(...args)});
   databaseWorkspace = window.GraphMineDatabaseWorkspace({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, renderGraph, previewActive, upload, clearResults, viewScope,
     openData: part => go("data", part === "files" ? "files" : ""),
     dataPartChanged: part => { if (state.view === "data") history.replaceState(null, "", route("data", part === "connection" ? "" : part)); },
     dataReturnLabel: () => /\/results(?:\/|$)/.test(navigation.returnRoute) ? "Back to results" : state.session ? "Back to conversation" : "Back to home",
     leaveData: () => { location.hash = navigation.returnRoute; }});
   exploration = window.GraphMineExploration({state, api, W, node, scope: viewScope, database: () => databaseWorkspace, applySelection, filterRows, reload: async () => { const id = state.session?.id, page = state.view; if (id) { await openSession(id); showPage(page); } }});
+  for (const [value, caption] of [["force", "Force"], ["hierarchical", "Hierarchical"], ["concentric", "Concentric"], ["clustered", "Clustered"], ["bipartite", "Bipartite"], ["radial", "Radial"]]) $("graph-layout").append(node("option", {value}, caption));
+  visualization = window.GraphMineVisualization({state, api, W, node, notice, renderGraph, renderTable, applySelection, selectRow, getExploration: () => exploration, getResultViews: () => resultViews, enumerateResult: async () => {
+    const response = await visualization.action("enumeration-input");
+    state.files.push(response.file); state.kinds[response.file.id] = "graph"; state.active = response.file.id; renderFiles();
+    const plan = {version: 1, device: $("device").value, steps: [{id: "enumerate", operation: response.operation, input: {input: "main"}, parameters: response.parameters}]};
+    go("chat"); await submitPlan(plan, false, null, {main: {file_id: response.file.id, kind: "graph"}});
+  }, askSelection: async (ids, kind) => {
+    if (!ids.length) throw new Error("Select entities first.");
+    const response = await visualization.action("selection", {vertices: ids});
+    state.files.push(response.file); state.kinds[response.file.id] = "graph"; state.active = response.file.id; state.pendingSelectionInput = response.file.id;
+    state.pendingSelectionNames = ids.map(id => visualization.label(id));
+    state.selectionOperationIds = new Set(response.compatible_operations || []);
+    resultViews.clearSelection(); renderFiles(); notice(response.note);
+    go("chat"); $("question").value = kind === "run" ? "Run a calculation on this selected subgraph: " : "Tell me about this selected subgraph: "; renderSelectionChip(); $("question").focus();
+    if (kind === "run") { renderOperations(); renderParameters(); $("operation-dialog").showModal(); }
+  }});
+  window.GraphMineWorkspace.visualization = visualization;
+  window.GraphMineWorkspace.exploration = exploration;
+  $("result-actions-panel").open = true;
   window.GraphMineOutputs.install({state, api, W, node, runAction});
   window.GraphMineExplorer.install({state, W, node, selectRow});
   window.GraphMineEditor({state, W, node, card, refs, runAction, notice, parameterControl, parametersFrom, loadEditor, submitPlan});
   window.GraphMineLibrary({state, api, W, node, notice, runAction, ensureSession, renderFiles, previewActive, questionSelection: currentSelection});
-  workspaceHome = window.GraphMineHome({state, api, W, node, runAction, onDataset: async response => {
-    // Keep the created conversation address recoverable if its first read fails.
-    history.pushState(null, "", `#workspace/${encodeURIComponent(response.session.id)}/chat`);
-    if (!await openSession(response.session.id)) return false;
-    await loadSessions();
-    const current = state.session?.id === response.session.id;
-    if (current) $("question").focus();
-    return current;
-  }});
   window.GraphMineProjects({state, api, W, node, runAction, notice, renderFiles, previewActive});
-  window.GraphMineTemplates({state, api, W, node, runAction, notice, card, parameterControl, parametersFrom, onCreated: async record => { state.record = record; setMode("interactive"); clearResults(); renderWorkflow(); await loadSaved(); go("chat"); }});
+  templates = window.GraphMineTemplates({state, api, W, node, runAction, notice, card, parameterControl, parametersFrom, onCreated: async record => { state.record = record; loadEditor(); setMode("expert"); clearResults(); renderWorkflow(); await loadSaved(); go("chat"); }});
   setMode("normal"); renderOutput();
   (window.GraphMineAccount?.ready || Promise.resolve(false)).then(enabled => {
     // Signed-in accounts use this server; there is no connection to configure.

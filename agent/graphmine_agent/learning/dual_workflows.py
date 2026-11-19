@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from ..llm_power import model_run_scope
+
 import argparse
 import asyncio
 import copy
@@ -354,6 +356,7 @@ def grade(settings, root, case, capture):
     }
 
 
+@model_run_scope
 async def evaluate(settings, root, manifest, output, *, planner, analyst, base_url):
     selection = json.loads(manifest.read_text())
     if HistoryStore.digest(root / "corpus.json") != selection["corpus_sha256"]:

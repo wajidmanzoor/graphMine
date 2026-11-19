@@ -1,0 +1,2280 @@
+[
+  {
+    "kind": "path",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "query-paths",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "path_set",
+          "value": [
+            {
+              "vertices": [
+                0,
+                "0",
+                2
+              ],
+              "edges": [
+                "parallel",
+                "b"
+              ],
+              "weight": 4
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "path_tree",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "single-source-shortest-paths",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_scores",
+          "value": [
+            {
+              "vertex": 0,
+              "predecessor": null,
+              "distance": 0
+            },
+            {
+              "vertex": "0",
+              "predecessor": 0,
+              "distance": 1
+            },
+            {
+              "vertex": 2,
+              "predecessor": "0",
+              "distance": 4
+            }
+          ],
+          "complete": true,
+          "score_field": "distance"
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "subgraph",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "densest-subgraph",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_set",
+          "value": [
+            0,
+            "0"
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "groups",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "maximal-cliques",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_groups",
+          "value": [
+            {
+              "group": 0,
+              "vertices": [
+                0,
+                "0"
+              ]
+            },
+            {
+              "group": 1,
+              "vertices": [
+                "0",
+                2
+              ]
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "partition",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "community-detection",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_partition",
+          "value": [
+            {
+              "vertex": 0,
+              "part": 0
+            },
+            {
+              "vertex": "0",
+              "part": 1
+            },
+            {
+              "vertex": 9007199254740993,
+              "part": 0
+            },
+            {
+              "vertex": 2,
+              "part": 1
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "bipartite",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "maximal-bicliques",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "bipartite_groups",
+          "value": [
+            {
+              "left_vertices": [
+                0
+              ],
+              "right_vertices": [
+                "0"
+              ]
+            },
+            {
+              "left_vertices": [
+                "0"
+              ],
+              "right_vertices": [
+                2
+              ]
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "edges",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "spanning-tree-forest",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "edge_ids",
+          "value": [
+            "parallel",
+            "b"
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "vertices",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "common-neighbors",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_set",
+          "value": [
+            0,
+            "0"
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "scores",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "degree-centrality",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_scores",
+          "value": [
+            {
+              "vertex": 0,
+              "score": 2
+            },
+            {
+              "vertex": "0",
+              "score": 3
+            },
+            {
+              "vertex": 2,
+              "score": 1
+            }
+          ],
+          "complete": true,
+          "vertex_field": "vertex",
+          "score_field": "score"
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "graph",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "query-subgraph",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "graph",
+          "value": {
+            "graph": {
+              "id": "typed-example",
+              "directed": true
+            },
+            "vertices": [
+              {
+                "id": 0,
+                "label": "Number zero",
+                "attributes": {
+                  "type": "User"
+                }
+              },
+              {
+                "id": "0",
+                "label": "Text zero",
+                "attributes": {
+                  "type": "Business"
+                }
+              },
+              {
+                "id": 9007199254740993,
+                "label": "Large ID",
+                "attributes": {
+                  "type": "User"
+                }
+              },
+              {
+                "id": 2,
+                "label": "Destination",
+                "attributes": {
+                  "type": "Business"
+                }
+              }
+            ],
+            "edges": [
+              {
+                "id": "a",
+                "source": 0,
+                "target": "0",
+                "weight": 10
+              },
+              {
+                "id": "parallel",
+                "source": 0,
+                "target": "0",
+                "weight": 1
+              },
+              {
+                "id": "b",
+                "source": "0",
+                "target": 2,
+                "weight": 3
+              }
+            ]
+          },
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "patterns",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "frequent-subgraphs",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "pattern_collection",
+          "value": [
+            {
+              "pattern_id": 0,
+              "pattern": {
+                "graph": {
+                  "id": "typed-example",
+                  "directed": true
+                },
+                "vertices": [
+                  {
+                    "id": 0,
+                    "label": "Number zero",
+                    "attributes": {
+                      "type": "User"
+                    }
+                  },
+                  {
+                    "id": "0",
+                    "label": "Text zero",
+                    "attributes": {
+                      "type": "Business"
+                    }
+                  },
+                  {
+                    "id": 9007199254740993,
+                    "label": "Large ID",
+                    "attributes": {
+                      "type": "User"
+                    }
+                  },
+                  {
+                    "id": 2,
+                    "label": "Destination",
+                    "attributes": {
+                      "type": "Business"
+                    }
+                  }
+                ],
+                "edges": [
+                  {
+                    "id": "a",
+                    "source": 0,
+                    "target": "0",
+                    "weight": 10
+                  },
+                  {
+                    "id": "parallel",
+                    "source": 0,
+                    "target": "0",
+                    "weight": 1
+                  },
+                  {
+                    "id": "b",
+                    "source": "0",
+                    "target": 2,
+                    "weight": 3
+                  }
+                ]
+              },
+              "support": 3
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "small_multiples"
+  },
+  {
+    "kind": "instances",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "subgraph-isomorphism",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_mappings",
+          "value": [
+            [
+              {
+                "query_vertex": "x",
+                "data_vertex": 0
+              },
+              {
+                "query_vertex": "y",
+                "data_vertex": "0"
+              }
+            ]
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "small_multiples"
+  },
+  {
+    "kind": "flow",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "max-flow-min-cut",
+      "parameters": {
+        "source": 0,
+        "sink": 2
+      },
+      "ports": {
+        "out": {
+          "type": "scalar",
+          "value": 3,
+          "complete": true
+        }
+      },
+      "result": {
+        "flows": [
+          {
+            "edge": "a",
+            "source": 0,
+            "target": "0",
+            "flow": 3,
+            "capacity": 10
+          },
+          {
+            "edge": "b",
+            "source": "0",
+            "target": 2,
+            "flow": 3,
+            "capacity": 3
+          }
+        ],
+        "min_cut_edges": [
+          "b"
+        ]
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "pairs",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "many-source-shortest-paths",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "table",
+          "value": [
+            {
+              "source": 0,
+              "target": "0",
+              "distance": 1
+            },
+            {
+              "source": 0,
+              "target": 2,
+              "distance": 4
+            },
+            {
+              "source": 2,
+              "target": 0,
+              "distance": null
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "matrix"
+  },
+  {
+    "kind": "mapping",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "network-alignment",
+      "parameters": {
+        "other_graph": {
+          "graph": {
+            "id": "typed-example",
+            "directed": true
+          },
+          "vertices": [
+            {
+              "id": 0,
+              "label": "Number zero",
+              "attributes": {
+                "type": "User"
+              }
+            },
+            {
+              "id": "0",
+              "label": "Text zero",
+              "attributes": {
+                "type": "Business"
+              }
+            },
+            {
+              "id": 9007199254740993,
+              "label": "Large ID",
+              "attributes": {
+                "type": "User"
+              }
+            },
+            {
+              "id": 2,
+              "label": "Destination",
+              "attributes": {
+                "type": "Business"
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "a",
+              "source": 0,
+              "target": "0",
+              "weight": 10
+            },
+            {
+              "id": "parallel",
+              "source": 0,
+              "target": "0",
+              "weight": 1
+            },
+            {
+              "id": "b",
+              "source": "0",
+              "target": 2,
+              "weight": 3
+            }
+          ]
+        }
+      },
+      "ports": {
+        "out": {
+          "type": "cross_graph_mapping",
+          "value": [
+            {
+              "graph_a_vertex": 0,
+              "graph_b_vertex": "0",
+              "score": 0.7
+            },
+            {
+              "graph_a_vertex": "0",
+              "graph_b_vertex": 2,
+              "score": 0.9
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "mapping"
+  },
+  {
+    "kind": "embedding",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "node-embedding",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_embeddings",
+          "value": [
+            {
+              "vertex": 0,
+              "values": [
+                1,
+                2,
+                3
+              ]
+            },
+            {
+              "vertex": "0",
+              "values": [
+                2,
+                0,
+                1
+              ]
+            },
+            {
+              "vertex": 2,
+              "values": [
+                -1,
+                1,
+                2
+              ]
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "scatter"
+  },
+  {
+    "kind": "predictions",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "node-learning",
+      "parameters": {
+        "task": "classification",
+        "training_labels": {
+          "rows": [
+            {
+              "vertex": 0,
+              "value": "A"
+            },
+            {
+              "vertex": "0",
+              "value": "A"
+            }
+          ]
+        }
+      },
+      "ports": {
+        "out": {
+          "type": "vertex_predictions",
+          "value": [
+            {
+              "vertex": 0,
+              "prediction": "A"
+            },
+            {
+              "vertex": "0",
+              "prediction": "B"
+            },
+            {
+              "vertex": 2,
+              "prediction": "A"
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "locations",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "graph-geolocation",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_locations",
+          "value": [
+            {
+              "vertex": 0,
+              "location": {
+                "latitude": 40,
+                "longitude": -74
+              }
+            },
+            {
+              "vertex": "0",
+              "location": {
+                "latitude": 42,
+                "longitude": -71
+              }
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "coordinates"
+  },
+  {
+    "kind": "positions",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "force-directed-layout",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_positions",
+          "value": [
+            {
+              "vertex": 0,
+              "coordinates": [
+                0,
+                0
+              ]
+            },
+            {
+              "vertex": "0",
+              "coordinates": [
+                1,
+                0
+              ]
+            },
+            {
+              "vertex": 2,
+              "coordinates": [
+                1,
+                1
+              ]
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "ordered",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "topological-sort",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_set",
+          "value": [
+            0,
+            "0",
+            2
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "colors",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "vertex-coloring",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "vertex_scores",
+          "value": [
+            {
+              "vertex": 0,
+              "color": 0
+            },
+            {
+              "vertex": "0",
+              "color": 1
+            },
+            {
+              "vertex": 2,
+              "color": 0
+            }
+          ],
+          "complete": true,
+          "score_field": "color"
+        }
+      }
+    },
+    "primary": "graph"
+  },
+  {
+    "kind": "intervals",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "persistent-homology",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "persistence_intervals",
+          "value": [
+            {
+              "dimension": 0,
+              "birth": 0,
+              "death": 1
+            },
+            {
+              "dimension": 0,
+              "birth": 0,
+              "death": null
+            },
+            {
+              "dimension": 1,
+              "birth": 3,
+              "death": 5
+            }
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "barcode"
+  },
+  {
+    "kind": "samples",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "null-model-significance",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "numeric_sample",
+          "value": [
+            -3,
+            -1,
+            0,
+            1,
+            2,
+            4,
+            6
+          ],
+          "complete": true
+        }
+      }
+    },
+    "primary": "histogram"
+  },
+  {
+    "kind": "spectrum",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "laplacian-eigenpairs",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "eigenpairs",
+          "value": {
+            "eigenvalues": [
+              0,
+              1,
+              2
+            ],
+            "vertex_order": [
+              0,
+              "0",
+              9007199254740993,
+              2
+            ],
+            "eigenvectors": [
+              [
+                0.5,
+                -0.5,
+                0.3
+              ],
+              [
+                0.5,
+                0.5,
+                -0.3
+              ],
+              [
+                0.5,
+                -0.5,
+                -0.3
+              ],
+              [
+                0.5,
+                0.5,
+                0.3
+              ]
+            ]
+          },
+          "complete": true
+        }
+      }
+    },
+    "primary": "spectrum"
+  },
+  {
+    "kind": "scalar",
+    "input": {
+      "graph": {
+        "id": "typed-example",
+        "directed": true
+      },
+      "vertices": [
+        {
+          "id": 0,
+          "label": "Number zero",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": "0",
+          "label": "Text zero",
+          "attributes": {
+            "type": "Business"
+          }
+        },
+        {
+          "id": 9007199254740993,
+          "label": "Large ID",
+          "attributes": {
+            "type": "User"
+          }
+        },
+        {
+          "id": 2,
+          "label": "Destination",
+          "attributes": {
+            "type": "Business"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "a",
+          "source": 0,
+          "target": "0",
+          "weight": 10
+        },
+        {
+          "id": "parallel",
+          "source": 0,
+          "target": "0",
+          "weight": 1
+        },
+        {
+          "id": "b",
+          "source": "0",
+          "target": 2,
+          "weight": 3
+        }
+      ]
+    },
+    "result": {
+      "operation": "maximal-biclique-counting",
+      "parameters": {},
+      "ports": {
+        "out": {
+          "type": "scalar",
+          "value": 9,
+          "complete": true
+        }
+      }
+    },
+    "primary": "metric"
+  }
+]

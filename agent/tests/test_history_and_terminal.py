@@ -382,7 +382,7 @@ def test_history_context_isolated_between_concurrent_sessions(settings: Settings
 def test_analyst_failure_keeps_computed_answer_and_reports_source(
     settings: Settings, triangle_graph: bytes, tmp_path: Path
 ):
-    from graphmine_agent.models import GroundedNarrative
+    from graphmine_agent.models import GroundedNarrative, TemplateNarrative
 
     app = create_app(settings)
     source = tmp_path / "graph.json"
@@ -393,7 +393,7 @@ def test_analyst_failure_keeps_computed_answer_and_reports_source(
             original = app.state.runtime.agent.model.generate
 
             async def failing_analyst(**kwargs):
-                if kwargs["schema"] is GroundedNarrative:
+                if kwargs["schema"] in {GroundedNarrative, TemplateNarrative}:
                     raise LLMError("Completion budget exhausted")
                 return await original(**kwargs)
 

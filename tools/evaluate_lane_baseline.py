@@ -27,6 +27,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "agent"))
 sys.path.insert(0, str(ROOT / "python/graphmine"))
+from graphmine_agent.llm_power import model_run_scope
 LANES = {"reply", "describe_input", "explain", "view", "lookup",
          "needs_information", "options", "calculate", "unsupported"}
 SUITE = ROOT / "agent/evaluation/lanes/questions.json"
@@ -315,6 +316,7 @@ async def finish(service, workflow):
     return service.result(workflow["id"])
 
 
+@model_run_scope
 async def evaluate(settings, suite, graphs, report, output):
     from graphmine_agent.analytics import AnalyticsService, WorkflowRequest
     from graphmine_agent.analytics_planning import AnalyticsPlanner, PlanningRequest

@@ -98,6 +98,7 @@ from .workflow_templates import register_template_routes
 from .workflow_api import register_workflow_routes
 from .api_errors import register_error_handlers
 from .web_assets import WebAssets, WebHeaders
+from .llm_power import LLMPowerRegistry, LLMPowerBusy, get_registry
 
 
 @dataclass(slots=True)
@@ -115,6 +116,7 @@ class Runtime:
     analytics: AnalyticsService
     accounts: Accounts
     database_pools: DatabasePools
+    llm_power: LLMPowerRegistry
     database_jobs: DatabaseJobs | None = None
 
 
@@ -227,7 +229,8 @@ def build_runtime(settings: Settings, *, serving: bool = False) -> Runtime:
         max_pending_jobs=settings.max_pending_jobs,
         accounts=accounts if settings.accounts_enabled and serving else None,
     )
-    agent = AgentService(settings, catalog, database, graph_store, validator, jobs)
+    power = get_registry(settings)
+    agent = AgentService(settings, catalog, database, graph_store, validator, jobs, llm_power=power)
     jobs.result_handler = agent.handle_completed_result
     runtime = Runtime(
         settings=settings,
@@ -240,9 +243,10 @@ def build_runtime(settings: Settings, *, serving: bool = False) -> Runtime:
         jobs=jobs,
         agent=agent,
         upload_slots=asyncio.Semaphore(settings.max_concurrent_uploads),
-        analytics=AnalyticsService(settings, database, graph_store, events),
+        analytics=AnalyticsService(settings, database, graph_store, events, llm_power=power),
         accounts=accounts,
         database_pools=DatabasePools(settings),
+        llm_power=power,
     )
     runtime.database_jobs = DatabaseJobs(runtime)
     return runtime
@@ -339,6 +343,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             await runtime.jobs.start()
             runtime.analytics.open()
             runtime.database.close_unanswered_planning()
+            if configured.llm_enabled and not runtime.llm_power.shared:
+                runtime.llm_power.start()
             previews = asyncio.create_task(expire_query_previews(runtime))
             pools = asyncio.create_task(expire_database_pools(runtime))
             retention = (
@@ -374,7 +380,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                         try:
                             await runtime.agent.close()
                         finally:
-                            await run_in_threadpool(runtime.database_pools.close)
+                            try:
+                                await run_in_threadpool(runtime.database_pools.close)
+                            finally:
+                                if not runtime.llm_power.shared:
+                                    await runtime.llm_power.close()
 
     app = FastAPI(
         title="GraphMine Agent API",
@@ -410,6 +420,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     router = APIRouter(prefix="/api", dependencies=[Depends(_authorization)])
 
+    @router.get("/admin/llm/power")
+    async def llm_power_status(request: Request):
+        from .account_api import administrator
+        administrator()
+        return await _runtime(request).llm_power.for_url().refresh_status()
+
+    @router.post("/admin/llm/power/sleep")
+    async def llm_power_sleep(request: Request):
+        from .account_api import administrator
+        administrator()
+        try:
+            return await _runtime(request).llm_power.for_url().sleep_now()
+        except LLMPowerBusy as error:
+            raise AnalyticsError(str(error), "llm_busy", 409) from error
+
+    @router.post("/admin/llm/power/wake")
+    async def llm_power_wake(request: Request):
+        from .account_api import administrator
+        administrator()
+        return await _runtime(request).llm_power.for_url().wake_now()
+
     @router.get("/health")
     async def health(request: Request) -> dict[str, Any]:
         runtime = _runtime(request)
@@ -438,6 +469,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "model": runtime.settings.llm_model,
                 "base_url": runtime.settings.llm_base_url,
                 "gpu_uuid": runtime.settings.llm_gpu_uuid,
+                "power": runtime.llm_power.for_url().status(),
             },
             "graphmine": capability.model_dump(mode="json"),
             "worker": worker,

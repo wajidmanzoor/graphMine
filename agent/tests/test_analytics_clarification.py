@@ -42,7 +42,7 @@ async def test_required_value_resume_after_new_planner_and_invalid_reply_stays_s
     assert invalid["pending_question"]["id"] == asked["pending_question"]["id"]
     assert invalid["pending_question"]["answer_error"]
     offered = await fresh.plan(session, reply(body, invalid, "Use 3."))
-    assert offered["status"] == "options" and len(offered["options"]) == 2
+    assert offered["status"] == "options" and len(offered["options"]) == 1
     assert offered["options"][0]["parameters"]["k"] == 3
     assert fresh.calls == [] and len(planner.calls) == 1 and not service.list(session)
     with pytest.raises(AnalyticsError, match="no longer pending"):
@@ -91,24 +91,23 @@ async def test_input_selection_uses_answer_not_main_alias(normal):
     assert len(planner.calls) == 1
 
 
-async def test_interactive_quality_then_other_choices_once_and_review_before_execution(normal):
+async def test_expert_uses_defaults_and_waits_for_review_before_execution(normal):
     settings, service, events, session, body = normal
-    body.mode, body.message = "interactive", "Find the densest subgraph."
+    body.mode, body.message = "expert", "Find the densest subgraph."
     body.intent, body.operations = "calculate", ["densest-subgraph"]
     planner = ReplayPlanner(settings, service, events, responses=[])
-    asked = await planner.plan(session, body)
-    assert asked["pending_question"]["kind"] == "quality"
-    other = await planner.plan(session, reply(body, asked, "exact"))
-    assert other["pending_question"]["parameter"] == "weight_mode"
-    ready = await planner.plan(session, reply(body, other, "unweighted"))
+    ready = await planner.plan(session, body)
     assert ready["status"] == "ready"
-    record = await service.create(session, WorkflowRequest(mode="interactive", inputs=body.inputs,
+    record = await service.create(session, WorkflowRequest(mode="expert", inputs=body.inputs,
         plan=ready["plan"], planning_turn_id=ready["turn_id"]))
-    assert record["status"] == "awaiting_review" and not service.tasks and not planner.calls
+    assert record["status"] == "ready" and record["approved_hash"] is None
+    assert not service.tasks and not planner.calls
 
 
-async def test_normal_keeps_native_quality_default_without_optional_questions(normal):
+@pytest.mark.parametrize("mode", ["normal", "expert"])
+async def test_modes_keep_native_quality_default_without_optional_questions(normal, mode):
     settings, service, events, session, body = normal
+    body.mode = mode
     body.intent, body.operations = "calculate", ["densest-subgraph"]
     planner = ReplayPlanner(settings, service, events, responses=[])
     ready = await planner.plan(session, body)
@@ -152,7 +151,7 @@ async def test_pending_reply_cannot_change_scope_or_inject_choice(normal, change
     answered = reply(body, asked, index=0)
     if change == "input": answered.inputs = {"other": body.inputs["main"]}
     elif change == "device": answered.device = "auto"
-    elif change == "mode": answered.mode = "interactive"
+    elif change == "mode": answered.mode = "expert"
     elif change == "session":
         session = service.database.create_session(SessionRecord(domain_id="general")).id
         answered.inputs = {}
@@ -256,7 +255,7 @@ async def test_native_parameter_failure_maps_to_one_specific_gap(normal):
     assert ready["status"] == "ready" and not planner.calls
 
 
-async def test_gap_priority_required_then_entity_then_input_then_quality(normal):
+async def test_gap_priority_required_then_entity_then_input_then_native_defaults(normal):
     settings, service, events, session, body = normal
     inputs = await service.load_inputs(session, body.inputs)
     inputs["other"] = deepcopy(inputs["main"])
@@ -264,11 +263,11 @@ async def test_gap_priority_required_then_entity_then_input_then_quality(normal)
     card = next(row for row in caps["operations"] if row["id"] == "max-flow-min-cut")
     entities = [{"id": 0, "input": key, "matched": "Ann"} for key in inputs]
     values = {}
-    assert detect_gap(card, inputs, values, None, entities, "interactive")["parameter"] == "source"
+    assert detect_gap(card, inputs, values, None, entities)["parameter"] == "source"
     values.update(source=0, sink=1)
-    assert detect_gap(card, inputs, values, None, entities, "interactive")["kind"] == "entity"
-    assert detect_gap(card, inputs, values, None, entities, "interactive", ["entity:ann"])["kind"] == "input"
-    assert detect_gap(card, inputs, values, "main", [], "interactive")["kind"] == "quality"
+    assert detect_gap(card, inputs, values, None, entities)["kind"] == "entity"
+    assert detect_gap(card, inputs, values, None, entities, ["entity:ann"])["kind"] == "input"
+    assert detect_gap(card, inputs, values, "main", []) is None
 
 
 async def test_added_query_input_resumes_same_operation_without_routing(normal):
@@ -341,7 +340,7 @@ async def test_entity_choice_is_kept_when_continuing_multiple_operations(normal,
              "vertices": [{"id": 0, "label": "Ann"}, {"id": 1, "label": "Ann"}], "edges": []}
     attach(service, session, body, graph)
     body.message = "Count triangles and show Ann's record."
-    body.mode = "interactive" if legacy_plan else "normal"
+    body.mode = "expert" if legacy_plan else "normal"
     if not legacy_plan:
         body.intent, body.operations = "calculate", ["triangle-counting", "node-lookup"]
     plan = proposal("triangle-counting", {"mode": "count"})

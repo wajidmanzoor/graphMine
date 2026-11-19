@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from ..llm_power import model_run_scope
+
 import asyncio
 import json
 import os
@@ -290,6 +292,7 @@ def check_agent_outcome(graph: dict, task: dict, outcome: dict) -> list[str]:
     return issues
 
 
+@model_run_scope
 async def evaluate_agent(
     settings: Settings,
     *,
@@ -496,7 +499,11 @@ def export_candidates(
 
 
 def run_pipeline(function, settings: Settings, **kwargs):
-    return asyncio.run(function(settings, **kwargs))
+    from ..llm_power import model_run
+    async def run():
+        async with model_run(settings):
+            return await function(settings, **kwargs)
+    return asyncio.run(run())
 
 
 def training_route_payload(catalog, example, graph, *, query=None):

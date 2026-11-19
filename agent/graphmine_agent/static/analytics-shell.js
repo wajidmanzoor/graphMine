@@ -4,15 +4,8 @@
   const $ = id => document.getElementById(id);
   const mobile = window.matchMedia("(max-width: 900px)");
   const sidebar = $("app-sidebar"), backdrop = $("panel-backdrop");
-  const dataTools = document.createElement("button");
-  dataTools.id = "toggle-tools"; dataTools.type = "button"; dataTools.className = "quiet";
-  dataTools.setAttribute("aria-label", "Tools"); dataTools.title = "Tools";
-  dataTools.setAttribute("aria-expanded", "false"); dataTools.setAttribute("aria-controls", "data-sidebar");
-  const toolsIcon = $("connection-button").querySelector("svg").cloneNode(true);
-  const toolsLabel = document.createElement("span"); toolsLabel.textContent = "Tools";
-  dataTools.append(toolsIcon, toolsLabel); $("toggle-activity").before(dataTools);
-  const panels = {data: $("data-sidebar"), activity: $("activity-sidebar"), navigation: sidebar};
-  const triggers = {data: [$("toggle-tools")], activity: [$("toggle-activity")], navigation: [$("toggle-sidebar")]};
+  const panels = {activity: $("activity-sidebar"), navigation: sidebar};
+  const triggers = {activity: [$("toggle-activity")], navigation: [$("toggle-sidebar")]};
   let currentPanel = null, returnFocus = null, collapsed = false;
   const inertSiblings = new Set();
   function restoreBackground() {
@@ -50,6 +43,7 @@
   }
 
   function setPanel(name, open, trigger = document.activeElement) {
+    if (!panels[name]) return;
     if (!open) { if (currentPanel === name) closePanel(); return; }
     closePanel(false);
     currentPanel = name;
@@ -96,7 +90,6 @@
   backdrop.addEventListener("click", () => closePanel());
   document.querySelectorAll("[data-close-panel]").forEach(button => button.addEventListener("click", () => closePanel()));
   $("toggle-activity").addEventListener("click", () => setPanel("activity", currentPanel !== "activity"));
-  $("toggle-tools").addEventListener("click", () => setPanel("data", currentPanel !== "data"));
   for (const id of ["composer-data", "welcome-data"]) $(id).addEventListener("click", () => document.dispatchEvent(new CustomEvent($(id).dataset.action === "projection" ? "graphmine:project-table" : "graphmine:open-data-source")));
   $("welcome-sample").addEventListener("click", () => $("sample-data").click());
   document.querySelector(".skip-link").addEventListener("click", event => {
@@ -117,9 +110,28 @@
     resizeComposer();
     question.focus();
   }));
+  document.addEventListener("click", event => {
+    for (const menu of document.querySelectorAll(".compute-settings[open], .session-menu[open]")) {
+      if (!menu.contains(event.target)) menu.open = false;
+    }
+  });
+  function positionCompute() {
+    if (!$("compute-settings").open) return;
+    const popover = document.querySelector(".compute-popover");
+    popover.style.transform = "";
+    const rect = popover.getBoundingClientRect();
+    const shift = rect.left < 12 ? 12 - rect.left : rect.right > innerWidth - 12 ? innerWidth - 12 - rect.right : 0;
+    if (shift) popover.style.transform = `translateX(${shift}px)`;
+  }
+  $("compute-settings").addEventListener("toggle", positionCompute);
+  window.addEventListener("resize", positionCompute);
   document.addEventListener("keydown", event => {
     // Native dialogs manage their own Escape and focus behavior.
     if (document.querySelector("dialog[open]")) return;
+    if (event.key === "Escape") {
+      const menu = document.querySelector(".compute-settings[open], .session-menu[open]");
+      if (menu) { event.preventDefault(); menu.open = false; menu.querySelector("summary").focus(); return; }
+    }
     if (event.key === "Escape" && currentPanel) { event.preventDefault(); closePanel(); return; }
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k" && !$("recent-section").hidden) {
       event.preventDefault();

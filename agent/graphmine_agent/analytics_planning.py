@@ -35,12 +35,14 @@ from .analytics_bipartite import (
 from .analytics_eligibility import eligible, requested_preferences, score_hints
 from .analytics_lane_choices import describes, description_answer, lookup_choices, reply_sources
 from .analytics_lanes import AnalyticsLanes
+from .analytics_modes import AnalysisMode
 from .analytics_clarification import detect_gap, explicit_operation, gap as clarification_gap, validator_gap
 from .analytics_lane_choices import explicit_parameters
 from .analytics_parameter_choices import constrain_literals, parameter_choices, resolve_literals
 from .database import RecordNotFound
 from .identity import AccountError
 from .models import FileRole
+from .llm_power import LLMUnavailable, power_notice, power_request
 
 _logger = logging.getLogger(__name__)
 
@@ -52,6 +54,7 @@ RETRYABLE_PLANNING = {
     "interrupted",
     "planner_timeout",
     "planner_unavailable",
+    "llm_unavailable",
     "planning_failed",
     "concurrency_limit",
 }
@@ -132,7 +135,7 @@ class PlanningRequest(BaseModel):
     family_id: str | None = None
     previous_workflow_id: str | None = None
     evaluation_id: str | None = Field(default=None, min_length=1, max_length=200)
-    mode: Literal["normal", "interactive", "expert"] = "normal"
+    mode: AnalysisMode = "normal"
     request_id: UUID | None = None
     selection: PlanningSelection | None = None
     # The checked action of a suggested follow-up for previous_workflow_id. It
@@ -924,66 +927,74 @@ class AnalyticsPlanner(AnalyticsLanes):
             )
         started, report = time.monotonic(), {"stage": stage, "model": request["model"], "call_id": call_id}
         body = data = live = None
+        base = (self.settings.analytics_router_base_url or self.settings.llm_base_url) if stage in {"family", "problem", "route", "clarify", "candidates"} else self.settings.llm_base_url
+        async def waking(state):
+            if context:
+                await self.events.publish(context['session_id'], 'workflow.planning',
+                    {'turn_id': context['turn_id'], 'stage': stage, 'status': 'waking' if state == 'waking' else 'running',
+                     'message': 'Waking the model…' if state == 'waking' else 'The model is ready.'})
         try:
-            async with httpx.AsyncClient(
-                base_url=(self.settings.analytics_router_base_url or self.settings.llm_base_url) if stage in {"family", "problem", "route", "clarify", "candidates"} else self.settings.llm_base_url,
-                headers={"Authorization": f"Bearer {self.settings.llm_api_key}"},
-                timeout=httpx.Timeout(120, connect=5),
-            ) as client:
-                from .accounts import model_post, model_stream
+            with power_notice(waking):
+                async with power_request(self.settings, base=base, registry=self.analytics.llm_power):
+                    async with httpx.AsyncClient(
+                        base_url=base,
+                        headers={"Authorization": f"Bearer {self.settings.llm_api_key}"},
+                        timeout=httpx.Timeout(120, connect=5),
+                    ) as client:
+                        from .accounts import model_post, model_stream
 
-                if context:
-                    live = _ReasoningStream(self.events, context, stage, call_id=call_id)
-                    body = await model_stream(
-                        client, "/chat/completions", json=request, on_reasoning=live.add
-                    )
-                    await live.flush()
-                else:
-                    response = await model_post(
-                        client, "/chat/completions", json=request
-                    )
-                    response.raise_for_status()
-                    body = response.json()
-                choice = body["choices"][0]
-                message = choice["message"]
-                report.update(
-                    finish_reason=choice.get("finish_reason"), usage=body.get("usage")
-                )
-                if stage == "candidates":
-                    from .analytics_options import SAMPLES, operation_logprob
-                    if len(body["choices"]) != SAMPLES:
-                        raise AnalyticsError("The routing server did not return all five samples.", "router_samples_incomplete", 503)
-                    data = []
-                    for sample in body["choices"]:
-                        if sample.get("finish_reason") == "length":
-                            raise AnalyticsError("A routing sample was truncated.", "router_sample_truncated", 503)
-                        decision = json.loads(sample["message"]["content"])
-                        jsonschema.Draft202012Validator(schema).validate(decision)
-                        probability = operation_logprob(sample)
-                        data.append({"decision": decision, "operation_logprob": probability})
-                    report.update(outcome="ok", samples=SAMPLES, samples_missing_logprobs=sum(row["operation_logprob"] is None for row in data))
-                    return data
-                # Saved before parsing, so a cut-off answer keeps its reasoning.
-                reasoning = message.get("reasoning") or message.get("reasoning_content")
-                if context and isinstance(reasoning, str) and reasoning.strip():
-                    await self.events.publish(
-                        context["session_id"],
-                        "workflow.reasoning",
-                        {
-                            "turn_id": context["turn_id"],
-                            "call_id": call_id,
-                            "stage": stage,
-                            "model": request["model"],
-                            "text": reasoning[:40000],
-                        },
-                    )
-                if choice.get("finish_reason") == "length":
-                    raise AnalyticsError(
-                        "The planner ran out of room before finishing its decision. Try a shorter or more specific question.",
-                        "planner_truncated",
-                        503,
-                    )
-                data = json.loads(message["content"])
+                        if context:
+                            live = _ReasoningStream(self.events, context, stage, call_id=call_id)
+                            body = await model_stream(
+                                client, "/chat/completions", json=request, on_reasoning=live.add
+                            )
+                            await live.flush()
+                        else:
+                            response = await model_post(
+                                client, "/chat/completions", json=request
+                            )
+                            response.raise_for_status()
+                            body = response.json()
+                        choice = body["choices"][0]
+                        message = choice["message"]
+                        report.update(
+                            finish_reason=choice.get("finish_reason"), usage=body.get("usage")
+                        )
+                        if stage == "candidates":
+                            from .analytics_options import SAMPLES, operation_logprob
+                            if len(body["choices"]) != SAMPLES:
+                                raise AnalyticsError("The routing server did not return all five samples.", "router_samples_incomplete", 503)
+                            data = []
+                            for sample in body["choices"]:
+                                if sample.get("finish_reason") == "length":
+                                    raise AnalyticsError("A routing sample was truncated.", "router_sample_truncated", 503)
+                                decision = json.loads(sample["message"]["content"])
+                                jsonschema.Draft202012Validator(schema).validate(decision)
+                                probability = operation_logprob(sample)
+                                data.append({"decision": decision, "operation_logprob": probability})
+                            report.update(outcome="ok", samples=SAMPLES, samples_missing_logprobs=sum(row["operation_logprob"] is None for row in data))
+                            return data
+                        # Saved before parsing, so a cut-off answer keeps its reasoning.
+                        reasoning = message.get("reasoning") or message.get("reasoning_content")
+                        if context and isinstance(reasoning, str) and reasoning.strip():
+                            await self.events.publish(
+                                context["session_id"],
+                                "workflow.reasoning",
+                                {
+                                    "turn_id": context["turn_id"],
+                                    "call_id": call_id,
+                                    "stage": stage,
+                                    "model": request["model"],
+                                    "text": reasoning[:40000],
+                                },
+                            )
+                        if choice.get("finish_reason") == "length":
+                            raise AnalyticsError(
+                                "The planner ran out of room before finishing its decision. Try a shorter or more specific question.",
+                                "planner_truncated",
+                                503,
+                            )
+                        data = json.loads(message["content"])
             jsonschema.Draft202012Validator(generation_schema).validate(data)
             if entity_choices and data.get("intent") == "view" and data["view"]["kind"] == "highlight":
                 data["view"]["vertices"] = [entity_choices[key] for key in data["view"]["vertices"]]
@@ -998,6 +1009,9 @@ class AnalyticsPlanner(AnalyticsLanes):
                 # in capture; the application consumes the normalized intent.
                 return {**data, "intent": "options"}
             return data
+        except LLMUnavailable as exc:
+            report["outcome"] = "llm_unavailable"
+            raise AnalyticsError(str(exc), "llm_unavailable", 503) from exc
         except (AnalyticsError, AccountError) as exc:
             report["outcome"] = exc.code
             raise
@@ -1182,12 +1196,12 @@ class AnalyticsPlanner(AnalyticsLanes):
             )
             raise
         except Exception as exc:
-            known = isinstance(exc, (AnalyticsError, AccountError))
+            known = isinstance(exc, (AnalyticsError, AccountError, LLMUnavailable))
             await self._publish_failure(
                 session_id,
                 turn_id,
                 body,
-                exc.code if known else "planning_failed",
+                getattr(exc, "code", "llm_unavailable") if known else "planning_failed",
                 str(exc) if known else "Planning failed. Please try again.",
             )
             raise
@@ -1379,8 +1393,6 @@ class AnalyticsPlanner(AnalyticsLanes):
         return {"intent": "needs_information", "message": "I could not find a matching problem after checking two families. What result do you want to obtain?", "choices": []}, []
 
     async def _plan(self, session_id, body, *, continuation=None):
-        if body.mode == "expert":
-            raise AnalyticsError("Expert mode accepts plan JSON in the plan editor. Submit that plan to the validator.")
         session = self.analytics.database.get_session(session_id)
         caps = await self.analytics.capabilities()
         policy = body.device
@@ -1553,7 +1565,8 @@ class AnalyticsPlanner(AnalyticsLanes):
         if results_for_routing:
             titles = {card["id"]: card["title"] for card in caps["operations"]}
             result_labels = await asyncio.to_thread(self.analytics._labels, previous)
-            facts = build_facts(results_for_routing, titles, result_labels)
+            input_context = await asyncio.to_thread(self.analytics._answer_input_context, previous, results_for_routing)
+            facts = build_facts(results_for_routing, titles, result_labels, input_context)
             selection = (
                 body.selection
                 if body.selection and body.selection.workflow_id == previous["id"]
@@ -1631,7 +1644,7 @@ class AnalyticsPlanner(AnalyticsLanes):
                 draft['text'] = ''  # A failed draft gets one repair, never display.
             answer = await compose_sources(self.settings, body.message, selected,
                 data_answer=data_answer, first=draft, default_ids=identifiers,
-                **writer_observers(self.settings, self.events, self.analytics.database, session_id, turn_id))
+                **writer_observers(self.settings, self.events, self.analytics.database, session_id, turn_id, power=self.analytics.llm_power))
             answer['sources'] = selected.public_sources(row['id'] for row in answer['citations'])
             await remember('grounding', {'status': 'passed', 'message': 'Answered from recorded sources.',
                                         **answer['grounding']})
@@ -1647,7 +1660,7 @@ class AnalyticsPlanner(AnalyticsLanes):
                 # The shortcut still uses verified cards and native validation.
                 direct = None if payload.get("conversation") or picked else self.direct_plan(body, inputs, eligible_cards)
                 if direct is not None:
-                    if body.mode in {"normal", "interactive"}:
+                    if body.mode == "normal":
                         operation = direct["steps"][0]
                         response = await self._operation_lane(session_id, body, inputs, cards,
                             [operation["operation"]], operation["parameters"], alias=operation["input"]["input"], entities=entities)
@@ -1764,7 +1777,7 @@ class AnalyticsPlanner(AnalyticsLanes):
                                                       'sources': evidence.public_sources(row['id'] for row in search['sources'])})
                             selected = evidence.subset(row['id'] for row in search['sources'])
                             answer = await compose_sources(self.settings, body.message, selected, data_answer=False,
-                                **writer_observers(self.settings, self.events, self.analytics.database, session_id, turn_id))
+                                **writer_observers(self.settings, self.events, self.analytics.database, session_id, turn_id, power=self.analytics.llm_power))
                             answer['sources'] = selected.public_sources(row['id'] for row in answer['citations'])
                         else:
                             # Tool failure is a recorded status, never a fabricated
@@ -1787,7 +1800,7 @@ class AnalyticsPlanner(AnalyticsLanes):
                     choice = next(row for row in lookups if row["id"] == decision["lookup_id"])
                     lookup_step = choice["plan"]["steps"][0]
                     card = next(card for card in cards if card["id"] == choice["operation"])
-                    missing = detect_gap(card, inputs, lookup_step["parameters"], lookup_step["input"]["input"], entities, "normal")
+                    missing = detect_gap(card, inputs, lookup_step["parameters"], lookup_step["input"]["input"], entities)
                     if missing:
                         context = {"question": body.message, "operations": [choice["operation"]],
                                    "parameters": lookup_step["parameters"], "alias": lookup_step["input"]["input"],
@@ -1852,7 +1865,7 @@ class AnalyticsPlanner(AnalyticsLanes):
                     aliases = [key for key, value in inputs.items() if value["kind"] == card["input_kind"]]
                     alias = aliases[0] if len(aliases) == 1 else "main" if "main" in aliases and any(name in card["parameters"] for name in ("query_graph", "other_graph")) else None
                     values = explicit_parameters(card, body.message, entities, alias)
-                    missing = detect_gap(card, inputs, values, alias, entities, body.mode)
+                    missing = detect_gap(card, inputs, values, alias, entities)
                     if missing:
                         return {**await self._ask_gap(body, {"question": body.message, "operations": decision["operations"],
                             "parameters": values, "alias": alias, "entities": entities, "selected": True}, missing), "trace": trace}
@@ -2025,7 +2038,7 @@ class AnalyticsPlanner(AnalyticsLanes):
                                 "status": "needs_information",
                                 "message": "I couldn't build a plan that passes the checks "
                                 "for this data. Try rephrasing the question or naming the "
-                                "values to use, or review the steps in Interactive mode.",
+                                "values to use, or review the steps in Expert mode.",
                                 "plan": None,
                                 "trace": trace,
                             }
