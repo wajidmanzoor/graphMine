@@ -187,3 +187,56 @@ with the vendor manifest.
 
 [Phase 3 browser evidence](../validation/admin-console/phase-3/README.md) includes
 both pages beside their supplied artboards, details and mobile Usage.
+
+## Capacity, storage and performance
+
+Capacity exposes the fourteen validated settings in `admin_settings.py`: model
+concurrency, vLLM requests, model queue wait, the shared token pool, calculation
+and per-user concurrency, CPU workers, calculation/queue deadlines, default token
+and storage allowances, upload size, backup count and operational-event retention.
+Saves require confirmation, compare against the values loaded by the page, and
+record before/after values. A conflicting edit returns 409. New work receives live
+settings; vLLM request changes wait for a model restart. The displayed effective
+vLLM limit comes from the running process, not from the desired override. The
+launcher reads validated overrides before starting vLLM. `MODEL_QUEUE_SECONDS`
+is the stored key; `GRAPHMINE_MODEL_QUEUE_SECONDS` and the older unprefixed name
+are accepted from the environment. Upload overrides also update the account and
+transport upload ceilings, while storage quotas still apply.
+
+Data & storage measures managed files and embedded SQLite payloads. Model caches
+are excluded, and archived history/database overhead appear under Other. Cleanup
+previews contain at most 500 items. Confirmation rechecks the preview fingerprint,
+references and active owner work under the existing workflow edit lock and an
+attached SQLite transaction. It rejects stale previews, referenced files, unsafe
+paths, and work in progress. File removal is queued durably and retried at startup.
+Authenticated file/result reads record access timestamps; offline backup and
+inspection helpers remain read-only. Historical results without an observed open
+are kept for the entire 90/180-day period after tracking began. Saved views,
+snapshots, templates and project references protect results. Cleanup retains plans
+and inputs, removes result indexes, and explains how to calculate results again.
+Deleting embedded results frees reusable database pages; it does not promise an
+immediate reduction in the SQLite file's physical size. External history retains
+its independent retention policy.
+
+Back up now, Verify and Restore reuse `backup.py`. Successful integrity checks are
+recorded with the manifest hash and verification time. A failure clears the
+verified status. Restore requires the exact snapshot name and stages data in a
+new directory; activating that directory remains an operator deployment step.
+Manual backups work even when automatic backups are unconfigured. The built-in
+scheduled retention default is fourteen snapshots; an existing environment value
+still takes precedence until changed in Capacity. Manual snapshots are not rotated
+by the scheduled job.
+
+Performance reads the optional installed `perf/run.py` suite's `var/perf` config,
+summary and report artifacts. The console returns allowlisted metadata, not raw
+queries or configuration secrets. Reports run in an opaque CSP sandbox with no
+network, forms, popups or same-origin privileges. Benchmark and ten-user load
+tests are available only when the suite is installed. Stress, spike and soak also
+require `GRAPHMINE_PERF_CONFIRM_SHARED_GPU=1`; every launch records the agreed slot
+and confirmation. Fixed argv starts the suite as a background job, using a private
+0600 environment file that is removed on completion. Jobs expose status and report
+availability, not raw subprocess output. Shutdown terminates owned test processes.
+Opening the page never installs the suite or starts model/GPU work.
+
+[Phase 4 browser evidence](../validation/admin-console/phase-4/README.md) places all
+three pages beside their supplied artboards and includes cleanup and mobile views.

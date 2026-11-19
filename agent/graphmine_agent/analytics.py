@@ -734,6 +734,13 @@ class AnalyticsService:
         return result
 
     async def create(self, session_id, body):
+        async with self.edit_lock:
+            record = await self._create(session_id, body)
+        if body.mode == "normal" and record["status"] == "ready":
+            return await self.start(record["id"], record["validation"]["workflow_hash"], record["revision"])
+        return record
+
+    async def _create(self, session_id, body):
         if body.planning_turn_id and not self.database.chat_turn_exists(
             session_id, body.planning_turn_id, role="assistant", status="ready"
         ):
@@ -761,10 +768,6 @@ class AnalyticsService:
             # Explain an expensive run and wait for approval, even in Normal mode.
             record["status"] = "awaiting_review"
         self._save(record)
-        if body.mode == "normal" and record["status"] == "ready":
-            return await self.start(
-                record["id"], checked["workflow_hash"], record["revision"]
-            )
         return record
 
     async def _preview(self, record, inputs):
@@ -1407,6 +1410,8 @@ class AnalyticsService:
 
     def _result_path(self, workflow_id, *, step=None, expected_revision=None):
         record = self.get(workflow_id)
+        from .admin_data import touch
+        touch(self.database, "workflow", workflow_id)
         if expected_revision is not None and record["revision"] != expected_revision:
             raise AnalyticsError("This analysis revision changed. Reopen the analysis to load its current result.", "revision_conflict", 409)
         if step is not None and step not in {

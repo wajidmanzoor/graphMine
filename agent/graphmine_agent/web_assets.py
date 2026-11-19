@@ -119,6 +119,15 @@ class WebHeaders:
                     f"font-src 'self' data:; connect-src {self.connections}; worker-src 'self' blob:; "
                     "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
                 )
+                if scope["path"].startswith("/api/admin/performance/runs/") and scope["path"].endswith("/report"):
+                    # The suite produces self-contained HTML with inline Vega.
+                    # An opaque sandbox permits its charts, without API/network,
+                    # cookie access, forms, popups or same-origin privileges.
+                    headers["Content-Security-Policy"] = (
+                        "sandbox allow-scripts; default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; "
+                        "style-src 'unsafe-inline'; img-src data: blob:; font-src data:; "
+                        "connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+                    )
                 if scope["path"].startswith("/api/"):
                     headers["Cache-Control"] = "private, no-store"
             await send(message)

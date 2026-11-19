@@ -816,7 +816,7 @@ class Accounts(AdminAccounts):
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
             lease = self._slot(
-                db, user_id, "job", self.settings.account_pending_jobs, 1, 86400
+                db, user_id, "job", self.settings.account_pending_jobs, self.settings.account_user_running_jobs, 86400
             )
             user_period, server_period = self._charge(db, user_id, "jobs", count)
             db.execute(
@@ -903,7 +903,7 @@ class Accounts(AdminAccounts):
                 user_id,
                 "execution",
                 self.settings.account_running_jobs,
-                1,
+                self.settings.account_user_running_jobs,
                 self.settings.account_job_seconds + 30,
                 self.settings.account_queue_seconds,
             )
@@ -1023,7 +1023,7 @@ async def _quota_metered(client, path, payload, max_tokens):
             principal.accounts.settings.max_model_calls,
             1,
             240,
-            MODEL_QUEUE_SECONDS,
+            principal.accounts.settings.model_queue_seconds,
         )
     except TimeoutError as error:
         raise AccountError(

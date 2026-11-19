@@ -246,13 +246,11 @@ class Monitor:
         with self.runtime.database._connect() as db:
             db.execute("SELECT 1").fetchone()
         size = sum(p.stat().st_size for p in (path, Path(str(path) + "-wal"), self.runtime.analytics.path) if p.exists())
-        directory = self.runtime.settings.backup_directory
-        last = None
-        if directory and directory.is_dir():
-            manifests = sorted(directory.glob("*/manifest.json"), key=lambda p: p.stat().st_mtime)
-            if manifests:
-                last = {"name": manifests[-1].parent.name, "created_at": manifests[-1].stat().st_mtime,
-                        "verified": None, "reason": "Run Verify to check this snapshot's current contents"}
+        from .admin_data import backups
+        snapshots = await asyncio.to_thread(backups, self.runtime)
+        last = snapshots["items"][0] if snapshots["items"] else None
+        if last:
+            last = {**last, "reason": "Verification records the last successful integrity check. Run Verify to check the current contents."}
         return {"status": "healthy", "sqlite_bytes": size, "slow_queries": None,
                 "slow_queries_reason": "SQLite slow-query instrumentation is not installed", "last_backup": last}
 
@@ -365,7 +363,7 @@ class Monitor:
             # The new process reads the same override table in start-vllm.sh.
             desired = admin_settings.load(self.runtime.settings, self.runtime.database)
             from dataclasses import replace
-            admin_settings.apply_live(self.runtime, replace(self.runtime.settings, llm_sleep_mode=desired.llm_sleep_mode))
+            admin_settings.apply_live(self.runtime, replace(self.runtime.settings, llm_sleep_mode=desired.llm_sleep_mode, llm_max_num_seqs=desired.llm_max_num_seqs))
             manager = self.runtime.llm_power.for_url()
             manager.configured = manager.enabled = desired.llm_sleep_mode
             manager.sleeping = None
