@@ -4,7 +4,7 @@
   const account = window.GraphMineAccount = {enabled: false, ready: null};
   if (document.getElementById("graphmine-report")) { account.ready = Promise.resolve(false); return; }
   let dialog, error, username, password, settings, accountName, manageUsers, usagePanel, profileName, profileRole, resolveLogin, expired = false;
-  let authenticated = false, refreshTimer, identity, adminData = [], selectedUser;
+  let authenticated = false, refreshTimer, identity;
   const tabs = new Map(), panels = new Map();
   const make = (tag, attrs = {}, text) => {
     const el = document.createElement(tag);
@@ -63,6 +63,8 @@
   function renderUsage(data) {
     identity = data;
     account.user = data.user;
+    document.getElementById("account-admin-console").hidden = data.user.role !== "admin";
+    document.getElementById("account-close-settings").disabled = Boolean(data.user.must_change_password);
     accountName.textContent = data.user.username;
     document.getElementById("account-settings-button").setAttribute("aria-label", `Account settings for ${data.user.username}`);
     profileName.value = data.user.username;
@@ -133,154 +135,27 @@
     });
     const logout = button("Sign out", "account-sign-out");
     logout.addEventListener("click", () => action(logout, notice, async () => { await post("/api/auth/logout"); location.hash = ""; location.reload(); }));
-    panel.append(make("h3", {class: "account-section-title"}, "Account"), hint("Your sign-in details and password."), summary, form, logout);
+    const history = make("section", {class: "account-card"});
+    const historyRows = make("div");
+    const showHistory = button("View support access history", "account-support-history");
+    showHistory.addEventListener("click", () => action(showHistory, notice, async () => {
+      const data = await request("/api/auth/history");
+      historyRows.replaceChildren(...data.support_access.map(grant => hint(`${grant.administrator || "Former administrator"} · ${grant.reason} · ${new Date(grant.created_at * 1000).toLocaleString()} · expires ${new Date(grant.expires_at * 1000).toLocaleString()}`)));
+      if (!data.support_access.length) historyRows.append(hint("No support access has been granted."));
+    }));
+    history.append(make("h3", {}, "Account history"), hint("Administrator support access is read-only and recorded here."), showHistory, historyRows);
+    panel.append(make("h3", {class: "account-section-title"}, "Account"), hint("Your sign-in details and password."), summary, form, history, logout);
   }
   function mountAdministration(panel) {
-    const notice = make("p", {class: "account-status", id: "account-admin-message", role: "status"});
-    const heading = make("div", {class: "account-section-heading"});
-    const title = make("div"); title.append(make("h3", {class: "account-section-title"}, "Manage users"), hint("Create accounts and manage each person's access and allowance."));
-    const add = button("Create user", "account-create-toggle", true);
-    heading.append(title, add);
-    const create = make("form", {class: "account-card account-create-form", hidden: ""});
-    const newUser = make("input", {id: "account-new-username", autocomplete: "off", required: "", minlength: "3", maxlength: "64", autocapitalize: "none", spellcheck: "false", pattern: "[a-zA-Z0-9][a-zA-Z0-9_.\\-]{2,63}", title: "3–64 letters, digits, dots, underscores or hyphens"});
-    const newPassword = passwordField("account-new-password");
-    // Filled when Settings opens, after the authenticated defaults have loaded.
-    const newLimit = make("input", {id: "account-new-limit", type: "number", min: "0", step: "1", required: "", inputmode: "numeric"});
-    const fields = make("div", {class: "account-form-grid"});
-    fields.append(labelFor("Username", newUser), labelFor("Password (12+ characters)", newPassword), labelFor("Tokens per 24 hours", newLimit));
-    const submit = button("Create account", "account-create-user", true); submit.type = "submit";
-    create.append(make("h3", {}, "New account"), fields, hint("Give the credentials to the user privately. Set 0 tokens to pause AI access."), submit);
-    add.addEventListener("click", () => {
-      create.hidden = !create.hidden;
-      add.textContent = create.hidden ? "Create user" : "Cancel";
-      newPassword.value = "";
-      if (!create.hidden) { newLimit.value = Math.min(identity.quota.default_token_limit, identity.quota.server_token_limit); newLimit.max = identity.quota.server_token_limit; newUser.focus(); }
-    });
-    const directory = make("div", {class: "account-directory"});
-    const sidebar = make("div", {class: "account-user-sidebar"});
-    const search = make("input", {type: "search", id: "account-user-search", placeholder: "Search users", "aria-label": "Search users"});
-    const users = make("div", {id: "account-admin-users", class: "account-user-list", "aria-label": "User accounts"});
-    sidebar.append(search, users);
-    const detail = make("section", {id: "account-user-detail", class: "account-card account-user-detail", "aria-label": "Selected user"});
-    directory.append(sidebar, detail);
-    const refresh = button("Refresh usage", "account-refresh-users");
-    panel.append(heading, notice, create, directory, refresh);
-    const model = make("section", {class: "account-card", id: "account-model-power"});
-    const modelStatus = make("p", {id: "account-model-status", role: "status"}, "Model: checking…");
-    const sleep = button("Sleep now", "account-model-sleep"), wake = button("Wake now", "account-model-wake");
-    sleep.disabled = wake.disabled = true;
-    const powerButtons = make("div", {class: "account-section-heading"}); powerButtons.append(sleep, wake);
-    model.append(make("h3", {}, "Model"), modelStatus, powerButtons); heading.after(model);
-    let powerBusy = false;
-    function showPower(value) {
-      const minutes = Math.max(0, Math.floor((Date.now() - Date.parse(value.last_activity)) / 60000));
-      modelStatus.textContent = value.enabled ? `Model: ${value.sleeping ? "Sleeping" : "Awake"} · last used ${minutes} min ago · sleeps after ${value.idle_sleep_minutes} min idle` : "Model: automatic sleep unavailable";
-      sleep.disabled = powerBusy || !value.enabled || value.sleeping || value.in_flight > 0;
-      wake.disabled = powerBusy || !value.enabled || !value.sleeping;
-    }
-    async function loadPower() {
-      if (identity?.user.role !== "admin" || powerBusy) return;
-      try { showPower(await request("/api/admin/llm/power")); }
-      catch (failure) { modelStatus.textContent = failure.message; sleep.disabled = wake.disabled = true; }
-    }
-    for (const [control, actionName] of [[sleep, "sleep"], [wake, "wake"]]) control.addEventListener("click", async () => {
-      powerBusy = true; sleep.disabled = wake.disabled = true;
-      modelStatus.textContent = actionName === "wake" ? "Waking the model…" : "Putting the model to sleep…";
-      try { const value = await post(`/api/admin/llm/power/${actionName}`); powerBusy = false; showPower(value); }
-      catch (failure) { powerBusy = false; await loadPower(); message(modelStatus, failure.message, true); }
-    });
-    manageUsers.addEventListener("click", loadPower);
-    setInterval(() => { if (settings.open && !panel.hidden) loadPower(); }, 30000);
-    const activity = make("details", {id: "account-activity"}), activityRows = make("div"), activityRefresh = button("Refresh activity", "account-refresh-activity"), activityMore = button("Older activity", "account-more-activity");
-    activity.append(make("summary", {}, "Administrator activity"), hint("Successful account and allowance changes. Passwords and login credentials are never included."), activityRefresh, activityRows, activityMore); panel.append(activity);
-    let activityCursor = null;
-    async function loadActivity(older = false) {
-      const rows = await request(`/api/auth/admin/activity?limit=50${older && activityCursor ? `&before=${activityCursor}` : ""}`);
-      if (!older) activityRows.replaceChildren();
-      for (const row of rows) activityRows.append(make("p", {}, `${new Date(row.at).toLocaleString()} · ${row.actor} · ${row.action.replaceAll(".", " ")} · ${row.target}${Object.keys(row.details).length ? ` · ${JSON.stringify(row.details)}` : ""}`));
-      activityCursor = rows.at(-1)?.sequence; activityMore.disabled = rows.length < 50;
-      if (!activityRows.children.length) activityRows.append(hint("No recorded activity."));
-    }
-    activityRefresh.onclick = () => action(activityRefresh, notice, () => loadActivity());
-    activityMore.onclick = () => action(activityMore, notice, () => loadActivity(true));
-    activity.addEventListener("toggle", () => { if (activity.open && !activityRows.children.length) action(activityRefresh, notice, () => loadActivity()); });
-    function renderList() {
-      users.replaceChildren();
-      const matches = adminData.filter(user => user.username.includes(search.value.toLowerCase().trim()));
-      for (const user of matches) {
-        const row = make("button", {type: "button", class: "account-user-row", "aria-pressed": String(user.username === selectedUser), "data-username": user.username});
-        row.append(make("strong", {}, user.username), make("span", {class: "account-hint"}, `${user.role === "admin" ? "Administrator" : "Member"}${user.disabled ? " · Disabled" : ""}`), tokenMeter(user.quota, {compact: true}));
-        row.addEventListener("click", () => { selectedUser = user.username; message(notice); renderList(); renderDetail(); });
-        users.append(row);
-      }
-      if (!matches.length) users.append(hint("No matching users."));
-    }
-    function renderDetail() {
-      detail.replaceChildren();
-      const user = adminData.find(row => row.username === selectedUser);
-      if (!user) { detail.append(hint("Select an account to manage its allowance and password.")); return; }
-      const endpoint = `/api/auth/admin/users/${encodeURIComponent(user.username)}`;
-      const head = make("div", {class: "account-section-heading"});
-      head.append(make("h3", {class: "account-selected-name"}, user.username), make("span", {class: "account-badge"}, user.disabled ? "Disabled" : "Active"));
-      const quota = tokenMeter(user.quota);
-      const limits = make("form", {class: "account-inline-form"});
-      const input = limitField("account-user-token-limit"); input.value = user.quota.token_limit;
-      const save = button("Save limit", "account-save-limit", true); save.type = "submit";
-      limits.append(labelFor("Tokens per 24 hours", input), save);
-      limits.addEventListener("submit", event => {
-        event.preventDefault();
-        action(save, notice, async () => {
-          await post(`${endpoint}/token-limit`, {daily_token_limit: Number(input.value)});
-          await loadUsers(user.username); await refreshUsage(); message(notice, `Daily token limit updated for ${user.username}.`);
-        });
-      });
-      const reset = button("Reset all usage", "account-reset-tokens");
-      reset.addEventListener("click", () => action(reset, notice, async () => {
-        await post(`${endpoint}/reset-tokens`);
-        await loadUsers(user.username); await refreshUsage(); message(notice, `All usage reset for ${user.username}: tokens, graph jobs and upload/storage allowance.`);
-      }));
-      const resetPassword = make("form", {class: "account-password-reset"});
-      const field = passwordField("account-reset-password");
-      const change = button("Reset password", "account-reset-user-password"); change.type = "submit";
-      resetPassword.append(make("h3", {}, "Password"), labelFor("New password (12+ characters)", field), hint("Signs this user out of all devices. Token usage is kept."), change);
-      resetPassword.addEventListener("submit", event => {
-        event.preventDefault();
-        action(change, notice, async () => {
-          try {
-            await post(`${endpoint}/reset-password`, {password: field.value});
-            if (user.username === identity.user.username) { showLogin("Password reset. Sign in with your new password."); return; }
-            message(notice, `Password reset for ${user.username}.`);
-          } finally { field.value = ""; }
-        });
-      });
-      const toggle = button(user.disabled ? "Enable account" : "Disable account", "account-toggle-user");
-      toggle.disabled = user.username === identity.user.username;
-      toggle.addEventListener("click", () => action(toggle, notice, async () => {
-        await post(`${endpoint}/${user.disabled ? "enable" : "disable"}`);
-        await loadUsers(user.username); message(notice, `Account ${user.disabled ? "enabled" : "disabled"}.`);
-      }));
-      detail.append(head, quota, limits, hint(`Maximum ${number(identity.quota.server_token_limit)} tokens. Use 0 to pause AI access.`), reset, hint("Reset clears tokens and graph jobs, and grants a fresh upload/storage allowance. Saved files, configured limits, the scheduled reset time and shared server usage are preserved. Wait for active work to finish first."), resetPassword, toggle);
-      if (toggle.disabled) detail.append(hint("You cannot disable your own administrator account."));
-    }
-    async function loadUsers(selection = selectedUser) {
-      adminData = await request("/api/auth/admin/users");
-      selectedUser = adminData.some(user => user.username === selection) ? selection : adminData[0]?.username;
-      renderList(); renderDetail();
-    }
-    search.addEventListener("input", renderList);
-    refresh.addEventListener("click", () => action(refresh, notice, () => loadUsers()));
-    manageUsers.addEventListener("click", () => action(refresh, notice, () => loadUsers()));
-    create.addEventListener("submit", event => {
-      event.preventDefault();
-      action(submit, notice, async () => {
-        const name = newUser.value.trim().toLowerCase();
-        try {
-          await post("/api/auth/admin/users", {username: name, password: newPassword.value, daily_token_limit: Number(newLimit.value)});
-          search.value = ""; await loadUsers(name); newUser.value = ""; create.hidden = true; add.textContent = "Create user";
-          message(notice, `Account created for ${name}. Share their credentials privately.`);
-        } finally { newPassword.value = ""; }
-      });
-    });
+    panel.append(make("h3", {class: "account-section-title"}, "Administration"),
+      hint("Manage users, inspect server activity, and configure GraphMine."),
+      make("a", {href: "/admin", class: "account-primary"}, "Open admin console"));
+  }
+  function requirePasswordChange() {
+    selectTab("profile");
+    document.getElementById("account-close-settings").disabled = true;
+    message(document.getElementById("account-password-message"), "Change your temporary password before continuing.");
+    if (!settings.open) settings.showModal();
   }
   function mountSettings() {
     settings = make("dialog", {class: "account-settings-dialog", "aria-labelledby": "account-settings-heading"});
@@ -311,6 +186,7 @@
     usagePanel = panels.get("usage"); manageUsers = tabs.get("users"); manageUsers.hidden = true;
     mountProfile(panels.get("profile")); mountAdministration(panels.get("users"));
     layout.append(navigation, content); settings.append(header, layout); document.body.append(settings);
+    settings.addEventListener("cancel", event => { if (identity?.user.must_change_password) event.preventDefault(); });
     settings.addEventListener("close", () => { for (const input of settings.querySelectorAll('input[type="password"]')) input.value = ""; });
     selectTab("usage");
     return () => { selectTab("usage"); settings.showModal(); refreshUsage(); };
@@ -333,7 +209,9 @@
         await post("/api/auth/login", {username: username.value, password: password.value});
         const data = await request("/api/auth/me");
         if (authenticated) { location.hash = ""; location.reload(); return; }
-        authenticated = true; renderUsage(data); dialog.close(); resolveLogin?.(true);
+        authenticated = true; renderUsage(data); dialog.close();
+        if (data.user.must_change_password) { requirePasswordChange(); return; }
+        resolveLogin?.(true);
       } catch (failure) { error.textContent = failure.message; }
       finally { password.value = ""; submit.disabled = false; }
     });
@@ -342,7 +220,8 @@
     const open = button("", "account-settings-button");
     open.append(make("span", {class: "account-settings-icon", "aria-hidden": "true"}, "⚙"), accountName, make("span", {}, "Settings"));
     open.addEventListener("click", mountSettings());
-    bar.append(open);
+    const adminLink = make("a", {href: "/admin", id: "account-admin-console", class: "account-secondary", hidden: ""}, "Admin");
+    bar.append(adminLink, open);
     (document.querySelector(".header-actions") || document.querySelector(".app-header") || document.body).append(bar);
     for (const id of ["connection-button", "settings-button"]) { const old = document.getElementById(id); if (old) old.hidden = true; }
   }
@@ -373,7 +252,7 @@
     if (!account.enabled) return false;
     try { localStorage.removeItem("graphmine.apiToken"); localStorage.removeItem("graphmine.apiBase"); } catch (_) { /* Storage is optional. */ }
     mount();
-    try { const data = await request("/api/auth/me"); authenticated = true; renderUsage(data); return true; }
+    try { const data = await request("/api/auth/me"); authenticated = true; renderUsage(data); if (data.user.must_change_password) { requirePasswordChange(); return new Promise(resolve => { resolveLogin = resolve; }); } return true; }
     catch (_) { showLogin(); return new Promise(resolve => { resolveLogin = resolve; }); }
   })();
   setInterval(refreshUsage, 30000);

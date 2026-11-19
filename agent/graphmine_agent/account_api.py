@@ -166,8 +166,16 @@ class AccountMiddleware:
                 principal = await account_io(runtime.accounts.authenticate, token)
                 if principal is None:
                     raise AccountError(
-                        "Please sign in to continue.", "unauthorized", 401
+                        "Administrator access is required." if path.startswith("/api/admin/") else "Please sign in to continue.",
+                        "admin_required" if path.startswith("/api/admin/") else "unauthorized",
+                        403 if path.startswith("/api/admin/") else 401,
                     )
+                scope["graphmine_principal"] = principal
+                if path.startswith("/api/admin/") and not principal.is_admin:
+                    raise AccountError("Administrator access is required.", "admin_required", 403)
+                user = await account_io(runtime.accounts.user, principal.username)
+                if user["must_change_password"] and path not in {"/api/auth/me", "/api/auth/password", "/api/auth/logout"}:
+                    raise AccountError("Change your temporary password before continuing.", "password_change_required", 403)
                 if (
                     cookie_auth
                     and method not in {"GET", "HEAD"}
@@ -332,12 +340,13 @@ def public_user(principal):
         "id": principal.user_id,
         "username": principal.username,
         "role": "admin" if principal.is_admin else "user",
+        "must_change_password": bool(principal.accounts.user(principal.username)["must_change_password"]),
     }
 
 
 def administrator():
     principal = current_principal.get()
-    if principal is None or not principal.is_admin:
+    if principal is None or not principal.is_admin or not principal.session_hash or not principal.accounts.session_active(principal):
         raise AccountError("Administrator access is required.", "admin_required", 403)
     return principal
 
@@ -404,6 +413,13 @@ def register_account_routes(app):
             "quota": principal.accounts.usage(principal.user_id),
         }
 
+    @router.get("/history")
+    def account_history():
+        principal = current_principal.get()
+        if principal is None:
+            raise AccountError("Please sign in.", "unauthorized", 401)
+        return {"support_access": principal.accounts.support_history(principal.user_id)}
+
     @router.post("/logout", status_code=204)
     def logout(response: Response):
         principal = current_principal.get()
@@ -429,21 +445,6 @@ def register_account_routes(app):
         async with login_slots:
             return await run_in_threadpool(operation, *args)
 
-    @router.get("/admin/activity")
-    def admin_activity(
-        response: Response, before: int | None = None, limit: int = 100
-    ):
-        principal = administrator()
-        if not 1 <= limit <= 200 or (before is not None and before < 1):
-            raise AccountError("Invalid activity page limits.", "invalid_request", 422)
-        response.headers["Cache-Control"] = "no-store"
-        return principal.accounts.activity(before, limit)
-
-    @router.get("/admin/users")
-    def users(response: Response):
-        response.headers["Cache-Control"] = "no-store"
-        return administrator().accounts.list_users()
-
     @router.post("/password", status_code=204)
     async def change_password(body: AccountPasswordChange, response: Response):
         principal = current_principal.get()
@@ -462,54 +463,6 @@ def register_account_routes(app):
             httponly=True,
             samesite="strict",
         )
-        response.headers["Cache-Control"] = "no-store"
-
-    @router.post("/admin/users", status_code=201)
-    async def create_user(body: AccountCreate, response: Response):
-        principal = administrator()
-        response.headers["Cache-Control"] = "no-store"
-        return await password_operation(
-            principal.accounts.create_user,
-            body.username,
-            body.password,
-            body.daily_token_limit,
-        )
-
-    @router.post("/admin/users/{username}/token-limit")
-    def token_limit(username: str, body: AccountTokenLimit, response: Response):
-        principal = administrator()
-        response.headers["Cache-Control"] = "no-store"
-        return principal.accounts.set_token_limit(username, body.daily_token_limit)
-
-    @router.post("/admin/users/{username}/reset-tokens")
-    def reset_tokens(username: str, response: Response):
-        principal = administrator()
-        response.headers["Cache-Control"] = "no-store"
-        return principal.accounts.reset_tokens(username)
-
-    @router.post("/admin/users/{username}/reset-password", status_code=204)
-    async def reset_password(username: str, body: AccountPassword, response: Response):
-        principal = administrator()
-        await password_operation(
-            principal.accounts.reset_password, username, body.password
-        )
-        response.headers["Cache-Control"] = "no-store"
-
-    @router.post("/admin/users/{username}/disable", status_code=204)
-    def disable_user(username: str, response: Response):
-        principal = administrator()
-        if principal.accounts.username(username) == principal.username:
-            raise AccountError(
-                "You cannot disable your own administrator account.",
-                "self_disable",
-                403,
-            )
-        principal.accounts.disable(username)
-        response.headers["Cache-Control"] = "no-store"
-
-    @router.post("/admin/users/{username}/enable", status_code=204)
-    def enable_user(username: str, response: Response):
-        administrator().accounts.enable(username)
         response.headers["Cache-Control"] = "no-store"
 
     app.include_router(router)

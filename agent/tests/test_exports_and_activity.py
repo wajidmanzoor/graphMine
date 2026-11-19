@@ -104,33 +104,22 @@ def test_admin_activity_is_private_paginated_and_contains_no_credentials(recipes
     client, runtime, alice, _, _, _, _, _ = recipes
     runtime.accounts.create_user("operator", PASSWORD, admin=True)
     admin = login(client, "operator")
-    prefix = "/api/auth/admin/users/alice"
-    assert (
-        client.post(
-            prefix + "/token-limit", headers=admin, json={"daily_token_limit": 40}
-        ).status_code
-        == 200
-    )
+    prefix = "/api/admin/users/alice"
+    assert client.patch(prefix, headers=admin, json={"daily_token_limit": 40}).status_code == 200
     assert client.post(prefix + "/reset-tokens", headers=admin).status_code == 200
-    assert client.post(prefix + "/disable", headers=admin).status_code == 204
-    assert client.post(prefix + "/enable", headers=admin).status_code == 204
+    assert client.post(prefix + "/disable", headers=admin).status_code == 200
+    assert client.post(prefix + "/enable", headers=admin).status_code == 200
     password = "replacement-password-76"
-    assert (
-        client.post(
-            prefix + "/reset-password", headers=admin, json={"password": password}
-        ).status_code
-        == 204
-    )
+    assert client.post(prefix + "/reset-password", headers=admin, json={"password": password}).status_code == 200
     alice = login(client, "alice", password)
-    assert client.get("/api/auth/admin/activity", headers=alice).status_code == 403
-    first = client.get("/api/auth/admin/activity?limit=3", headers=admin).json()
-    second = client.get(
-        f"/api/auth/admin/activity?before={first[-1]['sequence']}&limit=3",
-        headers=admin,
-    ).json()
-    assert not {row["sequence"] for row in first} & {row["sequence"] for row in second}
-    assert first[0]["action"] == "password.reset" and first[0]["actor"] == "operator"
-    text = json.dumps(first + second)
+    assert client.get("/api/admin/activity", headers=alice).status_code == 403
+    first = client.get("/api/admin/activity?kind=admin_change&limit=3", headers=admin).json()
+    second = client.get(f"/api/admin/activity?kind=admin_change&before={first['next_cursor']}&limit=3", headers=admin).json()
+    assert not {row["id"] for row in first["items"]} & {row["id"] for row in second["items"]}
+    reset = next(row for row in first["items"] if row["details"]["action"] == "password.reset")
+    assert reset["username"] == "operator"
+    assert isinstance(reset["details"]["before"], dict) and isinstance(reset["details"]["after"], dict)
+    text = json.dumps([first, second])
     assert password not in text and PASSWORD not in text and "Bearer" not in text
 
 

@@ -122,6 +122,7 @@ class Settings:
     account_queue_seconds: int = 900
     # Delete conversations after this many days without activity; 0 keeps them.
     retention_days: int = 0
+    admin_event_retention_days: int = 180
     # Online snapshots every backup_hours into this directory, keeping backup_keep.
     backup_directory: Path | None = None
     backup_hours: int = 24
@@ -391,6 +392,7 @@ class Settings:
             account_job_seconds=_integer("GRAPHMINE_ACCOUNT_JOB_SECONDS", 300),
             account_queue_seconds=_integer("GRAPHMINE_ACCOUNT_QUEUE_SECONDS", 900),
             retention_days=_integer("GRAPHMINE_RETENTION_DAYS", 0),
+            admin_event_retention_days=max(1, _integer("GRAPHMINE_ADMIN_EVENT_RETENTION_DAYS", 180)),
             backup_directory=Path(os.environ["GRAPHMINE_BACKUP_DIR"])
             .expanduser()
             .resolve()

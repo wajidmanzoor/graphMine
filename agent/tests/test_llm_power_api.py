@@ -18,7 +18,7 @@ def test_admin_only_controls_status_does_not_wake_and_busy_sleep_is_rejected(set
         assert runtime.analytics.llm_power is runtime.llm_power
         runtime.accounts.create_user('admin', PASSWORD, admin=True)
         runtime.accounts.create_user('member', PASSWORD)
-        assert client.get('/api/admin/llm/power').status_code == 401
+        assert client.get('/api/admin/llm/power').status_code == 403
         member = login(client, 'member')
         for method, path in [('get', ''), ('post', '/sleep'), ('post', '/wake')]:
             assert getattr(client, method)('/api/admin/llm/power' + path, headers=member).status_code == 403

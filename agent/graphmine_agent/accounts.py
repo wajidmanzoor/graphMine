@@ -25,6 +25,8 @@ from functools import lru_cache
 import httpx
 
 from .identity import AccountError, Principal, current_principal
+from .admin_accounts import AdminAccounts
+from . import admin_events
 
 DAY = 86400
 MODEL_QUEUE_SECONDS = 60
@@ -64,7 +66,7 @@ def _stamp(value):
     return datetime.fromtimestamp(value, timezone.utc).isoformat()
 
 
-class Accounts:
+class Accounts(AdminAccounts):
     def __init__(self, settings, database, *, clock=time.time):
         self.settings, self.database, self.clock = settings, database, clock
         # Process-local arrival order for each kind of slot; leases stay in SQLite.
@@ -113,21 +115,7 @@ class Accounts:
                 db.execute(
                     "ALTER TABLE accounts ADD COLUMN storage_reset_bytes INTEGER NOT NULL DEFAULT 0"
                 )
-
-    def _audit(self, db, action, target, details=None):
-        """Commit a secret-free activity entry in the mutation's transaction."""
-        principal = current_principal.get()
-        db.execute(
-            "INSERT INTO admin_activity(at,actor_id,actor,action,target,details) VALUES (?,?,?,?,?,?)",
-            (
-                _stamp(self.clock()),
-                principal.user_id if principal else None,
-                principal.username if principal else "local administrator",
-                action,
-                self.username(target),
-                json_module.dumps(details or {}, separators=(",", ":")),
-            ),
-        )
+            self._initialize_admin(db)
 
     def activity(self, before=None, limit=100):
         with self.database._connect() as db:
@@ -157,11 +145,17 @@ class Accounts:
                 f"Daily token limit must be a whole number from 0 to {self.settings.server_daily_tokens:,}."
             )
 
-    def create_user(self, username, password, daily_token_limit=None, *, admin=False):
+    def create_user(self, username, password, daily_token_limit=None, *, admin=False,
+                    storage_limit=None, graphmine_access=True, studio_access=False,
+                    must_change_password=False):
         username = self.username(username)
         self._validate_token_limit(daily_token_limit)
         if not 12 <= len(password) <= 128:
             raise ValueError("Use a password of 12–128 characters.")
+        if storage_limit is not None and (type(storage_limit) is not int or not 1 <= storage_limit <= 2**53 - 1):
+            raise ValueError("Storage limit must be a positive whole number of bytes.")
+        if studio_access and len(username) > 32:
+            raise ValueError("Dataset Studio usernames must be at most 32 characters.")
         encoded, now, user_id = (
             password_hash(password),
             self.clock(),
@@ -195,6 +189,10 @@ class Accounts:
                 "INSERT INTO quota_buckets(scope,started_at) VALUES (?,?)",
                 (user_id, now),
             )
+            principal = current_principal.get()
+            db.execute("UPDATE accounts SET storage_limit=?,graphmine_access=?,studio_access=?,must_change_password=?,created_by=? WHERE id=?",
+                       (storage_limit, graphmine_access, studio_access, must_change_password,
+                        principal.username if principal else "local administrator", user_id))
             self._audit(
                 db,
                 "account.created",
@@ -203,6 +201,7 @@ class Accounts:
                     "role": "admin" if admin else "user",
                     "daily_token_limit": daily_token_limit,
                 },
+                before={}, after=self._public_row(self._account_row(db, username)),
             )
         return {
             "id": user_id,
@@ -223,16 +222,15 @@ class Accounts:
         self._validate_token_limit(limit)
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            user = db.execute(
-                "SELECT id FROM accounts WHERE username=?", (self.username(username),)
-            ).fetchone()
+            user = self._account_row(db, username)
             if user is None:
                 raise ValueError("Unknown username.")
             db.execute(
                 "UPDATE accounts SET daily_token_limit=? WHERE id=?", (limit, user[0])
             )
             self._audit(
-                db, "tokens.limit_changed", username, {"daily_token_limit": limit}
+                db, "tokens.limit_changed", username, {"daily_token_limit": limit},
+                before={"daily_token_limit": user["daily_token_limit"]}, after={"daily_token_limit": limit}
             )
             return self._usage(db, user[0], self.clock())
 
@@ -311,7 +309,7 @@ class Accounts:
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
             changed = db.execute(
-                "UPDATE accounts SET password_hash=? WHERE id=? AND password_hash=? AND disabled=0",
+                "UPDATE accounts SET password_hash=?,must_change_password=0 WHERE id=? AND password_hash=? AND disabled=0",
                 (encoded, user_id, user["password_hash"]),
             ).rowcount
             if not changed:
@@ -322,36 +320,38 @@ class Accounts:
             db.execute(
                 "DELETE FROM login_attempts WHERE key=?", ("name:password:" + user_id,)
             )
-            self._audit(db, "password.changed", user["username"])
+            self._audit(db, "password.changed", user["username"],
+                        before={"must_change_password": bool(user["must_change_password"])},
+                        after={"must_change_password": False, "password": "changed", "sessions": 0})
 
-    def reset_password(self, username, password):
+    def reset_password(self, username, password, *, must_change_password=True):
         if not 12 <= len(password) <= 128:
             raise ValueError("Use a password of 12–128 characters.")
         encoded = password_hash(password)
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            row = db.execute(
-                "SELECT id FROM accounts WHERE username=?", (self.username(username),)
-            ).fetchone()
+            row = self._account_row(db, username)
             if row is None:
                 raise ValueError("Unknown username.")
             db.execute(
-                "UPDATE accounts SET password_hash=? WHERE id=?", (encoded, row[0])
+                "UPDATE accounts SET password_hash=?,must_change_password=? WHERE id=?", (encoded, must_change_password, row["id"])
             )
             db.execute("DELETE FROM account_sessions WHERE user_id=?", (row[0],))
-            self._audit(db, "password.reset", username)
+            self._audit(db, "password.reset", username,
+                        before={"must_change_password": bool(row["must_change_password"])},
+                        after={"must_change_password": must_change_password, "password": "reset", "sessions": 0})
 
     def disable(self, username):
         with self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
-            row = db.execute(
-                "SELECT id FROM accounts WHERE username=?", (self.username(username),)
-            ).fetchone()
+            row = self._account_row(db, username)
             if row is None:
                 raise ValueError("Unknown username.")
+            self._protect_admin(db, row, disabled=True)
             db.execute("UPDATE accounts SET disabled=1 WHERE id=?", (row[0],))
             db.execute("DELETE FROM account_sessions WHERE user_id=?", (row[0],))
-            self._audit(db, "account.disabled", username)
+            self._audit(db, "account.disabled", username, before=self._public_row(row),
+                        after=self._public_row(self._account_row(db, username)))
 
     def adopt_legacy(self, username):
         with self.database._connect() as db:
@@ -370,12 +370,15 @@ class Accounts:
 
     def enable(self, username):
         with self.database._connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            before = self._public_row(self._account_row(db, username))
             if not db.execute(
                 "UPDATE accounts SET disabled=0 WHERE username=?",
                 (self.username(username),),
             ).rowcount:
                 raise ValueError("Unknown username.")
-            self._audit(db, "account.enabled", username)
+            self._audit(db, "account.enabled", username, before=before,
+                        after=self._public_row(self._account_row(db, username)))
 
     def _login_attempt(self, username, address):
         now = self.clock()
@@ -407,7 +410,10 @@ class Accounts:
         matched = password_matches(
             password, user["password_hash"] if user else _dummy_password()
         )
-        if not matched or not user or user["disabled"]:
+        if not matched or not user or user["disabled"] or user["login_disabled"] or not user["graphmine_access"]:
+            admin_events.record(self.database, "sign_in", "Sign-in failed", ts=self.clock(),
+                                user_id=user["id"] if user else None, outcome="invalid_credentials",
+                                details={"ip": admin_events.truncate_ip(address)})
             raise AccountError(
                 "Incorrect username or password.", "invalid_credentials", 401
             )
@@ -419,7 +425,7 @@ class Accounts:
             current = db.execute(
                 "SELECT * FROM accounts WHERE id=?", (user["id"],)
             ).fetchone()
-            if current["disabled"] or current["password_hash"] != user["password_hash"]:
+            if not current or current["disabled"] or current["login_disabled"] or not current["graphmine_access"] or current["password_hash"] != user["password_hash"]:
                 raise AccountError(
                     "Incorrect username or password.", "invalid_credentials", 401
                 )
@@ -433,6 +439,9 @@ class Accounts:
                 (digest, user["id"], now + self.settings.account_session_seconds, now),
             )
             db.execute("DELETE FROM login_attempts WHERE key=?", ("name:" + username,))
+            db.execute("UPDATE accounts SET last_sign_in=?,last_active=? WHERE id=?", (now, now, user["id"]))
+            admin_events.insert(db, "sign_in", "Signed in", ts=now, user_id=user["id"],
+                                details={"ip": admin_events.truncate_ip(address)})
         return token, Principal(
             user["id"], username, self, digest, current["role"] == "admin"
         )
@@ -443,7 +452,7 @@ class Accounts:
         digest = hashlib.sha256(token.encode()).hexdigest()
         with self.database._connect() as db:
             row = db.execute(
-                "SELECT a.id,a.username,a.role FROM accounts a JOIN account_sessions s ON s.user_id=a.id WHERE s.token_hash=? AND s.expires_at>? AND a.disabled=0",
+                "SELECT a.id,a.username,a.role FROM accounts a JOIN account_sessions s ON s.user_id=a.id WHERE s.token_hash=? AND s.expires_at>? AND a.disabled=0 AND a.graphmine_access=1 AND a.login_disabled=0",
                 (digest, self.clock()),
             ).fetchone()
         return (
@@ -488,9 +497,10 @@ class Accounts:
         connection = nullcontext(db) if db is not None else self.database._connect()
         with connection as db:
             account = db.execute(
-                "SELECT storage_reset_bytes FROM accounts WHERE id=?", (user_id,)
+                "SELECT storage_reset_bytes,storage_limit FROM accounts WHERE id=?", (user_id,)
             ).fetchone()
             reset_bytes = account[0] if account else 0
+            storage_limit = account[1] if account and account[1] is not None else self.settings.account_storage_bytes
             uploads = db.execute(
                 "SELECT coalesce(sum(json_extract(f.payload,'$.size_bytes')),0) FROM files f JOIN sessions s ON s.id=f.session_id WHERE s.owner_id=?",
                 (user_id,),
@@ -577,12 +587,13 @@ class Accounts:
             "stored": stored,
             "reset_bytes": reset_bytes,
             "used": max(0, stored - reset_bytes),
-            "limit": self.settings.account_storage_bytes,
+            "limit": storage_limit,
         }
 
     def upload_remaining(self, user_id):
+        storage = self.storage_usage(user_id)
         return max(
-            0, self.settings.account_storage_bytes - self.storage_usage(user_id)["used"]
+            0, storage["limit"] - storage["used"]
         )
 
     def _bucket(self, db, scope, now):
@@ -621,7 +632,7 @@ class Accounts:
         """Tokens per recent question, from the planner's per-stage records."""
         with self.database._connect() as db:
             rows = db.execute(
-                "SELECT e.payload, e.created_at FROM events e "
+                "SELECT e.payload, e.created_at FROM conversation_events e "
                 "JOIN sessions s ON s.id=e.session_id "
                 "WHERE s.owner_id=? AND e.type='workflow.diagnostics' "
                 "ORDER BY e.sequence DESC LIMIT 300",

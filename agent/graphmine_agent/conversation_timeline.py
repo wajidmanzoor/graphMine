@@ -35,13 +35,13 @@ def initialize(db, *, backfill=False):
           turn_id TEXT NOT NULL, number INTEGER NOT NULL,
           PRIMARY KEY(session_id,turn_id), UNIQUE(session_id,number)
         );
-        CREATE INDEX IF NOT EXISTS events_turn ON events(session_id,json_extract(payload,'$.turn_id'),sequence);
-        CREATE INDEX IF NOT EXISTS events_type ON events(session_id,type,sequence);
-        CREATE INDEX IF NOT EXISTS events_chat_turn ON events(session_id,json_extract(payload,'$.turn_id'),json_extract(payload,'$.role'),sequence)
+        CREATE INDEX IF NOT EXISTS events_turn ON conversation_events(session_id,json_extract(payload,'$.turn_id'),sequence);
+        CREATE INDEX IF NOT EXISTS events_type ON conversation_events(session_id,type,sequence);
+        CREATE INDEX IF NOT EXISTS events_chat_turn ON conversation_events(session_id,json_extract(payload,'$.turn_id'),json_extract(payload,'$.role'),sequence)
           WHERE type='workflow.chat';
-        CREATE INDEX IF NOT EXISTS events_workflow_answer ON events(session_id,json_extract(payload,'$.workflow_id'),json_extract(payload,'$.revision'),sequence)
+        CREATE INDEX IF NOT EXISTS events_workflow_answer ON conversation_events(session_id,json_extract(payload,'$.workflow_id'),json_extract(payload,'$.revision'),sequence)
           WHERE type='workflow.answer';
-        CREATE INDEX IF NOT EXISTS events_reasoning_stage ON events(session_id,json_extract(payload,'$.turn_id'),json_extract(payload,'$.stage'),sequence)
+        CREATE INDEX IF NOT EXISTS events_reasoning_stage ON conversation_events(session_id,json_extract(payload,'$.turn_id'),json_extract(payload,'$.stage'),sequence)
           WHERE type='workflow.reasoning';
     """)
     public = "type='workflow.chat' AND coalesce(json_extract(payload,'$.evaluation_id'),'')=''"
@@ -52,7 +52,7 @@ def initialize(db, *, backfill=False):
         json_object('id','legacy_'||id,'kind','conversation.legacy','role',role,'created_at',created_at,
                     'message',{message},'plan',json_extract(payload,'$.plan'))"""
     # The rows remain derived; their sources keep the original payloads/evidence.
-    for table, prefix, key, row, predicate in (("events", "event_", "sequence", event_row, public), ("messages", "legacy_", "id", message_row, f"{message} IS NOT NULL")):
+    for table, prefix, key, row, predicate in (("conversation_events", "event_", "sequence", event_row, public), ("messages", "legacy_", "id", message_row, f"{message} IS NOT NULL")):
         for operation in ("INSERT", "UPDATE"):
             delete = f"DELETE FROM conversation_entries WHERE session_id=old.session_id AND id='{prefix}'||old.{key};" if operation == "UPDATE" else ""
             db.executescript(f"""
@@ -67,7 +67,7 @@ def initialize(db, *, backfill=False):
             END;
         """)
     db.executescript("""
-        CREATE TRIGGER IF NOT EXISTS conversation_turn_insert AFTER INSERT ON events
+        CREATE TRIGGER IF NOT EXISTS conversation_turn_insert AFTER INSERT ON conversation_events
           WHEN new.type='workflow.chat' AND json_extract(new.payload,'$.role')='user'
             AND coalesce(json_extract(new.payload,'$.evaluation_id'),'')=''
             AND json_extract(new.payload,'$.turn_id') IS NOT NULL BEGIN
@@ -76,12 +76,12 @@ def initialize(db, *, backfill=False):
         END;
     """)
     if backfill:
-        db.execute(f"INSERT OR IGNORE INTO conversation_entries SELECT {event_row} FROM events WHERE {public}")
+        db.execute(f"INSERT OR IGNORE INTO conversation_entries SELECT {event_row} FROM conversation_events WHERE {public}")
         db.execute(f"INSERT OR IGNORE INTO conversation_entries SELECT {message_row} FROM messages WHERE {message} IS NOT NULL")
         db.execute(f"""INSERT OR IGNORE INTO conversation_turns
             SELECT session_id,turn_id,row_number() OVER(PARTITION BY session_id ORDER BY first_sequence)
             FROM (SELECT session_id,json_extract(payload,'$.turn_id') turn_id,min(sequence) first_sequence
-                  FROM events WHERE {public} AND json_extract(payload,'$.role')='user'
+                  FROM conversation_events WHERE {public} AND json_extract(payload,'$.role')='user'
                   AND json_extract(payload,'$.turn_id') IS NOT NULL GROUP BY session_id,turn_id)""")
 
 
@@ -200,33 +200,33 @@ def conversation_page(database, session_id, *, before=None, limit=30, analytics=
             marks = ",".join("?" for _ in turn_ids)
             # Completed reasoning contains the full text. Earlier delta chunks
             # are redundant for display, but remain in the source event ledger.
-            for row in db.execute(f"""SELECT e.* FROM events e INDEXED BY events_turn WHERE e.session_id=? AND json_extract(e.payload,'$.turn_id') IN ({marks})
+            for row in db.execute(f"""SELECT e.* FROM conversation_events e INDEXED BY events_turn WHERE e.session_id=? AND json_extract(e.payload,'$.turn_id') IN ({marks})
                 AND (e.type!='workflow.reasoning.delta' OR (
                   json_extract(e.payload,'$.call_id') IS NOT NULL AND NOT EXISTS (
-                    SELECT 1 FROM events done WHERE done.session_id=e.session_id AND done.type='workflow.reasoning'
+                    SELECT 1 FROM conversation_events done WHERE done.session_id=e.session_id AND done.type='workflow.reasoning'
                       AND json_extract(done.payload,'$.turn_id')=json_extract(e.payload,'$.turn_id')
                       AND json_extract(done.payload,'$.call_id')=json_extract(e.payload,'$.call_id')))
                   OR (json_extract(e.payload,'$.call_id') IS NULL AND NOT EXISTS (
-                  SELECT 1 FROM events answer WHERE answer.session_id=e.session_id AND answer.type='workflow.chat'
+                  SELECT 1 FROM conversation_events answer WHERE answer.session_id=e.session_id AND answer.type='workflow.chat'
                     AND json_extract(answer.payload,'$.turn_id')=json_extract(e.payload,'$.turn_id') AND json_extract(answer.payload,'$.role')='assistant')
-                  AND e.sequence>coalesce((SELECT max(done.sequence) FROM events done WHERE done.session_id=e.session_id
+                  AND e.sequence>coalesce((SELECT max(done.sequence) FROM conversation_events done WHERE done.session_id=e.session_id
                     AND done.type='workflow.reasoning' AND json_extract(done.payload,'$.turn_id')=json_extract(e.payload,'$.turn_id')
                     AND json_extract(done.payload,'$.stage')=json_extract(e.payload,'$.stage')),0))) ORDER BY e.sequence""", [session_id, *turn_ids]):
                 events[row["sequence"]] = dict(row)
             numbers = dict(db.execute(f"SELECT turn_id,number FROM conversation_turns WHERE session_id=? AND turn_id IN ({marks})", [session_id, *turn_ids]).fetchall())
         if event_ids:
-            for row in db.execute(f"SELECT * FROM events WHERE session_id=? AND sequence IN ({','.join('?' for _ in event_ids)})", [session_id, *event_ids]):
+            for row in db.execute(f"SELECT * FROM conversation_events WHERE session_id=? AND sequence IN ({','.join('?' for _ in event_ids)})", [session_id, *event_ids]):
                 events[row["sequence"]] = dict(row)
         for item in rows:
             if item["lane"] != 3:
                 continue
             record = json.loads(item["document"])
-            row = db.execute("""SELECT * FROM events WHERE session_id=? AND type='workflow.answer'
+            row = db.execute("""SELECT * FROM conversation_events WHERE session_id=? AND type='workflow.answer'
                 AND json_extract(payload,'$.workflow_id')=? AND json_extract(payload,'$.revision')=?
                 ORDER BY sequence DESC LIMIT 1""", (session_id, record["id"], record["revision"])).fetchone()
             if row:
                 events[row["sequence"]] = dict(row)
-        event_cursor = db.execute("SELECT coalesce(max(sequence),0) FROM events WHERE session_id=?", (session_id,)).fetchone()[0]
+        event_cursor = db.execute("SELECT coalesce(max(sequence),0) FROM conversation_events WHERE session_id=?", (session_id,)).fetchone()[0]
     ordered = []
     for sequence in sorted(events):
         event = events[sequence]; event["payload"] = json.loads(event["payload"])

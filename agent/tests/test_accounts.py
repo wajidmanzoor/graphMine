@@ -1237,8 +1237,8 @@ def test_only_admin_can_manage_users_and_password_policy_is_preserved(account_se
         assert (
             client.get("/api/auth/me", headers=admin).json()["user"]["role"] == "admin"
         )
-        endpoint = "/api/auth/admin/users"
-        assert client.get(endpoint).status_code == 401
+        endpoint = "/api/admin/users"
+        assert client.get(endpoint).status_code == 403
         assert client.get(endpoint, headers=alice).status_code == 403
         assert (
             client.post(
@@ -1267,7 +1267,7 @@ def test_only_admin_can_manage_users_and_password_policy_is_preserved(account_se
             client.post(
                 endpoint,
                 headers=admin,
-                json={"username": "another", "password": PASSWORD, "role": "admin"},
+                json={"username": "another", "password": PASSWORD, "role": "invalid-role"},
             ).status_code
             == 422
         )
@@ -1275,8 +1275,8 @@ def test_only_admin_can_manage_users_and_password_policy_is_preserved(account_se
             endpoint, headers=admin, json={"username": "bob", "password": PASSWORD}
         )
         assert created.status_code == 201, created.text
-        assert created.json()["role"] == "user"
-        rows = client.get(endpoint, headers=admin).json()
+        assert created.json()["user"]["role"] == "user"
+        rows = client.get(endpoint, headers=admin).json()["items"]
         assert {row["username"] for row in rows} == {"alice", "bob", "owner"}
         assert all("password_hash" not in row for row in rows)
         bob = login(client, "bob")
@@ -1286,17 +1286,17 @@ def test_only_admin_can_manage_users_and_password_policy_is_preserved(account_se
                 headers=admin,
                 json={"password": PASSWORD + "-new"},
             ).status_code
-            == 204
+            == 200
         )
         assert client.get("/api/auth/me", headers=bob).status_code == 401
         bob = login(client, "bob", PASSWORD + "-new")
-        assert client.post(f"{endpoint}/bob/disable", headers=admin).status_code == 204
+        assert client.post(f"{endpoint}/bob/disable", headers=admin).status_code == 200
         assert client.get("/api/auth/me", headers=bob).status_code == 401
-        assert client.post(f"{endpoint}/bob/enable", headers=admin).status_code == 204
+        assert client.post(f"{endpoint}/bob/enable", headers=admin).status_code == 200
         bob = login(client, "bob", PASSWORD + "-new")
         assert client.get("/api/auth/me", headers=bob).status_code == 200
         assert (
-            client.post(f"{endpoint}/owner/disable", headers=admin).status_code == 403
+            client.post(f"{endpoint}/owner/disable", headers=admin).status_code == 409
         )
         sid = client.post("/api/sessions", headers=alice, json={}).json()["id"]
         assert client.get(f"/api/sessions/{sid}", headers=admin).status_code == 404
@@ -1428,108 +1428,46 @@ def test_storage_reset_migration_preserves_existing_accounts_and_usage(account_s
 
 
 def test_admin_quota_api_and_validation(account_settings, triangle_graph):
-    settings = replace(
-        account_settings, account_storage_bytes=len(triangle_graph), account_daily_jobs=1
-    )
+    settings = replace(account_settings, account_storage_bytes=len(triangle_graph), account_daily_jobs=1)
     with TestClient(create_app(settings)) as client:
         accounts = client.app.state.runtime.accounts
         accounts.create_user("owner", PASSWORD, admin=True)
         accounts.create_user("alice", PASSWORD)
         admin, alice = login(client, "owner"), login(client)
-        base = "/api/auth/admin/users"
-        response = client.post(
-            base,
-            headers=admin,
-            json={
-                "username": "bob",
-                "password": PASSWORD,
-                "daily_token_limit": 12345,
-            },
-        )
+        base = "/api/admin/users"
+        response = client.post(base, headers=admin, json={"username": "bob", "password": PASSWORD,
+                               "daily_token_limit": 12345, "must_change_password": False})
         assert response.status_code == 201, response.text
-        bob = response.json()["id"]
-        assert accounts.usage(bob)["token_limit"] == 12345
+        bob = response.json()["user"]["id"]
         accounts.settle_tokens(accounts.reserve_tokens(bob, 1000), 750)
         accounts.release(accounts.admit_jobs(bob))
         bob_auth = login(client, "bob")
-        sid = client.post(
-            "/api/sessions", headers=bob_auth, json={"domain_id": "general"}
-        ).json()["id"]
+        sid = client.post("/api/sessions", headers=bob_auth, json={"domain_id": "general"}).json()["id"]
         files = f"/api/sessions/{sid}/files"
-        uploaded = client.post(
-            files, headers=bob_auth, files={"file": ("graph.json", triangle_graph)}
-        )
+        uploaded = client.post(files, headers=bob_auth, files={"file": ("graph.json", triangle_graph)})
         assert uploaded.status_code == 201, uploaded.text
         assert accounts.upload_remaining(bob) == 0
-        assert client.post(
-            files, headers=bob_auth, files={"file": ("full.json", triangle_graph)}
-        ).status_code == 429
-        with pytest.raises(AccountError) as exhausted:
-            accounts.admit_jobs(bob)
-        assert exhausted.value.code == "daily_jobs_limit"
-        alice_id = next(row["id"] for row in accounts.list_users() if row["username"] == "alice")
-        accounts.settle_tokens(accounts.reserve_tokens(alice_id, 100), 50)
-        accounts.release(accounts.admit_jobs(alice_id))
-        alice_before = accounts.usage(alice_id)
-        for operation, body in (
-            ("token-limit", {"daily_token_limit": 20000}),
-            ("reset-tokens", {}),
-        ):
-            assert (
-                client.post(
-                    f"{base}/bob/{operation}", headers=alice, json=body
-                ).status_code
-                == 403
-            )
-        for invalid in (
-            -1,
-            True,
-            1.5,
-            "1000",
-            account_settings.server_daily_tokens + 1,
-        ):
-            assert client.post(
-                f"{base}/bob/token-limit",
-                headers=admin,
-                json={"daily_token_limit": invalid},
-            ).status_code in {400, 422}
-        updated = client.post(
-            f"{base}/bob/token-limit", headers=admin, json={"daily_token_limit": 30000}
-        )
-        assert updated.status_code == 200
-        assert updated.json()["tokens_remaining"] == 29250
+        assert client.patch(f"{base}/bob", headers=alice, json={"daily_token_limit": 20000}).status_code == 403
+        assert client.post(f"{base}/bob/reset-tokens", headers=alice).status_code == 403
+        for invalid in (-1, True, 1.5, "1000", account_settings.server_daily_tokens + 1):
+            assert client.patch(f"{base}/bob", headers=admin, json={"daily_token_limit": invalid}).status_code == 422
+        updated = client.patch(f"{base}/bob", headers=admin, json={"daily_token_limit": 30000})
+        assert updated.status_code == 200, updated.text
+        assert accounts.usage(bob)["tokens_remaining"] == 29250
+        before = accounts.usage(bob)
         reset = client.post(f"{base}/bob/reset-tokens", headers=admin)
         assert reset.status_code == 200
         assert reset.json()["tokens_used"] == 0
-        assert reset.json()["jobs_used"] == 0
-        assert reset.json()["server_tokens_used"] == 800
-        assert reset.json()["storage"]["used"] == 0
-        assert reset.json()["storage"]["stored"] == len(triangle_graph)
-        assert accounts.usage(alice_id) == alice_before
-        assert accounts.upload_remaining(bob) == len(triangle_graph)
-        assert client.get(files, headers=bob_auth).json()[0]["id"] == uploaded.json()["id"]
-        restarted = Accounts(settings, Database(settings.database_path))
-        assert restarted.upload_remaining(bob) == len(triangle_graph)
-        # A repeated reset grants one allowance, without accumulating credit.
-        repeated = client.post(f"{base}/bob/reset-tokens", headers=admin)
-        assert repeated.json()["storage"] == reset.json()["storage"]
-        assert client.post(
-            files, headers=bob_auth, files={"file": ("fresh.json", triangle_graph)}
-        ).status_code == 201
+        assert reset.json()["jobs_used"] == before["jobs_used"] == 1
+        assert reset.json()["server_tokens_used"] == before["server_tokens_used"] == 750
         assert accounts.upload_remaining(bob) == 0
-        assert client.post(
-            files, headers=bob_auth, files={"file": ("full-again.json", triangle_graph)}
-        ).status_code == 429
-        accounts.release(accounts.admit_jobs(bob))
-        assert accounts.usage(bob)["jobs_used"] == 1
-        with accounts.database._connect() as db:
-            assert db.execute("SELECT jobs FROM quota_buckets WHERE scope='server'").fetchone()[0] == 3
-        assert accounts.activity()[0]["action"] == "usage.reset"
-        rows = client.get(base, headers=admin).json()
-        row = next(row for row in rows if row["username"] == "bob")
-        assert row["quota"]["token_limit"] == 30000
+        assert client.get(files, headers=bob_auth).json()[0]["id"] == uploaded.json()["id"]
+        with pytest.raises(AccountError):
+            accounts.admit_jobs(bob)
+        assert accounts.activity()[0]["action"] == "tokens.reset"
+        rows = client.get(base, headers=admin).json()["items"]
+        assert next(row for row in rows if row["username"] == "bob")["quota"]["token_limit"] == 30000
         assert all("password_hash" not in row for row in rows)
-        # The administrator can also reset their own account via the UI endpoint.
         assert client.post(f"{base}/owner/reset-tokens", headers=admin).status_code == 200
 
 

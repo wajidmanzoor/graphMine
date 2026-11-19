@@ -83,10 +83,11 @@ def prepare(data_root, output, base_url=""):
                 or record.get("complete") is not True
             ):
                 excluded["reason"] = "incomplete_workflow"
+            event_table = "conversation_events" if main.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='conversation_events'").fetchone() else "events"
             events = [
                 json.loads(row[0])
                 for row in main.execute(
-                    "SELECT payload FROM events WHERE session_id=? AND type='workflow.chat' ORDER BY sequence",
+                    f"SELECT payload FROM {event_table} WHERE session_id=? AND type='workflow.chat' ORDER BY sequence",
                     (session,),
                 )
             ]

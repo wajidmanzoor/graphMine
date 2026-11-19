@@ -35,7 +35,7 @@ from .models import (
 # 9: bounded conversation exploration settings are private and quota-accounted.
 # 10: transactional dataset summaries and change tokens for indexed tables.
 # 11: indexed public conversation entries and stable question numbering.
-SCHEMA_VERSION = 11
+SCHEMA_VERSION = 12
 
 
 class RecordNotFound(KeyError):
@@ -88,6 +88,15 @@ class Database:
                     f"{stored}; this version supports {SCHEMA_VERSION}). Run the newer "
                     "version, or give this one its own GRAPHMINE_AGENT_DATA_ROOT."
                 )
+            # Schema 12 separates private conversation payloads from operational metadata.
+            if any(row[1] == "session_id" for row in connection.execute("PRAGMA table_info(events)")):
+                connection.execute("ALTER TABLE events RENAME TO conversation_events")
+                # Renaming preserves indexes and trigger SQL. Recreate the old named
+                # timeline triggers under their new names to avoid double execution.
+                for suffix in ("insert", "update", "delete"):
+                    connection.execute(f"DROP TRIGGER IF EXISTS conversation_events_{suffix}")
+            from .admin_events import initialize as initialize_admin_events
+            initialize_admin_events(connection)
             connection.executescript(
                 """
                 CREATE TABLE IF NOT EXISTS sessions (
@@ -137,7 +146,7 @@ class Database:
                   created_at TEXT NOT NULL
                 );
                 CREATE INDEX IF NOT EXISTS messages_session_idx ON messages(session_id, id);
-                CREATE TABLE IF NOT EXISTS events (
+                CREATE TABLE IF NOT EXISTS conversation_events (
                   sequence INTEGER PRIMARY KEY AUTOINCREMENT,
                   session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
                   job_id TEXT,
@@ -145,7 +154,7 @@ class Database:
                   payload TEXT NOT NULL,
                   created_at TEXT NOT NULL
                 );
-                CREATE INDEX IF NOT EXISTS events_session_idx ON events(session_id, sequence);
+                CREATE INDEX IF NOT EXISTS events_session_idx ON conversation_events(session_id, sequence);
                 CREATE TABLE IF NOT EXISTS feedback (
                   id TEXT PRIMARY KEY,
                   session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
@@ -326,7 +335,7 @@ class Database:
             # An untitled conversation nobody has used yet is not history.
             conditions.append(
                 "(json_extract(payload, '$.title') IS NOT NULL"
-                " OR EXISTS (SELECT 1 FROM events e WHERE e.session_id=sessions.id)"
+                " OR EXISTS (SELECT 1 FROM conversation_events e WHERE e.session_id=sessions.id)"
                 " OR EXISTS (SELECT 1 FROM files f WHERE f.session_id=sessions.id)"
                 " OR EXISTS (SELECT 1 FROM messages m WHERE m.session_id=sessions.id))"
             )
@@ -383,7 +392,7 @@ class Database:
             return [
                 json.loads(row["payload"])
                 for row in connection.execute(
-                    "SELECT payload FROM events WHERE type=? AND created_at>=? "
+                    "SELECT payload FROM conversation_events WHERE type=? AND created_at>=? "
                     "ORDER BY sequence DESC LIMIT ?",
                     (event_type, since.isoformat(), limit),
                 )
@@ -759,7 +768,7 @@ class Database:
     def add_event(self, event: ConversationEvent) -> ConversationEvent:
         with self._lock, self._connect() as connection:
             cursor = connection.execute(
-                "INSERT INTO events(session_id,job_id,type,payload,created_at) VALUES(?,?,?,?,?)",
+                "INSERT INTO conversation_events(session_id,job_id,type,payload,created_at) VALUES(?,?,?,?,?)",
                 (
                     event.session_id,
                     event.job_id,
@@ -768,6 +777,8 @@ class Database:
                     event.created_at.isoformat(),
                 ),
             )
+            from .admin_events import conversation_event
+            conversation_event(connection, event)
         return event.model_copy(update={"sequence": int(cursor.lastrowid)})
 
     def close_unanswered_planning(self) -> int:
@@ -781,11 +792,11 @@ class Database:
                 SELECT u.session_id,
                        json_extract(u.payload,'$.turn_id') AS turn_id,
                        json_extract(u.payload,'$.evaluation_id') AS evaluation_id
-                FROM events u
+                FROM conversation_events u
                 WHERE u.type='workflow.chat'
                   AND json_extract(u.payload,'$.role')='user'
                   AND NOT EXISTS (
-                    SELECT 1 FROM events a
+                    SELECT 1 FROM conversation_events a
                     WHERE a.session_id=u.session_id AND a.type='workflow.chat'
                       AND json_extract(a.payload,'$.role')='assistant'
                       AND json_extract(a.payload,'$.turn_id')
@@ -827,7 +838,7 @@ class Database:
             rows = connection.execute(
                 """
                 SELECT sequence,session_id,job_id,type,payload,created_at
-                FROM events WHERE session_id=? AND sequence>?
+                FROM conversation_events WHERE session_id=? AND sequence>?
                 """ + kinds + " ORDER BY sequence" + (" LIMIT ?" if limit is not None else ""),
                 values,
             ).fetchall()
@@ -850,7 +861,7 @@ class Database:
         """Whether a matching chat event exists, without reading the session's log."""
         self.get_session(session_id)
         sql = (
-            "SELECT 1 FROM events WHERE session_id=? AND type='workflow.chat'"
+            "SELECT 1 FROM conversation_events WHERE session_id=? AND type='workflow.chat'"
             " AND json_extract(payload,'$.turn_id')=?"
         )
         values = [session_id, turn_id]

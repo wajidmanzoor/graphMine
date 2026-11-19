@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GraphMine · Admin console</title>
+  <link rel="stylesheet" href="/admin.css">
+  <script src="/analytics-wire.js" defer></script>
+  <script src="/analytics-async.js" defer></script>
+  <script src="/analytics-transport.js" defer></script>
+  <script src="/admin.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="admin-header">
+    <a class="brand" href="/" aria-label="GraphMine home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 1M6 8l5 9M18 9l-5 8"/><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="7" r="2.5"/><circle cx="12" cy="19" r="2.5"/></svg>GraphMine</a>
+    <span class="admin-badge">Admin</span>
+    <a class="back-link" href="/">← Back to GraphMine</a>
+    <span id="admin-identity"></span>
+  </header>
+  <div id="access-message" class="access-message" role="status">Checking administrator access…</div>
+  <div class="admin-layout" id="admin-layout" hidden>
+    <aside class="sidebar"><nav id="admin-navigation" aria-label="Admin pages"></nav><p class="audit-note">Every change made here is recorded in <a href="#activity?kind=admin_change">Activity › Admin changes.</a></p></aside>
+    <main id="main" tabindex="-1"><div id="page-notice" role="status" aria-live="polite"></div><div id="page-content"></div></main>
+  </div>
+  <div id="dialog-root"></div>
+</body>
+</html>
