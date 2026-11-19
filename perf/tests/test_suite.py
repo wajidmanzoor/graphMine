@@ -216,6 +216,44 @@ m.DONE=True;assert s.tick() is None
     subprocess.run([os.sys.executable,"-c",script],cwd=ROOT,env={**os.environ,"GRAPHMINE_PERF_RUN_DIR":str(tmp_path)},check=True,capture_output=True,text=True)
 
 
+def test_load_user_retries_session_setup_after_busy_rejection(tmp_path):
+    import subprocess,os
+    from perf.common import ROOT
+    write_json(tmp_path/"private/locust.json",{"test":"load","host":"http://test","run_id":"test","accounts":[]})
+    script = '''import random
+from types import SimpleNamespace
+import perf.locustfile as m
+from perf.common import read_jsonl
+from perf.journey import JourneyError
+class BusyThenReady:
+    def __init__(self, prior_session):
+        self.session_id=prior_session;self.starts=0;self.asks=0
+    def start_session(self, config):
+        self.starts+=1
+        if self.starts==1:
+            raise JourneyError('concurrency_limit','Server busy','start_session')
+        self.session_id='new-session'
+        return {'session_id':self.session_id}
+    def ask(self, question, state, **kwargs):
+        assert self.session_id=='new-session'
+        self.asks+=1
+for prior_session in (None,'previous-conversation'):
+    journey=BusyThenReady(prior_session)
+    user=SimpleNamespace(journey=journey,in_session=0,question_index=0,
+        random=random.Random(17),user_id='synthetic',account={'username':'perftest01'},
+        environment=SimpleNamespace(runner=SimpleNamespace(user_count=10)))
+    m.GraphMineUser.question(user)
+    assert user.in_session==0 and journey.asks==0
+    rejected=read_jsonl(m.RUN/'questions.jsonl')[-1]
+    assert rejected['error_code']=='concurrency_limit' and not rejected.get('question_sent_at')
+    for _ in range(3):m.GraphMineUser.question(user)
+    assert journey.starts==2 and journey.asks==3 and user.in_session==0
+    m.GraphMineUser.question(user)
+    assert journey.starts==3 and journey.asks==4
+'''
+    subprocess.run([os.sys.executable,"-c",script],cwd=ROOT,env={**os.environ,"GRAPHMINE_PERF_RUN_DIR":str(tmp_path)},check=True,capture_output=True,text=True)
+
+
 def test_create_all_accounts_and_remove_every_owned_file(tmp_path,monkeypatch):
     from graphmine_agent.config import Settings
     import perf.accounts as accounts

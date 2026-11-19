@@ -104,7 +104,7 @@ class GraphMineUser(HttpUser):
                       "user_id": self.user_id, "username": self.account["username"], "outcome": "success", "wrong_operation": None,
                       "users": self.environment.runner.user_count}
         try:
-            if self.in_session == 0:
+            if self.in_session == 0 or self.journey.session_id is None:
                 dataset = self.journey.start_session(CONFIG)
                 append(RUN/"datasets.jsonl", {"ts": timestamp(), "user_id": self.user_id, **dataset})
             self.state["session_id"] = self.journey.session_id
@@ -120,7 +120,10 @@ class GraphMineUser(HttpUser):
             self.state["end"] = timestamp()
             append(RUN/"questions.jsonl", self.state)
             self.question_index += 1
-            self.in_session = (self.in_session+1) % 3
+            # A rejected source/session request is a failed journey, but no
+            # question was sent. Retry session setup on the next attempt.
+            if self.state.get("question_sent_at"):
+                self.in_session = (self.in_session+1) % 3
 
     def wait_time(self):
         return 0 if CONFIG["test"] == "benchmark" else self.random.uniform(20, 60)
