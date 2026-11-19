@@ -1,0 +1,1361 @@
+{
+  "config": {
+    "test": "benchmark",
+    "label": "baseline-benchmark-final",
+    "run_id": "20261119T030900-baseline-benchmark-final",
+    "prepared_at": "2026-11-19T03:09:00.274832+00:00",
+    "lab_window": "Current window approved by user on 2026-11-18 for benchmark and 10-user load",
+    "matrix_row": null,
+    "preflight": false,
+    "git_commit": "bf7efa88708b111b2d1dace7e47107232fea7dde",
+    "git_dirty": false,
+    "capacity": {
+      "GRAPHMINE_MAX_MODEL_CALLS": 2,
+      "GRAPHMINE_MODEL_QUEUE_SECONDS": 60.0,
+      "GRAPHMINE_MAX_PENDING_JOBS": 64,
+      "GRAPHMINE_MAX_CONCURRENT_UPLOADS": 2,
+      "GRAPHMINE_ACCOUNT_PENDING_JOBS": 8,
+      "GRAPHMINE_ACCOUNT_RUNNING_JOBS": 4,
+      "GRAPHMINE_ACCOUNT_JOB_SECONDS": 300,
+      "GRAPHMINE_ACCOUNT_QUEUE_SECONDS": 900,
+      "GRAPHMINE_JOB_TIMEOUT_SECONDS": 86400,
+      "GRAPHMINE_ANALYTICS_CPU_WORKERS": 2,
+      "GRAPHMINE_ANALYTICS_GPU_UUIDS": [
+        "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7"
+      ],
+      "GRAPHMINE_ANALYTICS_GPU_HEADROOM_BYTES": 536870912,
+      "GRAPHMINE_ANALYTICS_LLM_RESERVE_BYTES": 0,
+      "GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES": 67108864,
+      "GRAPHMINE_ANALYTICS_RESULT_CACHE_BYTES": 67108864,
+      "GRAPHMINE_ANALYTICS_MAX_EXPORTS": 2,
+      "GRAPHMINE_MAX_RESULT_BYTES": 67108864,
+      "GRAPHMINE_DATABASE_POOL_LIMIT": 16,
+      "GRAPHMINE_DATABASE_POOL_SIZE": 4,
+      "GRAPHMINE_DATABASE_POOL_WAIT_SECONDS": 10,
+      "GRAPHMINE_DATABASE_POOL_IDLE_SECONDS": 300,
+      "GRAPHMINE_MAX_ACCOUNTS": 100,
+      "GRAPHMINE_ACCOUNT_STORAGE_BYTES": 536870912,
+      "GRAPHMINE_ACCOUNT_UPLOAD_BYTES": 67108864,
+      "GRAPHMINE_MAX_UPLOAD_BYTES": 2147483648,
+      "GRAPHMINE_LLM_SLEEP_MODE": true,
+      "GRAPHMINE_LLM_SLEEP_LEVEL": 1,
+      "GRAPHMINE_LLM_IDLE_SLEEP_MINUTES": 20.0,
+      "GRAPHMINE_LLM_THINKING_STAGES": null,
+      "GRAPHMINE_ANALYTICS_REASONING_EFFORT": "medium",
+      "GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET": null,
+      "GRAPHMINE_ANALYTICS_ROUTE_THINKING_TOKEN_BUDGET": 384,
+      "GRAPHMINE_LLM_ROUTE_MAX_TOKENS": 768,
+      "GRAPHMINE_LLM_PLAN_MAX_TOKENS": 3072,
+      "GRAPHMINE_LLM_ANALYST_MAX_TOKENS": 3072,
+      "GRAPHMINE_BACKEND_SELECTION": "bandit",
+      "GRAPHMINE_BACKEND_EXPLORATION_ENABLED": true,
+      "GRAPHMINE_BACKEND_MEMORY_SAFETY": 0.8,
+      "GRAPHMINE_CAPTURE_ENABLED": true,
+      "GRAPHMINE_LLM_ROUTE_REASONING_EFFORT": "none",
+      "GRAPHMINE_LLM_PLAN_REASONING_EFFORT": "none",
+      "GRAPHMINE_LLM_ANALYST_REASONING_EFFORT": "none",
+      "GRAPHMINE_LLM_ENABLED": true,
+      "GRAPHMINE_ALLOW_SHARED_GPU": true,
+      "GRAPHMINE_GRAPH_GPU_UUID": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+      "GRAPHMINE_LLM_GPU_UUID": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+      "GRAPHMINE_RESULT_SUMMARY_ITEMS": 50,
+      "GRAPHMINE_BACKUP_HOURS": 24,
+      "GRAPHMINE_BACKUP_KEEP": 7,
+      "GRAPHMINE_RETENTION_DAYS": 0,
+      "GRAPHMINE_ANALYTICS_DIRECT_PLANS": true,
+      "GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE": false,
+      "GRAPHMINE_BACKEND_EXPLORATION_BUDGET": 0.1,
+      "GRAPHMINE_BACKEND_MAX_EXPLORE_RATIO": 1.5,
+      "GRAPHMINE_BACKEND_MIN_TIMEOUT_SECONDS": 60
+    },
+    "baseline_capacity": {
+      "GRAPHMINE_MAX_MODEL_CALLS": 2,
+      "GRAPHMINE_MODEL_QUEUE_SECONDS": 60.0,
+      "GRAPHMINE_MAX_PENDING_JOBS": 64,
+      "GRAPHMINE_MAX_CONCURRENT_UPLOADS": 2,
+      "GRAPHMINE_ACCOUNT_PENDING_JOBS": 8,
+      "GRAPHMINE_ACCOUNT_RUNNING_JOBS": 4,
+      "GRAPHMINE_ACCOUNT_JOB_SECONDS": 300,
+      "GRAPHMINE_ACCOUNT_QUEUE_SECONDS": 900,
+      "GRAPHMINE_JOB_TIMEOUT_SECONDS": 86400,
+      "GRAPHMINE_ANALYTICS_CPU_WORKERS": 2,
+      "GRAPHMINE_ANALYTICS_GPU_UUIDS": [
+        "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7"
+      ],
+      "GRAPHMINE_ANALYTICS_GPU_HEADROOM_BYTES": 536870912,
+      "GRAPHMINE_ANALYTICS_LLM_RESERVE_BYTES": 0,
+      "GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES": 67108864,
+      "GRAPHMINE_ANALYTICS_RESULT_CACHE_BYTES": 67108864,
+      "GRAPHMINE_ANALYTICS_MAX_EXPORTS": 2,
+      "GRAPHMINE_MAX_RESULT_BYTES": 67108864,
+      "GRAPHMINE_DATABASE_POOL_LIMIT": 16,
+      "GRAPHMINE_DATABASE_POOL_SIZE": 4,
+      "GRAPHMINE_DATABASE_POOL_WAIT_SECONDS": 10,
+      "GRAPHMINE_DATABASE_POOL_IDLE_SECONDS": 300,
+      "GRAPHMINE_MAX_ACCOUNTS": 100,
+      "GRAPHMINE_ACCOUNT_STORAGE_BYTES": 536870912,
+      "GRAPHMINE_ACCOUNT_UPLOAD_BYTES": 67108864,
+      "GRAPHMINE_MAX_UPLOAD_BYTES": 2147483648,
+      "GRAPHMINE_LLM_SLEEP_MODE": true,
+      "GRAPHMINE_LLM_SLEEP_LEVEL": 1,
+      "GRAPHMINE_LLM_IDLE_SLEEP_MINUTES": 20.0,
+      "GRAPHMINE_LLM_THINKING_STAGES": null,
+      "GRAPHMINE_ANALYTICS_REASONING_EFFORT": "medium",
+      "GRAPHMINE_ANALYTICS_THINKING_TOKEN_BUDGET": null,
+      "GRAPHMINE_ANALYTICS_ROUTE_THINKING_TOKEN_BUDGET": 384,
+      "GRAPHMINE_LLM_ROUTE_MAX_TOKENS": 768,
+      "GRAPHMINE_LLM_PLAN_MAX_TOKENS": 3072,
+      "GRAPHMINE_LLM_ANALYST_MAX_TOKENS": 3072,
+      "GRAPHMINE_BACKEND_SELECTION": "bandit",
+      "GRAPHMINE_BACKEND_EXPLORATION_ENABLED": true,
+      "GRAPHMINE_BACKEND_MEMORY_SAFETY": 0.8,
+      "GRAPHMINE_CAPTURE_ENABLED": true,
+      "GRAPHMINE_LLM_ROUTE_REASONING_EFFORT": "none",
+      "GRAPHMINE_LLM_PLAN_REASONING_EFFORT": "none",
+      "GRAPHMINE_LLM_ANALYST_REASONING_EFFORT": "none",
+      "GRAPHMINE_LLM_ENABLED": true,
+      "GRAPHMINE_ALLOW_SHARED_GPU": true,
+      "GRAPHMINE_GRAPH_GPU_UUID": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+      "GRAPHMINE_LLM_GPU_UUID": "GPU-177a4150-e6ff-62d9-810f-166fe6a4575b",
+      "GRAPHMINE_RESULT_SUMMARY_ITEMS": 50,
+      "GRAPHMINE_BACKUP_HOURS": 24,
+      "GRAPHMINE_BACKUP_KEEP": 7,
+      "GRAPHMINE_RETENTION_DAYS": 0,
+      "GRAPHMINE_ANALYTICS_DIRECT_PLANS": true,
+      "GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE": false,
+      "GRAPHMINE_BACKEND_EXPLORATION_BUDGET": 0.1,
+      "GRAPHMINE_BACKEND_MAX_EXPLORE_RATIO": 1.5,
+      "GRAPHMINE_BACKEND_MIN_TIMEOUT_SECONDS": 60
+    },
+    "test_quota_overrides": {
+      "GRAPHMINE_ACCOUNT_DAILY_TOKENS": "100000000",
+      "GRAPHMINE_SERVER_DAILY_TOKENS": "10000000000",
+      "GRAPHMINE_ACCOUNT_DAILY_JOBS": "100000",
+      "GRAPHMINE_SERVER_DAILY_JOBS": "10000000"
+    },
+    "uvicorn_limit_concurrency": 256,
+    "model_calls_per_user": 1,
+    "planning_slots": 8,
+    "planning_slots_per_user": 1,
+    "running_jobs_per_user": 1,
+    "planning_deadline_seconds": 360,
+    "vllm_command": [
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-vllm/bin/python",
+      "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-vllm/bin/vllm",
+      "serve",
+      "Qwen/Qwen3.8-27B-FP8",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "8001",
+      "--api-key",
+      "<redacted>",
+      "--tensor-parallel-size",
+      "1",
+      "--max-model-len",
+      "32768",
+      "--max-num-seqs",
+      "2",
+      "--gpu-memory-utilization",
+      "0.75",
+      "--reasoning-parser",
+      "qwen3",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser",
+      "qwen3_xml",
+      "--language-model-only",
+      "--enable-prefix-caching",
+      "--revision",
+      "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+      "--tokenizer-revision",
+      "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+      "--enable-sleep-mode",
+      "--enable-lora",
+      "--lora-modules",
+      "graphmine-planner-v2=/data/labdata/wajid/graphmine-models/learning/dual-adapter-v2/planner-serving-v1",
+      "graphmine-analyst-v2=/data/labdata/wajid/graphmine-models/learning/dual-adapter-v2/analyst-serving-v1",
+      "--max-loras",
+      "2",
+      "--max-cpu-loras",
+      "2",
+      "--max-lora-rank",
+      "16",
+      "--lora-dtype",
+      "bfloat16"
+    ],
+    "model": "Qwen/Qwen3.8-27B-FP8",
+    "router_model": "Qwen/Qwen3.8-27B-FP8",
+    "planner_model": "Qwen/Qwen3.8-27B-FP8",
+    "analyst_model": "Qwen/Qwen3.8-27B-FP8",
+    "legacy_planner_adapter": "graphmine-planner-v2",
+    "legacy_analyst_adapter": "graphmine-analyst-v2",
+    "gpu_names": "index, uuid, name, memory.total [MiB]\n0, GPU-177a4150-e6ff-62d9-810f-166fe6a4575b, NVIDIA RTX 6000 Ada Generation, 49140 MiB\n1, GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7, NVIDIA RTX 6000 Ada Generation, 49140 MiB",
+    "free_ram_bytes": 67249070080,
+    "app_packages": {
+      "fastapi": "0.150.0",
+      "uvicorn": "0.54.0",
+      "httpx": "0.28.1",
+      "pydantic": "2.14.1"
+    },
+    "app_python": "/home/wajid/projects/graphDatabaseAgent/graphmine-data/environments/venvs/production/bin/python",
+    "source_id": null,
+    "query": "MATCH (u:User)-[:WROTE]->(r:Review)-[:REVIEWS]->(b:Business) RETURN u AS source, b AS target, 'REVIEWED' AS type LIMIT 1000",
+    "projection": "rows",
+    "dataset_description": "Yelp reviewers linked to businesses; Review records become edges so the input has the two sides needed by biclique questions.",
+    "seed": 17,
+    "requested_users": 1,
+    "duration_seconds": null,
+    "backend_history_copied": true,
+    "started_at": "2026-11-19T03:09:18.719631+00:00",
+    "agent_pid": 3980710,
+    "vllm_pid": 3875535,
+    "finished_at": "2026-11-19T03:38:25.056797+00:00",
+    "locust_exit_code": 1
+  },
+  "headline": {
+    "users_requested": 1,
+    "users_observed_peak": 1,
+    "users_with_completed_questions": 1,
+    "questions_attempted": 30,
+    "questions_sent": 30,
+    "questions_answered": 15,
+    "question_error_percent": 50.0,
+    "success_percent": 50.0,
+    "busy_percent": 0.0,
+    "wrong_operation_percent": 0.0,
+    "routing_checks_available": 25,
+    "answer_p50_ms": 75917.85772517323,
+    "answer_p95_ms": 82975.64301081002,
+    "answer_p99_ms": 82975.64301081002,
+    "first_reply_p50_ms": 43426.519522443414,
+    "first_reply_p95_ms": 54000.8693151176,
+    "first_reply_p99_ms": 54928.66586521268,
+    "result_view_p50_ms": 228.07889804244041,
+    "result_view_p95_ms": 622.8233855217695,
+    "result_view_p99_ms": 622.8233855217695,
+    "model_queue_share_percent": 0.04631041246018387,
+    "model_calls": 150,
+    "model_calls_per_question": 5.0,
+    "routing_reasoning_share_percent": 68.31312017640573,
+    "reasoning_calls_covered": 135,
+    "vllm_preemptions": 0.0,
+    "wake_count": 0,
+    "wake_p95_ms": null,
+    "job_queue_p95_ms": 2594.9199814349413,
+    "job_queue_full": 0,
+    "job_queue_timeouts": 0,
+    "sqlite_slow_calls": 3,
+    "sqlite_lock_p95_ms": null,
+    "sqlite_worst_lock_ms": null,
+    "exploration_saves": 0,
+    "exploration_failures": 0,
+    "peak_GPU 0 memory": 34708.0,
+    "peak_GPU 0 utilization": 100.0,
+    "peak_GPU 1 memory": 8482.0,
+    "peak_GPU 1 utilization": 92.0,
+    "peak_Host CPU": 94.36740752314363,
+    "peak_Host RAM": 193882.00390625,
+    "peak_SQLite size": 46.4765625,
+    "peak_agent RSS (process tree sum)": 1176.6171875,
+    "peak_vllm RSS (process tree sum)": 50305.47265625
+  },
+  "datasets": [
+    {
+      "source_id": "benchmark-yelp",
+      "query": "MATCH (u:User)-[:WROTE]->(r:Review)-[:REVIEWS]->(b:Business) RETURN u AS source, b AS target, 'REVIEWED' AS type LIMIT 1000",
+      "projection": "rows",
+      "vertices": 989,
+      "edges": 1000,
+      "input_fingerprint": "52e718b73fd680a607915e644284f811fd790db36bdb5a21a801f13e1e57c449"
+    }
+  ],
+  "questions": [
+    {
+      "question": "centrality",
+      "attempts": 5,
+      "success_percent": 100.0,
+      "busy_percent": 0.0,
+      "wrong_operation_percent": 0.0,
+      "routing_checked": 5,
+      "first_reply_p50_ms": 52951.11898705363,
+      "first_reply_p95_ms": 54000.8693151176,
+      "first_reply_p99_ms": 54000.8693151176,
+      "answer_p50_ms": 78818.69028694928,
+      "answer_p95_ms": 79050.78152008355,
+      "answer_p99_ms": 79050.78152008355,
+      "results_p50_ms": 515.8975403755903,
+      "results_p95_ms": 622.8233855217695,
+      "results_p99_ms": 622.8233855217695
+    },
+    {
+      "question": "community-detection",
+      "attempts": 5,
+      "success_percent": 0.0,
+      "busy_percent": 0.0,
+      "wrong_operation_percent": 0.0,
+      "routing_checked": 5,
+      "first_reply_p50_ms": 43468.25533546507,
+      "first_reply_p95_ms": 54928.66586521268,
+      "first_reply_p99_ms": 54928.66586521268,
+      "answer_p50_ms": null,
+      "answer_p95_ms": null,
+      "answer_p99_ms": null,
+      "results_p50_ms": null,
+      "results_p95_ms": null,
+      "results_p99_ms": null
+    },
+    {
+      "question": "concept",
+      "attempts": 5,
+      "success_percent": 100.0,
+      "busy_percent": 0.0,
+      "wrong_operation_percent": 0.0,
+      "routing_checked": 5,
+      "first_reply_p50_ms": 30035.685343667865,
+      "first_reply_p95_ms": 38226.450216025114,
+      "first_reply_p99_ms": 38226.450216025114,
+      "answer_p50_ms": 30036.003144457936,
+      "answer_p95_ms": 38226.683439686894,
+      "answer_p99_ms": 38226.683439686894,
+      "results_p50_ms": null,
+      "results_p95_ms": null,
+      "results_p99_ms": null
+    },
+    {
+      "question": "densest-subgraph",
+      "attempts": 5,
+      "success_percent": 100.0,
+      "busy_percent": 0.0,
+      "wrong_operation_percent": 0.0,
+      "routing_checked": 5,
+      "first_reply_p50_ms": 44827.195009216666,
+      "first_reply_p95_ms": 52211.70855127275,
+      "first_reply_p99_ms": 52211.70855127275,
+      "answer_p50_ms": 75917.85772517323,
+      "answer_p95_ms": 82975.64301081002,
+      "answer_p99_ms": 82975.64301081002,
+      "results_p50_ms": 216.28928743302822,
+      "results_p95_ms": 228.07889804244041,
+      "results_p99_ms": 228.07889804244041
+    },
+    {
+      "question": "maximal-biclique-counting",
+      "attempts": 5,
+      "success_percent": 0.0,
+      "busy_percent": 0.0,
+      "wrong_operation_percent": 0.0,
+      "routing_checked": 0,
+      "first_reply_p50_ms": null,
+      "first_reply_p95_ms": null,
+      "first_reply_p99_ms": null,
+      "answer_p50_ms": null,
+      "answer_p95_ms": null,
+      "answer_p99_ms": null,
+      "results_p50_ms": null,
+      "results_p95_ms": null,
+      "results_p99_ms": null
+    },
+    {
+      "question": "maximal-bicliques",
+      "attempts": 5,
+      "success_percent": 0.0,
+      "busy_percent": 0.0,
+      "wrong_operation_percent": 0.0,
+      "routing_checked": 5,
+      "first_reply_p50_ms": 37498.17812629044,
+      "first_reply_p95_ms": 39529.28060106933,
+      "first_reply_p99_ms": 39529.28060106933,
+      "answer_p50_ms": null,
+      "answer_p95_ms": null,
+      "answer_p99_ms": null,
+      "results_p50_ms": null,
+      "results_p95_ms": null,
+      "results_p99_ms": null
+    }
+  ],
+  "model": [
+    {
+      "stage": "analyst",
+      "calls": 10,
+      "calls_per_question": 0.3333333333333333,
+      "duration_ms": 1163.7328676879406,
+      "ttft_ms": null,
+      "prompt_tokens": 297.0,
+      "completion_tokens": 31.0,
+      "reasoning_tokens": 0.0,
+      "reasoning_calls_covered": 10,
+      "reasoning_share_percent": 0.0,
+      "completion_tokens_per_second": 26.638741177888072,
+      "validation_failures": 0,
+      "retries": 0
+    },
+    {
+      "stage": "candidates",
+      "calls": 20,
+      "calls_per_question": 0.6666666666666666,
+      "duration_ms": 8048.943486530334,
+      "ttft_ms": 521.9576608389616,
+      "prompt_tokens": 557.75,
+      "completion_tokens": 324.5,
+      "reasoning_tokens": 0.0,
+      "reasoning_calls_covered": 20,
+      "reasoning_share_percent": 0.0,
+      "completion_tokens_per_second": 40.355300558269775,
+      "validation_failures": 0,
+      "retries": 0
+    },
+    {
+      "stage": "clarify",
+      "calls": 30,
+      "calls_per_question": 1.0,
+      "duration_ms": 6687.297464410464,
+      "ttft_ms": 417.92330872267485,
+      "prompt_tokens": 392.5,
+      "completion_tokens": 187.23333333333332,
+      "reasoning_tokens": 166.4,
+      "reasoning_calls_covered": 30,
+      "reasoning_share_percent": 88.87306391312089,
+      "completion_tokens_per_second": 28.409780864599895,
+      "validation_failures": 0,
+      "retries": 0
+    },
+    {
+      "stage": "family",
+      "calls": 30,
+      "calls_per_question": 1.0,
+      "duration_ms": 9262.312046748897,
+      "ttft_ms": 341.41474459320307,
+      "prompt_tokens": 1424.0,
+      "completion_tokens": 264.56666666666666,
+      "reasoning_tokens": 219.93333333333334,
+      "reasoning_calls_covered": 30,
+      "reasoning_share_percent": 83.12964596195036,
+      "completion_tokens_per_second": 28.481305889543535,
+      "validation_failures": 0,
+      "retries": 0
+    },
+    {
+      "stage": "problem",
+      "calls": 30,
+      "calls_per_question": 1.0,
+      "duration_ms": 13419.028652459383,
+      "ttft_ms": 201.02109014987946,
+      "prompt_tokens": 842.3333333333334,
+      "completion_tokens": 393.26666666666665,
+      "reasoning_tokens": 284.26666666666665,
+      "reasoning_calls_covered": 30,
+      "reasoning_share_percent": 72.28343787082557,
+      "completion_tokens_per_second": 29.34702466492208,
+      "validation_failures": 0,
+      "retries": 0
+    },
+    {
+      "stage": "route",
+      "calls": 30,
+      "calls_per_question": 1.0,
+      "duration_ms": 11447.499399197599,
+      "ttft_ms": 1505.8408132195473,
+      "prompt_tokens": 4888.96,
+      "completion_tokens": 358.92,
+      "reasoning_tokens": 310.56,
+      "reasoning_calls_covered": 25,
+      "reasoning_share_percent": 86.52624540287529,
+      "completion_tokens_per_second": 26.47860893607637,
+      "validation_failures": 5,
+      "retries": 0
+    }
+  ],
+  "calculations": [
+    {
+      "operation": "community-detection",
+      "device": "cpu",
+      "attempts": 5,
+      "outcomes": {
+        "error": 5
+      },
+      "queue_p50_ms": 2443.6629563570023,
+      "queue_p95_ms": 2555.0700277090073,
+      "run_p50_ms": 1218.0990930646658,
+      "run_p95_ms": 1287.3498927801847,
+      "peak_gpu_mb": 0.0
+    },
+    {
+      "operation": "degree-centrality",
+      "device": "cpu",
+      "attempts": 5,
+      "outcomes": {
+        "completed": 5
+      },
+      "queue_p50_ms": 2197.0431227236986,
+      "queue_p95_ms": 2574.247756972909,
+      "run_p50_ms": 698.0126835405827,
+      "run_p95_ms": 734.4616707414389,
+      "peak_gpu_mb": null
+    },
+    {
+      "operation": "densest-subgraph",
+      "device": "cpu",
+      "attempts": 5,
+      "outcomes": {
+        "completed": 5
+      },
+      "queue_p50_ms": 2430.455671623349,
+      "queue_p95_ms": 2594.9199814349413,
+      "run_p50_ms": 720.7857239991426,
+      "run_p95_ms": 737.3020444065332,
+      "peak_gpu_mb": 0.0
+    },
+    {
+      "operation": "maximal-bicliques",
+      "device": "cpu",
+      "attempts": 5,
+      "outcomes": {
+        "error": 5
+      },
+      "queue_p50_ms": 2411.333542317152,
+      "queue_p95_ms": 2625.212002545595,
+      "run_p50_ms": 753.6902949213982,
+      "run_p95_ms": 814.6661706268787,
+      "peak_gpu_mb": 0.0
+    }
+  ],
+  "histograms": [
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "+Inf",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.3",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.5",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.8",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "1.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "1.5",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 12.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "10.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 188.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "120.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "15.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 214.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "1920.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "2.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 12.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "2.5",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 12.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "20.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "240.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "30.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "40.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "480.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "5.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 55.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "50.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "60.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "7680.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "960.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_count",
+      "labels": {
+        "engine": "0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_created",
+      "labels": {
+        "engine": "0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:e2e_request_latency_seconds_sum",
+      "labels": {
+        "engine": "0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 1938.295521736145
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "+Inf",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.001",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.005",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.01",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.02",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.04",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.06",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.08",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 3.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.1",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 7.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.25",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 63.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.5",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 133.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "0.75",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 160.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "1.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 160.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "10.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 243.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "160.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "2.5",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 170.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "20.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "2560.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "40.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "5.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 217.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "640.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "7.5",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 241.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_bucket",
+      "labels": {
+        "engine": "0",
+        "le": "80.0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_count",
+      "labels": {
+        "engine": "0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 245.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_created",
+      "labels": {
+        "engine": "0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 0.0
+    },
+    {
+      "metric": "vllm:time_to_first_token_seconds_sum",
+      "labels": {
+        "engine": "0",
+        "model_name": "/data/labdata/wajid/graphmine-models/huggingface/hub/models--Qwen--Qwen3.8-27B-FP8/snapshots/017b9c7af6b5689d5dd426a76e0bc077eb5ca20a"
+      },
+      "increase": 411.0452654361725
+    }
+  ],
+  "power_events": [
+    {
+      "ts": "2026-11-19T03:38:26.588185+00:00",
+      "event": "llm_sleep",
+      "request_id": "097a5119-5e8e-443b-bfeb-e5ba6565307c",
+      "turn_id": null,
+      "workflow_id": null,
+      "user_id": "2cfaba0b9e6d7f2f2b2a2980794f4885",
+      "session_id": null,
+      "run_id": "20261119T030900-baseline-benchmark-final",
+      "duration_ms": 1328.980652615428,
+      "trigger": "admin"
+    }
+  ],
+  "saves": [],
+  "db": [
+    {
+      "ts": "2026-11-19T03:25:36.263058+00:00",
+      "event": "db",
+      "request_id": "2a4c14e8-1c9a-4b92-9ea5-959f65292db3",
+      "turn_id": null,
+      "workflow_id": null,
+      "user_id": "b91a04888e71d12a22964c2195372513",
+      "session_id": null,
+      "run_id": "20261119T030900-baseline-benchmark-final",
+      "operation": "PRAGMA",
+      "duration_ms": 190.4787588864565,
+      "lock_wait_ms": null
+    },
+    {
+      "ts": "2026-11-19T03:30:01.321456+00:00",
+      "event": "db",
+      "request_id": "50ff5211-fa45-4677-8eb7-bdbe8b7787da",
+      "turn_id": null,
+      "workflow_id": null,
+      "user_id": null,
+      "session_id": null,
+      "run_id": "20261119T030900-baseline-benchmark-final",
+      "operation": "PRAGMA",
+      "duration_ms": 80.05442656576633,
+      "lock_wait_ms": null
+    },
+    {
+      "ts": "2026-11-19T03:35:43.326738+00:00",
+      "event": "db",
+      "request_id": "beac4dc9-9623-4e80-86cc-d205350b3ee5",
+      "turn_id": null,
+      "workflow_id": null,
+      "user_id": null,
+      "session_id": null,
+      "run_id": "20261119T030900-baseline-benchmark-final",
+      "operation": "SELECT",
+      "duration_ms": 91.62112325429916,
+      "lock_wait_ms": null
+    }
+  ],
+  "errors": [
+    {
+      "source": "client",
+      "code": "planner_unavailable",
+      "step": "plan",
+      "count": 5,
+      "examples": [
+        {
+          "source": "client",
+          "code": "planner_unavailable",
+          "step": "plan",
+          "time": "2026-11-19T03:11:04.856809+00:00",
+          "request_id": "828ffd1f-ea23-436f-86fa-36b2d8b2582c",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode.",
+          "question_instance_id": "a60c3355-7d8e-4c50-a71c-ff599a2501c3"
+        },
+        {
+          "source": "client",
+          "code": "planner_unavailable",
+          "step": "plan",
+          "time": "2026-11-19T03:17:04.995525+00:00",
+          "request_id": "88c231c2-d1f7-4e70-be40-1a29df357d5e",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode.",
+          "question_instance_id": "33e6a764-2745-4c0d-b595-bc29732edbbf"
+        },
+        {
+          "source": "client",
+          "code": "planner_unavailable",
+          "step": "plan",
+          "time": "2026-11-19T03:22:53.510243+00:00",
+          "request_id": "d8e475bf-0142-4f27-b649-8cdd838fc8d4",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode.",
+          "question_instance_id": "eb20c90d-eb63-4b99-bbb7-9efbd3682698"
+        },
+        {
+          "source": "client",
+          "code": "planner_unavailable",
+          "step": "plan",
+          "time": "2026-11-19T03:28:34.753197+00:00",
+          "request_id": "6f350d39-e322-461d-8c9e-7bc812e446e6",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode.",
+          "question_instance_id": "24f5d571-87ef-4180-97eb-39baee5b739f"
+        },
+        {
+          "source": "client",
+          "code": "planner_unavailable",
+          "step": "plan",
+          "time": "2026-11-19T03:34:17.053904+00:00",
+          "request_id": "9dd5b55c-e468-489f-b640-d65c1c083c2c",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode.",
+          "question_instance_id": "49d5af9f-8c92-4632-ab9c-74f893698e90"
+        }
+      ]
+    },
+    {
+      "source": "journey",
+      "code": "resource_limit",
+      "step": "calculation",
+      "count": 10,
+      "examples": [
+        {
+          "source": "journey",
+          "code": "resource_limit",
+          "step": "calculation",
+          "time": "2026-11-19T03:11:04.855923+00:00",
+          "request_id": "6d6d6683-a417-4406-a092-f30ec0cbb059",
+          "message": "Native candidate budget exceeded"
+        },
+        {
+          "source": "journey",
+          "code": "resource_limit",
+          "step": "calculation",
+          "time": "2026-11-19T03:12:47.009465+00:00",
+          "request_id": "4c0c54b9-e459-4f91-bac9-88c290896058",
+          "message": "Native candidate budget exceeded"
+        },
+        {
+          "source": "journey",
+          "code": "resource_limit",
+          "step": "calculation",
+          "time": "2026-11-19T03:17:04.994692+00:00",
+          "request_id": "8ce1a1a9-5bc2-44af-a85b-9315b73128a0",
+          "message": "Native candidate budget exceeded"
+        },
+        {
+          "source": "journey",
+          "code": "resource_limit",
+          "step": "calculation",
+          "time": "2026-11-19T03:18:36.136084+00:00",
+          "request_id": "b09f9fe4-0f1b-4b56-87bc-a53ca2f79ed3",
+          "message": "Native candidate budget exceeded"
+        },
+        {
+          "source": "journey",
+          "code": "resource_limit",
+          "step": "calculation",
+          "time": "2026-11-19T03:22:53.509670+00:00",
+          "request_id": "4c7bb395-ee4a-4616-87f9-f393c4bc04aa",
+          "message": "Native candidate budget exceeded"
+        }
+      ]
+    },
+    {
+      "source": "server",
+      "code": "HTTPStatusError",
+      "step": "model_call",
+      "count": 5,
+      "examples": [
+        {
+          "source": "server",
+          "code": "HTTPStatusError",
+          "step": "model_call",
+          "time": "2026-11-19T03:11:30.599715+00:00",
+          "request_id": "828ffd1f-ea23-436f-86fa-36b2d8b2582c",
+          "message": "Client error '400 Bad Request' for url 'http://127.0.0.1:8001/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+        },
+        {
+          "source": "server",
+          "code": "HTTPStatusError",
+          "step": "model_call",
+          "time": "2026-11-19T03:17:29.332368+00:00",
+          "request_id": "88c231c2-d1f7-4e70-be40-1a29df357d5e",
+          "message": "Client error '400 Bad Request' for url 'http://127.0.0.1:8001/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+        },
+        {
+          "source": "server",
+          "code": "HTTPStatusError",
+          "step": "model_call",
+          "time": "2026-11-19T03:23:17.908591+00:00",
+          "request_id": "d8e475bf-0142-4f27-b649-8cdd838fc8d4",
+          "message": "Client error '400 Bad Request' for url 'http://127.0.0.1:8001/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+        },
+        {
+          "source": "server",
+          "code": "HTTPStatusError",
+          "step": "model_call",
+          "time": "2026-11-19T03:28:59.379272+00:00",
+          "request_id": "6f350d39-e322-461d-8c9e-7bc812e446e6",
+          "message": "Client error '400 Bad Request' for url 'http://127.0.0.1:8001/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+        },
+        {
+          "source": "server",
+          "code": "HTTPStatusError",
+          "step": "model_call",
+          "time": "2026-11-19T03:34:41.354004+00:00",
+          "request_id": "9dd5b55c-e468-489f-b640-d65c1c083c2c",
+          "message": "Client error '400 Bad Request' for url 'http://127.0.0.1:8001/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+        }
+      ]
+    },
+    {
+      "source": "server",
+      "code": "planner_unavailable",
+      "step": "/api/sessions/{session_id}/analytics/plan",
+      "count": 5,
+      "examples": [
+        {
+          "source": "server",
+          "code": "planner_unavailable",
+          "step": "/api/sessions/{session_id}/analytics/plan",
+          "time": "2026-11-19T03:11:30.624795+00:00",
+          "request_id": "828ffd1f-ea23-436f-86fa-36b2d8b2582c",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+        },
+        {
+          "source": "server",
+          "code": "planner_unavailable",
+          "step": "/api/sessions/{session_id}/analytics/plan",
+          "time": "2026-11-19T03:17:29.369921+00:00",
+          "request_id": "88c231c2-d1f7-4e70-be40-1a29df357d5e",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+        },
+        {
+          "source": "server",
+          "code": "planner_unavailable",
+          "step": "/api/sessions/{session_id}/analytics/plan",
+          "time": "2026-11-19T03:23:17.928131+00:00",
+          "request_id": "d8e475bf-0142-4f27-b649-8cdd838fc8d4",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+        },
+        {
+          "source": "server",
+          "code": "planner_unavailable",
+          "step": "/api/sessions/{session_id}/analytics/plan",
+          "time": "2026-11-19T03:28:59.398291+00:00",
+          "request_id": "6f350d39-e322-461d-8c9e-7bc812e446e6",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+        },
+        {
+          "source": "server",
+          "code": "planner_unavailable",
+          "step": "/api/sessions/{session_id}/analytics/plan",
+          "time": "2026-11-19T03:34:41.374342+00:00",
+          "request_id": "9dd5b55c-e468-489f-b640-d65c1c083c2c",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+        }
+      ]
+    },
+    {
+      "source": "server",
+      "code": "planner_unavailable",
+      "step": "turn",
+      "count": 5,
+      "examples": [
+        {
+          "source": "server",
+          "code": "planner_unavailable",
+          "step": "turn",
+          "time": "2026-11-19T03:11:30.618506+00:00",
+          "request_id": "828ffd1f-ea23-436f-86fa-36b2d8b2582c",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+        },
+        {
+          "source": "server",
+          "code": "planner_unavailable",
+          "step": "turn",
+          "time": "2026-11-19T03:17:29.364694+00:00",
+          "request_id": "88c231c2-d1f7-4e70-be40-1a29df357d5e",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+        },
+        {
+          "source": "server",
+          "code": "planner_unavailable",
+          "step": "turn",
+          "time": "2026-11-19T03:23:17.923304+00:00",
+          "request_id": "d8e475bf-0142-4f27-b649-8cdd838fc8d4",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+        },
+        {
+          "source": "server",
+          "code": "planner_unavailable",
+          "step": "turn",
+          "time": "2026-11-19T03:28:59.393547+00:00",
+          "request_id": "6f350d39-e322-461d-8c9e-7bc812e446e6",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+        },
+        {
+          "source": "server",
+          "code": "planner_unavailable",
+          "step": "turn",
+          "time": "2026-11-19T03:34:41.369135+00:00",
+          "request_id": "9dd5b55c-e468-489f-b640-d65c1c083c2c",
+          "message": "The question planner is unavailable right now. Please try again shortly, or use Expert mode."
+        }
+      ]
+    },
+    {
+      "source": "server",
+      "code": "resource_limit",
+      "step": "job_run",
+      "count": 10,
+      "examples": [
+        {
+          "source": "server",
+          "code": "resource_limit",
+          "step": "job_run",
+          "time": "2026-11-19T03:11:04.163296+00:00",
+          "request_id": "9bea4325-892f-429e-b41b-a34428415d4e",
+          "message": "resource_limit"
+        },
+        {
+          "source": "server",
+          "code": "resource_limit",
+          "step": "job_run",
+          "time": "2026-11-19T03:12:46.632224+00:00",
+          "request_id": "f804ea33-4e48-467e-9612-4b0ae1162349",
+          "message": "resource_limit"
+        },
+        {
+          "source": "server",
+          "code": "resource_limit",
+          "step": "job_run",
+          "time": "2026-11-19T03:17:04.026830+00:00",
+          "request_id": "a9429cb6-71d8-4b03-a442-f7c62fd17819",
+          "message": "resource_limit"
+        },
+        {
+          "source": "server",
+          "code": "resource_limit",
+          "step": "job_run",
+          "time": "2026-11-19T03:18:35.256288+00:00",
+          "request_id": "c3e5b8f2-5ec1-4a23-a420-1756bb9d0970",
+          "message": "resource_limit"
+        },
+        {
+          "source": "server",
+          "code": "resource_limit",
+          "step": "job_run",
+          "time": "2026-11-19T03:22:52.566197+00:00",
+          "request_id": "3b9a096a-02df-4c99-a553-fa127fc9e718",
+          "message": "resource_limit"
+        }
+      ]
+    }
+  ],
+  "trends": {},
+  "stress": [],
+  "breaking_points": [],
+  "flags": [
+    {
+      "message": "thinking on routing stages is costing time",
+      "percent": 68.31312017640573,
+      "calls_covered": 135
+    },
+    {
+      "message": "raise --max-num-seqs",
+      "waiting": 8.0,
+      "kv_cache_percent": 9.411764705882353
+    }
+  ],
+  "coverage": {
+    "server_events": 3282,
+    "system_samples": 874,
+    "monitor_errors": 0,
+    "answered_turns_observed": 41,
+    "answered_turns_expected": 41,
+    "ttft_calls_measured": 135,
+    "reasoning_calls_measured": 145,
+    "db_lock_calls_measured": 0
+  },
+  "first_error": {
+    "source": "server",
+    "code": "resource_limit",
+    "step": "job_run",
+    "time": "2026-11-19T03:11:04.163296+00:00",
+    "request_id": "9bea4325-892f-429e-b41b-a34428415d4e",
+    "message": "resource_limit"
+  }
+}

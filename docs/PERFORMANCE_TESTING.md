@@ -205,6 +205,11 @@ stages preserve their existing behavior; they are not forced to enable thinking.
 
 ## Read and compare reports
 
+The required server baseline is attached in
+[the November 18 lab-window results](../perf/reports/2026-11-19-baseline/README.md),
+including both reports, compressed evidence, cleanup receipts and observed
+limitations. The report directory date is UTC.
+
 ```sh
 .venv-perf/bin/python perf/report.py var/perf/RUN
 .venv-perf/bin/python perf/report.py var/perf/NEW --compare var/perf/BASELINE
@@ -219,8 +224,11 @@ and spans question sent through opening results; its residual includes wake,
 polling, bookkeeping and any overlap. Negative residuals are not hidden.
 
 Percentiles use nearest observed ranks. N/A means missing measurement, not zero.
-Failed/cancelled questions count in the error rate and are excluded from final
-answer latency. Busy and wrong-operation percentages use all question attempts;
+Failed/cancelled journeys, including dataset/session setup failures before a
+question is sent, count in the error rate and are excluded from final answer
+latency. `questions_sent` separates submitted questions from all attempts.
+Completion and routing correctness are scored separately. Busy and
+wrong-operation percentages use all question attempts;
 routing coverage is shown. Server errors may be recovered or duplicate client
 HTTP failures, so the report separates those counts. Flags quote the measured
 threshold evidence and suggest investigations, not automatic capacity changes.
