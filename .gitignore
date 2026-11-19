@@ -45,3 +45,8 @@ agent/frontend/node_modules/
 /agent/IMPROVEMENT_PLAN.md
 /agent/README.md
 /deploy/README.md
+
+# Public documentation build products.
+/site/
+/docs-src/library/api/
+/docs-src/research-note/graphmine.pdf

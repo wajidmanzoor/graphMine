@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-19",
+  "meaning": "These publisher URLs rejected the automated checker with HTTP 403; this is not evidence of a broken link or a successful content check.",
+  "urls": [
+    "https://dl.acm.org/doi/10.1145/3588707",
+    "https://dl.acm.org/doi/10.1145/3769792",
+    "https://doi.org/10.1145/3208040.3208041",
+    "https://doi.org/10.1145/3458744.3474047",
+    "https://doi.org/10.1145/3458817.3476153",
+    "https://doi.org/10.1145/3459637.3482344",
+    "https://doi.org/10.1145/3581784.3607059",
+    "https://doi.org/10.1145/3581784.3607071",
+    "https://doi.org/10.1145/3581784.3613213",
+    "https://doi.org/10.1145/3649329.3656238",
+    "https://doi.org/10.1145/3658617.3697551",
+    "https://doi.org/10.1145/3669940.3707274",
+    "https://doi.org/10.1145/3673038.3673105",
+    "https://doi.org/10.1145/3676642.3736116",
+    "https://doi.org/10.1145/3711925",
+    "https://doi.org/10.1145/3802023",
+    "https://doi.org/10.1145/3818671.3818675",
+    "https://doi.org/10.14778/3551793.3551806",
+    "https://escholarship.org/uc/item/7j96s061",
+    "https://www.mdpi.com/2079-3197/13/2/40",
+    "https://www.researchgate.net/publication/395608469_iG-kway_Incremental_k-way_Graph_Partitioning_on_GPU"
+  ]
+}

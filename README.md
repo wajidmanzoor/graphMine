@@ -189,7 +189,7 @@ settings. The default workspace does not require the legacy V1 CLI build.
 
 Stop the server with Ctrl+C. On later runs, use `deploy/start-agent.sh` from
 the same checkout; keep `.graphmine-agent` to retain accounts and saved work.
-See [accounts and daily limits](docs/ACCOUNTS_AND_QUOTAS.md) for user
+See [accounts and daily limits](docs-internal/ACCOUNTS_AND_QUOTAS.md) for user
 management, quotas and backups.
 
 ### 6. Optional: enable chat planning and GPU execution
@@ -219,7 +219,7 @@ GPU graph calculations require a CUDA-enabled native build and validation
 evidence for the GPU and supported operation profiles. Follow the
 [native build guide](docs/NATIVE_CORE_MIGRATION.md) before changing
 `GRAPHMINE_NATIVE_LIBRARY`, `GRAPHMINE_NATIVE_BINARY` and
-`GRAPHMINE_GRAPH_GPU_UUID`. The [deployment guide](docs/ENVIRONMENTS.md)
+`GRAPHMINE_GRAPH_GPU_UUID`. The [deployment guide](docs-internal/ENVIRONMENTS.md)
 covers managed testing and production installations.
 
 ## Further guides
@@ -229,24 +229,24 @@ Start with the [native library guide](docs/NATIVE_CORE_MIGRATION.md),
 [analysis workspace guide](docs/ANALYTICS_WORKSPACE.md). Exact source, binary,
 dependency and profile evidence controls what the application can execute.
 GPU coverage applies to declared parameter profiles, not every CPU operation.
-The [acceptance report](docs/NATIVE_ANALYTICS_ACCEPTANCE.md) records completed
+The [acceptance report](docs-internal/NATIVE_ANALYTICS_ACCEPTANCE.md) records completed
 checks, measured model accuracy and remaining limits.
 
-For a shared server, see [accounts and daily limits](docs/ACCOUNTS_AND_QUOTAS.md).
+For a shared server, see [accounts and daily limits](docs-internal/ACCOUNTS_AND_QUOTAS.md).
 Login is enabled by default; the server operator creates accounts. Both web
 workspaces enforce private user data, persistent 24-hour AI token budgets and
 shared calculation limits.
 
 [Dataset Studio](dataset-studio/README.md) is included in this repository.
-See the [development, testing, and production workflow](docs/ENVIRONMENTS.md)
+See the [development, testing, and production workflow](docs-internal/ENVIRONMENTS.md)
 for the shared branches, isolated app environments, and deployment commands.
 
 The [repaired algorithm guide](library/docs/repaired_algorithms.md) documents the nine repaired integrations, their exact profiles, installation, and agent JSON contracts.
 
-The [2026-10-04 expansion](docs/ALGORITHM_EXPANSION.md) explains the five new
+The [2026-10-04 expansion](docs-internal/ALGORITHM_EXPANSION.md) explains the five new
 executable profiles, all 17 new problem definitions, and routing without mandatory
 retraining. The original V1 release scope and scores remain in
-[`docs/V1.md`](docs/V1.md).
+[`docs-internal/V1.md`](docs-internal/V1.md).
 
 ## Repository layout
 

@@ -1,0 +1,45 @@
+/**
+\mainpage GraphMine native runtime
+
+This is the code-level reference for the current native runtime. For plain-language
+problem definitions, runnable operations, and research references, return to
+<a href="../../problem/taxonomy/">the family guides</a>.
+
+\section entry Entry points
+
+- graphmine::runtime::request accepts one JSON request and returns a JSON response.
+- graphmine_runtime_request provides the same protocol through the C ABI.
+- graphmine::Graph preserves canonical records and external identities.
+- The view types and builders declare graph normalization and memory layout.
+- Runtime family implementations compute the catalog's operations.
+
+Use the file and namespace indexes to inspect current definitions and source.
+A research-paper repository is not automatically an executable implementation.
+
+\section protocol Request and result contracts
+
+The catalog command returns available families, problems, operation schemas, and
+compiled backends. A run request identifies its operation, graph input, parameters,
+and device. Failures return a structured error. Check the result's completeness,
+quality, provenance, and operation-specific certificates before consuming it.
+
+\fn std::string graphmine::runtime::request(std::string_view json_request)
+\brief Execute one native JSON protocol request.
+\param json_request JSON describing the command and its inputs.
+\return Serialized JSON result, or an object containing a structured error.
+
+\fn int graphmine::runtime::abi_version() noexcept
+\brief Return the version of the native request ABI.
+
+\fn int graphmine_runtime_request(const char* request, size_t length, char** response, size_t* response_length)
+\brief Execute a JSON request through the versioned C ABI.
+\param request Input bytes, which need not be null terminated.
+\param length Number of input bytes.
+\param response Receives the allocated response bytes.
+\param response_length Receives the number of response bytes.
+\return Zero when a response was allocated; minus one for invalid output pointers or allocation failure. A zero return still requires inspecting the JSON for an algorithm error.
+
+\fn void graphmine_runtime_free(void* response)
+\brief Release memory returned by graphmine_runtime_request.
+\param response Allocation returned by the native request function.
+*/

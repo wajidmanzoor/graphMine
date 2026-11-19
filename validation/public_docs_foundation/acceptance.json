@@ -1,0 +1,48 @@
+{
+  "functional": "passed",
+  "mobile": [
+    {
+      "page": "",
+      "width": 375,
+      "scroll": 375
+    },
+    {
+      "page": "problem/families/dense/",
+      "width": 375,
+      "scroll": 375
+    },
+    {
+      "page": "guide/getting-started/",
+      "width": 375,
+      "scroll": 375
+    },
+    {
+      "page": "problem/explorer/",
+      "width": 375,
+      "scroll": 375
+    }
+  ],
+  "browser_errors": [],
+  "lighthouse": [
+    {
+      "page": "home",
+      "accessibility": 100
+    },
+    {
+      "page": "family",
+      "accessibility": 100
+    },
+    {
+      "page": "guide",
+      "accessibility": 100
+    },
+    {
+      "page": "explorer",
+      "accessibility": 100
+    }
+  ],
+  "date": "2026-11-19",
+  "catalog_check": "passed",
+  "mkdocs_strict": "passed",
+  "local_links_and_content_scan": "Checked 1042 HTML pages, 99855 local links, and public-content exclusions."
+}

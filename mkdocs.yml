@@ -1,0 +1,125 @@
+site_name: GraphMine
+site_description: Ask graph questions, understand formal problems, and use the native C++/CUDA library.
+site_url: https://wajidmanzoor.github.io/graphMine/
+repo_url: https://github.com/wajidmanzoor/graphMine
+repo_name: GraphMine on GitHub
+docs_dir: docs-src
+site_dir: site
+strict: true
+theme:
+  name: material
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  font:
+    text: Inter
+    code: Roboto Mono
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+plugins:
+  - search
+  - glightbox:
+      auto_caption: true
+  - redirects:
+      redirect_maps:
+        system/index.md: how-it-works/index.md
+        reference/index.md: library/code-reference.md
+        how-it-works/overview.md: how-it-works/index.md
+        problems/explorer.md: problem/explorer.md
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.arithmatex:
+      generic: true
+extra_css:
+  - assets/site.css
+  - https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js
+  - https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js
+  - assets/site.js
+  - assets/explorer.js
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    anchors: warn
+    unrecognized_links: warn
+nav:
+  - Home: index.md
+  - The problem:
+      - The problem: problem/index.md
+      - Taxonomy: problem/taxonomy.md
+      - Guarantees: problem/guarantees.md
+      - Research: problem/research.md
+      - Catalog explorer: problem/explorer.md
+      - Families:
+          - "Look up records": problem/families/records.md
+          - "Paths & reachability": problem/families/paths.md
+          - "Connectivity, cuts & trees": problem/families/connectivity.md
+          - "Cliques & dense subgraphs": problem/families/dense.md
+          - "Communities & partitions": problem/families/communities.md
+          - "Importance & influence": problem/families/importance.md
+          - "Similarity & comparison": problem/families/similarity.md
+          - "Counting motifs": problem/families/motifs.md
+          - "Pattern matching & mining": problem/families/patterns.md
+          - "Assignment & selection": problem/families/selection.md
+          - "Prepare, sample & draw": problem/families/preparation.md
+          - "Spectral & topology": problem/families/spectral.md
+          - "Statistics & anomalies": problem/families/statistics.md
+          - "Learning & embeddings": problem/families/learning.md
+  - Use the app:
+      - Get started: guide/getting-started.md
+  - Library:
+      - Install: library/install.md
+      - Graph format: library/graph-format.md
+      - Outputs: library/outputs.md
+      - C++ and C API: library/cpp-api.md
+      - Python: library/python.md
+      - CLI: library/cli.md
+      - CPU and GPU backends: library/backends.md
+      - Record queries: library/record-queries.md
+      - Reference profiles: library/reference-profiles.md
+      - Code reference: library/code-reference.md
+  - How it works:
+      - Overview: how-it-works/index.md
+      - From question to answer: how-it-works/from-question-to-answer.md
+      - Language model: how-it-works/language-model.md
+      - Results and views: how-it-works/results-and-views.md
