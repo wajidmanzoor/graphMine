@@ -75,7 +75,7 @@ def screenshot(page, name):
 
 def test_users_dialogs_activity_support_and_responsive_shell(browser_app):
     browser, base, auth, accounts = browser_app
-    page = browser.new_page(viewport={"width": 1600, "height": 1050}, reduced_motion="reduce")
+    page = browser.new_page(viewport={"width": 1440, "height": 1180}, reduced_motion="reduce")
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     sign_in(page, base, "review-admin")

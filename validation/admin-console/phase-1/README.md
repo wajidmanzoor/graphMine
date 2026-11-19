@@ -5,10 +5,17 @@ local server. The account names and conversation shown are test fixtures; every
 number in the screenshots is returned by that server. No production credentials or
 conversation content are included.
 
-The supplied reference is [GraphMine Admin Console](https://claude.ai/artifact/UKFqcyexaJ5vSA8YkzWAeA#page-dcb81aee8d83).
-The reference returned a Cloudflare security-verification screen to Playwright.
-Artboard matching and side-by-side comparison remain unverified until the design
-can be opened or exported. These screenshots are implementation evidence only.
+The reference artboards were exported from the supplied `GraphMine Admin Console.html`.
+The implemented shell, compact controls, inline edit/detail panels and Add user role
+choices follow that reference. Live counts, long account names, and unavailable
+measurements naturally differ from the design examples. Question content remains
+behind support access, as required by the security brief.
+
+| Design artboard | Implementation |
+| --- | --- |
+| ![Users reference](../reference/users.png) | ![Users and editor](03-edit-user.png) |
+| ![Activity reference](../reference/activity.png) | ![Activity](05-activity.png) |
+| ![Dialog reference](../reference/dialogs.png) | ![Add user](02-add-user.png) |
 
 | Page or dialog | Screenshot |
 | --- | --- |
