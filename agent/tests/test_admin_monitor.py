@@ -14,6 +14,53 @@ from test_admin_console import console
 from test_accounts import PASSWORD
 
 
+def test_private_certificate_health_keeps_tls_verification(console, tmp_path, monkeypatch):
+    import httpx
+    import ssl
+    import subprocess
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from graphmine_agent.admin_monitor import Monitor
+
+    client, _, _, _ = console
+    cert, key = tmp_path / "local.pem", tmp_path / "local.key"
+    subprocess.run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "1", "-subj", "/CN=127.0.0.1",
+                    "-addext", "subjectAltName=IP:127.0.0.1", "-keyout", str(key), "-out", str(cert)], check=True, capture_output=True)
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"ok")
+        def log_message(self, *_):
+            pass
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(cert, key)
+    server.socket = context.wrap_socket(server.socket, server_side=True)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    url = f"https://127.0.0.1:{server.server_port}/"
+    monkeypatch.setenv("GRAPHMINE_STUDIO_HEALTH_URL", url)
+    runtime = client.app.state.runtime
+    runtime.settings = replace(runtime.settings, tls_certfile=cert, tls_keyfile=key)
+    async def probe():
+        monitor = Monitor(runtime)
+        try:
+            result = await monitor.studio()
+            assert result["status"] == "healthy" and result["http_status"] == 200
+            async with httpx.AsyncClient(trust_env=False) as untrusted:
+                with pytest.raises(httpx.ConnectError, match="CERTIFICATE_VERIFY_FAILED"):
+                    await untrusted.get(url)
+        finally:
+            await monitor.close()
+    try:
+        client.portal.call(probe)
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(3)
+
+
 def test_overview_reads_measured_events_and_reports_missing_usage(console):
     client, accounts, admin, _ = console
     user = accounts.user("member")

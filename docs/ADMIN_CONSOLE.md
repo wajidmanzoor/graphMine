@@ -102,6 +102,10 @@ in the phase evidence, with actual measurements kept separate from design exampl
 
 ## Monitoring and model controls
 
+For a TLS-enabled local Studio, set `GRAPHMINE_STUDIO_HEALTH_URL` to its HTTPS
+address. Probes trust the configured agent TLS certificate in addition to system
+roots, while retaining hostname and certificate verification.
+
 Health probes run on the server in parallel, each bounded to three seconds. The
 console reuses snapshots for ten seconds; a background sampler runs every thirty
 seconds. Red checks open incidents immediately, warnings after fifteen continuous

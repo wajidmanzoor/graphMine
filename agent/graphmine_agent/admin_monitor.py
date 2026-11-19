@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import ssl
 import time
 from urllib.parse import urlsplit, urlunsplit
 
@@ -65,7 +66,12 @@ class Monitor:
         self.lock = asyncio.Lock()
         self.cached = None
         self.task = self.selftest_task = None
-        self.http = httpx.AsyncClient(timeout=3, follow_redirects=False, trust_env=False)
+        trust = ssl.create_default_context()
+        if runtime.settings.tls_certfile:
+            # Local agent/Studio deployments can share a private certificate.
+            # Keep hostname checks and the system roots for public probes.
+            trust.load_verify_locations(cafile=runtime.settings.tls_certfile)
+        self.http = httpx.AsyncClient(timeout=3, follow_redirects=False, trust_env=False, verify=trust)
         with runtime.database._connect() as db:
             db.executescript("""
                 CREATE TABLE IF NOT EXISTS admin_incidents (
