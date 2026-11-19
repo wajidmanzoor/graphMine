@@ -89,6 +89,22 @@ def stop(process, *, seconds=60):
         process.wait(timeout=seconds)
 
 
+def wait_for_load(load, *, agent, monitor, timeout):
+    deadline = time.monotonic() + timeout
+    while True:
+        for name, process in (("Test agent", agent), ("Resource monitor", monitor)):
+            code = process.poll()
+            if code is not None:
+                raise RuntimeError(f"{name} exited during load generation (exit {code}); inspect its log")
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise subprocess.TimeoutExpired(load.args, timeout)
+        try:
+            return load.wait(timeout=min(1, remaining))
+        except subprocess.TimeoutExpired:
+            pass
+
+
 def sleep_model(client, host, headers, run):
     status = client.get(host+"/api/admin/llm/power", headers=headers)
     status.raise_for_status()
@@ -260,7 +276,8 @@ def run_one(args, *, overrides=None, matrix_row=None):
         print(json.dumps({"run":str(run),"agent_pid":agent.pid,"monitor_pid":monitor.pid,"locust_pid":load.pid}), flush=True)
         # A benchmark must finish all thirty questions, including failed ones.
         # This guard diagnoses a broken generator/login instead of hanging forever.
-        load.wait(timeout=21600 if args.test == "benchmark" else config["duration_seconds"]+2700)
+        wait_for_load(load, agent=agent, monitor=monitor,
+                      timeout=21600 if args.test == "benchmark" else config["duration_seconds"]+2700)
         config.update(finished_at=timestamp(), locust_exit_code=load.returncode)
         validate_generation(run,config)
     except BaseException as exc:

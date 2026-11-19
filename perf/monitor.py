@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import signal
+import stat
 import subprocess
 import sys
 import time
@@ -117,6 +118,22 @@ def gpus():
     return result
 
 
+def sqlite_size(root):
+    total = 0
+    for path in Path(root).rglob("*"):
+        if not str(path).endswith((".sqlite3", ".sqlite3-wal", ".sqlite3-shm")):
+            continue
+        try:
+            info = path.stat()
+        except FileNotFoundError:
+            # SQLite can remove a WAL/SHM file during a checkpoint. There is
+            # no file to count, and this normal race must not stop telemetry.
+            continue
+        if stat.S_ISREG(info.st_mode):
+            total += info.st_size
+    return total
+
+
 class Monitor:
     def __init__(self, config):
         import httpx
@@ -164,8 +181,11 @@ class Monitor:
         except Exception as exc:
             row["app"] = None
             row["errors"].append({"component": "app", "message": str(exc)[:500]})
-        root = Path(self.config["data_root"])
-        row["sqlite_bytes"] = sum(p.stat().st_size for p in root.rglob("*") if p.is_file() and any(str(p).endswith(s) for s in (".sqlite3", ".sqlite3-wal", ".sqlite3-shm")))
+        try:
+            row["sqlite_bytes"] = sqlite_size(self.config["data_root"])
+        except OSError as exc:
+            row["sqlite_bytes"] = None
+            row["errors"].append({"component": "sqlite", "message": str(exc)[:500]})
         self.previous_time = now
         return row
 

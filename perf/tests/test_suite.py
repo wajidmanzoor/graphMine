@@ -12,9 +12,9 @@ from perf.accounts import cleanup
 from perf.common import append,write_json
 from perf.journey import Journey,JourneyError
 from perf.matrix import restored_environment,updated_environment
-from perf.monitor import prometheus,provider_summary
+from perf.monitor import prometheus,provider_summary,sqlite_size
 from perf.report import SECTIONS,comparisons,generate,slope
-from perf.run import validate_generation,safe_command
+from perf.run import validate_generation,safe_command,wait_for_load
 
 
 def fixture_run(root,test="soak"):
@@ -154,6 +154,36 @@ def test_generation_rejects_short_run_and_incomplete_benchmark(tmp_path):
         validate_generation(tmp_path,{"test":"load","requested_users":10,"duration_seconds":1500,"locust_exit_code":0})
     with pytest.raises(RuntimeError,match="six questions"):
         validate_generation(tmp_path,{"test":"benchmark","locust_exit_code":0})
+
+
+def test_sqlite_monitor_tolerates_wal_disappearing_during_checkpoint(tmp_path,monkeypatch):
+    database,wal = tmp_path/"agent.sqlite3",tmp_path/"agent.sqlite3-wal"
+    database.write_bytes(b"data")
+    wal.write_bytes(b"pending")
+    (tmp_path/"directory.sqlite3").mkdir()
+    (tmp_path/"unrelated.bin").write_bytes(b"not counted")
+    original = Path.stat
+    def vanished(path,*args,**kwargs):
+        if path == wal:
+            path.unlink(missing_ok=True)
+        return original(path,*args,**kwargs)
+    monkeypatch.setattr(Path,"stat",vanished)
+    assert sqlite_size(tmp_path) == 4
+
+
+@pytest.mark.parametrize("failed",["agent","monitor"])
+def test_load_supervision_rejects_dead_measurement_process(failed):
+    alive = SimpleNamespace(poll=lambda:None)
+    dead = SimpleNamespace(poll=lambda:1)
+    load = SimpleNamespace(wait=lambda **_:pytest.fail("Do not continue after a measurement process exits"))
+    with pytest.raises(RuntimeError,match="exited during load generation"):
+        wait_for_load(load,agent=dead if failed=="agent" else alive,
+                      monitor=dead if failed=="monitor" else alive,timeout=30)
+
+
+def test_load_supervision_preserves_application_failure_exit_code():
+    alive = SimpleNamespace(poll=lambda:None)
+    assert wait_for_load(SimpleNamespace(wait=lambda **_:1),agent=alive,monitor=alive,timeout=30) == 1
 
 
 class Immediate:
