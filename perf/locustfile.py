@@ -23,8 +23,6 @@ from perf.journey import Journey, JourneyError
 RUN = Path(os.environ["GRAPHMINE_PERF_RUN_DIR"])
 CONFIG = json.loads((RUN/"private/locust.json").read_text())
 QUESTIONS = yaml.safe_load((Path(__file__).with_name("questions.yaml")).read_text())["questions"]
-if CONFIG.get("preflight"):
-    QUESTIONS = [q for q in QUESTIONS if q["id"] in {"concept","densest-subgraph"}]
 REPETITIONS = 1 if CONFIG.get("preflight") else 5
 ACCOUNTS = Queue()
 for account in CONFIG["accounts"]:
@@ -83,6 +81,7 @@ class GraphMineUser(HttpUser):
                 raise
             raise JourneyError(code, message, step) from exc
         finally:
+            self.state["last_request_id"] = request_id
             append(RUN/"steps.jsonl", {"start": start, "end": timestamp(), "duration_ms": (time.monotonic()-clock)*1000,
                 "step": step, "route": route_name(path), "method": method, "status": status,
                 "outcome": outcome, "error_code": code, "message": message, "request_id": request_id,
@@ -97,7 +96,8 @@ class GraphMineUser(HttpUser):
             if self.question_index >= len(QUESTIONS)*REPETITIONS:
                 DONE = True
                 raise StopUser()
-            question = QUESTIONS[self.question_index // REPETITIONS]
+            # Five sequential rounds; three distinct questions per conversation.
+            question = QUESTIONS[self.question_index % len(QUESTIONS)]
         else:
             question = self.random.choices(QUESTIONS, weights=[q["weight"] for q in QUESTIONS])[0]
         self.state = {"question_instance_id": str(uuid4()), "question_id": question["id"], "start": timestamp(),

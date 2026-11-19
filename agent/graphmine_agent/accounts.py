@@ -28,7 +28,6 @@ from .identity import AccountError, Principal, current_principal
 from . import perf
 
 DAY = 86400
-MODEL_QUEUE_SECONDS = 60
 SCRYPT_N, SCRYPT_R, SCRYPT_P = 32768, 8, 3
 
 

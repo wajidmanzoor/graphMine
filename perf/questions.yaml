@@ -1,3 +1,7 @@
+dataset:
+  description: Yelp reviewers linked to businesses; Review records become edges so the input has the two sides needed by biclique questions.
+  query: "MATCH (u:User)-[:WROTE]->(r:Review)-[:REVIEWS]->(b:Business) RETURN u AS source, b AS target, 'REVIEWED' AS type LIMIT 1000"
+  projection: rows
 questions:
   - id: concept
     text: What is a biclique?
@@ -9,11 +13,13 @@ questions:
     weight: 2
     expected_operations: [maximal-bicliques]
     clarification: Find maximal bicliques, meaning complete connections between two groups, using an undirected copy of this graph.
+    sides_clarification: Use User vertices on the left and Business vertices on the right.
   - id: maximal-biclique-counting
     text: Count all maximal bicliques
     weight: 2
     expected_operations: [maximal-biclique-counting]
     clarification: Count the maximal bicliques rather than list them, using an undirected copy of this graph.
+    sides_clarification: Use User vertices on the left and Business vertices on the right.
   - id: community-detection
     text: Find the communities in this network
     weight: 2

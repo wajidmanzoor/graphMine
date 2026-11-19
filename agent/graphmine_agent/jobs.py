@@ -9,7 +9,7 @@ from collections.abc import Awaitable, Callable
 from contextlib import contextmanager, suppress
 from typing import Any
 
-from .database import Database
+from .database import Database, QueueCapacityError
 from . import perf
 from .execution import ExecutionError, GraphMineRunner
 from .identity import AccountError, current_principal, identity_scope
@@ -251,21 +251,18 @@ class JobManager:
                 "The worker stopped after a storage failure. Repair storage and restart the API before submitting more work.",
             )
         principal = current_principal.get()
-        admission = (
-            self.accounts.admit_jobs(principal.user_id, len(jobs))
-            if self.accounts and principal
-            else None
-        )
+        admission = None
         if self.accounts and principal is None:
             raise AccountError(
                 "A job requires an account owner.", "account_required", 401
             )
         try:
+            admission = self.accounts.admit_jobs(principal.user_id, len(jobs)) if self.accounts and principal else None
             self.database.admit_jobs(jobs, max_pending=self.max_pending_jobs)
         except BaseException as exc:
             if admission:
                 self.accounts.abort_admission(admission)
-            if getattr(exc, "code", None) == "queue_full":
+            if isinstance(exc,QueueCapacityError) or getattr(exc, "code", None) in {"queue_full","concurrency_limit"}:
                 perf.emit("job_queue", wait_ms=0, outcome="queue_full")
             raise
         if admission:

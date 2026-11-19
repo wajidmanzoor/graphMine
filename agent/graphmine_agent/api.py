@@ -331,6 +331,12 @@ async def _ingest_upload(store: GraphStore, **kwargs):
             raise asyncio.CancelledError
 
 
+class ObservedFastAPI(FastAPI):
+    def build_middleware_stack(self):
+        # Include framework-generated 500 responses in request IDs and timing.
+        return perf.PerfMiddleware(super().build_middleware_stack())
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     configured = settings or Settings.from_env()
 
@@ -387,7 +393,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                                 if not runtime.llm_power.shared:
                                     await runtime.llm_power.close()
 
-    app = FastAPI(
+    app = ObservedFastAPI(
         title="GraphMine Agent API",
         version=__version__,
         description=(
@@ -416,7 +422,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     register_account_routes(app)
     app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
     app.add_middleware(WebHeaders, allowed_origins=configured.allowed_origins)
-    app.add_middleware(perf.PerfMiddleware)
 
     register_error_handlers(app)
 

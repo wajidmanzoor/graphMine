@@ -399,6 +399,6 @@ def snapshot(runtime):
     return {"ts": datetime.now(timezone.utc).isoformat(),
             "model": {"waiting": len(runtime.accounts.waiting["model"]), "running": leases.get("model", 0)},
             "jobs": {"waiting": jobs.get("queued", 0)+sum(r["status"] == "queued" for r in workflows),
-                     "running": jobs.get("running", 0)+sum(r["status"] == "running" for r in workflows)},
+                     "running": jobs.get("running", 0)+jobs.get("interpreting",0)+sum(r["status"] == "running" for r in workflows)},
             "active_sessions": sessions,
             "planning_running": leases.get("planning", 0)}

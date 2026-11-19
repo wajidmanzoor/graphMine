@@ -139,7 +139,7 @@ def validate_generation(run, config):
         import yaml
         expected = {q["id"]:5 for q in yaml.safe_load((ROOT/"perf/questions.yaml").read_text())["questions"]}
         if config.get("preflight"):
-            expected = {"concept":1,"densest-subgraph":1}
+            expected = {key:1 for key in expected}
         actual = Counter(q["question_id"] for q in questions if q.get("question_sent_at"))
         if dict(actual) != expected:
             raise RuntimeError("Benchmark did not send each of the six questions five times")
@@ -154,6 +154,8 @@ def validate_generation(run, config):
 
 def run_one(args, *, overrides=None, matrix_row=None):
     import httpx
+    import yaml
+    dataset = yaml.safe_load((ROOT/"perf/questions.yaml").read_text())["dataset"]
     label = slug(args.label)
     run = (args.output/(time.strftime("%Y%m%dT%H%M%S", time.gmtime())+"-"+label)).resolve()
     run.mkdir(parents=True, exist_ok=False, mode=0o700)
@@ -188,7 +190,9 @@ def run_one(args, *, overrides=None, matrix_row=None):
         "legacy_planner_adapter":settings["llm_planner_model"],"legacy_analyst_adapter":settings["llm_analyst_model"],
         "gpu_names": gpu_names, "free_ram_bytes": proc_memory()["MemAvailable"],
         "app_packages": snapshot["packages"], "app_python": str(args.app_python),
-        "source_id": args.source_id, "query": args.query, "seed": args.seed,
+        "source_id": args.source_id, "query": args.query or dataset["query"],
+        "projection":args.projection or ("elements" if args.query else dataset["projection"]),
+        "dataset_description":dataset["description"] if not args.query else "Explicit custom query", "seed": args.seed,
         "requested_users": {"benchmark":1,"load":10,"stress":50,"spike":20,"soak":5}[args.test],
         "duration_seconds": {"benchmark":None,"load":1200,"stress":3000,"spike":600,"soak":7200}[args.test]}
     write_json(run/"config.json", config)
@@ -239,7 +243,7 @@ def run_one(args, *, overrides=None, matrix_row=None):
         write_json(private/"monitor.json", {"run_id":run.name,"host":host,"admin_token":headers["Authorization"][7:],
             "llm_root":llm_root,"llm_api_key":settings["llm_api_key"],"data_root":settings["data_root"],
             "pids":{"agent":agent.pid,"vllm":vllm_pid}}, private=True)
-        write_json(private/"locust.json", {**{k:config[k] for k in ("test","run_id","seed","source_id","query","preflight")},
+        write_json(private/"locust.json", {**{k:config[k] for k in ("test","run_id","seed","source_id","query","projection","preflight")},
             "host":host,"accounts":[a for a in manifest["accounts"] if a["username"] != "perftest_admin"]}, private=True)
         stream = (run/"monitor.log").open("w"); streams.append(stream)
         monitor = subprocess.Popen([sys.executable, str(ROOT/"perf/monitor.py"), str(run)], cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT, start_new_session=True)
@@ -315,12 +319,13 @@ def main():
     parser.add_argument("--port", type=int, default=18003)
     parser.add_argument("--vllm-service", default="graphmine-vllm.service")
     parser.add_argument("--source-id")
-    parser.add_argument("--query", help="Default: the Yelp registry's published query")
+    parser.add_argument("--query", help="Default: the Yelp User–Business projection in perf/questions.yaml")
+    parser.add_argument("--projection", choices=["elements","rows"],help="Default rows for the suite query, elements for a custom query")
     parser.add_argument("--seed", type=int, default=17)
     parser.add_argument("--lab-window", default=os.getenv("GRAPHMINE_PERF_LAB_WINDOW"), help="Record the agreed lab time slot")
     parser.add_argument("--confirm-shared-gpu", action="store_true")
     parser.add_argument("--matrix", action="store_true")
-    parser.add_argument("--preflight",action="store_true",help="Diagnostic only: benchmark journey with one concept and one densest question")
+    parser.add_argument("--preflight",action="store_true",help="Diagnostic only: one journey per question type")
     parser.add_argument("--vllm-env-file", type=Path)
     args = parser.parse_args()
     if args.preflight and (args.test != "benchmark" or args.matrix):

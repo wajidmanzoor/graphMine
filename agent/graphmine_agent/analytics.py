@@ -1062,9 +1062,12 @@ class AnalyticsService:
                 perf.emit("job_queue", wait_ms=0, outcome="queue_full")
                 raise AnalyticsError("Workflow queue is full", "queue_full", 429)
             principal = current_principal.get()
-            admission = (
-                principal.accounts.admit_jobs(principal.user_id) if principal else None
-            )
+            try:
+                admission = principal.accounts.admit_jobs(principal.user_id) if principal else None
+            except Exception as exc:
+                if getattr(exc,"code",None) in {"queue_full","concurrency_limit"}:
+                    perf.emit("job_queue",wait_ms=0,outcome="queue_full")
+                raise
             record.update(
                 status="queued",
                 approved_hash=expected_hash,

@@ -156,3 +156,92 @@ def test_settings_defaults_and_explicit_thinking_override(settings,monkeypatch):
     analyst = {"reasoning_effort":"medium"}
     perf.thinking(changed,"analyst",analyst)
     assert analyst == {"reasoning_effort":"medium"}
+
+
+@pytest.mark.asyncio
+async def test_worker_keeps_request_context_after_http_task_finishes(settings,tmp_path,triangle_graph):
+    from test_queue_capacity import setup_runtime
+    settings=replace(settings,perf_log=True,perf_directory=tmp_path/"perf")
+    runtime,plan=setup_runtime(settings,triangle_graph)
+    await runtime.jobs.start()
+    try:
+        with perf.scope(settings,request_id="submit",turn_id="turn1",user_id="synthetic"):
+            with runtime.database.history.scope(plan.session_id,"test",{},turn_id="turn1"):
+                job=await runtime.jobs.enqueue(plan)
+        for _ in range(100):
+            stored=runtime.database.get_job(job.id)
+            if stored.status.value not in {"queued","running","interpreting"}:
+                break
+            await asyncio.sleep(.05)
+        assert stored.status.value == "completed"
+    finally:
+        await runtime.jobs.stop()
+        await runtime.agent.close()
+    events=rows(settings.perf_directory)
+    run=next(r for r in events if r["event"] == "job_run")
+    assert run["request_id"]=="submit" and run["turn_id"]=="turn1" and run["user_id"]=="synthetic"
+    assert run["operation"]=="maximal-cliques" and run["input_vertices"]==3
+    assert run["duration_ms"]>0 and run["outcome"]=="completed"
+    assert any(r["event"]=="job_queue" and r["outcome"]=="started" for r in events)
+
+
+def test_exploration_logs_real_bytes_and_conflict(settings,tmp_path):
+    settings=replace(settings,perf_log=True,perf_directory=tmp_path/"perf",api_token=None)
+    with TestClient(create_app(settings)) as client:
+        session=client.post("/api/sessions",json={"domain_id":"general"}).json()
+        path=f"/api/sessions/{session['id']}/exploration"
+        body=b'{ "expected_revision" : 0, "state" : {} }'
+        assert client.put(path,content=body,headers={"content-type":"application/json"}).status_code==200
+        assert client.put(path,content=body,headers={"content-type":"application/json"}).status_code==409
+    events=[r for r in rows(settings.perf_directory) if r["event"]=="exploration_save"]
+    assert [r["outcome"] for r in events]==["saved","error"]
+    assert all(r["payload_bytes"]==len(body) and r["session_id"]==session["id"] for r in events)
+
+
+@pytest.mark.asyncio
+async def test_actual_power_transitions_emit_once_with_admin_trigger(settings,tmp_path):
+    from test_llm_power import Server,manager
+    settings=replace(settings,perf_log=True,perf_directory=tmp_path/"perf")
+    power=manager(tmp_path/"leases",Server(),perf_recorder=perf.recorder(settings))
+    try:
+        with perf.scope(settings,request_id="admin-request",user_id="admin"):
+            await power.wake_now()
+            await power.wake_now()
+            await power.sleep_now()
+    finally:
+        await power.close()
+    events=rows(settings.perf_directory)
+    assert [r["event"] for r in events]==["llm_wake","llm_sleep"]
+    assert all(r["trigger"]=="admin" and r["request_id"]=="admin-request" and r["duration_ms"]>=0 for r in events)
+
+
+def test_unhandled_500_keeps_request_id_and_real_response_size(settings,tmp_path):
+    settings=replace(settings,perf_log=True,perf_directory=tmp_path/"perf",api_token=None)
+    app=create_app(settings)
+    @app.get("/api/perf-error")
+    def fail():
+        raise RuntimeError("injected error")
+    app.router.routes.insert(0,app.router.routes.pop())
+    with TestClient(app,raise_server_exceptions=False) as client:
+        response=client.get("/api/perf-error",headers={"X-Request-ID":"failed-request"})
+        assert response.status_code==500 and response.headers["X-Request-ID"]=="failed-request"
+        assert response.text=="Internal Server Error"
+    event=next(r for r in rows(settings.perf_directory) if r["event"]=="http")
+    assert event["status"]==500 and event["response_bytes"]==len(response.content)
+
+
+@pytest.mark.asyncio
+async def test_rejected_classic_queue_is_observed(settings,tmp_path,triangle_graph):
+    from test_queue_capacity import setup_runtime
+    from graphmine_agent.database import QueueCapacityError
+    settings=replace(settings,perf_log=True,perf_directory=tmp_path/"perf")
+    runtime,plan=setup_runtime(settings,triangle_graph,limit=1)
+    try:
+        with perf.scope(settings,request_id="submit",user_id="synthetic"):
+            await runtime.jobs.enqueue(plan)
+            with pytest.raises(QueueCapacityError):
+                await runtime.jobs.enqueue(plan)
+    finally:
+        await runtime.agent.close()
+    events=[r for r in rows(settings.perf_directory) if r["event"]=="job_queue"]
+    assert len(events)==1 and events[0]["outcome"]=="queue_full"

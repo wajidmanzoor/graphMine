@@ -42,7 +42,7 @@ perf_python=/absolute/path/to/application-venv/bin/python
 perf_window='Agreed lab window, date and time'
 ```
 
-An optional diagnostic sends one concept and one densest-subgraph question. It is
+An optional diagnostic sends each of the six question types once. It is
 marked **PREFLIGHT ONLY** and does not count as the required benchmark:
 
 ```sh
@@ -53,7 +53,7 @@ marked **PREFLIGHT ONLY** and does not count as the required benchmark:
 The five full shapes are:
 
 ```sh
-# One user; each of the six questions five times, sequentially (30 total).
+# One user; five sequential rounds of the six questions (30 total).
 .venv-perf/bin/python perf/run.py benchmark --label baseline-benchmark \
   --app-env "$perf_env" --app-python "$perf_python" --lab-window "$perf_window"
 
@@ -90,9 +90,14 @@ run for five minutes, or when the trailing 60-second question error rate remains
 above 20% for 120 seconds. No observations means no calculated error rate.
 Use one Locust process; distributed workers would reuse account assignments.
 
-All requests go through the HTTP API. The driver uses the Yelp source's published
-default query and the General graph analysis domain. `--source-id` and `--query`
-can explicitly select another Yelp projection, and are recorded in config. It
+All requests go through the HTTP API. The driver uses the Yelp User–Business
+projection defined in `perf/questions.yaml` and the General graph analysis domain.
+The source stores reviews as intermediate vertices (User → Review → Business).
+The suite's read-only row projection represents reviews as User–Business edges,
+limited to 1,000 rows, providing the two sides required by the biclique questions.
+It records the exact query, returned graph size and input fingerprint; results
+apply to this projection, not the full Yelp database. `--source-id`, `--query` and
+`--projection rows|elements` can select another Yelp projection and are recorded in config. It
 does not use expected operations to force routing. It selects the first offered
 option and sends the question's canned clarification. Expected operations only
 score the resulting plan. A documentation answer needs no calculation. Collection

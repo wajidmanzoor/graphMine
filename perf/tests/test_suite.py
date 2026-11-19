@@ -232,3 +232,63 @@ def test_create_all_accounts_and_remove_every_owned_file(tmp_path,monkeypatch):
     (backend/"owned-result").write_text("sample")
     receipt=accounts.cleanup(run)
     assert receipt["accounts_deleted"]==51 and not backend.exists() and not settings.data_root.exists()
+
+
+@pytest.mark.parametrize("fail_row",[None,1])
+def test_matrix_restarts_each_row_and_restores_service_after_failure(tmp_path,monkeypatch,fail_row):
+    import perf.matrix as matrix
+    import perf.run as runner
+    model_env=tmp_path/"model.env"; original=b"GRAPHMINE_LLM_MAX_NUM_SEQS=2\nPRIVATE=secret\n"
+    model_env.write_bytes(original);model_env.chmod(0o600)
+    args=SimpleNamespace(output=tmp_path/"runs",label="matrix-test",vllm_env_file=model_env,app_python=Path("unused"))
+    monkeypatch.setattr(runner,"app_environment",lambda *_:{})
+    monkeypatch.setattr(runner,"settings_snapshot",lambda *_:{"settings":{"llm_base_url":"http://localhost/v1","llm_api_key":"secret"}})
+    restarts=[];sleeps=[];calls=[]
+    monkeypatch.setattr(matrix,"restart",lambda *_:restarts.append(model_env.read_bytes()))
+    monkeypatch.setattr(matrix,"restore_sleep",lambda *_:sleeps.append(True))
+    def one(args,*,overrides,matrix_row):
+        calls.append((overrides,matrix_row))
+        if len(calls)-1==fail_row:
+            raise RuntimeError("injected load failure")
+        return fixture_run(args.output/args.label,"load")
+    monkeypatch.setattr(runner,"run_one",one)
+    if fail_row is None:
+        matrix.run_matrix(args)
+        assert len(calls)==5 and len(restarts)==6
+        assert b"GRAPHMINE_LLM_MAX_NUM_SEQS=8" in restarts[1]
+        assert restarts[2]==original
+        assert list(args.output.glob("*/report.html"))
+    else:
+        with pytest.raises(RuntimeError,match="injected"):
+            matrix.run_matrix(args)
+        assert len(restarts)==3
+    assert model_env.read_bytes()==original and restarts[-1]==original and sleeps==[True]
+    record=json.loads(next(args.output.glob("*/matrix.json")).read_text())
+    assert record["restored"]
+    assert not list(args.output.glob("*/private/vllm-env.original"))
+
+
+def test_failed_native_step_preserves_application_error_code():
+    def request(method,path,*,step,**kwargs):
+        if step=="plan":
+            return {"status":"ready","message":"ready","turn_id":"t","plan":{"steps":[{"operation":"maximal-bicliques"}]}}
+        if step=="create_workflow":
+            return {"id":"w","status":"failed","steps":{"answer":{"error":{"code":"resource_limit","message":"Native candidate budget exceeded"}}}}
+        raise AssertionError("Failed calculation must not request a result view")
+    journey=Journey(request);journey.session_id="s";journey.inputs={"main":{}}
+    with pytest.raises(JourneyError,match="Native candidate budget exceeded") as caught:
+        journey.ask({"text":"question","expected_operations":["maximal-bicliques"]},{},spawn=Immediate)
+    assert caught.value.code=="resource_limit" and caught.value.step=="calculation"
+
+
+@pytest.mark.parametrize("kind,text",[("input","Use main."),("direction","Use an undirected copy for this analysis."),("sides","Use User vertices on the left and Business vertices on the right.")])
+def test_canned_clarifications_resolve_the_specific_gap(kind,text):
+    calls=[]
+    def request(method,path,*,step,**kwargs):
+        calls.append(kwargs["json"])
+        if len(calls)==1:
+            return {"status":"needs_information","message":"choose","pending_question":{"id":"gap","kind":kind}}
+        assert kwargs["json"]["message"]==text and kwargs["json"]["clarification_id"]=="gap"
+        return {"status":"answered","message":"done"}
+    journey=Journey(request);journey.session_id="s";journey.inputs={"main":{}}
+    journey.ask({"text":"question","clarification":"generic","sides_clarification":"Use User vertices on the left and Business vertices on the right.","expected_operations":[]},{},spawn=Immediate)

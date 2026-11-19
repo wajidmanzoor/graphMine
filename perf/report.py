@@ -65,6 +65,12 @@ def analyze(run):
     run = Path(run)
     config = json.loads((run/"config.json").read_text())
     questions, steps = read_jsonl(run/"questions.jsonl"), read_jsonl(run/"steps.jsonl")
+    dataset_fields = ("source_id","query","projection","vertices","edges","input_fingerprint")
+    datasets = []
+    for observation in read_jsonl(run/"datasets.jsonl"):
+        dataset = {key:observation.get(key) for key in dataset_fields}
+        if dataset not in datasets:
+            datasets.append(dataset)
     events, system = read_jsonl(run/"events.jsonl"), read_jsonl(run/"system.jsonl")
     shape, run_events = read_jsonl(run/"shape.jsonl"), read_jsonl(run/"run-events.jsonl")
     by_event = defaultdict(list)
@@ -76,7 +82,7 @@ def analyze(run):
     answer_times = [q.get("time_to_answer_ms") for q in answered]
     reply_times = [q.get("first_reply_ms") for q in questions]
     view_times = [q["results_page_ms"][0] for q in questions if q.get("results_page_ms")]
-    busy_codes = {"busy","concurrency_limit","queue_full","queue_time_limit","login_busy"}
+    busy_codes = {"busy","concurrency_limit","queue_full","job_queue_full","queue_time_limit","login_busy"}
     headline = {"users_requested":config.get("requested_users"),
         "users_observed_peak":max((r["users"] for r in shape),default=None),
         "users_with_completed_questions":len({q["user_id"] for q in answered}),
@@ -204,7 +210,7 @@ def analyze(run):
     for q in failed:
         if not any(e.get("question_instance_id") == q.get("question_instance_id") and e["code"] == q.get("error_code") for e in error_rows):
             error_rows.append({"source":"journey","code":q.get("error_code") or "interrupted","step":q.get("error_step") or "question",
-                               "time":q["end"],"request_id":None,"message":q.get("message")})
+                               "time":q["end"],"request_id":q.get("last_request_id"),"message":q.get("message")})
     error_rows.extend({"source":"server","code":r.get("error_code") or "unknown","step":r.get("where") or "unknown",
                        "time":r["ts"],"request_id":r.get("request_id"),"message":r.get("message")} for r in by_event["error"])
     errors = []
@@ -244,7 +250,7 @@ def analyze(run):
         "ttft_calls_measured":sum(r.get("time_to_first_token_ms") is not None for r in calls),
         "reasoning_calls_measured":sum(r.get("reasoning_tokens") is not None for r in calls),
         "db_lock_calls_measured":sum(r.get("lock_wait_ms") is not None for r in by_event["db"])}
-    return {"config":config,"headline":headline,"questions":question_stats,"breakdown":breakdown,"model":model_stats,
+    return {"config":config,"headline":headline,"datasets":datasets,"questions":question_stats,"breakdown":breakdown,"model":model_stats,
         "calculations":calculations,"series":series,"system":system,"histograms":histograms(system),
         "power_events":[e for e in events if e["event"] in {"llm_wake","llm_sleep"}],
         "saves":by_event["exploration_save"],"db":by_event["db"],"errors":errors,"trends":trends,
@@ -340,6 +346,8 @@ def render(data, previous=None):
     for key in ("infrastructure_error","sleep_error","stop_error","cleanup_error","validation_error"):
         if config.get(key):
             paragraph(key+": "+str(config[key]))
+    paragraph("Observed input projections (the test covers these snapshots, not every record in the source database):")
+    rows(data["datasets"])
     rows([{"metric":k,"value":v} for k,v in h.items()])
     paragraph("Coverage: "+display(data["coverage"])+". N/A means unmeasured, not zero. Percentiles use the nearest observed rank; no interpolated or estimated samples. Success requires the full journey including result views. Wrong-operation percentages use all attempts, with routing coverage shown separately.")
     heading(2)

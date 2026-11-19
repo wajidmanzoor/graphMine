@@ -37,7 +37,8 @@ class Journey:
         if not query:
             raise JourneyError("query_missing", "Yelp has no published default query; supply --query", "dataset")
         preview = self.request("POST", f"/api/database-sources/{source['id']}/queries", step="query",
-            json={"statement": query, "dataset_id": "yelp", "name": "Yelp performance test"})
+            json={"statement": query, "dataset_id": "yelp", "name": "Yelp performance test",
+                  "projection": config.get("projection","elements")})
         if not preview.get("dataset"):
             raise JourneyError("empty_input", "The Yelp query returned no graph", "dataset")
         metadata = preview["dataset"]
@@ -49,6 +50,7 @@ class Journey:
         self.previous_workflow = None
         graph = result["file"].get("metadata") or {}
         return {"session_id": self.session_id, "source_id": source["id"], "query": query,
+                "projection":config.get("projection","elements"),
                 "vertices": graph.get("vertex_count"), "edges": graph.get("edge_count"),
                 "input_fingerprint": result["file"].get("sha256") or metadata.get("sha256") or metadata.get("fingerprint")}
 
@@ -107,7 +109,12 @@ class Journey:
                     parameters=option.get("parameters", {}), option_id=option["id"], option_turn_id=response["turn_id"])
             elif status == "needs_information":
                 pending = response.get("pending_question") or {}
-                clarification = question.get("direction_clarification", "Use an undirected copy for this analysis.") if pending.get("kind") == "direction" else question["clarification"]
+                kind = pending.get("kind")
+                clarification = question.get(str(kind)+"_clarification", question["clarification"])
+                if kind == "direction":
+                    clarification = question.get("direction_clarification", "Use an undirected copy for this analysis.")
+                elif kind == "input":
+                    clarification = question.get("input_clarification","Use main.")
                 response = plan(clarification, **({"clarification_id": pending["id"]} if pending.get("id") else {}))
             else:
                 break
@@ -135,7 +142,7 @@ class Journey:
             self.sleep(self.poll_seconds)
             record = self.request("GET", f"/api/workflows/{workflow}", step="poll_calculation")
         if record["status"] != "completed":
-            detail = record.get("error") or {}
+            detail = record.get("error") or next((row["error"] for row in record.get("steps",{}).values() if row.get("error")),{})
             raise JourneyError(detail.get("code", "calculation_"+record["status"]), detail.get("message", "Calculation did not complete"), "calculation")
         # The browser renders a factual answer first, then replaces its pending
         # introduction. Time-to-answer ends at the final answer, not at job exit.
