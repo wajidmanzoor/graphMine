@@ -288,12 +288,16 @@
     if (!clocks.length) { clearInterval(elapsedTimer); elapsedTimer = null; }
     else if (!elapsedTimer) elapsedTimer = setInterval(tickElapsed, 1000);
   }
+  function modelWaking(turn) {
+    return eventIndex.turn(turn).findLast(event => event.type === "workflow.planning")?.payload.status === "waking";
+  }
   function planningNode(chats) {
     const asked = chats.at(-1)?.payload.role === "user" ? chats.at(-1) : null;
     const turn = state.pendingQuestion?.id || asked?.payload.turn_id || null;
     const started = state.pendingQuestion?.startedAt || Date.parse(asked?.created_at || "") || Date.now();
-    return messageNodes.item("planning", W.stringify([turn, started]), () => {
-      const item = messageElement("assistant", "Working on your question…", "GraphMine");
+    const waking = modelWaking(turn);
+    return messageNodes.item("planning", W.stringify([turn, started, waking]), () => {
+      const item = messageElement("assistant", waking ? "Waking the model…" : "Working on your question…", "GraphMine");
       item.article.classList.add("planning-progress");
       const footer = node("p", {class: "planning-footer"});
       footer.append(node("small", {class: "planning-elapsed", "data-started": String(started)}, elapsedText(started)));
@@ -573,7 +577,7 @@
       const decisionsForStatus = new Map(events.filter(event => event.type === "workflow.planning").map(event => [event.payload.stage, event.payload.status]));
       const calls = window.GraphMineModelCalls(events);
       count += calls.length;
-      if (question.turn_id === latest) { outcome = answer; workflow = record; thinking ||= !answer && [...decisionsForStatus.values()].includes("running"); }
+      if (question.turn_id === latest) { outcome = answer; workflow = record; thinking ||= !answer && [...decisionsForStatus.values()].some(value => ["running", "waking"].includes(value)); }
       const heading = turnNumbers.has(question.turn_id) ? `Question ${turnNumbers.get(question.turn_id)}` : question.turn_id === state.pendingQuestion?.id && turnNumbers.size ? "New question" : `Question ${index + 1}`;
       rendered.push(activityNodes.item(`turn:${question.turn_id}`, W.stringify([eventIndex.version(question.turn_id), heading, question.message, outcomeKey(record), showWorkingNotes()]), () => {
       // Raw returned reasoning, once per call, grouped by the user's question.
@@ -605,7 +609,7 @@
       }));
     }
     const status = thinking ? "Thinking through your question…" : workflow ? workflowStatus(workflow) : outcome?.status === "options" ? "Choose an option" : outcome?.status === "needs_information" ? "Waiting for your reply" : outcome?.status === "failed" ? "Planning failed" : "Ready for your question";
-    $("chat-status").textContent = thinking ? "Thinking…" : status;
+    $("chat-status").textContent = thinking ? modelWaking(state.pendingQuestion?.id || latest) ? "Waking the model…" : "Thinking…" : status;
     $("reasoning-count").textContent = String(count);
     if (!questions.length) rendered.push(activityNodes.item("empty", "empty", () => node("li", {class: "muted"}, "Model reasoning will appear here, grouped by question.")));
     activityNodes.reconcile($("activity-list"), rendered);

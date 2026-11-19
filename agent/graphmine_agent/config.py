@@ -63,6 +63,9 @@ class Settings:
     llm_route_max_tokens: int = 768
     llm_plan_max_tokens: int = 3072
     llm_analyst_max_tokens: int = 3072
+    llm_sleep_mode: bool = True
+    llm_sleep_level: int = 1
+    llm_idle_sleep_minutes: float = 20
     history_directory: Path | None = None
     # Write-once training captures; they outlive conversation deletion.
     capture_directory: Path | None = None
@@ -184,6 +187,10 @@ class Settings:
         return self.llm_route_model if self.routing_adapter_active else self.llm_model
 
     def __post_init__(self) -> None:
+        if self.llm_sleep_level != 1:
+            raise ValueError("GRAPHMINE_LLM_SLEEP_LEVEL supports only level 1")
+        if not 0 < self.llm_idle_sleep_minutes < float("inf"):
+            raise ValueError("GRAPHMINE_LLM_IDLE_SLEEP_MINUTES must be a finite positive number")
         if self.backend_selection not in {"legacy", "shadow", "bandit"}:
             raise ValueError("backend_selection must be legacy, shadow or bandit")
         if not 0 <= self.backend_exploration_budget <= 1:
@@ -471,6 +478,9 @@ class Settings:
             llm_api_key=os.getenv("GRAPHMINE_LLM_API_KEY", "local-graphmine"),
             llm_model=os.getenv("GRAPHMINE_LLM_MODEL", "Qwen/Qwen3.8-27B-FP8"),
             llm_enabled=_boolean("GRAPHMINE_LLM_ENABLED", True),
+            llm_sleep_mode=_boolean("GRAPHMINE_LLM_SLEEP_MODE", True),
+            llm_sleep_level=_integer("GRAPHMINE_LLM_SLEEP_LEVEL", 1),
+            llm_idle_sleep_minutes=float(os.getenv("GRAPHMINE_LLM_IDLE_SLEEP_MINUTES", "20")),
             google_search_enabled=_boolean("GRAPHMINE_GOOGLE_SEARCH_ENABLED", False),
             llm_planner_model=os.getenv("GRAPHMINE_LLM_PLANNER_MODEL", "").strip()
             or None,

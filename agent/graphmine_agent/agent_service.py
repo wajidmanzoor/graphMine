@@ -86,6 +86,8 @@ class AgentService:
         graph_store: GraphStore,
         validator: PlanValidator,
         jobs: JobManager,
+        *,
+        llm_power=None,
     ):
         self.settings = settings
         self.catalog = catalog
@@ -94,7 +96,7 @@ class AgentService:
         self.validator = validator
         self.jobs = jobs
         self.model = (
-            OpenAICompatibleModel(settings, database.history)
+            OpenAICompatibleModel(settings, database.history, power=llm_power)
             if settings.llm_enabled
             else RuleBasedModel()
         )
@@ -155,7 +157,11 @@ class AgentService:
             },
         )
         try:
-            result = await self.model.generate(**kwargs)
+            from .llm_power import power_notice
+            async def waking(state):
+                await activity("running", "Waking the model…" if state == "waking" else stage + "…")
+            with power_notice(waking):
+                result = await self.model.generate(**kwargs)
         except Exception:
             await activity(
                 "failed",
@@ -965,6 +971,7 @@ class AgentService:
         result_id: str,
         *,
         user_message: str = "Interpret this result and select useful visualizations.",
+        wake: bool = True,
     ) -> ResultRecord:
         result = self.database.get_result(result_id)
         with self.database.history.scope(
@@ -975,9 +982,9 @@ class AgentService:
                 "message": user_message,
             },
         ):
-            return await self._interpret(result_id, user_message=user_message)
+            return await self._interpret(result_id, user_message=user_message, wake=wake)
 
-    async def _interpret(self, result_id: str, *, user_message: str) -> ResultRecord:
+    async def _interpret(self, result_id: str, *, user_message: str, wake: bool = True) -> ResultRecord:
         result = self.database.get_result(result_id)
         job = self.database.get_job(result.job_id)
         graph_record = self.database.get_file(job.plan.graph_id)
@@ -1037,6 +1044,7 @@ class AgentService:
                     narrative = await self._generate(
                         mode=LLMMode.analyst,
                         schema=GroundedNarrative,
+                        wake=wake,
                         user_payload=payload,
                         conversation=self.database.messages(result.session_id),
                     )
@@ -1165,6 +1173,7 @@ class AgentService:
     ) -> ResultRecord:
         return await self.interpret(
             result.id,
+            wake=False,
             user_message=plan.application_intent.objective
             if plan.application_intent
             else "Explain the computed result.",

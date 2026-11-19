@@ -7,6 +7,8 @@ training examples.
 
 from __future__ import annotations
 
+from ..llm_power import model_run_scope
+
 import copy
 import json
 import time
@@ -415,6 +417,7 @@ def recheck_workflows(*, corpus: Path, report_path: Path, output: Path) -> dict:
     return report
 
 
+@model_run_scope
 async def evaluate_workflows(
     settings: Settings,
     *,

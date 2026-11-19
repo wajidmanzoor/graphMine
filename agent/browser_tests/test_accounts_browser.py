@@ -8,6 +8,7 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+import httpx
 import uvicorn
 from graphmine_agent.analytics import AnalyticsService
 from graphmine_agent.api import create_app
@@ -72,6 +73,23 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
             time.sleep(0.05)
         assert server.started
         runtime = app.state.runtime
+        power_state = {'sleeping': True, 'calls': []}
+        async def power_response(request):
+            assert request.headers['Authorization'] == f'Bearer {settings.llm_api_key}'
+            power_state['calls'].append(request.url.path)
+            if request.url.path == '/is_sleeping':
+                return httpx.Response(200, json={'is_sleeping': power_state['sleeping']})
+            if request.url.path == '/wake_up':
+                power_state['sleeping'] = False
+            elif request.url.path == '/sleep':
+                power_state['sleeping'] = True
+            elif request.url.path != '/v1/models':
+                raise AssertionError(request.url)
+            return httpx.Response(200, json={})
+        power = runtime.llm_power.for_url()
+        power.configured = power.enabled = True
+        power._directory = tmp_path / 'power-leases'
+        power._transport = httpx.MockTransport(power_response)
         alice = runtime.accounts.create_user("alice", PASSWORD, admin=True)["id"]
         runtime.accounts.create_user("bob", PASSWORD)
         runtime.accounts.settle_tokens(
@@ -156,6 +174,14 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         wait.until(
             lambda d: "alice" in d.find_element(By.ID, "account-admin-users").text
         )
+        wait.until(lambda d: 'Model: Sleeping' in d.find_element(By.ID, 'account-model-status').text)
+        assert '/wake_up' not in power_state['calls']
+        driver.find_element(By.ID, 'account-model-wake').click()
+        wait.until(lambda d: 'Model: Awake' in d.find_element(By.ID, 'account-model-status').text)
+        assert 'sleeps after 20 min idle' in driver.find_element(By.ID, 'account-model-status').text
+        driver.find_element(By.ID, 'account-model-sleep').click()
+        wait.until(lambda d: 'Model: Sleeping' in d.find_element(By.ID, 'account-model-status').text)
+        assert power_state['calls'].count('/wake_up') == power_state['calls'].count('/sleep') == 1
         driver.find_element(By.ID, "account-create-toggle").click()
         driver.find_element(By.ID, "account-new-username").send_keys("carol")
         driver.find_element(By.ID, "account-new-password").send_keys(PASSWORD)

@@ -19,8 +19,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "agent"))
+from graphmine_agent.llm_power import model_run_scope
 
 
+@model_run_scope
 async def check(output: Path):
     from graphmine_agent.analytics import AnalyticsService, WorkflowRequest
     from graphmine_agent.analytics_planning import AnalyticsPlanner, PlanningRequest

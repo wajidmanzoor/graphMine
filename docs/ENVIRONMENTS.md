@@ -110,6 +110,66 @@ not overlap. A developer shell cannot override its GraphMine storage settings.
 
 ## Workflow
 
+### Model sleep and wake
+
+The model process can release its GPU allocations while GraphMine is idle.
+Configure the same values in the model and agent environment files:
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `GRAPHMINE_LLM_SLEEP_MODE` | `1` | Enable automatic wake and idle sleep. Set `0` to retain the original always-awake vLLM command. |
+| `GRAPHMINE_LLM_SLEEP_LEVEL` | `1` | Only level 1 is supported; other values are rejected. |
+| `GRAPHMINE_LLM_IDLE_SLEEP_MINUTES` | `20` | Idle interval after the last request or evaluation finishes. |
+| `GRAPHMINE_LLM_HOST` | `127.0.0.1` | Sleep mode refuses any other bind address. |
+| `GRAPHMINE_LLM_WEIGHT_BYTES` | measured | Optional positive model-weight byte count instead of summing the active cached safetensors snapshot. |
+| `GRAPHMINE_LLM_POWER_LEASE_DIR` | runtime directory | Optional shared directory for request leases; use the same absolute path in agents, evaluations and SSH commands. |
+
+Level 1 offloads weights to CPU RAM and discards the KV cache. Before enabling
+it, the launcher reads `/proc/meminfo` and requires `MemAvailable` to be at least
+1.25 times the model's weight size. If RAM is insufficient or the weight size
+cannot be determined, it warns and launches without sleep mode. No model files
+are downloaded by this check. The LoRA adapters and existing launch flags are
+preserved. See the [vLLM sleep-mode documentation](https://docs.vllm.ai/en/v0.30.0/features/sleep_mode/).
+
+The agent owns one power manager per distinct model server, including a separate
+analytics router when configured. Each model request wakes its server if needed;
+streaming responses and retries keep a request lease until they finish. Learning
+runs acquire a lease on their first local model use and retain it for the whole
+run. Native-only audits and external-provider runs do not wake local vLLM.
+Process leases also prevent an agent from sleeping during an SSH evaluation.
+They live under `XDG_RUNTIME_DIR/graphmine-llm-power` when available, otherwise
+under `HF_HOME` (or `~/.cache/huggingface`). System services without a user runtime
+directory should set a shared writable path such as
+`/var/lib/graphmine/llm-power`; do not put it in a systemd-private `/tmp`.
+
+Every 60 seconds the agent checks for 20 minutes of inactivity and zero active
+leases. It requests level-1 sleep with `mode=wait`, so vLLM can drain any remaining
+work. Failed sleep attempts are logged and retried the next minute. Servers that
+return 404 for `/is_sleeping` are treated as unsupported and rechecked after ten
+minutes. A wake has a 120-second deadline, includes a successful `/v1/models`
+check, and reports its elapsed time in the agent log.
+
+Administrators can use Settings → Manage users → Model, or the authenticated
+`GET /api/admin/llm/power` and `POST /api/admin/llm/power/{sleep,wake}` routes.
+Over SSH, `GRAPHMINE_ENV_FILE=/path/to/model.env deploy/vllm-power.sh status`
+shows the current state; replace `status` with `sleep` or `wake` to control it.
+The script reads the same environment file as the launcher and sends its API key
+without putting the key in a command argument. It only contacts
+`http://127.0.0.1:8001` and respects active GraphMine request leases.
+
+Chat displays “Waking the model…” while waiting. A wake timeout keeps the question
+retryable. Opening saved results does not wake the model; optional prose after
+an already-chosen calculation only uses an already-awake model, with the computed
+facts available immediately. Health checks and power-status reads also never wake
+the model.
+
+`VLLM_SERVER_DEV_MODE=1` is set only when the launcher enables sleep. Keep these
+development endpoints on loopback; public Cloudflare routes remain exclusively
+on the existing application ports 18000 and 8877. No systemd-unit, tunnel,
+database-service or account changes are required.
+
+### Promoting application changes
+
 1. Work in `graphMine-database-cypher` on `devlopment`; Studio code is its
    `dataset-studio/` subdirectory. Commit your changes and push `devlopment`.
 2. Use `gm-env start-dev` for private UI development and `gm-env stop-dev` when

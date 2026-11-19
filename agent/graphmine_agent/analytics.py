@@ -168,7 +168,10 @@ class AnalyticsService:
     Memory leases permit concurrent workers and preserve configured LLM space.
     """
 
-    def __init__(self, settings, database, graph_store, events):
+    def __init__(self, settings, database, graph_store, events, *, llm_power=None):
+        from .llm_power import get_registry
+        self.llm_power = llm_power or get_registry(settings)
+        self._owns_power = llm_power is None and not self.llm_power.shared
         self.settings, self.database, self.graph_store, self.events = (
             settings,
             database,
@@ -230,6 +233,8 @@ class AnalyticsService:
         self.closed = True
         self.result_cache.clear()
         if not self.opened:
+            if self._owns_power:
+                await self.llm_power.close()
             if self.run_log is not None:
                 await asyncio.to_thread(self.run_log.close)
             return
@@ -238,6 +243,8 @@ class AnalyticsService:
             task.cancel()
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
+        if self._owns_power:
+            await self.llm_power.close()
         for record in self._all():
             if record["status"] == "queued":
                 record.update(status="cancelled", complete=False)
@@ -1312,9 +1319,9 @@ class AnalyticsService:
                 return
             try:
                 choice = await compose(
-                    self.settings, question, facts, evidence=evidence,
+                    self.settings, question, facts, evidence=evidence, wake=False,
                     **writer_observers(self.settings, self.events, self.database, record['session_id'], turn_id,
-                                       workflow_id=record['id'], revision=record['revision']),
+                                       power=self.llm_power, workflow_id=record['id'], revision=record['revision']),
                 )
                 if not evidence.check(choice, turn_id=turn_id, data_answer=True):
                     answer.update(choice)

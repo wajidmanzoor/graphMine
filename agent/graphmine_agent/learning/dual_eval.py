@@ -6,6 +6,8 @@ Native execution and complete agent workflows are evaluated separately.
 
 from __future__ import annotations
 
+from ..llm_power import model_run_scope
+
 import argparse
 import asyncio
 import json
@@ -131,6 +133,7 @@ def freeze_inputs(root, destination, *, split="validation"):
     return {"rows": len(rows), "stages": dict(Counter(row["schema"] for row in rows))}
 
 
+@model_run_scope
 async def evaluate(
     settings, root, manifest, output, *, planner, analyst, base_url, key, concurrency=2
 ):

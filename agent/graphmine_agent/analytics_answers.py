@@ -363,13 +363,14 @@ async def _callback(callback, **values):
 
 
 async def compose_sources(settings, question, evidence, *, data_answer=False, first=None,
-                          default_ids=None, on_call=None, on_start=None):
+                          default_ids=None, on_call=None, on_start=None, on_power=None, power=None, wake=True):
     """Check a draft, retry once, then return code-rendered evidence.
 
     With no first draft the Analyst has two attempts. Router replies already
     consumed the first attempt, so repair adds at most one model request.
     """
     from .accounts import model_post
+    from .llm_power import power_notice, power_request
     schema = answer_schema(evidence, data_answer=data_answer)
     # Qwen's deployed grammar engine cannot compile uniqueItems. The complete
     # schema still validates its output locally, including duplicate citations.
@@ -415,55 +416,57 @@ async def compose_sources(settings, question, evidence, *, data_answer=False, fi
             },
         },
     }
-    for attempt in range(1 if first is not None else 2):
-        if errors:
-            request['messages'] = request['messages'][:2] + [{'role': 'user', 'content':
-                'The previous answer failed verification. Use only source placeholders and matching source_ids. ' + ' '.join(errors)}]
-        await _callback(on_start)
-        started, body, data, outcome, error = time.monotonic(), None, None, 'interrupted', None
-        try:
-            async with httpx.AsyncClient(base_url=settings.llm_base_url,
-                    headers={'Authorization': f'Bearer {settings.llm_api_key}'}, timeout=httpx.Timeout(90, connect=5)) as client:
-                response = await model_post(client, '/chat/completions', json=request)
+    with power_notice(on_power):
+        async with power_request(settings, registry=power, wake=wake):
+            for attempt in range(1 if first is not None else 2):
+                if errors:
+                    request['messages'] = request['messages'][:2] + [{'role': 'user', 'content':
+                        'The previous answer failed verification. Use only source placeholders and matching source_ids. ' + ' '.join(errors)}]
+                await _callback(on_start)
+                started, body, data, outcome, error = time.monotonic(), None, None, 'interrupted', None
                 try:
-                    body = response.json()
-                except ValueError:
-                    if response.is_success:
-                        raise
-                response.raise_for_status()
-            choice = body['choices'][0]
-            if choice.get('finish_reason') == 'length':
-                raise ValueError('The answer was truncated.')
-            data = json.loads(choice['message']['content'])
-            jsonschema.Draft202012Validator(schema).validate(data)
-            answer = evidence.render(evidence.answer(data['text'], data['source_ids']), data_answer=data_answer)
-            errors = evidence.check(answer, turn_id=evidence.turn_id, data_answer=data_answer)
-            if errors:
-                raise ValueError(' '.join(errors))
-            outcome = 'ok'
-            return {**answer, 'source': 'model', 'grounding': {'checked': True, 'attempts': attempt + 1 + (first is not None), 'fallback': False}}
-        except (ValueError, KeyError, IndexError, TypeError, jsonschema.ValidationError) as exc:
-            outcome, error = 'grounding_failed', str(exc)[:1000]
-            errors = [error]
-        except Exception as exc:
-            outcome, error = 'failed', f'{type(exc).__name__}: {exc}'[:1000]
-            break  # An unavailable service is not a factual correction attempt.
-        finally:
-            fallback['grounding']['attempts'] = attempt + 1 + (first is not None)
-            await _callback(on_call, request=deepcopy(request), response=body, output=data if outcome == 'ok' else None,
-                            outcome=outcome, seconds=time.monotonic() - started, error=error,
-                            target_schema=schema, output_schema=schema)
-    return fallback
+                    async with httpx.AsyncClient(base_url=settings.llm_base_url,
+                            headers={'Authorization': f'Bearer {settings.llm_api_key}'}, timeout=httpx.Timeout(90, connect=5)) as client:
+                        response = await model_post(client, '/chat/completions', json=request)
+                        try:
+                            body = response.json()
+                        except ValueError:
+                            if response.is_success:
+                                raise
+                        response.raise_for_status()
+                    choice = body['choices'][0]
+                    if choice.get('finish_reason') == 'length':
+                        raise ValueError('The answer was truncated.')
+                    data = json.loads(choice['message']['content'])
+                    jsonschema.Draft202012Validator(schema).validate(data)
+                    answer = evidence.render(evidence.answer(data['text'], data['source_ids']), data_answer=data_answer)
+                    errors = evidence.check(answer, turn_id=evidence.turn_id, data_answer=data_answer)
+                    if errors:
+                        raise ValueError(' '.join(errors))
+                    outcome = 'ok'
+                    return {**answer, 'source': 'model', 'grounding': {'checked': True, 'attempts': attempt + 1 + (first is not None), 'fallback': False}}
+                except (ValueError, KeyError, IndexError, TypeError, jsonschema.ValidationError) as exc:
+                    outcome, error = 'grounding_failed', str(exc)[:1000]
+                    errors = [error]
+                except Exception as exc:
+                    outcome, error = 'failed', f'{type(exc).__name__}: {exc}'[:1000]
+                    break  # An unavailable service is not a factual correction attempt.
+                finally:
+                    fallback['grounding']['attempts'] = attempt + 1 + (first is not None)
+                    await _callback(on_call, request=deepcopy(request), response=body, output=data if outcome == 'ok' else None,
+                                    outcome=outcome, seconds=time.monotonic() - started, error=error,
+                                    target_schema=schema, output_schema=schema)
+            return fallback
 
 
-async def compose(settings, question, facts, *, on_call=None, on_start=None, evidence=None):
+async def compose(settings, question, facts, *, on_call=None, on_start=None, on_power=None, power=None, wake=True, evidence=None):
     evidence = evidence or Evidence('composition').record('build_facts', fact_sources(facts, workflow_id='current', revision=1))
     answer = await compose_sources(settings, question, evidence, data_answer=True,
-        default_ids=default_fact_ids(facts), on_call=on_call, on_start=on_start)
+        default_ids=default_fact_ids(facts), on_call=on_call, on_start=on_start, on_power=on_power, power=power, wake=wake)
     return {**answer, 'lead': '', 'fact_ids': [row['id'] for row in answer['citations']]}
 
 
-def writer_observers(settings, events, database, session_id, turn_id, **context):
+def writer_observers(settings, events, database, session_id, turn_id, *, power=None, **context):
     """One activity/capture entry per actual attempt, including a failed retry."""
     call = {}
     async def on_start():
@@ -471,6 +474,10 @@ def writer_observers(settings, events, database, session_id, turn_id, **context)
         call.update(turn_id=turn_id, call_id=str(uuid4()), stage='answer',
                     model=settings.analytics_answer_model or settings.llm_model, **context)
         await events.publish(session_id, 'workflow.model_call', dict(call))
+    async def on_power(state):
+        await events.publish(session_id, 'workflow.planning',
+            {'turn_id': turn_id, 'stage': 'answer', 'status': 'waking' if state == 'waking' else 'running',
+             'message': 'Waking the model…' if state == 'waking' else 'The model is ready.', **context})
     async def on_call(**observation):
         if database.capture:
             database.capture.model_call(session_id, stage='answer', turn_id=turn_id,
@@ -486,4 +493,4 @@ def writer_observers(settings, events, database, session_id, turn_id, **context)
             await events.publish(session_id, 'workflow.reasoning', {**call, 'text': reasoning[:40000]})
         await events.publish(session_id, 'workflow.diagnostics', {**call, 'outcome': observation['outcome'],
             'seconds': round(observation['seconds'], 3), 'usage': response.get('usage'), 'finish_reason': choice.get('finish_reason')})
-    return {'on_start': on_start, 'on_call': on_call}
+    return {'on_start': on_start, 'on_call': on_call, 'on_power': on_power, 'power': power}

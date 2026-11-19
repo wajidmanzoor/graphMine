@@ -23,6 +23,7 @@ from xml.etree import ElementTree
 ROOT = Path(__file__).resolve().parents[1]
 BACKEND = [
     "test_api_contracts",
+    "test_llm_power", "test_llm_power_api", "test_llm_power_integration",
     "test_studio_exchange",
     "test_projects",
     "test_connectors",

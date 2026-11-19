@@ -13,6 +13,8 @@ from pydantic import BaseModel
 
 from .config import Settings
 from .history import HistoryStore
+from .llm_errors import LLMError
+from .llm_power import get_registry
 from .models import (
     ExecutionPlan,
     GroundedNarrative,
@@ -121,10 +123,6 @@ EXPANDED_PLANNER_SYSTEM_PROMPT = PLANNER_SYSTEM_PROMPT.replace(
 EXPANDED_ROUTING_SYSTEM_PROMPT = ROUTING_SYSTEM_PROMPT.replace(
     _LEGACY_WEIGHT_RULE, _EXPANDED_PROFILE_RULES
 )
-
-
-class LLMError(RuntimeError):
-    pass
 
 
 def constrain_plan_schema(
@@ -344,9 +342,11 @@ def decoder_schema(output_schema):
 class OpenAICompatibleModel:
     """One loaded Qwen model with separate planner and analyst skills."""
 
-    def __init__(self, settings: Settings, history: HistoryStore | None = None):
+    def __init__(self, settings: Settings, history: HistoryStore | None = None, *, power=None):
         self.settings = settings
         self.history = history
+        self.power = power or get_registry(settings)
+        self._owns_power = power is None and not self.power.shared
         self.routing_contract_version = settings.routing_contract_version
         self._route_client = (
             httpx.AsyncClient(
@@ -367,6 +367,8 @@ class OpenAICompatibleModel:
         await self._client.aclose()
         if self._route_client:
             await self._route_client.aclose()
+        if self._owns_power:
+            await self.power.close()
 
     async def available(self) -> bool:
         try:
@@ -432,12 +434,13 @@ class OpenAICompatibleModel:
         try:
             from .accounts import model_post
 
-            response = await model_post(
-                self._route_client,
-                "/route",
-                json=request,
-                max_tokens=self.settings.llm_route_max_tokens,
-            )
+            async with self.power.for_url(self.settings.llm_route_base_url).request():
+                response = await model_post(
+                    self._route_client,
+                    "/route",
+                    json=request,
+                    max_tokens=self.settings.llm_route_max_tokens,
+                )
             response.raise_for_status()
             data = response.json()
             self._check_route_identity(
@@ -475,6 +478,7 @@ class OpenAICompatibleModel:
         user_payload: dict[str, Any],
         conversation: list[dict[str, Any]] | None = None,
         _repair: bool = False,
+        wake: bool = True,
     ) -> T:
         contract = user_payload.get("routing_context", {}).get(
             "contract_version", "legacy-20"
@@ -570,93 +574,95 @@ class OpenAICompatibleModel:
                 "llm.request",
                 {"call_id": call_id, "mode": mode.value, "request": request},
             )
-        for attempt in range(2):
-            started = time.monotonic()
-            try:
-                from .accounts import model_post
+        async with self.power.for_url(self.settings.llm_base_url).request(wake=wake):
+            for attempt in range(2):
+                started = time.monotonic()
+                try:
+                    from .accounts import model_post
 
-                response = await model_post(
-                    self._client, "/chat/completions", json=request
-                )
-                if self.history:
-                    self.history.current(
-                        "llm.response",
-                        {
-                            "call_id": call_id,
-                            "attempt": attempt + 1,
-                            "status_code": response.status_code,
-                            "elapsed_seconds": time.monotonic() - started,
-                            "body": response.text,
-                        },
+                    response = await model_post(
+                        self._client, "/chat/completions", json=request
                     )
-                response.raise_for_status()
-                break
-            except httpx.TransportError as error:
-                if self.history:
-                    self.history.current(
-                        "llm.transport_error",
-                        {
-                            "call_id": call_id,
-                            "attempt": attempt + 1,
-                            "elapsed_seconds": time.monotonic() - started,
-                            "type": type(error).__name__,
-                            "message": str(error),
-                        },
+                    if self.history:
+                        self.history.current(
+                            "llm.response",
+                            {
+                                "call_id": call_id,
+                                "attempt": attempt + 1,
+                                "status_code": response.status_code,
+                                "elapsed_seconds": time.monotonic() - started,
+                                "body": response.text,
+                            },
+                        )
+                    response.raise_for_status()
+                    break
+                except httpx.TransportError as error:
+                    if self.history:
+                        self.history.current(
+                            "llm.transport_error",
+                            {
+                                "call_id": call_id,
+                                "attempt": attempt + 1,
+                                "elapsed_seconds": time.monotonic() - started,
+                                "type": type(error).__name__,
+                                "message": str(error),
+                            },
+                        )
+                    if attempt == 0:
+                        await asyncio.sleep(0.25)
+                        continue
+                    raise LLMError(
+                        "local LLM request failed after retry "
+                        f"({type(error).__name__}): {error}"
+                    ) from error
+                except httpx.HTTPError as error:
+                    raise LLMError(
+                        f"local LLM request failed ({type(error).__name__}): {error}"
+                    ) from error
+            if response is None:  # pragma: no cover - loop always returns or raises
+                raise LLMError("local LLM request failed without a response")
+            try:
+                body = response.json()
+                content = body["choices"][0]["message"]["content"]
+                if not content and body["choices"][0].get("finish_reason") == "length":
+                    raise ValueError(
+                        "The language model reached its completion-token limit without returning a structured answer."
                     )
-                if attempt == 0:
-                    await asyncio.sleep(0.25)
-                    continue
+                if isinstance(content, list):
+                    content = "".join(
+                        str(item.get("text", "")) if isinstance(item, dict) else str(item)
+                        for item in content
+                    )
+                content = re.sub(
+                    r"<think>.*?</think>", "", str(content), flags=re.DOTALL
+                ).strip()
+                return schema.model_validate_json(content)
+            except (
+                KeyError,
+                IndexError,
+                ValueError,
+            ) as error:
+                if not _repair:
+                    if self.history:
+                        self.history.current(
+                            "llm.repair",
+                            {
+                                "call_id": call_id,
+                                "reason": type(error).__name__,
+                                "schema": schema.__name__,
+                            },
+                        )
+                    return await self.generate(
+                        mode=mode,
+                        schema=schema,
+                        user_payload=user_payload,
+                        conversation=conversation,
+                        _repair=True,
+                        wake=wake,
+                    )
                 raise LLMError(
-                    "local LLM request failed after retry "
-                    f"({type(error).__name__}): {error}"
+                    f"local LLM response was invalid ({type(error).__name__}): {error}"
                 ) from error
-            except httpx.HTTPError as error:
-                raise LLMError(
-                    f"local LLM request failed ({type(error).__name__}): {error}"
-                ) from error
-        if response is None:  # pragma: no cover - loop always returns or raises
-            raise LLMError("local LLM request failed without a response")
-        try:
-            body = response.json()
-            content = body["choices"][0]["message"]["content"]
-            if not content and body["choices"][0].get("finish_reason") == "length":
-                raise ValueError(
-                    "The language model reached its completion-token limit without returning a structured answer."
-                )
-            if isinstance(content, list):
-                content = "".join(
-                    str(item.get("text", "")) if isinstance(item, dict) else str(item)
-                    for item in content
-                )
-            content = re.sub(
-                r"<think>.*?</think>", "", str(content), flags=re.DOTALL
-            ).strip()
-            return schema.model_validate_json(content)
-        except (
-            KeyError,
-            IndexError,
-            ValueError,
-        ) as error:
-            if not _repair:
-                if self.history:
-                    self.history.current(
-                        "llm.repair",
-                        {
-                            "call_id": call_id,
-                            "reason": type(error).__name__,
-                            "schema": schema.__name__,
-                        },
-                    )
-                return await self.generate(
-                    mode=mode,
-                    schema=schema,
-                    user_payload=user_payload,
-                    conversation=conversation,
-                    _repair=True,
-                )
-            raise LLMError(
-                f"local LLM response was invalid ({type(error).__name__}): {error}"
-            ) from error
 
 
 class RuleBasedModel:
@@ -715,6 +721,7 @@ class RuleBasedModel:
         schema: type[T],
         user_payload: dict[str, Any],
         conversation: list[dict[str, Any]] | None = None,
+        wake: bool = True,
     ) -> T:
         if schema is TurnDecision:
             message = str(user_payload.get("message", ""))

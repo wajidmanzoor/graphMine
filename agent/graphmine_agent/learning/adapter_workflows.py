@@ -8,6 +8,8 @@ the explicit final-holdout mode consumes it for the frozen candidate.
 
 from __future__ import annotations
 
+from ..llm_power import model_run_scope
+
 import argparse
 import asyncio
 import fcntl
@@ -208,6 +210,7 @@ def embedded_client(router, arm):
     return client_context
 
 
+@model_run_scope
 async def evaluate(
     suite,
     output,
