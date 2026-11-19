@@ -95,5 +95,6 @@ agent requires the pre-upgrade database snapshot; older agents reject schema 12.
 
 [Phase 1 browser evidence](../validation/admin-console/phase-1/README.md) includes the
 Users and Activity pages, all dialogs, support view, mobile layout, and access denial.
-The supplied design link currently presents security verification to the automated
-browser, so artboard comparison remains outstanding.
+The local `GraphMine Admin Console.html` supplied by the user provides all twelve
+artboards. Reference captures and implementation images are shown side by side
+in the phase evidence, with actual measurements kept separate from design examples.

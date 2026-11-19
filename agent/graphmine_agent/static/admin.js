@@ -32,6 +32,20 @@
   const details = entries => el("dl", {class: "details"}, entries.flatMap(([name, value]) => [el("dt", {}, name), el("dd", {}, value ?? "Not available yet")]));
   const state = {user: null, users: null, route: null, revision: 0, timer: null, supportTimer: null, now: null};
   const routes = new Map();
+  const iconPaths = {
+    overview: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z",
+    health: "M2 12h5l3-8 4 16 3-8h5", activity: "M4 5h16 M4 12h16 M4 19h11",
+    usage: "M3 21h18 M6 18V9 M12 18V3 M18 18V12", performance: "M3 17a9 9 0 1 1 18 0 M12 15l5-7",
+    users: "M16 21v-3a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v3 M16 4a4 4 0 0 1 0 8 M22 21v-3a4 4 0 0 0-3-4 M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
+    jobs: "M3 4h18v6H3z M3 14h18v6H3z M7 7h1 M7 17h1",
+    model: "M5 6h14v15H5z M9 6V3h6v3 M9 11h6 M9 15h6", data: "M3 5c0-4 18-4 18 0s-18 4-18 0 M3 5v14c0 4 18 4 18 0V5 M3 12c0 4 18 4 18 0",
+    capacity: "M5 2v6 M5 12v10 M2 8h6v4H2z M12 2v12 M12 18v4 M9 14h6v4H9z M19 2v3 M19 9v13 M16 5h6v4h-6z",
+  };
+  function navIcon(key) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"), path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    svg.setAttribute("viewBox", "0 0 24 24"); svg.setAttribute("aria-hidden", "true"); svg.classList.add("nav-icon");
+    path.setAttribute("d", iconPaths[key]); svg.append(path); return svg;
+  }
   const groups = [
     ["Monitor", [["overview", "Overview", "◫"], ["health", "Health", "♡"], ["activity", "Activity", "≋"], ["usage", "Usage analytics", "▥"], ["performance", "Performance", "↗"]]],
     ["Manage", [["users", "Users", "♙"], ["jobs", "Jobs & queue", "☷"], ["model", "Model", "◇"], ["data", "Data & storage", "▤"]]],
@@ -55,12 +69,15 @@
     } catch (error) { notice(error.message, true); }
   }
   function dialog(title, drawer = false) {
+    if (drawer) for (const previous of document.querySelectorAll("dialog.drawer")) previous.close();
     const node = el("dialog", {class: drawer ? "drawer" : "", "aria-label": title});
+    const panel = drawer && $("#page-content .panel-layout");
+    if (panel) { node.classList.add("inline-panel"); panel.classList.add("has-panel"); }
     const close = button("×", () => node.close(), "quiet close"); close.setAttribute("aria-label", "Close");
     node.append(el("div", {class: "dialog-head"}, el("h2", {}, title), close));
-    node.addEventListener("close", () => { for (const input of node.querySelectorAll("input")) input.value = ""; node.replaceChildren(); node.remove(); });
-    $("#dialog-root").append(node);
-    return {node, open: () => node.showModal(), close: () => node.close()};
+    node.addEventListener("close", () => { if (panel) panel.classList.remove("has-panel"); for (const input of node.querySelectorAll("input")) input.value = ""; node.replaceChildren(); node.remove(); });
+    (panel || $("#dialog-root")).append(node);
+    return {node, open: () => panel ? node.show() : node.showModal(), close: () => node.close()};
   }
   function footer(d, submit, cancelText = "Cancel") { return el("div", {class: "dialog-footer"}, button(cancelText, d.close), submit); }
   function studioNotice(result) {
@@ -73,7 +90,7 @@
     const copy = button("Copy password", event => action(event.currentTarget, message, async () => { await navigator.clipboard.writeText(password); message.textContent = "Copied"; }));
     d.node.append(message, el("div", {class: "dialog-footer"}, copy, button("Done", d.close, "primary"))); d.open();
   }
-  function userFields(user = {}, defaults = {}) {
+  function userFields(user = {}, defaults = {}, roleCards = false) {
     const name = el("input", {value: user.username || "", required: true, minlength: 3, maxlength: 64, autocomplete: "off", pattern: "[a-z0-9][a-z0-9_.-]{2,63}"});
     const role = el("select", {}, option("user", "Member"), option("admin", "Administrator")); role.value = user.role || "user";
     const tokens = el("input", {type: "number", min: 0, max: state.users.server_token_limit, step: 1, value: user.daily_token_limit ?? defaults.daily_token_limit ?? ""});
@@ -81,11 +98,12 @@
     const graphmine = check("GraphMine", user.graphmine_access ?? true), studio = check("Dataset Studio", Boolean(user.studio_access));
     const explanation = hint(role.value === "admin" ? "Administrators manage users, services, and server settings." : "Members use GraphMine with their assigned allowances.");
     role.addEventListener("change", () => { explanation.textContent = role.value === "admin" ? "Administrators manage users, services, and server settings." : "Members use GraphMine with their assigned allowances."; });
-    const nodes = [field("Username", name), field("Role", role), explanation, el("div", {class: "field-row"}, field("Daily tokens", tokens, "Blank uses the new-user default."), field("Storage limit (bytes)", storage, "Blank uses the new-user default.")), el("p", {class: "form-heading"}, "Access"), graphmine.label, studio.label];
+    const choices = el("fieldset", {class: "choice-group"}, el("legend", {}, "Role"), [["user", "Member", "Uses GraphMine with their own daily limits."], ["admin", "Administrator", "Can open this console and change users, limits and settings."]].map(([value, title, text]) => el("label", {class: "choice-card"}, el("input", {type: "radio", name: "new-user-role", value, checked: value === role.value, onchange: () => { role.value = value; }}), el("span", {}, el("strong", {}, title), hint(text)))));
+    const nodes = [field("Username", name), roleCards ? choices : field("Role", role), roleCards ? null : explanation, el("div", {class: "field-row"}, field("Daily tokens", tokens, "Blank uses the new-user default."), field("Storage limit (bytes)", storage, "Blank uses the new-user default.")), el("p", {class: "form-heading"}, "Access"), graphmine.label, studio.label].filter(Boolean);
     return {nodes, values: () => ({username: name.value, role: role.value, daily_token_limit: tokens.value === "" ? null : Number(tokens.value), storage_limit: storage.value === "" ? null : Number(storage.value), graphmine_access: graphmine.input.checked, studio_access: studio.input.checked})};
   }
   function addUser() {
-    const d = dialog("Add user"), form = el("form"), fields = userFields({}, state.users.defaults);
+    const d = dialog("Add user"), form = el("form"), fields = userFields({}, state.users.defaults, true);
     const password = el("input", {type: "password", minlength: 12, maxlength: 128, autocomplete: "new-password", placeholder: "Generate on create"});
     const generate = button("Generate", () => { const raw = crypto.getRandomValues(new Uint8Array(20)); password.value = Array.from(raw, x => x.toString(16).padStart(2, "0")).join(""); password.type = "text"; });
     const must = check("Must change password at first sign-in", true), message = el("p", {class: "form-notice", role: "status"});
@@ -108,6 +126,7 @@
   }
   function openActivity(user) { for (const node of $("#dialog-root").querySelectorAll("dialog")) node.close(); location.hash = `activity?user_id=${encodeURIComponent(user.id)}`; }
   function editUser(user) {
+    notice();
     const d = dialog(user.username, true), form = el("form"), fields = userFields(user, state.users.defaults);
     const message = el("p", {class: "form-notice", role: "status"}), submit = el("button", {type: "submit", class: "btn primary"}, "Save changes");
     d.node.append(details([["Created", stamp(user.created_at)], ["Created by", user.created_by || "Not available yet · not recorded"], ["Last sign-in", stamp(user.last_sign_in)], ["Failed sign-ins", n(user.failed_sign_ins)]]));
@@ -128,9 +147,10 @@
     try { preview = await api(`/api/admin/users/${encodeURIComponent(user.username)}/delete-preview`); }
     catch (error) { notice(error.message, true); return; }
     const d = dialog(`Delete ${user.username}`), form = el("form"), mode = el("select", {}, option("transfer", `Move it to ${state.user.username}`), option("erase", "Erase it permanently"));
+    const modes = el("fieldset", {class: "choice-group"}, el("legend", {}, "What happens to their data?"), [["transfer", `Move it to ${state.user.username}`, "Conversations and files stay available to you."], ["erase", "Erase it", "Permanently deleted. This cannot be undone."]].map(([value, title, text]) => el("label", {class: "choice-card"}, el("input", {type: "radio", name: "delete-data", value, checked: value === "transfer", onchange: () => { mode.value = value; }}), el("span", {}, el("strong", {}, title), hint(text)))));
     const name = el("input", {required: true, autocomplete: "off"}), message = el("p", {class: "form-notice", role: "status"});
     const submit = el("button", {class: "btn danger primary", type: "submit"}, "Delete user");
-    form.append(hint("Disable keeps the account and all its work. Deleting removes the account and signs out every device."), details([["Conversations", n(preview.conversations)], ["Saved analyses", n(preview.saved_analyses)], ["Uploaded files", `${n(preview.uploaded_files)} · ${bytes(preview.uploaded_bytes)}`], ["Project shares", n(preview.project_shares)], ["Total stored", bytes(preview.storage.stored)]]), field("What happens to their data?", mode), field(`Type ${user.username} to confirm`, name), message, footer(d, submit));
+    form.append(hint("Disable keeps the account and all its work. Deleting removes the account and signs out every device."), details([["Conversations", n(preview.conversations)], ["Saved analyses", n(preview.saved_analyses)], ["Uploaded files", `${n(preview.uploaded_files)} · ${bytes(preview.uploaded_bytes)}`], ["Project shares", n(preview.project_shares)], ["Total stored", bytes(preview.storage.stored)]]), modes, field(`Type ${user.username} to confirm`, name), message, footer(d, submit));
     name.addEventListener("input", () => name.setCustomValidity(""));
     form.addEventListener("submit", event => { event.preventDefault(); if (name.value !== user.username) { name.setCustomValidity("Type the username exactly."); name.reportValidity(); return; }
       action(submit, message, async () => {
@@ -142,7 +162,7 @@
     d.node.append(form); d.open();
   }
   function userRow(user) {
-    const name = el("div", {}, button(user.username, () => editUser(user), "quiet"), user.id === state.user.id ? badge("you") : null, el("span", {class: "small"}, `Created ${stamp(user.created_at)}`));
+    const name = el("div", {}, button(user.username, () => editUser(user), "quiet"), user.id === state.user.id ? badge("you") : null, el("span", {class: "small"}, `Created ${new Date(user.created_at * 1000).toLocaleDateString([], {month: "short", day: "numeric"})}`));
     const meter = el("div", {}, `${n(user.quota.tokens_used)} of ${n(user.quota.token_limit)}`, el("progress", {value: user.quota.tokens_used, max: Math.max(user.quota.token_limit, 1), class: user.quota.tokens_used > user.quota.token_limit * .7 ? "high" : "", "aria-label": `${user.username} token allowance`}));
     const message = el("span", {class: "small", role: "status"});
     const menu = el("details", {class: "row-menu"}, el("summary", {"aria-label": `Actions for ${user.username}`}, "⋯"));
@@ -186,7 +206,7 @@
     state.renderUsers = render;
     search.addEventListener("input", render);
     const head = heading("Users", "", button("Export CSV", () => download("/api/admin/users/export", "graphmine-users.csv")), button("+ Add user", addUser, "primary")); head.querySelector(".subtitle").replaceWith(subtitle);
-    container.replaceChildren(head, pending, el("div", {class: "toolbar"}, search), chips, list,
+    container.replaceChildren(head, pending, el("div", {class: "toolbar user-filters"}, search, chips), el("div", {class: "panel-layout"}, list),
       hint(`Activity counts are recorded from ${stamp(data.recording_since)}. Earlier activity may not be available.`)); render();
   });
   async function supportDialog(conversationId) {
@@ -255,7 +275,7 @@
     let debounce; search.addEventListener("input", () => { clearTimeout(debounce); debounce = setTimeout(() => load(), 250); });
     for (const control of [user, start, end]) control.addEventListener("change", () => load());
     range.addEventListener("change", () => { custom.hidden = range.value !== "custom"; load(); });
-    container.replaceChildren(heading("Activity", "A record of questions, calculations, sign-ins, and every administrative change.", button("Export CSV", () => download(`/api/admin/activity/export?${query()}`, "graphmine-activity.csv"))), el("div", {class: "toolbar"}, search, user, range, custom), chips, rows, el("div", {class: "bottom-actions"}, more)); await load();
+    container.replaceChildren(heading("Activity", "A record of questions, calculations, sign-ins, and every administrative change.", button("Export CSV", () => download(`/api/admin/activity/export?${query()}`, "graphmine-activity.csv"))), el("div", {class: "toolbar"}, search, user, range, custom), chips, el("div", {class: "panel-layout"}, rows), el("div", {class: "bottom-actions"}, more)); await load();
   });
   async function badges() {
     try {
@@ -264,6 +284,7 @@
     } catch (_) { /* The page retains its last measured values during a failed refresh. */ }
   }
   async function route() {
+    for (const node of document.querySelectorAll("dialog.drawer")) node.close();
     clearInterval(state.timer); clearInterval(state.supportTimer);
     const revision = ++state.revision, [name, search = ""] = location.hash.slice(1).split("?");
     state.route = name || "overview"; state.renderUsers = null; notice();
@@ -290,7 +311,7 @@
     try {
       const me = await api("/api/auth/me"); if (me.user.role !== "admin" || me.user.must_change_password) { showAccess(); return; }
       state.user = me.user; $("#admin-identity").textContent = `${me.user.username} · Administrator`;
-      $("#admin-navigation").replaceChildren(...groups.flatMap(([group, items]) => [el("p", {class: "nav-group"}, group), ...items.map(([key, title, icon]) => el("a", {class: "nav-item", href: `#${key}`, "data-route": key}, el("span", {class: "nav-icon", "aria-hidden": "true"}, icon), title, ["health", "users", "jobs"].includes(key) ? el("span", {class: "nav-count", "data-badge": key}, "—") : null))]));
+      $("#admin-navigation").replaceChildren(...groups.flatMap(([group, items]) => [el("p", {class: "nav-group"}, group), ...items.map(([key, title, icon]) => el("a", {class: "nav-item", href: `#${key}`, "data-route": key}, navIcon(key), title, ["health", "users", "jobs"].includes(key) ? el("span", {class: "nav-count", "data-badge": key}, "—") : null))]));
       $("#access-message").hidden = true; $("#admin-layout").hidden = false;
       window.addEventListener("hashchange", route); await route(); await badges(); setInterval(badges, 30000);
     } catch (_) { showAccess(); }

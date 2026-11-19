@@ -9,8 +9,8 @@
   --danger:#a52e26;
   color:var(--ink);
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-size:16px;
-  background:var(--soft);
+  font-size:14px;
+  background:#fffdf7;
 }
 * {
   box-sizing:border-box;
@@ -57,13 +57,13 @@ button:disabled {
   top:10px;
 }
 .admin-header {
-  height:76px;
+  height:64px;
   border-bottom:1px solid var(--line);
   display:flex;
   align-items:center;
   gap:16px;
   background:white;
-  padding:0 28px;
+  padding:0 24px;
   position:sticky;
   top:0;
   z-index:10;
@@ -72,51 +72,51 @@ button:disabled {
   display:flex;
   align-items:center;
   gap:10px;
-  font-size:1.4rem;
-  font-weight:750;
+  font-size:18px;
+  font-weight:700;
   letter-spacing:-.04em;
   text-decoration:none;
 }
 .brand svg {
-  width:31px;
-  height:31px;
-  fill:var(--accent);
+  width:26px;
+  height:26px;
+  fill:none;
   stroke:var(--accent);
   stroke-width:1.7;
 }
 .admin-badge {
-  padding:5px 10px;
+  padding:3px 10px;
   background:var(--accent);
   color:white;
-  border-radius:5px;
-  font-size:.8rem;
+  border-radius:99px;
+  font-size:12px;
   font-weight:650;
 }
 .back-link {
   font-size:.9rem;
   text-decoration:none;
-  margin-left:22px;
+  margin-left:auto;
   color:var(--muted);
 }
 #admin-identity {
-  margin-left:auto;
+  margin-left:0;
   font-size:.9rem;
   color:var(--muted);
 }
 .admin-layout {
   display:grid;
   grid-template-columns:232px minmax(0,1fr);
-  min-height:calc(100vh - 76px);
+  min-height:calc(100vh - 64px);
 }
 .sidebar {
-  background:white;
+  background:#edf5f0;
   border-right:1px solid var(--line);
-  padding:28px 16px;
+  padding:26px 12px;
   display:flex;
   flex-direction:column;
   position:sticky;
-  top:76px;
-  max-height:calc(100vh - 76px);
+  top:64px;
+  max-height:calc(100vh - 64px);
   overflow:auto;
 }
 .nav-group {
@@ -133,12 +133,13 @@ button:disabled {
   display:flex;
   align-items:center;
   gap:10px;
-  padding:11px 12px;
+  padding:9px 10px;
   border-radius:7px;
   text-decoration:none;
   color:var(--ink);
-  font-size:.9rem;
-  margin:3px 0;
+  font-size:14px;
+  font-weight:550;
+  margin:2px 0;
 }
 .nav-item:hover {
   background:var(--soft);
@@ -167,7 +168,9 @@ button:disabled {
   color:white;
 }
 .audit-note {
-  margin:40px 12px 0;
+  margin:auto 10px 0;
+  padding-top:16px;
+  border-top:1px solid var(--line);
   font-size:.8rem;
   line-height:1.6;
   color:var(--muted);
@@ -176,7 +179,7 @@ button:disabled {
   text-decoration:none;
 }
 main {
-  padding:36px clamp(20px,3vw,48px);
+  padding:28px 36px;
   min-width:0;
 }
 .access-message {
@@ -192,13 +195,13 @@ main {
   justify-content:space-between;
   gap:20px;
   align-items:flex-start;
-  margin-bottom:26px;
+  margin-bottom:18px;
 }
 h1 {
-  font-size:1.8rem;
+  font-size:28px;
   letter-spacing:-.045em;
   font-weight:700;
-  margin:0 0 8px;
+  margin:0 0 4px;
 }
 h2 {
   font-size:1.15rem;
@@ -216,7 +219,7 @@ p {
   color:var(--muted);
 }
 .subtitle {
-  font-size:.9rem;
+  font-size:14px;
   margin:0;
 }
 .hint {
@@ -234,7 +237,7 @@ p {
   border-radius:6px;
   background:white;
   color:var(--ink);
-  padding:9px 14px;
+  padding:7px 14px;
   font-size:.875rem;
   font-weight:600;
   text-decoration:none;
@@ -242,7 +245,7 @@ p {
   align-items:center;
   justify-content:center;
   gap:8px;
-  min-height:40px;
+  min-height:36px;
 }
 .btn:hover {
   background:#edf5ef;
@@ -401,8 +404,8 @@ tbody tr:hover {
   margin-top:4px;
 }
 .tag {
-  font-size:.75rem;
-  border-radius:5px;
+  font-size:12px;
+  border-radius:99px;
   padding:4px 8px;
   display:inline-block;
   background:#edf3ef;
@@ -872,3 +875,48 @@ dialog.drawer {
   font-weight:100 900;
   font-display:swap;
 }
+
+/* Layout taken from the supplied GraphMine Admin Console artboards. */
+.sidebar { height:calc(100vh - 64px); }
+.nav-group { font-weight:650; font-size:11px; }
+.nav-count { background:white; min-width:20px; padding:0 6px; }
+.nav-item[aria-current=page] .nav-count { background:white; color:var(--accent); }
+.page-heading { align-items:center; }
+.btn { border-radius:8px; font-size:13px; }
+input:not([type=checkbox]):not([type=radio]),select { min-height:36px; padding:8px 12px; font-size:13px; border-radius:8px; }
+.card { border-radius:12px; }
+th { font-size:12px; text-transform:none; letter-spacing:0; }
+td { font-size:13px; }
+.tag.admin { background:var(--accent); color:white; }
+.status { padding:3px 8px; border-radius:99px; font-weight:550; font-size:12px; background:#edf0ee; }
+.status.active-now,.status.active-today { background:#e6f4ec; color:#0d5737; }
+.status.never-signed-in { background:#fff0e5; color:#7a3f0c; }
+.status.disabled { background:#fdecea; color:#9a3128; }
+.user-filters { gap:10px; }
+.user-filters .search { flex:0 1 360px; width:360px; }
+.user-filters .chips { margin:0; }
+.chip { border-radius:8px; padding:8px 12px; font-size:13px; }
+.panel-layout { display:grid; grid-template-columns:minmax(0,1fr); gap:18px; align-items:start; }
+.panel-layout.has-panel { grid-template-columns:minmax(0,1fr) 380px; }
+dialog.inline-panel { position:sticky; top:84px; width:100%; height:auto; max-height:calc(100vh - 106px); margin:0; border:1px solid var(--line); border-radius:12px; padding:20px; box-shadow:none; min-width:0; }
+.inline-panel .details { grid-template-columns:1fr 1.5fr; gap:8px; }
+.inline-panel .dialog-footer { position:static; margin:16px 0 0; padding:0 0 16px; background:white; }
+.inline-panel .dialog-footer .primary { flex:1; }
+.inline-panel .field { margin:12px 0; }
+.inline-panel .actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.inline-panel .actions .btn { padding:7px 9px; }
+@media(max-width:1050px) { .panel-layout.has-panel { grid-template-columns:minmax(0,1fr); } dialog.inline-panel { position:fixed; inset:80px 16px auto auto; width:min(420px,calc(100vw - 32px)); max-height:calc(100dvh - 100px); z-index:30; box-shadow:0 16px 60px #17332933; } }
+@media(max-width:760px) { .sidebar { height:auto; } main { padding:24px 16px; } .user-filters .search { width:100%; flex-basis:100%; } .user-filters .chips { flex-wrap:wrap; } .back-link { margin-left:auto; } #admin-identity { width:100%; } .admin-header { min-height:64px; height:auto; } }
+
+svg.nav-icon { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+.choice-group { border:0; padding:0; margin:16px 0; }
+.choice-group legend { font-size:12px; color:var(--muted); font-weight:550; margin-bottom:8px; }
+.choice-card { display:flex; align-items:flex-start; gap:10px; border:1px solid var(--line); border-radius:9px; padding:12px; margin-bottom:8px; font-size:14px; }
+.choice-card:has(input:checked) { border-color:var(--green); background:#f4f8f5; }
+.choice-card input { margin-top:3px; }
+.choice-card .hint { margin:2px 0 0; }
+
+.field-row > *,.field input,.field select { min-width:0; width:100%; }
+.user-cell .btn { white-space:nowrap; max-width:160px; overflow:hidden; text-overflow:ellipsis; display:block; }
+.user-filters .chip { border:1px solid var(--line); background:white; }
+.user-filters .chip[aria-pressed=true] { background:var(--accent); color:white; border-color:var(--accent); }
