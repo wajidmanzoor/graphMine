@@ -9,7 +9,8 @@ from collections.abc import Awaitable, Callable
 from contextlib import contextmanager, suppress
 from typing import Any
 
-from .database import Database
+from .database import Database, QueueCapacityError
+from . import perf
 from .execution import ExecutionError, GraphMineRunner
 from .identity import AccountError, current_principal, identity_scope
 from .models import (
@@ -110,6 +111,7 @@ class JobManager:
         self.result_handler = result_handler
         self.accounts = accounts
         self._quota_jobs = {}
+        self._perf_jobs = {}
         # SQLite owns the pending backlog. This event is only a wakeup signal,
         # so canceled jobs and pre-existing backlogs consume no in-memory queue.
         self._ready = asyncio.Event()
@@ -249,25 +251,26 @@ class JobManager:
                 "The worker stopped after a storage failure. Repair storage and restart the API before submitting more work.",
             )
         principal = current_principal.get()
-        admission = (
-            self.accounts.admit_jobs(principal.user_id, len(jobs))
-            if self.accounts and principal
-            else None
-        )
+        admission = None
         if self.accounts and principal is None:
             raise AccountError(
                 "A job requires an account owner.", "account_required", 401
             )
         try:
+            admission = self.accounts.admit_jobs(principal.user_id, len(jobs)) if self.accounts and principal else None
             self.database.admit_jobs(jobs, max_pending=self.max_pending_jobs)
-        except BaseException:
+        except BaseException as exc:
             if admission:
                 self.accounts.abort_admission(admission)
+            if isinstance(exc,QueueCapacityError) or getattr(exc, "code", None) in {"queue_full","concurrency_limit"}:
+                perf.emit("job_queue", wait_ms=0, outcome="queue_full")
             raise
         if admission:
             self._quota_jobs.update({job.id: admission for job in jobs})
         self._ready.set()
         for job in jobs:
+            if perf.enabled():
+                self._perf_jobs[job.id] = perf.identifiers()
             await self.event_bus.publish(
                 job.session_id,
                 "job.queued",
@@ -331,6 +334,14 @@ class JobManager:
                 self._active.pop(job.id, None)
 
     async def _execute(self, job: JobRecord) -> None:
+        if self.runner.settings.perf_log:
+            identifiers = {**self._perf_jobs.pop(job.id, {}), "session_id": job.session_id,
+                           "turn_id": job.turn_id, "workflow_id": job.analysis_id or job.id}
+            with perf.scope(self.runner.settings, **identifiers):
+                return await self._execute_observed(job)
+        return await self._execute_observed(job)
+
+    async def _execute_observed(self, job: JobRecord) -> None:
         if self.accounts is None:
             return await self._execute_unlimited(job)
         try:
@@ -341,11 +352,16 @@ class JobManager:
                 ):
                     await self._execute_unlimited(job)
         except AccountError as error:
+            perf.error(error, "job_queue")
+            if getattr(error, "code", None) in {"queue_time_limit", "queue_full"}:
+                perf.emit("job_queue", wait_ms=(utc_now()-job.created_at).total_seconds()*1000,
+                          outcome="queue_full" if error.code == "queue_full" else "queue_timeout")
             await self._fail_job(job, error)
         finally:
             self._finish_admission(job.id)
 
     def _finish_admission(self, job_id):
+        self._perf_jobs.pop(job_id, None)
         admission = self._quota_jobs.pop(job_id, None)
         if admission and admission not in self._quota_jobs.values():
             self.accounts.release(admission)
@@ -370,11 +386,19 @@ class JobManager:
         with history.scope(
             job.session_id, "execution", job.plan, turn_id=job.turn_id, job_id=job.id
         ):
+            perf.emit("job_queue", wait_ms=timings["queue_wait_seconds"]*1000, outcome="started")
             try:
                 await self._execute_job(job, timings)
             finally:
                 timings["total_active_seconds"] = time.monotonic() - started
                 timings["status"] = self.database.get_job(job.id).status.value
+                if perf.enabled() and "execution" in timings["stages_seconds"]:
+                    graph = self.database.get_file(job.plan.graph_id).metadata
+                    perf.emit("job_run", operation=job.plan.operation_id, device="gpu",
+                              input_vertices=getattr(graph, "vertex_count", None),
+                              input_edges=getattr(graph, "edge_count", None),
+                              duration_ms=timings["stages_seconds"]["execution"]*1000,
+                              outcome=timings["status"], peak_gpu_mb=None)
                 with history.best_effort("job.timings"):
                     history.write(workspace / "timings.json", timings)
                 history.record(job.session_id, "job.timings", timings)
@@ -497,6 +521,7 @@ class JobManager:
             await self._fail_job(job, error)
 
     async def _fail_job(self, job: JobRecord, error: Exception) -> None:
+        perf.error(error, "job_run")
         current = self.database.get_job(job.id)
         if current.status in {
             JobStatus.completed,

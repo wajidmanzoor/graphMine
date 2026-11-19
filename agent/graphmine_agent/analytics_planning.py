@@ -19,6 +19,7 @@ import jsonschema
 from pydantic import BaseModel, ConfigDict, Field
 
 from ._families import FAMILIES
+from . import perf
 from .analytics_taxonomy import (
     FAMILY_INSTRUCTION, PROBLEM_INSTRUCTION, candidate_operations,
     family_context, family_schema, problem_context, problem_schema,
@@ -802,6 +803,10 @@ class AnalyticsPlanner(AnalyticsLanes):
         }]}
 
     async def _generate(self, stage, payload, schema, catalog=None):
+        with perf.model_scope(stage):
+            return await self._generate_observed(stage, payload, schema, catalog)
+
+    async def _generate_observed(self, stage, payload, schema, catalog=None):
         if not self.settings.llm_enabled:
             raise AnalyticsError(
                 "The question planner is disabled on this server. You can build a workflow in Expert mode.",
@@ -912,6 +917,7 @@ class AnalyticsPlanner(AnalyticsLanes):
             # decision without disabling the reasoning needed for selection.
             # Reasoning tokens dominate planning latency, so routing gets its own.
             request["thinking_token_budget"] = budget
+        perf.thinking(self.settings, stage, request)
         context = self.conversation.get()
         call_id = str(uuid4())
         if context:
@@ -1037,6 +1043,7 @@ class AnalyticsPlanner(AnalyticsLanes):
             jsonschema.ValidationError,
         ) as exc:
             report.update(outcome="planner_invalid_output", error=type(exc).__name__)
+            perf.validation_failed()
             raise AnalyticsError(
                 "The question planner could not return a valid decision. Try a more specific question or use Expert mode.",
                 "planner_invalid_output",
@@ -1089,9 +1096,10 @@ class AnalyticsPlanner(AnalyticsLanes):
             str(self.settings.repository_root / "agent/domain_profiles.json")
         )
 
+    @perf.turn
     async def plan(self, session_id, body):
         session = self.analytics.database.get_session(session_id)
-        turn_id = str(body.request_id or uuid4())
+        turn_id = str(body.request_id or perf.turn_id() or uuid4())
         if body.request_id and self.analytics.database.chat_turn_exists(
             session_id, turn_id
         ):

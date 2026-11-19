@@ -7,6 +7,7 @@ import json
 import math
 import re
 import sqlite3
+from . import perf
 from collections import Counter
 from contextlib import closing
 from datetime import datetime, timezone
@@ -44,7 +45,7 @@ class ExampleReview(BaseModel):
 class ReviewedExamples:
     def __init__(self, analytics):
         self.analytics = analytics
-        with closing(sqlite3.connect(analytics.path)) as db, db:
+        with closing(perf.connect(analytics.path)) as db, db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS reviewed_examples (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, document TEXT NOT NULL)"
             )
@@ -119,7 +120,7 @@ class ReviewedExamples:
                     "Example exceeds the bounded planning context", "resource_limit"
                 )
             example["content_sha256"] = digest(example)
-            with closing(sqlite3.connect(self.analytics.path)) as db, db:
+            with closing(perf.connect(self.analytics.path)) as db, db:
                 db.execute(
                     "INSERT INTO reviewed_examples VALUES (?,?,?)",
                     (
@@ -132,7 +133,7 @@ class ReviewedExamples:
 
     def list(self, session_id):
         self.analytics.database.get_session(session_id)
-        with closing(sqlite3.connect(self.analytics.path)) as db:
+        with closing(perf.connect(self.analytics.path)) as db:
             rows = db.execute(
                 "SELECT document FROM reviewed_examples WHERE session_id=? ORDER BY id",
                 (session_id,),
@@ -141,7 +142,7 @@ class ReviewedExamples:
 
     def revoke(self, session_id, example_id):
         self.analytics.database.get_session(session_id)
-        with closing(sqlite3.connect(self.analytics.path)) as db, db:
+        with closing(perf.connect(self.analytics.path)) as db, db:
             row = db.execute(
                 "SELECT document FROM reviewed_examples WHERE id=? AND session_id=?",
                 (example_id, session_id),

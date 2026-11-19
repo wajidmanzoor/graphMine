@@ -1,0 +1,39 @@
+dataset:
+  description: Yelp reviewers linked to businesses; Review records become edges so the input has the two sides needed by biclique questions.
+  query: "MATCH (u:User)-[:WROTE]->(r:Review)-[:REVIEWS]->(b:Business) RETURN u AS source, b AS target, 'REVIEWED' AS type LIMIT 1000"
+  projection: rows
+questions:
+  - id: concept
+    text: What is a biclique?
+    weight: 1
+    expected_operations: []
+    clarification: Explain what a biclique means; do not run a calculation.
+  - id: maximal-bicliques
+    text: Find all maximal bicliques
+    weight: 2
+    expected_operations: [maximal-bicliques]
+    clarification: Find maximal bicliques, meaning complete connections between two groups, using an undirected copy of this graph.
+    sides_clarification: Use User vertices on the left and Business vertices on the right.
+  - id: maximal-biclique-counting
+    text: Count all maximal bicliques
+    weight: 2
+    expected_operations: [maximal-biclique-counting]
+    clarification: Count the maximal bicliques rather than list them, using an undirected copy of this graph.
+    sides_clarification: Use User vertices on the left and Business vertices on the right.
+  - id: community-detection
+    text: Find the communities in this network
+    weight: 2
+    expected_operations: [community-detection]
+    clarification: Find groups of users and businesses that are more connected within each group.
+    direction_clarification: Use an undirected copy for this analysis.
+  - id: densest-subgraph
+    text: Find the densest part of the graph
+    weight: 2
+    expected_operations: [densest-subgraph]
+    clarification: Find the vertex-induced subgraph with the greatest number of edges per vertex.
+    direction_clarification: Use an undirected copy for this analysis.
+  - id: centrality
+    text: Who are the most important users?
+    weight: 1
+    expected_operations: [degree-centrality, pagerank, personalized-pagerank, betweenness-centrality, closeness-centrality, eigenvector-centrality]
+    clarification: Rank users by how many connections they have, using degree centrality.

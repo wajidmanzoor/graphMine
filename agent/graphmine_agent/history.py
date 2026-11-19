@@ -303,7 +303,8 @@ class HistoryStore:
         inherited = (
             parent.get("turn_id") if parent.get("session_id") == session_id else None
         )
-        identifier = turn_id or inherited or new_id("turn")
+        from . import perf
+        identifier = turn_id or inherited or perf.turn_id() or new_id("turn")
         context = {"session_id": session_id, "turn_id": identifier}
         if job_id:
             context["job_id"] = job_id

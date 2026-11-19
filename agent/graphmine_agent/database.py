@@ -5,10 +5,10 @@ import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from threading import RLock
 from typing import Any
 
 from .history import HistoryStore
+from . import perf
 from .identity import current_principal
 from .models import (
     ConversationEvent,
@@ -60,7 +60,7 @@ class Database:
     def __init__(self, path: Path, history: HistoryStore | None = None):
         self.path = path
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._lock = RLock()
+        self._lock = perf.TimedRLock()
         self.history = history or HistoryStore(path.parent / "history")
         # Set by the runtime; tools that open the store directly capture nothing.
         self.capture = None
@@ -68,7 +68,7 @@ class Database:
 
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
-        connection = sqlite3.connect(self.path, timeout=30)
+        connection = perf.connect(self.path, timeout=30)
         try:
             connection.row_factory = sqlite3.Row
             connection.create_function("casefold", 1, lambda value: (value or "").casefold(), deterministic=True)

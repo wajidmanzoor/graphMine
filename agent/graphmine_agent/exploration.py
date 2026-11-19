@@ -345,7 +345,21 @@ def register_exploration_routes(router):
 
     @router.put("/sessions/{session_id}/exploration")
     def save(session_id: str, body: SaveExploration, request: Request):
-        return response(Exploration(request.app.state.runtime).save(session_id, body))
+        import time
+        from . import perf
+        started, outcome = time.monotonic(), "error"
+        try:
+            value = response(Exploration(request.app.state.runtime).save(session_id, body))
+            outcome = "saved"
+            return value
+        except Exception as exc:
+            perf.error(exc, "exploration_save")
+            raise
+        finally:
+            if perf.enabled():
+                perf.emit("exploration_save", session_id=session_id,
+                          payload_bytes=request.scope.get("perf_context", {}).get("request_bytes"),
+                          duration_ms=(time.monotonic()-started)*1000, outcome=outcome)
 
     @router.post("/sessions/{session_id}/exploration/overlay")
     async def overlay(session_id: str, body: ReadOverlay, request: Request):

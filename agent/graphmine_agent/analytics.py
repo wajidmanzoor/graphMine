@@ -12,6 +12,7 @@ import re
 import shutil
 import signal
 import sqlite3
+from . import perf
 import time
 from contextlib import closing, nullcontext, suppress
 from datetime import UTC, datetime, timedelta, timezone
@@ -201,7 +202,7 @@ class AnalyticsService:
         self.closed = False
         self.opened = False
         self.run_log = None
-        with closing(sqlite3.connect(self.path)) as db, db:
+        with closing(perf.connect(self.path)) as db, db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS workflows (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, document TEXT NOT NULL)"
             )
@@ -265,7 +266,7 @@ class AnalyticsService:
             self.run_log = RunLog(self.settings.backend_data_dir)
 
     def _all(self, session_id=None):
-        with closing(sqlite3.connect(self.path)) as db:
+        with closing(perf.connect(self.path)) as db:
             rows = db.execute(
                 "SELECT document FROM workflows"
                 + (" WHERE session_id=?" if session_id else ""),
@@ -282,7 +283,7 @@ class AnalyticsService:
         return self._all(session_id)
 
     def get(self, workflow_id):
-        with closing(sqlite3.connect(self.path)) as db:
+        with closing(perf.connect(self.path)) as db:
             row = db.execute(
                 "SELECT document FROM workflows WHERE id=?", (workflow_id,)
             ).fetchone()
@@ -294,7 +295,7 @@ class AnalyticsService:
 
     def _save(self, record):
         record["updated_at"] = _now()
-        with closing(sqlite3.connect(self.path)) as db, db:
+        with closing(perf.connect(self.path)) as db, db:
             db.execute(
                 "INSERT INTO workflows VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET document=excluded.document",
                 (record["id"], record["session_id"], _json(record)),
@@ -573,6 +574,7 @@ class AnalyticsService:
                     # Preflight failures have a terminal row without a start.
                     # They must remain visible even when no native kernel ran.
                     self.run_log.submit(row)
+                    perf.native_run(row)
                     continue
                 total += len(line)
                 if len(line) > self.settings.max_result_bytes + 1 or total > self.settings.max_result_bytes * 3:
@@ -659,6 +661,7 @@ class AnalyticsService:
                     except Exception:
                         row["telemetry_warnings"].append("peak_sampler_failed")
                 self.run_log.submit(row)
+                perf.native_run(row)
 
     def _capability_key(self):
         paths = [
@@ -753,6 +756,7 @@ class AnalyticsService:
             "validation": checked,
             "steps": {},
         }
+        perf.annotate(workflow_id=record["id"], turn_id=body.planning_turn_id, session_id=session_id)
         await asyncio.to_thread(self._write, self._directory(record) / "inputs.json", inputs, input_snapshot=True)
         record["preview"] = await self._preview(record, inputs)
         if body.mode == "normal" and (record["preview"] or {}).get("expensive"):
@@ -879,7 +883,7 @@ class AnalyticsService:
                 "state_conflict",
                 409,
             )
-        with closing(sqlite3.connect(self.path)) as db, db:
+        with closing(perf.connect(self.path)) as db, db:
             db.execute("DELETE FROM workflows WHERE session_id=?", (session_id,))
             db.execute(
                 "DELETE FROM reviewed_examples WHERE session_id=?", (session_id,)
@@ -1038,6 +1042,7 @@ class AnalyticsService:
     async def start(self, workflow_id, expected_hash, expected_revision):
         async with self.edit_lock:
             record = self.get(workflow_id)
+            perf.annotate(workflow_id=workflow_id, turn_id=record.get("planning_turn_id"), session_id=record["session_id"])
             if self.closed or record["status"] in ("queued", "running"):
                 raise AnalyticsError(
                     "Workflow execution is unavailable or already pending",
@@ -1054,11 +1059,15 @@ class AnalyticsService:
                     409,
                 )
             if len(self.tasks) >= self.settings.max_pending_jobs:
+                perf.emit("job_queue", wait_ms=0, outcome="queue_full")
                 raise AnalyticsError("Workflow queue is full", "queue_full", 429)
             principal = current_principal.get()
-            admission = (
-                principal.accounts.admit_jobs(principal.user_id) if principal else None
-            )
+            try:
+                admission = principal.accounts.admit_jobs(principal.user_id) if principal else None
+            except Exception as exc:
+                if getattr(exc,"code",None) in {"queue_full","concurrency_limit"}:
+                    perf.emit("job_queue",wait_ms=0,outcome="queue_full")
+                raise
             record.update(
                 status="queued",
                 approved_hash=expected_hash,
@@ -1071,7 +1080,7 @@ class AnalyticsService:
             record.pop("error", None)
             try:
                 self._save(record)
-                task = asyncio.create_task(self._execute(workflow_id, admission))
+                task = asyncio.create_task(self._execute(workflow_id, admission, queued_at=time.monotonic()))
             except BaseException:
                 if admission:
                     principal.accounts.abort_admission(admission)
@@ -1103,9 +1112,19 @@ class AnalyticsService:
                     cache[path.stem[5:]] = saved
         return cache
 
-    async def _execute(self, workflow_id, admission=None):
+    async def _execute(self, workflow_id, admission=None, *, queued_at=None):
+        if not self.settings.perf_log:
+            return await self._execute_observed(workflow_id, admission, queued_at=queued_at)
+        record = self.get(workflow_id)
+        with perf.scope(self.settings, workflow_id=workflow_id, turn_id=record.get("planning_turn_id"),
+                        session_id=record["session_id"]):
+            return await self._execute_observed(workflow_id, admission, queued_at=queued_at)
+
+    async def _execute_observed(self, workflow_id, admission=None, *, queued_at=None):
         record = self.get(workflow_id)
         directory = self._directory(record)
+        queued_at = queued_at if queued_at is not None else time.monotonic()
+        began = False
         try:
             plan = record["validation"]["plan"]
             policy, allowed_gpu_uuids = "cpu", set()
@@ -1130,6 +1149,8 @@ class AnalyticsService:
                     allowed_gpu_uuids=allowed_gpu_uuids,
                 ) as lease,
             ):
+                began = True
+                perf.emit("job_queue", wait_ms=(time.monotonic()-queued_at)*1000, outcome="started")
                 (directory / "result.json").unlink(missing_ok=True)
                 record.update(
                     status="running",
@@ -1209,6 +1230,10 @@ class AnalyticsService:
         except asyncio.CancelledError:
             record.update(status="cancelled", complete=False, finished_at=_now())
         except Exception as exc:  # noqa: BLE001 - persist terminal failures from isolated jobs
+            perf.error(exc, "job")
+            if not began and getattr(exc, "code", None) in {"queue_time_limit", "queue_timeout", "queue_full"}:
+                perf.emit("job_queue", wait_ms=(time.monotonic()-queued_at)*1000,
+                          outcome="queue_full" if exc.code == "queue_full" else "queue_timeout")
             record.update(
                 status="failed",
                 complete=False,

@@ -25,9 +25,9 @@ from functools import lru_cache
 import httpx
 
 from .identity import AccountError, Principal, current_principal
+from . import perf
 
 DAY = 86400
-MODEL_QUEUE_SECONDS = 60
 SCRYPT_N, SCRYPT_R, SCRYPT_P = 32768, 8, 3
 
 
@@ -991,6 +991,7 @@ async def _metered(client, path, payload, max_tokens):
     """
     principal = current_principal.get()
     if principal is None:
+        perf.emit("model_queue", stage=perf.stage_name(), wait_ms=0, outcome="granted")
         yield None
         return
     # Count before inference, then reserve the actual prompt plus maximum output.
@@ -998,6 +999,7 @@ async def _metered(client, path, payload, max_tokens):
     output = (max_tokens or payload.get(
         "max_completion_tokens", payload.get("max_tokens", 3072)
     )) * max(1, payload.get("n", 1))
+    queued_at = time.monotonic()
     try:
         # Wait in line briefly rather than failing when every model slot is busy.
         lease = await principal.accounts.wait_slot(
@@ -1006,14 +1008,16 @@ async def _metered(client, path, payload, max_tokens):
             principal.accounts.settings.max_model_calls,
             1,
             240,
-            MODEL_QUEUE_SECONDS,
+            principal.accounts.settings.model_queue_seconds,
         )
     except TimeoutError as error:
+        perf.emit("model_queue", stage=perf.stage_name(), wait_ms=(time.monotonic()-queued_at)*1000, outcome="timeout")
         raise AccountError(
             "The language model is busy with other people's questions. Please try again shortly.",
             "concurrency_limit",
             retry_after=5,
         ) from error
+    perf.emit("model_queue", stage=perf.stage_name(), wait_ms=(time.monotonic()-queued_at)*1000, outcome="granted")
     prompt = method = None
     try:
         prompt, method = await _prompt_tokens(client, path, payload)
@@ -1049,8 +1053,14 @@ async def _metered(client, path, payload, max_tokens):
 async def model_post(client, path, *, json, max_tokens=None):
     """Meter every real transport attempt, including repair calls and retries."""
     async with _metered(client, path, json, max_tokens) as meter:
-        async with asyncio.timeout(180):
-            response = await client.post(path, json=json)
+        with perf.transport(json) as observation:
+            async with asyncio.timeout(180):
+                response = await client.post(path, json=json)
+            if observation is not None:
+                try:
+                    perf.usage(observation, response.json())
+                except ValueError:
+                    pass
         if meter is not None:
             if not response.is_success:
                 meter["used"] = 0  # The model server rejected or failed the request.
@@ -1070,23 +1080,25 @@ async def model_stream(client, path, *, json, on_reasoning, max_tokens=None):
     """
     request = {**json, "stream": True, "stream_options": {"include_usage": True}}
     async with _metered(client, path, request, max_tokens) as meter:
-        async with asyncio.timeout(180):
-            async with client.stream("POST", path, json=request) as response:
-                if not response.is_success:
-                    if meter is not None:
-                        meter["used"] = 0
-                    await response.aread()
-                    response.raise_for_status()
-                if "text/event-stream" not in response.headers.get("content-type", ""):
-                    body = json_module.loads(await response.aread())
-                else:
-                    body = await _collect_stream(response, on_reasoning)
+        with perf.transport(request) as observation:
+            async with asyncio.timeout(180):
+                async with client.stream("POST", path, json=request) as response:
+                    if not response.is_success:
+                        if meter is not None:
+                            meter["used"] = 0
+                        await response.aread()
+                        response.raise_for_status()
+                    if "text/event-stream" not in response.headers.get("content-type", ""):
+                        body = json_module.loads(await response.aread())
+                    else:
+                        body = await _collect_stream(response, on_reasoning, observation=observation)
+            perf.usage(observation, body)
         if meter is not None:
             meter["used"] = _reported_usage(body.get("usage"))
         return body
 
 
-async def _collect_stream(response, on_reasoning):
+async def _collect_stream(response, on_reasoning, *, observation=None):
     choices, usage = {}, None
     async for line in response.aiter_lines():
         if not line.startswith("data:"):
@@ -1101,6 +1113,8 @@ async def _collect_stream(response, on_reasoning):
             collected = choices.setdefault(index, {"index": index, "message": {"content": "", "reasoning": ""},
                                                    "finish_reason": None})
             delta = choice.get("delta") or {}
+            if delta.get("content") or delta.get("reasoning_content") or delta.get("reasoning"):
+                perf.first_token(observation)
             text = delta.get("reasoning_content") or delta.get("reasoning")
             if text:
                 collected["message"]["reasoning"] += text

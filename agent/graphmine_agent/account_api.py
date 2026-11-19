@@ -14,6 +14,7 @@ from starlette.datastructures import Headers
 
 from .analytics_planning import PLANNING_DEADLINE_SECONDS
 from .identity import AccountError, current_principal, identity_scope
+from . import perf
 
 COOKIE = os.getenv("GRAPHMINE_ACCOUNT_COOKIE_NAME", "graphmine_session")
 # Request limits only backstop the work: the planner reports its own timeout
@@ -168,6 +169,7 @@ class AccountMiddleware:
                     raise AccountError(
                         "Please sign in to continue.", "unauthorized", 401
                     )
+                perf.annotate(user_id=principal.user_id)
                 if (
                     cookie_auth
                     and method not in {"GET", "HEAD"}
@@ -371,6 +373,7 @@ def register_account_routes(app):
                 body.password,
                 request.client.host if request.client else "unknown",
             )
+        perf.annotate(user_id=principal.user_id)
         response.set_cookie(
             COOKIE,
             token,

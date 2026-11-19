@@ -12,6 +12,7 @@ import httpx
 from pydantic import BaseModel
 
 from .config import Settings
+from . import perf
 from .history import HistoryStore
 from .llm_errors import LLMError
 from .llm_power import get_registry
@@ -567,6 +568,8 @@ class OpenAICompatibleModel:
                 },
             },
         }
+        perf.thinking(self.settings, "analyst" if mode == LLMMode.analyst else
+                      "route" if schema is RouteDecision else "clarify" if schema is TurnDecision else "plan", request)
         response: httpx.Response | None = None
         call_id = new_id("llm")
         if self.history:
@@ -643,6 +646,7 @@ class OpenAICompatibleModel:
                 ValueError,
             ) as error:
                 if not _repair:
+                    perf.validation_failed()
                     if self.history:
                         self.history.current(
                             "llm.repair",

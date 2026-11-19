@@ -240,6 +240,8 @@ shared calculation limits.
 [Dataset Studio](dataset-studio/README.md) is included in this repository.
 See the [development, testing, and production workflow](docs/ENVIRONMENTS.md)
 for the shared branches, isolated app environments, and deployment commands.
+The [performance testing guide](docs/PERFORMANCE_TESTING.md) covers scheduled
+benchmark/load runs, timing reports, cleanup and later capacity experiments.
 
 The [repaired algorithm guide](library/docs/repaired_algorithms.md) documents the nine repaired integrations, their exact profiles, installation, and agent JSON contracts.
 

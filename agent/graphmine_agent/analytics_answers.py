@@ -443,6 +443,7 @@ async def compose_sources(settings, question, evidence, *, data_answer=False, fi
     consumed the first attempt, so repair adds at most one model request.
     """
     from .accounts import model_post
+    from . import perf
     from .llm_power import power_notice, power_request
     schema = answer_schema(evidence, data_answer=data_answer)
     # Qwen's deployed grammar engine cannot compile uniqueItems. The complete
@@ -489,7 +490,8 @@ async def compose_sources(settings, question, evidence, *, data_answer=False, fi
             },
         },
     }
-    with power_notice(on_power):
+    perf.thinking(settings, "analyst", request)
+    with power_notice(on_power), perf.model_scope("analyst"):
         async with power_request(settings, registry=power, wake=wake):
             for attempt in range(1 if first is not None else 2):
                 if errors:
@@ -519,6 +521,7 @@ async def compose_sources(settings, question, evidence, *, data_answer=False, fi
                     outcome = 'ok'
                     return {**answer, 'source': 'model', 'grounding': {'checked': True, 'attempts': attempt + 1 + (first is not None), 'fallback': False}}
                 except (ValueError, KeyError, IndexError, TypeError, jsonschema.ValidationError) as exc:
+                    perf.validation_failed()
                     outcome, error = 'grounding_failed', str(exc)[:1000]
                     errors = [error]
                 except Exception as exc:

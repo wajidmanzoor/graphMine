@@ -45,3 +45,7 @@ agent/frontend/node_modules/
 /agent/IMPROVEMENT_PLAN.md
 /agent/README.md
 /deploy/README.md
+
+# Performance run logs and test-only credentials.
+/var/perf/
+/.venv-perf/
