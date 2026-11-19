@@ -1,0 +1,2181 @@
+{
+  "classgraphmine_1_1ExecutionResult_1a62c7744548a90a3cab42e121d1206ee3": {
+    "summary": "Create a successful execution envelope owning the output and associated metadata.",
+    "parameters": {
+      "output": "Output value to move into the result.",
+      "provenance": "Problem/backend provenance to retain.",
+      "statistics": "Timing and optional memory measurements to retain.",
+      "warnings": "Nonfatal messages to retain."
+    },
+    "returns": "An ExecutionResult for which ok() is true."
+  },
+  "classgraphmine_1_1ExecutionResult_1acebdcec1455aebba017ca3ab45b662bf": {
+    "summary": "Create an execution envelope without an output value.",
+    "parameters": {
+      "status": "Failure code and message to retain; callers should supply a non-success status.",
+      "provenance": "Provenance available for the failed attempt.",
+      "warnings": "Nonfatal messages collected before failure."
+    },
+    "returns": "An ExecutionResult for which ok() is false because no output is present.",
+    "details": [
+      "This factory does not reject a success Status; absence of a value still makes the envelope unsuccessful."
+    ]
+  },
+  "classgraphmine_1_1ExecutionResult_1a2c493e3c63c7166eadb128fed5d03360": {
+    "summary": "Check that the status is successful and an output value exists.",
+    "parameters": {},
+    "returns": "True only when status().ok() and output_.has_value() are both true."
+  },
+  "classgraphmine_1_1ExecutionResult_1a31c386c05a7c0b5ceb6b17d1f84f97f7": {
+    "summary": "Read the success/failure classification.",
+    "parameters": {},
+    "returns": "A const reference to the owned Status.",
+    "details": [
+      "The returned reference remains valid while this ExecutionResult is alive."
+    ]
+  },
+  "classgraphmine_1_1ExecutionResult_1a860d791ab62261e37778c46abdbd9f7d": {
+    "summary": "Access the immutable computed output.",
+    "parameters": {},
+    "returns": "A const reference to the owned output, borrowed from this result.",
+    "details": [
+      "Throws std::logic_error containing the status message if ok() is false.",
+      "Do not rely on a returned reference remaining valid after its owner is reassigned, moved from, or destroyed."
+    ]
+  },
+  "classgraphmine_1_1ExecutionResult_1aabd63a96a547811cc938e666997490d9": {
+    "summary": "Access the mutable computed output.",
+    "parameters": {},
+    "returns": "A mutable reference to the owned output, borrowed from this result.",
+    "details": [
+      "Throws std::logic_error containing the status message if ok() is false.",
+      "Do not rely on a returned reference remaining valid after its owner is reassigned, moved from, or destroyed."
+    ]
+  },
+  "classgraphmine_1_1ExecutionResult_1adeba8503383f6c010144d1fe701c851d": {
+    "summary": "Read the selected problem, backend, and source provenance.",
+    "parameters": {},
+    "returns": "A const reference to the owned Provenance.",
+    "details": [
+      "The returned reference remains valid while this ExecutionResult is alive."
+    ]
+  },
+  "classgraphmine_1_1ExecutionResult_1a2eaa6b12d25c62ac4f804f605abc4471": {
+    "summary": "Read recorded execution timing and optional memory measurements.",
+    "parameters": {},
+    "returns": "A const reference to the owned ExecutionStatistics; absent measurements are not inferred.",
+    "details": [
+      "The returned reference remains valid while this ExecutionResult is alive."
+    ]
+  },
+  "classgraphmine_1_1ExecutionResult_1a69b9534299e699b075c37cd93eff953c": {
+    "summary": "Read nonfatal normalization and execution messages.",
+    "parameters": {},
+    "returns": "A const reference to the owned warning vector.",
+    "details": [
+      "The returned reference remains valid while this ExecutionResult is alive."
+    ]
+  },
+  "classgraphmine_1_1ExternalId_1a4a8073aef8156b5b5a68bbec5dd897f0": {
+    "summary": "Create the numeric external identifier zero.",
+    "parameters": {},
+    "returns": "An ExternalId holding the signed integer 0."
+  },
+  "classgraphmine_1_1ExternalId_1a0c6d0e9ac244d0edec66907d6f1655b8": {
+    "summary": "Create a numeric external identifier.",
+    "parameters": {
+      "value": "Integer identifier, stored as a signed 64-bit value."
+    },
+    "returns": "An ExternalId retaining integer identity, distinct from a string with the same digits."
+  },
+  "classgraphmine_1_1ExternalId_1a99d0630e5efed51e2024acc1301d546c": {
+    "summary": "Create a numeric external identifier.",
+    "parameters": {
+      "value": "Integer identifier, stored as a signed 64-bit value."
+    },
+    "returns": "An ExternalId retaining integer identity, distinct from a string with the same digits."
+  },
+  "classgraphmine_1_1ExternalId_1ae1e250f1258788a63b3b8139d38d3b2a": {
+    "summary": "Take ownership of a string external identifier.",
+    "parameters": {
+      "value": "String value to move into the identifier."
+    },
+    "returns": "An ExternalId holding the supplied string; no numeric conversion is performed."
+  },
+  "classgraphmine_1_1ExternalId_1a5d745c80d5d98ab73a1ddb24ab02a2e9": {
+    "summary": "Copy a null-terminated string into a string external identifier.",
+    "parameters": {
+      "value": "Readable, non-null, null-terminated character sequence."
+    },
+    "returns": "An ExternalId owning a string copy. Numeric-looking text remains a string."
+  },
+  "classgraphmine_1_1ExternalId_1a2032d0863774ece5177d570f51e0f6ec": {
+    "summary": "Inspect the stored integer-or-string alternative.",
+    "parameters": {},
+    "returns": "A const reference to the internal variant, valid while this ExternalId remains alive and unchanged."
+  },
+  "classgraphmine_1_1ExternalId_1abfef7ccecc34cb7a0afd1e2adaa685db": {
+    "summary": "Render the identifier as display text.",
+    "parameters": {},
+    "returns": "Decimal text for an integer, or a copy of the stored string.",
+    "details": [
+      "This is not an identity encoding: integer 1 and string \"1\" produce the same display text. Use value(), equality, or ExternalIdHash when identity matters."
+    ]
+  },
+  "classgraphmine_1_1ExternalId_1ab895e162affd5d504a3a0123cf3564d5": {
+    "summary": "Compare identifier type and value for equality.",
+    "parameters": {
+      "lhs": "First identifier; not modified.",
+      "rhs": "Second identifier; not modified."
+    },
+    "returns": "True when the variants have identical alternatives and values."
+  },
+  "classgraphmine_1_1ExternalId_1a3e1976f7e23030e50dbd2373bfb8d03d": {
+    "summary": "Compare identifier type and value for inequality.",
+    "parameters": {
+      "lhs": "First identifier; not modified.",
+      "rhs": "Second identifier; not modified."
+    },
+    "returns": "True when the variants differ in their alternative or stored value."
+  },
+  "classgraphmine_1_1ExternalId_1a587e4cdd77be281d5621ae617816e621": {
+    "summary": "Order external identifiers with integers before strings.",
+    "parameters": {
+      "lhs": "Left identifier.",
+      "rhs": "Right identifier."
+    },
+    "returns": "True when the left identifier precedes the right: numeric comparison within integers, lexicographic comparison within strings."
+  },
+  "structgraphmine_1_1ExternalIdHash_1a4f63c864d43f4ba5b7816223226a7291": {
+    "summary": "Hash an identifier using both its stored type and value.",
+    "parameters": {
+      "id": "External vertex or edge identifier; not modified."
+    },
+    "returns": "A size_t hash suitable for unordered containers using type-preserving identifier equality.",
+    "details": [
+      "The integer and string hash paths use different salts. As with any hash, collisions remain possible."
+    ]
+  },
+  "classgraphmine_1_1PropertyValue_1a1850d55821a2d83a7cab985a77593092": {
+    "summary": "Construct a null graph-property value.",
+    "parameters": {},
+    "returns": "A PropertyValue whose active alternative is nullptr."
+  },
+  "classgraphmine_1_1PropertyValue_1af1dc4136a47e34b3569fdd807c019f11": {
+    "summary": "Construct an explicit null graph-property value.",
+    "parameters": {
+      "$1": "Null tag; no storage is borrowed."
+    },
+    "returns": "A PropertyValue whose active alternative is nullptr."
+  },
+  "classgraphmine_1_1PropertyValue_1adf2d920a2422b37da12548877e8aa784": {
+    "summary": "Construct a graph property containing a Boolean.",
+    "parameters": {
+      "value": "Value stored as a Boolean; owned strings and containers are moved into the property."
+    },
+    "returns": "A PropertyValue with the corresponding variant alternative.",
+    "details": [
+      "This constructor stores the value; it does not parse JSON or validate algorithm-specific weight rules."
+    ]
+  },
+  "classgraphmine_1_1PropertyValue_1a2a7e7db92681bdf1cf6d483a0af7229e": {
+    "summary": "Construct a graph property containing a signed 64-bit integer.",
+    "parameters": {
+      "value": "Value stored as a signed 64-bit integer; owned strings and containers are moved into the property."
+    },
+    "returns": "A PropertyValue with the corresponding variant alternative.",
+    "details": [
+      "This constructor stores the value; it does not parse JSON or validate algorithm-specific weight rules."
+    ]
+  },
+  "classgraphmine_1_1PropertyValue_1a5f4d2a0d6b664d5f3264d19be59aad20": {
+    "summary": "Construct a graph property containing a integer widened to signed 64-bit storage.",
+    "parameters": {
+      "value": "Value stored as a integer widened to signed 64-bit storage; owned strings and containers are moved into the property."
+    },
+    "returns": "A PropertyValue with the corresponding variant alternative.",
+    "details": [
+      "This constructor stores the value; it does not parse JSON or validate algorithm-specific weight rules."
+    ]
+  },
+  "classgraphmine_1_1PropertyValue_1a5ea377d0a34389d288d8286edb3c291d": {
+    "summary": "Construct a graph property containing a binary64 floating-point number.",
+    "parameters": {
+      "value": "Value stored as a binary64 floating-point number; owned strings and containers are moved into the property."
+    },
+    "returns": "A PropertyValue with the corresponding variant alternative.",
+    "details": [
+      "This constructor stores the value; it does not parse JSON or validate algorithm-specific weight rules."
+    ]
+  },
+  "classgraphmine_1_1PropertyValue_1a4ffe70f0899150e43fc0600b1285c0c6": {
+    "summary": "Construct a graph property containing a owned string.",
+    "parameters": {
+      "value": "Value stored as a owned string; owned strings and containers are moved into the property."
+    },
+    "returns": "A PropertyValue with the corresponding variant alternative.",
+    "details": [
+      "This constructor stores the value; it does not parse JSON or validate algorithm-specific weight rules."
+    ]
+  },
+  "classgraphmine_1_1PropertyValue_1a0cc52209e52f41db16bc238e85647f56": {
+    "summary": "Copy a null-terminated string into an owned graph property.",
+    "parameters": {
+      "value": "Readable, non-null, null-terminated text."
+    },
+    "returns": "A string-valued PropertyValue; text is not interpreted as a number or JSON document."
+  },
+  "classgraphmine_1_1PropertyValue_1a7c779cc6dc5e3830cd1eeb2783619b58": {
+    "summary": "Construct a graph property containing a nested array.",
+    "parameters": {
+      "value": "Value stored as a nested array; owned strings and containers are moved into the property."
+    },
+    "returns": "A PropertyValue with the corresponding variant alternative.",
+    "details": [
+      "This constructor stores the value; it does not parse JSON or validate algorithm-specific weight rules."
+    ]
+  },
+  "classgraphmine_1_1PropertyValue_1a2466fb7fb97156ef227a7b79a501827f": {
+    "summary": "Construct a graph property containing a nested key/value object.",
+    "parameters": {
+      "value": "Value stored as a nested key/value object; owned strings and containers are moved into the property."
+    },
+    "returns": "A PropertyValue with the corresponding variant alternative.",
+    "details": [
+      "This constructor stores the value; it does not parse JSON or validate algorithm-specific weight rules."
+    ]
+  },
+  "classgraphmine_1_1PropertyValue_1aa2c0ba53ff51c5f776db2a5f01bc1d01": {
+    "summary": "Inspect the JSON-compatible variant without copying its contents.",
+    "parameters": {},
+    "returns": "A const reference to this value\u2019s internal variant; its lifetime is tied to the PropertyValue."
+  },
+  "structgraphmine_1_1CsrGraph_1a44d854287ebcfe2ae0f2057c62a1bb0b": {
+    "summary": "Read the vertex count encoded by the CSR offset array.",
+    "parameters": {},
+    "returns": "Zero for an empty offsets array; otherwise offsets.size() - 1.",
+    "details": [
+      "This accessor does not validate offset monotonicity or neighbor bounds."
+    ]
+  },
+  "structgraphmine_1_1CsrGraph_1ac8a879a08f2554fab1b5f46f262c9858": {
+    "summary": "Count undirected edges from a symmetric CSR representation.",
+    "parameters": {},
+    "returns": "neighbors.size() / 2.",
+    "details": [
+      "Each undirected edge must appear once in each direction. This formula is not a general count for directed CSR or unmatched self arcs."
+    ]
+  },
+  "classgraphmine_1_1Graph_1a9f45eeaaac777e8c81feaabd6725dfec": {
+    "summary": "Own and validate canonical graph records, then assign dense vertex indices in input order.",
+    "parameters": {
+      "input": "Canonical descriptor, vertices, and edges to move into the graph."
+    },
+    "returns": "A Graph retaining canonical record order, external identifiers, attributes, and optional metadata.",
+    "details": [
+      "Throws std::invalid_argument for an empty graph ID, too many vertices for VertexIndex, duplicate vertex or edge IDs, unknown endpoints, or loops/parallel edges forbidden by the descriptor.",
+      "For an undirected graph, reversed endpoint pairs count as the same logical edge. Weight and timestamp semantics are validated by the selected operation or view, not by this constructor."
+    ]
+  },
+  "classgraphmine_1_1Graph_1a0a2f80140c5540f3a2e48b84889d7050": {
+    "summary": "Build a simple canonical graph from explicit vertex IDs and endpoint pairs.",
+    "parameters": {
+      "graph_id": "Nonempty graph identifier to retain.",
+      "vertices": "Complete vertex list, including any isolated vertices.",
+      "edges": "Endpoint pairs referencing the supplied vertices; input order is retained.",
+      "directed": "Whether the endpoint pairs represent directed edges."
+    },
+    "returns": "A validated Graph with numeric edge IDs 0, 1, \u2026 and no optional vertex/edge metadata.",
+    "details": [
+      "Self-loops and parallel edges are disallowed. Graph constructor validation rejects unknown endpoints and duplicate vertex IDs."
+    ],
+    "example": "auto graph = graphmine::Graph::from_edges(\"triangle\", {0, 1, 2},\n    {{0, 1}, {1, 2}, {2, 0}});"
+  },
+  "classgraphmine_1_1Graph_1ab6d8e49f36ff1e98c62c4c96d36d710a": {
+    "summary": "Read the original canonical records without normalization.",
+    "parameters": {},
+    "returns": "A const reference owned by this Graph; it is valid for the Graph\u2019s lifetime."
+  },
+  "classgraphmine_1_1Graph_1af16e3a7b8e28234dd2b4dc969bc7b068": {
+    "summary": "Count canonical vertex records, including isolates.",
+    "parameters": {},
+    "returns": "The size of canonical().vertices."
+  },
+  "classgraphmine_1_1Graph_1a067a49a644dd8a17759550a1be5f5228": {
+    "summary": "Count canonical edge records before projection or normalization.",
+    "parameters": {},
+    "returns": "The size of canonical().edges, including permitted loops and parallel records."
+  },
+  "classgraphmine_1_1Graph_1a5f9f26c459cd04884442c4fff6fb6de6": {
+    "summary": "Read the direction declared by the graph descriptor.",
+    "parameters": {},
+    "returns": "True for a directed canonical graph; false for an undirected one."
+  },
+  "classgraphmine_1_1Graph_1a9fff1ca4f975808952eb9e0dd58920a3": {
+    "summary": "Resolve an external vertex ID to its zero-based position in the canonical vertex array.",
+    "parameters": {
+      "id": "Exact type-preserving identifier of a vertex in this graph."
+    },
+    "returns": "The dense VertexIndex used by native graph representations.",
+    "details": [
+      "Throws std::out_of_range when the external identifier is absent."
+    ]
+  },
+  "classgraphmine_1_1Graph_1a86b89bfd5890e2a9e4f9491e9add37a6": {
+    "summary": "Recover the external identifier associated with a dense vertex index.",
+    "parameters": {
+      "index": "Zero-based dense vertex index in [0, vertex_count())."
+    },
+    "returns": "A const reference to the canonical vertex\u2019s identifier, owned by this Graph.",
+    "details": [
+      "Throws std::out_of_range when the index is outside the canonical vertex array.",
+      "Do not rely on a returned reference remaining valid after its owner is reassigned, moved from, or destroyed."
+    ]
+  },
+  "classgraphmine_1_1Graph_1a8096d9bf6e656a0c768a0ad0cb9de093": {
+    "summary": "Build a symmetric, unweighted CSR view with loops removed and parallel edges collapsed.",
+    "parameters": {
+      "options": "Projection policy; directed input requires allow_directed_projection=true."
+    },
+    "returns": "An owned CSR copy and normalization summary; canonical records are unchanged.",
+    "details": [
+      "Throws std::invalid_argument if directed input is supplied without explicit projection permission.",
+      "Uses the standard-view builder with direction=symmetrize, self_loops=drop, parallel_edges=collapse:first, and weights=none."
+    ]
+  },
+  "runtime__c_8h_1a8a912786193e5fdbafa87d06845bb5c4": {
+    "summary": "Report the ABI version implemented by the loaded native runtime.",
+    "parameters": {},
+    "returns": "The integer returned by graphmine::runtime::abi_version(). Use it to check binding compatibility."
+  },
+  "runtime__c_8h_1a3077c9d7529eabb5e46f4a0b55ced6a1": {
+    "summary": "Execute one native JSON request through the C ABI and allocate the response.",
+    "parameters": {
+      "request": "Input byte buffer; it need not be null terminated. A null pointer is allowed only when length is zero.",
+      "length": "Number of input bytes to read.",
+      "response": "Non-null output pointer receiving a malloc-allocated, null-terminated response buffer.",
+      "response_length": "Non-null output pointer receiving the response byte count, excluding its trailing null."
+    },
+    "returns": "0 when a response buffer was allocated; -1 for invalid pointers, allocation failure, or an exception before a response can be returned.",
+    "details": [
+      "After argument validation, response is reset to null and response_length to zero before execution.",
+      "A zero return is transport success, not proof of algorithm success: inspect the JSON for an error object.",
+      "The caller owns the returned buffer and must release it with graphmine_runtime_free."
+    ],
+    "example": "char* response = nullptr;\nsize_t size = 0;\nconst char request[] = \"{\\\"command\\\":\\\"catalog\\\"}\";\nif (graphmine_runtime_request(request, sizeof(request) - 1, &response, &size) == 0) {\n    // Parse exactly size response bytes and inspect the JSON result.\n    graphmine_runtime_free(response);\n}"
+  },
+  "runtime__c_8h_1a39dba3955ebf576c5d074ffdf782eee6": {
+    "summary": "Release a response buffer allocated by the native C request function.",
+    "parameters": {
+      "response": "Pointer returned by graphmine_runtime_request, or null."
+    },
+    "returns": "No value. The allocation is released with std::free; the pointer must not be used or freed again."
+  },
+  "classgraphmine_1_1Status_1ada303e081d0821ab280491f16b3659de": {
+    "summary": "Construct a successful status with no message.",
+    "parameters": {},
+    "returns": "A Status with code StatusCode::ok and an empty message."
+  },
+  "classgraphmine_1_1Status_1a8d4826aa9008eeaf1e693c798e17dcb9": {
+    "summary": "Store an explicit status code and diagnostic text.",
+    "parameters": {
+      "code": "Machine-readable StatusCode.",
+      "message": "Diagnostic message to move into the status."
+    },
+    "returns": "A Status containing the supplied values.",
+    "details": [
+      "The constructor does not force successful statuses to have empty messages or failed statuses to have nonempty messages."
+    ]
+  },
+  "classgraphmine_1_1Status_1a7004af5015cd2cc4e39749db3f77a16a": {
+    "summary": "Return a default successful status.",
+    "parameters": {},
+    "returns": "A new Status with code StatusCode::ok and an empty message."
+  },
+  "classgraphmine_1_1Status_1ab3229e89f98ec7a444611c1683f24bf9": {
+    "summary": "Test the machine-readable status code.",
+    "parameters": {},
+    "returns": "True exactly when code() equals StatusCode::ok; the diagnostic text does not affect the result."
+  },
+  "classgraphmine_1_1Status_1a404698024eb3ba4ad192dc5d40d0d584": {
+    "summary": "Read the stored machine-readable status code.",
+    "parameters": {},
+    "returns": "The stored StatusCode value."
+  },
+  "classgraphmine_1_1Status_1ae5d5502dda47d68497dec284a896258b": {
+    "summary": "Read the stored diagnostic text.",
+    "parameters": {},
+    "returns": "A const reference to the owned string, valid while the Status remains alive."
+  },
+  "namespacegraphmine_1a523c2569b59036d590ff89b67f8e6936": {
+    "summary": "Combine optional-output selections using their bitwise union.",
+    "parameters": {
+      "lhs": "First selection mask.",
+      "rhs": "Second selection mask."
+    },
+    "returns": "A mask containing every bit present in either input; no outputs are computed by this operator."
+  },
+  "namespacegraphmine_1a242e4fc1a6fb980f08b6b475cab219ad": {
+    "summary": "Test whether the requested optional-output bits overlap the enabled selection.",
+    "parameters": {
+      "outputs": "Enabled optional-output mask.",
+      "output": "Output bit or mask to test."
+    },
+    "returns": "True when (outputs & output) is nonzero. Passing none returns false; a multi-bit mask tests any overlap, not inclusion of every bit."
+  },
+  "classgraphmine_1_1BetweennessCentrality_1a0cca554d8b48d16407529331c80dd372": {
+    "summary": "Configure a reusable calculation for unweighted, endpoint-excluding betweenness centrality.",
+    "parameters": {
+      "options": "Backend selection, optional normalized/ranked outputs, explicit directed projection, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1BetweennessCentrality_1acd1af5fac65517d086ef37dbfbdd22f4": {
+    "summary": "Check unit-weight semantics, directed-projection permission, a nonempty execution-device list, and TurboBC build availability for nonempty graphs.",
+    "parameters": {
+      "graph": "Graph with absent or unit edge weights; directed input requires explicit projection. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1BetweennessCentrality_1a9c67978229e72cf73b43d0c086c783cc": {
+    "summary": "Compute ordered-pair, unnormalized betweenness with TurboBC and restore one score for each external vertex ID.",
+    "parameters": {
+      "graph": "Graph with absent or unit edge weights; directed input requires explicit projection. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing score_by_vertex and requested normalized_score_by_vertex, ranking, and maximum fields.",
+    "details": [
+      "Requires one finite backend score per input vertex. A wrong length or nonfinite score returns correctness_mismatch.",
+      "Normalized scores use 1/((n-1)(n-2)) for n>2 and zero for smaller graphs. Rankings sort descending by score, then by external ID.",
+      "Normalization removes self-loops and parallel edges; requested directed projection is recorded as a warning.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1BetweennessCentrality_1a789d17362f982022a6277064126601d1": {
+    "summary": "Inspect the configuration captured by this BetweennessCentrality instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1BetweennessCentrality_1a928f3fef13999dc66447f6dc2fa52f0b": {
+    "summary": "List registered TurboBC backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "namespacegraphmine_1a6320760702be7e79d46f152d3a7d6fa1": {
+    "summary": "Combine optional-output selections using their bitwise union.",
+    "parameters": {
+      "lhs": "First selection mask.",
+      "rhs": "Second selection mask."
+    },
+    "returns": "A mask containing every bit present in either input; no outputs are computed by this operator."
+  },
+  "namespacegraphmine_1a07a3aa44dccebeddd3fb45fd89ea729b": {
+    "summary": "Test whether the requested optional-output bits overlap the enabled selection.",
+    "parameters": {
+      "outputs": "Enabled optional-output mask.",
+      "output": "Output bit or mask to test."
+    },
+    "returns": "True when (outputs & output) is nonzero. Passing none returns false; a multi-bit mask tests any overlap, not inclusion of every bit."
+  },
+  "classgraphmine_1_1CommunityDetection_1a6999d523d284054f63216144d8eb82f4": {
+    "summary": "Configure a reusable calculation for community partitions and their modularity.",
+    "parameters": {
+      "options": "Community backend, resolution, optional community lists/edge cut, projection policy, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1CommunityDetection_1a5c591f89a064acd16f30e7c713c7fd47": {
+    "summary": "Check finite nonnegative resolution, unweighted input, projection permission, execution preferences, and selected-backend availability. gLeiden accepts resolution=1 only.",
+    "parameters": {
+      "graph": "Unweighted graph (absent or unit weights); directed input requires explicit projection. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1CommunityDetection_1afa234a68c113ba16ee404debbb8e0830": {
+    "summary": "Partition the graph with the selected community backend and recompute modularity from the returned partition.",
+    "parameters": {
+      "graph": "Unweighted graph (absent or unit weights); directed input requires explicit projection. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing assignment_by_vertex, community_count, modularity, resolution, and requested communities/edge_cut.",
+    "details": [
+      "Community labels are reassigned densely in first-appearance order without changing membership. This makes labels compact, not a global-optimum guarantee.",
+      "Empty and edgeless graphs use trivial results. For nontrivial inputs, backend modularity is compared with the common-layer value when supplied.",
+      "A missing vertex label or inconsistent modularity returns correctness_mismatch.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1CommunityDetection_1a1d9a8aa894326b3bd43ffe9c02a8be52": {
+    "summary": "Inspect the configuration captured by this CommunityDetection instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1CommunityDetection_1abbd9c27fddc3e52dbaf1ba7e9ffaff23": {
+    "summary": "List registered gLeiden and the parallel Louvain, Leiden, and Leiden-plus profiles backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1DynamicTriangleCounting_1a43c80944aefccc832ddb95206a8567af": {
+    "summary": "Configure a reusable calculation for triangle changes from one edge-update batch.",
+    "parameters": {
+      "options": "Optional before/after counts and changed-triangle lists, list cap, projection policy, EDTC backend, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1DynamicTriangleCounting_1acfc5c1ed5d06a096099da987b9354361": {
+    "summary": "Validate the initial graph and update batch, explicit projection, execution preferences, EDTC build availability, and the relationship between list_changed_instances and result_limit.",
+    "parameters": {
+      "graph": "Initial graph; it is normalized for an undirected update batch and is not mutated. The function borrows it for the call.",
+      "updates": "Edge updates referencing existing external vertex IDs. Deletions are validated/applied before insertions; the caller\u2019s vector is unchanged."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1DynamicTriangleCounting_1aa85ae68cb9d4749485bb1e53dc8f0b94": {
+    "summary": "Apply every deletion before every insertion in the batch, then report deleted/inserted triangle counts and their signed difference.",
+    "parameters": {
+      "graph": "Initial graph; it is normalized for an undirected update batch and is not mutated. The function borrows it for the call.",
+      "updates": "Edge updates referencing existing external vertex IDs. Deletions are validated/applied before insertions; the caller\u2019s vector is unchanged."
+    },
+    "returns": "ExecutionResult containing deleted_triangle_count, inserted_triangle_count, net_triangle_change, and any requested global counts or changed-triangle lists.",
+    "details": [
+      "The order of update kinds in the input vector does not change the delete-then-insert batch semantics.",
+      "Optional counts/lists use exact common-layer triangle enumeration and cross-check the EDTC deltas.",
+      "result_limit caps the deleted and inserted lists separately. changed_instances_complete indicates whether both retained lists cover their totals.",
+      "A net difference outside the signed 64-bit range returns unsupported.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1DynamicTriangleCounting_1a5c86b7e369e98ba4dba87293ba322731": {
+    "summary": "Inspect the configuration captured by this DynamicTriangleCounting instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1DynamicTriangleCounting_1a2fa178296a16daaab285900aec818117": {
+    "summary": "List registered EDTC backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "namespacegraphmine_1ac39d4a5fa04f605442d3b790c3ee158d": {
+    "summary": "Combine optional-output selections using their bitwise union.",
+    "parameters": {
+      "lhs": "First selection mask.",
+      "rhs": "Second selection mask."
+    },
+    "returns": "A mask containing every bit present in either input; no outputs are computed by this operator."
+  },
+  "namespacegraphmine_1a8807a5c6ca89682c836ab198474c5870": {
+    "summary": "Test whether the requested optional-output bits overlap the enabled selection.",
+    "parameters": {
+      "outputs": "Enabled optional-output mask.",
+      "output": "Output bit or mask to test."
+    },
+    "returns": "True when (outputs & output) is nonzero. Passing none returns false; a multi-bit mask tests any overlap, not inclusion of every bit."
+  },
+  "classgraphmine_1_1GraphMotifs_1acacca6ed5019d9aee9abafa6382de5cd": {
+    "summary": "Configure a reusable calculation for counts of caller-supplied small graph motifs.",
+    "parameters": {
+      "options": "Backend, induced/non-induced semantics, occurrence identity, optional mappings/participation, per-motif limit, projection policy, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1GraphMotifs_1aa661942c039709d5d5db41348c7c4ec5": {
+    "summary": "Check nonempty uniquely named motif queries, connected three/four-vertex motif topology, backend build availability, induced semantics, output-limit compatibility, and projection permission.",
+    "parameters": {
+      "data_graph": "Data graph in which to count the supplied motif queries; directed projection must be explicit. The function borrows it for the call.",
+      "motifs": "Nonempty vector of uniquely named, connected three/four-vertex motif graphs; each graph is borrowed for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1GraphMotifs_1a028173af5a81e596c2d68a3bc70fda7a": {
+    "summary": "Count each supplied motif with the selected backend, then optionally reconstruct mappings and per-vertex participation.",
+    "parameters": {
+      "data_graph": "Data graph in which to count the supplied motif queries; directed projection must be explicit. The function borrows it for the call.",
+      "motifs": "Nonempty vector of uniquely named, connected three/four-vertex motif graphs; each graph is borrowed for the call."
+    },
+    "returns": "ExecutionResult containing one motif_id/count record per query and requested instances/per_vertex_participation.",
+    "details": [
+      "GraphMiner and DuMato use induced semantics; GraphSet uses non-induced semantics.",
+      "Backend counts are reused for queries of the same vertex count. all_embeddings multiplies occurrence counts by the motif automorphism count.",
+      "Requested optional outputs are checked against exact common-layer materialization. instances_complete concerns the retained mapping list, independently of the total count.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1GraphMotifs_1acce84ed9a8f7a7bbe9e76aa567e6a590": {
+    "summary": "Inspect the configuration captured by this GraphMotifs instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1GraphMotifs_1ab112a7753f74576be0da93aaaa4233f9": {
+    "summary": "List registered GraphMiner, GraphSet, and DuMato backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1KCliques_1a58132ac23348db2a1624aa3135f59c39": {
+    "summary": "Configure a reusable calculation for fixed-size clique counts and optional witnesses.",
+    "parameters": {
+      "options": "Clique size k, backend, optional enumeration/per-vertex counts, result limit, projection policy, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1KCliques_1a81b45848f23d2dbade6addb64bf5a306": {
+    "summary": "Check k>=2, projection and output-limit settings, execution preferences, and the selected backend\u2019s compiled state and supported clique order.",
+    "parameters": {
+      "graph": "Graph whose normalized simple-undirected topology is used for k-cliques. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1KCliques_1a956ed9712187f9051c0f9c365227a14f": {
+    "summary": "Count k-cliques and optionally enumerate their external vertex IDs or per-vertex participation.",
+    "parameters": {
+      "graph": "Graph whose normalized simple-undirected topology is used for k-cliques. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing count, optional cliques/per_vertex_count, and a complete flag for the materialized clique list.",
+    "details": [
+      "k>n and insufficient-edge cases return zero; k=2 counts undirected edges without a clique kernel.",
+      "GAMMA supports k<=7, KCGPU k<=10, and the validated GraphSet path k<=6 when a nontrivial calculation is needed.",
+      "When optional outputs are requested, exact materialization must agree with the backend total. result_limit limits stored witnesses, not the total count.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1KCliques_1a9cc9bdd40ad2c86d05ec0bba5d50163a": {
+    "summary": "Inspect the configuration captured by this KCliques instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1KCliques_1aa418eaf96367c8146c9487223aec5e44": {
+    "summary": "List registered KCGPU, GraphSet, and GAMMA backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "namespacegraphmine_1ae6a6cb9f4bbd148989226d6b7ff144a6": {
+    "summary": "Combine optional-output selections using their bitwise union.",
+    "parameters": {
+      "lhs": "First selection mask.",
+      "rhs": "Second selection mask."
+    },
+    "returns": "A mask containing every bit present in either input; no outputs are computed by this operator."
+  },
+  "namespacegraphmine_1af1a7261d7a6f015f2231496bcb37d762": {
+    "summary": "Test whether the requested optional-output bits overlap the enabled selection.",
+    "parameters": {
+      "outputs": "Enabled optional-output mask.",
+      "output": "Output bit or mask to test."
+    },
+    "returns": "True when (outputs & output) is nonzero. Passing none returns false; a multi-bit mask tests any overlap, not inclusion of every bit."
+  },
+  "classgraphmine_1_1KCore_1a032e9e86e5f1334aee8fb4e39c144dc3": {
+    "summary": "Configure a reusable calculation for core numbers and requested k-core subgraphs.",
+    "parameters": {
+      "options": "Requested k, optional core vertices/edges or peeling order, projection policy, backend, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1KCore_1a2d357fc087045871b97d5d54c8f80006": {
+    "summary": "Check projection permission, an execution device, KCoreGPU build availability, and requested_k when a requested-core output is enabled.",
+    "parameters": {
+      "graph": "Graph whose normalized simple-undirected topology defines the core decomposition. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1KCore_1a3c12ae78143cfec31f59e0de7524686e": {
+    "summary": "Compute one core number per vertex, the graph degeneracy, and requested k-core or peeling outputs.",
+    "parameters": {
+      "graph": "Graph whose normalized simple-undirected topology defines the core decomposition. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing core_number_by_vertex, degeneracy, and the selected optional outputs.",
+    "details": [
+      "The backend must return one core number per input vertex; otherwise the result is correctness_mismatch.",
+      "Requested-core vertices have core number at least requested_k. Edges are deduplicated endpoint pairs represented by the first applicable canonical edge ID.",
+      "The optional peeling_order is a deterministic common-layer order, not the backend\u2019s internal concurrent removal order.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1KCore_1aa36fc62f72e88f2e765076022386bee0": {
+    "summary": "Inspect the configuration captured by this KCore instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1KCore_1a8c5ff308a833383602d9887e387940d7": {
+    "summary": "List registered KCoreGPU backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "namespacegraphmine_1a6ab6e91a770619a68a69a1ed690f97e9": {
+    "summary": "Combine optional-output selections using their bitwise union.",
+    "parameters": {
+      "lhs": "First selection mask.",
+      "rhs": "Second selection mask."
+    },
+    "returns": "A mask containing every bit present in either input; no outputs are computed by this operator."
+  },
+  "namespacegraphmine_1acb958ff08b3520ee18628346db313a4e": {
+    "summary": "Test whether the requested optional-output bits overlap the enabled selection.",
+    "parameters": {
+      "outputs": "Enabled optional-output mask.",
+      "output": "Output bit or mask to test."
+    },
+    "returns": "True when (outputs & output) is nonzero. Passing none returns false; a multi-bit mask tests any overlap, not inclusion of every bit."
+  },
+  "classgraphmine_1_1MaximalBicliques_1a19ef7259cde18022c7ed25c6c11a3091": {
+    "summary": "Configure a reusable calculation for maximal biclique enumeration.",
+    "parameters": {
+      "options": "Explicit left partition, minimum side sizes, result limit, optional total count, projection policy, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1MaximalBicliques_1a4909090fcfe2ef3e67f9d26ee1b9280b": {
+    "summary": "Check positive minimum side sizes and result limit, valid bipartite partitions/edges, projection permission, execution preferences, and cuMBE availability when edges exist.",
+    "parameters": {
+      "graph": "Graph with a valid declared left partition; every edge must cross to its complement. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1MaximalBicliques_1a0b4d54af176747627ee6ce39f925f6fe": {
+    "summary": "Get the cuMBE total and collect maximal bicliques as external-ID left/right vertex sets.",
+    "parameters": {
+      "graph": "Graph with a valid declared left partition; every edge must cross to its complement. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing bicliques, returned_count, complete, and optional total_count.",
+    "details": [
+      "The unfiltered GPU count is exact. Minimum-size filters and early collection limits change which totals the collector has established.",
+      "For an unfiltered completed collection, the common-layer count must match cuMBE. complete is true only when the returned count equals a known qualifying total.",
+      "A maximal biclique cannot be extended on either side; it need not have maximum size.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1MaximalBicliques_1ae14f2eee181246ef4922667f4531014a": {
+    "summary": "Inspect the configuration captured by this MaximalBicliques instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1MaximalBicliques_1a57c107298e7cb4228e69bbc7778b18c1": {
+    "summary": "List registered cuMBE backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "namespacegraphmine_1a3d9e61e6645190485c326e26055f63a1": {
+    "summary": "Combine optional-output selections using their bitwise union.",
+    "parameters": {
+      "lhs": "First selection mask.",
+      "rhs": "Second selection mask."
+    },
+    "returns": "A mask containing every bit present in either input; no outputs are computed by this operator."
+  },
+  "namespacegraphmine_1a06558ec0c5e3c73dabbd5af5a627661c": {
+    "summary": "Test whether the requested optional-output bits overlap the enabled selection.",
+    "parameters": {
+      "outputs": "Enabled optional-output mask.",
+      "output": "Output bit or mask to test."
+    },
+    "returns": "True when (outputs & output) is nonzero. Passing none returns false; a multi-bit mask tests any overlap, not inclusion of every bit."
+  },
+  "classgraphmine_1_1MaximalCliques_1a2ec464db1c4af039e81da7402da8d8a7": {
+    "summary": "Configure a reusable calculation for maximal clique enumeration.",
+    "parameters": {
+      "options": "Backend, minimum clique size, retained-result limit, optional total count, projection policy, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1MaximalCliques_1a018728e053271007e711867bbd5fe8a1": {
+    "summary": "Check positive minimum size/result limit, projection permission, execution preferences, and availability of the selected maximal-clique backend.",
+    "parameters": {
+      "graph": "Graph interpreted through its simple-undirected topology. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1MaximalCliques_1a37a567f09cfb6d6ac85d47064a41696f": {
+    "summary": "Obtain a backend maximal-clique count and materialize qualifying vertex sets with a Bron\u2013Kerbosch collector.",
+    "parameters": {
+      "graph": "Graph interpreted through its simple-undirected topology. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing cliques, returned_count, complete, and optional total_count.",
+    "details": [
+      "Automatic selection resolves to RDMCE. Isolated vertices contribute singleton maximal cliques when minimum_clique_size=1.",
+      "The unfiltered complete collector count is compared with the backend total. A capped or size-filtered collection must be interpreted using complete and total_count.",
+      "Each returned clique uses canonical external vertex IDs; canonical graph records are unchanged.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1MaximalCliques_1a2df97471dc58df966b9bc2273920ffee": {
+    "summary": "Inspect the configuration captured by this MaximalCliques instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1MaximalCliques_1abd307c82984a77b972c4bd6101104bac": {
+    "summary": "List registered mce-gpu, G2-AIMD, and RDMCE backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "namespacegraphmine_1abfe15e5edf33a556ed03be196e9dcbf3": {
+    "summary": "Combine optional-output selections using their bitwise union.",
+    "parameters": {
+      "lhs": "First selection mask.",
+      "rhs": "Second selection mask."
+    },
+    "returns": "A mask containing every bit present in either input; no outputs are computed by this operator."
+  },
+  "namespacegraphmine_1af1dcad57f503d2ad671e01729775fd6a": {
+    "summary": "Test whether the requested optional-output bits overlap the enabled selection.",
+    "parameters": {
+      "outputs": "Enabled optional-output mask.",
+      "output": "Output bit or mask to test."
+    },
+    "returns": "True when (outputs & output) is nonzero. Passing none returns false; a multi-bit mask tests any overlap, not inclusion of every bit."
+  },
+  "classgraphmine_1_1MaximumClique_1ae5d2bf395925d2606482251b791811d2": {
+    "summary": "Configure a reusable calculation for a largest clique and optional tied optima.",
+    "parameters": {
+      "options": "Backend, known valid lower bound, return_all_ties, optional upper bound, projection policy, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1MaximumClique_1a318213067983f259747d5f86ef1fdd9e": {
+    "summary": "Check projection permission, execution preferences, lower-bound range, backend availability, and the restriction that return_all_ties requires GPUMaximumClique.",
+    "parameters": {
+      "graph": "Graph whose normalized simple-undirected topology defines clique feasibility. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1MaximumClique_1aa55306c42b2931964dcfd6bafbe30818": {
+    "summary": "Find a maximum clique with the selected exact backend, validate each returned witness, and restore external identifiers.",
+    "parameters": {
+      "graph": "Graph whose normalized simple-undirected topology defines clique feasibility. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing maximum_size, one or more cliques, optimal=true on success, and the requested coloring upper_bound.",
+    "details": [
+      "Automatic selection uses Cuda-Ms. Empty and edgeless graphs have direct results.",
+      "Every witness is checked for clique feasibility; tied cliques must have the same size. A result below the supplied valid lower bound is rejected.",
+      "A greedy coloring bound is computed independently. It can exceed the optimum; the exact search establishes optimality rather than equality with this relaxation bound.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1MaximumClique_1aea1609590a1b2c6614b376cca9f7727c": {
+    "summary": "Inspect the configuration captured by this MaximumClique instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1MaximumClique_1a3a55bf4d89967de8d8f6ed65377ed3b8": {
+    "summary": "List registered Cuda-Ms, GPUMaximumClique, and MaximumCliqueOnGPU backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "namespacegraphmine_1aa4570c1653fa4a3903b3d7d00c5d1082": {
+    "summary": "Combine optional-output selections using their bitwise union.",
+    "parameters": {
+      "lhs": "First selection mask.",
+      "rhs": "Second selection mask."
+    },
+    "returns": "A mask containing every bit present in either input; no outputs are computed by this operator."
+  },
+  "namespacegraphmine_1a79a62ac0bc3bf63e9c1074c6373f4536": {
+    "summary": "Test whether the requested optional-output bits overlap the enabled selection.",
+    "parameters": {
+      "outputs": "Enabled optional-output mask.",
+      "output": "Output bit or mask to test."
+    },
+    "returns": "True when (outputs & output) is nonzero. Passing none returns false; a multi-bit mask tests any overlap, not inclusion of every bit."
+  },
+  "classgraphmine_1_1QuasiCliques_1a8dafceff8a1e7fa6a676dbddcaa5c12c": {
+    "summary": "Configure a reusable calculation for maximal quasi-cliques satisfying a minimum internal-degree ratio.",
+    "parameters": {
+      "options": "Minimum degree ratio, minimum size, cuQC scheduling, result limit, optional total count, projection policy, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1QuasiCliques_1a730551dbcab8612f453c35bb95b7ffa2": {
+    "summary": "Check finite degree ratio in [0.5,1], minimum size greater than one, positive result limit, signed-index bounds, projection permission, execution preferences, and cuQC availability.",
+    "parameters": {
+      "graph": "Graph interpreted as a normalized simple-undirected graph. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1QuasiCliques_1a7ae4bdc418ec6e175fb95da28343c00a": {
+    "summary": "Enumerate quasi-cliques with cuQC, validate the returned sets, and retain up to the requested result limit.",
+    "parameters": {
+      "graph": "Graph interpreted as a normalized simple-undirected graph. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing quasi_cliques, returned_count, complete, and optional total_count before truncation.",
+    "details": [
+      "A graph smaller than minimum_size has a direct empty result.",
+      "Validation checks the backend\u2019s quasi-clique sets before truncation. complete compares the number retained with the full backend collection size.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1QuasiCliques_1ae1cf29d44b66f91758d02ec8fcbe0b54": {
+    "summary": "Inspect the configuration captured by this QuasiCliques instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1QuasiCliques_1a4b3c2490a504c73fa6dfc1d5b879364b": {
+    "summary": "List registered cuQC backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1KTruss_1a096b9897f6d78721b653146b507c2711": {
+    "summary": "Configure a reusable calculation for edge truss decomposition.",
+    "parameters": {
+      "options": "Execution preferences and bounded backend execution settings."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1KTruss_1a2fab6a8c25d00567f37b767aefc928fc": {
+    "summary": "Check undirected unweighted input, adapter graph-size bounds, execution settings, and availability of the ACCTD backend.",
+    "parameters": {
+      "graph": "Undirected graph with absent or unit edge weights. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1KTruss_1adeed34c8296f252c0926a5a8b6d893cd": {
+    "summary": "Compute a truss number for every normalized undirected edge and map it to a canonical edge identifier.",
+    "parameters": {
+      "graph": "Undirected graph with absent or unit edge weights. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing truss_number_by_edge and maximum_truss_number.",
+    "details": [
+      "Loops are removed. Parallel edge groups use the smallest external edge ID as their representative.",
+      "Backend rows must cover every normalized edge exactly once, with valid endpoints and truss numbers; malformed or incomplete results are rejected.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1KTruss_1a607b3787e785c24141c252d59a8b5ac7": {
+    "summary": "List registered ACCTD backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1DensestSubgraph_1aac333268f7cbe5968431490b65f233e0": {
+    "summary": "Configure a reusable calculation for maximum unweighted k-clique density.",
+    "parameters": {
+      "options": "clique_order (at least two), execution preferences, and bounded backend execution settings."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1DensestSubgraph_1ae9b34bcd2e5633f32156a656e71c44ea": {
+    "summary": "Check the CDS profile, nonempty undirected unweighted input, clique_order in [2,2147483647], graph-size bounds, and backend availability.",
+    "parameters": {
+      "graph": "Nonempty undirected graph with absent or unit edge weights. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1DensestSubgraph_1a36688ca50543f2a2b2c3e54e8ad6c90a": {
+    "summary": "Find a vertex set maximizing C_k(S)/|S|, then recompute its edge/clique counts to check the returned density.",
+    "parameters": {
+      "graph": "Nonempty undirected graph with absent or unit edge weights. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing vertices, density, induced_edge_value, clique_order, clique_count, and optimal=true on success.",
+    "details": [
+      "clique_order=2 is ordinary edges-per-vertex density. It does not constrain how many vertices are selected.",
+      "The returned nonempty vertex set, clique order, count, and numeric density must agree with the backend certificate.",
+      "Worker partition capacity can grow after a specific overflow failure while preserving the total execution time budget.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1DensestSubgraph_1ad9734d88f43dc705902c7d148d7b7e0d": {
+    "summary": "List registered CDS backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1MaximalBicliqueCounting_1adafbe071586e08956ae079d751faedd6": {
+    "summary": "Configure a reusable calculation for the number of nonempty maximal bicliques.",
+    "parameters": {
+      "options": "Execution preferences and bounded backend execution settings."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1MaximalBicliqueCounting_1a199b8969131f4a23db031c4c591016ce": {
+    "summary": "Check the declared bipartition, crossing edges, unit/absent weights, graph-size bounds, execution settings, and MBE-GPU availability.",
+    "parameters": {
+      "graph": "Undirected unweighted bipartite graph; each vertex has attributes.side equal to left or right. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1MaximalBicliqueCounting_1a53f3fbe89cbb7b70f4b9ef4df4c35ed9": {
+    "summary": "Count all nonempty maximal bicliques with MBE-GPU without retaining vertex-set witnesses.",
+    "parameters": {
+      "graph": "Undirected unweighted bipartite graph; each vertex has attributes.side equal to left or right. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing total_count and complete=true when counting succeeds.",
+    "details": [
+      "An edgeless graph returns zero. Side declarations are checked before constructing the backend adjacency.",
+      "This facade has no size-filter, list-materialization, bitmap, or multiple-device mode.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1MaximalBicliqueCounting_1a5e168d9a2a2d8b64c7efaf0e42112aa6": {
+    "summary": "List registered MBE-GPU backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1PersonalizedPageRank_1a2772c7d324ecaff18aab27fbe6ce592b": {
+    "summary": "Configure a reusable calculation for approximate top-k personalized PageRank.",
+    "parameters": {
+      "options": "Seed vertex, top_k, epsilon in [0.01,0.5], reproducible random seed, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1PersonalizedPageRank_1ac13e3de55ab7ef30943c36aa248238c1": {
+    "summary": "Check directed unit-weight semantics, existing seed, positive top_k, supported epsilon/random-seed ranges, execution settings, and kPAR availability.",
+    "parameters": {
+      "graph": "Nonempty directed unweighted outgoing graph containing the requested seed vertex. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1PersonalizedPageRank_1a77da80be13ca87e8adc1f3bac5c79a1a": {
+    "summary": "Estimate personalized PageRank from one seed at restart probability 0.2, then sort and retain the requested top-k vertices.",
+    "parameters": {
+      "graph": "Nonempty directed unweighted outgoing graph containing the requested seed vertex. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing ranked_vertices, epsilon_used, restart_probability_used, complete, approximate=true, and error_bound_certified=false.",
+    "details": [
+      "Backend scores must contain every vertex exactly once, be finite, and lie in the checked probability range. Ranking sorts descending by score, then external ID.",
+      "complete reports whether top_k retained every vertex, not whether estimates are exact. Epsilon is a sampling setting, not a certified per-run error bound.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1PersonalizedPageRank_1ad2bad7e4f4aa79a3f549a7cb40f611a5": {
+    "summary": "List registered kPAR backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1GroupSteinerTree_1abbb36a03064d3dbba4a2d5528fcc80c2": {
+    "summary": "Configure a reusable calculation for a minimum-cost tree meeting each required vertex group.",
+    "parameters": {
+      "options": "Between one and sixteen nonempty groups of external vertex IDs, plus execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1GroupSteinerTree_1ad4ce3797f32591a4613e30393c465163": {
+    "summary": "Check group membership, integer weights and tree-cost bounds, undirected input, graph-size bounds, execution settings, and GPU4GST availability.",
+    "parameters": {
+      "graph": "Undirected graph with explicit nonnegative integer edge weights no greater than 2^53-1. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1GroupSteinerTree_1a25596f62e29b5c66b43d9c1dbe0d0d0b": {
+    "summary": "Solve the group Steiner tree profile and verify the returned tree\u2019s edges, connectivity, group coverage, and cost.",
+    "parameters": {
+      "graph": "Undirected graph with explicit nonnegative integer edge weights no greater than 2^53-1. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing tree_edges, selected_vertices, tree_weight, feasible, and optimal. A successful infeasible result has feasible=false.",
+    "details": [
+      "Duplicate edges are reduced by minimum weight, then by external edge ID on a tie.",
+      "The certificate must be acyclic, connected, cover every group, use actual input edges, and have the reported cost.",
+      "The configured bound requires a potential tree cost below 2^58.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1GroupSteinerTree_1a0dbcabaa6c626e0ee0f1cf62dece19ed": {
+    "summary": "List registered GPU4GST backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1InfluenceMaximization_1a67d3bad6cd7a919402d52532f562f286": {
+    "summary": "Configure a reusable calculation for heuristic seed selection for independent-cascade diffusion.",
+    "parameters": {
+      "options": "Seed-set size, sample count (a multiple of 32 in [32,65536]), random seed, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1InfluenceMaximization_1a85a7d761e69a158acbe48a98097f31d2": {
+    "summary": "Check seed-set size, sample-count range/multiple, edge probabilities, execution settings, graph-size bounds, and Superfuser availability.",
+    "parameters": {
+      "graph": "Directed graph with explicit finite edge activation probabilities in [0,1]. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1InfluenceMaximization_1a885a74ab922709c39ada567a25d4502d": {
+    "summary": "Select an influence seed set and read its independent holdout spread estimates from Superfuser.",
+    "parameters": {
+      "graph": "Directed graph with explicit finite edge activation probabilities in [0,1]. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing seed_set, expected_spread, prefix_spread, sample_count, and guarantee_met=false.",
+    "details": [
+      "The result is approximate and does not claim a certified approximation guarantee.",
+      "Selected vertices must be distinct and have the requested cardinality. Prefix estimates must be nondecreasing and within the graph\u2019s feasible spread range.",
+      "Reported sample counts, random seed, diffusion model, and final/prefix spread must agree with the request.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1InfluenceMaximization_1af4712efdf86868be7f4ed76129b88e45": {
+    "summary": "List registered Superfuser backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1GammaButterflyCounting_1aeeda46b6232cd1c95c2ae055e20e9188": {
+    "summary": "Configure a reusable calculation for global butterfly counting through GAMMA.",
+    "parameters": {
+      "options": "Execution preferences and bounded backend execution settings."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1GammaButterflyCounting_1a830674cf2c3be8cee477bddea39275e5": {
+    "summary": "Check side declarations/crossing edges, unweighted semantics, graph-size bounds, execution settings, and GAMMA availability.",
+    "parameters": {
+      "graph": "Undirected unweighted bipartite graph with attributes.side declared on every vertex. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1GammaButterflyCounting_1a12c450e48534292bd6b4524c99e00b7a": {
+    "summary": "Count injective unlabeled four-cycle embeddings with GAMMA and divide by the eight cycle automorphisms.",
+    "parameters": {
+      "graph": "Undirected unweighted bipartite graph with attributes.side declared on every vertex. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing butterfly_count; fewer than four normalized edges return zero.",
+    "details": [
+      "The embedding count must be divisible by eight. This facade returns only the global count, not butterfly listings or alpha/beta cores.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1GammaButterflyCounting_1ad82a9e5725347b9192ff5b2798fd6bc4": {
+    "summary": "List registered GAMMA butterfly profile backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "namespacegraphmine_1ad6cdb57f0777545e6fed0e7526f1ef5f": {
+    "summary": "Combine optional-output selections using their bitwise union.",
+    "parameters": {
+      "lhs": "First selection mask.",
+      "rhs": "Second selection mask."
+    },
+    "returns": "A mask containing every bit present in either input; no outputs are computed by this operator."
+  },
+  "namespacegraphmine_1acbc4271b5cc2dcec625c897baf6e5c07": {
+    "summary": "Test whether the requested optional-output bits overlap the enabled selection.",
+    "parameters": {
+      "outputs": "Enabled optional-output mask.",
+      "output": "Output bit or mask to test."
+    },
+    "returns": "True when (outputs & output) is nonzero. Passing none returns false; a multi-bit mask tests any overlap, not inclusion of every bit."
+  },
+  "classgraphmine_1_1SubgraphIsomorphism_1a0aa003498f3b232099492224f2edf96d": {
+    "summary": "Configure a reusable calculation for non-induced query-graph embedding counts.",
+    "parameters": {
+      "options": "Vertex-label matching, initial backend match capacity, optional embeddings/result cap, projection policy, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1SubgraphIsomorphism_1aca4ac1b7d670f9782fd817c9c66b85a7": {
+    "summary": "Check both graphs, connected query topology, at most 16 query vertices and 32767 data vertices, positive bounded initial match capacity, optional-list settings, projection permission, and gMatch availability.",
+    "parameters": {
+      "data_graph": "Data graph containing possible matches; normalized topology and optional vertex labels determine compatibility. The function borrows it for the call.",
+      "query_graph": "Connected query graph whose distinct vertices must map injectively into the data graph; optional labels constrain matches."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1SubgraphIsomorphism_1a9ff67324682e6a0c3fd226015a41aacc": {
+    "summary": "Count injective non-induced embeddings of the query graph in the data graph and optionally reconstruct external-ID mappings.",
+    "parameters": {
+      "data_graph": "Data graph containing possible matches; normalized topology and optional vertex labels determine compatibility. The function borrows it for the call.",
+      "query_graph": "Connected query graph whose distinct vertices must map injectively into the data graph; optional labels constrain matches."
+    },
+    "returns": "ExecutionResult containing count, optional embeddings, and embeddings_complete.",
+    "details": [
+      "Label encodings preserve equality across the data/query pair when respect_vertex_labels is enabled.",
+      "A fully completed exact materialization must match the gMatch count. A result_limit caps retained mappings independently of the count.",
+      "An embedding maps each query vertex to a distinct data vertex; extra data-graph edges are allowed.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1SubgraphIsomorphism_1a8a7a8b763da6ca2a1290afcac20a866e": {
+    "summary": "Inspect the configuration captured by this SubgraphIsomorphism instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1SubgraphIsomorphism_1a3091065d161a3b7c4c58168dfc2b30c6": {
+    "summary": "List registered gMatch backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "namespacegraphmine_1a23bb64b1cc41c444bbceea3654e69e76": {
+    "summary": "Combine optional-output selections using their bitwise union.",
+    "parameters": {
+      "lhs": "First selection mask.",
+      "rhs": "Second selection mask."
+    },
+    "returns": "A mask containing every bit present in either input; no outputs are computed by this operator."
+  },
+  "namespacegraphmine_1a16b915c73c70a7795d956bc22a0563f4": {
+    "summary": "Test whether the requested optional-output bits overlap the enabled selection.",
+    "parameters": {
+      "outputs": "Enabled optional-output mask.",
+      "output": "Output bit or mask to test."
+    },
+    "returns": "True when (outputs & output) is nonzero. Passing none returns false; a multi-bit mask tests any overlap, not inclusion of every bit."
+  },
+  "classgraphmine_1_1TemporalMotifMining_1a63a1e65f87ed25fb46a11554b4228f44": {
+    "summary": "Configure a reusable calculation for ordered feed-forward temporal-triangle counts.",
+    "parameters": {
+      "options": "Everest/Mayura backend, nonnegative max_time_span, optional instances and result limit, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1TemporalMotifMining_1a66505dd79f02469b85a8c8003182a248": {
+    "summary": "Check directed input, the supported feed-forward pattern, integer timestamps, nonnegative signed-32-bit time window, graph index bounds, execution preferences, and backend availability.",
+    "parameters": {
+      "graph": "Directed event graph with an integer timestamp on every edge; canonical event identities are preserved. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1TemporalMotifMining_1acb3673fc73f846ac22d9bfc32770644b": {
+    "summary": "Count A\u2192B, B\u2192C, A\u2192C event triples at strictly increasing times within the inclusive time window.",
+    "parameters": {
+      "graph": "Directed event graph with an integer timestamp on every edge; canonical event identities are preserved. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing count, optional instances with original vertex/edge IDs, and instances_complete.",
+    "details": [
+      "Times satisfy t1<t2<t3 and t3<=t1+max_time_span. Events are stably sorted before relative-time conversion.",
+      "Execution additionally checks that the event time span plus window fits signed 32-bit kernel time.",
+      "Requested instance materialization must agree with the backend count; the cap only limits stored witnesses.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1TemporalMotifMining_1a13d3371422f1ef70f5867ddb795ee041": {
+    "summary": "Inspect the configuration captured by this TemporalMotifMining instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1TemporalMotifMining_1afd09c20dc36fa8c3c6cb037eb502146b": {
+    "summary": "List registered Everest and Mayura backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1TriangleCounting_1a0f0b78478ecaaa185b0243a3d87ae050": {
+    "summary": "Configure a reusable calculation for triangle counts and optional participation.",
+    "parameters": {
+      "options": "ToT/WeTriC backend, optional instances/per-vertex/per-edge counts, list limit, WeTriC tuning values, projection policy, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1TriangleCounting_1acbb3fe92961e9e3ef1bcbfd516558569": {
+    "summary": "Check projection permission, execution preferences, list-limit compatibility, positive WeTriC spread, its adjacency-size multiple of 64, and selected-backend availability.",
+    "parameters": {
+      "graph": "Graph whose simple-undirected topology is used to count triangles. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1TriangleCounting_1a862c7809d0fa0ca0bc8dc2bcc0b0bdbd": {
+    "summary": "Count triangles with ToT or WeTriC and optionally materialize triangle witnesses and participation counts.",
+    "parameters": {
+      "graph": "Graph whose simple-undirected topology is used to count triangles. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing global_triangle_count and requested triangles/per_vertex_count/per_edge_count, with instances_complete for the witness list.",
+    "details": [
+      "Automatic selection uses ToT. Normalization removes loops and collapses parallel edges.",
+      "When optional outputs are requested, the exact common-layer materializer must agree with the backend total.",
+      "Per-edge counts use the first canonical edge ID in each collapsed parallel-edge group; retained triangle limits do not change the total count.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1TriangleCounting_1afce2984cc2261892e5f373e335051088": {
+    "summary": "Inspect the configuration captured by this TriangleCounting instance.",
+    "parameters": {},
+    "returns": "A const reference to the owned options, valid while the calculation object remains alive."
+  },
+  "classgraphmine_1_1TriangleCounting_1a2a7205e6ce001aa149307a1cec5a918f": {
+    "summary": "List registered ToT and WeTriC backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1ConnectedComponents_1a8bfbbca776315bd1ba996753dcc16243": {
+    "summary": "Configure a reusable calculation for weak or strong connected-component partitions.",
+    "parameters": {
+      "options": "ConnectivityMode plus execution preferences and bounded backend execution settings."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1ConnectedComponents_1aa6c08e2d20c78e6d5d1d288ac2044f04": {
+    "summary": "Check adapter graph-size/execution limits and a recognized weakly_connected or strongly_connected mode.",
+    "parameters": {
+      "graph": "Canonical graph; weak mode symmetrizes directed edges, while strong mode retains directed reachability. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1ConnectedComponents_1aab54a4333c28d6c700f4e42e210a6870": {
+    "summary": "Compute connected components with ECL-SCC and restore a deterministic external-ID partition.",
+    "parameters": {
+      "graph": "Canonical graph; weak mode symmetrizes directed edges, while strong mode retains directed reachability. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing component_assignment, component_count, and component_sizes.",
+    "details": [
+      "Loops are removed and duplicate arcs collapsed before execution. Edgeless graphs produce one component per vertex.",
+      "Backend labels must be in range and cover every vertex. Members and groups are ordered by external IDs, then assignments are sorted by vertex ID.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1ConnectedComponents_1a87762f9f21f977d99664730dbf0b2415": {
+    "summary": "List registered ECL-SCC backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1MaxFlowMinCut_1a27a7ab3526368b601528b2579d400044": {
+    "summary": "Configure a reusable calculation for maximum flow with a matching minimum-cut certificate.",
+    "parameters": {
+      "options": "Distinct source and sink vertex IDs, unit_capacity or explicit edge capacities, and execution preferences."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1MaxFlowMinCut_1a2ea8a3f63759b43318c47d228a616589": {
+    "summary": "Check source/sink, directed semantics, integer capacities, total non-loop capacity at most 1,000,000,000, and adapter execution/size limits.",
+    "parameters": {
+      "graph": "Directed graph with existing source/sink; explicit capacities must be nonnegative integers unless unit_capacity is selected. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1MaxFlowMinCut_1ae82cbb70ee5c562977cefe1b3a1faf3f": {
+    "summary": "Compute maximum flow, verify conservation and residual optimality, and reconstruct per-edge flows and a minimum cut.",
+    "parameters": {
+      "graph": "Directed graph with existing source/sink; explicit capacities must be nonnegative integers unless unit_capacity is selected. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing max_flow_value, min_cut_value, flow_assignment, min_cut_edges, source_side_vertices, and optimal=true on success.",
+    "details": [
+      "Parallel capacities are summed for solving, then aggregate flows are distributed back over original edges without exceeding each capacity. Loops receive zero flow.",
+      "The residual graph must have no source-to-sink augmenting path. Flow value, source/sink balances, and cut capacity must agree.",
+      "Zero-capacity or empty networks use a direct zero-flow result and still pass through certificate checks.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1MaxFlowMinCut_1a401e06771e925c53937c3a7ebe087d56": {
+    "summary": "List registered ECL-MaxFlow backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1LinearAssignment_1a221f204f94a0c55bd97394bfdb71eec5": {
+    "summary": "Configure a reusable calculation for minimum-cost perfect bipartite assignment.",
+    "parameters": {
+      "options": "Execution preferences and bounded backend execution settings."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1LinearAssignment_1a84a4c75641d730a867ba2596aa9678e5": {
+    "summary": "Check declared equal sides, complete cross-side topology, integer cost range, and adapter execution/size limits.",
+    "parameters": {
+      "graph": "Complete undirected bipartite graph with equal sides, at most 64 vertices per side, attributes.side labels, and integer edge costs in [0,999]. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1LinearAssignment_1a1d0e8ff31ca345786f3a812937cb2471": {
+    "summary": "Solve the square cost matrix with the Hungarian CUDA profile and restore matched canonical edge IDs.",
+    "parameters": {
+      "graph": "Complete undirected bipartite graph with equal sides, at most 64 vertices per side, attributes.side labels, and integer edge costs in [0,999]. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing matching_edges, matching_size, objective_value, feasible=true, and optimal=true on successful completion.",
+    "details": [
+      "For parallel edges, the lowest-cost representative is used. Rows and columns are ordered by external vertex ID.",
+      "The returned assignment must be a permutation of the right-hand side. An empty assignment returns an empty zero-cost result.",
+      "This facade is not a general maximum-matching or rectangular assignment solver.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1LinearAssignment_1a58a6d74c821330a9b1b9f9d7e854945b": {
+    "summary": "List registered Hungarian CUDA backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1TransitiveClosure_1a7827812a9c34123e921f9174f4874f14": {
+    "summary": "Configure a reusable calculation for reflexive transitive reachability.",
+    "parameters": {
+      "options": "Execution preferences and bounded backend execution settings."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1TransitiveClosure_1a5764880f8c24ed3e5ebbe0cddaf7fcca": {
+    "summary": "Check directed input, the 1024-vertex materialization limit, and adapter execution/size limits.",
+    "parameters": {
+      "graph": "Directed graph with no more than 1024 vertices. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1TransitiveClosure_1a1fddaf9520e7631709a6d66f282573e9": {
+    "summary": "Materialize directed reachability pairs with GDlog, including every vertex\u2019s reflexive pair.",
+    "parameters": {
+      "graph": "Directed graph with no more than 1024 vertices. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing reachable_pairs as external source/target IDs and reachable_pair_count.",
+    "details": [
+      "The result must contain distinct in-range pairs, a complete end marker, and every (v,v) pair.",
+      "All pairs are retained within the validated size bound; this function does not build a persistent query index.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1TransitiveClosure_1a37b10a3d4383b2a8044a44eff2843109": {
+    "summary": "List registered GDlog backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "classgraphmine_1_1ButterflyCounting_1a18444841ba253ef0e8704c336c8026fd": {
+    "summary": "Configure a reusable calculation for global butterfly counts in a declared bipartite graph.",
+    "parameters": {
+      "options": "Backend selector (auto/graphminer or gamma-butterfly), execution preferences, and backend execution settings."
+    },
+    "returns": "A calculation object owning its options; no graph is computed by construction.",
+    "details": [
+      "Input support is checked by supports() or run(). The supplied options are moved into the object."
+    ]
+  },
+  "classgraphmine_1_1ButterflyCounting_1afa5a1d6989550a1688f78e773b63f9d8": {
+    "summary": "Validate the selected butterfly backend and its bipartite input profile; the default GraphMiner path also checks the square-motif contract.",
+    "parameters": {
+      "graph": "Undirected graph with attributes.side equal to left or right on every vertex and edges crossing those sides. The function borrows it for the call."
+    },
+    "returns": "A SupportReport: supported=true when the checked profile is admissible, otherwise supported=false with a reason.",
+    "details": [
+      "This check does not run the graph-mining algorithm and does not guarantee that later execution will fit available memory or complete within its time budget."
+    ]
+  },
+  "classgraphmine_1_1ButterflyCounting_1a59c26b6e75a7f5f40fc019dada5af1eb": {
+    "summary": "Count butterflies through the selected GraphMiner square-motif or GAMMA embedding path.",
+    "parameters": {
+      "graph": "Undirected graph with attributes.side equal to left or right on every vertex and edges crossing those sides. The function borrows it for the call."
+    },
+    "returns": "ExecutionResult containing the global butterfly_count.",
+    "details": [
+      "Unknown backend names return unsupported. gamma-butterfly delegates to GammaButterflyCounting; auto resolves to the GraphMiner path.",
+      "The GraphMiner path expects exactly one returned square-motif result and propagates the motif calculation\u2019s errors.",
+      "Check ok() before accessing value(). Failures are returned as Status codes/messages; provenance and recorded diagnostics accompany the result when available."
+    ]
+  },
+  "classgraphmine_1_1ButterflyCounting_1a44ea34f69a61b50d7364afac45965fb0": {
+    "summary": "List registered GraphMiner and GAMMA butterfly profiles backends for this facade.",
+    "parameters": {},
+    "returns": "A new vector of BackendInfo records containing identifiers, source provenance, compiled availability, and declared capabilities.",
+    "details": [
+      "A registered or compiled backend can still reject a particular graph or parameter combination. Call supports() for the configured calculation."
+    ]
+  },
+  "structgraphmine_1_1ViewSpec_1a8e6f9c8a7b141e3ee6640952cbe5ad7c": {
+    "summary": "Parse and validate a standard graph-view specification.",
+    "parameters": {
+      "input": "JSON object containing supported view fields; omitted fields retain ViewSpec defaults."
+    },
+    "returns": "A validated ViewSpec with parsed policies, limits, labels, and optional explicit bipartite partitions.",
+    "details": [
+      "Rejects malformed JSON, duplicate/unknown fields, incorrect field types, unsupported policies, and incompatible policy combinations.",
+      "COO records default sorted_neighbors to false when the caller omits that field. Partition parameters must contain both left_partition and right_partition."
+    ]
+  },
+  "structgraphmine_1_1ViewSpec_1ac54240561ca602bb3bd2afdaa9d2e1fd": {
+    "summary": "Serialize this validated view specification into its deterministic cache-key representation.",
+    "parameters": {},
+    "returns": "A JSON string containing all resolved policy fields, limits, sorted label selections, and any explicit partitions.",
+    "details": [
+      "Calls validate() first. Object keys and label selections are sorted; explicit partition order remains part of the specification."
+    ]
+  },
+  "structgraphmine_1_1ViewSpec_1a8e07361f3577e57fa3f9c7177be01860": {
+    "summary": "Check that view policies are recognized and mutually compatible.",
+    "parameters": {},
+    "returns": "No value. Leaves the specification unchanged; throws std::invalid_argument for an invalid combination.",
+    "details": [
+      "Checks representation kind, COO layout, direction, loop/parallel policies, weight source/type, index width, side tables, and bipartite parameter presence.",
+      "Dense views require numeric weights; bipartite views require side declarations; reverse-CSR requests need a CSR-based kind.",
+      "Hypergraph views preserve incidence membership/identity and reject ordinary graph label/timestamp policies.",
+      "This validates policy structure, not the records or eventual size of an input graph."
+    ]
+  },
+  "structgraphmine_1_1RationalWeight_1a25e592e820a81868ec867baf22420e1e": {
+    "summary": "Compare the stored numerator and denominator strings of two exact weights.",
+    "parameters": {
+      "a": "First stored rational weight.",
+      "b": "Second stored rational weight."
+    },
+    "returns": "True when both stored strings match exactly.",
+    "details": [
+      "The representation convention is reduced integers with a positive denominator. This operator does not itself reduce fractions, so differently encoded equivalent fractions do not compare equal."
+    ]
+  },
+  "structgraphmine_1_1ViewResult_1ad534f80eed9519d12f8efe048dd8c957": {
+    "summary": "Estimate retained host storage for cache admission across all supported view variants.",
+    "parameters": {},
+    "returns": "A capacity-based byte estimate including view arrays, strings, mappings, side tables, and fixed allocation overhead; saturates at SIZE_MAX.",
+    "details": [
+      "Uses allocated vector/string capacities and includes nested collection members and exact-weight strings. It is an accounting estimate, not a measurement of process or GPU memory."
+    ]
+  },
+  "structgraphmine_1_1ViewResult_1ad4378685ac4f1fdb746835279989d3f6": {
+    "summary": "Serialize the transformation summary for this materialized view.",
+    "parameters": {},
+    "returns": "JSON containing projection_applied, self_loops_removed, parallel_edges_collapsed, weights_cast, vertices, and edges.",
+    "details": [
+      "This is the normalization summary, not a serialization of the view arrays or the full execution result."
+    ]
+  },
+  "namespacegraphmine_1_1anonymous__namespace_02graph_8cpp_03_1ac18d47db05461bd0bf0d42ccd88dab23": {
+    "summary": "Pack an ordered pair of 32-bit dense vertex indices into one 64-bit key.",
+    "parameters": {
+      "source": "Source index placed in the high 32 bits.",
+      "target": "Target index placed in the low 32 bits."
+    },
+    "returns": "A collision-free key for the supplied ordered pair within the VertexIndex range.",
+    "details": [
+      "For undirected edge checks, the caller orders the endpoints before calling this helper."
+    ]
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1ae4edbc383b6f11a222cd6c7dce308aa9": {
+    "summary": "Append raw bytes to the active digest context.",
+    "parameters": {
+      "data": "Readable memory region containing at least size bytes.",
+      "size": "Number of bytes to append."
+    },
+    "returns": "No value. Updates the digest state or throws std::runtime_error if the digest operation fails."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1a9cecc1f6a87c052d6faf416a8ff8fb15": {
+    "summary": "Initialize an incremental SHA-256 context for canonical native records.",
+    "parameters": {},
+    "returns": "A fingerprint builder owning its digest context.",
+    "details": [
+      "Throws std::runtime_error when digest allocation or initialization fails."
+    ]
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1ad8db6cebce3a21ebbe3fcfe3fb9ef4ca": {
+    "summary": "Append an unsigned integer in a fixed eight-byte little-endian encoding.",
+    "parameters": {
+      "value": "Unsigned value whose eight bytes enter the digest."
+    },
+    "returns": "No value. Advances the digest by exactly eight bytes."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1a797a1ed5a5c06e6b5f31e413102f0baa": {
+    "summary": "Append the signed integer\u2019s 64-bit modulo representation.",
+    "parameters": {
+      "value": "Signed value to cast to uint64_t before byte encoding."
+    },
+    "returns": "No value. Delegates to the fixed-width unsigned encoding."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1a1b78256a7652001b67d956568533e4cd": {
+    "summary": "Append a Boolean as the unsigned 64-bit value zero or one.",
+    "parameters": {
+      "value": "Boolean value to encode."
+    },
+    "returns": "No value. Advances the digest through the fixed-width integer path."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1abebeb92611f44d9119dabadb6691efba": {
+    "summary": "Handle a null payload without appending additional payload bytes.",
+    "parameters": {
+      "$1": "Null payload; its enclosing variant already records the type."
+    },
+    "returns": "No value. The digest state is unchanged by this overload."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1a9bbc211e289f5f9749b0428647320f58": {
+    "summary": "Append the exact binary64 bit pattern without decimal conversion.",
+    "parameters": {
+      "value": "Floating-point value; its stored bits are copied into uint64_t storage."
+    },
+    "returns": "No value. Appends the bit pattern through the fixed-width integer encoder."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1aabd2642d15d0caf9f1b09bbff0b03b1d": {
+    "summary": "Append a length-delimited string to the native-record digest.",
+    "parameters": {
+      "value": "String bytes to hash; no text normalization is applied."
+    },
+    "returns": "No value. Appends the uint64 length followed by the original bytes."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1afa4b1c02eaac8da3f8a4ea9e19a5b6e5": {
+    "summary": "Append a variant\u2019s alternative index and then its active payload.",
+    "parameters": {
+      "value": "Variant whose stored type and value must both influence the hash."
+    },
+    "returns": "No value. Distinguishes equal-looking values stored in different alternatives."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1a9b496b9c2f59a988bee6f2593e0c1e32": {
+    "summary": "Append an optional-value presence flag and, when present, its payload.",
+    "parameters": {
+      "value": "Optional field; absence must remain distinct from an explicit payload."
+    },
+    "returns": "No value. Appends presence before any contained value."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1ada609395e748625d26c00670a1a757e2": {
+    "summary": "Append a vector length and each element in its existing order.",
+    "parameters": {
+      "values": "Ordered values to hash; elements are encoded using the appropriate overload."
+    },
+    "returns": "No value. Retains sequence length and order in the digest."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1a7e6d8f1ad797884a9565be4aa180f014": {
+    "summary": "Append an attribute map in its ordered-key iteration order.",
+    "parameters": {
+      "values": "Attribute map containing property keys and typed values."
+    },
+    "returns": "No value. Appends map size followed by each key and value."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1a56bd670c124459ea4654001911af8719": {
+    "summary": "Append a property\u2019s typed JSON-compatible variant.",
+    "parameters": {
+      "value": "Property value whose active alternative and recursive contents are hashed."
+    },
+    "returns": "No value. Delegates to variant encoding so value types remain distinct."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1ae011343f1970d8f7f4c082202145ab12": {
+    "summary": "Append a graph identifier while preserving integer-versus-string identity.",
+    "parameters": {
+      "value": "External vertex or edge ID to hash."
+    },
+    "returns": "No value. Delegates to the identifier\u2019s type-tagged variant encoding."
+  },
+  "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1a6bc24ba5df41b163e09c31f6dd4bed8a": {
+    "summary": "Finalize the active SHA-256 record digest.",
+    "parameters": {},
+    "returns": "The digest as lowercase hexadecimal text.",
+    "details": [
+      "Throws std::runtime_error if finalization fails. Call only after the complete record stream has been supplied."
+    ]
+  },
+  "namespacegraphmine_1_1view__detail_1aff8b36898786e1af052d253a2550b41b": {
+    "summary": "Fingerprint canonical native graph records without a JSON round trip.",
+    "parameters": {
+      "graph": "Graph whose descriptor, ordered vertices/edges, optional metadata, and typed property values are hashed."
+    },
+    "returns": "A lowercase SHA-256 digest using the graphmine-native-records-v2 encoding.",
+    "details": [
+      "The hash preserves numeric representations, external-ID types, missing-versus-present fields, and record order. It is a snapshot fingerprint, not a graph-isomorphism invariant.",
+      "Floating property values retain their bits even when an operation ignores that property. Digest failures raise std::runtime_error."
+    ]
+  },
+  "structgraphmine_1_1representation__store_1_1anonymous__namespace_02representation__store_8cpp_03_1_1Cache_1a17c6443364e731c7bffedb4dc7636168": {
+    "summary": "Remove the least-recently-used representation from the shared cache.",
+    "parameters": {},
+    "returns": "No value. Decreases retained bytes, erases the entry and recency node, and increments the eviction counter.",
+    "details": [
+      "Internal precondition: the caller holds the cache mutex and the recency list is nonempty. Existing shared owners can keep the removed representation alive."
+    ]
+  },
+  "namespacegraphmine_1_1representation__store_1_1anonymous__namespace_02representation__store_8cpp_03_1a96fb58914a49aafa5d049087525ea281": {
+    "summary": "Access the process-lifetime representation-cache state.",
+    "parameters": {},
+    "returns": "A mutable reference to the function-local singleton Cache.",
+    "details": [
+      "The accessor itself does not lock. lookup(), insert(), and control() acquire the cache mutex before touching shared state."
+    ]
+  },
+  "namespacegraphmine_1_1representation__store_1ad06442a204fa618d9477d49361f029fd": {
+    "summary": "Look up an immutable representation and update its least-recently-used position.",
+    "parameters": {
+      "key": "Representation key, including any required snapshot and policy/version components."
+    },
+    "returns": "A copied Entry with shared ownership on a hit, or nullopt on a miss.",
+    "details": [
+      "Holds the cache mutex while searching, incrementing hit/miss counters, and moving a hit to the front of the recency list."
+    ]
+  },
+  "namespacegraphmine_1_1representation__store_1aacdd6d0b465da8c97ad9f88b1cff4bd3": {
+    "summary": "Admit an immutable representation to the size-bounded cache, reusing an existing entry for the same key.",
+    "parameters": {
+      "key": "Unique representation key.",
+      "value": "Shared immutable representation to retain; existing external owners remain valid.",
+      "bytes": "Storage charged against the cache limit.",
+      "work": "Work amount recorded with the entry.",
+      "winner": "Optional output pointer receiving the retained representation, which may be an existing winner for this key."
+    },
+    "returns": "True when an existing or new entry is retained; false when caching is disabled or this entry exceeds the limit.",
+    "details": [
+      "Locks shared cache state and evicts least-recently-used entries until the new value fits.",
+      "On a duplicate key, the existing representation wins. A false return leaves winner untouched; callers should initialize it before the call."
+    ]
+  },
+  "namespacegraphmine_1_1representation__store_1a471718f18f0106c83f272d019cf60b8e": {
+    "summary": "Inspect or change cache capacity and optionally clear retained entries and counters.",
+    "parameters": {
+      "limit": "Optional replacement byte limit; a present zero disables retention.",
+      "clear": "If true, clear all entries and reset hit/miss/eviction counters after applying the limit."
+    },
+    "returns": "Current limit, retained bytes, entry count, hits, misses, and evictions.",
+    "details": [
+      "All changes occur under the cache mutex. Reducing the limit evicts least-recently-used entries until retained bytes fit. Shared values held by callers remain alive after eviction."
+    ]
+  },
+  "namespacegraphmine_1_1view__detail_1a8a0a681f0f880876587c66078767d46b": {
+    "summary": "Reuse or build an immutable standard view keyed by its input snapshot and canonical specification.",
+    "parameters": {
+      "snapshot": "Input snapshot fingerprint.",
+      "canonical": "Canonical serialized ViewSpec, included in the representation key.",
+      "options": "Budget-charge and observation callbacks for the view request.",
+      "build": "Builder invoked only on a cache miss; returns the fully populated ViewResult."
+    },
+    "returns": "Shared ownership of a const ViewResult, whether retained in the cache or returned only to this caller.",
+    "details": [
+      "A hit charges the stored original-edge and build-work amounts before observation, so cache reuse does not bypass request budgets.",
+      "On a miss, cache accounting includes the ViewResult estimate and key storage. A concurrent insertion for the same key can supply the winning representation.",
+      "observe receives whether the request hit the cache and whether the result was retained. Callback and builder exceptions propagate."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a6be50a454a6aca85bdf4a9c3b6a45aec": {
+    "summary": "Accept the beginning of a JSON document.",
+    "parameters": {
+      "$1": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "No additional state is needed at this boundary."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1af94b4d7201065a01c5ecfa9f0dd971c7": {
+    "summary": "Accept the end of a structurally parsed JSON document.",
+    "parameters": {
+      "$1": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "The outer strict_json function checks that the whole input was consumed."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1aa6c6b337857c8cb546941072adc7cc49": {
+    "summary": "Accept an array opening without allocating validation state.",
+    "parameters": {
+      "$1": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "Duplicate-key tracking is needed only for objects."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a3a6b5ac56334284873396cc9140e7222": {
+    "summary": "Accept an array closing.",
+    "parameters": {
+      "$1": "Parser-supplied element count or token length; unused by this callback.",
+      "$2": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "The element count is supplied by Boost.JSON and is not used by this guard."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a1648cf7d3ed1745e4e9e7df8fd1b0cb0": {
+    "summary": "Start a fresh duplicate-key set for the newly opened object.",
+    "parameters": {
+      "$1": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "Pushes one empty set onto the object stack."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a7196563caa277f3bb645028754a4d329": {
+    "summary": "Finish duplicate-key validation for the current object.",
+    "parameters": {
+      "$1": "Parser-supplied element count or token length; unused by this callback.",
+      "$2": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "Pops its key set; the parser must have supplied a matching opening callback."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a40a71abe93e8e0ea81285d50033265af": {
+    "summary": "Accept a partial string-value token without copying its payload.",
+    "parameters": {
+      "$1": "Parser-supplied token text; unused by this callback.",
+      "$2": "Parser-supplied element count or token length; unused by this callback.",
+      "$3": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "Only object keys and numeric tokens require extra validation state."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a0e47cc0d46a01417dcf2ad7397bf5a91": {
+    "summary": "Accept a completed string-value token.",
+    "parameters": {
+      "$1": "Parser-supplied token text; unused by this callback.",
+      "$2": "Parser-supplied element count or token length; unused by this callback.",
+      "$3": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "The normal parser remains responsible for JSON string syntax."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1aadf437c9fcdf7061329e726057aa875a": {
+    "summary": "Accumulate a fragment of an object key.",
+    "parameters": {
+      "part": "Final or partial token bytes delivered by the parser; consumed synchronously.",
+      "$2": "Parser-supplied element count or token length; unused by this callback.",
+      "$3": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "Appends the supplied bytes to the current key buffer."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a1bf464d7720e337775c7eb97db5a5ca2": {
+    "summary": "Finish an object key and reject duplicates within its containing object.",
+    "parameters": {
+      "part": "Final or partial token bytes delivered by the parser; consumed synchronously.",
+      "$2": "Parser-supplied element count or token length; unused by this callback.",
+      "$3": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "Appends the final fragment, inserts into the current object\u2019s key set, and clears the buffer; duplicate keys throw std::invalid_argument."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a0cee6355b05a25370d8316d6036eadaa": {
+    "summary": "Accumulate a fragment of a numeric token for later representation checks.",
+    "parameters": {
+      "part": "Final or partial token bytes delivered by the parser; consumed synchronously.",
+      "$2": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "Appends raw characters to the number buffer."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a11b1f01b3bb30db516b39878bf4cd45b": {
+    "summary": "Accept an integer already represented exactly as signed 64-bit JSON.",
+    "parameters": {
+      "$1": "Parsed scalar value; its payload is not retained by this validation pass.",
+      "$2": "Parser-supplied token text; unused by this callback.",
+      "$3": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "Clears the accumulated numeric token buffer."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1afd7acf2a715b604dbd48f254a81672e1": {
+    "summary": "Accept an integer already represented exactly as unsigned 64-bit JSON.",
+    "parameters": {
+      "$1": "Parsed scalar value; its payload is not retained by this validation pass.",
+      "$2": "Parser-supplied token text; unused by this callback.",
+      "$3": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "Clears the accumulated numeric token buffer."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a6c6e2e3363f1106e3b7db621b926eba1": {
+    "summary": "Reject nonfinite numbers and integer tokens that overflowed into floating-point representation.",
+    "parameters": {
+      "value": "Parsed floating-point value to check for finiteness.",
+      "part": "Final or partial token bytes delivered by the parser; consumed synchronously.",
+      "$3": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "Appends the final fragment, requires a decimal point or exponent in the original token, checks std::isfinite(value), then clears the buffer."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a617f41910c29fd80e97e08187e12a8cb": {
+    "summary": "Accept a parsed Boolean token.",
+    "parameters": {
+      "$1": "Parsed scalar value; its payload is not retained by this validation pass.",
+      "$2": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "No additional validation state is changed."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1a1245e13598e3cbc95e3edcad91ee877b": {
+    "summary": "Accept a parsed null token.",
+    "parameters": {
+      "$1": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "No additional validation state is changed."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1ad1a93da80ba048b54b43eb13b7e0da7b": {
+    "summary": "Provide the partial-comment callback required by the parser interface.",
+    "parameters": {
+      "$1": "Parser-supplied token text; unused by this callback.",
+      "$2": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "The callback accepts the fragment; strict_json uses default parse options rather than enabling comments."
+    ]
+  },
+  "structgraphmine_1_1view__json_1_1anonymous__namespace_02view__json_8cpp_03_1_1InputGuard_1adf5e010f3fec9044b4d6fc4beeebed81": {
+    "summary": "Provide the completed-comment callback required by the parser interface.",
+    "parameters": {
+      "$1": "Parser-supplied token text; unused by this callback.",
+      "$2": "Parser error-code reference required by the callback interface; this guard leaves it unchanged and throws on its own validation failures."
+    },
+    "returns": "True when the callback accepts the token and parsing may continue.",
+    "details": [
+      "The callback accepts the token; comment syntax remains governed by the parser\u2019s options."
+    ]
+  },
+  "namespacegraphmine_1_1view__json_1a946dcb3a9a112539bfdbe15f4afd7d1a": {
+    "summary": "Validate original JSON tokens before constructing the Boost.JSON value tree.",
+    "parameters": {
+      "raw": "Complete JSON document of at most 64 MiB."
+    },
+    "returns": "An owned json::value parsed from the validated document.",
+    "details": [
+      "Rejects duplicate object keys, nonfinite numbers, trailing text, malformed syntax, and integer literals that would overflow native JSON integer storage and otherwise become doubles.",
+      "Throws std::length_error for the size limit and std::invalid_argument for token or structural validation failures."
+    ]
+  },
+  "namespacegraphmine_1_1view__json_1a4fa85edf5d3ceebf209ca1a481237341": {
+    "summary": "Enforce an input condition with a caller-supplied diagnostic.",
+    "parameters": {
+      "condition": "Condition required to be true.",
+      "message": "Message used when the condition fails."
+    },
+    "returns": "No value; throws std::invalid_argument when condition is false."
+  },
+  "namespacegraphmine_1_1view__json_1a4cd421770edd15e27a5a60ac3755fc7c": {
+    "summary": "Require a JSON object and copy its members.",
+    "parameters": {
+      "value": "JSON value to inspect.",
+      "context": "Context name included in a type-error diagnostic."
+    },
+    "returns": "An owned json::object copy; throws std::invalid_argument for another JSON type."
+  },
+  "namespacegraphmine_1_1view__json_1ad8b674e9d1fa7a60b8b6e417393f52c0": {
+    "summary": "Reject unknown object keys and enforce a list of required keys.",
+    "parameters": {
+      "value": "JSON object whose keys are checked.",
+      "allowed": "Complete allowlist of valid key names.",
+      "required": "Keys that must be present; defaults to no required keys."
+    },
+    "returns": "No value; throws std::invalid_argument naming the first unknown or missing key."
+  },
+  "namespacegraphmine_1_1view__json_1a6c939042cacd101fe69f7d06791a2a3d": {
+    "summary": "Require a JSON string and copy its text.",
+    "parameters": {
+      "value": "JSON value to inspect.",
+      "context": "Context name included in a type-error diagnostic."
+    },
+    "returns": "An owned std::string; throws std::invalid_argument for a non-string value."
+  },
+  "namespacegraphmine_1_1view__json_1af8c267b8b695b1c7a6befaae181d5ab6": {
+    "summary": "Read an exact nonnegative JSON integer without floating-point coercion.",
+    "parameters": {
+      "value": "uint64 JSON integer or nonnegative int64 JSON integer.",
+      "context": "Context name included in a validation diagnostic."
+    },
+    "returns": "The value as uint64_t; throws std::invalid_argument for negative integers, floating numbers, or other types."
+  },
+  "namespacegraphmine_1_1view__json_1ab9c3f602bb91e6d73193174da34dc8cf": {
+    "summary": "Convert a JSON identifier while preserving its integer or string type.",
+    "parameters": {
+      "value": "Nonempty JSON string or an integer within signed 64-bit range."
+    },
+    "returns": "An ExternalId owning the corresponding typed value.",
+    "details": [
+      "Rejects empty strings, out-of-range unsigned integers, and floating-point IDs."
+    ]
+  },
+  "namespacegraphmine_1_1view__json_1a6a66a3906672add0f3e34ba4ead8adc5": {
+    "summary": "Encode an external identifier as its original JSON scalar type.",
+    "parameters": {
+      "id": "Integer-or-string external identifier."
+    },
+    "returns": "A JSON integer or string with the same stored identity; no stringification is applied."
+  }
+}

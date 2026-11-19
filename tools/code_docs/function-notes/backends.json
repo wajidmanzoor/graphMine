@@ -1,0 +1,1062 @@
+{
+  "namespacegraphmine_1_1detail_1aaa62f02c8dc2b3d2d9dfc34a34644cab": {
+    "summary": "Reports whether the CUDA-MS implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a1c7a10e47ceb63ade3965324fcaef1ea": {
+    "summary": "Reports whether the cuMBE implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a14521e987035fc6ec637fe7128ae7a10": {
+    "summary": "Reports whether the cuQC adapter is present in this build. The current source provides only the unavailable-backend stub.",
+    "parameters": {},
+    "returns": "false in the current implementation.",
+    "details": [
+      "This is a build-availability query, not a test for a usable CUDA device or support for a particular graph.",
+      "run_cuqc returns backend_unavailable."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ac04031814d9cbccac096426939dc002b": {
+    "summary": "Reports whether the DuMato motif implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a2b0bd4aa8cf6fceee808f225865a9fbf": {
+    "summary": "Reports whether the EDTC implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1aa5d25b075b6849b7df5a9a94029f89df": {
+    "summary": "Reports whether the Everest implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a5781f2e4b33da27862631cd1cc235671": {
+    "summary": "Reports whether the GraphMiner motif implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a7704d1558a2134519c5c946ad99f74e1": {
+    "summary": "Reports whether the GAMMA k-clique implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1afd145e929f6380fd2a6b048bb3f074b6": {
+    "summary": "Reports whether the gLeiden implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a585e47d1589296875a5e988a51c5053b": {
+    "summary": "Reports whether the gMatch implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a1a9194cd401b66bed7df493cca8feaee": {
+    "summary": "Reports whether the GPUMaximumClique implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1af18989cf6ec91563d8a407db9cd4365a": {
+    "summary": "Reports whether the GraphSet k-clique implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a61d3e617616699402501800122a41cdb": {
+    "summary": "Reports whether the GraphSet motif implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a5ac826577bef437d8ca7d919230ded0f": {
+    "summary": "Reports whether the KCGPU implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a84c31d82cbd48d33b11f23723d32a14a": {
+    "summary": "Reports whether the KCoreGPU implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a78b0e7e5d07e61f0d061973870713d03": {
+    "summary": "Reports whether the G2-AIMD implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ac0ce248c55d90c0dda0dbb9fd548d179": {
+    "summary": "Reports whether the mce-gpu implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1abc951ba32fc05c2c38f002090300b37f": {
+    "summary": "Reports whether the RDMCE implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a6e7c4e0fe85dcbbd82bd1641831549e8": {
+    "summary": "Reports whether the Maximum-Clique-on-GPU implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a940ba474943ec7ec229e9f467169eba3": {
+    "summary": "Reports whether the Mayura implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a0224daad249b7e8c4367825edbc9d288": {
+    "summary": "Reports whether the parallel multilevel clustering implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ae33db4f5562885a44082be5eef05f252": {
+    "summary": "Reports whether the ToT implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ac3f244338b90bb18f26269d67cda0607": {
+    "summary": "Reports whether the TurboBC implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a1feaf0fe1732ea6818dcdafff6e91fb2": {
+    "summary": "Reports whether the WeTriC implementation was linked into this GraphMine build.",
+    "parameters": {},
+    "returns": "true in the enabled adapter; false in the alternative stub compiled when this backend is disabled.",
+    "details": [
+      "No CUDA initialization, device query, allocation, or calculation occurs. A true value does not establish device availability or input support."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ae722978dbf4e68250534fa16d8603f09": {
+    "summary": "Converts the CSR to a dense host adjacency matrix and invokes the CUDA-MS clique search. The returned bitmasks are copied into GraphMine-owned result values.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "A MaximumCliqueBackendResult containing status, one clique as dense vertex indices, the size of the optional upper mask, and search-plus-synchronization time in milliseconds. An absent upper mask produces an upper-size field of zero.",
+    "details": [
+      "An empty graph succeeds before any device check. Nonempty inputs require a signed 32-bit vertex count; negative device ordinals are invalid_argument, and unavailable devices are backend_unavailable.",
+      "The adapter stores an n-by-n byte matrix. Matrix-size overflow or caught matrix allocation failure returns resource_exhausted.",
+      "The upstream call uses fixed search parameters. A negative returned size, null clique mask, or failed synchronization returns execution_failed; both masks are released with mask_free.",
+      "This layer decodes the witness but does not itself verify every pair of returned vertices or establish an optimality certificate.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a5ef6d17d1fe74b418464e32874ad755c": {
+    "summary": "Counts maximal bicliques with cuMBE after building adjacency in both directions and placing the smaller partition on the candidate side.",
+    "parameters": {
+      "input": "Borrowed left-to-right bipartite CSR. Partition counts and edge indices must fit signed 32-bit integers; neighbors are right-partition indices, not global graph IDs.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "A MaximalBicliqueBackendResult with status, the count, and enumeration-kernel time in milliseconds. No biclique vertex sets are materialized by this adapter.",
+    "details": [
+      "An empty partition or empty edge array returns a successful zero count before preparation or device access.",
+      "prepare_graph checks offsets, row bounds, and neighbor bounds. Invalid preparation and caught CUDA exceptions become execution_failed; oversized partition counts return unsupported.",
+      "The device must support cooperative kernel launches and at least 512 threads per block. Workspace block count is limited by cooperative occupancy.",
+      "ManagedArena owns the CUDA managed allocations for graph data and search workspace until the call completes. Calls are serialized because the upstream kernels share state.",
+      "Workspace size overflow and a negative signed 32-bit result counter return resource_exhausted. The negative-counter check is not a general proof against all possible counter wraparound.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ae82e1ede36fa4e3a113fb2d71beffec4": {
+    "summary": "Provides the cuQC adapter boundary when no executable cuQC backend is linked. The current implementation always reports that the backend is unavailable.",
+    "parameters": {
+      "graph": "Graph argument reserved by the backend interface; the stub does not read it.",
+      "minimum_degree_ratio": "Requested minimum-degree ratio reserved by the interface; unused by the stub.",
+      "minimum_size": "Requested minimum quasi-clique size reserved by the interface; unused by the stub.",
+      "static_scheduling": "Requested static-scheduling flag reserved by the interface; unused by the stub.",
+      "device_id": "Requested CUDA device ordinal; the stub does not query or select a device."
+    },
+    "returns": "QuasiCliqueBackendResult with backend_unavailable, an empty quasi_cliques vector, and elapsed_ms equal to zero.",
+    "details": [
+      "No parameter validation or computation occurs, including for empty graphs. This function does not implement a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a06e9330cffdaebbee0a99da0679aa063": {
+    "summary": "Runs the DuMato induced-motif engine and sums per-warp canonical-graph counters into GraphMine's common motif ordering.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "motif_size": "Motif vertex count; only 3 and 4 are accepted by this adapter.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "GraphMotifBackendResult with status, two or six owned uint64 counts, and elapsed milliseconds covering engine setup, search, result transfer, and aggregation.",
+    "details": [
+      "Counts use the common order: size 3 = triangle, path of length two; size 4 = three-star, four-vertex path, tailed triangle, four-cycle, diamond, four-clique.",
+      "Graphs with fewer vertices than the motif size or no adjacency entries return an all-zero count vector before device access. Vertex and adjacency-entry counts must fit signed 32-bit integers.",
+      "The adapter converts offsets to signed 64-bit and neighbors to signed 32-bit storage, serializes the upstream engine, and copies per-warp hashes from device memory before aggregation.",
+      "Unsupported sizes and index widths return unsupported; unusable devices return backend_unavailable; result transfer errors return execution_failed; an unexpected canonical vector shape returns internal_error.",
+      "Caught host allocation failure returns resource_exhausted. Other caught exceptions return execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a1c115aff57f2baff82c7879f0a40bfb6": {
+    "summary": "Runs EDTC on a batch of edge deletions and insertions and returns their separate triangle-count changes.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "updates": "Borrowed, already validated dense-endpoint edge updates. insertion selects addition versus deletion; endpoints and update consistency must be checked by the caller.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "DynamicTriangleBackendResult with status, triangles deleted, triangles inserted, and elapsed call time in milliseconds. The input CSR is not changed and no updated CSR is returned.",
+    "details": [
+      "An empty batch succeeds with zero deltas before device access. Vertex, adjacency-entry, and update counts must each be at most UINT_MAX - 2 to leave room for sentinels.",
+      "Two temporary isolated vertices and their edge supply a deletion/reinsertion pair. They add no triangles while preserving the upstream pipeline's requirement for both update kinds.",
+      "The adapter passes deletion and insertion records to the upstream batch routine; semantic validation and canonical batch preparation belong to the public facade.",
+      "Device discovery failure returns backend_unavailable; a pending CUDA error after execution or a caught exception returns execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1af1f171581938168e2ceda8110ed1d345": {
+    "summary": "Prepares device-specific launch dimensions and invokes the Everest temporal feed-forward motif kernel through the common CUDA runner.",
+    "parameters": {
+      "input": "Borrowed, validated temporal input with dense signed 32-bit endpoints, events sorted by timestamp, and nonnegative relative timestamps and window. Event count, vertex count, and timestamp plus window must fit signed 32-bit values; normalization belongs to the public facade.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "TemporalMotifBackendResult with status, the motif count, and elapsed runner time in milliseconds. It returns a count only, not event triples.",
+    "details": [
+      "An empty event array succeeds before device access. Input format and range checks belong to the public temporal-motif facade.",
+      "The supported pattern is A to B, then B to C, then A to C on distinct vertices with strictly increasing event times and final-minus-first time no greater than max_time_span.",
+      "Dispatch and expansion grid sizes are each derived from kernel occupancy using 96 threads per block. The common runner owns all temporary CUDA buffers.",
+      "Device discovery failure returns backend_unavailable. Device setup, occupancy, allocation, execution, and synchronization exceptions become execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a9329da32a0830e4d4b67a5993baff5c6": {
+    "summary": "Copies the canonical CSR into the GraphMiner graph representation and invokes its induced-motif counter for three or four vertices.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "motif_size": "Motif vertex count; only 3 and 4 are supported.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "GraphMotifBackendResult with status, two or six owned uint64 counts, and solver-plus-synchronization time in milliseconds.",
+    "details": [
+      "Counts use the common order: size 3 = triangle, path of length two; size 4 = three-star, four-vertex path, tailed triangle, four-cycle, diamond, four-clique.",
+      "A graph with fewer vertices than the requested motif size returns a zero vector before device access. Vertex counts must fit signed 32-bit integers and adjacency counts signed 64-bit integers.",
+      "The solver receives the fixed adapter configuration 1 and 1024 for its final two arguments. Execution is serialized, followed by CUDA synchronization.",
+      "Unsupported size or index width returns unsupported; device selection failure returns backend_unavailable; synchronization failures and caught exceptions return execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a0210a96682035e5cb4ea2a10b2e9220a": {
+    "summary": "Counts k-cliques with GAMMA by expanding ordered embeddings from vertices whose degree is at least k - 1.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "k": "Requested clique size; the compiled adapter accepts 3 through 7.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "KCliqueBackendResult with status, a uint64 count, and expansion time in milliseconds. The adapter returns a count only, with no clique witnesses.",
+    "details": [
+      "Fewer than k vertices or no degree-eligible roots yields a successful zero count before device access. Vertex and adjacency-entry counts must fit unsigned 32-bit integers.",
+      "CSR offsets and access flags use device allocations; adjacency uses managed memory with a read-mostly hint. Root storage is released after initializing the first embedding level.",
+      "For each level, the expansion constraint requires adjacency to all prior vertices and their ordering, preventing permutation duplicates.",
+      "Calls are serialized. The cleanup helper attempts to release graph, embeddings, and access-controller storage on both normal completion and caught exceptions.",
+      "Unsupported k or sizes return unsupported; unusable devices return backend_unavailable; caught execution exceptions return execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a6d335ab2de087f58a03952d912bc7014": {
+    "summary": "Builds an unweighted gLeiden graph from incident vertices, computes communities, and maps the labels back to the original dense vertex order.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "CommunityDetectionBackendResult with status, one owned label per vertex, and elapsed GPU call time. native_modularity is absent for nontrivial executions and is zero for empty or all-isolate graphs.",
+    "details": [
+      "Isolated vertices bypass the upstream refinement kernel and receive separate singleton labels. An empty graph or a graph containing only isolates succeeds without a device query.",
+      "Vertex and adjacency-entry counts must fit signed 32-bit integers. Both adjacency directions are filled with unit edge weights.",
+      "Calls are serialized because the upstream original-to-current mapping is shared. Negative output labels return correctness_mismatch.",
+      "Unavailable devices return backend_unavailable. Device selection or pending CUDA errors use execution_failed; caught exceptions also return execution_failed.",
+      "The adapter supplies no resolution argument and does not claim that the heuristic partition is a globally optimal modularity partition.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ace868cb30adea4a14454543fc59658a3": {
+    "summary": "Counts label-preserving subgraph embeddings with gMatch after reordering the query and constructing candidate sets on the GPU.",
+    "parameters": {
+      "data_graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "data_labels": "One integer label per data vertex, in dense vertex order; borrowed for this call.",
+      "query_graph": "Borrowed simple undirected query CSR. Its labels and structure must meet the public gMatch support checks before this internal adapter is called.",
+      "query_labels": "One integer label per query vertex; label codes must use the same equality convention as data_labels.",
+      "initial_match_capacity": "Initial match-buffer capacity passed to the join routine; must be a positive value no larger than INT_MAX for nontrivial queries.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "SubgraphIsomorphismBackendResult with status, the embedding count including restored query symmetries, and milliseconds covering candidate construction and joining. It does not return mappings.",
+    "details": [
+      "The empty query has one embedding. A query larger than the data has none. A one-vertex query counts matching labels directly, before device access or capacity validation.",
+      "The public facade restricts the validated path to at most 16 query vertices and 32767 data vertices; this adapter relies on those checks and does not repeat them or label-length validation.",
+      "For a symmetry factor of one, the ordinary BFS/DFS join is used. Otherwise the symmetry-reduced join count is multiplied by the query's factor.",
+      "Calls are serialized. GPU query, data, and candidate allocations are explicitly deallocated on the successful path after synchronization; caught exceptions become execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a0eee63b081697765406209756617b050": {
+    "summary": "Invokes GPUMaximumClique on in-memory CSR and copies one maximum-clique witness, optionally retaining every returned tie.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller.",
+      "known_lower_bound": "Caller-supplied lower-bound size. This adapter intentionally does not use it for pruning because no witness accompanies it; the public facade checks it.",
+      "return_all_ties": "When true, request all tied maximum cliques from the upstream implementation and copy them into tied_cliques."
+    },
+    "returns": "MaximumCliqueBackendResult with status, the first returned clique, its size in relaxation_upper_size, upstream elapsed time, and optional tied_cliques. All returned vertex vectors own their storage.",
+    "details": [
+      "An empty graph succeeds before device access. Vertex and adjacency-entry counts must fit unsigned 32-bit integers.",
+      "Execution is serialized and uses the validated breadth-first configuration with one run and windowing disabled.",
+      "CUDA failure or a completed search with no clique returns execution_failed. An upstream out-of-memory flag returns resource_exhausted rather than presenting a partial search as complete.",
+      "The adapter copies vertex results but leaves common witness and lower-bound validation to the public facade.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a0c9941f1d3e3d3634a5c7fccf5b349fd": {
+    "summary": "Orients each undirected edge by degree and vertex ID, then counts k-cliques with the GraphSet kernel.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "k": "Requested clique size; only 3 through 6 are supported by this validated kernel.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "KCliqueBackendResult with status, the clique count, and kernel-plus-synchronization time in milliseconds. No clique sets are returned.",
+    "details": [
+      "Fewer than k vertices produces a zero count before device access. Vertex count must fit signed 32-bit integers and the undirected edge count signed 64-bit integers.",
+      "Edges point from lower degree to higher degree, breaking equal-degree ties by increasing vertex ID. The adapter rejects an oriented degree above 1280 because the kernel reserves twenty 64-bit partitions.",
+      "The oriented host graph owns copies of its arrays. Calls are serialized around the upstream counter.",
+      "Input limits return unsupported; unusable devices return backend_unavailable; caught host allocation failure returns resource_exhausted; other exceptions or synchronization failures return execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ae2c3f3e3762724b3b69e8099ea592907": {
+    "summary": "Runs GraphSet's non-induced three- or four-vertex motif counter, using a CPU triangle statistic to prepare the upstream graph.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "motif_size": "Motif vertex count; only 3 and 4 are supported.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "GraphMotifBackendResult with status, reordered owned counts, and upstream counter-plus-synchronization time in milliseconds. CPU triangle preprocessing is outside that measured interval.",
+    "details": [
+      "Counts use the common order: size 3 = triangle, path of length two; size 4 = three-star, four-vertex path, tailed triangle, four-cycle, diamond, four-clique.",
+      "Too few vertices or no adjacency entries returns a zero vector before device access. Vertex count and maximum degree must fit signed 32-bit integers; adjacency count and the triangle statistic must fit signed 64-bit integers.",
+      "The adapter sets GraphSet's shared maximum-intersection capacity while holding a mutex and passes owned copies of the CSR arrays to the upstream graph.",
+      "Unsupported sizes/statistics return unsupported; device failures return backend_unavailable; unexpected count-vector length returns internal_error.",
+      "Caught host allocation failure returns resource_exhausted. Synchronization failures and other caught exceptions return execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ae9edd2234f29ad063833df823b0f15e5": {
+    "summary": "Counts k-cliques with KCGPU's validated PIV-8-BE configuration after degree orientation and one-based remapping.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "k": "Requested clique size; the adapter accepts 3 through 10.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "KCliqueBackendResult with status, a uint64 count, and kernel execution time in milliseconds. Clique witnesses are not materialized.",
+    "details": [
+      "Fewer than k vertices returns a successful zero before device access. The adapter checks unsigned 32-bit vertex and undirected-edge counts, then adds an isolated zero sentinel for the upstream layout.",
+      "Oriented edges point from lower degree to higher degree, breaking ties by increasing vertex ID. Every oriented degree must be at most 1000.",
+      "A host calculation sums choose(oriented_degree, k - 1) bounds and rejects inputs for which it cannot certify that the count fits uint64.",
+      "DeviceGraph owns the device CSR/COO arrays. Allocation failure returns resource_exhausted; copy/kernel failures and caught exceptions return execution_failed; unsupported bounds return unsupported.",
+      "The adapter serializes the kernel invocation and explicitly releases the algorithm's resources and stream on successful completion.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a2f2f8ec45856d5f1fee653ae8a0e9aa1": {
+    "summary": "Runs KCoreGPU's level-by-level peeling kernels and copies the final core number for every vertex back to host memory.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "KCoreBackendResult with status, an owned vector of core numbers in input vertex order, and peeling-loop time in milliseconds. Transfers and graph preparation are outside the measured loop.",
+    "details": [
+      "An empty graph succeeds before device checks. A negative device ordinal returns invalid_argument; an unavailable device returns backend_unavailable.",
+      "BackendGraph converts counts, offsets, and degrees to unsigned 32-bit values. Conversion errors are caught as execution_failed by this wrapper.",
+      "At each level the kernels select and process vertices, synchronize, and read the cumulative processed count. The loop ends when all vertices have been processed.",
+      "Device adjacency, degree, progress, and work buffers are allocated for the call and explicitly freed along the handled success and CUDA-error paths.",
+      "The final degree buffer is interpreted as core numbers. CUDA operation failures and caught exceptions return execution_failed with no result vector.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a0492791d4c585fa02af7a66196431112": {
+    "summary": "Counts maximal cliques with the G2-AIMD sequential-expansion application and its GPU pipeline executor.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "BackendCountResult with status, the total maximal-clique count, and executor-plus-synchronization time in milliseconds. The adapter returns no clique vertex sets.",
+    "details": [
+      "An empty graph succeeds before device access. Vertex and edge-array sizes must fit the upstream index types; maximum degree must be strictly below the 100000-entry per-warp temporary capacity.",
+      "The requested device must also fit the upstream eight-slot device table. Calls are serialized.",
+      "All dense vertices are submitted as sources. The executor receives a 16000000-entry buffer cap and borrowed host CSR copies that remain alive through execution.",
+      "Input capacity limits return unsupported; device failures return backend_unavailable; caught execution errors return execution_failed. Public handling of isolated-vertex cliques belongs to the facade.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a66f44c4c0cf9fa9041bc2f2562eaaab7": {
+    "summary": "Builds the mce-gpu one-based CSR/COO layout, orders it by core priority, and runs maximal-clique counting.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "BackendCountResult with status, the maximal-clique count, and counter execution time in milliseconds. Graph preparation and core ordering are outside that measured interval.",
+    "details": [
+      "An empty graph succeeds before device access. The vertex count must be at most UINT_MAX - 1 to leave an isolated zero sentinel; adjacency count must fit unsigned 32-bit integers.",
+      "Managed graph arrays are copied and split by core priority. The original arrays are freed before counting; the oriented arrays are freed on the successful completion path.",
+      "The kernel uses one partition when the computed core bound is at most 300 and eight otherwise. Public handling of genuine isolated vertices belongs to the facade.",
+      "Unsupported sizes return unsupported; device selection failures return backend_unavailable; caught exceptions return execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a78ebd38ff89742f8ec9143760cc1180b": {
+    "summary": "Copies the canonical graph into RDMCE, orders vertices by degree, rebuilds its CSR, and invokes the pivot-based maximal-clique solver.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "BackendCountResult with status, the returned maximal-clique count, and solver-call time in milliseconds. Host conversion and ordering are outside that measured interval.",
+    "details": [
+      "An empty graph succeeds without CUDA. A negative device ordinal returns invalid_argument; a failed device query or selection returns backend_unavailable.",
+      "CanonicalRdmceGraph checks its vertex index range and requires an even number of adjacency entries, but assumes the caller has established full undirected symmetry.",
+      "The adapter returns a count only. It relies on the solver for execution and leaves common completeness/witness handling to the public facade.",
+      "Exceptions from graph conversion or the solver are translated to execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1aa985ccc6484e44807c452bb291dce8cc": {
+    "summary": "Runs Maximum-Clique-on-GPU with core reduction, a retained heuristic witness, and exact search on the reduced graph when the bound is not already met.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller.",
+      "known_lower_bound": "Caller-provided lower-bound size. This adapter ignores it for pruning and seeds search from an actual preprocessing clique; the public facade checks the caller's bound."
+    },
+    "returns": "MaximumCliqueBackendResult with status, one owned clique in original dense indices, a core-derived upper-size bound, and total adapter execution time in milliseconds. It does not enumerate tied optima.",
+    "details": [
+      "An empty graph succeeds before device access. Vertex count must be at most UINT_MAX - 1 for the zero sentinel, and adjacency count must fit unsigned 32-bit integers.",
+      "The preprocessing witness is returned immediately when its size equals maximum core number plus one, or when reduction leaves no candidate vertices.",
+      "Otherwise the adapter reduces by the witness size, sorts surviving vertices by core number, applies the same permutation to degrees, and runs the evaluation path that retains clique vertices.",
+      "A larger returned clique is mapped through the surviving original-name array and the one-based sentinel offset is removed. Missing preprocessing vertices or invalid reduced vertices cause execution_failed.",
+      "DeviceGraphStorage owns original, reduced, and split graph arrays. Calls are serialized; unusable devices return backend_unavailable, and caught exceptions return execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a9295d407218b17306c5e5decd01ee356": {
+    "summary": "Prepares device-specific launch dimensions and invokes the Mayura temporal feed-forward motif kernel through the common CUDA runner.",
+    "parameters": {
+      "input": "Borrowed, validated temporal input with dense signed 32-bit endpoints, events sorted by timestamp, and nonnegative relative timestamps and window. Event count, vertex count, and timestamp plus window must fit signed 32-bit values; normalization belongs to the public facade.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "TemporalMotifBackendResult with status, the motif count, and elapsed runner time in milliseconds. It returns a count only, not event triples.",
+    "details": [
+      "An empty event array succeeds before device access. Input format and range checks belong to the public temporal-motif facade.",
+      "The supported pattern is A to B, then B to C, then A to C on distinct vertices with strictly increasing event times and final-minus-first time no greater than max_time_span.",
+      "Dispatch and expansion grid sizes are each derived from kernel occupancy using 96 threads per block. The common runner owns all temporary CUDA buffers.",
+      "Device discovery failure returns backend_unavailable. Device setup, occupancy, allocation, execution, and synchronization exceptions become execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a830ced3a75ba715cb454b5b96fbaa260": {
+    "summary": "Runs a selected parallel Louvain or Leiden variant on a Kokkos graph with unit edge weights and degree-based vertex weights.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller.",
+      "algorithm": "One of parallel_louvain, parallel_leiden, or parallel_leiden_plus. The switch has no fallback for an invalid enum value.",
+      "resolution": "Modularity resolution passed to the objective; the public facade must validate that it is finite and nonnegative. This adapter does not repeat that check."
+    },
+    "returns": "CommunityDetectionBackendResult with status, an owned label per vertex, the upstream modularity objective, and elapsed milliseconds covering matrix construction, clustering, and result transfer.",
+    "details": [
+      "An empty graph succeeds with empty labels and modularity zero before device access. Vertex and adjacency counts must fit the compiled Kokkos index types, described by this adapter as signed 32-bit.",
+      "Calls are serialized. Kokkos is initialized once if needed and cannot be switched to another device by this adapter after initialization.",
+      "The modularity objective is refreshed after setting resolution, before convergence decisions and state copies.",
+      "The adapter fences the computation, copies labels to host, and rejects negative or out-of-range labels with correctness_mismatch. It does not promise globally optimal communities.",
+      "Unavailable devices return backend_unavailable; unsupported index ranges return unsupported; initialization conflicts and other caught exceptions return execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ace30ca592e00ce634f2eb43cc9415b85": {
+    "summary": "Builds a unit-weight device COO matrix, converts it to ToT's bitmap representation, and counts triangles through tensor operations.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "TriangleBackendResult with status, the undirected triangle count, and bitmap-conversion-plus-kernel time in milliseconds.",
+    "details": [
+      "Fewer than three vertices or fewer than three undirected edges returns zero without device access. Vertex and adjacency-entry counts must fit signed 32-bit integers.",
+      "The tensor routine counts directed closed walks on symmetric adjacency. The adapter requires divisibility by six and divides by six to obtain undirected triangles; a remainder produces correctness_mismatch.",
+      "Thrust and ToT containers manage temporary matrix storage. Unsupported sizes return unsupported, unusable devices backend_unavailable, and synchronization failures or caught exceptions execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1ad16b60cbb86ae561818ba0d33511c852": {
+    "summary": "Runs TurboBC from every vertex and converts the returned float betweenness scores to an owned double vector.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
+    },
+    "returns": "BetweennessCentralityBackendResult with status, one raw score per dense vertex, and upstream call time in milliseconds. Widening floats to double does not recover precision lost in the GPU computation.",
+    "details": [
+      "An empty graph succeeds before device access. Vertex count, adjacency count, and every CSR offset must fit signed 32-bit integers.",
+      "The adapter allocates host levels, path-count, and score arrays and calls the external routine with all vertices as sources, first source zero, and one repetition.",
+      "Scores are not rescaled here; the public facade applies its documented centrality conventions and checks.",
+      "Calls are serialized. A failed device selection, a nonzero external return code, a pending CUDA error, or a caught exception returns execution_failed. Index-width limits return unsupported.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1a167ad2dfec68d540865d9e8c8d876ae8": {
+    "summary": "Uses WeTriC's CPU degree-ordering preprocessing and CUDA triangle counter on an in-memory canonical graph.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
+      "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller.",
+      "spread": "Positive WeTriC spread tuning parameter. Its shared-memory requirement is (2 * 128 * spread + 1) uint32 values and must fit the selected device's per-block limit.",
+      "adjacency_matrix_length": "Positive WeTriC adjacency-matrix length, required to be a multiple of 64."
+    },
+    "returns": "TriangleBackendResult with status, the triangle count, and GPU counter call time in milliseconds. CPU preprocessing and graph release are outside that measured interval.",
+    "details": [
+      "Fewer than three vertices or fewer than three undirected edges returns zero before parameter or device checks. Vertex and adjacency-entry counts must fit unsigned 32-bit integers.",
+      "Invalid tuning values return invalid_argument. Oversized indices or shared-memory requirements return unsupported, and unusable devices return backend_unavailable.",
+      "The CPU preprocessing result is released after a successful counter call. The upstream exit hook throws WetricUpstreamError so an abort becomes execution_failed instead of terminating the process.",
+      "A pending CUDA error or any caught standard exception returns execution_failed.",
+      "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02cumbe_8cu_03_1aacf537e528d2be5f3731400505f2e240": {
+    "summary": "Converts a failed CUDA runtime result into a C++ exception with the operation name and CUDA error description.",
+    "parameters": {
+      "code": "CUDA status code returned by the operation being checked.",
+      "operation": "Description of the failed operation; a C-string argument must be non-null."
+    },
+    "returns": "Returns normally for cudaSuccess; otherwise throws std::runtime_error. It does not clear CUDA error state or release resources.",
+    "details": [
+      "The enclosing adapter catches standard exceptions and translates them to an execution_failed Status."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1anonymous__namespace_02cumbe_8cu_03_1_1ManagedArena_1af7252da7868e7752bf2467e41ea45713": {
+    "summary": "Constructs an empty owner for cuMBE CUDA managed-memory allocations.",
+    "parameters": {},
+    "returns": "An arena with no allocations. It allocates storage only when allocate<T> is called.",
+    "details": [
+      "The arena is noncopyable so registered allocations have one cleanup owner."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1anonymous__namespace_02cumbe_8cu_03_1_1ManagedArena_1abe065699801c599df8e7cdfda3a49c11": {
+    "summary": "Disables copying a managed-memory arena so two arenas cannot free the same recorded CUDA pointers.",
+    "parameters": {
+      "$1": "Source arena; this copy-construction overload is deleted."
+    },
+    "returns": "No object can be created through this overload; attempting to use it is a compile-time error."
+  },
+  "classgraphmine_1_1detail_1_1anonymous__namespace_02cumbe_8cu_03_1_1ManagedArena_1ab556f6426a08261028d5a1439bd2ba30": {
+    "summary": "Disables copy assignment of cuMBE allocation ownership.",
+    "parameters": {
+      "$1": "Source arena; this copy-assignment overload is deleted."
+    },
+    "returns": "No assignment is performed; using this overload is a compile-time error."
+  },
+  "classgraphmine_1_1detail_1_1anonymous__namespace_02cumbe_8cu_03_1_1ManagedArena_1a37feb1ca67ec31dbd2106450340fe857": {
+    "summary": "Releases the CUDA managed-memory pointers registered by this arena in reverse allocation order.",
+    "parameters": {},
+    "returns": "Every recorded pointer is passed to cudaFree. CUDA release errors are ignored and all previously returned pointers become invalid.",
+    "details": [
+      "The caller must ensure work using these allocations has completed before destruction."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1anonymous__namespace_02cumbe_8cu_03_1_1ManagedArena_1a1fb4b73ebeb63d76b714e9a28fed948d": {
+    "summary": "Allocates uninitialized managed storage for count elements and records its pointer for arena cleanup.",
+    "parameters": {
+      "count": "Number of T elements. Zero requests return null; count * sizeof(T) must fit std::size_t."
+    },
+    "returns": "A borrowed T* into CUDA managed memory owned by the arena, or nullptr for zero elements. The caller must not free it independently.",
+    "details": [
+      "An overflowing byte count throws std::overflow_error. A failed cudaMallocManaged call throws std::runtime_error through check_cuda.",
+      "Successful nonzero allocations are retained until the arena is destroyed; no per-allocation release API is provided."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02cumbe_8cu_03_1ad1510a2f89a311ff0bf5e72b97d09f6b": {
+    "summary": "Validates bipartite CSR boundaries, builds reverse adjacency, and chooses the smaller partition as cuMBE's candidate side.",
+    "parameters": {
+      "input": "Borrowed left-to-right bipartite CSR. Partition counts must already fit int; right_neighbors contains partition-local right vertex indices."
+    },
+    "returns": "An owned HostBipartiteGraph with signed-int node ranges and edge arrays in both directions. num_r is the smaller side; equal sizes place the original left side there.",
+    "details": [
+      "Requires left_offsets to have left_vertex_count + 1 entries, start at zero, end at the edge-array length, and contain valid nondecreasing row bounds.",
+      "Rejects an edge-array length above INT_MAX or any right neighbor outside its partition with std::invalid_argument.",
+      "The transpose is filled by scanning left vertices in increasing order. Duplicate edges are not removed and rows are not generally sorted by this helper."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02cumbe_8cu_03_1ac95379e26e099b59d203f98afa5e51f6": {
+    "summary": "Assigns the same value to a contiguous host-accessible range, including cuMBE managed-memory work arrays.",
+    "parameters": {
+      "destination": "Pointer to the first of count writable T elements; the caller owns the allocation.",
+      "count": "Number of consecutive elements to fill.",
+      "value": "Value copied into every destination element."
+    },
+    "returns": "The range [destination, destination + count) is overwritten through std::fill; ownership is unchanged.",
+    "details": [
+      "The destination must be accessible to the CPU. This is not a CUDA kernel launch or a device-only-memory fill."
+    ]
+  },
+  "dumato__motif_8cu_1a3ae1e6fd0dfa0cdd51fd8df409725145": {
+    "summary": "Declares the upstream CUDA motif kernel selected by the DuMato adapter. Its kernel body is supplied by the linked DuMato artifact.",
+    "parameters": {
+      "data": "Device-side DuMato state supplied by the engine, including graph/search storage and count buffers. It must remain valid until kernel completion."
+    },
+    "returns": "The kernel interface has no return value. The engine waits for it and the adapter later reads per-warp canonical-graph counters.",
+    "details": [
+      "This entry is a declaration boundary, not a first-party implementation. The adapter passes this function to GraphMineDumatoMotifCpu for launching."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02dumato__motif_8cu_03_1aa64b125549d2b21f7031c4255574ec6d": {
+    "summary": "Selects DuMato canonical-graph counters and reorders them into the public connected-motif vector.",
+    "parameters": {
+      "motif_size": "Requested motif size, either 3 or 4.",
+      "canonical_graph_counts": "Borrowed counts indexed by DuMato canonical graph ID. The vector must contain at least 3 entries for size 3 or 10 entries for size 4."
+    },
+    "returns": "A new vector with IDs [2, 1] for size 3 or [6, 3, 7, 4, 8, 9] for size 4. Unsupported sizes or too-short vectors return an empty vector.",
+    "details": [
+      "Counts use the common order: size 3 = triangle, path of length two; size 4 = three-star, four-vertex path, tailed triangle, four-cycle, diamond, four-clique.",
+      "Counters for other canonical graph IDs are ignored; this helper does not change count values or validate their numerical correctness."
+    ]
+  },
+  "g2miner__motif_8cu_1a42f0d2a99f6a5532c5f573540a78eb33": {
+    "summary": "Declares the GraphMiner motif solver called by the adapter with a prepared graph and count vector.",
+    "parameters": {
+      "graph": "Borrowed GraphMiner graph populated from the canonical CSR; it remains alive throughout the solver call.",
+      "k": "Motif vertex count; the adapter calls this boundary only with 3 or 4.",
+      "counts": "Caller-owned output vector, initialized to two zeros for k = 3 or six zeros for k = 4.",
+      "$4": "Unnamed upstream configuration argument; the first-party adapter passes 1.",
+      "$5": "Unnamed upstream configuration argument; the first-party adapter passes 1024."
+    },
+    "returns": "No direct return value; the upstream solver writes motif counts through counts. The adapter synchronizes CUDA and inspects the result status afterward.",
+    "details": [
+      "Only the declaration and call contract are present in this adapter. The linked upstream implementation owns the algorithm and interpretation of its final two configuration arguments."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02gamma__kclique_8cu_03_1ab3e9c7d4e7ff87507b8daeb480630268": {
+    "summary": "Attempts each GAMMA cleanup step independently so one cleanup exception does not prevent the remaining releases.",
+    "parameters": {
+      "data_graph": "Upstream graph whose clean() method is always attempted.",
+      "embeddings": "Embedding storage whose clean() method is called only when embeddings_initialized is true.",
+      "access_controller": "Access-controller storage whose clean() method is called only when access_initialized is true.",
+      "embeddings_initialized": "Whether embedding initialization was entered and its cleanup should be attempted.",
+      "access_initialized": "Whether access-controller initialization was entered and its cleanup should be attempted."
+    },
+    "returns": "Attempts embedding, access-controller, then graph cleanup. All exceptions from those calls are swallowed; the function is noexcept.",
+    "details": [
+      "The initialization flags are not reset. This helper does not independently establish that repeated cleanup is safe."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02gleiden_8cu_03_1a9fdc642a87d73b39a301ff64a6fb7d4d": {
+    "summary": "Wraps a CUDA runtime result in the GraphMine Status type and adds the operation context on failure.",
+    "parameters": {
+      "code": "CUDA status code to translate.",
+      "operation": "Non-null operation description included in an error message."
+    },
+    "returns": "Status::success() for cudaSuccess; otherwise execution_failed with the operation and CUDA error text.",
+    "details": [
+      "This helper does not throw intentionally, synchronize work, or query a new CUDA error; it describes the supplied code."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02gmatch_8cu_03_1afb364526d8af2bf74d46898435456cac": {
+    "summary": "Copies each CSR row into the nested signed-int adjacency vectors expected by gMatch.",
+    "parameters": {
+      "graph": "Borrowed CSR with valid row offsets and neighbor values representable as int; no range check is performed here."
+    },
+    "returns": "An owned vector of adjacency rows in original vertex and neighbor order, independent of the input storage.",
+    "details": [
+      "The helper reserves each row's degree, then casts and appends its neighbors. It does not sort, remove duplicate edges, or change directedness."
+    ]
+  },
+  "graphset__kclique_8cu_1a357a127908296dbaa2acb5e29c2ffe47": {
+    "summary": "Declares the upstream GraphSet k-clique counter used after GraphMine builds a forward-oriented graph.",
+    "parameters": {
+      "graph": "Borrowed GraphSet graph with degree-oriented adjacency and owned arrays kept alive by the caller for the duration of the call.",
+      "k": "Clique size; the adapter only calls the validated range 3 through 6."
+    },
+    "returns": "The unsigned-long-long count returned by the upstream implementation. CUDA synchronization and failure translation are performed by run_graphset_kclique.",
+    "details": [
+      "This source contains a declaration only. The adapter restricts oriented degree to 1280 before crossing this boundary."
+    ]
+  },
+  "graphset__motif_8cu_1ab62b87c72da52db7724088acca3ad853": {
+    "summary": "Declares the upstream GraphSet motif routine invoked with a prepared graph and a vector for raw counts.",
+    "parameters": {
+      "graph": "Borrowed GraphSet graph containing copied CSR arrays and a CPU-computed triangle statistic.",
+      "pattern_size": "Motif vertex count; the adapter uses only 3 or 4.",
+      "counts": "Caller-owned vector populated with the upstream motif ordering; it is empty when the adapter calls the routine."
+    },
+    "returns": "No direct return value; raw motif counts are written to counts. The adapter synchronizes CUDA and validates/reorders the vector afterward.",
+    "details": [
+      "Only this declaration belongs to the adapter; the implementation is supplied by GraphSet.",
+      "For four vertices the expected raw order is clique, diamond, tailed triangle, three-star, four-cycle, path."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02graphset__motif_8cu_03_1a3ecd7702a3bbe97c60c1f84176f4cfe3": {
+    "summary": "Counts undirected triangles on the CPU for the GraphSet graph statistics by visiting only increasing vertex triples.",
+    "parameters": {
+      "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract."
+    },
+    "returns": "A uint64 triangle count. Each triangle is counted once as source < middle < target; no witness triples are retained.",
+    "details": [
+      "For every forward neighbor of a source, the helper scans larger neighbors of that middle vertex and binary-searches the source row for the closing edge.",
+      "Sorted rows and simple symmetric adjacency are caller preconditions. Arithmetic overflow is not checked in this helper."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02graphset__motif_8cu_03_1a7ff7793e8fcb64cff7b85580e1950c15": {
+    "summary": "Maps the GraphSet motif counter vector into GraphMine's common connected-motif ordering.",
+    "parameters": {
+      "motif_size": "Requested motif size, either 3 or 4.",
+      "graphset_counts": "Borrowed raw counts. Exactly two entries are required for size 3 and six for size 4."
+    },
+    "returns": "A new uint64 vector: size-3 counts are copied in order; size-4 counts use indices [3, 5, 2, 4, 1, 0]. An unsupported size or unexpected vector length returns empty.",
+    "details": [
+      "Counts use the common order: size 3 = triangle, path of length two; size 4 = three-star, four-vertex path, tailed triangle, four-cycle, diamond, four-clique.",
+      "Only positions and the unsigned integer type are converted; values are not normalized."
+    ]
+  },
+  "structgraphmine_1_1detail_1_1anonymous__namespace_02kcgpu_8cu_03_1_1DeviceGraph_1a401e3059b70fa7e4f2a343dc1156a35c": {
+    "summary": "Releases the KCGPU graph owner's row-pointer, row-index, and column-index device arrays when present.",
+    "parameters": {},
+    "returns": "Each non-null pointer in value is passed to cudaFree. Free errors are ignored; the pointers must not be used after destruction.",
+    "details": [
+      "These arrays are allocated by run_kcgpu. This destructor does not release the separate algorithm object or its CUDA stream."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02kcore__gpu_8cu_03_1abdb46029fbb04434d756f1439d0c3d1d": {
+    "summary": "Wraps a CUDA runtime result in the GraphMine Status type and adds the operation context on failure.",
+    "parameters": {
+      "code": "CUDA status code to translate.",
+      "operation": "Non-null operation description included in an error message."
+    },
+    "returns": "Status::success() for cudaSuccess; otherwise execution_failed with the operation and CUDA error text.",
+    "details": [
+      "This helper does not throw intentionally, synchronize work, or query a new CUDA error; it describes the supplied code."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1anonymous__namespace_02kcore__gpu_8cu_03_1_1BackendGraph_1a3d695ebee910b752a57a92a1cc290b6d": {
+    "summary": "Copies the canonical CSR into KCoreGPU's host graph representation and derives degree statistics.",
+    "parameters": {
+      "graph": "Borrowed CSR with valid offsets and neighbors; vertex and adjacency-entry counts and every offset must fit unsigned int."
+    },
+    "returns": "A BackendGraph holding copied neighbor and offset arrays, a degree per vertex, maximum degree, integer average degree, and an initial kmax of zero.",
+    "details": [
+      "Throws std::invalid_argument for graph counts or offsets outside the 32-bit range. Array allocation can throw an allocation exception.",
+      "The input arrays are not transferred or modified. Call get() for a reference to the owned upstream graph used by the peeling adapter."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1anonymous__namespace_02kcore__gpu_8cu_03_1_1BackendGraph_1ae3f55f60b205eca6cd0cfbdd04313fe6": {
+    "summary": "Exposes the upstream KCoreGPU host graph stored inside this wrapper.",
+    "parameters": {},
+    "returns": "A mutable borrowed ::Graph& whose lifetime is limited to the BackendGraph owner. No graph data is copied or transferred."
+  },
+  "classanonymous__namespace_02rdmce__backend_8cu_03_1_1CanonicalRdmceGraph_1a9ed5157ed0c06daaa2847a45e3afd468": {
+    "summary": "Copies CSR rows into RDMCE's host adjacency lists while preserving the original dense vertex labels.",
+    "parameters": {
+      "graph": "Borrowed canonical CSR. Vertex count must fit vid_t; full undirected symmetry and valid sorted rows are caller preconditions."
+    },
+    "returns": "A constructed RDMCE graph with copied adjacency lists, dense identity labels, the undirected edge count, and maximum degree. degeneracy_ initially uses maximum degree as an upper bound.",
+    "details": [
+      "Throws std::invalid_argument if the vertex count exceeds vid_t or if the adjacency-entry count is odd. The parity check does not establish symmetry.",
+      "run_rdmce_count subsequently degree-orders this graph and converts it to the upstream CSR form."
+    ]
+  },
+  "structgraphmine_1_1detail_1_1anonymous__namespace_02maximum__clique__on__gpu__backend_8cu_03_1_1DeviceGraphStorage_1af6a2f8faa7df0a10b235b62b0ea5bcf3": {
+    "summary": "Constructs an empty owner for Maximum-Clique-on-GPU CSR/COO device arrays.",
+    "parameters": {},
+    "returns": "An owner with value-initialized graph metadata and null pointer fields; no CUDA allocation occurs."
+  },
+  "structgraphmine_1_1detail_1_1anonymous__namespace_02maximum__clique__on__gpu__backend_8cu_03_1_1DeviceGraphStorage_1a1e48daff0f849ba8b2c4608ea0a74734": {
+    "summary": "Disables copying a graph allocation owner to prevent duplicate ownership of CUDA pointers.",
+    "parameters": {
+      "$1": "Source owner; this copy-construction overload is deleted."
+    },
+    "returns": "No object is constructed. Use of this overload fails at compile time."
+  },
+  "structgraphmine_1_1detail_1_1anonymous__namespace_02maximum__clique__on__gpu__backend_8cu_03_1_1DeviceGraphStorage_1a1145849deb80c20ba6220fe263413202": {
+    "summary": "Disables copy assignment of the Maximum-Clique-on-GPU graph allocation owner.",
+    "parameters": {
+      "$1": "Source owner; this copy-assignment overload is deleted."
+    },
+    "returns": "No allocation ownership is copied. Use of this overload fails at compile time."
+  },
+  "structgraphmine_1_1detail_1_1anonymous__namespace_02maximum__clique__on__gpu__backend_8cu_03_1_1DeviceGraphStorage_1a639d17005af9cc4051a0e6f15d98bdbe": {
+    "summary": "Releases each non-null column-index, row-index, row-pointer, and split-pointer allocation held by the graph.",
+    "parameters": {},
+    "returns": "The graph's recorded pointers are passed to cudaFree in that order. Free errors are ignored and any borrowed pointer into these allocations is invalid afterward.",
+    "details": [
+      "The caller must finish work that uses these graph arrays before destroying the owner."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02maximum__clique__on__gpu__backend_8cu_03_1a1a9c81c1ad68c323f69ebfc2bd1dd59a": {
+    "summary": "Copies an upstream clique array to host and translates one-based vertex names back to GraphMine's zero-based indices.",
+    "parameters": {
+      "values": "Borrowed upstream GPUArray whose first count elements contain original one-based vertex names.",
+      "count": "Number of values requested; zero or a count above values.N returns an empty vector."
+    },
+    "returns": "An owned vector in input order with sentinel zeros omitted and every other value decremented by one. The vector can therefore contain fewer than count entries.",
+    "details": [
+      "The temporary CPU array returned by copytocpu is released with std::free after conversion. The source GPUArray remains owned by the caller.",
+      "This helper does not sort vertices, remove repeated nonzero names, or verify clique adjacency."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03_1aee165620a0a7aeb4c377f2e12e775e80": {
+    "summary": "Returns the process-lifetime bookkeeping record for the Kokkos runtime used by the clustering adapter.",
+    "parameters": {},
+    "returns": "A reference to one lazily allocated KokkosRuntime containing ownership, finalizer-registration, and selected-device state.",
+    "details": [
+      "The record is intentionally not destroyed during static teardown. ensure_kokkos registers a separate exit handler after initialization so Kokkos can finalize in the required order.",
+      "This function does not itself initialize or finalize Kokkos. Calls that change the state are serialized by the surrounding clustering adapter."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03_1acff417c1279f8d5911ad974a54043c91": {
+    "summary": "Initializes Kokkos for the requested CUDA device when needed, or verifies that an existing runtime is compatible with that request.",
+    "parameters": {
+      "device_id": "CUDA device ordinal expected by the caller. If Kokkos is already initialized, it must match the recorded or discovered active device."
+    },
+    "returns": "On normal return, Kokkos is initialized and no known device conflict exists. Throws std::invalid_argument if an existing runtime belongs to another device.",
+    "details": [
+      "When this adapter initializes Kokkos, it marks ownership and registers one exit handler that finalizes only while Kokkos is still initialized.",
+      "For an externally initialized runtime with unknown recorded device, it tries cudaGetDevice; it does not take ownership or register finalization.",
+      "Initialization exceptions propagate to run_pggc. A failed device-discovery query for an existing runtime leaves the device unknown rather than proving compatibility."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03_1a274cad78a7d44871e50c4a24a2137dc9": {
+    "summary": "Copies CSR topology to Kokkos device views and constructs the unweighted matrix representation used by parallel clustering.",
+    "parameters": {
+      "graph": "Borrowed canonical CSR with counts and indices already validated for ordinal_t and edge_offset_t. Kokkos must be initialized before calling."
+    },
+    "returns": "A matrix_t retaining the device neighbor and offset views. Its explicit edge-weight view is empty; the clustering caller marks the graph as having uniform edges.",
+    "details": [
+      "Host mirror views are filled and deep-copied to device storage. The returned matrix does not borrow the input graph's vectors.",
+      "This helper casts sizes and indices without independent range validation."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02pggc_8cpp_03_1a31ce9fe5766bc9860ec1b75c5442a81f": {
+    "summary": "Builds a Kokkos device vector whose entry for each vertex is its CSR degree.",
+    "parameters": {
+      "graph": "Borrowed CSR with valid offsets and index ranges already checked by the caller; Kokkos must be initialized."
+    },
+    "returns": "A PggcWeightView owning a device allocation of graph.vertex_count() values, filled with offsets[v + 1] - offsets[v] converted to value_t.",
+    "details": [
+      "The helper computes degrees in a host mirror and deep-copies them to the device. It does not read stored edge weights."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1temporal__cuda_1a2e56bc0e7bee1ab3696a6223fb26eeba": {
+    "summary": "Converts a failed CUDA runtime result into a C++ exception with the operation name and CUDA error description.",
+    "parameters": {
+      "code": "CUDA status code returned by the operation being checked.",
+      "operation": "Description of the failed operation; a C-string argument must be non-null."
+    },
+    "returns": "Returns normally for cudaSuccess; otherwise throws std::runtime_error. It does not clear CUDA error state or release resources.",
+    "details": [
+      "The enclosing adapter catches standard exceptions and translates them to an execution_failed Status."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1a4ad31e87d03433268c568e3caf6d02ea": {
+    "summary": "Constructs an empty noncopyable owner for a temporal-kernel CUDA buffer.",
+    "parameters": {},
+    "returns": "An object with a null device pointer and zero element count. No allocation or initialization occurs."
+  },
+  "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1a0bee6690e16eb5e67ad11147b9763e5d": {
+    "summary": "Constructs a temporal-kernel buffer and allocates device storage for count elements.",
+    "parameters": {
+      "count": "Number of T elements; count * sizeof(T) must fit std::size_t. Zero leaves the buffer empty."
+    },
+    "returns": "A buffer owning uninitialized CUDA device storage, released by its destructor. Allocation failure throws std::runtime_error.",
+    "details": [
+      "The constructor delegates to allocate. It does not initialize element values; call zero or copy_from before a kernel reads them."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1a352ced21dd5500ed8bfca3ec111bae56": {
+    "summary": "Disables copy construction of a CUDA buffer owner so its device allocation has a single cleanup owner.",
+    "parameters": {
+      "$1": "Source buffer; this overload is deleted."
+    },
+    "returns": "No buffer can be created through this overload; using it is a compile-time error."
+  },
+  "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1ae24d881454b1a83bf36f5f4912a279d4": {
+    "summary": "Disables copy assignment of a temporal CUDA buffer owner.",
+    "parameters": {
+      "$1": "Source buffer; this overload is deleted."
+    },
+    "returns": "No device pointer or ownership is copied; using this overload is a compile-time error."
+  },
+  "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1a0680a5cd037ed833bd22720b8366cbe3": {
+    "summary": "Frees the temporal-kernel device allocation if this buffer owns one.",
+    "parameters": {},
+    "returns": "Passes the stored pointer to cudaFree and ignores the return code. All pointers obtained with get() become invalid.",
+    "details": [
+      "The surrounding runner synchronizes its work before normal scope exit. Buffer destruction is also used during exception unwinding."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1aaff800bc981bed43ba3f56248832e044": {
+    "summary": "Allocates uninitialized CUDA storage and records the requested element count.",
+    "parameters": {
+      "count": "Number of T elements. This helper is intended for an empty buffer, and count * sizeof(T) must fit std::size_t."
+    },
+    "returns": "For nonzero count, installs the newly allocated device pointer and size. Zero leaves the current pointer and size unchanged.",
+    "details": [
+      "A failed cudaMalloc throws std::runtime_error. The byte multiplication is not overflow-checked.",
+      "The method does not free an existing allocation before overwriting its pointer; call it only on an unallocated buffer."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1a598ae5ca5cd038bae26ef8cd8a2b3760": {
+    "summary": "Clears every byte of the owned device allocation to zero.",
+    "parameters": {},
+    "returns": "The allocated range is zero-filled with cudaMemset; an empty buffer is unchanged. CUDA failure throws std::runtime_error.",
+    "details": [
+      "This applies byte-zero initialization, so callers must use types whose intended zero state is represented by all-zero bytes."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1a20d47c349bddc1865ecba3d6204fc75b": {
+    "summary": "Copies an entire host vector into an already allocated CUDA buffer with the same element count.",
+    "parameters": {
+      "source": "Borrowed host vector to copy. Its size must exactly match this buffer's recorded count."
+    },
+    "returns": "The device range contains a byte copy of source. Empty matching vectors require no CUDA copy; ownership of both allocations stays unchanged.",
+    "details": [
+      "A size mismatch throws std::logic_error before copying. A failed cudaMemcpy throws std::runtime_error.",
+      "The operation uses cudaMemcpyHostToDevice and does not resize or allocate the buffer. T must be suitable for this raw-memory copy."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1afdeb093a6cc7f3346cfbb13276564852": {
+    "summary": "Exposes the temporal buffer's device address without transferring allocation ownership.",
+    "parameters": {},
+    "returns": "A borrowed mutable T* into the owned CUDA allocation, or nullptr for an empty buffer. It is valid only while the owner retains the allocation.",
+    "details": [
+      "The returned address is for CUDA work or CUDA copy operations; it is not a host copy and must not be freed by the caller."
+    ]
+  },
+  "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1abb8557e00b70723c4476a329854fe47d": {
+    "summary": "Exposes the temporal buffer's device address without transferring allocation ownership.",
+    "parameters": {},
+    "returns": "A borrowed const T* into the owned CUDA allocation, or nullptr for an empty buffer. It is valid only while the owner retains the allocation.",
+    "details": [
+      "The returned address is for CUDA work or CUDA copy operations; it is not a host copy and must not be freed by the caller."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1temporal__cuda_1aba33776b11ee7d70c15f8729df170cea": {
+    "summary": "Builds temporal event indexes and the fixed feed-forward motif, owns the CUDA workspace, and calls a backend-specific runner.",
+    "parameters": {
+      "input": "Borrowed, validated temporal input with dense signed 32-bit endpoints, events sorted by timestamp, and nonnegative relative timestamps and window. Event count, vertex count, and timestamp plus window must fit signed 32-bit values; normalization belongs to the public facade.",
+      "device_id": "Device ordinal carried through the adapter interface. This helper does not read it or select a device; the caller must already have selected the correct CUDA context.",
+      "dispatch_blocks": "Dispatch-kernel grid size recorded in the Invocation passed to runner.",
+      "expansion_blocks": "Expansion-kernel grid size recorded in the Invocation passed to runner.",
+      "block_size": "Threads per block recorded in the Invocation; the current backend callers use 96.",
+      "backend_name": "Non-null backend label used in synchronization and failure messages.",
+      "runner": "Callable accepting the prepared Invocation and returning the motif count. It borrows all invocation pointers and must not retain them beyond this call."
+    },
+    "returns": "TemporalMotifBackendResult with success, the runner's count converted to uint64, and total setup/execute/synchronization time. Caught standard exceptions produce execution_failed, zero count, and zero time.",
+    "details": [
+      "Host event indexes group incoming and outgoing event indices by dense vertex while retaining event order within each group.",
+      "The fixed motif descriptors extend A to B with B to C and then constrain A to C. The invocation uses three motif edges and input.max_time_span as its time window.",
+      "Every event/index/descriptor array and work buffer is owned by a local DeviceBuffer. Offload storage has 2092 * 96 Context entries; counters and control buffers start at zero.",
+      "The helper synchronizes CUDA after runner returns, then its buffers are released on scope exit. Endpoint bounds, temporal ordering, index widths, and launch dimensions are caller preconditions."
+    ]
+  },
+  "turbobc_8cu_1a0e4154d65b41ca334b749ef3b1308df1": {
+    "summary": "Declares the C-linkage TurboBC entry point called with host CSR arrays and host scratch/output vectors.",
+    "parameters": {
+      "row_indices": "Borrowed host neighbor-index array of length nonzeros; the adapter passes its CSR neighbors through this upstream argument name.",
+      "column_offsets": "Borrowed host CSR offset array of length vertex_count + 1, represented as signed int.",
+      "levels": "Writable host traversal-level buffer of vertex_count integers, initialized to zero by the adapter.",
+      "path_counts": "Writable host path-count buffer of vertex_count floats, initialized to zero by the adapter.",
+      "scores": "Writable host output-score buffer of vertex_count floats, initialized to zero by the adapter.",
+      "source_count": "Number of source vertices requested; GraphMine passes vertex_count to process every source.",
+      "first_source": "First requested source index; GraphMine passes zero.",
+      "nonzeros": "Number of adjacency entries in row_indices.",
+      "vertex_count": "Number of dense graph vertices and entries in each per-vertex buffer.",
+      "repetition_count": "Upstream repetition count; GraphMine passes one."
+    },
+    "returns": "An integer result code interpreted by run_turbobc as success when zero and failure otherwise. Scores are delivered through scores.",
+    "details": [
+      "This adapter contains only the declaration. CUDA allocation details and traversal implementation belong to the linked TurboBC artifact.",
+      "GraphMine keeps all supplied arrays alive throughout the call, then checks the return code and CUDA error state before exposing a result."
+    ]
+  },
+  "namespacegraphmine_1_1detail_1_1anonymous__namespace_02turbobc_8cu_03_1a861d1b586fb77b8b7be669684d82910f": {
+    "summary": "Wraps a CUDA runtime result in the GraphMine Status type and adds the operation context on failure.",
+    "parameters": {
+      "code": "CUDA status code to translate.",
+      "operation": "Non-null operation description included in an error message."
+    },
+    "returns": "Status::success() for cudaSuccess; otherwise execution_failed with the operation and CUDA error text.",
+    "details": [
+      "This helper does not throw intentionally, synchronize work, or query a new CUDA error; it describes the supplied code."
+    ]
+  },
+  "classanonymous__namespace_02wetric_8cu_03_1_1WetricUpstreamError_1aeaa2b674457ee312d1e815c5049cc125": {
+    "summary": "Constructs the exception used to turn a WeTriC upstream abort into a recoverable adapter error.",
+    "parameters": {
+      "code": "Exit code supplied by the upstream routine; it is included in the exception message."
+    },
+    "returns": "A std::runtime_error-derived object with a message identifying the WeTriC abort code. Construction alone does not throw this object."
+  },
+  "namespaceanonymous__namespace_02wetric_8cu_03_1a6963ece81f652605f02ecb78f73668f1": {
+    "summary": "Replaces the upstream WeTriC exit call with an exception so the library caller can receive a Status failure.",
+    "parameters": {
+      "code": "Exit code requested by the upstream code, preserved in the exception message."
+    },
+    "returns": "Never returns normally; always throws WetricUpstreamError, including when code is zero.",
+    "details": [
+      "The WeTriC source is included with exit remapped to this function. run_wetric catches the exception as std::exception and reports execution_failed."
+    ]
+  }
+}

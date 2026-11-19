@@ -1,4 +1,17 @@
 {% extends "base.html" %}
 {% block header %}{% include "partials/original-header.html" %}{% endblock %}
 {% block tabs %}{% endblock %}
+{% block content %}
+<div class="gm-document{% if page.meta.native_reference %} gm-document--reference{% endif %}">
+  <div class="gm-page-kicker">
+    <a href="{{ nav.homepage.url | url }}">GraphMine</a>
+    {% if page.parent %}<span aria-hidden="true">/</span><span>{{ page.parent.title }}</span>{% endif %}
+  </div>
+  {% include "partials/content.html" %}
+  <nav class="gm-page-pagination" aria-label="Continue reading">
+    {% if page.previous_page %}<a href="{{ page.previous_page.url | url }}"><span>Previous</span>{{ page.previous_page.title }}</a>{% endif %}
+    {% if page.next_page %}<a href="{{ page.next_page.url | url }}"><span>Next</span>{{ page.next_page.title }}</a>{% endif %}
+  </nav>
+</div>
+{% endblock %}
 {% block footer %}{% include "partials/original-footer.html" %}{% endblock %}

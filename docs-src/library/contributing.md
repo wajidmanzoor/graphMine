@@ -7,7 +7,7 @@ Extend the native runtime while preserving the problem contract and verifiable o
 3. Register the operation and its parameter schema. Update the authoritative family/problem catalog and generated catalog artifacts. Keep research-paper references separate from executable backend entries.
 4. Declare output-port types, optional materialization, completeness, and provenance. Supply the view profile that lets the application interpret the output's type and shape.
 5. Add independent correctness evidence. Include small oracle cases, input rejection, edge cases, and bounded-output behavior. For a GPU profile, compare against CPU/reference semantics under the supported parameters and declared numerical tolerances.
-6. Rebuild and regenerate evidence for the changed native code. Update the reading guide, operation documentation, and source-bound site snapshot.
+6. Rebuild and regenerate evidence for the changed native code. Update the reading guide, operation documentation, and source-bound site snapshot. Review the affected function contracts and add documentation for every new function and parameter before refreshing the code-reference source binding.
 
 ## Checks to run
 
@@ -16,7 +16,7 @@ ctest --test-dir build/native-cpu --output-on-failure
 python -m pytest -q library/tests/test_family_taxonomy.py
 python3 tools/build_site_catalog.py --binary build/native-cpu/graphmine-native
 python3 tools/build_site_catalog.py --check
-node tools/build_code_docs.mjs
+node tools/build_code_docs.mjs --refresh-source-binding
 python3 tools/build_public_note.py
 mkdocs build --strict
 python3 tools/check_public_site.py
