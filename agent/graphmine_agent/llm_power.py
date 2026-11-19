@@ -67,7 +67,9 @@ def use_registry(registry):
 class LLMPower:
     def __init__(self, base, api_key, *, enabled=True, level=1, idle_minutes=20,
                  transport=None, lease_dir=None, wake_timeout=120, poll_seconds=.5,
-                 clock=time.time, monotonic=time.monotonic):
+                 clock=time.time, monotonic=time.monotonic, perf_recorder=None):
+        from . import perf
+        self.perf = perf_recorder or perf.Recorder()
         if level != 1:
             raise ValueError("GRAPHMINE_LLM_SLEEP_LEVEL supports only level 1")
         if not 0 < idle_minutes < float("inf"):
@@ -181,6 +183,8 @@ class LLMPower:
                 response = await self._http().get("v1/models")
                 response.raise_for_status()
                 self.last_wake_seconds = round(self._monotonic() - started, 3)
+                from .perf import trigger
+                self.perf.emit("llm_wake", duration_ms=self.last_wake_seconds*1000, trigger=trigger())
                 self._used()
                 log.info("Model at %s woke in %.3f seconds", self.base, self.last_wake_seconds)
                 await self._announce("awake")
@@ -231,7 +235,9 @@ class LLMPower:
             pass
 
     async def wake_now(self):
-        await self.ensure_awake()
+        from .perf import scope
+        with scope(trigger="admin"):
+            await self.ensure_awake()
         return self.status()
 
     async def refresh_status(self):
@@ -263,9 +269,12 @@ class LLMPower:
                         if sleeping is None:
                             return
                         if not sleeping:
+                            started = self._monotonic()
                             response = await self._http().post("sleep", params={"level": self.level, "mode": "wait"})
                             response.raise_for_status()
                             self.sleeping = True
+                            self.perf.emit("llm_sleep", duration_ms=(self._monotonic()-started)*1000,
+                                           trigger="idle" if idle else "admin")
                             log.info("Model at %s put to sleep (level %s)", self.base, self.level)
 
     async def sleep_now(self):
@@ -313,11 +322,12 @@ class LLMPowerRegistry:
         self._held, self._hold_lock = set(), asyncio.Lock()
 
     def for_url(self, base=None):
+        from .perf import recorder
         root = server_root(base or self.settings.llm_base_url)
         if root not in self.managers:
             power = self.managers[root] = LLMPower(root, self.settings.llm_api_key,
                 enabled=self.settings.llm_sleep_mode, level=self.settings.llm_sleep_level,
-                idle_minutes=self.settings.llm_idle_sleep_minutes)
+                idle_minutes=self.settings.llm_idle_sleep_minutes, perf_recorder=recorder(self.settings))
             power._run = self if self._stack is not None else None
             if self._started:
                 power.start()

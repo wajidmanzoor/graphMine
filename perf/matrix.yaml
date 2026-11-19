@@ -1,0 +1,16 @@
+rows:
+  - label: baseline
+    app: {}
+    vllm: {}
+  - label: concurrency-8
+    app: {GRAPHMINE_MAX_MODEL_CALLS: '8'}
+    vllm: {GRAPHMINE_LLM_MAX_NUM_SEQS: '8'}
+  - label: routing-thinking-off
+    app: {GRAPHMINE_LLM_THINKING_STAGES: analyst}
+    vllm: {}
+  - label: concurrency-8-routing-thinking-off
+    app: {GRAPHMINE_MAX_MODEL_CALLS: '8', GRAPHMINE_LLM_THINKING_STAGES: analyst}
+    vllm: {GRAPHMINE_LLM_MAX_NUM_SEQS: '8'}
+  - label: model-queue-180
+    app: {GRAPHMINE_MODEL_QUEUE_SECONDS: '180'}
+    vllm: {}

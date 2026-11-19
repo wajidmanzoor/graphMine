@@ -98,6 +98,7 @@ from .workflow_templates import register_template_routes
 from .workflow_api import register_workflow_routes
 from .api_errors import register_error_handlers
 from .web_assets import WebAssets, WebHeaders
+from . import perf
 from .llm_power import LLMPowerRegistry, LLMPowerBusy, get_registry
 
 
@@ -415,10 +416,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     register_account_routes(app)
     app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
     app.add_middleware(WebHeaders, allowed_origins=configured.allowed_origins)
+    app.add_middleware(perf.PerfMiddleware)
 
     register_error_handlers(app)
 
     router = APIRouter(prefix="/api", dependencies=[Depends(_authorization)])
+
+    @router.get("/admin/perf/snapshot")
+    async def perf_snapshot(request: Request):
+        from .account_api import administrator
+        administrator()
+        return await run_in_threadpool(perf.snapshot, _runtime(request))
 
     @router.get("/admin/llm/power")
     async def llm_power_status(request: Request):

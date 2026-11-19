@@ -10,6 +10,7 @@ import json
 import os
 import re
 import sqlite3
+from . import perf
 import tempfile
 from contextlib import closing, contextmanager
 from pathlib import Path
@@ -53,7 +54,7 @@ def open_index(path, stamp, build):
             expected = _json([VERSION, stamp()])
             connection = None
             try:
-                connection = sqlite3.connect(f"{path.as_uri()}?mode=ro", uri=True)
+                connection = perf.connect(f"{path.as_uri()}?mode=ro", uri=True)
                 found = connection.execute("SELECT value FROM meta WHERE key='stamp'").fetchone()
                 if found and found[0] == expected:
                     break
@@ -66,7 +67,7 @@ def open_index(path, stamp, build):
             fd, temporary = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
             os.close(fd)  # mkstemp creates private 0600 files.
             try:
-                with closing(sqlite3.connect(temporary)) as db, db:
+                with closing(perf.connect(temporary)) as db, db:
                     db.executescript("""
                         CREATE TABLE meta(key TEXT PRIMARY KEY,value TEXT NOT NULL);
                         CREATE TABLE ports(name TEXT PRIMARY KEY,metadata TEXT NOT NULL,total INTEGER NOT NULL,is_list INTEGER NOT NULL);

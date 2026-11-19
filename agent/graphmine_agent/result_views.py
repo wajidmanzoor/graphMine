@@ -808,7 +808,11 @@ def register_result_view_routes(router):
         vertex_limit: int = Query(2000, ge=1, le=50000),
         edge_limit: int = Query(5000, ge=0, le=100000),
     ):
-        return await run_in_threadpool(
+        import time
+        from . import perf
+        from starlette.responses import JSONResponse
+        started = time.monotonic()
+        value = await run_in_threadpool(
             result_view,
             request.app.state.runtime.analytics,
             workflow_id,
@@ -820,5 +824,12 @@ def register_result_view_routes(router):
             vertex_limit=vertex_limit,
             edge_limit=edge_limit,
         )
+        if perf.enabled():
+            record = request.app.state.runtime.analytics.get(workflow_id)
+            perf.annotate(workflow_id=workflow_id, turn_id=record.get("planning_turn_id"), session_id=record["session_id"])
+            perf.emit("result_view", profile=value.get("profile"), duration_ms=(time.monotonic()-started)*1000,
+                      response_bytes=len(JSONResponse(value).body), vertices=value.get("vertex_count"),
+                      edges=value.get("edge_count"))
+        return value
     from .view_actions import register_view_action_routes
     register_view_action_routes(router)

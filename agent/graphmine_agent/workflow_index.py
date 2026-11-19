@@ -2,6 +2,7 @@
 
 import json
 import sqlite3
+from . import perf
 from contextlib import closing
 
 from .analytics_modes import saved_mode
@@ -36,7 +37,7 @@ def initialize(db):
 
 def summaries(service, session_id):
     service.database.get_session(session_id)
-    with closing(sqlite3.connect(service.path)) as db:
+    with closing(perf.connect(service.path)) as db:
         return [saved_mode(json.loads(row[0])) for row in db.execute(
             "SELECT document FROM workflow_summaries WHERE session_id=? ORDER BY created_at,id", (session_id,))]
 
@@ -46,7 +47,7 @@ def manual_page(service, session_id, cursor, limit):
     where, args = ["session_id=?", "turn_id IS NULL"], [session_id]
     if cursor:
         where.append("(created_at,3,0,'workflow_'||id)<(?,?,?,?)"); args.extend(cursor)
-    with closing(sqlite3.connect(service.path)) as db:
+    with closing(perf.connect(service.path)) as db:
         db.row_factory = sqlite3.Row
         return [dict(row) for row in db.execute(
             "SELECT 'workflow_'||id id,created_at,3 lane,0 ordinal,NULL turn_id,document FROM workflow_summaries WHERE "

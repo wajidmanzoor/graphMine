@@ -16,6 +16,7 @@ from .analysis import (
 )
 from .answers import answer_interpretation, build_answer
 from .catalog import Catalog
+from . import perf
 from .commands import command_name
 from .commands import dispatch as dispatch_command
 from .config import Settings
@@ -105,6 +106,7 @@ class AgentService:
     async def close(self) -> None:
         await self.model.close()
 
+    @perf.turn
     async def plan(
         self,
         session_id: str,
@@ -162,7 +164,9 @@ class AgentService:
             from .llm_power import power_notice
             async def waking(state):
                 await activity("running", "Waking the model…" if state == "waking" else stage + "…")
-            with power_notice(waking):
+            perf_stage = {"RouteDecision": "route", "TurnDecision": "clarify",
+                          "GroundedNarrative": "analyst", "TemplateNarrative": "analyst"}.get(schema_name, "plan")
+            with power_notice(waking), perf.model_scope(perf_stage):
                 result = await self.model.generate(**kwargs)
         except Exception:
             await activity(
@@ -1176,6 +1180,7 @@ class AgentService:
             else "Explain the computed result.",
         )
 
+    @perf.turn
     async def chat(self, session_id: str, request: ChatRequest) -> ChatResponse:
         self.database.get_session(session_id)
         history = self.database.history

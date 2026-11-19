@@ -66,6 +66,11 @@ class Settings:
     llm_sleep_mode: bool = True
     llm_sleep_level: int = 1
     llm_idle_sleep_minutes: float = 20
+    perf_log: bool = False
+    perf_directory: Path | None = None
+    # None preserves every existing stage's provider request.
+    llm_thinking_stages: tuple[str, ...] | None = None
+    model_queue_seconds: float = 60
     history_directory: Path | None = None
     # Write-once training captures; they outlive conversation deletion.
     capture_directory: Path | None = None
@@ -213,6 +218,7 @@ class Settings:
             "account_daily_jobs",
             "server_daily_jobs",
             "max_model_calls",
+            "model_queue_seconds",
             "account_pending_jobs",
             "account_running_jobs",
             "account_job_seconds",
@@ -222,6 +228,12 @@ class Settings:
         ):
             if getattr(self, name) < 1:
                 raise ValueError(f"{name} must be positive")
+        if self.llm_thinking_stages is not None and set(self.llm_thinking_stages) - {
+            "family", "problem", "route", "clarify", "candidates", "plan", "analyst"
+        }:
+            raise ValueError("Unknown GRAPHMINE_LLM_THINKING_STAGES stage")
+        if not self.model_queue_seconds < float("inf"):
+            raise ValueError("model_queue_seconds must be finite")
         if bool(self.llm_planner_model) != bool(self.llm_analyst_model):
             raise ValueError(
                 "Configure both GRAPHMINE_LLM_PLANNER_MODEL and GRAPHMINE_LLM_ANALYST_MODEL"
@@ -386,6 +398,12 @@ class Settings:
             account_daily_jobs=_integer("GRAPHMINE_ACCOUNT_DAILY_JOBS", 10),
             server_daily_jobs=_integer("GRAPHMINE_SERVER_DAILY_JOBS", 100),
             max_model_calls=_integer("GRAPHMINE_MAX_MODEL_CALLS", 2),
+            model_queue_seconds=float(os.getenv("GRAPHMINE_MODEL_QUEUE_SECONDS", "60")),
+            perf_log=_boolean("GRAPHMINE_PERF_LOG", False),
+            perf_directory=Path(os.environ["GRAPHMINE_PERF_DIR"]).expanduser().resolve()
+            if os.getenv("GRAPHMINE_PERF_DIR") else None,
+            llm_thinking_stages=tuple(x.strip() for x in os.environ["GRAPHMINE_LLM_THINKING_STAGES"].split(",") if x.strip())
+            if "GRAPHMINE_LLM_THINKING_STAGES" in os.environ else None,
             account_pending_jobs=_integer("GRAPHMINE_ACCOUNT_PENDING_JOBS", 8),
             account_running_jobs=_integer("GRAPHMINE_ACCOUNT_RUNNING_JOBS", 4),
             account_job_seconds=_integer("GRAPHMINE_ACCOUNT_JOB_SECONDS", 300),
