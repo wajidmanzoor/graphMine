@@ -91,10 +91,11 @@
     d.node.append(message, el("div", {class: "dialog-footer"}, copy, button("Done", d.close, "primary"))); d.open();
   }
   function userFields(user = {}, defaults = {}, roleCards = false) {
+    const editing = Boolean(user.id);
     const name = el("input", {value: user.username || "", required: true, minlength: 3, maxlength: 64, autocomplete: "off", pattern: "[a-z0-9][a-z0-9_.-]{2,63}"});
     const role = el("select", {}, option("user", "Member"), option("admin", "Administrator")); role.value = user.role || "user";
-    const tokens = el("input", {type: "number", min: 0, max: state.users.server_token_limit, step: 1, value: user.daily_token_limit ?? defaults.daily_token_limit ?? ""});
-    const storage = el("input", {type: "number", min: 1, step: 1, value: user.storage_limit ?? defaults.storage_limit ?? ""});
+    const tokens = el("input", {type: "number", min: 0, max: state.users.server_token_limit, step: 1, value: user.daily_token_limit ?? (editing ? "" : defaults.daily_token_limit ?? ""), placeholder: defaults.daily_token_limit == null ? "" : `Default: ${n(defaults.daily_token_limit)}`});
+    const storage = el("input", {type: "number", min: 1, step: 1, value: user.storage_limit ?? (editing ? "" : defaults.storage_limit ?? ""), placeholder: defaults.storage_limit == null ? "" : `Default: ${bytes(defaults.storage_limit)}`});
     const graphmine = check("GraphMine", user.graphmine_access ?? true), studio = check("Dataset Studio", Boolean(user.studio_access));
     const explanation = hint(role.value === "admin" ? "Administrators manage users, services, and server settings." : "Members use GraphMine with their assigned allowances.");
     role.addEventListener("change", () => { explanation.textContent = role.value === "admin" ? "Administrators manage users, services, and server settings." : "Members use GraphMine with their assigned allowances."; });

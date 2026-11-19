@@ -117,8 +117,11 @@ class Settings:
     account_daily_jobs: int = 10
     server_daily_jobs: int = 100
     max_model_calls: int = 2
+    llm_max_num_seqs: int = 2
+    model_queue_seconds: int = 60
     account_pending_jobs: int = 8
     account_running_jobs: int = 4
+    account_user_running_jobs: int = 1
     account_job_seconds: int = 300
     account_queue_seconds: int = 900
     # Delete conversations after this many days without activity; 0 keeps them.
@@ -127,7 +130,8 @@ class Settings:
     # Online snapshots every backup_hours into this directory, keeping backup_keep.
     backup_directory: Path | None = None
     backup_hours: int = 24
-    backup_keep: int = 7
+    backup_keep: int = 14
+    perf_confirm_shared_gpu: bool = False
     account_storage_bytes: int = 512 * 1024 * 1024
     account_upload_bytes: int = 64 * 1024 * 1024
     # Serve HTTPS directly when no reverse proxy terminates TLS.
@@ -217,8 +221,11 @@ class Settings:
             "account_daily_jobs",
             "server_daily_jobs",
             "max_model_calls",
+            "llm_max_num_seqs",
+            "model_queue_seconds",
             "account_pending_jobs",
             "account_running_jobs",
+            "account_user_running_jobs",
             "account_job_seconds",
             "account_queue_seconds",
             "account_storage_bytes",
@@ -392,8 +399,11 @@ class Settings:
             account_daily_jobs=_integer("GRAPHMINE_ACCOUNT_DAILY_JOBS", 10),
             server_daily_jobs=_integer("GRAPHMINE_SERVER_DAILY_JOBS", 100),
             max_model_calls=_integer("GRAPHMINE_MAX_MODEL_CALLS", 2),
+            llm_max_num_seqs=_integer("GRAPHMINE_LLM_MAX_NUM_SEQS", 2),
+            model_queue_seconds=_integer("GRAPHMINE_MODEL_QUEUE_SECONDS", _integer("MODEL_QUEUE_SECONDS", 60)),
             account_pending_jobs=_integer("GRAPHMINE_ACCOUNT_PENDING_JOBS", 8),
             account_running_jobs=_integer("GRAPHMINE_ACCOUNT_RUNNING_JOBS", 4),
+            account_user_running_jobs=_integer("GRAPHMINE_ACCOUNT_USER_RUNNING_JOBS", 1),
             account_job_seconds=_integer("GRAPHMINE_ACCOUNT_JOB_SECONDS", 300),
             account_queue_seconds=_integer("GRAPHMINE_ACCOUNT_QUEUE_SECONDS", 900),
             retention_days=_integer("GRAPHMINE_RETENTION_DAYS", 0),
@@ -404,7 +414,8 @@ class Settings:
             if os.getenv("GRAPHMINE_BACKUP_DIR")
             else None,
             backup_hours=_integer("GRAPHMINE_BACKUP_HOURS", 24),
-            backup_keep=_integer("GRAPHMINE_BACKUP_KEEP", 7),
+            backup_keep=_integer("GRAPHMINE_BACKUP_KEEP", 14),
+            perf_confirm_shared_gpu=_boolean("GRAPHMINE_PERF_CONFIRM_SHARED_GPU", False),
             account_storage_bytes=_integer(
                 "GRAPHMINE_ACCOUNT_STORAGE_BYTES", 512 * 1024 * 1024
             ),

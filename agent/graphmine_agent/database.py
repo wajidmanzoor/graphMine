@@ -457,6 +457,8 @@ class Database:
             raise RecordNotFound(f"unknown file: {file_id}")
         record = StoredFile.model_validate_json(row["payload"])
         self.get_session(record.session_id)
+        from .admin_data import touch
+        touch(self, "file", file_id)
         return record
 
     def list_files(self, session_id: str) -> list[StoredFile]:
@@ -644,6 +646,8 @@ class Database:
             raise RecordNotFound(f"unknown result: {result_id}")
         record = ResultRecord.model_validate_json(row["payload"])
         self.get_session(record.session_id)
+        from .admin_data import touch
+        touch(self, "result", result_id)
         return record
 
     def latest_result(
@@ -662,7 +666,12 @@ class Database:
                 + "ORDER BY results.created_at DESC, results.rowid DESC LIMIT 1",
                 (session_id, graph_id) if graph_id else (session_id,),
             ).fetchone()
-        return None if row is None else ResultRecord.model_validate_json(row["payload"])
+        if row is None:
+            return None
+        record = ResultRecord.model_validate_json(row["payload"])
+        from .admin_data import touch
+        touch(self, "result", record.id)
+        return record
 
     def add_message(
         self,

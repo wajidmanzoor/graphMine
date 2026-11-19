@@ -175,12 +175,15 @@ async def scheduled_backups(runtime):
     settings = runtime.settings
     settings.backup_directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     while True:
+        settings = runtime.settings
         target = settings.backup_directory / (
             "graphmine-" + datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         )
         try:
             await run_in_threadpool(online_snapshot, settings.data_root, target)
             await run_in_threadpool(verify_snapshot, target)
+            from .admin_data import record_verification
+            await run_in_threadpool(record_verification, runtime, target)
             rotate_snapshots(settings.backup_directory, settings.backup_keep)
             _logger.info("backup written to %s", target)
         except Exception:  # A failed backup must never stop the service.
@@ -345,6 +348,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.runtime = runtime
         from .admin_monitor import Monitor
         app.state.admin_monitor = Monitor(runtime)
+        from .admin_performance import Performance
+        app.state.admin_performance = Performance(runtime)
         from .admin_lifecycle import cleanup as recover_admin_cleanup
         await run_in_threadpool(recover_admin_cleanup, runtime)
         retention = backups = previews = pools = None
@@ -375,6 +380,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             app.state.admin_monitor.start()
             yield
         finally:
+            await app.state.admin_performance.close()
             await app.state.admin_monitor.close()
             for task in (retention, backups, previews, pools):
                 if task:

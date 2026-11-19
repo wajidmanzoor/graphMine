@@ -5,7 +5,7 @@ import secrets
 from typing import Literal
 
 from fastapi import APIRouter, Depends, Query, Request
-from fastapi.responses import Response
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, ConfigDict, Field
 from starlette.concurrency import run_in_threadpool
 
@@ -63,6 +63,29 @@ class ModelSettings(Body):
 
 class Confirm(Body):
     confirm: bool = Field(strict=True)
+
+
+class CapacitySave(Confirm):
+    values: dict
+    expected: dict | None = None
+    restart_model: bool = False
+
+
+class StorageCleanup(Confirm):
+    kind: Literal["unused", "results"]
+    days: Literal[90, 180] = 90
+    identifiers: list[str] = Field(min_length=1, max_length=500)
+    preview_token: str = Field(min_length=64, max_length=64)
+
+
+class BackupRestore(Confirm):
+    confirm_name: str
+
+
+class PerformanceStart(Confirm):
+    test: Literal["benchmark", "load", "stress", "spike", "soak"]
+    label: str = Field(min_length=1, max_length=60)
+    lab_window: str = Field(min_length=1, max_length=200)
 
 
 def register_admin_routes(app):
@@ -128,6 +151,84 @@ def register_admin_routes(app):
     async def jobs(request: Request, view: Literal["active", "finished", "failed"] = "active"):
         from .admin_jobs import snapshot
         return snapshot(request.app.state.runtime, view)
+
+    @router.get("/capacity")
+    async def capacity(request: Request):
+        from .admin_settings import capacity as settings
+        monitor = request.app.state.admin_monitor
+        data = settings(request.app.state.runtime)
+        loaded = await monitor.loaded()
+        actual = loaded.get("max_requests")
+        key = "GRAPHMINE_LLM_MAX_NUM_SEQS"
+        data["effective"][key] = actual
+        for row in data["rows"]:
+            if row["key"] == key:
+                row["effective"] = actual
+                row["effective_reason"] = None if actual is not None else "The running model has not reported its request limit."
+        return {**data, "model_restart_available": bool(await monitor.unit("model"))}
+
+    @router.patch("/capacity")
+    async def save_capacity(body: CapacitySave, request: Request):
+        from .admin_settings import CAPACITY_KEYS, save
+        if body.confirm is not True:
+            raise ValueError("Confirm the capacity changes.")
+        if body.restart_model and not await request.app.state.admin_monitor.unit("model"):
+            raise AccountError("The model cannot be restarted by this deployment.", "service_unavailable", 409)
+        result = await run_in_threadpool(save, request.app.state.runtime, body.values, keys=CAPACITY_KEYS, target="capacity", expected=body.expected)
+        if body.restart_model:
+            result["restart"] = await request.app.state.admin_monitor.restart("model", True)
+        return result
+
+    @router.get("/data")
+    def storage(request: Request):
+        from .admin_data import inventory
+        return inventory(request.app.state.runtime)
+
+    @router.get("/data/cleanup-preview")
+    def storage_preview(request: Request, kind: Literal["unused", "results"], days: int = Query(90, ge=90, le=180), file_id: str | None = None):
+        from .admin_data import cleanup_preview
+        return cleanup_preview(request.app.state.runtime, kind, days, {file_id} if file_id else None)
+
+    @router.post("/data/cleanup")
+    async def clean_storage(body: StorageCleanup, request: Request):
+        from .admin_data import cleanup
+        runtime = request.app.state.runtime
+        async with runtime.analytics.edit_lock:
+            return await run_in_threadpool(cleanup, runtime, **body.model_dump())
+
+    @router.get("/data/files/{identifier}/download")
+    def file_download(identifier: str, request: Request):
+        from .admin_data import download_file
+        path, name = download_file(request.app.state.runtime, identifier)
+        return FileResponse(path, filename=name, media_type="application/octet-stream")
+
+    @router.post("/data/backups")
+    def create_backup(request: Request):
+        from .admin_data import backup_action
+        return backup_action(request.app.state.runtime, "create")
+
+    @router.post("/data/backups/{name}/verify")
+    def verify_backup(name: str, request: Request):
+        from .admin_data import backup_action
+        return backup_action(request.app.state.runtime, "verify", name=name)
+
+    @router.post("/data/backups/{name}/restore")
+    def restore_backup(name: str, body: BackupRestore, request: Request):
+        from .admin_data import backup_action
+        return backup_action(request.app.state.runtime, "restore", name=name, **body.model_dump())
+
+    @router.get("/performance")
+    def performance(request: Request):
+        return request.app.state.admin_performance.snapshot()
+
+    @router.get("/performance/runs/{identifier}/report")
+    def performance_report(identifier: str, request: Request):
+        return FileResponse(request.app.state.admin_performance.report(identifier), media_type="text/html")
+
+    @router.post("/performance/start", status_code=202)
+    async def start_performance(body: PerformanceStart, request: Request):
+        unit = await request.app.state.admin_monitor.unit("model")
+        return await request.app.state.admin_performance.begin(**body.model_dump(), unit=unit)
 
     @router.get("/jobs/{kind}/{identifier}")
     async def job_details(kind: Literal["workflow", "job"], identifier: str, request: Request):

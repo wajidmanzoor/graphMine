@@ -17,6 +17,8 @@ PUBLIC_FIELDS = ("id", "username", "role", "created_at", "created_by", "disabled
 
 class AdminAccounts:
     def _initialize_admin(self, db):
+        from .admin_data import initialize
+        initialize(db)
         columns = {row[1] for row in db.execute("PRAGMA table_info(accounts)")}
         migrating_sign_in = "last_sign_in" not in columns
         for name, definition in {
