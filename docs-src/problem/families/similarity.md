@@ -158,7 +158,7 @@ The [operation details](../explorer.md#problem/graph_edit_distance_mcs) list req
 
 These papers study this problem. A paper or linked repository does not by itself establish support in the compiled runtime.
 
-- [A GPU Based Maximum Common Subgraph Algorithm for Drug Discovery Applications](https://people.cse.nitc.ac.in/jayaraj/files/ipdps_online_paper.pdf). IEEE (Chicago), 2016. Author-hosted proceedings version; replaces an unavailable older PDF link. Checked November 19, 2026.
+- [A GPU Based Maximum Common Subgraph Algorithm for Drug Discovery Applications](https://people.cse.nitc.ac.in/sites/default/files/jayaraj/files/ipdps_online_paper.pdf). IEEE (Chicago), 2016. Author-hosted proceedings version; replaces an unavailable older PDF link. Checked November 19, 2026.
 - [Efficient Accelerated Graph Edit Distance Computation on GPU](https://arxiv.org/abs/2605.00830). ICCS 2026, 2026 · [Author code](https://gitlab.jsc.fz-juelich.de/dabah2/fast-ged.git).
 
 ## Pairwise Network Alignment {#network_alignment}

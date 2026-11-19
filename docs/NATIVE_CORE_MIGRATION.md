@@ -9,7 +9,7 @@ run without Python.
 The shared taxonomy uses `catalog/family.json` for family descriptions and
 `catalog/problems.json` for the problems and operation IDs within each family.
 It assigns all 70 formal problems and the record-query utility problem to
-14 families. [The generated family reference](FAMILIES.md) lists every problem
+14 families. [The generated family reference](https://wajidmanzoor.github.io/graphMine/problem/taxonomy/) lists every problem
 and its description. The native build validates and embeds these files; the
 Python wrapper obtains its catalog from that binary. `catalog/algo.json` is
 generated from existing native implementation profiles, keyed by problem and

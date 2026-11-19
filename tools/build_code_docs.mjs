@@ -35,6 +35,7 @@ WARN_IF_DOC_ERROR = YES
 WARN_AS_ERROR = FAIL_ON_WARNINGS
 HTML_COLORSTYLE = AUTO_LIGHT
 PROJECT_LOGO = tools/code_docs/graphmine-mark.svg
+HTML_EXTRA_STYLESHEET = tools/code_docs/doxygen-theme.css
 `;
 fs.rmSync(output, {recursive:true, force:true});
 fs.mkdirSync(output, {recursive:true});

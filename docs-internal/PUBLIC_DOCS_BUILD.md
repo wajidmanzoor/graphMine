@@ -1,6 +1,6 @@
 # Public documentation build
 
-Public source is exclusively `docs-src/`. The old `docs/` tree is retained only until the replacement is live; it is not a build input. Internal records and the original October technical note stay outside the public build.
+Public content source is exclusively `docs-src/`. The original visual design is retained through `overrides/` templates and `docs-src/assets/original*.css`; MkDocs supplies the documentation hierarchy, search, and build. The old `docs/` HTML and typed-library reference snapshot were removed after the replacement went live. Internal records and the original October technical note stay outside the public build.
 
 Install `requirements-docs.txt`, Doxygen, and `pdftotext`, then run:
 

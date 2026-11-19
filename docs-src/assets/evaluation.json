@@ -1,0 +1,47 @@
+{
+  "source_revision": "8d8487ade4bbfa3518fe12c059d9e2c87f8afd10",
+  "source_collection": "validation/family_routing_runtime",
+  "scope": "Historical native validation suites; not live-model routing accuracy or an all-input correctness proof.",
+  "suites": [
+    {
+      "suite": "Native binding tests",
+      "date": "2026-11-17",
+      "tests": 148,
+      "passed": 148,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "source_sha256": "7ba3bc7a3267acddb274a9a668889952fc8912febfc320fcba42ddb0cba7ff33"
+    },
+    {
+      "suite": "CPU completion tests",
+      "date": "2026-11-17",
+      "tests": 168,
+      "passed": 168,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "source_sha256": "626bc7cefb590293634a75c797a4868514607e3335c5deccae72d1fe9c055f19"
+    },
+    {
+      "suite": "Original GPU profile tests, run A",
+      "date": "2026-11-17",
+      "tests": 33,
+      "passed": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "source_sha256": "fb614568390fc7985e75ae45971168bafa4c2ab99f0e75170299b3e8602c6bf3"
+    },
+    {
+      "suite": "Original GPU profile tests, run B",
+      "date": "2026-11-17",
+      "tests": 34,
+      "passed": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "source_sha256": "a0874692e85addd3b0b9854e624da0efa53973b9fdfafcd514a404bf21dda9d9"
+    }
+  ]
+}
