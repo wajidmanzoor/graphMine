@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-19",
+  "scope": "Shared site styling and source-checked C++/CUDA function documentation",
+  "coverage": {
+    "functions": 1101,
+    "documented": 1101,
+    "source_files": 221,
+    "function_pages": 156,
+    "errors": 0
+  },
+  "strict_build": "passed",
+  "catalog_check": "passed",
+  "content_scan": {
+    "html_pages": 208,
+    "local_links": 86047,
+    "status": "passed"
+  },
+  "browser": {
+    "function_search": "passed",
+    "source_groups": "passed",
+    "implementation_expansion": "passed",
+    "site_search": "passed",
+    "catalog_and_redirects": "passed",
+    "mobile": [
+      {
+        "page": "home",
+        "width": 375,
+        "scroll": 375
+      },
+      {
+        "page": "guide",
+        "width": 375,
+        "scroll": 375
+      },
+      {
+        "page": "family",
+        "width": 375,
+        "scroll": 375
+      },
+      {
+        "page": "explorer",
+        "width": 375,
+        "scroll": 375
+      },
+      {
+        "page": "api",
+        "width": 375,
+        "scroll": 375
+      },
+      {
+        "page": "graph",
+        "width": 375,
+        "scroll": 375
+      }
+    ],
+    "browser_errors": []
+  },
+  "lighthouse_accessibility": {
+    "home": 100,
+    "family": 100,
+    "guide": 100,
+    "explorer": 100,
+    "api": 100,
+    "function": 100
+  },
+  "documentation_gates": [
+    {
+      "check": "missing_function",
+      "rejected": true
+    },
+    {
+      "check": "missing_parameter",
+      "rejected": true
+    },
+    {
+      "check": "stale_source_binding",
+      "rejected": true
+    }
+  ],
+  "cpp_examples": "Graph construction and C ABI documentation examples passed.\nC ABI catalog response parsed: 82 operations.",
+  "source_review": "Reviewed notes against declarations and bodies; independent spot-checks covered ownership, cache accounting, input validation, quality, and completeness. Corrected density-mode parameter keys, helper validation wording, and borrowed-reference lifetimes.",
+  "runtime_changes": false
+}

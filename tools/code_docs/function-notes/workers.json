@@ -1,0 +1,41 @@
+{
+  "structgraphmine_1_1detail_1_1isolated_1_1BackendError_1ac8d44f09ad9d611c6ce934fca85bf1a8": {
+    "summary": "Construct an exception carrying both a library status code and a readable backend failure message.",
+    "parameters": {"c": "Status classification retained in the public code member.", "s": "Message copied into the std::runtime_error base."},
+    "returns": "A BackendError object; constructing it does not itself throw the represented backend failure. Callers throw the object when needed.",
+    "details": ["what() exposes the stored message. The code member lets the caller distinguish missing backends, exhausted resources, execution failures, and failed correctness checks."]
+  },
+  "namespacegraphmine_1_1detail_1_1isolated_1aaec93bbadea4affecdd88c27a92e9c8b": {
+    "summary": "Reject an invalid caller input before an isolated algorithm is invoked.",
+    "parameters": {"condition": "Required input condition.", "message": "Explanation used if the condition is false."},
+    "returns": "No value and no effect when condition is true; otherwise throws std::invalid_argument with message."
+  },
+  "namespacegraphmine_1_1detail_1_1isolated_1af939f7effd5c8fc854aaadc2664da6b0": {
+    "summary": "Check a computed backend result against an independently verified condition.",
+    "parameters": {"condition": "Correctness condition that the returned result must satisfy.", "message": "Explanation of a failed result check."},
+    "returns": "No value when the condition holds; otherwise throws BackendError with StatusCode::correctness_mismatch."
+  },
+  "structgraphmine_1_1detail_1_1isolated_1_1TempDirectory_1ad9bcaddd4668e3d88629a1ce51f54ffa": {
+    "summary": "Create a unique temporary working directory for one isolated backend invocation.",
+    "parameters": {},
+    "returns": "An owner whose path member identifies the newly created directory.",
+    "details": ["Uses the platform temporary directory and mkdtemp. A creation failure throws BackendError with execution_failed. Destruction removes the directory and its contents."]
+  },
+  "structgraphmine_1_1detail_1_1isolated_1_1TempDirectory_1a347a2cb92bea65567c48737eaec19008": {
+    "summary": "Remove the temporary working directory and any files retained beneath it.",
+    "parameters": {},
+    "returns": "No value. Uses filesystem::remove_all with an error_code and ignores cleanup errors."
+  },
+  "namespacegraphmine_1_1detail_1_1isolated_1abb82e8c24d19215906721d309cd136db": {
+    "summary": "Resolve the executable used by a named isolated library backend.",
+    "parameters": {"name": "Backend suffix appended to the graphmine-worker- executable prefix.", "options": "Caller options, including an optional explicit worker_directory."},
+    "returns": "Executable path as a string; throws BackendError with backend_unavailable if no configured or installed fallback is found.",
+    "details": ["An explicit options directory takes precedence over the library's environment override. Otherwise it checks an executable-relative installation location and the compiled build/install locations.", "Explicit directory overrides are returned without testing that the executable exists; invocation performs the launch and reports a missing executable."]
+  },
+  "namespacegraphmine_1_1detail_1_1isolated_1aa4a57a71f8a5f2692d3a2c13f07b96fa": {
+    "summary": "Run an isolated algorithm executable, collect its output, and enforce its time and output-size limits.",
+    "parameters": {"name": "Backend suffix resolved by worker_path.", "arguments": "Argument strings passed directly to the executable; the resolved executable path is prepended. No shell command is constructed.", "options": "Execution options; the first selected device and timeout_seconds configure the invocation.", "temp": "Live temporary-directory owner used to retain captured output for this call.", "overrides": "Environment entries replaced or added for this backend invocation.", "deadline_override": "Optional absolute steady-clock deadline; when absent, timeout_seconds is measured from launch setup."},
+    "returns": "Captured standard output and standard error as one string after a normal zero exit. On failure, throws BackendError with backend_unavailable, execution_failed, or resource_exhausted.",
+    "details": ["The caller must supply a nonempty device selection. The selected ordinal is translated through an inherited visible-device list when one is present.", "The implementation polls completion and rejects output larger than 64 MiB. On timeout or oversized output it terminates the owned child process group, or the child alone when group inheritance is enabled, and waits for it.", "A nonzero or abnormal exit produces an execution_failed error containing at most the final 2,000 captured characters. The temporary directory must remain alive until this function returns."]
+  }
+}

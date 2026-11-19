@@ -50,3 +50,4 @@ agent/frontend/node_modules/
 /site/
 /docs-src/library/api/
 /docs-src/research-note/graphmine.pdf
+/build/docs-reference/

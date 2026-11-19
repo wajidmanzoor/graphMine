@@ -356,7 +356,7 @@ Read the [public documentation](https://wajidmanzoor.github.io/graphMine/) for t
 
 Reader-facing source lives in [`docs-src/`](docs-src/), with the homepage and shared original-design templates in [`overrides/`](overrides/). MkDocs builds the site through GitHub Actions. Internal working records are kept separately in [`docs-internal/`](docs-internal/).
 
-The family pages and backend table are generated from the catalog and a source-bound native snapshot. The [code reference](https://wajidmanzoor.github.io/graphMine/library/code-reference/) is regenerated from current native C++/CUDA sources, rather than a committed HTML snapshot. See [documentation build instructions](docs-internal/PUBLIC_DOCS_BUILD.md) for checks and regeneration.
+The family pages and backend table are generated from the catalog and a source-bound native snapshot. The [code reference](https://wajidmanzoor.github.io/graphMine/library/code-reference/) combines declarations extracted from current C++/CUDA sources with reviewed descriptions of every function, its parameters, return values, and ownership. It uses the same site layout, with searchable functions and expandable implementation excerpts. See [documentation build instructions](docs-internal/PUBLIC_DOCS_BUILD.md) for checks and regeneration.
 
 ## Research artifacts
 

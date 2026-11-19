@@ -1,53 +1,58 @@
 #!/usr/bin/env node
-// Generate current native documentation. Generated HTML is never a source input.
+// Doxygen extracts declarations; the shared site renders reviewed function docs.
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const output = path.join(root, 'docs-src/library/api');
+const output = path.join(root, 'build/docs-reference');
+const publicOutput = path.join(root, 'docs-src/library/api');
 const config = `
 PROJECT_NAME = "GraphMine native runtime"
-PROJECT_BRIEF = "Current C++/CUDA API and implementation"
 OUTPUT_DIRECTORY = "${output}"
-HTML_OUTPUT = .
-INPUT = tools/code_docs/native-main.dox library/include library/runtime library/src/core library/src/backends library/src/problems
+INPUT = library/include library/runtime library/src
 RECURSIVE = YES
-FILE_PATTERNS = *.h *.hpp *.cuh *.cpp *.cc *.cu *.dox
+FILE_PATTERNS = *.h *.hpp *.cuh *.cpp *.cc *.cu
+EXTENSION_MAPPING = cu=C++ cuh=C++
 EXCLUDE_PATTERNS = */tests/* */upstream/* */build/* */third_party/*
 EXCLUDE_SYMLINKS = YES
 EXTRACT_ALL = YES
-EXTRACT_PRIVATE = NO
+EXTRACT_PRIVATE = YES
 EXTRACT_STATIC = YES
+EXTRACT_ANON_NSPACES = YES
+ENABLE_PREPROCESSING = NO
 SOURCE_BROWSER = YES
-INLINE_SOURCES = NO
-STRIP_CODE_COMMENTS = NO
 FULL_PATH_NAMES = NO
 STRIP_FROM_PATH = "${root}/"
 STRIP_FROM_INC_PATH = "${root}/library/include/" "${root}/"
-GENERATE_TREEVIEW = YES
+GENERATE_HTML = NO
 GENERATE_LATEX = NO
-GENERATE_XML = NO
+GENERATE_XML = YES
 HAVE_DOT = NO
 QUIET = YES
 WARN_IF_UNDOCUMENTED = NO
 WARN_IF_DOC_ERROR = YES
 WARN_AS_ERROR = FAIL_ON_WARNINGS
-HTML_COLORSTYLE = AUTO_LIGHT
-PROJECT_LOGO = tools/code_docs/graphmine-mark.svg
-HTML_EXTRA_STYLESHEET = tools/code_docs/doxygen-theme.css
 `;
-fs.rmSync(output, {recursive:true, force:true});
-fs.mkdirSync(output, {recursive:true});
-const result = spawnSync(process.env.DOXYGEN_EXECUTABLE || 'doxygen', ['-'], {
-  cwd:root, input:config, encoding:'utf8', maxBuffer:16*1024*1024
+fs.rmSync(output, { recursive: true, force: true });
+fs.mkdirSync(output, { recursive: true });
+const extract = spawnSync(process.env.DOXYGEN_EXECUTABLE || 'doxygen', ['-'], {
+  cwd: root, input: config, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024
 });
-if (result.error) throw result.error;
-if (result.status !== 0) {
-  process.stderr.write(result.stderr || result.stdout);
-  process.exit(result.status || 1);
+if (extract.error) throw extract.error;
+if (extract.status !== 0) {
+  process.stderr.write(extract.stderr || extract.stdout);
+  process.exit(extract.status || 1);
 }
-for (const required of ['index.html','files.html','namespaces.html']) {
-  if (!fs.existsSync(path.join(output,required))) throw new Error('Missing generated page: '+required);
-}
-console.log('Built current native API and source reference in docs-src/library/api');
+const allowed = new Set(['--draft', '--refresh-source-binding']);
+const options = process.argv.slice(2);
+if (options.some(arg => !allowed.has(arg))) throw new Error('Unknown reference build option');
+// Keep the previous reference if extraction fails, but never mix old and new pages.
+fs.rmSync(publicOutput, { recursive: true, force: true });
+const render = spawnSync(process.env.PYTHON || 'python3', [
+  'tools/build_native_reference.py', '--xml', path.join(output, 'xml'), ...options
+], { cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+if (render.error) throw render.error;
+process.stdout.write(render.stdout);
+process.stderr.write(render.stderr);
+process.exit(render.status ?? 1);

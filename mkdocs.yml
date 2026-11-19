@@ -70,12 +70,16 @@ extra_css:
   - assets/site.css
   - assets/original.css
   - assets/original-adapter.css
+  - assets/documentation.css
   - https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js
   - https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js
   - assets/site.js
   - assets/explorer.js
+  - assets/native-reference.js
+hooks:
+  - tools/docs_hooks.py
 validation:
   nav:
     omitted_files: warn

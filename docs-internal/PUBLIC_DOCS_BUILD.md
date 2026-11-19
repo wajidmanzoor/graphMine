@@ -16,4 +16,8 @@ python3 tools/check_public_site.py
 
 `catalog/problem_reading_guide.json` supplies mathematical notation and example questions. Contracts and runtime metadata remain authoritative. `catalog/site_reference_links.json` records public-link corrections without rewriting historical source provenance.
 
-Doxygen output and the public reading-edition PDF are generated during the Actions build. They are not hand-maintained snapshots. The public note's original is retained in `docs-internal/research-note/`.
+Doxygen 1.9.8 extracts XML from all first-party public headers, the native runtime, and library sources, including CUDA and conditional definitions. The site renders those symbols as ordinary documentation pages, using reviewed contracts in `tools/code_docs/function-notes/`. The generator rejects missing function descriptions, incomplete parameter coverage, and stale source bindings. It does not infer explanations from function names.
+
+After changing library code, review affected notes, then run `node tools/build_code_docs.mjs --refresh-source-binding`. Commit the reviewed notes and updated `tools/code_docs/source-manifest.json` together. `--draft` is available only for local editing; CI always requires complete documentation. The Actions build uses Ubuntu 24.04 to keep the Doxygen parser version consistent.
+
+The reference pages and public reading-edition PDF are generated during the Actions build. They are not hand-maintained HTML snapshots. The public note's original is retained in `docs-internal/research-note/`.
