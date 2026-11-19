@@ -8,6 +8,7 @@ site_dir: site
 strict: true
 theme:
   name: material
+  custom_dir: overrides
   logo: assets/logo.svg
   favicon: assets/logo.svg
   font:
@@ -67,6 +68,8 @@ markdown_extensions:
       generic: true
 extra_css:
   - assets/site.css
+  - assets/original.css
+  - assets/original-adapter.css
   - https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js
@@ -88,6 +91,7 @@ nav:
       - The problem: problem/index.md
       - Taxonomy: problem/taxonomy.md
       - Guarantees: problem/guarantees.md
+      - Evaluation: problem/evaluation.md
       - Research: problem/research.md
       - Catalog explorer: problem/explorer.md
       - Families:
@@ -107,6 +111,13 @@ nav:
           - "Learning & embeddings": problem/families/learning.md
   - Use the app:
       - Get started: guide/getting-started.md
+      - Asking questions: guide/asking-questions.md
+      - Results: guide/results.md
+      - Data: guide/data.md
+      - Projects and sharing: guide/projects-and-sharing.md
+      - Allowances and waiting: guide/limits.md
+      - Privacy and deletion: guide/privacy.md
+      - FAQ and glossary: guide/faq.md
   - Library:
       - Install: library/install.md
       - Graph format: library/graph-format.md
@@ -117,9 +128,11 @@ nav:
       - CPU and GPU backends: library/backends.md
       - Record queries: library/record-queries.md
       - Reference profiles: library/reference-profiles.md
+      - Contributing: library/contributing.md
       - Code reference: library/code-reference.md
   - How it works:
       - Overview: how-it-works/index.md
       - From question to answer: how-it-works/from-question-to-answer.md
       - Language model: how-it-works/language-model.md
       - Results and views: how-it-works/results-and-views.md
+  - Changelog: changelog.md

@@ -22,7 +22,7 @@ implementation and parameter planning then uses their operation contracts.
 When the question explicitly needs steps across families, those dependencies
 are available in the later operation stage. One family reroute is allowed;
 a second failure asks for clarification. Confirmed choices and saved UI actions
-retain their existing direct paths. [Families and problems](FAMILIES.md) is
+retain their existing direct paths. [Families and problems](https://wajidmanzoor.github.io/graphMine/problem/taxonomy/) is
 generated from the same catalogs.
 
 Calculation choices contain one or two supported alternatives. The second needs

@@ -1,0 +1,41 @@
+    <header class="site-header" data-header data-md-component="header">
+      <div class="nav-shell">
+        <a class="brand" href="{{ nav.homepage.url | url }}" aria-label="GraphMine home">
+          <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M12 14 25 8l12 8-3 17-13 8-12-10Z" />
+            <path d="m12 14 12 12m13-10L24 26m-3 15 3-15" />
+            <circle cx="12" cy="14" r="4" />
+            <circle cx="37" cy="16" r="4" />
+            <circle cx="21" cy="41" r="4" />
+            <circle cx="24" cy="26" r="4" />
+          </svg>
+          <span>Graph<span class="brand-accent">Mine</span></span>
+        </a>
+
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="public-doc-navigation"
+          data-doc-menu-toggle
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <span></span><span></span><span></span>
+        </button>
+
+        <nav id="primary-navigation" class="primary-nav" aria-label="Main navigation">
+<a href="{{ 'index.html' | url }}">Overview</a>
+<a href="{{ 'guide/getting-started/' | url }}">Use the app</a>
+<a href="{{ 'library/install/' | url }}">Library</a>
+<a href="{{ 'problem/taxonomy/' | url }}">Problem families</a>
+<a href="{{ 'how-it-works/' | url }}">How it works</a>
+<a class="nav-github" href="https://github.com/wajidmanzoor/graphMine">GitHub ↗</a>
+</nav>
+<div class="original-header-tools">
+{% include "partials/palette.html" %}
+{% include "partials/javascripts/palette.html" %}
+<label class="md-header__button md-icon original-search-toggle" role="button" tabindex="0" for="__search" aria-label="Search documentation">{% include ".icons/material/magnify.svg" %}</label>
+{% include "partials/search.html" %}
+</div>
+      </div>
+    </header>

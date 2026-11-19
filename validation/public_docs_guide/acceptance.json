@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-19",
+  "scope": "Public guide, original visual design restoration, and legacy HTML retirement",
+  "foundation_revision": "300ee711de5276f80dd9fb052a1f38e063bbca3c",
+  "strict_mkdocs_build": "passed",
+  "catalog_generation_check": "passed",
+  "current_native_doxygen": "passed",
+  "public_content_and_local_links": {
+    "html_pages": 1052,
+    "local_links": 102172,
+    "status": "passed"
+  },
+  "browser": {
+    "functional": "passed",
+    "mobile": [
+      {
+        "page": "",
+        "width": 375,
+        "scroll": 375
+      },
+      {
+        "page": "problem/families/dense/",
+        "width": 375,
+        "scroll": 375
+      },
+      {
+        "page": "guide/getting-started/",
+        "width": 375,
+        "scroll": 375
+      },
+      {
+        "page": "problem/explorer/",
+        "width": 375,
+        "scroll": 375
+      }
+    ],
+    "browser_errors": []
+  },
+  "lighthouse_accessibility": {
+    "home": 100,
+    "family": 100,
+    "guide": 100,
+    "explorer": 100
+  },
+  "external_links": {
+    "tool": "lychee 0.24.2",
+    "destinations": 299,
+    "successful": 278,
+    "http_403_unverified": [
+      "https://dl.acm.org/doi/10.1145/3588707",
+      "https://dl.acm.org/doi/10.1145/3769792",
+      "https://doi.org/10.1145/3208040.3208041",
+      "https://doi.org/10.1145/3458744.3474047",
+      "https://doi.org/10.1145/3458817.3476153",
+      "https://doi.org/10.1145/3459637.3482344",
+      "https://doi.org/10.1145/3581784.3607059",
+      "https://doi.org/10.1145/3581784.3607071",
+      "https://doi.org/10.1145/3581784.3613213",
+      "https://doi.org/10.1145/3649329.3656238",
+      "https://doi.org/10.1145/3658617.3697551",
+      "https://doi.org/10.1145/3669940.3707274",
+      "https://doi.org/10.1145/3673038.3673105",
+      "https://doi.org/10.1145/3676642.3736116",
+      "https://doi.org/10.1145/3711925",
+      "https://doi.org/10.1145/3802023",
+      "https://doi.org/10.1145/3818671.3818675",
+      "https://doi.org/10.14778/3551793.3551806",
+      "https://escholarship.org/uc/item/7j96s061",
+      "https://www.mdpi.com/2079-3197/13/2/40",
+      "https://www.researchgate.net/publication/395608469_iG-kway_Incremental_k-way_Graph_Partitioning_on_GPU"
+    ],
+    "other_errors": 0,
+    "status": "incomplete: publisher HTTP 403 responses"
+  },
+  "screenshots": {
+    "files": [
+      "docs-src/assets/screenshots/data.png",
+      "docs-src/assets/screenshots/results.png"
+    ],
+    "source": "Current app in an isolated test account with anonymized Yelp example fixtures. Saved computed results are replayed through the real result viewer. No model-accuracy or performance claim is made."
+  },
+  "full_reports": "Retained in the local public-site-refresh-20261118 validation workspace."
+}

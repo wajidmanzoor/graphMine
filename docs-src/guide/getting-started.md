@@ -1,16 +1,31 @@
 # Get started with the app
 
-Open GraphMine, choose an input, and run your first graph question.
+Run a first question and learn where to find the input, answer, and evidence.
 
-1. Ask the person who invited you for access, then [sign in to GraphMine](https://graphmine.autographmine.com/#).
-2. Start a **New conversation**. The sidebar keeps your saved conversations; **Chat**, **Data**, and **Results** are the main work areas.
-3. Open **Data** or the attachment button. Upload a graph, choose an available example, or use **Try example team data**.
-4. In **Normal** mode, ask a specific question such as “How many triangles are in this graph?”
-5. Read the proposed problem and operation. Answer a clarification or choose **Use this option** when prompted.
-6. Read the answer, then open **Results** to inspect the returned graph, table, and downloads.
+## Sign in and start a conversation
 
-For a two-sided Yelp example, ask “Find maximal groups of users and businesses where every selected user is connected to every selected business.” This asks for a biclique, not a clique of people. Use it when the Yelp example is available and its two sides are declared.
+Ask the person who invited you for access, then [open GraphMine](https://graphmine.autographmine.com/#) and sign in. Choose **New conversation**, select a domain that fits your data, and optionally give the conversation a name. The domain supplies context; it does not change an algorithm's definition.
 
-**Expert** mode lets you review the plan and parameters before approval. A GPU preference changes implementation selection, not the meaning of your question.
+The sidebar holds saved conversations. **Chat** is where you ask questions, **Data** is where you select and inspect inputs, and **Results** is where you explore completed calculations. **Activity** shows progress and details for the current work.
 
-[Understand the guarantees](../problem/guarantees.md) · [See how a question becomes a result](../how-it-works/from-question-to-answer.md)
+![GraphMine Data workspace with example inputs](../assets/screenshots/data.png)
+
+*The current interface in a test account, using anonymized example data.*
+
+## Try a first question
+
+1. Open **Data** or the attachment button in Chat.
+2. Choose an available example dataset. If Yelp is available, use a saved user–business graph with its two sides declared. You can also upload a graph or choose **Try example team data**.
+3. Confirm which input is selected. Check the vertex and relationship counts, direction, and record types.
+4. Return to **Chat** and choose **Normal** mode.
+5. For Yelp, ask: “Find maximal groups of users and businesses where every selected user is connected to every selected business.” This asks for **maximal bicliques**. For the team example, try “How many triangles are in this graph?”
+6. Read the proposed **Family**, **Problem**, **Operation**, and quality. Answer a clarification or select **Use this option** when prompted.
+7. Wait for the calculation. Read the answer, then open **Results** to inspect the returned items.
+8. Open **Download** if you want an image, table, full report, or raw result.
+
+A maximal biclique cannot be extended on either side. It is not necessarily the largest biclique. The [dense-family guide](../problem/families/dense.md) explains related problems that can sound similar.
+
+!!! tip "Start with a concrete objective"
+    Name the relationships and what you want to measure. “Find the densest subgraph by edges per vertex” is more precise than “find the best group.”
+
+Next: [asking questions](asking-questions.md), [reading results](results.md), and [bringing data](data.md).

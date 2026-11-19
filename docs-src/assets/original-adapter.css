@@ -1,0 +1,61 @@
+/* Preserve the original site design while adding documentation navigation. */
+html { font-size: 100%; }
+body { background: var(--white); color: var(--ink); }
+.md-typeset { font-size: 1rem; line-height: 1.7; }
+.md-nav { font-size: .875rem; }
+.md-main__inner { margin-top: 2.5rem; }
+.md-grid { max-width: 1380px; }
+.md-sidebar--primary, .md-sidebar--secondary { width: 15rem; }
+.md-typeset h1 { font-weight: 750; }
+.md-typeset h2 { font-weight: 700; }
+.site-header { color: var(--ink); }
+.site-header .nav-shell { gap: 20px; }
+.site-header .brand { flex-shrink: 0; }
+.site-header .primary-nav { gap: 18px; margin-left: auto; }
+.original-header-tools { display: flex; align-items: center; gap: 3px; }
+.original-header-tools .md-icon { color: var(--ink); }
+.original-header-tools .md-search { position: absolute; right: 24px; top: 10px; }
+.original-header-tools .md-search__form { background: var(--paper); }
+.original-header-tools .md-search:not([data-md-state="active"]) .md-search__inner { display: none; }
+[data-md-toggle="search"]:checked ~ .site-header .md-search__inner { display: block; }
+.original-search-toggle { display: block!important; cursor: pointer; }
+.original-home { width: 100%; font-size: 16px; }
+body:has(.original-home) .md-main__inner { max-width: none; margin: 0; }
+body:has(.original-home) .md-main { display: block; }
+.original-home .reveal { opacity: 1; transform: none; }
+.original-home .hero { padding-top: 90px; }
+.original-home .hero h1 { font-weight: 790; }
+.original-home .hero-console pre { overflow-wrap: anywhere; white-space: pre-wrap; }
+.original-entry-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; }
+.original-entry-grid .pipeline-card { display: flex; flex-direction: column; }
+.original-entry-grid .reading-link { margin-top: auto; padding-top: 20px; color: var(--green); font-weight: 700; }
+.original-home .hero-actions .button { text-decoration: none; }
+.original-home p a, .original-home .reading-link { text-decoration: underline; text-underline-offset: .15em; }
+.original-home #operation-dialog { max-width: min(860px, calc(100vw - 24px)); width: 860px; padding: 0; }
+.original-home #operation-dialog .dialog-shell { padding: 28px; }
+.original-home #operation-dialog .dialog-close { float: none; }
+.original-home #copy-toast { opacity: 0; }
+.original-home #copy-toast.visible { opacity: 1; }
+.original-home .family-card { text-decoration: none; }
+.original-home .demo-player { min-height: 202px; }
+.original-home .demo-player iframe { min-height: 200px; }
+.site-footer p { color: var(--muted); }
+[data-md-color-scheme="slate"] { --white: #14231b; --paper: #172a20; --paper-warm: #27261b; --ink: #eef6f1; --ink-soft: #d6e8dc; --muted: #b3c8ba; --line: #36523f; --line-strong: #54715d; --green: #8ad8a6; --green-dark: #8ad8a6; --green-pale: #244d34; --green-wash: #193321; --orange-pale: #35271c; color-scheme: dark; }
+[data-md-color-scheme="slate"] .site-header { background: rgba(20,35,27,.95); }
+[data-md-color-scheme="slate"] .md-nav__title { background: var(--white); }
+@media(min-width:1220px) { .original-home-drawer { display: none; } }
+@media(max-width:1100px) { .site-header .primary-nav { display:none; } .site-header .menu-toggle { display:block; margin-left:auto; } .original-entry-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .original-entry-grid { grid-template-columns:1fr; } .site-header .nav-shell { gap:8px; } .original-header-tools .md-header__option { margin:0; } .site-header .brand { font-size:1.1rem; } .site-header .brand-mark { width:30px; } .original-header-tools .md-header__button { padding:4px; margin:2px; } .original-home .hero { padding-top:50px; } }
+.site-header .brand-accent, .site-footer .brand-accent { color: var(--orange-dark); }
+.original-entry-grid .step-number { color: var(--muted); }
+.code-reference-card-research > a { color: #17221b; }
+.site-footer small { color: var(--muted); }
+.md-nav__title { color: var(--ink-soft); }
+[data-md-color-scheme="slate"] .brand-accent { color: #ffae56; }
+@media(max-width:1219px) {
+  .site-header .primary-nav { display:none; }
+  .site-header .menu-toggle { display:block; margin-left:auto; }
+  [dir=ltr] .md-sidebar--primary { left:0; width:min(18rem,90vw); transform:translateX(-100%); }
+  [data-md-toggle=drawer]:checked ~ .md-container .md-sidebar--primary { transform:translateX(0); }
+  .md-nav--primary .md-nav__title:not([for=__drawer]) { color:var(--ink-soft); }
+}

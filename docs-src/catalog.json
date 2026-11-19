@@ -7,7 +7,7 @@
     "catalog/artifact_sources.json": "d34c72cef7b79d8fcffc1587b029ddd9c27b7f42288bdf9d2e656687e3980aeb",
     "catalog/family.json": "8348ae2558c518b6c6b51114938498fae85b36eceada790a1a151c163dee1b4f",
     "catalog/problems.json": "e47a98cc5fb722b78d0ba37cf19ef8ac1e5e870673bc3313b3be30350632d7c3",
-    "catalog/site_reference_links.json": "cd94535e8cbaaaf83f5542dca2486b405630e32ca31ca5cda0673467ef4789c4",
+    "catalog/site_reference_links.json": "20be4614423fee06d584f800f7baf709532910c58ee71d7c51dc208ea014a2f9",
     "problems/01_maximal_clique_enumeration/problem.json": "3ebee667be936468335f5436d8bfd78f497db294e3bbb1dfcbb3ff6f9974d4af",
     "problems/02_maximum_clique/problem.json": "e0085444b11338985cd849cffc34599a26cdffc8ef3fad0901331ba231b4f30e",
     "problems/03_k_clique_counting_enumeration/problem.json": "2bbbbe37cec7d104da78b1a4d1ca84af3ea52bbce18ac6e77e36abf76a37bb71",
@@ -5826,7 +5826,7 @@
           "title": "A GPU Based Maximum Common Subgraph Algorithm for Drug Discovery Applications",
           "year": 2016,
           "venue": "IEEE (Chicago)",
-          "publication_url": "https://people.cse.nitc.ac.in/jayaraj/files/ipdps_online_paper.pdf",
+          "publication_url": "https://people.cse.nitc.ac.in/sites/default/files/jayaraj/files/ipdps_online_paper.pdf",
           "code_url": null,
           "collection_metadata": "problems/24_graph_edit_distance_mcs/papers/2016_gpu_mcs_drug_discovery/metadata.json",
           "note": "Author-hosted proceedings version; replaces an unavailable older PDF link. Checked November 19, 2026."

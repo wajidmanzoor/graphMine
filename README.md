@@ -352,18 +352,11 @@ node tools/build_catalog.mjs
 
 ## Documentation
 
-The static documentation site lives in [`docs/`](docs/) and is ready to publish
-with GitHub Pages from the `main` branch’s `/docs` directory:
+Read the [public documentation](https://wajidmanzoor.github.io/graphMine/) for the app guide, formal problem families, runnable operations, research references, and native library APIs. The site retains the original GraphMine design.
 
-<https://wajidmanzoor.github.io/graphMine/>
+Reader-facing source lives in [`docs-src/`](docs-src/), with the homepage and shared original-design templates in [`overrides/`](overrides/). MkDocs builds the site through GitHub Actions. Internal working records are kept separately in [`docs-internal/`](docs-internal/).
 
-The site has no framework or build dependency. It reads the global problem
-catalog at runtime to render the searchable validated-operation documentation.
-It also includes a [low-level code reference](docs/reference/) for GraphMine's
-public C++ API and adapters plus isolated function-by-function C/C++/CUDA
-references for vendored research sources and provenance/build pages for the
-seven externally prepared repair workers. Regenerate those
-committed pages with `node tools/build_code_docs.mjs` when code changes.
+The family pages and backend table are generated from the catalog and a source-bound native snapshot. The [code reference](https://wajidmanzoor.github.io/graphMine/library/code-reference/) is regenerated from current native C++/CUDA sources, rather than a committed HTML snapshot. See [documentation build instructions](docs-internal/PUBLIC_DOCS_BUILD.md) for checks and regeneration.
 
 ## Research artifacts
 

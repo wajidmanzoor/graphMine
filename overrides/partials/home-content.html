@@ -1,0 +1,279 @@
+<div class="original-home" id="main-content">
+      <section id="top" class="hero section-shell">
+        <div class="hero-glow hero-glow-orange" aria-hidden="true"></div>
+        <div class="hero-glow hero-glow-green" aria-hidden="true"></div>
+
+        <div class="hero-copy reveal">
+          <p class="eyebrow">
+            <span class="eyebrow-dot"></span>
+            Plain-English questions · Checked graph computations
+          </p>
+          <h1 id="graphmine">
+            Ask about your graph.
+            <span class="gradient-text">Follow the computation.</span>
+          </h1>
+          <p class="hero-lede">
+            GraphMine maps your question to a formal graph problem, runs a compatible compiled CPU or GPU algorithm, and explains the returned facts. Explore the answer in graphs and tables, with its quality, completeness, and input snapshot visible.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://graphmine.autographmine.com/#">
+              Open GraphMine
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="m7 4 6 6-6 6" />
+              </svg>
+            </a>
+            <a class="button button-secondary" href="#operations">
+              Explore problem families
+            </a>
+            <a class="button button-secondary" href="#demo">Watch demo</a>
+          </div>
+
+          <dl class="hero-stats" aria-label="GraphMine library statistics">
+            <div>
+              <dt data-stat="families">—</dt>
+              <dd>problem families</dd>
+            </div>
+            <div>
+              <dt data-stat="formal_problems">—</dt>
+              <dd>formal problems</dd>
+            </div>
+            <div>
+              <dt data-stat="operations">—</dt>
+              <dd>algorithm operations</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div
+          class="hero-console reveal reveal-delay-1"
+          aria-label="CLI example"
+        >
+          <div class="console-toolbar">
+            <div class="console-dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <span>graphmine · terminal</span>
+            <button
+              class="icon-button copy-button"
+              type="button"
+              data-copy-target="hero-command"
+              aria-label="Copy command"
+            >
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <rect x="7" y="7" width="9" height="9" rx="2" />
+                <path
+                  d="M13 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+                />
+              </svg>
+            </button>
+          </div>
+          <pre
+            id="hero-command"
+          ><code><span class="prompt">$</span> build/native-cpu/graphmine-native run \
+    triangle-counting library/examples/data/triangle.json \
+    --device cpu</code></pre>
+          <div class="console-output" aria-hidden="true">
+            <span class="json-key">"family"</span>:
+            <span class="json-string">"motifs"</span>,
+            <span class="json-key">"result"</span>: {
+            <span class="json-key">"count"</span>:
+            <span class="json-number">1</span> },
+            <span class="json-key">"quality"</span>:
+            <span class="json-string">"exact"</span>
+          </div>
+          <div class="console-status">
+            <span><i></i> native CPU example</span>
+            <span>Using the included triangle example</span>
+          </div>
+        </div>
+      </section>
+
+
+<section id="overview" class="content-section section-shell">
+  <div class="section-heading"><p class="section-kicker">Understand and use GraphMine</p><h2>From a question to a computation you can inspect.</h2><p>Find connected groups, compare paths, measure importance, count patterns, and work with graph records. The language model helps interpret and explain; the library computes the result.</p></div>
+  <div class="original-entry-grid">
+<article class="pipeline-card"><span class="step-number">01</span><h3><a href="problem/">The problem</a></h3><p>Why ordinary questions are ambiguous, and how formal contracts make their meaning precise.</p><a class="reading-link" href="problem/">Read the guide <span aria-hidden="true">→</span></a></article>
+<article class="pipeline-card"><span class="step-number">02</span><h3><a href="guide/getting-started/">Use the app</a></h3><p>Choose data, ask a question in Normal or Expert mode, and explore the answer.</p><a class="reading-link" href="guide/getting-started/">Read the guide <span aria-hidden="true">→</span></a></article>
+<article class="pipeline-card"><span class="step-number">03</span><h3><a href="library/install/">Use the library</a></h3><p>Build the C++/CUDA runtime and call its compiled operations from C++, Python, or the command line.</p><a class="reading-link" href="library/install/">Read the guide <span aria-hidden="true">→</span></a></article>
+<article class="pipeline-card"><span class="step-number">04</span><h3><a href="how-it-works/">How it works</a></h3><p>Follow interpretation, input checks, computation, result checks, and explanation.</p><a class="reading-link" href="how-it-works/">Read the guide <span aria-hidden="true">→</span></a></article>
+</div></section>
+      <section
+        id="demo"
+        class="content-section section-shell demo-section"
+        aria-labelledby="demo-title"
+      >
+        <div class="section-heading">
+          <p class="section-kicker">Video demo</p>
+          <h2 id="demo-title">See GraphMine in action</h2>
+          <p>Follow a complete question-to-result example. The guides describe the current interface.</p>
+        </div>
+        <div class="demo-player">
+          <iframe
+            width="960"
+            height="540"
+            src="https://www.youtube.com/embed/F5bJvpa3gdQ?playsinline=1&amp;rel=0"
+            title="GraphMine demo video"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <p class="demo-caption">
+          <a
+            href="https://youtu.be/F5bJvpa3gdQ"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Watch on YouTube
+          </a>
+        </p>
+      </section>
+
+      <section id="operations" class="content-section section-shell">
+        <div class="section-heading section-heading-row reveal">
+          <div>
+            <p class="section-kicker">Families, problems, and compiled operations</p>
+            <h2>Choose a family. Find your problem.</h2>
+            <p>
+              Browse <span data-stat="families">the</span> families and
+              <span data-stat="operations">their</span> native algorithm
+              operations, with
+              <span data-stat="research_algorithms">collected</span> research
+              references under their formal problems. Open an operation for its parameters, outputs and implementation limits. For explanations and examples, read the <a href="problem/taxonomy/">family guides</a>.
+            </p>
+          </div>
+          <a
+            id="manifest-link"
+            class="manifest-link"
+            href="catalog.json"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Download catalog JSON
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M7 4h9v9M16 4 5 15" />
+            </svg>
+          </a>
+        </div>
+
+        <div class="catalog-toolbar reveal">
+          <label class="search-field">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <circle cx="8.5" cy="8.5" r="5.5" />
+              <path d="m13 13 4 4" />
+            </svg>
+            <span class="sr-only"
+              >Search families, problems and algorithms</span
+            >
+            <input
+              id="operation-search"
+              type="search"
+              placeholder="Search families, problems, algorithms…"
+              autocomplete="off"
+            />
+          </label>
+          <label class="family-select-label"
+            ><span class="sr-only">Problem family</span
+            ><select id="family-select">
+              <option value="">All families</option>
+            </select></label
+          >
+          <div
+            class="filter-group"
+            role="group"
+            aria-label="Filter by execution device"
+          >
+            <button
+              class="filter-button active"
+              type="button"
+              data-filter="all"
+              aria-pressed="true"
+            >
+              All
+            </button>
+            <button
+              class="filter-button"
+              type="button"
+              data-filter="cpu"
+              aria-pressed="false"
+            >
+              CPU
+            </button>
+            <button
+              class="filter-button"
+              type="button"
+              data-filter="gpu"
+              aria-pressed="false"
+            >
+              GPU
+            </button>
+          </div>
+        </div>
+
+        <nav
+          id="catalog-breadcrumb"
+          class="catalog-breadcrumb"
+          aria-label="Catalog location"
+        >
+          <a href="#operations">All families</a>
+        </nav>
+        <p id="catalog-summary" class="catalog-summary" aria-live="polite">
+          Loading families, problems and algorithms…
+        </p>
+        <div id="operation-grid" class="family-grid"></div>
+        <noscript
+          ><p>
+            This explorer needs JavaScript.
+            <a href="catalog.json">Download the complete catalog</a> to browse
+            its families, problems and algorithms.
+          </p></noscript
+        >
+        <div id="catalog-error" class="catalog-error" hidden>
+          <div class="step-icon step-icon-orange">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 8v5m0 3v.01M4 20h16L12 4z" />
+            </svg>
+          </div>
+          <h3>The problem catalog could not be loaded.</h3>
+          <p>
+            Reload the page or <a href="catalog.json">open the catalog JSON</a>.
+            The <a href="problem/taxonomy/">family guides</a> are also available without JavaScript.
+          </p>
+        </div>
+      </section>
+
+
+<section id="code-reference" class="content-section code-reference-section">
+ <div class="section-shell">
+  <div class="section-heading"><p class="section-kicker">Two levels of documentation</p><h2>Understand the problem. Then inspect the code.</h2></div>
+  <div class="code-reference-grid">
+   <article class="code-reference-card"><div class="code-reference-meta"><span>Definitions and practical use</span><strong>Families · Problems · Operations</strong></div><h3>The readable catalog</h3><p>Learn what each family covers, which formal problem answers your question, and how to run a compatible compiled operation. Definitions, examples, parameters, and quality stay together.</p><a href="problem/taxonomy/">Read the family guides <span aria-hidden="true">→</span></a></article>
+   <article class="code-reference-card code-reference-card-research"><div class="code-reference-meta"><span>Current native source</span><strong>C++ · CUDA</strong></div><h3>The code reference</h3><p>Inspect function signatures, types, dispatch, graph views, and runtime implementations. The generated reference is rebuilt from current source; research-paper links remain a separate reading collection.</p><a href="library/code-reference/">Open code documentation <span aria-hidden="true">→</span></a></article>
+  </div>
+ </div>
+</section>
+<section class="content-section final-cta section-shell">
+ <div><p class="section-kicker">Research behind the system</p><h2>Read the contracts and the evidence.</h2><p>The catalog links <span data-stat="research_algorithms">the collected</span> research references. They describe algorithms; the operation profiles identify executable support.</p></div>
+ <div class="final-actions"><a class="button button-primary" href="problem/research/">Research and technical note</a><a class="button button-secondary" href="library/install/">Install the library</a></div>
+</section>
+    <dialog id="operation-dialog" class="operation-dialog">
+      <div class="dialog-shell">
+        <button
+          class="dialog-close"
+          type="button"
+          data-dialog-close
+          aria-label="Close algorithm details"
+        >
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="m4 4 12 12M16 4 4 16" />
+          </svg>
+        </button>
+        <div id="dialog-content"></div>
+      </div>
+    </dialog>
+
+    <div id="copy-toast" class="copy-toast" role="status" aria-live="polite">
+      Copied to clipboard
+    </div>
+</div>
