@@ -57,6 +57,14 @@ class SupportRequest(Body):
     duration: Literal["hour", "session"] = "hour"
 
 
+class ModelSettings(Body):
+    values: dict
+
+
+class Confirm(Body):
+    confirm: bool = Field(strict=True)
+
+
 def register_admin_routes(app):
     router = APIRouter(prefix="/api/admin", dependencies=[Depends(administrator)])
 
@@ -66,9 +74,55 @@ def register_admin_routes(app):
         with runtime.database._connect() as db:
             users = db.execute("SELECT count(*) FROM accounts WHERE login_disabled=0").fetchone()[0]
             jobs = db.execute("SELECT count(*) FROM account_leases WHERE kind IN ('model','job') AND expires_at>?", (runtime.accounts.clock(),)).fetchone()[0]
-        waiting = sum(len(values) for values in runtime.accounts.waiting.values())
-        return {"users": users, "jobs": jobs + waiting, "health": None, "now": runtime.accounts.clock(),
-                "health_reason": "Health checks have not run yet"}
+        waiting = len(runtime.accounts.waiting.get("model", []))
+        health = request.app.state.admin_monitor.cached
+        return {"users": users, "jobs": jobs + waiting, "health": health["attention"] if health else None, "now": runtime.accounts.clock(),
+                "health_reason": None if health else "Health checks have not run yet"}
+
+    @router.get("/overview")
+    async def overview(request: Request):
+        from .admin_summary import overview as summary
+        data = await run_in_threadpool(summary, request.app.state.runtime)
+        data["health"] = await request.app.state.admin_monitor.snapshot()
+        return data
+
+    @router.get("/overview/export")
+    def overview_csv(request: Request):
+        from .admin_summary import overview as summary
+        data = summary(request.app.state.runtime)
+        rows = [{"metric": key, "value": value} for key, value in data.items() if not isinstance(value, (dict, list))]
+        return Response(admin_events.csv_text(rows, ("metric", "value")), media_type="text/csv",
+                        headers={"Content-Disposition": 'attachment; filename="graphmine-summary.csv"'})
+
+    @router.get("/health")
+    async def health(request: Request, refresh: bool = False):
+        return await request.app.state.admin_monitor.snapshot(force=refresh)
+
+    @router.get("/health/logs")
+    async def agent_logs(request: Request):
+        return await request.app.state.admin_monitor.logs()
+
+    @router.get("/health/selftest")
+    def selftest_status(request: Request):
+        return {"result": request.app.state.admin_monitor.state("selftest")}
+
+    @router.post("/health/selftest", status_code=202)
+    async def selftest(request: Request):
+        from .admin_selftest import begin
+        return begin(request.app)
+
+    @router.post("/services/{service}/restart", status_code=202)
+    async def restart_service(service: Literal["agent", "model"], body: Confirm, request: Request):
+        return await request.app.state.admin_monitor.restart(service, body.confirm)
+
+    @router.get("/model")
+    async def model(request: Request):
+        return await request.app.state.admin_monitor.model()
+
+    @router.patch("/model/settings")
+    def model_settings(body: ModelSettings, request: Request):
+        from .admin_settings import save
+        return save(request.app.state.runtime, body.values)
 
     @router.get("/users")
     def users(request: Request):

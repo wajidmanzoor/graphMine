@@ -208,8 +208,10 @@ async def expire_database_pools(runtime):
 def build_runtime(settings: Settings, *, serving: bool = False) -> Runtime:
     settings.data_root.mkdir(parents=True, exist_ok=True)
     settings.workspaces_root.mkdir(parents=True, exist_ok=True)
-    catalog = Catalog(settings)
     database = Database(settings.database_path, HistoryStore(settings.history_root))
+    from .admin_settings import load as load_admin_settings
+    settings = load_admin_settings(settings, database)
+    catalog = Catalog(settings)
     accounts = Accounts(settings, database)
     if settings.capture_enabled:
         database.capture = TrainingCapture(
@@ -341,6 +343,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         runtime = build_runtime(configured, serving=True)
         app.state.runtime = runtime
+        from .admin_monitor import Monitor
+        app.state.admin_monitor = Monitor(runtime)
         from .admin_lifecycle import cleanup as recover_admin_cleanup
         await run_in_threadpool(recover_admin_cleanup, runtime)
         retention = backups = previews = pools = None
@@ -368,8 +372,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 with runtime.database._connect() as db:
                     db.execute("DELETE FROM account_leases WHERE kind != 'model'")
             await runtime.database_jobs.start()
+            app.state.admin_monitor.start()
             yield
         finally:
+            await app.state.admin_monitor.close()
             for task in (retention, backups, previews, pools):
                 if task:
                     task.cancel()

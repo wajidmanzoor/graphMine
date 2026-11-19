@@ -71,6 +71,7 @@ class Accounts(AdminAccounts):
         self.settings, self.database, self.clock = settings, database, clock
         # Process-local arrival order for each kind of slot; leases stay in SQLite.
         self.waiting = defaultdict(list)
+        self.wait_started = {}
         database.path.chmod(0o600)
         with database._connect() as db:
             db.executescript("""
@@ -147,7 +148,7 @@ class Accounts(AdminAccounts):
 
     def create_user(self, username, password, daily_token_limit=None, *, admin=False,
                     storage_limit=None, graphmine_access=True, studio_access=False,
-                    must_change_password=False):
+                    must_change_password=False, login_disabled=False):
         username = self.username(username)
         self._validate_token_limit(daily_token_limit)
         if not 12 <= len(password) <= 128:
@@ -190,8 +191,8 @@ class Accounts(AdminAccounts):
                 (user_id, now),
             )
             principal = current_principal.get()
-            db.execute("UPDATE accounts SET storage_limit=?,graphmine_access=?,studio_access=?,must_change_password=?,created_by=? WHERE id=?",
-                       (storage_limit, graphmine_access, studio_access, must_change_password,
+            db.execute("UPDATE accounts SET storage_limit=?,graphmine_access=?,studio_access=?,must_change_password=?,login_disabled=?,created_by=? WHERE id=?",
+                       (storage_limit, graphmine_access, studio_access, must_change_password, login_disabled,
                         principal.username if principal else "local administrator", user_id))
             self._audit(
                 db,
@@ -401,6 +402,7 @@ class Accounts(AdminAccounts):
                 )
 
     def login(self, username, password, address):
+        from .admin_selftest import internal_user
         username = username.strip().lower()
         self._login_attempt(username, address)
         with self.database._connect() as db:
@@ -410,7 +412,7 @@ class Accounts(AdminAccounts):
         matched = password_matches(
             password, user["password_hash"] if user else _dummy_password()
         )
-        if not matched or not user or user["disabled"] or user["login_disabled"] or not user["graphmine_access"]:
+        if not matched or not user or user["disabled"] or (user["login_disabled"] and user["id"] != internal_user.get()) or not user["graphmine_access"]:
             admin_events.record(self.database, "sign_in", "Sign-in failed", ts=self.clock(),
                                 user_id=user["id"] if user else None, outcome="invalid_credentials",
                                 details={"ip": admin_events.truncate_ip(address)})
@@ -425,7 +427,7 @@ class Accounts(AdminAccounts):
             current = db.execute(
                 "SELECT * FROM accounts WHERE id=?", (user["id"],)
             ).fetchone()
-            if not current or current["disabled"] or current["login_disabled"] or not current["graphmine_access"] or current["password_hash"] != user["password_hash"]:
+            if not current or current["disabled"] or (current["login_disabled"] and current["id"] != internal_user.get()) or not current["graphmine_access"] or current["password_hash"] != user["password_hash"]:
                 raise AccountError(
                     "Incorrect username or password.", "invalid_credentials", 401
                 )
@@ -447,13 +449,14 @@ class Accounts(AdminAccounts):
         )
 
     def authenticate(self, token):
+        from .admin_selftest import internal_user
         if not token or len(token) > 256:
             return None
         digest = hashlib.sha256(token.encode()).hexdigest()
         with self.database._connect() as db:
             row = db.execute(
-                "SELECT a.id,a.username,a.role FROM accounts a JOIN account_sessions s ON s.user_id=a.id WHERE s.token_hash=? AND s.expires_at>? AND a.disabled=0 AND a.graphmine_access=1 AND a.login_disabled=0",
-                (digest, self.clock()),
+                "SELECT a.id,a.username,a.role FROM accounts a JOIN account_sessions s ON s.user_id=a.id WHERE s.token_hash=? AND s.expires_at>? AND a.disabled=0 AND a.graphmine_access=1 AND (a.login_disabled=0 OR a.id=?)",
+                (digest, self.clock(), internal_user.get()),
             ).fetchone()
         return (
             Principal(row["id"], row["username"], self, digest, row["role"] == "admin")
@@ -871,6 +874,7 @@ class Accounts(AdminAccounts):
         ticket = (user_id, object())
         waiting = self.waiting[kind]
         waiting.append(ticket)
+        self.wait_started[ticket[1]] = self.clock()
         try:
             async with asyncio.timeout(timeout):
                 while True:
@@ -884,6 +888,7 @@ class Accounts(AdminAccounts):
                     await asyncio.sleep(0.2)
         finally:
             waiting.remove(ticket)
+            self.wait_started.pop(ticket[1], None)
 
     @asynccontextmanager
     async def execution_slot(self, user_id, admission=None):

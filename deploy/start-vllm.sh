@@ -14,6 +14,14 @@ if [[ -f "${env_file}" ]]; then
   set +a
 fi
 
+# Only the named, validated model-launch values may override the environment.
+admin_model_values="$(python3 "${repo_dir}/deploy/admin-model-settings.py")"
+while IFS='=' read -r setting_name setting_value; do
+  case "${setting_name}" in
+    GRAPHMINE_LLM_SLEEP_MODE|GRAPHMINE_LLM_MAX_NUM_SEQS) export "${setting_name}=${setting_value}" ;;
+  esac
+done <<< "${admin_model_values}"
+
 : "${GRAPHMINE_LLM_GPU_UUID:?Set GRAPHMINE_LLM_GPU_UUID to the LLM GPU UUID}"
 model="${GRAPHMINE_LLM_MODEL:-Qwen/Qwen3.8-27B-FP8}"
 api_key="${GRAPHMINE_LLM_API_KEY:-local-graphmine}"

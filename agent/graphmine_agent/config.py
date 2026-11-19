@@ -66,6 +66,7 @@ class Settings:
     llm_sleep_mode: bool = True
     llm_sleep_level: int = 1
     llm_idle_sleep_minutes: float = 20
+    llm_thinking_stages: tuple[str, ...] | None = None
     history_directory: Path | None = None
     # Write-once training captures; they outlive conversation deletion.
     capture_directory: Path | None = None
@@ -190,6 +191,8 @@ class Settings:
         return self.llm_route_model if self.routing_adapter_active else self.llm_model
 
     def __post_init__(self) -> None:
+        if self.llm_thinking_stages is not None and set(self.llm_thinking_stages) - {"family", "problem", "route", "clarify", "analyst", "plan", "candidates"}:
+            raise ValueError("Unknown GRAPHMINE_LLM_THINKING_STAGES value")
         if self.llm_sleep_level != 1:
             raise ValueError("GRAPHMINE_LLM_SLEEP_LEVEL supports only level 1")
         if not 0 < self.llm_idle_sleep_minutes < float("inf"):
@@ -338,6 +341,8 @@ class Settings:
         )
         token = os.getenv("GRAPHMINE_API_TOKEN", "").strip() or None
         return cls(
+            llm_thinking_stages=tuple(x.strip() for x in os.environ["GRAPHMINE_LLM_THINKING_STAGES"].split(",") if x.strip())
+            if "GRAPHMINE_LLM_THINKING_STAGES" in os.environ else None,
             backend_data_dir=Path(os.getenv("GRAPHMINE_BACKEND_DATA_DIR", "/data/labdata/wajid/graphmine_data/rlModelData")).expanduser().resolve(),
             backend_model_dir=Path(os.getenv("GRAPHMINE_BACKEND_MODEL_DIR", "/data/labdata/wajid/graphmine-models/rlModel")).expanduser().resolve(),
             backend_selection=os.getenv("GRAPHMINE_BACKEND_SELECTION", "legacy"),
