@@ -87,3 +87,9 @@ The imported worker sources are pinned in [PROVENANCE.json](library/src/backends
 | `linear-assignment` | [Fast block distributed CUDA implementation of the Hungarian algorithm](https://github.com/paclopes/HungarianGPU) | `ef841797c7b5ad9b04527d2fafc7604229c8a941` | [License](library/src/backends/expansion/upstream/hungarian/LICENSE.txt) |
 | `transitive-closure` | [Optimizing Datalog for the GPU](https://github.com/harp-lab/gdlog) | `65a6ee960ced8d04bc725ccdfa68f004f8479226` | [License](library/src/backends/expansion/upstream/gdlog/LICENSE) |
 | `butterfly-counting` | [G2Miner: An Efficient and Scalable GPU-Based Graph Pattern Mining Framework](https://github.com/chenxuhao/GraphMiner) | `2a76e3f612e40e46a821d603ca11d10fcbc63ddd` | [License](problems/11_graph_motif_counting/papers/2022_g2miner/code/LICENSE) |
+
+## Admin console font
+
+`agent/graphmine_agent/static/vendor/InterVariable.woff2` is Inter by Rasmus Andersson,
+vendored from <https://github.com/rsms/inter> under the SIL Open Font License 1.1.
+The upstream license is retained beside the font as `Inter-LICENSE.txt`.

@@ -261,6 +261,10 @@ def _authorization(
     authorization: Annotated[str | None, Header()] = None,
     x_graphmine_token: Annotated[str | None, Header()] = None,
 ) -> None:
+    if request.url.path.startswith("/api/admin/"):
+        from .account_api import administrator
+        administrator()
+        return
     if _runtime(request).settings.accounts_enabled:
         if current_principal.get() is None:
             raise AccountError("Please sign in to continue.", "unauthorized", 401)
@@ -337,6 +341,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         runtime = build_runtime(configured, serving=True)
         app.state.runtime = runtime
+        from .admin_lifecycle import cleanup as recover_admin_cleanup
+        await run_in_threadpool(recover_admin_cleanup, runtime)
         retention = backups = previews = pools = None
         try:
             runtime.runner.probe()
@@ -413,6 +419,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         expose_headers=["Location", "Retry-After"],
     )
     register_account_routes(app)
+    from .admin_api import register_admin_routes
+    from .admin_telemetry import OperationalMiddleware
+    register_admin_routes(app)
+    app.add_middleware(OperationalMiddleware)
     app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
     app.add_middleware(WebHeaders, allowed_origins=configured.allowed_origins)
 
@@ -420,26 +430,38 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     router = APIRouter(prefix="/api", dependencies=[Depends(_authorization)])
 
-    @router.get("/admin/llm/power")
+    from .account_api import administrator
+
+    @router.get("/admin/llm/power", dependencies=[Depends(administrator)])
     async def llm_power_status(request: Request):
         from .account_api import administrator
         administrator()
         return await _runtime(request).llm_power.for_url().refresh_status()
 
-    @router.post("/admin/llm/power/sleep")
+    @router.post("/admin/llm/power/sleep", dependencies=[Depends(administrator)])
     async def llm_power_sleep(request: Request):
         from .account_api import administrator
         administrator()
         try:
-            return await _runtime(request).llm_power.for_url().sleep_now()
+            manager = _runtime(request).llm_power.for_url()
+            before = await manager.refresh_status()
+            after = await manager.sleep_now()
+            with _runtime(request).database._connect() as db:
+                _runtime(request).accounts._audit(db, "model.sleep", "model", before=before, after=after)
+            return after
         except LLMPowerBusy as error:
             raise AnalyticsError(str(error), "llm_busy", 409) from error
 
-    @router.post("/admin/llm/power/wake")
+    @router.post("/admin/llm/power/wake", dependencies=[Depends(administrator)])
     async def llm_power_wake(request: Request):
         from .account_api import administrator
         administrator()
-        return await _runtime(request).llm_power.for_url().wake_now()
+        manager = _runtime(request).llm_power.for_url()
+        before = await manager.refresh_status()
+        after = await manager.wake_now()
+        with _runtime(request).database._connect() as db:
+            _runtime(request).accounts._audit(db, "model.wake", "model", before=before, after=after)
+        return after
 
     @router.get("/health")
     async def health(request: Request) -> dict[str, Any]:
@@ -919,6 +941,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         @app.get("/classic", response_class=HTMLResponse, include_in_schema=False)
         async def classic_workspace():
             return HTMLResponse(assets.pages["index.html"], headers={"Cache-Control": "no-cache"})
+
+        @app.get("/admin", response_class=HTMLResponse, include_in_schema=False)
+        async def admin_console():
+            return HTMLResponse(assets.files["admin.html"], headers={"Cache-Control": "no-store"})
 
         app.mount("/", assets, name="ui")
     return app

@@ -1177,6 +1177,7 @@ class AgentService:
         )
 
     async def chat(self, session_id: str, request: ChatRequest) -> ChatResponse:
+        started = time.monotonic()
         self.database.get_session(session_id)
         history = self.database.history
         is_command = command_name(request.message) is not None
@@ -1189,9 +1190,20 @@ class AgentService:
                 )
             else:
                 history.current("deployment.context", self.deployment_info())
-                response = await self._chat(session_id, request)
+                try:
+                    response = await self._chat(session_id, request)
+                except Exception as error:
+                    from .admin_events import record
+                    record(self.database, "question", "Question failed", outcome=getattr(error, "code", "failed"),
+                           duration_ms=(time.monotonic() - started) * 1000, correlation=turn_id,
+                           details={"conversation_id": session_id, "turn_id": turn_id})
+                    raise
             response = response.model_copy(update={"turn_id": turn_id})
             history.current(f"{kind}.response", response)
+            if not is_command:
+                from .admin_events import record
+                record(self.database, "question", "Question completed", duration_ms=(time.monotonic() - started) * 1000,
+                       correlation=turn_id, details={"conversation_id": session_id, "turn_id": turn_id})
             return response
 
     def deployment_info(self):

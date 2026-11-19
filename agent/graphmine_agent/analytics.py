@@ -1235,6 +1235,9 @@ class AnalyticsService:
                     "revision": record["revision"],
                     "status": record["status"],
                     "complete": record.get("complete", False),
+                    "error_code": (record.get("error") or {}).get("code"),
+                    "duration_ms": ((datetime.fromisoformat(record["finished_at"]) - datetime.fromisoformat(record["started_at"])).total_seconds() * 1000
+                                    if record.get("finished_at") and record.get("started_at") else None),
                 },
             )
             if record["status"] == "completed" and not self.closed:

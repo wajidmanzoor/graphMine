@@ -11,7 +11,7 @@ from .database import Database
 
 def add_accounts_parser(subcommands):
     parser = subcommands.add_parser(
-        "accounts", help="create and manage local user accounts"
+        "accounts", aliases=["users"], help="create and manage local user accounts"
     )
     parser.add_argument(
         "--data-root",
@@ -28,6 +28,11 @@ def add_accounts_parser(subcommands):
                 action="store_true",
                 help="allow this account to manage users",
             )
+            action.add_argument("--studio", action="store_true", help="also allow Dataset Studio access")
+            action.add_argument("--must-change-password", action="store_true", help="require a new password at first sign-in")
+    role = actions.add_parser("set-role")
+    role.add_argument("username")
+    role.add_argument("role", choices=("admin", "user"))
     actions.add_parser("list")
 
 
@@ -46,7 +51,12 @@ def run_accounts(arguments, settings):
                     arguments.username,
                     password,
                     admin=getattr(arguments, "admin", False),
+                    studio_access=getattr(arguments, "studio", False),
+                    must_change_password=getattr(arguments, "must_change_password", False),
                 )
+                if getattr(arguments, "studio", False):
+                    from .studio_sync import sync_account
+                    result["studio"] = sync_account(accounts, accounts.user(arguments.username))
             else:
                 accounts.reset_password(arguments.username, password)
                 result = {
@@ -54,6 +64,11 @@ def run_accounts(arguments, settings):
                     "password_reset": True,
                     "sessions_revoked": True,
                 }
+        elif action == "set-role":
+            result = accounts.update_user(arguments.username, {"role": arguments.role})
+            if result["studio_access"]:
+                from .studio_sync import sync_account
+                result["studio"] = sync_account(accounts, result)
         elif action == "disable":
             accounts.disable(arguments.username)
             result = {"username": arguments.username, "disabled": True}
@@ -67,6 +82,11 @@ def run_accounts(arguments, settings):
             }
         else:
             result = accounts.list_users()
+        if action in {"disable", "enable", "reset-password"}:
+            user = accounts.user(arguments.username)
+            if user["studio_access"] or user["studio_sync_error"]:
+                from .studio_sync import sync_account
+                result["studio"] = sync_account(accounts, user, revoke_sessions=True)
     except (ValueError, EOFError) as error:
         raise SystemExit(str(error)) from None
     print(json.dumps(result, indent=2))

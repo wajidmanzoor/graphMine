@@ -200,7 +200,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         from .backend_learning.model_cli import run_command
 
         return run_command(arguments, settings)
-    if arguments.command == "accounts":
+    if arguments.command in {"accounts", "users"}:
         from .accounts_cli import run_accounts
 
         return run_accounts(arguments, settings)

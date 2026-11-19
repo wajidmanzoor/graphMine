@@ -21,7 +21,7 @@ def seed(database, session_id, count=100):
         for number in range(count):
             for role in ("user", "assistant"):
                 payload = {"turn_id": f"turn-{number}", "role": role, "message": f"{role} {number}"}
-                db.execute("INSERT INTO events(session_id,type,payload,created_at) VALUES (?,?,?,?)",
+                db.execute("INSERT INTO conversation_events(session_id,type,payload,created_at) VALUES (?,?,?,?)",
                            (session_id, "workflow.chat", json.dumps(payload), (start + timedelta(seconds=number * 2 + (role == "assistant"))).isoformat()))
 
 
@@ -174,7 +174,7 @@ def test_page_and_turn_query_plans_use_indexes(database, session):
     with database._connect() as db:
         plan = db.execute("EXPLAIN QUERY PLAN SELECT * FROM conversation_entries WHERE session_id=? ORDER BY created_at DESC,lane DESC,ordinal DESC,id DESC LIMIT 30", (session.id,)).fetchall()
         assert "conversation_entry_page" in str([tuple(row) for row in plan])
-        plan = db.execute("EXPLAIN QUERY PLAN SELECT * FROM events WHERE session_id=? AND json_extract(payload,'$.turn_id')=? ORDER BY sequence", (session.id, "turn")).fetchall()
+        plan = db.execute("EXPLAIN QUERY PLAN SELECT * FROM conversation_events WHERE session_id=? AND json_extract(payload,'$.turn_id')=? ORDER BY sequence", (session.id, "turn")).fetchall()
         assert "events_turn" in str([tuple(row) for row in plan])
 
 

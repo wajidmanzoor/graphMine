@@ -77,8 +77,10 @@ class GraphMineAccounts:
         if self.available and name:
             with closing(sqlite3.connect(f"file:{self.database}?mode=ro", uri=True, timeout=10)) as db:
                 try:
+                    columns = {item[1] for item in db.execute("PRAGMA table_info(accounts)")}
+                    access = " AND studio_access=1 AND must_change_password=0 AND login_disabled=0" if "studio_access" in columns else ""
                     row = db.execute(
-                        "SELECT id, username, password_hash, disabled FROM accounts WHERE username=?", (name,)
+                        "SELECT id, username, password_hash, disabled FROM accounts WHERE username=?" + access, (name,)
                     ).fetchone()
                 except sqlite3.OperationalError:
                     row = None
@@ -96,7 +98,9 @@ class GraphMineAccounts:
             return False
         with closing(sqlite3.connect(f"file:{self.database}?mode=ro", uri=True, timeout=10)) as db:
             try:
-                row = db.execute("SELECT disabled FROM accounts WHERE id=?", (account_id,)).fetchone()
+                columns = {item[1] for item in db.execute("PRAGMA table_info(accounts)")}
+                access = " AND studio_access=1 AND must_change_password=0 AND login_disabled=0" if "studio_access" in columns else ""
+                row = db.execute("SELECT disabled FROM accounts WHERE id=?" + access, (account_id,)).fetchone()
             except sqlite3.OperationalError:
                 return False
         return bool(row) and not row[0]

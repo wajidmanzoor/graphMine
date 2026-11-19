@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import fcntl
 import hmac
 import json
 import re
@@ -66,6 +67,37 @@ def verify_password(password: str, stored: str) -> bool:
 _DUMMY_HASH = hash_password(secrets.token_hex(16))
 
 
+class AccountFileLock:
+    """Coordinate with GraphMine and reload externally updated account records."""
+    def __init__(self, auth):
+        self.auth, self.mutex, self.depth, self.file = auth, threading.RLock(), 0, None
+
+    def __enter__(self):
+        self.mutex.acquire()
+        try:
+            if not self.depth:
+                self.auth.folder.mkdir(parents=True, exist_ok=True)
+                self.file = (self.auth.folder / "users.lock").open("a+")
+                fcntl.flock(self.file, fcntl.LOCK_EX)
+                self.auth.users = self.auth._load(self.auth.users_path).get("users", {})
+                self.auth.sessions = self.auth._load(self.auth.sessions_path).get("sessions", {})
+            self.depth += 1
+            return self
+        except BaseException:
+            if self.file:
+                self.file.close()
+                self.file = None
+            self.mutex.release()
+            raise
+
+    def __exit__(self, *_):
+        self.depth -= 1
+        if not self.depth and self.file:
+            self.file.close()
+            self.file = None
+        self.mutex.release()
+
+
 class AuthError(ValueError):
     """Bad credentials or a refused account change (shown to the person)."""
 
@@ -81,7 +113,7 @@ class Auth:
         self.folder = folder
         self.users_path = folder / "users.json"
         self.sessions_path = folder / "sessions.json"
-        self.lock = threading.RLock()
+        self.lock = AccountFileLock(self)
         self._failures: dict[str, list[float]] = {}
         self.users = self._load(self.users_path).get("users", {})
         self.sessions = self._load(self.sessions_path).get("sessions", {})
@@ -108,7 +140,8 @@ class Auth:
 
     @property
     def has_users(self) -> bool:
-        return bool(self.users)
+        with self.lock:
+            return bool(self.users)
 
     # ---------------- users ----------------
     @staticmethod
@@ -300,7 +333,9 @@ class Auth:
             if not record:
                 return None
             user = self.users.get(record["username"])
-            if not user or user.get("disabled") or record["expires_at"] < _iso(_now()):
+            linked = (user or {}).get("graphmine")
+            if (not user or user.get("disabled") or record["expires_at"] < _iso(_now())
+                    or (linked and (not self.graphmine or not self.graphmine.active(linked["id"])))):
                 self.sessions.pop(sid, None)
                 self._save_sessions()
                 return None
