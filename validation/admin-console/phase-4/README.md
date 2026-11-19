@@ -17,7 +17,8 @@ Also captured: [unsaved capacity changes](capacity-unsaved.png),
 References come from `GraphMine Admin Console.html`; see
 [source details](../reference/README.md).
 
-The browser test saves a capacity change and checks its audit entry, creates and
+The browser test preserves inherited limits during an access-only edit, saves a
+capacity change and checks its audit entry, creates and
 verifies a backup, downloads an upload, previews and confirms cleanup, compares
 two saved performance reports, checks the missing-suite state and verifies mobile
 overflow. Backend acceptance covers range/type validation, conflicting saves,

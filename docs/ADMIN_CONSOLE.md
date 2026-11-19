@@ -202,6 +202,8 @@ launcher reads validated overrides before starting vLLM. `MODEL_QUEUE_SECONDS`
 is the stored key; `GRAPHMINE_MODEL_QUEUE_SECONDS` and the older unprefixed name
 are accepted from the environment. Upload overrides also update the account and
 transport upload ceilings, while storage quotas still apply.
+Editing an existing user's access preserves blank, inherited token/storage limits;
+the form does not silently turn the current default into an individual override.
 
 Data & storage measures managed files and embedded SQLite payloads. Model caches
 are excluded, and archived history/database overhead appear under Other. Cleanup

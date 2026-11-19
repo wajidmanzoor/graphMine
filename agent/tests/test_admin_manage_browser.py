@@ -23,6 +23,16 @@ def test_capacity_storage_and_performance_pages(browser_app, triangle_graph, mon
     upload = page.request.post(base + f"/api/sessions/{session.json()['id']}/files", headers=headers,
                                multipart={"file": {"name": "triangle.json", "mimeType": "application/json", "buffer": triangle_graph}})
     assert upload.ok, upload.text()
+    page.goto(base + "/admin#users")
+    page.get_by_role("button", name="review-member", exact=True).click()
+    editor = page.get_by_role("dialog", name="review-member", exact=True)
+    pw.expect(editor.get_by_label("Daily tokens", exact=False)).to_have_value("")
+    pw.expect(editor.get_by_label("Storage limit (bytes)", exact=False)).to_have_value("")
+    editor.get_by_label("Dataset Studio", exact=True).check()
+    editor.get_by_role("button", name="Save changes", exact=True).click()
+    pw.expect(page.locator("#page-notice")).to_contain_text("Saved changes to review-member")
+    unchanged = accounts.user("review-member")
+    assert unchanged["daily_token_limit"] is None and unchanged["storage_limit"] is None
     page.goto(base + "/admin#capacity")
     pw.expect(page.get_by_role("heading", name="Capacity settings", exact=True)).to_be_visible()
     pw.expect(page.locator(".capacity-row")).to_have_count(14)
