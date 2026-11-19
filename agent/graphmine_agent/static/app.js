@@ -140,7 +140,7 @@
     else if (event.type.startsWith("job.")) {
       key = event.job_id;
       const labels = {"job.queued":"Waiting to run", "job.running":"Computing your answer", "job.interpreting":"Checking and explaining the result", "job.completed":"Results ready", "job.failed":"Analysis failed", "job.cancelled":"Analysis cancelled"};
-      item = {stage:"Computation", message:labels[event.type] || event.type, status:event.type === "job.completed" ? "completed" : event.type === "job.failed" || event.type === "job.cancelled" ? "failed" : "running"};
+      item = {stage:"Computation", message:event.payload.error?.message || labels[event.type] || event.type, status:event.type === "job.completed" ? "completed" : event.type === "job.failed" || event.type === "job.cancelled" ? "failed" : "running"};
     } else return;
     state.activity.set(key, {...item, created_at:event.created_at});
     $("#activity-empty").classList.add("hidden");
@@ -276,7 +276,7 @@
       return;
     }
     const labels = {"job.queued":"Queued for GPU", "job.running":"Running on GPU", "job.interpreting":"Interpreting result", "job.completed":"Complete", "job.failed":"Failed", "job.cancelled":"Cancelled"};
-    const node = $("#job-state"); node.textContent = labels[event.type] || event.type; node.classList.remove("hidden");
+    const node = $("#job-state"); node.textContent = event.payload.error?.message || labels[event.type] || event.type; node.classList.remove("hidden");
     if (event.type === "job.completed" && !replay) loadResult(event.payload.result_id);
     if (event.type === "job.failed" && !replay) { toast(event.payload.error?.message || "Analysis failed", true); addMessage("assistant", event.payload.error?.message || "The analysis failed.", null, {job_id:event.job_id}); }
   }

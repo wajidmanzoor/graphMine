@@ -150,3 +150,40 @@ unavailable rather than being inferred from manual admin actions.
 
 [Phase 2 browser evidence](../validation/admin-console/phase-2/README.md) covers
 Overview, Health, Model, and the narrow-screen layout.
+
+
+## Jobs and usage
+
+Jobs & queue refreshes every five seconds. Model-call tracking stores owner,
+known schema stage, queue/start times and provider-reported usage in memory;
+it never stores prompts or generated content. Unknown streaming token counts
+remain unavailable until the provider reports them. Calculation rows include
+saved input metadata, safe plan fields and step status, with active, finished
+today and failed filters. Lists are capped at 500 rows and report truncation.
+
+Cancellation follows the existing worker paths and emits “Cancelled by an
+administrator” to the owner. It records before/after metadata under the actor's
+identity and refunds the daily calculation once. Cancelling a job from a batch
+cannot consume another job's refund. Disabled owners' existing jobs remain
+cancellable by an active administrator. Completed work rejects cancellation.
+
+Usage accepts 7, 14, 30 or 90 days and caches each aggregate for sixty seconds.
+Periods use UTC calendar dates, comparing today's elapsed hours with equivalent
+elapsed hours in the prior period. Counts and provider usage cover recorded
+question/calculation events. Partial provider token reports do not become complete
+totals; reasoning share also requires coverage. Error rate counts failed or
+interrupted questions/calculations once, excluding cancellation from failures.
+Per-stage charts show measured aggregate seconds across calls and calculations;
+missing model queue times are not inferred. Dataset counts use recorded calculation
+inputs. Free-text feedback is not classified as a routing mistake; without a
+structured routing correction, that metric remains unavailable.
+
+Six fixed Vega-Lite specifications render with the vendored Vega expression
+interpreter under the existing CSP. Charts accept inline measured data only and
+cannot fetch external resources. Regenerate pinned assets with `npm ci` followed
+by `node vendor.mjs` in `agent/visualization`. The interpreter's ESM wrapper reuses
+the helpers from the pinned Vega runtime. Its license and source hashes are kept
+with the vendor manifest.
+
+[Phase 3 browser evidence](../validation/admin-console/phase-3/README.md) includes
+both pages beside their supplied artboards, details and mobile Usage.

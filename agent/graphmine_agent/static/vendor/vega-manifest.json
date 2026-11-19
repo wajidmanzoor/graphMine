@@ -2,7 +2,8 @@
   "packages": {
     "vega": "6.4.0",
     "vega-lite": "6.4.3",
-    "vega-embed": "7.3.0"
+    "vega-embed": "7.3.0",
+    "vega-interpreter": "2.3.2"
   },
   "files": {
     "vega.min.js": {
@@ -32,6 +33,15 @@
     "vega-embed.LICENSE": {
       "source": "vega-embed/LICENSE",
       "sha256": "32df67148f0fc3db0eb9e263a7b75d07f1eb14c61955005a4a39c6918d10d137"
+    },
+    "vega-interpreter.LICENSE": {
+      "source": "vega-interpreter/LICENSE",
+      "sha256": "63727832aaf62004a2b249c933e327f3c90caf49e41a72f4bf436edf632cbda8"
+    },
+    "vega-interpreter.js": {
+      "source": "vega-interpreter/build/vega-interpreter.js",
+      "transform": "classic-script wrapper; helpers from pinned Vega",
+      "sha256": "8fe2d65cdd285ba9aad9c25347d2368a1cabcfa9b297c3948fd4e4af440c0ecc"
     }
   }
 }

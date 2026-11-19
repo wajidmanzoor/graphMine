@@ -284,6 +284,7 @@
     } catch (_) { /* The page retains its last measured values during a failed refresh. */ }
   }
   async function route() {
+    if (state.cleanup) { state.cleanup(); state.cleanup = null; }
     for (const node of document.querySelectorAll("dialog.drawer")) node.close();
     clearInterval(state.timer); clearInterval(state.supportTimer);
     const revision = ++state.revision, [name, search = ""] = location.hash.slice(1).split("?");

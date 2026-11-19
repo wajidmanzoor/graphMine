@@ -1031,3 +1031,23 @@ svg.nav-icon { width:16px; height:16px; fill:none; stroke:currentColor; stroke-w
 .overview-middle .queue-columns .hint { margin:6px 0; }
 .thinking-grid .check { margin:0; font-weight:400; }
 .health-card .actions > div { width:100%; }
+.jobs-metrics { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.jobs-metrics .metric-value { font-size:24px; }
+.work-table { margin:16px 0; }
+.work-table-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 20px; }
+.work-table-heading h2 { margin:0; font-size:15px; }
+.work-table td { padding:12px; }
+.work-table .hint { font-size:12px; margin:4px 0 0; }
+.work-note { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:18px 20px; background:var(--soft); }
+.work-note p { margin:0; }
+.work-note .btn { flex-shrink:0; }
+.usage-chart { min-width:0; overflow:auto; }
+.usage-chart svg { max-width:100%; height:auto; }
+.usage-chart .empty { padding:35px 14px; }
+.usage-charts .card { min-height:245px; }
+.usage-charts .card .hint { font-size:12px; }
+.tag.queued,.tag.waiting { background:#fff1de; color:#945314; }
+.tag.completed { color:var(--green); background:#e8f4ec; }
+.tag.cancelled { color:var(--muted); background:#edf0ee; }
+@media(max-width:1100px) { .jobs-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .work-table-heading,.work-note { flex-wrap:wrap; } }
+@media(max-width:500px) { .jobs-metrics .metric-value { font-size:18px; } }

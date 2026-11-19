@@ -357,6 +357,7 @@
     return activity.clean(text, answer).replace(/^Here (?:are the results|is what the saved result shows)\.\s*/i, "").replace(/\n+/g, " ").trim();
   }
   function appendAnswer(bubble, answer, record) {
+    if (answer?.notice) bubble.append(node("p", {class: "answer-pending", role: "status"}, answer.notice));
     const text = answerText(answer, record);
     if (text) { const body = activity.markdown(text, answer); body.classList.add("grounded-answer"); bubble.append(body); }
     const sources = answer?.sources || [];

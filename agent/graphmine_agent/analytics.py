@@ -184,6 +184,8 @@ class AnalyticsService:
         self.path = self.root / "workflows.sqlite3"
         self.owner = StoreLock(self.path)
         self.tasks = {}
+        self.admissions = {}
+        self.admin_cancelled = set()
         self.answer_tasks = set()
         # Questions being planned, by (session, turn), so a person can stop one.
         self.planning_tasks = {}
@@ -1076,7 +1078,10 @@ class AnalyticsService:
                 if admission:
                     principal.accounts.abort_admission(admission)
                 raise
+            self.admin_cancelled.discard(workflow_id)
             if admission:
+                self.admissions[workflow_id] = admission
+                task.add_done_callback(lambda _done: self.admissions.pop(workflow_id, None))
                 task.add_done_callback(
                     lambda _done: principal.accounts.release(admission)
                 )
@@ -1208,6 +1213,8 @@ class AnalyticsService:
                 )
         except asyncio.CancelledError:
             record.update(status="cancelled", complete=False, finished_at=_now())
+            if workflow_id in self.admin_cancelled:
+                record["error"] = {"code": "admin_cancelled", "message": "Cancelled by an administrator"}
         except Exception as exc:  # noqa: BLE001 - persist terminal failures from isolated jobs
             record.update(
                 status="failed",
@@ -1236,6 +1243,8 @@ class AnalyticsService:
                     "status": record["status"],
                     "complete": record.get("complete", False),
                     "error_code": (record.get("error") or {}).get("code"),
+                    "error": record.get("error"),
+                    **self._admin_event_metadata(record),
                     "duration_ms": ((datetime.fromisoformat(record["finished_at"]) - datetime.fromisoformat(record["started_at"])).total_seconds() * 1000
                                     if record.get("finished_at") and record.get("started_at") else None),
                 },
@@ -1351,6 +1360,8 @@ class AnalyticsService:
                     answer.update(choice)
                     answer['sources'] = evidence.public_sources(row['id'] for row in answer['citations'])
             except Exception as exc:  # noqa: BLE001 - the facts still answer
+                if getattr(exc, "code", None) == "admin_cancelled":
+                    answer["notice"] = "Cancelled by an administrator"
                 _logger.info("answer composition skipped: %s", exc)
             answer["pending"] = False
             await self.events.publish(record["session_id"], "workflow.answer", answer)
@@ -1359,17 +1370,31 @@ class AnalyticsService:
         except Exception:  # Never turn a finished workflow into an error.
             _logger.exception("Could not build the chat answer for %s", record["id"])
 
-    async def cancel(self, workflow_id):
+    @staticmethod
+    def _admin_event_metadata(record):
+        return {"operations": list(dict.fromkeys(step["operation"] for step in record.get("validation", {}).get("plan", {}).get("steps", []))),
+                "datasets": list(dict.fromkeys(value.get("file_snapshot", {}).get("name", "Unknown input") for value in record.get("input_provenance", {}).values()))}
+
+    async def cancel(self, workflow_id, *, admin=False):
         record = self.get(workflow_id)
         task = self.tasks.get(workflow_id)
         if task:
+            if admin:
+                self.admin_cancelled.add(workflow_id)
             task.cancel()
             await asyncio.gather(task, return_exceptions=True)
             record = self.get(workflow_id)
             # A task cancelled before its coroutine first runs has no finally.
             if record["status"] == "queued":
-                record.update(status="cancelled", complete=False)
+                record.update(status="cancelled", complete=False, finished_at=_now())
+                if admin:
+                    record["error"] = {"code": "admin_cancelled", "message": "Cancelled by an administrator"}
                 self._save(record)
+                await self.events.publish(record["session_id"], "workflow.finished", {
+                    "workflow_id": workflow_id, "revision": record["revision"], "status": "cancelled",
+                    "complete": False, "error_code": "admin_cancelled" if admin else None,
+                    "error": record.get("error"), **self._admin_event_metadata(record)})
+            self.admin_cancelled.discard(workflow_id)
         return record
 
     def result(self, workflow_id, *, step=None, expected_revision=None):

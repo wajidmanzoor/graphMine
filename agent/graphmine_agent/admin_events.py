@@ -66,7 +66,7 @@ def conversation_event(db, event):
         elapsed = (event.created_at - datetime.fromisoformat(first[0])).total_seconds() * 1000 if first else None
         stages = {}
         tokens, reasoning, usage_count = 0, 0, 0
-        reasoning_known = False
+        reasoning_count = 0
         for call in diagnostics:
             if isinstance(call.get("seconds"), (int, float)):
                 stages[call.get("stage", "unknown")] = stages.get(call.get("stage", "unknown"), 0) + call["seconds"] * 1000
@@ -77,21 +77,38 @@ def conversation_event(db, event):
             value = (usage.get("completion_tokens_details") or {}).get("reasoning_tokens")
             if isinstance(value, int):
                 reasoning += value
-                reasoning_known = True
+                reasoning_count += 1
         outcome = data.get("status", "ok")
-        details.update(turn_id=turn, stage_ms=stages, tokens=tokens if usage_count else None,
-                       reasoning_tokens=reasoning if reasoning_known else None, model_queue_ms=None,
+        details.update(turn_id=turn, stage_ms=stages, tokens=tokens if usage_count and usage_count == len(diagnostics) else None,
+                       tokens_recorded=tokens, token_calls_recorded=usage_count, model_calls=len(diagnostics),
+                       reasoning_tokens=reasoning if reasoning_count and reasoning_count == len(diagnostics) else None, model_queue_ms=None,
                        timing_reason="Model queue time was not separately recorded", workflow_id=data.get("workflow_id"))
         insert(db, "question", "Question completed" if outcome not in {"failed", "cancelled"} else "Question " + outcome,
                user_id=user_id, outcome=outcome, duration_ms=elapsed, details=details,
                ts=event.created_at.timestamp(), correlation=turn)
     elif event.type == "workflow.finished":
-        details.update({key: data.get(key) for key in ("workflow_id", "revision", "operation", "dataset", "error_code")})
+        details.update({key: data.get(key) for key in ("workflow_id", "revision", "operation", "dataset", "operations", "datasets", "error_code")})
         insert(db, "calculation", "Calculation " + data.get("status", "finished"), user_id=user_id,
                outcome=data.get("status", "finished"), duration_ms=data.get("duration_ms"), details=details,
                ts=event.created_at.timestamp())
         if data.get("status") == "failed":
             code = data.get("error_code") or "workflow_failure"
+            insert(db, "error", code.replace("_", " "), user_id=user_id, outcome=code,
+                   details={**details, "code": code}, ts=event.created_at.timestamp())
+    elif event.type in {"job.completed", "job.failed", "job.cancelled"}:
+        saved = db.execute("SELECT payload FROM jobs WHERE id=?", (event.job_id or data.get("job_id"),)).fetchone()
+        if not saved:
+            return
+        job = json.loads(saved[0])
+        plan = job["plan"]
+        error = job.get("error") or {}
+        details.update(job_id=job["id"], operation=plan["operation_id"], dataset=plan["graph_id"], error_code=error.get("code"))
+        elapsed = ((datetime.fromisoformat(job["finished_at"]) - datetime.fromisoformat(job["started_at"])).total_seconds() * 1000
+                   if job.get("finished_at") and job.get("started_at") else None)
+        insert(db, "calculation", "Calculation " + job["status"], user_id=user_id, outcome=job["status"], duration_ms=elapsed,
+               details=details, ts=event.created_at.timestamp())
+        if job["status"] == "failed":
+            code = error.get("code", "execution_error")
             insert(db, "error", code.replace("_", " "), user_id=user_id, outcome=code,
                    details={**details, "code": code}, ts=event.created_at.timestamp())
 

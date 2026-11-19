@@ -72,6 +72,7 @@ class Accounts(AdminAccounts):
         # Process-local arrival order for each kind of slot; leases stay in SQLite.
         self.waiting = defaultdict(list)
         self.wait_started = {}
+        self.model_calls = {}
         database.path.chmod(0o600)
         with database._connect() as db:
             db.executescript("""
@@ -891,7 +892,7 @@ class Accounts(AdminAccounts):
             self.wait_started.pop(ticket[1], None)
 
     @asynccontextmanager
-    async def execution_slot(self, user_id, admission=None):
+    async def execution_slot(self, user_id, admission=None, *, already_refunded=None):
         """Wait in line for a slot, then run; waiting and running have separate limits.
 
         A job that times out or is cancelled before it starts gets its daily job back.
@@ -907,7 +908,7 @@ class Accounts(AdminAccounts):
                 self.settings.account_queue_seconds,
             )
         except (TimeoutError, asyncio.CancelledError) as error:
-            if admission:
+            if admission and not (already_refunded and already_refunded()):
                 self.refund_unstarted_job(admission)
             if isinstance(error, asyncio.CancelledError):
                 raise
@@ -998,7 +999,7 @@ def _reported_usage(usage):
 
 
 @asynccontextmanager
-async def _metered(client, path, payload, max_tokens):
+async def _quota_metered(client, path, payload, max_tokens):
     """Reserve before inference; settle what the caller records in meter["used"].
 
     The caller sets used=0 for a model-server error and the reported usage on
@@ -1030,6 +1031,8 @@ async def _metered(client, path, payload, max_tokens):
             "concurrency_limit",
             retry_after=5,
         ) from error
+    from .admin_model_calls import running
+    running(lease, principal.accounts.clock())
     prompt = method = None
     try:
         prompt, method = await _prompt_tokens(client, path, payload)
@@ -1060,6 +1063,14 @@ async def _metered(client, path, payload, max_tokens):
         raise
     finally:
         principal.accounts.settle_tokens(lease, meter["used"])
+
+
+@asynccontextmanager
+async def _metered(client, path, payload, max_tokens):
+    from .admin_model_calls import observe
+    async with observe(payload):
+        async with _quota_metered(client, path, payload, max_tokens) as meter:
+            yield meter
 
 
 async def model_post(client, path, *, json, max_tokens=None):
@@ -1112,6 +1123,8 @@ async def _collect_stream(response, on_reasoning):
             break
         chunk = json_module.loads(data)
         usage = chunk.get("usage") or usage
+        from .admin_model_calls import usage as report_usage
+        report_usage(usage)
         for choice in chunk.get("choices") or []:
             index = choice.get("index", 0)
             collected = choices.setdefault(index, {"index": index, "message": {"content": "", "reasoning": ""},
