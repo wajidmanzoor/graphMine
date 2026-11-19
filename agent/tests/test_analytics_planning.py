@@ -477,7 +477,7 @@ def setup(settings, database, graph_store, session, triangle_graph):
     analytics = AnalyticsService(settings, database, graph_store, events)
     body = PlanningRequest(
         message="Count the three-way connections in this network.",
-        mode="interactive",  # Existing explicit-review/DAG coverage; Normal is covered in test_analytics_lanes.
+        mode="expert",  # Existing explicit-review/DAG coverage; Normal is covered in test_analytics_lanes.
         device="cpu",
         inputs={"main": {"file_id": file.id}},
     )
@@ -515,6 +515,7 @@ def proposal(op="triangle-counting", parameters=None):
 @pytest.mark.asyncio
 async def test_explicit_count_waits_for_a_card_then_uses_native_validation(setup):
     settings, analytics, events, session, body = setup
+    body.mode = "normal"
     settings = replace(settings, analytics_direct_plans=True)
     planner = ReplayPlanner(settings, analytics, events, responses=[], candidate_operation="triangle-counting")
     body.message = "How many triangles are in this graph?"
@@ -842,10 +843,10 @@ async def test_family_and_problem_routing_then_real_library_validation_and_execu
         saved = await analytics.create(
             session,
             WorkflowRequest(
-                mode="interactive", plan=result["plan"], inputs=body.inputs
+                mode="expert", plan=result["plan"], inputs=body.inputs
             ),
         )
-        assert saved["status"] == "awaiting_review"
+        assert saved["status"] == "ready"
         await analytics.start(
             saved["id"], saved["validation"]["workflow_hash"], saved["revision"]
         )
@@ -1409,19 +1410,19 @@ async def test_domain_clarification_history_and_workflow_link_are_saved(
     saved = await analytics.create(
         session.id,
         WorkflowRequest(
-            mode="interactive",
+            mode="expert",
             plan=second["plan"],
             inputs=body.inputs,
             planning_turn_id=second["turn_id"],
         ),
     )
     assert saved["planning_turn_id"] == second["turn_id"]
-    assert saved["status"] == "awaiting_review" and saved["steps"] == {}
+    assert saved["status"] == "ready" and saved["steps"] == {}
     with pytest.raises(AnalyticsError, match="not ready"):
         await analytics.create(
             session.id,
             WorkflowRequest(
-                mode="interactive",
+                mode="expert",
                 plan=second["plan"],
                 inputs=body.inputs,
                 planning_turn_id=first["turn_id"],
@@ -1432,7 +1433,7 @@ async def test_domain_clarification_history_and_workflow_link_are_saved(
         await analytics.create(
             other.id,
             WorkflowRequest(
-                mode="interactive",
+                mode="expert",
                 plan=second["plan"],
                 inputs=body.inputs,
                 planning_turn_id=second["turn_id"],
@@ -1609,7 +1610,7 @@ async def test_followup_retains_reviewed_plan_context_without_automatic_executio
     initial = await analytics.create(
         session,
         WorkflowRequest(
-            mode="interactive", plan=proposal()["plan"], inputs=body.inputs
+            mode="expert", plan=proposal()["plan"], inputs=body.inputs
         ),
     )
     body.previous_workflow_id = initial["id"]
@@ -1632,7 +1633,7 @@ async def test_followup_retains_reviewed_plan_context_without_automatic_executio
     assert response["plan"]["steps"][0]["parameters"]["mode"] == "enumerate"
     # Planning itself neither revises the reviewed record nor starts a job.
     unchanged = analytics.get(initial["id"])
-    assert unchanged["revision"] == 1 and unchanged["status"] == "awaiting_review"
+    assert unchanged["revision"] == 1 and unchanged["status"] == "ready"
     assert len(analytics.list(session)) == 1
 
 
@@ -1642,7 +1643,7 @@ async def test_previous_plan_must_belong_to_current_workspace(setup):
     initial = await analytics.create(
         session,
         WorkflowRequest(
-            mode="interactive", plan=proposal()["plan"], inputs=body.inputs
+            mode="expert", plan=proposal()["plan"], inputs=body.inputs
         ),
     )
     other = analytics.database.create_session(SessionRecord(domain_id="general"))
@@ -1676,7 +1677,7 @@ async def test_graph_collection_context_and_pattern_selector_schema(
     )
     body = PlanningRequest(
         message="Find frequent subgraphs with minimum support fraction 0.5, maximum edges 2, induced false, vertex and edge type labels; reject self loops and parallel edges.",
-        mode="interactive",
+        mode="expert",
         device="cpu",
         inputs={"main": {"file_id": file.id, "kind": "graph_collection"}},
     )

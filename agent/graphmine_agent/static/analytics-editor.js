@@ -61,7 +61,7 @@ window.GraphMineEditor = ({state, W, node, card, refs, runAction, notice, parame
     };
     form.onsubmit = event => { event.preventDefault(); runAction(async () => {
       if (state.session?.id !== sessionId || state.record?.id !== originalId || state.record?.revision !== originalRevision) throw new Error("The conversation or workflow changed. Reopen the editor.");
-      collect(); $("plan-editor").value = W.stringify(plan, true); await submitPlan(plan, Boolean(state.record), null, null, "interactive"); finish();
+      collect(); $("plan-editor").value = W.stringify(plan, true); await submitPlan(plan, Boolean(state.record), null, null, "expert"); finish();
     }); };
     dialog.showModal(); render();
   });

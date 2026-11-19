@@ -26,7 +26,7 @@ def test_visual_editor_revalidates_and_requires_review(loading_browser, loading_
     )
     body = server.requests[-1][2]
     assert body["plan"]["steps"][0]["parameters"]["requested_k"] == 3
-    assert body["mode"] == "interactive"
+    assert body["mode"] == "expert"
     assert browser.find_element(By.ID, "approve-plan").is_displayed()
     assert not any(path.endswith("/run") for _, path, _ in server.requests)
 

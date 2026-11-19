@@ -20,7 +20,7 @@ from pathlib import Path
 from jsonschema import Draft7Validator
 from jsonschema.exceptions import best_match
 
-from .models import GroundedNarrative, GroundedStatement, VisualizationSpec
+from .models import ChartTemplateRequest, GroundedNarrative, GroundedStatement, TemplateNarrative, VisualizationSpec
 
 VERSION = "grounded-analysis-v2"
 MAX_CHART_ROWS = 10000
@@ -30,10 +30,8 @@ NUMBER = re.compile(r"(?<![\w.])[-+]?\d+(?:,\d{3})*(?:\.\d+)?(?:[eE][-+]?\d+)?")
 DATUM_FIELD = re.compile(r"datum(?:\.([A-Za-z_]\w*)|\[['\"]([^'\"]+)['\"]\])")
 CHART_REPAIR_GUIDANCE = (
     "Return the full corrected narrative. Preserve evidence references and use only supplied datasets. "
-    "Each spec_json must be a valid JSON object serialized as a string, with balanced braces and brackets. "
-    "hconcat, vconcat, concat and layer must be arrays of child specifications, not objects with a views key; "
-    "put spacing beside hconcat/vconcat/concat. A filter transform has exactly one key, filter, "
-    "whose value is a predicate; it has no join key. Check all chart specifications before returning."
+    "Request at most one chart using chart (bar, histogram, scatter, line or heatmap), dataset, x, optional y/color, "
+    "title, description and fact_ids. Use exact fields from the named dataset. Do not emit a chart specification or code."
 )
 
 
@@ -279,8 +277,8 @@ def analysis_context(answer: dict) -> dict:
             }
             for name, table in answer.get("analysis_datasets", {}).items()
         },
-        "chart_data_rule": "Use data: {name: <exact dataset name>}. The server binds all recorded rows. Sample rows are only examples, never the complete dataset unless shown_rows equals their count.",
-        "chart_schema": SCHEMA_URL,
+        "chart_data_rule": "Request at most one fixed chart template using the exact dataset name and declared column names. The server binds all recorded rows. Samples are examples, not the complete dataset.",
+        "chart_templates": ["bar", "histogram", "scatter", "line", "heatmap"],
         "numeric_rule": "Concrete numerical claims must be supported by the cited fact statements/values. Request a new computation when the supplied evidence cannot answer the question.",
     }
 
@@ -531,6 +529,38 @@ def compile_vega(spec: dict) -> dict:
     return report
 
 
+def template_chart(chart: ChartTemplateRequest, datasets: dict) -> dict:
+    dataset = datasets.get(chart.dataset)
+    if dataset is None:
+        raise ValueError("Chart template references an unknown dataset")
+    columns = dataset["columns"]
+    for field in (chart.x, chart.y, chart.color):
+        if field is not None and field not in columns:
+            raise ValueError("Chart template references an unknown field")
+    if chart.chart in {"scatter", "line", "heatmap"} and chart.y is None:
+        raise ValueError("This chart template requires a y field")
+    def encoding(field):
+        # Vega field escaping preserves literal uploaded property names.
+        escaped = re.sub(r"([.\[\]\\])", r"\\\1", field)
+        return {"field": escaped, "type": columns[field]}
+    x = encoding(chart.x)
+    y = encoding(chart.y) if chart.y is not None else {"aggregate": "count", "type": "quantitative", "title": "Recorded rows"}
+    if chart.chart == "histogram":
+        if columns[chart.x] != "quantitative":
+            raise ValueError("Histogram templates require a numeric field")
+        x["bin"] = {"maxbins": 16}
+    if chart.chart == "bar" and y.get("type") == "quantitative":
+        y["scale"] = {"zero": True}
+    spec = {"$schema": SCHEMA_URL, "data": {"name": chart.dataset}, "width": "container", "height": 260,
+            "mark": {"type": {"histogram": "bar", "scatter": "point", "heatmap": "rect"}.get(chart.chart, chart.chart), "tooltip": True},
+            "encoding": {"x": x, "y": y}}
+    if chart.color:
+        spec["encoding"]["color"] = encoding(chart.color)
+    elif chart.chart == "heatmap":
+        spec["encoding"]["color"] = {"aggregate": "count", "type": "quantitative", "title": "Recorded rows"}
+    return spec
+
+
 def validate_narrative(
     narrative: GroundedNarrative,
     answer: dict,
@@ -543,7 +573,10 @@ def validate_narrative(
     if not set(narrative.fact_ids) <= facts.keys():
         raise ValueError("Narrative selected unknown facts")
     if not set(narrative.view_ids) <= {view.id for view in defaults}:
-        raise ValueError("Narrative selected unknown default views")
+        if isinstance(narrative, TemplateNarrative):
+            narrative.view_ids = [v for v in narrative.view_ids if v in {view.id for view in defaults}]
+        else:
+            raise ValueError("Narrative selected unknown default views")
     for statement in (
         [narrative.summary] if narrative.summary else []
     ) + narrative.findings:
@@ -559,22 +592,34 @@ def validate_narrative(
     views = []
     for index, chart in enumerate(narrative.charts):
         if not set(chart.fact_ids) <= facts.keys():
+            if isinstance(chart, ChartTemplateRequest):
+                continue
             raise ValueError("Chart references unknown facts")
+        if isinstance(chart, ChartTemplateRequest):
+            try:
+                template_chart(chart, answer.get("analysis_datasets", {}))
+            except ValueError:
+                continue
         try:
-            spec = json.loads(chart.spec_json)
+            spec = template_chart(chart, answer.get("analysis_datasets", {})) if isinstance(chart, ChartTemplateRequest) else json.loads(chart.spec_json)
         except json.JSONDecodeError as error:
             raise ValueError(
                 f"charts[{index}].spec_json must contain valid JSON: {error.msg} "
                 f"at line {error.lineno}, column {error.colno}. Check commas and balanced braces/brackets."
             ) from error
-        used = validate_vega_spec(spec, answer.get("analysis_datasets", {}))
-        spec = copy.deepcopy(spec)
-        # Inline only verified rows, after validating that the proposal had no data.
-        spec["datasets"] = {
-            name: answer["analysis_datasets"][name]["rows"] for name in sorted(used)
-        }
-        if compile_charts:
-            compile_vega(spec)
+        try:
+            used = validate_vega_spec(spec, answer.get("analysis_datasets", {}))
+            spec = copy.deepcopy(spec)
+            # Inline only verified rows, after validating that the proposal had no data.
+            spec["datasets"] = {
+                name: answer["analysis_datasets"][name]["rows"] for name in sorted(used)
+            }
+            if compile_charts:
+                compile_vega(spec)
+        except ValueError:
+            if isinstance(chart, ChartTemplateRequest):
+                continue
+            raise
         notices = [
             f"{name}: displaying {answer['analysis_datasets'][name]['shown_rows']} of {answer['analysis_datasets'][name]['total_rows']} rows."
             for name in sorted(used)

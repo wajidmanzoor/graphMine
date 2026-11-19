@@ -1,5 +1,5 @@
 "use strict";
-window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection, renderSelectionChip, notice, savedSelection, onContext}) => {
+window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection, renderSelectionChip, notice, savedSelection, onContext, onView, onClear, onRender}) => {
   const $ = id => document.getElementById(id);
   const toolbar = node("div", {class: "result-focus", id: "result-focus", hidden: true});
   const mode = node("select", {id: "result-view-mode", "aria-label": "Result graph scope"});
@@ -8,11 +8,14 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
   const description = node("p", {id: "result-focus-description", role: "status"});
   const item = node("input", {id: "result-item-index", type: "number", min: "1", "aria-label": "Recorded item number"});
   const choose = node("button", {id: "show-result-item", type: "button", class: "quiet"}, "Show item");
-  toolbar.append(mode, item, choose, reset, description); $("network").before(toolbar);
+  const previous = node("button", {id: "previous-result-item", type: "button", class: "quiet", "aria-label": "Previous recorded item"}, "◀");
+  const next = node("button", {id: "next-result-item", type: "button", class: "quiet", "aria-label": "Next recorded item"}, "▶");
+  const itemCount = node("span", {id: "result-item-count"});
+  toolbar.append(mode, previous, item, itemCount, next, reset, description); $("network").before(toolbar);
   const block = node("div", {id: "result-building-block", class: "result-building-block", hidden: true}); $("chart").after(block);
   const destination = node("select", {id: "result-destination", "aria-label": "Path destination", hidden: true}); toolbar.prepend(destination);
   // chosen: the person picked (or restored) an item, as opposed to a default view.
-  let generation = 0, selectedIndex = null, useSelection = true, chosen = false, restorePending = true, controller = null;
+  let generation = 0, selectedIndex = null, useSelection = true, chosen = false, restorePending = true, controller = null, initial = null;
   const vertexLabels = new Map();
   const entityLabel = id => vertexLabels.get(W.idKey(id)) || W.idLabel(id);
   async function load() {
@@ -20,6 +23,12 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
     if (!record || port === "__result") { toolbar.hidden = true; return; }
     const operation = state.result?.steps[step]?.result?.operation;
     if (!state.caps?.operations.some(card => card.id === operation && card.visualization)) { toolbar.hidden = true; return; }
+    const selectionScope = W.stringify([record.id, record.revision, step, port]);
+    if (state.selection.scope !== selectionScope) {
+      state.restoreEntitySelection = state.selection.scope === null;
+      state.selection.scope = selectionScope; state.selection.item = null;
+      state.selected.clear(); state.selectedEdges.clear(); state.selectedItems.clear();
+    }
     if (restorePending) {
       const saved = savedSelection?.(record, step, port);
       if (saved) { selectedIndex = saved.index; chosen = saved.index !== null && saved.index !== undefined; mode.value = saved.context ? "context" : "focus"; }
@@ -32,24 +41,35 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
     toolbar.hidden = false;
     description.textContent = "Loading the recorded result view…";
     const params = new URLSearchParams({context: String(mode.value === "context"), expected_revision: record.revision});
+    if (state.viewVertexLimit) { params.set("vertex_limit", state.viewVertexLimit); params.set("edge_limit", Math.min(100000, Math.max(5000, state.viewVertexLimit * 2))); }
     if (selectedIndex !== null) params.set("index", selectedIndex);
     const path = [record.id, "steps", step, "ports", port, "view"].map(encodeURIComponent).join("/");
     try {
       const response = await api(`/api/workflows/${path}?${params}`, {signal: controller.signal});
       if (current !== generation || epoch !== state.epoch || state.record?.id !== record.id) return;
       if (response.revision !== undefined && response.revision !== record.revision) throw new Error("This analysis revision changed. Reopen its results.");
+      if (response.vertices.length > 2000 && window.GraphMineViewStyle && !window.GraphMineViewStyle.canWebGL(response)) {
+        state.viewVertexLimit = 2000; notice("This browser or scene requires canvas rendering. The view is limited to 2,000 vertices to keep interaction responsive; the saved result and paged table retain all records."); return load();
+      }
       state.resultView = response;
+      await onView?.(response);
+      if (current !== generation || epoch !== state.epoch) return;
       state.resultViewPending = false;
       for (const vertex of response.vertices) if (vertex.label) vertexLabels.set(W.idKey(vertex.id), String(vertex.label));
       // Only an item the person chose narrows a follow-up question.
       useSelection = chosen;
       selectedIndex = response.index;
-      item.hidden = choose.hidden = !response.item_count;
+      item.hidden = !response.item_count;
+      previous.hidden = next.hidden = itemCount.hidden = !response.item_count;
+      previous.disabled = (response.index ?? 0) <= 0; next.disabled = (response.index ?? 0) >= response.item_count - 1;
+      itemCount.textContent = `of ${response.item_count}`;
       item.max = String(response.item_count); item.value = response.index === null ? "" : String(response.index + 1);
       state.groupFilter = response.context || response.index === null ? "" : state.groups?.find(g => g.index === response.index)?.key || "";
       state.groupGraph = null;
-      state.selected = new Set(response.selected_vertices.map(W.idKey));
-      state.selectedEdges = new Set(response.selected_edges.map(W.idKey));
+      state.selection.item = {workflow_id: record.id, step, port, index: response.index, vertices: response.selected_vertices, edges: response.selected_edges};
+      state.selectedItems = new Set(response.index === null ? [] : [response.index]);
+      if (!initial) initial = {index: response.index, context: response.context, layout: $("graph-layout").value || response.view_spec?.layout?.name};
+      notice.clearError?.();
       if (response.flow_rows) { state.flowRows = response.flow_rows; $("flow-direction").checked = !response.context; }
       const count = response.graph_available ? ` ${response.vertex_count} vertices · ${response.edge_count} edges.` : "";
       description.textContent = response.note + count + (!response.complete ? " This result collection is incomplete or count-only." : "");
@@ -78,8 +98,12 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
   mode.onchange = () => { void load(); };
   destination.onchange = () => { if (destination.value !== "") void select(Number(destination.value)); };
   choose.onclick = () => { if (item.value && item.validity.valid) void select(Number(item.value) - 1); };
-  reset.onclick = () => { selectedIndex = null; chosen = false; mode.value = "focus"; void load(); renderBlocks(); };
-  function clear() { generation++; controller?.abort(); vertexLabels.clear(); selectedIndex = null; chosen = false; state.resultView = null; state.resultViewPending = false; state.resultViewError = null; state.selectedEdges = null; mode.value = "focus"; toolbar.hidden = true; block.hidden = true; restorePending = true; onContext?.(); }
+  item.onchange = choose.onclick;
+  item.onkeydown = event => { if (event.key === "Enter") { event.preventDefault(); choose.onclick(); } };
+  previous.onclick = () => { if ((selectedIndex ?? 0) > 0) void select(selectedIndex - 1); };
+  next.onclick = () => { if ((selectedIndex ?? 0) + 1 < (state.resultView?.item_count || 0)) void select((selectedIndex ?? 0) + 1); };
+  reset.onclick = () => { selectedIndex = initial?.index ?? null; chosen = false; mode.value = initial?.context ? "context" : "focus"; state.selected.clear(); state.selectedEdges.clear(); window.GraphMineWorkspace?.visualization?.resetDefault(initial); void load(); renderBlocks(); };
+  function clear() { generation++; controller?.abort(); vertexLabels.clear(); selectedIndex = null; chosen = false; initial = null; state.selection.item = null; state.selected.clear(); state.selectedItems.clear(); state.resultView = null; state.resultViewPending = false; state.resultViewError = null; state.selectedEdges = null; mode.value = "focus"; toolbar.hidden = true; block.hidden = true; restorePending = true; onContext?.(); onClear?.(); }
   function selection() {
     const v = state.resultView;
     // The whole output is already the previous result; only an item narrows it.
@@ -91,6 +115,7 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
   const svgNode = (tag, attributes) => { const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for (const [k, v] of Object.entries(attributes || {})) e.setAttribute(k, v); return e; };
   const numeric = value => typeof value === "number" && Number.isFinite(value) ? value : null;
   function renderBlocks() {
+    if (state.resultView?.view_spec && onRender) { block.hidden = true; onRender(); return; }
     const focusedLocation = block.querySelector("[data-location-index]:focus")?.dataset.locationIndex;
     block.replaceChildren(); block.hidden = true;
     const result = state.result?.steps[$("result-step").value]?.result, port = state.port;
@@ -187,6 +212,7 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
     if (focusedLocation !== undefined) block.querySelector(`[data-location-index="${focusedLocation}"]`)?.focus({preventScroll: true});
   }
   function decorate() {
+    if (state.resultView?.view_spec) return;
     const view = state.resultView, cy = state.cy; if (!view || !cy) return;
     if (view.profile.kind === "colors") {
       const palette = ["#4179b5", "#dd8050", "#499678", "#a765ab", "#c05a6e", "#8b8739", "#4998aa", "#8664bb"];

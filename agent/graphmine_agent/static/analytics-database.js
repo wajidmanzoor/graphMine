@@ -120,6 +120,8 @@ window.GraphMineDatabaseWorkspace = argumentsForSource => {
     const unavailable = !file || Boolean(state.resultView && !state.resultView.enrichable);
     attributes.disabled = unavailable || capabilities?.enrichment === false;
     relationships.disabled = unavailable || capabilities?.expansion === false;
+    attributes.hidden = benchmark || attributes.disabled; relationships.hidden = benchmark || relationships.disabled;
+    attributes.title = attributes.disabled ? "Needs a source table mapping for these entities" : ""; relationships.title = relationships.disabled ? "Needs a source relationship mapping for these entities" : "";
     const optionalSqlNote = "This graph comes directly from Neo4j. SQL enrichment is optional and is not configured.";
     if (!overlay && capabilities?.sql === false && !benchmark) enrichedNote.textContent = optionalSqlNote;
     else if (enrichedNote.textContent === optionalSqlNote) enrichedNote.textContent = "";

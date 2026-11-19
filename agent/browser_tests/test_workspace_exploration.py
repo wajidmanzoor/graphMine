@@ -116,16 +116,16 @@ def test_active_version_viewport_filters_and_typed_selection_survive_reload(load
     browser.execute_script("""
         const s = GraphMineWorkspace.state;
         document.getElementById('include-untimed').click();
-        s.cy.nodes().forEach((n, i) => n.position({x: 17 + i * 70, y: 19 + i * 45}));
+        s.cy.nodes().forEach((n, i) => n.position('x', 17 + i * 70).position('y', 19 + i * 45));
         s.cy.nodes().filter(n => n.data('entity') === 1).emit('tap');
-        s.cy.zoom(1.3); s.cy.pan({x: 93, y: 55}); s.cy.nodes().emit('dragfree');
+        s.cy.zoom(1.3); s.cy.pan('x', 93); s.cy.pan('y', 55); s.cy.nodes().emit('dragfree');
     """)
     saved(browser, lambda: server.preferences["state"]["active_file_id"] == "network-new")
     before = graph_state(browser)
     assert server.preferences["state"]["views"][-1]["selected_vertices"] == [1]
     browser.refresh()
     wait_for(browser, "GraphMineWorkspace.state.cy?.nodes().length === 6 && !GraphMineWorkspace.state.busy")
-    assert graph_state(browser) == before
+    assert graph_state(browser) == before, {"before": before, "after": graph_state(browser), "saved": server.preferences["state"]["views"][-1]["viewport"]}
     assert browser.execute_script("return GraphMineWorkspace.state.active") == "network-new"
     assert browser.execute_script("return GraphMineWorkspace.state.record.input_files.main.file_id") == "network"
     assert browser.find_element(By.ID, "graph-layout").get_attribute("value") == "circle"

@@ -1,0 +1,1390 @@
+{
+  "description": "Anonymous structure derived from a saved analysis. Numeric results retained; IDs, labels, and type names anonymized. Original attributes and text omitted.",
+  "input": {
+    "graph": {
+      "id": "anonymous",
+      "directed": false
+    },
+    "vertices": [
+      {
+        "id": "entity-0",
+        "label": "Entity 1",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-1",
+        "label": "Entity 2",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-2",
+        "label": "Entity 3",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-3",
+        "label": "Entity 4",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-4",
+        "label": "Entity 5",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-5",
+        "label": "Entity 6",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-6",
+        "label": "Entity 7",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-7",
+        "label": "Entity 8",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-8",
+        "label": "Entity 9",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-9",
+        "label": "Entity 10",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-10",
+        "label": "Entity 11",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-11",
+        "label": "Entity 12",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-12",
+        "label": "Entity 13",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-13",
+        "label": "Entity 14",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-14",
+        "label": "Entity 15",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-15",
+        "label": "Entity 16",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-16",
+        "label": "Entity 17",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-17",
+        "label": "Entity 18",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-18",
+        "label": "Entity 19",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-19",
+        "label": "Entity 20",
+        "type": "Type 2"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-0",
+        "source": "entity-0",
+        "target": "entity-1",
+        "weight": 3,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-1",
+        "source": "entity-0",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-2",
+        "source": "entity-0",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-3",
+        "source": "entity-0",
+        "target": "entity-4",
+        "weight": 2,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-4",
+        "source": "entity-0",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-5",
+        "source": "entity-0",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-6",
+        "source": "entity-0",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-7",
+        "source": "entity-0",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-8",
+        "source": "entity-0",
+        "target": "entity-9",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-9",
+        "source": "entity-10",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-10",
+        "source": "entity-10",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-11",
+        "source": "entity-10",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-12",
+        "source": "entity-10",
+        "target": "entity-4",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-13",
+        "source": "entity-10",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-14",
+        "source": "entity-10",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-15",
+        "source": "entity-10",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-16",
+        "source": "entity-10",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-17",
+        "source": "entity-11",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-18",
+        "source": "entity-11",
+        "target": "entity-2",
+        "weight": 2,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-19",
+        "source": "entity-11",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-20",
+        "source": "entity-11",
+        "target": "entity-4",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-21",
+        "source": "entity-11",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-22",
+        "source": "entity-11",
+        "target": "entity-8",
+        "weight": 2,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-23",
+        "source": "entity-11",
+        "target": "entity-9",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-24",
+        "source": "entity-12",
+        "target": "entity-2",
+        "weight": 2,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-25",
+        "source": "entity-12",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-26",
+        "source": "entity-12",
+        "target": "entity-4",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-27",
+        "source": "entity-12",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-28",
+        "source": "entity-12",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-29",
+        "source": "entity-12",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-30",
+        "source": "entity-12",
+        "target": "entity-9",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-31",
+        "source": "entity-13",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-32",
+        "source": "entity-13",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-33",
+        "source": "entity-13",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-34",
+        "source": "entity-13",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-35",
+        "source": "entity-13",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-36",
+        "source": "entity-13",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-37",
+        "source": "entity-13",
+        "target": "entity-9",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-38",
+        "source": "entity-14",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-39",
+        "source": "entity-14",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-40",
+        "source": "entity-14",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-41",
+        "source": "entity-14",
+        "target": "entity-4",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-42",
+        "source": "entity-14",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-43",
+        "source": "entity-14",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-44",
+        "source": "entity-14",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-45",
+        "source": "entity-15",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-46",
+        "source": "entity-15",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-47",
+        "source": "entity-15",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-48",
+        "source": "entity-15",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-49",
+        "source": "entity-15",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-50",
+        "source": "entity-15",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-51",
+        "source": "entity-16",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-52",
+        "source": "entity-16",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-53",
+        "source": "entity-16",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-54",
+        "source": "entity-16",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-55",
+        "source": "entity-16",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-56",
+        "source": "entity-16",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-57",
+        "source": "entity-17",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-58",
+        "source": "entity-17",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-59",
+        "source": "entity-17",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-60",
+        "source": "entity-17",
+        "target": "entity-4",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-61",
+        "source": "entity-17",
+        "target": "entity-5",
+        "weight": 2,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-62",
+        "source": "entity-17",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-63",
+        "source": "entity-18",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-64",
+        "source": "entity-18",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-65",
+        "source": "entity-18",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-66",
+        "source": "entity-18",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-67",
+        "source": "entity-18",
+        "target": "entity-19",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-68",
+        "source": "entity-18",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      }
+    ]
+  },
+  "result": {
+    "operation": "community-detection",
+    "parameters": {},
+    "ports": {
+      "partition": {
+        "type": "vertex_partition",
+        "value": [
+          {
+            "vertex": "entity-0",
+            "part": 0
+          },
+          {
+            "vertex": "entity-1",
+            "part": 1
+          },
+          {
+            "vertex": "entity-2",
+            "part": 2
+          },
+          {
+            "vertex": "entity-3",
+            "part": 2
+          },
+          {
+            "vertex": "entity-4",
+            "part": 1
+          },
+          {
+            "vertex": "entity-5",
+            "part": 2
+          },
+          {
+            "vertex": "entity-6",
+            "part": 1
+          },
+          {
+            "vertex": "entity-7",
+            "part": 0
+          },
+          {
+            "vertex": "entity-8",
+            "part": 1
+          },
+          {
+            "vertex": "entity-9",
+            "part": 0
+          },
+          {
+            "vertex": "entity-10",
+            "part": 1
+          },
+          {
+            "vertex": "entity-11",
+            "part": 1
+          },
+          {
+            "vertex": "entity-12",
+            "part": 2
+          },
+          {
+            "vertex": "entity-13",
+            "part": 0
+          },
+          {
+            "vertex": "entity-14",
+            "part": 1
+          },
+          {
+            "vertex": "entity-15",
+            "part": 1
+          },
+          {
+            "vertex": "entity-16",
+            "part": 2
+          },
+          {
+            "vertex": "entity-17",
+            "part": 2
+          },
+          {
+            "vertex": "entity-18",
+            "part": 3
+          },
+          {
+            "vertex": "entity-19",
+            "part": 3
+          }
+        ],
+        "complete": true
+      },
+      "groups": {
+        "type": "vertex_groups",
+        "value": [
+          {
+            "group": 0,
+            "vertices": [
+              "entity-0",
+              "entity-7",
+              "entity-9",
+              "entity-13"
+            ]
+          },
+          {
+            "group": 1,
+            "vertices": [
+              "entity-1",
+              "entity-4",
+              "entity-6",
+              "entity-8",
+              "entity-10",
+              "entity-11",
+              "entity-14",
+              "entity-15"
+            ]
+          },
+          {
+            "group": 2,
+            "vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-5",
+              "entity-12",
+              "entity-16",
+              "entity-17"
+            ]
+          },
+          {
+            "group": 3,
+            "vertices": [
+              "entity-18",
+              "entity-19"
+            ]
+          }
+        ],
+        "complete": true
+      }
+    },
+    "result": {
+      "community_count": 4,
+      "quality_score": 0.09168241965973535
+    }
+  },
+  "expected": {
+    "partition": {
+      "spec": {
+        "schema_version": "1.0.0",
+        "rules_version": "2026-11-18.3",
+        "profile": "partition",
+        "view": "graph",
+        "title": "Partition overview",
+        "layout": {
+          "name": "clustered",
+          "seed": 0,
+          "sides": [],
+          "positions_source": "browser",
+          "alternates": [
+            "clustered",
+            "force",
+            "grid"
+          ]
+        },
+        "nodes": {
+          "color": {
+            "field": "group",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Group 1",
+                "color": "#0072b2",
+                "count": 4
+              },
+              {
+                "value": 1,
+                "label": "Group 2",
+                "color": "#d55e00",
+                "count": 0
+              },
+              {
+                "value": 2,
+                "label": "Group 3",
+                "color": "#009e73",
+                "count": 0
+              },
+              {
+                "value": 3,
+                "label": "Group 4",
+                "color": "#cc79a7",
+                "count": 0
+              }
+            ]
+          },
+          "size": {
+            "field": "degree",
+            "value": null,
+            "scale": "sqrt",
+            "range_px": [
+              14.0,
+              36.0
+            ],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "label": {
+            "field": "display_name",
+            "value": null,
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "shape": {
+            "field": "vertex_type",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": [
+              {
+                "value": "Type 1",
+                "label": "Type 1",
+                "shape": "ellipse"
+              },
+              {
+                "value": "Type 2",
+                "label": "Type 2",
+                "shape": "diamond"
+              }
+            ]
+          }
+        },
+        "edges": {
+          "color": {
+            "field": "relationship_type",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "width": {
+            "field": "weight",
+            "value": null,
+            "scale": "sqrt",
+            "range_px": [
+              1.0,
+              4.0
+            ],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "style": {
+            "field": "edge_role",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "arrows": {
+            "field": null,
+            "value": false,
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          }
+        },
+        "legend": [
+          {
+            "channel": "color",
+            "field": "group",
+            "title": "Group"
+          },
+          {
+            "channel": "size",
+            "field": "degree",
+            "title": "Connections in input"
+          },
+          {
+            "channel": "shape",
+            "field": "vertex_type",
+            "title": "Entity type"
+          }
+        ],
+        "linked": [
+          {
+            "id": "group_sizes",
+            "chart": "bar",
+            "title": "Group sizes",
+            "dataset": "group_sizes",
+            "x": "group",
+            "y": "size",
+            "select": "group"
+          },
+          {
+            "id": "group_matrix",
+            "chart": "heatmap",
+            "title": "Connections between groups",
+            "dataset": "group_matrix",
+            "x": "source",
+            "y": "target",
+            "select": "group"
+          }
+        ],
+        "alternates": [
+          "matrix",
+          "meta_graph"
+        ],
+        "emphasis": {
+          "item": 0,
+          "context_opacity": 0.25
+        },
+        "limits": {
+          "shown_vertices": 4,
+          "total_vertices": 4,
+          "shown_edges": 4,
+          "total_edges": 4,
+          "sampled": false,
+          "strategy": "recorded witness first, then saved input order",
+          "collection_complete": true
+        },
+        "rules_applied": [
+          "profile_partition",
+          "partition_few_groups",
+          "dense_small_graph",
+          "typed_vertices"
+        ],
+        "provenance": {
+          "workflow_id": "fixture",
+          "revision": 1,
+          "step": "analysis",
+          "port": "partition",
+          "input_fingerprint": "4bfa527f7698db12edd3ec1da97256dab92228c0e3cd9cdd25dd9bcca05f6695",
+          "result_fingerprint": "1d7cc1b43387bd4935f9ad8bbeaa08073bdcda6727a0268d62672271db5a1242",
+          "recorded_rules_version": "2026-11-18.3"
+        },
+        "notes": [],
+        "renderer": "cytoscape",
+        "field_roles": {
+          "vertex": {
+            "role": "entity",
+            "namespace": "input",
+            "identity": "typed"
+          },
+          "group": {
+            "role": "group_key"
+          },
+          "part": {
+            "role": "group_key"
+          },
+          "community": {
+            "role": "group_key"
+          }
+        }
+      },
+      "facts": {
+        "version": "1.0.0",
+        "operation": "community-detection",
+        "port_type": "vertex_partition",
+        "field_roles": {
+          "vertex": {
+            "role": "entity",
+            "namespace": "input",
+            "identity": "typed"
+          },
+          "group": {
+            "role": "group_key"
+          },
+          "part": {
+            "role": "group_key"
+          },
+          "community": {
+            "role": "group_key"
+          }
+        },
+        "input": {
+          "vertices": 20,
+          "edges": 69,
+          "directed": false,
+          "density": 0.3631578947368421,
+          "density_definition": "distinct non-loop connections / possible connections",
+          "parallel_edges": false,
+          "self_loops": false,
+          "vertex_types": {
+            "Type 1": 10,
+            "Type 2": 10
+          },
+          "edge_types": {
+            "Type 3": 69
+          },
+          "named_vertices": 20,
+          "scanned_vertices": 20,
+          "scanned_edges": 69,
+          "statistics_complete": true
+        },
+        "witness": {
+          "vertices": 4,
+          "edges": 4,
+          "directed": false,
+          "density": 0.6666666666666666,
+          "density_definition": "distinct non-loop connections / possible connections",
+          "parallel_edges": false,
+          "self_loops": false,
+          "vertex_types": {
+            "Type 1": 2,
+            "Type 2": 2
+          },
+          "edge_types": {
+            "Type 3": 4
+          },
+          "named_vertices": 4,
+          "scanned_vertices": 4,
+          "scanned_edges": 4,
+          "statistics_complete": true
+        },
+        "coverage": 0.2,
+        "items": 20,
+        "scanned_items": 20,
+        "collection": {
+          "count": 4,
+          "covered_vertices": 20,
+          "largest_members": 8,
+          "largest_sides": null,
+          "median_members": 5.0,
+          "statistics_complete": true
+        },
+        "statistics_complete": true,
+        "groups": {
+          "count": 4,
+          "sizes": [
+            {
+              "id": 1,
+              "size": 8
+            },
+            {
+              "id": 2,
+              "size": 6
+            },
+            {
+              "id": 0,
+              "size": 4
+            },
+            {
+              "id": 3,
+              "size": 2
+            }
+          ],
+          "overlap": false,
+          "shared_members": 0,
+          "statistics_complete": true,
+          "smallest": 0,
+          "largest": 0
+        },
+        "scores": null,
+        "budget": {
+          "items": 10000,
+          "graph_records": 20000,
+          "memberships": 100000,
+          "scanned_memberships": 0
+        }
+      }
+    },
+    "groups": {
+      "spec": {
+        "schema_version": "1.0.0",
+        "rules_version": "2026-11-18.3",
+        "profile": "partition",
+        "view": "graph",
+        "title": "Partition overview",
+        "layout": {
+          "name": "clustered",
+          "seed": 0,
+          "sides": [],
+          "positions_source": "browser",
+          "alternates": [
+            "clustered",
+            "force",
+            "grid"
+          ]
+        },
+        "nodes": {
+          "color": {
+            "field": "group",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Group 1",
+                "color": "#0072b2",
+                "count": 4
+              },
+              {
+                "value": 1,
+                "label": "Group 2",
+                "color": "#d55e00",
+                "count": 0
+              },
+              {
+                "value": 2,
+                "label": "Group 3",
+                "color": "#009e73",
+                "count": 0
+              },
+              {
+                "value": 3,
+                "label": "Group 4",
+                "color": "#cc79a7",
+                "count": 0
+              }
+            ]
+          },
+          "size": {
+            "field": "degree",
+            "value": null,
+            "scale": "sqrt",
+            "range_px": [
+              14.0,
+              36.0
+            ],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "label": {
+            "field": "display_name",
+            "value": null,
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "shape": {
+            "field": "vertex_type",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": [
+              {
+                "value": "Type 1",
+                "label": "Type 1",
+                "shape": "ellipse"
+              },
+              {
+                "value": "Type 2",
+                "label": "Type 2",
+                "shape": "diamond"
+              }
+            ]
+          }
+        },
+        "edges": {
+          "color": {
+            "field": "relationship_type",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "width": {
+            "field": "weight",
+            "value": null,
+            "scale": "sqrt",
+            "range_px": [
+              1.0,
+              4.0
+            ],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "style": {
+            "field": "edge_role",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "arrows": {
+            "field": null,
+            "value": false,
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          }
+        },
+        "legend": [
+          {
+            "channel": "color",
+            "field": "group",
+            "title": "Group"
+          },
+          {
+            "channel": "size",
+            "field": "degree",
+            "title": "Connections in input"
+          },
+          {
+            "channel": "shape",
+            "field": "vertex_type",
+            "title": "Entity type"
+          }
+        ],
+        "linked": [
+          {
+            "id": "group_sizes",
+            "chart": "bar",
+            "title": "Group sizes",
+            "dataset": "group_sizes",
+            "x": "group",
+            "y": "size",
+            "select": "group"
+          },
+          {
+            "id": "group_matrix",
+            "chart": "heatmap",
+            "title": "Connections between groups",
+            "dataset": "group_matrix",
+            "x": "source",
+            "y": "target",
+            "select": "group"
+          }
+        ],
+        "alternates": [
+          "matrix",
+          "meta_graph"
+        ],
+        "emphasis": {
+          "item": 0,
+          "context_opacity": 0.25
+        },
+        "limits": {
+          "shown_vertices": 4,
+          "total_vertices": 4,
+          "shown_edges": 4,
+          "total_edges": 4,
+          "sampled": false,
+          "strategy": "recorded witness first, then saved input order",
+          "collection_complete": true
+        },
+        "rules_applied": [
+          "profile_partition",
+          "partition_few_groups",
+          "dense_small_graph",
+          "typed_vertices"
+        ],
+        "provenance": {
+          "workflow_id": "fixture",
+          "revision": 1,
+          "step": "analysis",
+          "port": "groups",
+          "input_fingerprint": "4bfa527f7698db12edd3ec1da97256dab92228c0e3cd9cdd25dd9bcca05f6695",
+          "result_fingerprint": "1d7cc1b43387bd4935f9ad8bbeaa08073bdcda6727a0268d62672271db5a1242",
+          "recorded_rules_version": "2026-11-18.3"
+        },
+        "notes": [],
+        "renderer": "cytoscape",
+        "field_roles": {
+          "group": {
+            "role": "group_key"
+          },
+          "vertices[]": {
+            "role": "entity",
+            "namespace": "input",
+            "identity": "typed"
+          }
+        }
+      },
+      "facts": {
+        "version": "1.0.0",
+        "operation": "community-detection",
+        "port_type": "vertex_groups",
+        "field_roles": {
+          "group": {
+            "role": "group_key"
+          },
+          "vertices[]": {
+            "role": "entity",
+            "namespace": "input",
+            "identity": "typed"
+          }
+        },
+        "input": {
+          "vertices": 20,
+          "edges": 69,
+          "directed": false,
+          "density": 0.3631578947368421,
+          "density_definition": "distinct non-loop connections / possible connections",
+          "parallel_edges": false,
+          "self_loops": false,
+          "vertex_types": {
+            "Type 1": 10,
+            "Type 2": 10
+          },
+          "edge_types": {
+            "Type 3": 69
+          },
+          "named_vertices": 20,
+          "scanned_vertices": 20,
+          "scanned_edges": 69,
+          "statistics_complete": true
+        },
+        "witness": {
+          "vertices": 4,
+          "edges": 4,
+          "directed": false,
+          "density": 0.6666666666666666,
+          "density_definition": "distinct non-loop connections / possible connections",
+          "parallel_edges": false,
+          "self_loops": false,
+          "vertex_types": {
+            "Type 1": 2,
+            "Type 2": 2
+          },
+          "edge_types": {
+            "Type 3": 4
+          },
+          "named_vertices": 4,
+          "scanned_vertices": 4,
+          "scanned_edges": 4,
+          "statistics_complete": true
+        },
+        "coverage": 0.2,
+        "items": 4,
+        "scanned_items": 4,
+        "collection": {
+          "count": 4,
+          "covered_vertices": 20,
+          "largest_members": 8,
+          "largest_sides": null,
+          "median_members": 5.0,
+          "statistics_complete": true
+        },
+        "statistics_complete": true,
+        "groups": {
+          "count": 4,
+          "sizes": [
+            {
+              "id": 1,
+              "size": 8
+            },
+            {
+              "id": 2,
+              "size": 6
+            },
+            {
+              "id": 0,
+              "size": 4
+            },
+            {
+              "id": 3,
+              "size": 2
+            }
+          ],
+          "overlap": false,
+          "shared_members": 0,
+          "statistics_complete": true,
+          "smallest": 2,
+          "largest": 8
+        },
+        "scores": null,
+        "budget": {
+          "items": 10000,
+          "graph_records": 20000,
+          "memberships": 100000,
+          "scanned_memberships": 20
+        }
+      }
+    }
+  }
+}

@@ -9,6 +9,7 @@ export interface HistoryDependencies {
   api: Transport;
   node: NodeFactory;
   notice(message: string, error?: boolean): void;
+  onAction(session: Session, action: string): Promise<void>;
 }
 export interface RenderingDependencies {
   state: {noticeTimer?: number; domains: Domain[]};

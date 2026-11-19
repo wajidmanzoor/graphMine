@@ -29,7 +29,7 @@ def upload(client, graph):
 
 def workflow(file, **extra):
     return {
-        "mode": "interactive",
+        "mode": "expert",
         "inputs": {"main": {"file_id": file}},
         "plan": {
             "version": 1,
@@ -169,7 +169,7 @@ async def test_mcp_uses_the_same_native_review_and_authentication_boundary(
             )
             assert not created["isError"], created
             record = created["structuredContent"]
-            assert record["status"] == "awaiting_review"
+            assert record["status"] == "ready"
             args = {
                 "workflow_id": record["id"],
                 "workflow_hash": "0" * 64,

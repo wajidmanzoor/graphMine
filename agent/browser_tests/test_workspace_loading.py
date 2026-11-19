@@ -38,8 +38,8 @@ CAPABILITIES = {
 }
 WORKFLOW = {
     "id": "saved-analysis",
-    "status": "awaiting_review",
-    "mode": "interactive",
+    "status": "ready",
+    "mode": "expert",
     "revision": 1,
     "input_files": {},
     "steps": {},

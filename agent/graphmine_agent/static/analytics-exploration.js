@@ -9,10 +9,20 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
   const ids = {search: "table-search", group_min: "group-min-size", group_max: "group-max-size", group_member: "group-member", attribute_search: "source-attribute-search"};
   const watched = new Set([...Object.values(ids), "graph-layout", "graph-group", "highlight-overlap", "flow-direction", "time-start", "time-end", "include-untimed", "attribute-label", "attribute-color"]);
   let context = null, generation = 0, captureTimer = null, saveTimer = null, applying = false, lastGraph = null;
-  const key = value => !value ? "" : value.file_id ? W.stringify(["file", value.file_id]) : W.stringify(["result", value.result.workflow_id, value.result.revision, value.result.step, value.result.port, value.result.index ?? null, Boolean(value.result.context)]);
+  const key = value => !value ? "" : value.file_id ? W.stringify(["file", value.file_id]) : W.stringify(["result", value.result.workflow_id, value.result.revision, value.result.step, value.result.port]);
   const clone = value => W.parse(W.stringify(value));
+  const entityIds = values => [...(values || [])].map(key => key.startsWith("s:") ? key.slice(2) : W.parse(key.slice(2)));
   const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === "object" ? Object.fromEntries(Object.keys(value).sort().map(name => [name, canonical(value[name])])) : value;
-  const equal = (left, right) => W.stringify(canonical(left)) === W.stringify(canonical(right));
+  // The server materializes optional defaults. Compare their meaning so a lost
+  // acknowledgement does not turn those defaults into a false edit conflict.
+  const normalized = doc => {
+    if (!doc) return doc;
+    const view = v => ({delta_version: 2, layout: "cose", viewport: null, label_attribute: "", color_attribute: "", overlay_file_id: null, selected_vertices: [], selected_edges: [], selected_items: [], view_spec: null, pinned: [], context_vertices: [], context_edges: [], ...v,
+      filters: {search: "", group_min: "", group_max: "", group_member: "", group: "", highlight_overlap: false, flow_direction: true, time_start: null, time_end: null, include_untimed: true, attribute_search: "", ...v.filters},
+      overrides: {primary: null, style_rules: [], property_filters: [], hidden_vertices: [], hidden_categories: [], search: "", eigenvector: 0, filtration: null, projection_id: null, ...v.overrides}});
+    return {active_file_id: null, view: null, ...doc, views: (doc.views || []).map(view), named_views: (doc.named_views || []).map(n => ({...n, view: view(n.view)}))};
+  };
+  const equal = (left, right) => W.stringify(canonical(normalized(left))) === W.stringify(canonical(normalized(right)));
   const storageKey = response => response.storage_key ? `graphmine.exploration.v1.${new URL(state.base || location.origin, location.href).href}.${response.storage_key}` : null;
   function validJournal(value) {
     // Recovery data is browser-owned and may be corrupt or from an older client.
@@ -28,15 +38,15 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
     for (const view of doc.views) {
       if (!object(view) || !scope(view.scope) || keys.has(key(view.scope))) return false;
       keys.add(key(view.scope));
-      if (!["cose", "groups", "circle", "grid", "computed"].includes(view.layout) || !object(view.filters)) return false;
+      if (!["cose", "groups", "circle", "grid", "computed", "force", "hierarchical", "concentric", "clustered", "bipartite", "radial"].includes(view.layout) || !object(view.filters)) return false;
       if (![view.label_attribute, view.color_attribute].every(v => typeof v === "string" && v.length <= 256) || view.overlay_file_id !== null && !identifier(view.overlay_file_id)) return false;
       for (const [name, val] of Object.entries(view.filters)) {
         if (["highlight_overlap", "flow_direction", "include_untimed"].includes(name)) { if (typeof val !== "boolean") return false; }
         else if (val !== null && typeof val !== "string" || typeof val === "string" && val.length > 2048) return false;
       }
-      if (!Array.isArray(view.selected_vertices) || view.selected_vertices.length > 500 || !view.selected_vertices.every(entity) || !Array.isArray(view.selected_edges) || view.selected_edges.length > 2000 || !view.selected_edges.every(entity)) return false;
+      if (!Array.isArray(view.selected_vertices) || view.selected_vertices.length > 50000 || !view.selected_vertices.every(entity) || !Array.isArray(view.selected_edges) || view.selected_edges.length > 100000 || !view.selected_edges.every(entity)) return false;
       const v = view.viewport;
-      if (v !== null && (!object(v) || !point(v.pan) || typeof v.zoom !== "number" || !Number.isFinite(v.zoom) || v.zoom < .08 || v.zoom > 5 || !Array.isArray(v.positions) || v.positions.length > 500 || !v.positions.every(p => point(p) && entity(p.id)) || new Set(v.positions.map(p => W.idKey(p.id))).size !== v.positions.length)) return false;
+      if (v !== null && (!object(v) || !point(v.pan) || typeof v.zoom !== "number" || !Number.isFinite(v.zoom) || v.zoom < .000001 || v.zoom > 20 || !Array.isArray(v.positions) || v.positions.length > 50000 || !v.positions.every(p => point(p) && entity(p.id)) || new Set(v.positions.map(p => W.idKey(p.id))).size !== v.positions.length)) return false;
     }
     return new TextEncoder().encode(W.stringify(doc)).length <= 512 * 1024;
   }
@@ -62,32 +72,37 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
     const found = key(value.scope);
     context.document.views = context.document.views.filter(view => key(view.scope) !== found);
     context.document.views.push(value);
-    while (context.document.views.length > 32 || context.document.views.length > 1 && new TextEncoder().encode(W.stringify(context.document)).length > 500 * 1024) context.document.views.shift();
+    while (context.document.views.length > 32 || context.document.views.length > 1 && new TextEncoder().encode(W.stringify(context.document)).length > 480 * 1024) context.document.views.shift();
   }
   function viewport(cy) {
-    return {zoom: cy.zoom(), pan: cy.pan(), positions: cy.nodes().map(n => ({id: n.data("entity"), ...n.position()}))};
+    return {zoom: cy.zoom(), pan: cy.pan(), positions: cy.nodes().filter(n => !scope()?.result || n.locked()).map(n => ({id: n.data("entity"), ...n.position()}))};
   }
   function capture() {
     clearTimeout(captureTimer); captureTimer = null;
     const ctx = context;
     if (!ctx?.ready || applying) return;
     const current = scope(), previous = viewFor(current), style = database()?.settings() || {};
+    // A loading/input preview must never become a saved result preference.
+    if (current?.result && (!state.resultView?.view_spec || state.resultViewPending || state.cy && W.stringify(lastGraph?.scope ?? null) !== W.stringify(current))) return;
     ctx.document.active_file_id = state.active || null; ctx.document.view = current;
     if (state.cy && current && lastGraph?.cy === state.cy && key(lastGraph.scope) === key(current)) {
       const filters = {...previous?.filters, ...window.GraphMineExplorer?.timeState?.()};
       for (const [name, id] of Object.entries(ids)) filters[name] = $(id)?.value || "";
       Object.assign(filters, {group: state.groupFilter || "", highlight_overlap: $("highlight-overlap").checked, flow_direction: $("flow-direction").checked});
-      upsert({scope: clone(current), layout: $("graph-layout").value, viewport: viewport(state.cy), filters,
+      upsert({delta_version: 2, scope: clone(current), layout: $("graph-layout").value, viewport: viewport(state.cy), filters,
+        overrides: clone(state.visualOverrides || {}), pinned: state.cy.nodes().filter(n => n.locked()).map(n => n.data("entity")),
+        context_vertices: state.viewContext?.vertices || [], context_edges: state.viewContext?.edges || [],
         overlay_file_id: style.overlay_file_id || previous?.overlay_file_id || null, label_attribute: style.label_attribute || "", color_attribute: style.color_attribute || "",
-        selected_vertices: state.cy.nodes().filter(n => state.selected.has(n.id())).map(n => n.data("entity")),
+        selected_vertices: entityIds(state.selected), selected_items: [...(state.selectedItems || [])],
         selected_edges: state.cy.edges().filter(e => state.selectedEdges?.has(W.idKey(e.data("original").id))).map(e => e.data("original").id).filter(id => id !== undefined)});
     }
+    if (!state.cy && current?.result && state.resultView?.view_spec && !state.resultView.graph_available) upsert({delta_version: 2, scope: clone(current), layout: "force", viewport: null, filters: {}, label_attribute: "", color_attribute: "", overlay_file_id: null, selected_vertices: entityIds(state.selected), selected_items: [...(state.selectedItems || [])], selected_edges: entityIds(state.selectedEdges), overrides: clone(state.visualOverrides || {}), pinned: []});
     const serialized = W.stringify(ctx.document);
     if (serialized === ctx.serialized) return;
     ctx.serialized = serialized; ctx.dirty = true; remember(ctx);
     if (!ctx.available) { message("Exploration settings could not be loaded. These changes are kept in this tab; retry to reconnect.", true); return; }
     if (!ctx.conflict) {
-      message(ctx.local ? "Saving exploration… Changes are also retained in this browser." : "Saving exploration… Browser recovery storage is unavailable.");
+      message("Saving…");
       clearTimeout(saveTimer); saveTimer = setTimeout(() => flush(ctx), 350);
     }
   }
@@ -97,15 +112,17 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
   }
   async function flush(ctx = context, keepalive = false) {
     clearTimeout(saveTimer);
-    if (!ctx?.ready || !ctx.dirty || ctx.saving || ctx.conflict || !ctx.available) return;
+    if (ctx?.saving) { await ctx.pending; return flush(ctx, keepalive); }
+    if (!ctx?.ready || !ctx.dirty || ctx.conflict || !ctx.available) return;
     const sent = ctx.serialized, payload = {expected_revision: ctx.revision, state: W.parse(sent)};
     const body = W.stringify(payload); ctx.saving = true;
+    let finished; ctx.pending = new Promise(resolve => { finished = resolve; });
     try {
       const response = await api(`/api/sessions/${encodeURIComponent(ctx.id)}/exploration`, {method: "PUT", body, keepalive: keepalive && new TextEncoder().encode(body).length < 60_000});
       ctx.revision = response.revision;
       if (ctx.serialized === sent) { ctx.dirty = false; if (context === ctx) journal(ctx); }
       else if (context === ctx) remember(ctx);
-      if (context === ctx) message("Exploration saved.");
+      if (context === ctx) message("Saved");
     } catch (error) {
       if (context !== ctx) return;
       if (error.code === "exploration_conflict") {
@@ -115,7 +132,7 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
           if (equal(latest.state, W.parse(sent))) {
             ctx.revision = latest.revision; ctx.dirty = ctx.serialized !== sent;
             if (ctx.dirty) remember(ctx); else journal(ctx);
-            message("Exploration saved."); return;
+            message("Saved"); return;
           }
         } catch { /* Keep the local draft until the user can reconcile it. */ }
         ctx.conflict = true;
@@ -123,6 +140,7 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
       } else message(`Exploration could not be saved. ${error.message}${ctx.local ? " Your changes remain in this browser." : " Keep this tab open to retry."}`, true);
     } finally {
       ctx.saving = false;
+      finished();
       if (context === ctx && ctx.dirty && !ctx.conflict && ctx.revision !== payload.expected_revision) saveTimer = setTimeout(() => flush(ctx), 100);
     }
   }
@@ -177,13 +195,13 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
   }
   function beforeGraph() {
     if (context?.ready && lastGraph?.cy === state.cy && state.cy) {
-      if (key(lastGraph.scope) === key(scope())) capture();
+      if (W.stringify(lastGraph.scope) === W.stringify(scope())) capture();
       const saved = viewFor(lastGraph.scope);
       if (saved) saved.viewport = viewport(state.cy);
     }
   }
   function prepareGraph() {
-    const saved = viewFor();
+    const saved = state.ignoreSavedView ? null : viewFor();
     if (!saved) { database()?.restoreSettings({label_attribute: "", color_attribute: "", filters: {}}); return; }
     $("graph-layout").value = saved.layout;
     const filters = saved.filters || {};
@@ -196,6 +214,7 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
   function afterGraph({hidden = false} = {}) {
     const cy = state.cy, current = scope(), saved = viewFor(current), epoch = state.epoch;
     if (!context || !current) return;
+    if (current.result && (!state.resultView?.view_spec || state.resultViewPending)) return;
     if (saved?.overlay_file_id) {
       const ctx = context;
       void database()?.restoreOverlay(saved, () => context === ctx && state.epoch === epoch && key(scope()) === key(current)).catch(() => { /* The source-attribute panel owns its recovery message. */ });
@@ -203,16 +222,17 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
     if (!cy || hidden) return;
     applying = true;
     try {
-      if (saved?.viewport) {
+      if (saved?.viewport && !state.resultView?.view_spec && !state.ignoreSavedView) {
         const positions = new Map(saved.viewport.positions.map(p => [W.idKey(p.id), p]));
-        if (cy.nodes().length === positions.size && cy.nodes().every(n => positions.has(n.id()))) {
-          cy.batch(() => cy.nodes().forEach(n => { const {x, y} = positions.get(n.id()); n.position({x, y}); }));
-          cy.viewport({zoom: saved.viewport.zoom, pan: saved.viewport.pan});
+        if ([...positions.keys()].every(id => cy.getElementById(id).length)) {
+          cy.batch(() => cy.nodes().forEach(n => { const point = positions.get(n.id()); if (!point) return; const {x, y} = point, locked = n.locked(); if (locked) n.unlock(); n.position({x, y}); if (locked) n.lock(); }));
+          cy.viewport({zoom: saved.viewport.zoom, pan: {...saved.viewport.pan}});
         }
       }
-      if (saved) {
+      if (saved && state.restoreEntitySelection && !state.ignoreSavedView) {
         state.selected = new Set((saved.selected_vertices || []).map(W.idKey));
         state.selectedEdges = new Set((saved.selected_edges || []).map(W.idKey));
+        state.selectedItems = new Set(saved.selected_items || []);
         applySelection(); filterRows();
       }
       lastGraph = {cy, scope: clone(current)};
@@ -226,6 +246,18 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
     if (!context) return null;
     if (matches(context.document.view)) return context.document.view.result;
     return [...context.document.views].reverse().find(view => matches(view.scope))?.scope.result || null;
+  }
+  async function saveNamed(name) {
+    capture(); if (!context?.ready) throw new Error("Wait for exploration settings to load.");
+    const view = viewFor(); if (!view) throw new Error("Open a saved result view first.");
+    const entries = context.document.named_views || (context.document.named_views = []);
+    if (entries.length >= 32) throw new Error("This conversation already has 32 named views.");
+    entries.push({id: crypto.randomUUID(), name, view: clone(view)}); context.dirty = true; context.serialized = W.stringify(context.document); remember(context); await flush();
+  }
+  async function restoreNamed(id) {
+    const item = context?.document.named_views?.find(v => v.id === id); if (!item) throw new Error("This named view is unavailable.");
+    state.restoreEntitySelection = true;
+    upsert(clone(item.view)); context.document.view = clone(item.view.scope); context.dirty = true; context.serialized = W.stringify(context.document); remember(context); await flush(); context.ready = false; await reload();
   }
   async function resolveConflict(useLocal) {
     const ctx = context;
@@ -260,5 +292,5 @@ window.GraphMineExploration = ({state, api, W, node, scope, database, applySelec
   window.addEventListener("pagehide", () => { capture(); void flush(context, true); });
   const reconcile = () => { if (!document.hidden) { capture(); void flush(); } };
   window.addEventListener("online", reconcile); document.addEventListener("visibilitychange", () => { if (document.hidden) { capture(); void flush(context, true); } else reconcile(); });
-  return {open, ready, leave, changed, capture, beforeGraph, prepareGraph, afterGraph, selectionFor, settings: viewFor, key};
+  return {open, ready, leave, changed, capture, beforeGraph, prepareGraph, afterGraph, selectionFor, settings: viewFor, key, saveNamed, restoreNamed, namedViews: () => clone(context?.document.named_views || [])};
 };

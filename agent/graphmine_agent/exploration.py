@@ -15,7 +15,7 @@ from starlette.concurrency import run_in_threadpool
 from .analytics import AnalyticsError, _json, _key
 from .database import RecordNotFound
 from .identity import AccountError, current_principal
-from .models import StrictModel, utc_now
+from .models import StrictModel, ViewSpec, utc_now
 from .result_views import source_files
 
 MAX_STATE_BYTES = 512 * 1024
@@ -54,9 +54,9 @@ class NodePosition(Point):
 
 
 class Viewport(StrictModel):
-    zoom: float = Field(ge=0.08, le=5, allow_inf_nan=False)
+    zoom: float = Field(ge=0.000001, le=20, allow_inf_nan=False)
     pan: Point
-    positions: list[NodePosition] = Field(default_factory=list, max_length=500)
+    positions: list[NodePosition] = Field(default_factory=list, max_length=50000)
 
     @model_validator(mode="after")
     def unique_positions(self):
@@ -80,28 +80,91 @@ class ViewFilters(StrictModel):
     attribute_search: str = Field(default="", max_length=2000)
 
 
+class StyleRule(StrictModel):
+    target: Literal["node", "edge"] = "node"
+    channel: Literal["color", "size", "label", "width", "shape"]
+    field: str = Field(min_length=1, max_length=256)
+    mode: Literal["unique", "range", "single"] = "unique"
+    scale: Literal["categorical", "linear", "sqrt", "log1p", "symlog", "sequential", "diverging"] = "categorical"
+    equals: str | float | bool | None = None
+    color: str | None = Field(default=None, pattern=r"^#[0-9a-fA-F]{6}$")
+
+
+class PropertyFilter(StrictModel):
+    target: Literal["node", "edge"] = "node"
+    field: str = Field(min_length=1, max_length=256)
+    operator: Literal["eq", "contains", "gte", "lte", "exists"] = "eq"
+    value: str | float | bool | None = None
+
+
+class ViewOverrides(StrictModel):
+    primary: str | None = Field(default=None, max_length=80)
+    style_rules: list[StyleRule] = Field(default_factory=list, max_length=16)
+    property_filters: list[PropertyFilter] = Field(default_factory=list, max_length=32)
+    hidden_vertices: list[EntityId] = Field(default_factory=list, max_length=50000)
+    hidden_categories: list[str] = Field(default_factory=list, max_length=1000)
+    search: str = Field(default="", max_length=2000)
+    eigenvector: int = Field(default=0, ge=0, le=63)
+    filtration: float | None = Field(default=None, allow_inf_nan=False)
+    projection_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+
+
 class GraphView(StrictModel):
+    delta_version: Literal[2] = 2
     scope: ViewScope
-    layout: Literal["cose", "groups", "circle", "grid", "computed"] = "cose"
+    layout: Literal["cose", "groups", "circle", "grid", "computed", "force", "hierarchical", "concentric", "clustered", "bipartite", "radial"] = "cose"
     viewport: Viewport | None = None
     filters: ViewFilters = Field(default_factory=ViewFilters)
     label_attribute: str = Field(default="", max_length=256)
     color_attribute: str = Field(default="", max_length=256)
     overlay_file_id: Identifier | None = None
-    selected_vertices: list[EntityId] = Field(default_factory=list, max_length=500)
-    selected_edges: list[EntityId] = Field(default_factory=list, max_length=2000)
+    selected_vertices: list[EntityId] = Field(default_factory=list, max_length=50000)
+    selected_edges: list[EntityId] = Field(default_factory=list, max_length=100000)
+    selected_items: list[Annotated[StrictInt, Field(ge=0)]] = Field(default_factory=list, max_length=2000)
+    view_spec: ViewSpec | None = None
+    overrides: ViewOverrides = Field(default_factory=ViewOverrides)
+    pinned: list[EntityId] = Field(default_factory=list, max_length=50000)
+    context_vertices: list[EntityId] = Field(default_factory=list, max_length=2000)
+    context_edges: list[EntityId] = Field(default_factory=list, max_length=5000)
+
+    @model_validator(mode="before")
+    @classmethod
+    def compact_result_view(cls, value):
+        if not isinstance(value, dict):
+            return value
+        value = dict(value)
+        # Old clients sent the complete rule document. It is always resolved
+        # from the saved result; only user overrides belong in this store.
+        value.pop("view_spec", None)
+        viewport = value.get("viewport")
+        if viewport and value.get("scope", {}).get("result"):
+            pins = {_key(identifier) for identifier in value.get("pinned", [])}
+            value["viewport"] = {**viewport, "positions": [p for p in viewport.get("positions", []) if _key(p["id"]) in pins]}
+            if not .8 <= viewport.get("zoom", 1) <= 1.8:
+                value["viewport"] = None
+        return value
+
+
+class NamedView(StrictModel):
+    id: Identifier
+    name: str = Field(min_length=1, max_length=160)
+    view: GraphView
 
 
 class ExplorationState(StrictModel):
     active_file_id: Identifier | None = None
     view: ViewScope | None = None
     views: list[GraphView] = Field(default_factory=list, max_length=32)
+    named_views: list[NamedView] = Field(default_factory=list, max_length=32)
+
 
     @model_validator(mode="after")
     def distinct_views(self):
         keys = [_json(view.scope.model_dump()) for view in self.views]
         if len(keys) != len(set(keys)):
             raise ValueError("Saved view contexts must be unique")
+        if len({view.id for view in self.named_views}) != len(self.named_views):
+            raise ValueError("Named view identifiers must be unique")
         return self
 
 
@@ -182,6 +245,13 @@ class Exploration:
                 check(lambda: self.chain(session_id, view.scope, view.overlay_file_id), lambda: setattr(view, "overlay_file_id", None))
             valid.append(view)
         state.views = valid
+        named = []
+        for item in state.named_views:
+            if check(lambda: self.roots(session_id, item.view.scope), lambda: None):
+                if item.view.overlay_file_id:
+                    check(lambda: self.chain(session_id, item.view.scope, item.view.overlay_file_id), lambda: setattr(item.view, "overlay_file_id", None))
+                named.append(item)
+        state.named_views = named
         return list(dict.fromkeys(warnings))
 
     def get(self, session_id):
@@ -195,12 +265,19 @@ class Exploration:
             return {"revision": 0, "state": None, "warnings": [], "storage_key": storage_key}
         state = ExplorationState.model_validate_json(row["document"])
         warnings = self.validate(session_id, state, recover=True)
-        return {"revision": row["revision"], "state": state.model_dump(), "updated_at": row["updated_at"], "warnings": warnings, "storage_key": storage_key}
+        return {"revision": row["revision"], "state": self.compact(state), "updated_at": row["updated_at"], "warnings": warnings, "storage_key": storage_key}
+
+    @staticmethod
+    def compact(state):
+        value = state.model_dump()
+        for view in [*value["views"], *(item["view"] for item in value["named_views"])]:
+            view.pop("view_spec", None)
+        return value
 
     def save(self, session_id, request):
         self.database.get_session(session_id)
         self.validate(session_id, request.state)
-        document = _json(request.state.model_dump())
+        document = _json(self.compact(request.state))
         if len(document.encode()) > MAX_STATE_BYTES:
             raise AnalyticsError("Saved exploration exceeds its 512 KiB limit.", "resource_limit", 413)
         with self.database._lock, self.database._connect() as db:
@@ -216,7 +293,7 @@ class Exploration:
             now = utc_now().isoformat()
             db.execute("INSERT INTO session_exploration VALUES (?,?,?,?) ON CONFLICT(session_id) DO UPDATE SET revision=excluded.revision,document=excluded.document,updated_at=excluded.updated_at",
                        (session_id, revision + 1, document, now))
-        return {"revision": revision + 1, "state": request.state.model_dump(), "updated_at": now, "warnings": []}
+        return {"revision": revision + 1, "state": self.compact(request.state), "updated_at": now, "warnings": []}
 
     def overlay(self, session_id, body):
         """Read saved attributes only; no source credentials or live SQL needed."""

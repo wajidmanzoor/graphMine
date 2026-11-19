@@ -105,11 +105,11 @@ def test_modal_drawers_isolate_background_and_restore_keyboard_focus(loading_bro
     browser = loading_browser
     browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": 390, "height": 844})
     open_chat(browser, loading_server)
-    trigger = browser.find_element(By.ID, "toggle-tools")
+    trigger = browser.find_element(By.ID, "toggle-activity")
     trigger.send_keys(Keys.ENTER)
-    assert browser.execute_script("return document.getElementById('chat-content').inert && document.getElementById('app-sidebar').inert && !document.getElementById('data-sidebar').closest('[inert]')")
+    assert browser.execute_script("return Boolean(document.getElementById('chat-content').closest('[inert]')) && document.getElementById('app-sidebar').inert && !document.getElementById('activity-sidebar').closest('[inert]')")
     browser.execute_script("document.getElementById('question').focus()")
-    assert browser.execute_script("return document.getElementById('data-sidebar').contains(document.activeElement)")
+    assert browser.execute_script("return document.getElementById('activity-sidebar').contains(document.activeElement)")
     assert_readable(browser)
     browser.switch_to.active_element.send_keys(Keys.ESCAPE)
     assert browser.switch_to.active_element == trigger
@@ -196,12 +196,12 @@ def test_resizing_modal_drawer_restores_background_and_existing_inert_state(load
     browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": 390, "height": 844})
     open_chat(browser, loading_server)
     browser.execute_script("document.getElementById('domain-view').inert = true")
-    click(browser, "toggle-tools")
+    click(browser, "toggle-activity")
     browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": 1440, "height": 900})
-    wait_for(browser, "!document.getElementById('chat-content').inert")
-    assert browser.find_element(By.ID, "data-sidebar").get_attribute("aria-modal") is None
+    wait_for(browser, "!Boolean(document.getElementById('chat-content').closest('[inert]'))")
+    assert browser.find_element(By.ID, "activity-sidebar").get_attribute("aria-modal") is None
     browser.find_element(By.ID, "question").send_keys("The desktop conversation is available")
-    click(browser, "toggle-tools")
+    click(browser, "toggle-activity")
     assert browser.execute_script("return document.getElementById('domain-view').inert && document.querySelectorAll('[inert]').length === 1")
 
 

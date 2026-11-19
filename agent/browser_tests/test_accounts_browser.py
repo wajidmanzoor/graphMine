@@ -153,7 +153,7 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
         wait.until(
             lambda d: (
                 "Alice private research"
-                in d.find_element(By.ID, "session-select").get_attribute("textContent")
+                in d.find_element(By.ID, "recent-sessions").get_attribute("textContent")
             )
         )
         assert not driver.find_element(By.ID, "connection-button").is_displayed()
@@ -261,7 +261,7 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
             )
         )
         assert "Alice private research" not in driver.find_element(
-            By.ID, "session-select"
+            By.ID, "recent-sessions"
         ).get_attribute("textContent")
         driver.save_screenshot(str(tmp_path / "workspace.png"))
         driver.browsing_context.set_viewport(context=driver.current_window_handle, viewport={"width": 390, "height": 844})

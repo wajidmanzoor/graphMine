@@ -87,7 +87,7 @@ def test_invalid_or_oversized_settings_do_not_change_saved_state(workspace, chan
 
 def test_state_byte_budget_is_enforced(workspace):
     value = state(workspace)
-    value["views"][0]["viewport"]["positions"] = [{"id": str(index) + "x" * 1500, "x": 0, "y": 0} for index in range(500)]
+    value["views"][0]["viewport"]["positions"] = [{"id": str(index) + "x" * 1500, "x": 0, "y": 0} for index in range(6000)]
     response = workspace.client.put(endpoint(workspace), json={"expected_revision": 0, "state": value})
     assert response.status_code == 413 and response.json()["error"]["code"] == "resource_limit"
 

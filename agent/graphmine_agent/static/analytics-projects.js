@@ -5,7 +5,7 @@ window.GraphMineProjects = ({state, api, W, node, runAction, notice, renderFiles
     const projects = (await api("/api/projects")).filter(p => p.role !== "viewer"), dialog = node("dialog", {class: "wide-dialog", id: "publish-project"}), form = node("form"), choices = node("select", {id: "publish-project-choice", required: ""}), name = node("input", {id: "publish-project-name", required: "", maxlength: "160"});
     if (!projects.length) throw new Error("Create a project first, or ask its owner to add you as an editor.");
     let source;
-    if (result) { if (!state.record || !state.result) throw new Error("Open a saved result first."); source = {workflow_id: state.record.id, expected_revision: state.record.revision}; name.value = "Analysis result"; }
+    if (result) { if (!state.record || !state.result) throw new Error("Open a saved result first."); window.GraphMineWorkspace.exploration?.capture(); source = {workflow_id: state.record.id, expected_revision: state.record.revision, view: window.GraphMineWorkspace.exploration?.settings() || null}; name.value = "Analysis result"; }
     else { const file = state.files.find(f => f.id === state.active); if (!file) throw new Error("Choose an input first."); source = {file_id: file.id, kind: state.kinds[file.id] || "graph"}; name.value = file.original_name; }
     for (const p of projects) choices.append(node("option", {value: p.id}, p.name));
     const close = node("button", {type: "button", class: "quiet"}, "Cancel"); close.onclick = () => { dialog.close(); dialog.remove(); };

@@ -66,11 +66,11 @@ class AnalyticsLanes(Clarifications):
             **({"confirmed_operations": operations} if context.get("answered") else {})}, schema)
         calibration = load_calibration(self.settings, cards)
         ranked = rank_candidates(menu, samples, calibration)
-        options = make_cards(ranked, cards, profiles, body.message, allow_single=allowed is not None)
+        options = make_cards(ranked, cards, profiles, body.message)
         evidence = {"samples": samples, "candidates": [{key: row[key] for key in ("id", "operation", "score", "match", "match_evidence")} for row in ranked],
                     "calibrated": bool(calibration)}
-        if not options or allowed is None and len(options) != 2:
-            return {**self._gap("Only one distinct compatible calculation is available. What other result would be useful?"), "option_evidence": evidence}
+        if not options:
+            return {**self._gap("No supported calculation matches this question. What result would you like to find?"), "option_evidence": evidence}
         if all(option["match"] == "Low" for option in options):
             choices = [{"action": "operation", "operation": card["id"], "label": f"Use {card['title']}."}
                        for card in cards if any(row["operation"] == card["id"] for row in menu)]
@@ -192,7 +192,7 @@ class AnalyticsLanes(Clarifications):
             context["candidate_operations"] = list(candidate_operations)
         if len(operations) > 1 and any(isinstance((parameters or {}).get(op), dict) for op in operations):
             context["operation_parameters"] = deepcopy(parameters)
-        missing = detect_gap(primary, inputs, values, alias, entities, body.mode,
+        missing = detect_gap(primary, inputs, values, alias, entities,
                              context.get("answered", []), context.get("bindings"), question=body.message)
         if missing:
             return await self._ask_gap(body, context, missing)

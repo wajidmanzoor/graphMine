@@ -160,6 +160,23 @@ def answer_visualizations(
             "Computed result",
             description=answer["facts"][0]["statement"] if answer.get("facts") else "",
         )
+    # The legacy envelope remains replayable; new answers carry the same
+    # versioned server decisions used by the analytics workspace.
+    from .models import ViewSpec
+    from .result_views import profile
+    from .view_profile import profile_result
+    from .view_rules import choose_view
+    network = answer.get("network", {})
+    graph = {"graph": {"directed": network.get("directed", False)}, "vertices": network.get("nodes", []), "edges": network.get("edges", [])}
+    operation = answer.get("operation_id", "")
+    kind = profile(operation)["kind"]
+    typ, value = ("vertex_groups", [{"group": g["id"], "vertices": g.get("vertices", [])} for g in answer.get("groups", [])]) if kind in {"groups", "partition"} else ("vertex_scores", answer.get("rows", [])) if kind == "scores" else ("vertex_set", [v["id"] for v in graph["vertices"]])
+    port = {"type": typ, "value": value}
+    facts = profile_result(operation, port, None, graph)
+    view = {"graph_available": bool(graph["vertices"]), "vertices": graph["vertices"], "edges": graph["edges"], "vertex_count": network.get("total_nodes", len(graph["vertices"])), "edge_count": network.get("total_edges", len(graph["edges"])), "vertices_truncated": network.get("truncated", False), "complete": not network.get("truncated", False)}
+    spec = ViewSpec.model_validate(choose_view(profile(operation), facts, view, provenance={"adapter": "legacy-grounded-answer-v1", **answer.get("provenance", {})}))
+    for item in views:
+        item.view_spec = spec
     return views
 
 

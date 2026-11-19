@@ -1,6 +1,6 @@
 /* Local commands, annotations and downloads for the conversation workspace. */
 "use strict";
-window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls, mergeHistory}) => {
+window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls, mergeHistory, operations, onOperation, onTemplates, quality}) => {
   const $ = id => document.getElementById(id);
   const input = $("question"), menu = $("command-menu"), list = $("command-options");
   const catalog = [
@@ -11,6 +11,8 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
     {name: "note", usage: "observation", description: "Save a research note"},
     {name: "export", usage: "", description: "Download this conversation and its evidence"},
     {name: "status", usage: "", description: "Show the model and app version"},
+    {name: "templates", usage: "", description: "Open workflow templates", action: () => onTemplates()},
+    {name: "calculate", usage: "operation", description: "Choose an advanced calculation", action: () => onOperation("")},
   ];
   let matches = [], active = 0, feedbackTarget = null;
   const isCommand = message => /^[\/\\]/.test(message.trimStart());
@@ -41,21 +43,28 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
   }
   function select(index) {
     const prefix = input.value.trimStart().startsWith("\\") ? "\\" : "/";
-    input.value = `${prefix}${matches[index].name} `;
+    const command = matches[index];
+    if (command.action) { input.value = ""; close(); updateControls(); runAction(async () => { await ensureSession(); await command.action(); }); return; }
+    input.value = `${prefix}${command.name} `;
     input.focus(); input.setSelectionRange(input.value.length, input.value.length);
     close(); updateControls(); window.GraphMineShell.resizeComposer();
     input.scrollIntoView({block: "nearest"});
   }
   function suggest() {
-    const match = /^\s*[\/\\]([^\s]*)$/.exec(input.value);
+    const match = /^\s*[\/\\](.*)$/.exec(input.value);
     if (!match || document.activeElement !== input) { close(); return; }
-    matches = catalog.filter(command => command.name.startsWith(match[1].toLowerCase()));
+    // A space accepts a local command; Enter then submits its arguments.
+    const accepted = /^(\S+)\s/.exec(match[1]);
+    if (accepted && catalog.some(command => !command.action && command.name === accepted[1].toLowerCase())) { close(); return; }
+    const query = match[1].toLowerCase().replace(/^calculate\s+/, "").trim();
+    const calculations = operations().map(operation => ({name: operation.id, usage: quality(operation), description: operation.title, action: () => onOperation(operation.id), calculation: true}));
+    matches = [...catalog, ...calculations].filter(command => `${command.name} ${command.description}`.toLowerCase().includes(query));
     if (!matches.length) { close(); return; }
     active = 0; list.replaceChildren();
     matches.forEach((command, index) => {
       const option = node("li", {id: `command-option-${command.name}`, role: "option", "aria-selected": "false"});
       const heading = node("span", {class: "command-title"});
-      heading.append(node("strong", {}, `/${command.name}`), node("span", {}, command.usage));
+      heading.append(node("strong", {}, `/${command.name}`), node("span", {class: command.calculation ? "command-guarantee pill" : ""}, command.usage));
       option.append(heading, node("span", {class: "command-description"}, command.description));
       option.addEventListener("pointerdown", event => event.preventDefault());
       option.addEventListener("click", () => select(index));
@@ -88,6 +97,9 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
   }
   async function send(message) {
     await ensureSession(); close();
+    const requested = message.trim().replace(/^[\/\\]/, "").trim();
+    if (requested === "templates") { input.value = ""; await onTemplates(); return; }
+    if (requested === "calculate" || operations().some(operation => operation.id === requested.replace(/^calculate\s+/, ""))) { input.value = ""; onOperation(requested === "calculate" ? "" : requested.replace(/^calculate\s+/, "")); return; }
     const id = state.session.id;
     const response = await api(`/api/sessions/${id}/chat`, {method: "POST", body: W.stringify({message})});
     if (input.value.trim() === message) input.value = "";
@@ -126,7 +138,7 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
     } else if (!local && (row.turn_id || row.result_id || row.job_id)) {
       const button = node("button", {type: "button", class: "quiet answer-feedback"}, "Give feedback");
       button.addEventListener("click", () => openFeedback({turn_id: row.turn_id || null, result_id: row.result_id || null, job_id: row.job_id || null}));
-      item.bubble.append(button);
+      (item.bubble.querySelector(".answer-footer") || item.bubble).append(button);
     }
   }
   $("conversation-help").addEventListener("click", () => { window.GraphMineShell.setPanel("data", false); runAction(() => send("/help")); });

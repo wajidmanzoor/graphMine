@@ -7,6 +7,7 @@ import hashlib
 import importlib.metadata
 import json
 import os
+import sqlite3
 import stat
 import sys
 import textwrap
@@ -110,7 +111,7 @@ def upload(client, graph):
     return session, response.json()["id"]
 
 
-def body(file_id, mode="interactive"):
+def body(file_id, mode="expert"):
     return {
         "mode": mode,
         "plan": plan(),
@@ -141,7 +142,7 @@ def wait(client, workflow_id):
     pytest.fail("Workflow did not finish within the test deadline")
 
 
-@pytest.mark.parametrize("mode", ["normal", "interactive", "expert"])
+@pytest.mark.parametrize("mode", ["normal", "expert"])
 def test_live_modes_dependent_results_and_pagination(settings, triangle_graph, mode):
     # Requires current committed-source CPU evidence and the analytics venv.
     with TestClient(create_app(settings)) as client:
@@ -152,9 +153,7 @@ def test_live_modes_dependent_results_and_pagination(settings, triangle_graph, m
         assert response.status_code == 201, response.text
         record = response.json()
         if mode != "normal":
-            assert record["status"] == (
-                "awaiting_review" if mode == "interactive" else "ready"
-            )
+            assert record["status"] == "ready"
             assert record["approved_hash"] is None
             assert (
                 client.get(
@@ -199,6 +198,57 @@ def test_live_modes_dependent_results_and_pagination(settings, triangle_graph, m
             ]
             == record["id"]
         )
+
+
+def test_modes_reject_removed_value_and_default_to_manual_approval(settings, triangle_graph):
+    with TestClient(create_app(settings)) as client:
+        session, graph = upload(client, triangle_graph)
+        schemas = client.app.openapi()["components"]["schemas"]
+        for name in ("PlanningRequest", "WorkflowRequest", "WorkflowRevision"):
+            mode = schemas[name]["properties"]["mode"]
+            assert mode["enum"] == ["normal", "expert"]
+            assert mode["default"] == ("normal" if name == "PlanningRequest" else "expert")
+        request = body(graph, "interactive")
+        for path, payload in [
+            (f"/api/sessions/{session}/analytics/plan", {"mode": "interactive", "message": "Count triangles", "inputs": request["inputs"]}),
+            (f"/api/sessions/{session}/workflows", request),
+        ]:
+            response = client.post(path, headers=AUTH, json=payload)
+            assert response.status_code == 422, response.text
+            assert any(error["loc"] == ["body", "mode"] for error in response.json()["detail"])
+        assert client.app.state.runtime.analytics.list(session) == []
+        request.pop("mode")
+        response = client.post(f"/api/sessions/{session}/workflows", headers=AUTH, json=request)
+        assert response.status_code == 201, response.text
+        record = response.json()
+        assert (record["mode"], record["status"], record["approved_hash"]) == ("expert", "ready", None)
+        assert not client.app.state.runtime.analytics.tasks
+        response = client.post(f"/api/workflows/{record['id']}/revise", headers=AUTH,
+            json={**request, "mode": "interactive", "expected_revision": 1})
+        assert response.status_code == 422, response.text
+        unchanged = client.get(f"/api/workflows/{record['id']}", headers=AUTH).json()
+        assert unchanged == {**record, "queue_position": None}
+
+
+def test_saved_manual_mode_remains_reviewable_without_rewriting_history(settings, triangle_graph):
+    with TestClient(create_app(settings)) as client:
+        session, graph = upload(client, triangle_graph)
+        response = client.post(f"/api/sessions/{session}/workflows", headers=AUTH, json=body(graph))
+        assert response.status_code == 201, response.text
+        legacy = {**response.json(), "mode": "interactive", "status": "awaiting_review"}
+        service = client.app.state.runtime.analytics
+        service._save(legacy)
+        for record in [service.get(legacy["id"]), *service.list(session), *service.list(session, summary=True)]:
+            assert record["mode"] == "expert"
+            assert record["status"] == "awaiting_review" and record["approved_hash"] is None
+            assert record["validation"]["workflow_hash"] == legacy["validation"]["workflow_hash"]
+            assert record["revision"] == legacy["revision"]
+        with sqlite3.connect(service.path) as db:
+            stored = json.loads(db.execute("SELECT document FROM workflows WHERE id=?", (legacy["id"],)).fetchone()[0])
+        assert stored == legacy
+        assert not service.tasks
+        approve(client, service.get(legacy["id"]))
+        assert wait(client, legacy["id"])["status"] == "completed"
 
 
 def test_live_graph_collection_patterns_and_derived_graph(settings, triangle_graph):
@@ -479,7 +529,7 @@ def test_live_capabilities_authorization_and_input_scope(settings, triangle_grap
         )
 
 
-@pytest.mark.parametrize("mode", ["normal", "interactive", "expert"])
+@pytest.mark.parametrize("mode", ["normal", "expert"])
 def test_live_record_query_to_filtered_graph_to_count(settings, triangle_graph, mode):
     with TestClient(create_app(settings)) as client:
         session, graph = upload(client, triangle_graph)
@@ -897,7 +947,7 @@ def test_live_failed_step_recovery_reuses_only_valid_steps(settings, triangle_gr
             ).status_code
             == 401
         )
-        request.update(mode="interactive", expected_revision=1)
+        request.update(mode="expert", expected_revision=1)
         request["plan"]["steps"][0]["budget"] = {"max_output_items": 100}
         revised = client.post(
             f"/api/workflows/{record['id']}/revise", headers=AUTH, json=request

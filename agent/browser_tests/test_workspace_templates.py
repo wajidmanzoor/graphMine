@@ -32,8 +32,8 @@ def test_template_parameter_edit_and_review(loading_browser, loading_server):
         record = deepcopy(server.workflows[0])
         record.update(
             id="from-template",
-            status="awaiting_review",
-            mode="interactive",
+            status="ready",
+            mode="expert",
             result=None,
         )
         record["validation"]["plan"] = deepcopy(plan)
@@ -44,8 +44,10 @@ def test_template_parameter_edit_and_review(loading_browser, loading_server):
 
     server.post_handler = post
     open_saved(browser, server)
-    browser.find_element(By.ID, "toggle-tools").click()
-    browser.find_element(By.ID, "open-templates").click()
+    browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
+    browser.find_element(By.ID, "question").send_keys("/templates")
+    wait_for(browser, "!document.getElementById('command-menu').hidden")
+    browser.find_element(By.ID, "command-option-templates").click()
     wait_for(browser, "document.querySelector('#templates-dialog')?.open")
     Select(browser.find_element(By.ID, "template-choice")).select_by_value("recipe")
     value = browser.find_element(By.ID, "template-core-requested_k")
@@ -59,6 +61,7 @@ def test_template_parameter_edit_and_review(loading_browser, loading_server):
         "GraphMineWorkspace.state.record?.id === 'from-template' && !GraphMineWorkspace.state.busy",
     )
     assert browser.find_element(By.ID, "approve-plan").is_displayed()
+    assert browser.execute_script("return JSON.parse(document.getElementById('plan-editor').value).steps[0].parameters.requested_k") == 3
     assert not any(path.endswith("/run") for _, path, _ in server.requests)
 
 
@@ -94,7 +97,7 @@ def test_csv_preview_requires_explicit_import(
 
     server.post_handler = post
     open_saved(browser, server)
-    browser.find_element(By.ID, "toggle-data").click()
+    browser.find_element(By.ID, "data-page-link").click()
     wait_for(browser, "document.querySelector('#database-workspace')?.isConnected")
     browser.find_element(By.ID, "source-files-tab").click()
     browser.find_element(By.ID, "source-file-upload").send_keys(str(path))

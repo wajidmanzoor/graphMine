@@ -19,12 +19,25 @@ def open_chat(browser, server):
 def test_changing_mode_preserves_a_draft_without_submitting(loading_browser, loading_server):
     browser, server = loading_browser, loading_server
     open_chat(browser, server)
+    assert [button.get_attribute("data-mode") for button in browser.find_elements(By.CSS_SELECTOR, "[data-mode]")] == ["normal", "expert"]
     browser.find_element(By.ID, "question").send_keys("Count triangles")
     browser.execute_script("window.modeSubmissions = 0; document.getElementById('question-form').addEventListener('submit', event => { window.modeSubmissions++; event.preventDefault(); event.stopImmediatePropagation(); }, true)")
-    for mode in ("interactive", "expert", "normal"):
+    for mode in ("expert", "normal"):
         browser.find_element(By.CSS_SELECTOR, f'[data-mode="{mode}"]').click()
         assert browser.execute_script("return window.modeSubmissions") == 0
         assert browser.find_element(By.ID, "question").get_attribute("value") == "Count triangles"
+
+
+def test_saved_removed_mode_opens_in_expert(loading_browser, loading_server):
+    browser, server = loading_browser, loading_server
+    open_chat(browser, server)
+    browser.execute_script("localStorage.setItem('graphmine.mode.saved-session', 'interactive')")
+    browser.refresh()
+    wait_for(browser, "GraphMineWorkspace.state.session && !GraphMineWorkspace.state.busy && GraphMineWorkspace.state.mode === 'expert'")
+    assert browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').get_attribute("aria-pressed") == "true"
+    assert browser.find_element(By.ID, "expert-panel").is_displayed()
+    assert browser.execute_script("return localStorage.getItem('graphmine.mode.saved-session')") == "expert"
+    assert not server.requests
 
 
 @pytest.mark.parametrize("width,height", [(320, 640), (390, 844), (820, 1180), (1440, 1000)])
@@ -34,7 +47,7 @@ def test_conversation_and_composer_fit_the_viewport(loading_browser, loading_ser
     open_chat(browser, server)
     assert browser.execute_script("return innerWidth") == width
     assert browser.find_element(By.ID, "chat-welcome").is_displayed()
-    assert not browser.find_element(By.ID, "data-sidebar").is_displayed()
+    assert not browser.find_elements(By.ID, "data-sidebar")
     assert not browser.find_element(By.ID, "activity-sidebar").is_displayed()
     assert browser.execute_script("""
         const composer = document.getElementById('question-form').getBoundingClientRect();
@@ -43,31 +56,29 @@ def test_conversation_and_composer_fit_the_viewport(loading_browser, loading_ser
           && composer.top >= 0 && composer.bottom <= innerHeight
           && composer.left >= 0 && composer.right <= innerWidth;
     """)
-    browser.find_element(By.ID, "toggle-tools").click()
-    assert browser.find_element(By.ID, "manual-tools").is_displayed()
-    assert browser.find_element(By.ID, "open-templates").is_displayed()
-    assert not browser.find_element(By.ID, "data-file-controls").is_displayed()
-    assert browser.find_element(By.ID, "data-sidebar").get_attribute("aria-modal") == ("true" if width <= 900 else None)
-    browser.switch_to.active_element.send_keys(Keys.ESCAPE)
-    assert browser.switch_to.active_element.get_attribute("id") == "toggle-tools"
-    assert not browser.find_element(By.ID, "data-sidebar").is_displayed()
+    browser.find_element(By.CSS_SELECTOR, "#compute-settings > summary").click()
+    assert browser.find_element(By.ID, "device").is_displayed()
+    assert browser.execute_script("const r=document.querySelector('.compute-popover').getBoundingClientRect(); return r.left>=0 && r.right<=innerWidth && document.documentElement.scrollWidth<=innerWidth")
+    assert not browser.find_elements(By.ID, "toggle-tools")
+    browser.find_element(By.CSS_SELECTOR, "#compute-settings > summary").click()
+    assert not browser.find_element(By.ID, "device").is_displayed()
 
 
 def test_drawers_trap_focus_and_restore_the_trigger(loading_browser, loading_server):
     browser, server = loading_browser, loading_server
     browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": 390, "height": 844})
     open_chat(browser, server)
-    browser.find_element(By.ID, "toggle-tools").click()
-    close = browser.find_element(By.CSS_SELECTOR, "#data-sidebar [data-close-panel]")
+    browser.find_element(By.ID, "toggle-activity").click()
+    close = browser.find_element(By.CSS_SELECTOR, "#activity-sidebar [data-close-panel]")
     assert browser.switch_to.active_element == close
     close.send_keys(Keys.SHIFT, Keys.TAB)
-    assert browser.execute_script("return document.getElementById('data-sidebar').contains(document.activeElement)")
+    assert browser.execute_script("return document.getElementById('activity-sidebar').contains(document.activeElement)")
     browser.switch_to.active_element.send_keys(Keys.TAB)
     assert browser.switch_to.active_element == close
     close.click()
-    assert browser.switch_to.active_element.get_attribute("id") == "toggle-tools"
+    assert browser.switch_to.active_element.get_attribute("id") == "toggle-activity"
     browser.find_element(By.ID, "toggle-activity").click()
-    assert browser.find_element(By.ID, "activity-list").is_displayed()
+    assert browser.find_element(By.ID, "activity-sidebar").is_displayed()
     assert not browser.find_elements(By.ID, "activity-status")
     browser.switch_to.active_element.send_keys(Keys.ESCAPE)
     assert browser.switch_to.active_element.get_attribute("id") == "toggle-activity"
@@ -89,7 +100,7 @@ def test_desktop_panels_resize_chat_and_leave_composer_usable(loading_browser, l
     full = browser.execute_script(measure)
     assert 0 <= full["left"] - full["sidebarRight"] <= 32
     assert width - full["right"] <= 32
-    for trigger, panel in [("toggle-tools", "data-sidebar"), ("toggle-activity", "activity-sidebar")]:
+    for trigger, panel in [("toggle-activity", "activity-sidebar")]:
         browser.find_element(By.ID, trigger).click()
         narrowed = browser.execute_script(measure)
         panel_left = browser.execute_script("return arguments[0].getBoundingClientRect().left", browser.find_element(By.ID, panel))
@@ -152,8 +163,8 @@ def test_sidebar_preference_persists_and_prompt_is_editable(loading_browser, loa
     question.send_keys("Focus on my team.")
     assert "\nFocus on my team." in question.get_attribute("value")
     assert not server.requests
-    browser.find_element(By.CSS_SELECTOR, '[data-mode="interactive"]').click()
-    assert "approve" in browser.find_element(By.ID, "mode-description").text
+    browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
+    assert "Inspect and edit" in browser.find_element(By.ID, "mode-description").text
     browser.execute_script("document.querySelector('.skip-link').focus()")
     browser.find_element(By.CSS_SELECTOR, ".skip-link").click()
     assert browser.switch_to.active_element.get_attribute("id") == "chat-content"

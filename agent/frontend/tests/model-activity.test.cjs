@@ -95,3 +95,28 @@ test("one parallel completion records five samples without inventing five reques
   assert.equal(rows[0].text, "");
   assert.equal(rows[0].running, false);
 });
+
+vm.runInContext(readFileSync(join(__dirname, "../../graphmine_agent/static/analytics-activity.js"), "utf8"), context);
+const steps = (events, options) => JSON.parse(JSON.stringify(context.window.GraphMineActivitySteps(numbered(events), options)));
+
+test("planning status updates replace the same Activity stage", () => {
+  const rows = steps([event("planning", {stage: "family", status: "running"}), event("planning", {stage: "family", status: "selected", family_id: "dense"})]);
+  assert.equal(rows.length, 1); assert.equal(rows[0].state, "done"); assert.equal(rows[0].latest.family_id, "dense");
+});
+test("a finished turn never leaves an uncompleted stage spinning", () => {
+  const rows = steps([event("planning", {stage: "candidates", status: "running"}), event("chat", {role: "assistant", status: "options"})]);
+  assert.equal(rows[0].state, "incomplete");
+});
+test("completed model diagnostics finish candidates even without a selected event", () => {
+  const rows = steps([event("planning", {stage: "candidates", status: "running"}), event("model_call", {stage: "candidates", call_id: "c"}), event("diagnostics", {stage: "candidates", call_id: "c", outcome: "ok", seconds: 1.2}), event("chat", {role: "assistant", status: "options"})]);
+  assert.equal(rows.length, 1); assert.equal(rows[0].state, "done"); assert.equal(rows[0].calls[0].seconds, 1.2);
+});
+test("a pending answer stays live after planning has finished", () => {
+  const events = [event("chat", {role: "assistant", status: "ready"}), event("model_call", {stage: "answer", call_id: "a"})];
+  assert.equal(steps(events, {answer: {pending: true}})[0].state, "running");
+  assert.equal(steps(events, {answer: {pending: false}})[0].state, "incomplete");
+});
+test("failed calls retain their failure state", () => {
+  const rows = steps([event("planning", {stage: "route", status: "running"}), event("diagnostics", {stage: "route", call_id: "r", outcome: "planner_timeout"}), event("chat", {role: "assistant", status: "failed"})]);
+  assert.equal(rows[0].state, "failed");
+});

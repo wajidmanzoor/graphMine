@@ -84,13 +84,13 @@ def test_query_reopens_in_current_chat_and_preserves_draft(loading_browser, data
     session = browser.execute_script("return GraphMineWorkspace.state.session.id")
     original = browser.execute_script("return GraphMineWorkspace.state.active")
     assert browser.execute_script("return GraphMineWorkspace.state.session.domain_id") == selected_domain
-    click(browser, "toggle-data")
+    click(browser, "data-page-link")
     wait(browser, "document.getElementById('cypher-editor').value.includes('Account')")
 
     editor = browser.find_element(By.ID, "cypher-editor")
     editor.clear(); editor.send_keys("MATCH p=(a:Account)-[:TRANSFER]->(b:Account)\nRETURN p LIMIT 2")
     click(browser, "close-data-source")
-    click(browser, "toggle-data")
+    click(browser, "data-page-link")
     wait(browser, "document.getElementById('cypher-editor').value.includes('LIMIT 2')")
     click(browser, "preview-cypher")
     wait(browser, "document.getElementById('database-preview-count').textContent.includes('2 relationships')")
@@ -177,7 +177,7 @@ def test_movielens_shared_movies_projection_opens_in_chat(loading_browser, datab
     assert provenance["projection"] == "rows"
     assert provenance["lineage"] == {"vertices": {}, "edges": {}}
     assert provenance["database_dataset"]["registry"] is True
-    click(browser, "toggle-data")
+    click(browser, "data-page-link")
     wait(browser, "document.getElementById('query-graph-projection')?.value === 'rows'")
     assert Select(browser.find_element(By.ID, "query-graph-direction")).first_selected_option.get_attribute("value") == "undirected"
     assert "AS source" in browser.find_element(By.ID, "cypher-editor").get_attribute("value")

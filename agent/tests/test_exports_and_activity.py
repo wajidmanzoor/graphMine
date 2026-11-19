@@ -68,7 +68,8 @@ def test_csv_download_keeps_all_rows_and_neutralizes_text_formulas(recipes):
     response = client.get(path, headers=alice)
     assert response.status_code == 200
     output = list(csv.DictReader(io.StringIO(response.content.decode("utf-8-sig"))))
-    assert len(output) == 2102 and output[-2] == {"vertex": "'=1+1", "score": "-5"}
+    assert len(output) == 2102
+    assert output[-2] == {"index": "2101", "vertex": "'=1+1", "vertex_name": "'=1+1", "score": "-5"}
     assert output[-1]["vertex"] == "9007199254740993"
     assert client.get(path, headers=bob).status_code == 404
 

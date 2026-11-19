@@ -21,7 +21,7 @@ admission. Both paths preserve the projection contract and source provenance.
 `GET/POST /api/workflow-templates` lists or saves private validated plans.
 `POST /api/sessions/{session_id}/workflow-templates/{template_id}/use` accepts
 `inputs` and optional `parameters` keyed by step ID. It validates all bindings
-and always returns an unapproved Interactive workflow. Templates can be deleted
+and always returns an unapproved Expert workflow. Templates can be deleted
 without changing runs made from them.
 
 `GET /api/workflow-history` lists up to 200 recent owned analyses.
@@ -65,7 +65,7 @@ The application can now execute the verified Python library through
 and its parameters. Dependencies connect declared output ports to declared
 inputs. Neither algorithm code nor expressions are generated or evaluated.
 
-The default browser workspace at `/` uses this library and the three modes.
+The default browser workspace at `/` uses this library with Normal and Expert modes.
 The previous native workspace remains at `/classic`. Native adaptation,
 multi-table operations and MCP access are still
 separate work in the active implementation plan.
@@ -297,7 +297,7 @@ family and select an exact calculation. The available choices come from the
 current evidence-checked operation cards. The task picker works with the
 question planner disabled.
 
-Interactive mode shows the input scope, dependency sources, parameters, method
+Expert mode shows the input scope, dependency sources, parameters, method
 quality and execution device before approval. Step settings can be edited in
 place; every edit creates a new review revision. Expert mode exposes the same
 validated workflow as structured JSON. Uploaded inputs use `main` for the
@@ -395,10 +395,14 @@ problem variant. Native and research-only implementations have separate evidence
 ## Modes and review
 
 - **Normal:** validate the supplied plan, save the input snapshot, then queue it.
-- **Interactive:** validate and save the plan for review. Execution requires its
-  current workflow hash and revision number.
-- **Expert:** accept an explicit structured plan, validate it, and wait for an
-  explicit run request with the current hash and revision.
+- **Expert:** validate a generated or explicit structured plan, save it for
+  review and editing, and wait for an explicit run request with the current
+  hash and revision.
+
+Question planning defaults to Normal. Creating or revising a workflow through
+the API defaults to Expert, so omitting the mode never bypasses approval. These
+are the only accepted modes. Older saved manual workflows open as Expert while
+retaining their results, revision and approval requirements.
 
 Every revision resets approval, execution status and timestamps. Approval for a
 previous revision is rejected even if the plan content happens to be identical.
@@ -417,7 +421,7 @@ After uploading a canonical graph with the existing file API, create a workflow:
 
 ```json
 {
-  "mode": "interactive",
+  "mode": "expert",
   "inputs": {"main": {"file_id": "UPLOADED_FILE_ID", "kind": "graph"}},
   "plan": {
     "version": 1,
@@ -607,7 +611,7 @@ are trusted local artifacts, not client-submitted results or signed certificates
   injections and independently replayed edit scripts, including exact cost
   fractions and rejection of bindings across distinct comparison inputs.
 - The application/planner suite passed all 40 checks on both working-tree and
-  staged application sources. These exercise all three
+  staged application sources. These exercise both
   API modes with the actual library,
   approval revision changes, pagination, stale evidence at execution, retries
   and result reuse. Separate fault-injection tests verify process-group

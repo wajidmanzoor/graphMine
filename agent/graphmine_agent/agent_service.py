@@ -37,6 +37,7 @@ from .models import (
     ExecutionPlan,
     FileRole,
     GroundedNarrative,
+    TemplateNarrative,
     LLMMode,
     PlanDraft,
     PlanningOutcome,
@@ -125,6 +126,7 @@ class AgentService:
             "TurnDecision": "Checking your follow-up",
             "PlanDraft": "Validating the analysis plan",
             "GroundedNarrative": "Explaining the computed results",
+            "TemplateNarrative": "Explaining the computed results",
         }.get(schema_name, "Preparing your analysis")
         activity_id = new_id("activity")
 
@@ -1043,7 +1045,7 @@ class AgentService:
                 for attempt in range(2):
                     narrative = await self._generate(
                         mode=LLMMode.analyst,
-                        schema=GroundedNarrative,
+                        schema=TemplateNarrative,
                         wake=wake,
                         user_payload=payload,
                         conversation=self.database.messages(result.session_id),
@@ -1103,13 +1105,8 @@ class AgentService:
                     "The language model was unavailable or returned an invalid response. These findings and views are computed directly from the result and original data."
                 )
         # Recipes are validated against the same enriched dataset as the facts.
-        selected = generated_views + [
-            view for view in defaults if narrative and view.id in narrative.view_ids
-        ]
-        # Keep the deterministic operation-specific inspection views, including
-        # those belonging to supporting analyses. Narration may prioritize them
-        # but cannot remove access to computed values or linked exploration.
-        selected.extend(view for view in defaults if view not in selected)
+        selected = [*defaults, *generated_views]
+        # Deterministic views lead; an optional validated template follows them.
         safe_views = sanitize_visualizations(
             selected or defaults, {"answer": answer, **result.payload}
         )

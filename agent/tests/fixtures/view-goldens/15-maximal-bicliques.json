@@ -1,0 +1,1417 @@
+{
+  "description": "Anonymous structure derived from a saved analysis. Numeric results retained; IDs, labels, and type names anonymized. Original attributes and text omitted.",
+  "input": {
+    "graph": {
+      "id": "anonymous",
+      "directed": false
+    },
+    "vertices": [
+      {
+        "id": "entity-0",
+        "label": "Entity 1",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-1",
+        "label": "Entity 2",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-2",
+        "label": "Entity 3",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-3",
+        "label": "Entity 4",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-4",
+        "label": "Entity 5",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-5",
+        "label": "Entity 6",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-6",
+        "label": "Entity 7",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-7",
+        "label": "Entity 8",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-8",
+        "label": "Entity 9",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-9",
+        "label": "Entity 10",
+        "type": "Type 2"
+      },
+      {
+        "id": "entity-10",
+        "label": "Entity 11",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-11",
+        "label": "Entity 12",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-12",
+        "label": "Entity 13",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-13",
+        "label": "Entity 14",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-14",
+        "label": "Entity 15",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-15",
+        "label": "Entity 16",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-16",
+        "label": "Entity 17",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-17",
+        "label": "Entity 18",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-18",
+        "label": "Entity 19",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-19",
+        "label": "Entity 20",
+        "type": "Type 2"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-0",
+        "source": "entity-0",
+        "target": "entity-1",
+        "weight": 3,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-1",
+        "source": "entity-0",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-2",
+        "source": "entity-0",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-3",
+        "source": "entity-0",
+        "target": "entity-4",
+        "weight": 2,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-4",
+        "source": "entity-0",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-5",
+        "source": "entity-0",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-6",
+        "source": "entity-0",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-7",
+        "source": "entity-0",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-8",
+        "source": "entity-0",
+        "target": "entity-9",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-9",
+        "source": "entity-10",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-10",
+        "source": "entity-10",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-11",
+        "source": "entity-10",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-12",
+        "source": "entity-10",
+        "target": "entity-4",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-13",
+        "source": "entity-10",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-14",
+        "source": "entity-10",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-15",
+        "source": "entity-10",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-16",
+        "source": "entity-10",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-17",
+        "source": "entity-11",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-18",
+        "source": "entity-11",
+        "target": "entity-2",
+        "weight": 2,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-19",
+        "source": "entity-11",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-20",
+        "source": "entity-11",
+        "target": "entity-4",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-21",
+        "source": "entity-11",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-22",
+        "source": "entity-11",
+        "target": "entity-8",
+        "weight": 2,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-23",
+        "source": "entity-11",
+        "target": "entity-9",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-24",
+        "source": "entity-12",
+        "target": "entity-2",
+        "weight": 2,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-25",
+        "source": "entity-12",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-26",
+        "source": "entity-12",
+        "target": "entity-4",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-27",
+        "source": "entity-12",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-28",
+        "source": "entity-12",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-29",
+        "source": "entity-12",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-30",
+        "source": "entity-12",
+        "target": "entity-9",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-31",
+        "source": "entity-13",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-32",
+        "source": "entity-13",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-33",
+        "source": "entity-13",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-34",
+        "source": "entity-13",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-35",
+        "source": "entity-13",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-36",
+        "source": "entity-13",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-37",
+        "source": "entity-13",
+        "target": "entity-9",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-38",
+        "source": "entity-14",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-39",
+        "source": "entity-14",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-40",
+        "source": "entity-14",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-41",
+        "source": "entity-14",
+        "target": "entity-4",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-42",
+        "source": "entity-14",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-43",
+        "source": "entity-14",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-44",
+        "source": "entity-14",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-45",
+        "source": "entity-15",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-46",
+        "source": "entity-15",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-47",
+        "source": "entity-15",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-48",
+        "source": "entity-15",
+        "target": "entity-6",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-49",
+        "source": "entity-15",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-50",
+        "source": "entity-15",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-51",
+        "source": "entity-16",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-52",
+        "source": "entity-16",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-53",
+        "source": "entity-16",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-54",
+        "source": "entity-16",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-55",
+        "source": "entity-16",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-56",
+        "source": "entity-16",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-57",
+        "source": "entity-17",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-58",
+        "source": "entity-17",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-59",
+        "source": "entity-17",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-60",
+        "source": "entity-17",
+        "target": "entity-4",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-61",
+        "source": "entity-17",
+        "target": "entity-5",
+        "weight": 2,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-62",
+        "source": "entity-17",
+        "target": "entity-8",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-63",
+        "source": "entity-18",
+        "target": "entity-1",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-64",
+        "source": "entity-18",
+        "target": "entity-2",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-65",
+        "source": "entity-18",
+        "target": "entity-3",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-66",
+        "source": "entity-18",
+        "target": "entity-5",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-67",
+        "source": "entity-18",
+        "target": "entity-19",
+        "weight": 1,
+        "type": "Type 3"
+      },
+      {
+        "id": "edge-68",
+        "source": "entity-18",
+        "target": "entity-7",
+        "weight": 1,
+        "type": "Type 3"
+      }
+    ]
+  },
+  "result": {
+    "operation": "maximal-bicliques",
+    "parameters": {},
+    "ports": {
+      "bicliques": {
+        "type": "bipartite_groups",
+        "value": [
+          {
+            "left_vertices": [
+              "entity-0"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-5",
+              "entity-6",
+              "entity-7",
+              "entity-8",
+              "entity-9"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-11"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-6",
+              "entity-8",
+              "entity-9"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-13"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-5",
+              "entity-7",
+              "entity-8",
+              "entity-9"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-11",
+              "entity-13"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-8",
+              "entity-9"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-5",
+              "entity-6",
+              "entity-7",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-13",
+              "entity-16"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-5",
+              "entity-7",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-17"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-5",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-13",
+              "entity-16",
+              "entity-17"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-5",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-14"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-6",
+              "entity-7",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-14",
+              "entity-15"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-6",
+              "entity-7",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-13",
+              "entity-14",
+              "entity-15",
+              "entity-16"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-7",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-11",
+              "entity-14"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-6",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-11",
+              "entity-14",
+              "entity-17"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-11",
+              "entity-14",
+              "entity-15"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-6",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-11",
+              "entity-13",
+              "entity-14",
+              "entity-15",
+              "entity-16",
+              "entity-17"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-13",
+              "entity-16",
+              "entity-18"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-5",
+              "entity-7"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-13",
+              "entity-16",
+              "entity-17",
+              "entity-18"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-5"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-13",
+              "entity-14",
+              "entity-15",
+              "entity-16",
+              "entity-18"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-7"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-11",
+              "entity-13",
+              "entity-14",
+              "entity-15",
+              "entity-16",
+              "entity-17",
+              "entity-18"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-12"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-5",
+              "entity-6",
+              "entity-8",
+              "entity-9"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-11",
+              "entity-12"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-6",
+              "entity-8",
+              "entity-9"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-12",
+              "entity-13"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-5",
+              "entity-8",
+              "entity-9"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-11",
+              "entity-12",
+              "entity-13"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-8",
+              "entity-9"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-12"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-5",
+              "entity-6",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-12",
+              "entity-17"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-5",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-12",
+              "entity-13",
+              "entity-16",
+              "entity-17"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-5",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-11",
+              "entity-12",
+              "entity-14"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-6",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-11",
+              "entity-12",
+              "entity-14",
+              "entity-17"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-4",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-11",
+              "entity-12",
+              "entity-14",
+              "entity-15"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-6",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-11",
+              "entity-12",
+              "entity-13",
+              "entity-14",
+              "entity-15",
+              "entity-16",
+              "entity-17"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-8"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-12",
+              "entity-13",
+              "entity-16",
+              "entity-17",
+              "entity-18"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3",
+              "entity-5"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-0",
+              "entity-10",
+              "entity-11",
+              "entity-12",
+              "entity-13",
+              "entity-14",
+              "entity-15",
+              "entity-16",
+              "entity-17",
+              "entity-18"
+            ],
+            "right_vertices": [
+              "entity-2",
+              "entity-3"
+            ]
+          },
+          {
+            "left_vertices": [
+              "entity-18"
+            ],
+            "right_vertices": [
+              "entity-1",
+              "entity-2",
+              "entity-3",
+              "entity-5",
+              "entity-7",
+              "entity-19"
+            ]
+          }
+        ],
+        "complete": true
+      }
+    },
+    "result": {
+      "returned_count": 33,
+      "total_count": 33
+    }
+  },
+  "expected": {
+    "bicliques": {
+      "spec": {
+        "schema_version": "1.0.0",
+        "rules_version": "2026-11-18.3",
+        "profile": "bipartite",
+        "view": "graph",
+        "title": "Returned biclique",
+        "layout": {
+          "name": "bipartite",
+          "seed": 0,
+          "sides": [
+            "Type 1",
+            "Type 2"
+          ],
+          "positions_source": "browser",
+          "alternates": [
+            "bipartite",
+            "force",
+            "grid"
+          ]
+        },
+        "nodes": {
+          "color": {
+            "field": "side",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": [
+              {
+                "value": 0,
+                "label": "Type 1",
+                "color": "#0072b2",
+                "count": 1
+              },
+              {
+                "value": 1,
+                "label": "Type 2",
+                "color": "#d55e00",
+                "count": 9
+              }
+            ]
+          },
+          "size": {
+            "field": "degree",
+            "value": null,
+            "scale": "sqrt",
+            "range_px": [
+              14.0,
+              36.0
+            ],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "label": {
+            "field": "display_name",
+            "value": null,
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "shape": {
+            "field": null,
+            "value": "ellipse",
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          }
+        },
+        "edges": {
+          "color": {
+            "field": "relationship_type",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "width": {
+            "field": "weight",
+            "value": null,
+            "scale": "sqrt",
+            "range_px": [
+              1.0,
+              4.0
+            ],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "style": {
+            "field": "edge_role",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "arrows": {
+            "field": null,
+            "value": false,
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          }
+        },
+        "legend": [
+          {
+            "channel": "color",
+            "field": "side",
+            "title": "Bipartite side"
+          },
+          {
+            "channel": "size",
+            "field": "degree",
+            "title": "Connections in input"
+          }
+        ],
+        "linked": [
+          {
+            "id": "biclique_sizes",
+            "chart": "scatter",
+            "title": "Biclique sizes",
+            "dataset": "biclique_sizes",
+            "x": "left_size",
+            "y": "right_size",
+            "select": "item"
+          }
+        ],
+        "alternates": [
+          "matrix",
+          "small_multiples"
+        ],
+        "emphasis": {
+          "item": 0,
+          "context_opacity": 0.25
+        },
+        "limits": {
+          "shown_vertices": 10,
+          "total_vertices": 10,
+          "shown_edges": 9,
+          "total_edges": 9,
+          "sampled": false,
+          "strategy": "recorded witness first, then saved input order",
+          "collection_complete": true
+        },
+        "rules_applied": [
+          "profile_bipartite",
+          "bipartite_items",
+          "typed_vertices",
+          "redundant_type_shape_removed"
+        ],
+        "provenance": {
+          "workflow_id": "fixture",
+          "revision": 1,
+          "step": "analysis",
+          "port": "bicliques",
+          "input_fingerprint": "4bfa527f7698db12edd3ec1da97256dab92228c0e3cd9cdd25dd9bcca05f6695",
+          "result_fingerprint": "29f09974fb495f75c0ced8d3892c15b7d09765a475016b7b9b227ea22120717a",
+          "recorded_rules_version": "2026-11-18.3"
+        },
+        "notes": [],
+        "renderer": "cytoscape",
+        "field_roles": {
+          "item": {
+            "role": "item"
+          },
+          "left_vertices[]": {
+            "role": "side",
+            "side": "left",
+            "namespace": "input"
+          },
+          "right_vertices[]": {
+            "role": "side",
+            "side": "right",
+            "namespace": "input"
+          }
+        }
+      },
+      "facts": {
+        "version": "1.0.0",
+        "operation": "maximal-bicliques",
+        "port_type": "bipartite_groups",
+        "field_roles": {
+          "item": {
+            "role": "item"
+          },
+          "left_vertices[]": {
+            "role": "side",
+            "side": "left",
+            "namespace": "input"
+          },
+          "right_vertices[]": {
+            "role": "side",
+            "side": "right",
+            "namespace": "input"
+          }
+        },
+        "input": {
+          "vertices": 20,
+          "edges": 69,
+          "directed": false,
+          "density": 0.3631578947368421,
+          "density_definition": "distinct non-loop connections / possible connections",
+          "parallel_edges": false,
+          "self_loops": false,
+          "vertex_types": {
+            "Type 1": 10,
+            "Type 2": 10
+          },
+          "edge_types": {
+            "Type 3": 69
+          },
+          "named_vertices": 20,
+          "scanned_vertices": 20,
+          "scanned_edges": 69,
+          "statistics_complete": true
+        },
+        "witness": {
+          "vertices": 10,
+          "edges": 9,
+          "directed": false,
+          "density": 0.2,
+          "density_definition": "distinct non-loop connections / possible connections",
+          "parallel_edges": false,
+          "self_loops": false,
+          "vertex_types": {
+            "Type 2": 9,
+            "Type 1": 1
+          },
+          "edge_types": {
+            "Type 3": 9
+          },
+          "named_vertices": 10,
+          "scanned_vertices": 10,
+          "scanned_edges": 9,
+          "statistics_complete": true
+        },
+        "coverage": 0.5,
+        "items": 33,
+        "scanned_items": 33,
+        "collection": {
+          "count": 33,
+          "covered_vertices": 20,
+          "largest_members": 12,
+          "largest_sides": [
+            8,
+            4
+          ],
+          "median_members": 10,
+          "statistics_complete": true
+        },
+        "statistics_complete": true,
+        "groups": {
+          "count": 0,
+          "sizes": [],
+          "overlap": true,
+          "shared_members": 19,
+          "statistics_complete": true,
+          "smallest": 7,
+          "largest": 12
+        },
+        "scores": null,
+        "budget": {
+          "items": 10000,
+          "graph_records": 20000,
+          "memberships": 100000,
+          "scanned_memberships": 324
+        }
+      }
+    }
+  }
+}

@@ -281,6 +281,9 @@ def browser(server, tmp_path):
     driver.set_window_size(1500, 1050)
     driver.set_script_timeout(30)
     driver.get(server[0])
+    # Let the initial unauthenticated request settle before installing a token;
+    # its late 401 must not race the authenticated page's capability request.
+    WebDriverWait(driver, 10).until(lambda d: d.find_element(By.ID, "connection-state").text == "Offline")
     driver.execute_script(
         "localStorage.setItem('graphmine.apiToken','analytics-browser-secret')"
     )
@@ -328,7 +331,7 @@ def chat(browser):
     for dialog in browser.find_elements(By.ID, "database-workspace"):
         if dialog.is_displayed():
             browser.find_element(By.ID, "close-data-source").click()
-    for selector in ["#data-sidebar", "#activity-sidebar"]:
+    for selector in ["#activity-sidebar"]:
         if browser.find_element(By.CSS_SELECTOR, selector).is_displayed():
             browser.find_element(By.CSS_SELECTOR, selector + " [data-close-panel]").click()
     if not browser.find_element(By.ID, "workspace-view").is_displayed():
@@ -340,20 +343,20 @@ def chat(browser):
 
 def manual(browser):
     chat(browser)
-    browser.find_element(By.ID, "toggle-tools").click()
-    tools = browser.find_element(By.ID, "manual-tools")
-    if not tools.get_attribute("open"):
-        tools.find_element(By.TAG_NAME, "summary").click()
+    question = browser.find_element(By.ID, "question")
+    question.clear()
+    question.send_keys("/calculate")
+    WebDriverWait(browser, 5).until(lambda d: d.find_element(By.ID, "command-menu").is_displayed())
+    browser.find_element(By.ID, "command-option-calculate").click()
+    WebDriverWait(browser, 5).until(lambda d: d.find_element(By.ID, "operation-dialog").is_displayed())
     Select(browser.find_element(By.ID, "operation-select")).select_by_value("")
 
 
 def choose_device(browser, value):
     chat(browser)
-    browser.find_element(By.ID, "toggle-tools").click()
-    if not browser.find_element(By.ID, "device").is_displayed():
-        browser.find_element(By.CSS_SELECTOR, ".advanced-data summary").click()
+    browser.find_element(By.CSS_SELECTOR, "#compute-settings > summary").click()
     Select(browser.find_element(By.ID, "device")).select_by_value(value)
-    browser.find_element(By.CSS_SELECTOR, "#data-sidebar [data-close-panel]").click()
+    browser.find_element(By.CSS_SELECTOR, "#compute-settings > summary").click()
 
 
 def upload(browser, tmp_path, graph=None, kind="graph"):
@@ -364,7 +367,8 @@ def upload(browser, tmp_path, graph=None, kind="graph"):
     )
     path = tmp_path / "typed-graph.json"
     path.write_text(json.dumps(graph or typed_graph()))
-    Select(browser.find_element(By.ID, "source-file-kind")).select_by_value(kind)
+    browser.execute_script("document.getElementById('upload-settings').open = true")
+    Select(browser.find_element(By.ID, "upload-kind")).select_by_value(kind)
     browser.find_element(By.ID, "source-file-upload").send_keys(str(path))
     WebDriverWait(browser, 30).until(
         lambda d: (
@@ -382,7 +386,7 @@ def upload(browser, tmp_path, graph=None, kind="graph"):
 
 
 def data_files(browser):
-    browser.find_element(By.ID, "toggle-data").click()
+    browser.find_element(By.ID, "data-page-link").click()
     WebDriverWait(browser, 15).until(
         lambda d: d.find_element(By.ID, "source-files-tab").is_displayed()
     )
@@ -394,6 +398,7 @@ def status(browser, expected):
         lambda d: (
             d.execute_script("return window.GraphMineWorkspace.state.record?.status")
             == expected
+            and (expected != "ready" or d.execute_script("return !GraphMineWorkspace.state.busy && !document.getElementById('approve-plan').disabled"))
         )
     )
 
@@ -410,7 +415,7 @@ def done(browser):
     )
     WebDriverWait(browser, 10).until(
         lambda d: d.execute_script(
-            "return window.GraphMineWorkspace.state.graph === null || !!window.GraphMineWorkspace.state.cy"
+            "return !window.GraphMineWorkspace.state.resultViewPending && (window.GraphMineWorkspace.state.graph === null || !!window.GraphMineWorkspace.state.cy)"
         )
     )
 
@@ -670,16 +675,17 @@ def test_aggregate_exact_values_and_query_truncation_views(browser, tmp_path):
     )
 
 
-def test_interactive_review_edit_linked_views_and_large_ids(browser, tmp_path):
+def test_expert_review_edit_linked_views_and_large_ids(browser, tmp_path):
     upload(browser, tmp_path)
     chat(browser)
-    browser.find_element(By.CSS_SELECTOR, '[data-mode="interactive"]').click()
+    browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
     manual(browser)
     Select(browser.find_element(By.ID, "operation-select")).select_by_value(
         "degree-centrality"
     )
     browser.find_element(By.ID, "use-operation").click()
-    status(browser, "awaiting_review")
+    status(browser, "ready")
+    assert browser.execute_script("return JSON.parse(document.getElementById('plan-editor').value).steps[0].operation") == "degree-centrality"
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.result") is None
     )
@@ -712,19 +718,17 @@ def test_interactive_review_edit_linked_views_and_large_ids(browser, tmp_path):
     browser.execute_script("document.getElementById('evidence-panel').scrollIntoView()")
     capture(browser, "linked-results-desktop.png")
     chat(browser)
-    details = browser.find_elements(By.CSS_SELECTOR, ".workflow-step .step-editor")[-1]
-    details.find_element(By.TAG_NAME, "summary").click()
-    Select(
-        details.find_element(By.CSS_SELECTOR, '[data-parameter="normalized"]')
-    ).select_by_value("false")
-    details.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
+    browser.find_element(By.ID, "open-visual-editor").click()
+    WebDriverWait(browser, 5).until(lambda d: d.find_element(By.ID, "visual-editor").is_displayed())
+    Select(browser.find_element(By.ID, "visual-analysis-normalized")).select_by_value("false")
+    browser.find_element(By.ID, "visual-save").click()
     WebDriverWait(browser, 15).until(
         lambda d: (
             d.execute_script("return window.GraphMineWorkspace.state.record.revision")
             == 2
         )
     )
-    status(browser, "awaiting_review")
+    status(browser, "ready")
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.result") is None
     )
@@ -845,7 +849,7 @@ def test_expert_dependent_plan_and_incomplete_output(browser, tmp_path):
     assert "1 of 1 retained rows" in browser.find_element(By.ID, "table-count").text
 
 
-def test_normal_mode_paging_outside_preview_and_fixed_renderers(browser, tmp_path):
+def test_normal_mode_paging_and_complete_saved_view_fixed_renderers(browser, tmp_path):
     graph = {
         "graph": {
             "id": "large-preview",
@@ -868,14 +872,12 @@ def test_normal_mode_paging_outside_preview_and_fixed_renderers(browser, tmp_pat
         == "normal"
     )
     Select(browser.find_element(By.ID, "graph-layout")).select_by_value("circle")
-    assert "500 of 502 vertices" in browser.find_element(
+    assert "502 of 502 vertices" in browser.find_element(
         By.ID, "preview-scope"
     ).get_attribute("textContent")
     browser.find_element(By.CSS_SELECTOR, '#chart [data-result-row="501"]').click()
-    assert (
-        "outside this graph preview"
-        in browser.find_element(By.ID, "selection-detail").text
-    )
+    WebDriverWait(browser, 10).until(lambda d: d.execute_script("return GraphMineWorkspace.state.selected.has('i:501') && !GraphMineWorkspace.state.resultViewPending"))
+    assert browser.execute_script("return GraphMineWorkspace.state.cy.getElementById('i:501').length") == 1
     browser.find_element(By.ID, "table-next").click()
     assert browser.find_element(By.ID, "table-page").text == "2 / 17"
     browser.find_element(By.ID, "table-search").send_keys("vertex:501")
@@ -1258,8 +1260,10 @@ def test_force_layout_displays_computed_coordinates_with_explicit_projection(
     displayed = browser.execute_script(
         "return window.GraphMineWorkspace.state.cy.nodes().map(n=>[n.position('x'),n.position('y')])"
     )
+    scale = displayed[1][0] / coordinates[1][0]
+    assert scale > 0
     for actual, expected in zip(displayed, coordinates, strict=True):
-        assert actual == pytest.approx([expected[0] / 3 * 200, expected[1] / 3 * 200])
+        assert actual == pytest.approx([expected[0] * scale, expected[1] * scale])
     Select(browser.find_element(By.ID, "graph-layout")).select_by_value("circle")
     assert "for display only" in browser.find_element(
         By.ID, "preview-scope"
@@ -1273,7 +1277,8 @@ def test_reply_without_input_and_description_need_no_workflow(browser, tmp_path,
     WebDriverWait(browser, 30).until(lambda d: "A k-core retains vertices" in d.find_element(By.ID, "messages").text)
     assert browser.execute_script("return window.GraphMineWorkspace.state.workflows.length") == 0
     assert authored_model_transport[1][start:] == ["family", "problem", "route"]
-    browser.find_element(By.CSS_SELECTOR, "#messages details summary").click()
+    browser.find_element(By.CSS_SELECTOR, "#messages .answer-details").click()
+    assert browser.find_element(By.ID, "activity-sidebar").is_displayed()
     assert "k-core" in browser.find_element(By.ID, "messages").text
     upload(browser, tmp_path)
     chat(browser)
@@ -1284,7 +1289,7 @@ def test_reply_without_input_and_description_need_no_workflow(browser, tmp_path,
     browser.find_element(By.ID, "toggle-activity").click()
     assert not browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-record")
     assert browser.find_element(By.ID, "reasoning-count").text == "6"
-    assert 'Answered from recorded sources.' in browser.find_element(By.ID, 'activity-list').text
+    assert browser.find_elements(By.CSS_SELECTOR, '#activity-list [data-stage="grounding"][data-state="done"]')
     capture(browser, "phase2-code-facts.png")
 
 
@@ -1369,10 +1374,10 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
     assert browser.find_element(By.ID, "workspace-view").is_displayed()
     assert not browser.find_element(By.ID, "results-view").is_displayed()
     assert question in browser.find_element(By.ID, "messages").text
-    assert any(
-        text in browser.find_element(By.ID, "messages").text
-        for text in ("Count: 1", "count is 1")
-    )
+    WebDriverWait(browser, 15).until(lambda d: any(
+        text in d.find_element(By.ID, "messages").text.casefold()
+        for text in ("count: 1", "count is 1")
+    ))
     assert len(authored_model_transport[2][start:]) == 4
     assert (
         browser.execute_script(
@@ -1386,7 +1391,7 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
     )
     assert not browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-record")
     assert "Authored reasoning" not in browser.find_element(By.ID, "activity-list").text
-    assert browser.find_elements(By.CSS_SELECTOR, "#activity-list .activity-trace")
+    assert browser.find_elements(By.CSS_SELECTOR, "#activity-list .activity-step")
     capture(browser, "domain-chat-reasoning.png")
     browser.find_element(By.CSS_SELECTOR, "#activity-sidebar [data-close-panel]").click()
     link = browser.find_element(By.CSS_SELECTOR, "#messages .result-link")

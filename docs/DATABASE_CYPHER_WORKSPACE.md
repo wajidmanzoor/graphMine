@@ -56,7 +56,7 @@ flowchart LR
    API endpoint, conversation/input, connection and dataset. **Discard draft**
    restores the starting query. If browser storage is unavailable, the editor
    reports that the draft is retained only for the current tab.
-3. Ask an English question in the existing chat. Normal, Interactive and Expert
+3. Ask an English question in the existing chat. Normal and Expert
    retain their existing validation, approval, execution and model settings.
    Database-backed analyses open the results page after completion.
 4. The default graph presents the result witness. **Highlight result in input

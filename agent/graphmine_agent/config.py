@@ -70,6 +70,8 @@ class Settings:
     # Write-once training captures; they outlive conversation deletion.
     capture_directory: Path | None = None
     capture_enabled: bool = True
+    map_tile_url: str | None = None
+    map_attribution: str = ""
     llm_route_base_url: str | None = None
     llm_route_model: str = "graphmine-business-v1"
     llm_route_adapter_sha256: str | None = None
@@ -552,6 +554,8 @@ class Settings:
                 "GRAPHMINE_ROUTER_ALLOW_EXPANDED_CATALOG", False
             ),
             deployment_version=os.getenv("GRAPHMINE_DEPLOYMENT_VERSION", "base"),
+            map_tile_url=os.getenv("GRAPHMINE_MAP_TILE_URL") or None,
+            map_attribution=os.getenv("GRAPHMINE_MAP_ATTRIBUTION", ""),
         )
 
     @property

@@ -2,6 +2,7 @@ import asyncio
 from copy import deepcopy
 from dataclasses import replace
 import json
+from uuid import uuid4
 
 import pytest
 
@@ -84,9 +85,8 @@ async def test_normal_calculation_waits_for_a_saved_choice_then_validates_and_ru
     planner = ReplayPlanner(settings, service, events, responses=[route("triangle-counting")])
     offered = await planner.plan(session, body)
     assert offered["status"] == "options" and offered["plan"] is None
-    assert len(offered["options"]) == 2 and service.list(session) == []
+    assert len(offered["options"]) == 1 and service.list(session) == []
     assert offered["options"][0]["operations"] == ["triangle-counting"]
-    assert offered["options"][1]["operations"] != offered["options"][0]["operations"]
     choice = offered["options"][0]
     picked = body.model_copy(update={"message": "Use the first option.", "intent": "calculate",
         "operations": choice["operations"], "parameters": choice["parameters"],
@@ -121,14 +121,51 @@ async def test_choice_rejects_tampering_or_changed_inputs(normal, tamper):
     assert len(planner.calls) == 1 and service.list(session) == []
 
 
-async def test_direct_shortcut_still_offers_two_options(normal):
+async def test_direct_shortcut_still_waits_for_one_supported_option(normal):
     settings, service, events, session, body = normal
     settings = replace(settings, analytics_direct_plans=True)
     body.message = "Count triangles"
     planner = ReplayPlanner(settings, service, events, responses=[], candidate_operation="triangle-counting")
     offered = await planner.plan(session, body)
-    assert offered["status"] == "options" and len(offered["options"]) == 2
+    assert offered["status"] == "options" and len(offered["options"]) == 1
     assert planner.calls == [] and len(planner.candidate_calls) == 1 and service.list(session) == []
+
+
+async def test_density_offers_one_exact_choice_and_old_approximate_choice_still_executes(normal):
+    settings, service, events, session, body = normal
+    body.message = "find the densest subgraph"
+    planner = ReplayPlanner(settings, service, events, responses=[route("densest-subgraph")])
+    offered = await planner.plan(session, body)
+    assert offered["status"] == "options" and len(offered["options"]) == 1
+    choice = offered["options"][0]
+    assert choice["quality"] == "exact" and choice["parameters"]["solution_quality"] == "exact"
+    assert service.list(session) == []
+    _, prompt, _ = planner.candidate_calls[0]
+    assert all(c["settings"]["solution_quality"] == "exact" for op in prompt["choices"] for c in op["choices"])
+    caps = await service.capabilities()
+    contract = next(c for c in caps["operations"] if c["id"] == "densest-subgraph")
+    assert contract["quality_guarantees"]["by_request"]["approximate"] == "exact"
+
+    old = deepcopy(choice)
+    old.pop("quality_guarantees")
+    old["parameters"]["solution_quality"] = "approximate"
+    old["quality"] = "approximate"
+    old_turn = str(uuid4())
+    await events.publish(session, "workflow.chat", {"turn_id": old_turn, "role": "assistant",
+        "status": "options", "message": "Choose the calculation.", "question": body.message, "options": [old],
+        "inputs": {key: value.model_dump() for key, value in body.inputs.items()}})
+    picked = body.model_copy(update={"intent": "calculate", "operations": old["operations"],
+        "parameters": old["parameters"], "option_id": old["id"], "option_turn_id": old_turn})
+    ready = await planner.plan(session, picked)
+    assert ready["status"] == "ready"
+    assert ready["plan"]["steps"][0]["parameters"]["solution_quality"] == "approximate"
+    assert len(planner.candidate_calls) == 1
+    record = await service.create(session, WorkflowRequest(mode="normal", plan=ready["plan"],
+        inputs=picked.inputs, planning_turn_id=ready["turn_id"]))
+    await asyncio.gather(*list(service.tasks.values()))
+    await asyncio.gather(*list(service.answer_tasks))
+    result = service.result(record["id"])["steps"]["answer"]["result"]
+    assert result["quality"] == "exact" and result["result"]["optimal"] is True
 
 
 async def test_user_parameter_edit_is_validated_without_resampling(normal):

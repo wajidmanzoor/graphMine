@@ -25,6 +25,18 @@ def test_working_notes_are_admin_only_without_mutating_saved_event(admin, as_dic
 
 
 @pytest.mark.parametrize("admin", [False, True])
+@pytest.mark.parametrize("as_dict", [False, True])
+def test_saved_chat_mode_is_expert_without_mutating_history(admin, as_dict):
+    event = ConversationEvent(session_id="session", type="workflow.chat",
+        payload={"turn_id": "t", "role": "user", "message": "Rank people", "mode": "interactive"})
+    original = event.model_dump() if as_dict else event
+    with identity_scope(SimpleNamespace(is_admin=admin)):
+        shown = visible_event(original)
+    assert (shown["payload"] if as_dict else shown.payload) == {**event.payload, "mode": "expert"}
+    assert (original["payload"] if as_dict else original.payload)["mode"] == "interactive"
+
+
+@pytest.mark.parametrize("admin", [False, True])
 def test_api_event_pages_and_websocket_obey_note_visibility(settings, admin):
     configured = replace(settings, accounts_enabled=True, account_cookie_secure=False)
     with TestClient(create_app(configured)) as client:

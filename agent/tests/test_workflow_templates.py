@@ -93,7 +93,8 @@ def test_template_use_validates_real_native_inputs_and_waits_for_review(recipes)
     )
     assert response.status_code == 201, response.text
     record = response.json()
-    assert record["status"] == "awaiting_review" and record["approved_hash"] is None
+    assert record["mode"] == "expert"
+    assert record["status"] == "ready" and record["approved_hash"] is None
     assert record["validation"]["plan"]["steps"][0]["parameters"]["requested_k"] == 2
     assert record["source_template"]["id"] == template["id"]
     assert not runtime.analytics.tasks

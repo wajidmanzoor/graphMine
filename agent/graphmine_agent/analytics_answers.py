@@ -182,7 +182,64 @@ def _count(number, noun):
     return f"{number:,} {_singular(noun) if number == 1 else noun}"
 
 
-def build_facts(saved, titles, labels):
+def bipartite_input_context(saved, plan, inputs):
+    """Name sides only when the saved memberships establish one type per side."""
+    context = {}
+    for step in plan.get("steps", []):
+        if step.get("operation") not in {"maximal-bicliques", "maximal-biclique-counting"}:
+            continue
+        graph = inputs.get(step.get("input", {}).get("input"), {}).get("data", {})
+        vertices = graph.get("vertices", [])
+        by_id = {json.dumps(vertex.get("id"), sort_keys=True): vertex for vertex in vertices}
+        output = saved.get("steps", {}).get(step["id"], {}).get("result", {})
+        parameters = output.get("parameters") or step.get("parameters", {})
+        names = []
+        for side in ("left", "right"):
+            members = parameters.get(side + "_partition")
+            if members is None:
+                members = [vertex["id"] for vertex in vertices if vertex.get("attributes", {}).get("side") == side]
+            types = {by_id.get(json.dumps(member, sort_keys=True), {}).get("type") for member in members}
+            if len(types) != 1 or not all(isinstance(name, str) and name for name in types):
+                break
+            names.append(next(iter(types)))
+        if len(names) == 2 and names[0] != names[1]:
+            context[step["id"]] = names
+    return context
+
+
+def result_sentence(result, sides=()):
+    """One deterministic finding shared by chat, the result page and reports."""
+    singular_sides = list(sides)
+    sides = [name + ("es" if name.endswith("s") else "s") for name in sides]
+    ports = result.get("ports", {})
+    operation = result.get("operation")
+    if operation in {"maximal-bicliques", "maximal-biclique-counting"}:
+        port = next((p for p in ports.values() if p.get("type") == "bipartite_groups"), None)
+        scalar = next((p.get("value") for p in ports.values() if p.get("type") == "scalar"), None)
+        rows = port.get("value", []) if port else []
+        count = scalar if scalar is not None else len(rows)
+        verb = "Found" if scalar is not None or port and port.get("complete", result.get("complete", False)) else "Retained"
+        between = " between " + " and ".join(sides) if len(sides) == 2 else ""
+        text = f"{verb} {_number(count)} maximal {'biclique' if count == 1 else 'bicliques'}{between}."
+        if rows:
+            pairs = [(len(r.get("left_vertices", r.get("left", []))), len(r.get("right_vertices", r.get("right", [])))) for r in rows]
+            left, right = max(pairs, key=lambda pair: (sum(pair), pair[0] * pair[1]))
+            nouns = [(singular_sides[i] if count == 1 else sides[i]).lower() for i, count in enumerate((left, right))] if len(sides) == 2 else ["left members", "right members"]
+            text += f" The largest{' retained' if not port.get('complete', result.get('complete', False)) else ''} has {left} {nouns[0]} × {right} {nouns[1]}."
+        return text
+    if operation == "community-detection":
+        port = next((p for p in ports.values() if p.get("type") == "vertex_groups"), None)
+        if port:
+            sizes = [len(row.get("vertices", [])) for row in port.get("value", [])]
+            return f"Found {len(sizes)} communities. The largest has {max(sizes, default=0)} members."
+    if operation == "densest-subgraph":
+        port = next((p for p in ports.values() if p.get("type") == "vertex_set"), None)
+        if port:
+            return f"Found a densest subgraph with {len(port.get('value', []))} vertices." if result.get("quality") == "exact" else f"Found a dense subgraph with {len(port.get('value', []))} vertices."
+    return None
+
+
+def build_facts(saved, titles, labels, input_context=None):
     """Plain statements of what each completed step found, most important first.
 
     Each statement is labelled with its calculation's title, because titles are
@@ -191,6 +248,22 @@ def build_facts(saved, titles, labels):
     facts = []
 
     def add(kind, step, statement):
+        text = statement.removeprefix(method + ": ")
+        if kind in {"quality", "scope"} and text.startswith(tuple(QUALITY.values())):
+            text = "The result is " + text
+            if result.get("quality") == "exact" and result.get("complete"):
+                text = "The result is exact."
+        elif result.get("operation") in {"maximal-bicliques", "maximal-biclique-counting"}:
+            match = re.fullmatch(r"(?:returned (.+) bicliques?|count is (.+))\.", text)
+            if match:
+                count = match[1] or match[2]
+                sides = (input_context or {}).get(step, [])
+                between = " between " + " and ".join(sides) if len(sides) == 2 else ""
+                text = f"Found {count} maximal {'biclique' if count == '1' else 'bicliques'}{between}."
+        primary = result_sentence(result, (input_context or {}).get(step, []))
+        if primary and kind not in {"quality", "scope", "sizes"}:
+            text = primary
+        text = text[:1].upper() + text[1:]
         facts.append(
             {
                 "id": f"f{len(facts) + 1}",
@@ -198,7 +271,7 @@ def build_facts(saved, titles, labels):
                 "step": step,
                 "operation_title": method,
                 "statement": statement,
-                "text": statement.removeprefix(method + ": "),
+                "text": text,
             }
         )
 

@@ -15,6 +15,7 @@ from .database import RecordNotFound
 from .datasets import DatasetLibrary, SaveDataset
 from .identity import AccountError, current_principal
 from .models import FileInfo, FileRole, new_id, utc_now
+from .exploration import GraphView
 
 
 class Name(BaseModel):
@@ -39,6 +40,7 @@ class Publish(Name):
     file_id: str | None = None
     workflow_id: str | None = None
     expected_revision: int | None = Field(default=None, ge=1)
+    view: GraphView | None = None
     kind: Literal["graph", "graph_collection", "feature_vectors", "hypergraph"] = (
         "graph"
     )
@@ -216,6 +218,30 @@ class Projects:
                     (service._directory(record) / "inputs.json").read_bytes()
                 ),
             }
+            if body.view is not None:
+                chosen = body.view.scope.result
+                if chosen is None or chosen.workflow_id != record["id"] or chosen.revision != record["revision"]:
+                    raise AnalyticsError("The chosen view must belong to this result revision.", "invalid_view", 409)
+                from .result_views import result_view
+                count = max(2000, len(body.view.viewport.positions) if body.view.viewport else 0)
+                value["view_data"] = result_view(service, record["id"], chosen.step, chosen.port, index=chosen.index, context=chosen.context, expected_revision=record["revision"], vertex_limit=min(50000, count), edge_limit=min(100000, max(5000, count * 2)))
+                from .view_actions import ContextRequest, ProjectionRequest, ViewRequest, merge_context, restore_context, project_embedding, meta_graph
+                if body.view.context_vertices or body.view.context_edges:
+                    context = restore_context(service, record["id"], chosen.step, chosen.port, ContextRequest(expected_revision=record["revision"], vertices=body.view.context_vertices, edges=body.view.context_edges))
+                    value["view_data"] = merge_context(value["view_data"], context)
+                primary = body.view.overrides.primary or (body.view.view_spec.view if body.view.view_spec else value["view_data"]["view_spec"]["view"])
+                if primary in {"eigenvector", "filtration", "visit_heat", "walk", "predicted_edges", "occurrence_overlay", "input_comparison", "cut"}:
+                    value["view_context"] = result_view(service, record["id"], chosen.step, chosen.port, context=True, expected_revision=record["revision"], vertex_limit=2000, edge_limit=5000)
+                if primary == "meta_graph":
+                    value["view_aggregate"] = meta_graph(service, record["id"], chosen.step, chosen.port, ViewRequest(expected_revision=record["revision"]))
+                if body.view.overrides.projection_id:
+                    projection = project_embedding(service, record["id"], chosen.step, chosen.port, ProjectionRequest(expected_revision=record["revision"], cached_only=True))
+                    if projection["id"] != body.view.overrides.projection_id:
+                        raise AnalyticsError("The saved display projection does not match this result.", "invalid_view", 409)
+                    value["view_projection"] = projection
+                value["view"] = body.view.model_dump(mode="json")
+                if value["view"].get("view_spec"):
+                    value["view"]["view_spec"]["provenance"] = value["view_data"]["view_spec"]["provenance"]
             provenance = {
                 "workflow_id": record["id"],
                 "revision": record["revision"],

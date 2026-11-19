@@ -4,6 +4,8 @@ import json
 import sqlite3
 from contextlib import closing
 
+from .analytics_modes import saved_mode
+
 
 def initialize(db):
     present = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='workflow_summaries'").fetchone()
@@ -35,7 +37,7 @@ def initialize(db):
 def summaries(service, session_id):
     service.database.get_session(session_id)
     with closing(sqlite3.connect(service.path)) as db:
-        return [json.loads(row[0]) for row in db.execute(
+        return [saved_mode(json.loads(row[0])) for row in db.execute(
             "SELECT document FROM workflow_summaries WHERE session_id=? ORDER BY created_at,id", (session_id,))]
 
 

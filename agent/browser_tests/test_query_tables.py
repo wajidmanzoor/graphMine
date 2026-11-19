@@ -131,7 +131,7 @@ def test_table_import_preserves_existing_graph_and_analysis(loading_browser, loa
     wait_for(browser, "document.getElementById('projection-dialog').open")
     assert browser.execute_script("return GraphMineWorkspace.state.active") == "existing-graph"
     assert browser.execute_script("return GraphMineWorkspace.state.record.id") == "keep-analysis"
-    assert browser.find_element(By.ID, "input-aliases").get_attribute("textContent") == "main: graph"
+    assert not browser.find_elements(By.ID, "input-aliases")
 
 
 def test_old_table_page_cannot_replace_new_query(loading_browser, loading_server):

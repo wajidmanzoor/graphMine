@@ -6,24 +6,22 @@ window.GraphMineOutputs = {
       const url = URL.createObjectURL(blob), link = node("a", {href: url, download: filename}); link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     };
     for (const [id, title, action] of [
-      ["export-csv", "Export full table", async () => {
+      ["export-csv", "Table with names (CSV)", async () => {
         if (!state.record || !state.port || $("result-port").value === "__result") throw new Error("Choose a saved output table first.");
         const record = state.record;
         const path = `/api/workflows/${record.id}/steps/${encodeURIComponent($("result-step").value)}/ports/${encodeURIComponent($("result-port").value)}/csv?expected_revision=${record.revision}`;
         download(await api(path, {asBlob: true}), `graphmine-${record.id}-revision-${record.revision}-table.csv`);
       }],
-      ["export-report", "Download reproducible report", async () => {
+      ["export-report", "Full report (ZIP)", async () => {
         if (!state.record || !state.result) throw new Error("Open a saved result first.");
         const record = state.record;
-        download(await api(`/api/workflows/${record.id}/report?expected_revision=${record.revision}`, {asBlob: true}), `graphmine-${record.id}-revision-${record.revision}.zip`);
-      }],
-      ["export-image", "Export visible graph image", async () => {
-        if (!state.cy?.nodes().length) throw new Error("Display a graph first.");
-        download(state.cy.png({output: "blob", bg: "#ffffff", scale: 2, full: true}), `graphmine-${state.record?.id || "input"}-visible-graph.png`);
+        const step = $("result-step").value, port = $("result-port").value;
+        const image = await window.GraphMineWorkspace.visualization.reportImage({workflow: record.id, revision: record.revision, step, port});
+        download(await api(`/api/workflows/${record.id}/report`, {method: "POST", body: W.stringify({expected_revision: record.revision, step, port, default_image: image}), asBlob: true}), `graphmine-${record.id}-revision-${record.revision}.zip`);
       }],
     ]) {
       const button = node("button", {id, class: "quiet", type: "button"}, title);
-      button.onclick = () => runAction(action); $("result-actions").append(button);
+      button.onclick = () => runAction(action); document.querySelector("#result-download-menu .view-menu").insertBefore(button, $(id === "export-csv" ? "view-export-visible" : "download-result"));
     }
     const limits = node("details", {id: "operation-limits", hidden: true}); $("operation-quality").after(limits);
     this.operationLimits = (selected, configuration) => {

@@ -35,6 +35,7 @@ from .analytics_bipartite import (
 from .analytics_eligibility import eligible, requested_preferences, score_hints
 from .analytics_lane_choices import describes, description_answer, lookup_choices, reply_sources
 from .analytics_lanes import AnalyticsLanes
+from .analytics_modes import AnalysisMode
 from .analytics_clarification import detect_gap, explicit_operation, gap as clarification_gap, validator_gap
 from .analytics_lane_choices import explicit_parameters
 from .analytics_parameter_choices import constrain_literals, parameter_choices, resolve_literals
@@ -134,7 +135,7 @@ class PlanningRequest(BaseModel):
     family_id: str | None = None
     previous_workflow_id: str | None = None
     evaluation_id: str | None = Field(default=None, min_length=1, max_length=200)
-    mode: Literal["normal", "interactive", "expert"] = "normal"
+    mode: AnalysisMode = "normal"
     request_id: UUID | None = None
     selection: PlanningSelection | None = None
     # The checked action of a suggested follow-up for previous_workflow_id. It
@@ -1392,8 +1393,6 @@ class AnalyticsPlanner(AnalyticsLanes):
         return {"intent": "needs_information", "message": "I could not find a matching problem after checking two families. What result do you want to obtain?", "choices": []}, []
 
     async def _plan(self, session_id, body, *, continuation=None):
-        if body.mode == "expert":
-            raise AnalyticsError("Expert mode accepts plan JSON in the plan editor. Submit that plan to the validator.")
         session = self.analytics.database.get_session(session_id)
         caps = await self.analytics.capabilities()
         policy = body.device
@@ -1566,7 +1565,8 @@ class AnalyticsPlanner(AnalyticsLanes):
         if results_for_routing:
             titles = {card["id"]: card["title"] for card in caps["operations"]}
             result_labels = await asyncio.to_thread(self.analytics._labels, previous)
-            facts = build_facts(results_for_routing, titles, result_labels)
+            input_context = await asyncio.to_thread(self.analytics._answer_input_context, previous, results_for_routing)
+            facts = build_facts(results_for_routing, titles, result_labels, input_context)
             selection = (
                 body.selection
                 if body.selection and body.selection.workflow_id == previous["id"]
@@ -1660,7 +1660,7 @@ class AnalyticsPlanner(AnalyticsLanes):
                 # The shortcut still uses verified cards and native validation.
                 direct = None if payload.get("conversation") or picked else self.direct_plan(body, inputs, eligible_cards)
                 if direct is not None:
-                    if body.mode in {"normal", "interactive"}:
+                    if body.mode == "normal":
                         operation = direct["steps"][0]
                         response = await self._operation_lane(session_id, body, inputs, cards,
                             [operation["operation"]], operation["parameters"], alias=operation["input"]["input"], entities=entities)
@@ -1800,7 +1800,7 @@ class AnalyticsPlanner(AnalyticsLanes):
                     choice = next(row for row in lookups if row["id"] == decision["lookup_id"])
                     lookup_step = choice["plan"]["steps"][0]
                     card = next(card for card in cards if card["id"] == choice["operation"])
-                    missing = detect_gap(card, inputs, lookup_step["parameters"], lookup_step["input"]["input"], entities, "normal")
+                    missing = detect_gap(card, inputs, lookup_step["parameters"], lookup_step["input"]["input"], entities)
                     if missing:
                         context = {"question": body.message, "operations": [choice["operation"]],
                                    "parameters": lookup_step["parameters"], "alias": lookup_step["input"]["input"],
@@ -1865,7 +1865,7 @@ class AnalyticsPlanner(AnalyticsLanes):
                     aliases = [key for key, value in inputs.items() if value["kind"] == card["input_kind"]]
                     alias = aliases[0] if len(aliases) == 1 else "main" if "main" in aliases and any(name in card["parameters"] for name in ("query_graph", "other_graph")) else None
                     values = explicit_parameters(card, body.message, entities, alias)
-                    missing = detect_gap(card, inputs, values, alias, entities, body.mode)
+                    missing = detect_gap(card, inputs, values, alias, entities)
                     if missing:
                         return {**await self._ask_gap(body, {"question": body.message, "operations": decision["operations"],
                             "parameters": values, "alias": alias, "entities": entities, "selected": True}, missing), "trace": trace}
@@ -2038,7 +2038,7 @@ class AnalyticsPlanner(AnalyticsLanes):
                                 "status": "needs_information",
                                 "message": "I couldn't build a plan that passes the checks "
                                 "for this data. Try rephrasing the question or naming the "
-                                "values to use, or review the steps in Interactive mode.",
+                                "values to use, or review the steps in Expert mode.",
                                 "plan": None,
                                 "trace": trace,
                             }

@@ -163,9 +163,7 @@ def enable_admin_working_notes(browser):
     browser.execute_script("window.GraphMineAccount.user = {role: 'admin'}; document.querySelector('[data-mode=expert]').click()")
 
 
-def test_admin_expert_notes_are_collapsed_and_survive_reload(
-    loading_browser, loading_server
-):
+def test_activity_steps_are_collapsed_and_survive_reload(loading_browser, loading_server):
     browser, server = loading_browser, loading_server
     saved_network(server)
     saved_turn(server, "first", "Find the communities")
@@ -174,44 +172,23 @@ def test_admin_expert_notes_are_collapsed_and_survive_reload(
     for reload in [False, True]:
         if reload:
             browser.refresh()
-            wait_for(
-                browser,
-                "GraphMineWorkspace.state.result && !GraphMineWorkspace.state.busy",
-            )
+            wait_for(browser, "GraphMineWorkspace.state.result && !GraphMineWorkspace.state.busy")
         browser.find_element(By.ID, "toggle-activity").click()
         assert browser.find_element(By.ID, "reasoning-count").text == "7"
-        assert not browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-turn")
-        enable_admin_working_notes(browser)
-        assert (
-            len(
-                browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-turn")
-            )
-            == 2
-        )
-        assert (
-            len(
-                browser.find_elements(
-                    By.CSS_SELECTOR,
-                    '#activity-list [data-turn="second"] [data-stage="plan"]',
-                )
-            )
-            == 2
-        )
-        notes = browser.find_elements(By.CSS_SELECTOR, "#activity-list details.reasoning-turn")
+        assert len(browser.find_elements(By.CSS_SELECTOR, "#activity-list .activity-turn")) == 2
+        retry = browser.find_elements(By.CSS_SELECTOR, '#activity-list [data-turn="second"] [data-stage="plan"]')
+        assert len(retry) == 1
+        notes = browser.find_elements(By.CSS_SELECTOR, "#activity-list details.activity-step")
         assert all(not note.get_attribute("open") for note in notes)
-        for note in notes:
-            note.find_element(By.TAG_NAME, "summary").click()
+        browser.execute_script("document.querySelectorAll('#activity-list details.activity-step').forEach(el=>el.open=true)")
+        assert len(retry[0].find_elements(By.CSS_SELECTOR, '.activity-model-call')) == 2
+        assert "Attempt 2" in retry[0].text
         assert browser.execute_script("return GraphMineWorkspace.state.events.filter(e => e.type==='workflow.planning' && e.payload.stage==='validation' && e.payload.status==='failed').length") == 2
-        assert (
-            browser.find_element(By.ID, "chat-status").text == "Waiting for your reply"
-        )
-        assert browser.execute_script(
-            "return document.querySelectorAll('#activity-list .activity-turn > .reasoning-turn').length === 2"
-        )
+        assert browser.find_element(By.ID, "chat-status").text == "Waiting for your reply"
+        assert not browser.find_elements(By.CSS_SELECTOR, '.activity-step[data-state="running"]')
         assert_latest_user_visible(browser)
     activity = browser.find_element(By.ID, "activity-list").text
     assert "Reasoning for first" in activity
-    assert "Call 4" in activity
     assert "Decision for" in activity
     assert "Reasoning for" not in browser.find_element(By.ID, "messages").text
 
@@ -251,31 +228,23 @@ def test_chat_answer_and_each_model_call_survive_reload(loading_browser, loading
         messages = browser.find_element(By.ID, "messages").text
         assert "The network contains two communities." in messages
         assert "Each community has 3 members." in messages
-        assert "Explanation" in messages
+        assert "Explanation" not in messages
         for hidden in [explanation, "How this was planned", "Model reasoning", "Building a valid plan", *texts]:
             assert hidden not in messages
         assert len(browser.find_elements(By.CSS_SELECTOR, "#messages .result-link")) == 1
-        details = browser.find_element(By.CSS_SELECTOR, "#messages .answer-explanation")
-        assert not details.get_attribute("open")
-        details.find_element(By.TAG_NAME, "summary").click()
-        assert explanation in details.text
-        details.find_element(By.TAG_NAME, "summary").click()
+        assert not browser.find_elements(By.CSS_SELECTOR, '#messages .answer-explanation, #messages .answer-sources, #messages .chat-trace')
         if not reload:
             capture(browser, f"chat-{width}.png")
-        browser.find_element(By.ID, "toggle-activity").click()
+        browser.find_element(By.CSS_SELECTOR, '#messages .answer-details').click()
         assert browser.find_element(By.ID, "reasoning-count").text == "4"
         assert browser.find_element(By.CSS_SELECTOR, "#activity-list .model-call-count").text == "4 model calls"
-        assert not browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-record")
-        enable_admin_working_notes(browser)
-        notes = browser.find_element(By.CSS_SELECTOR, "#activity-list details.reasoning-turn")
-        assert not notes.get_attribute("open")
-        assert "not checked" in notes.find_element(By.TAG_NAME, "summary").text
-        notes.find_element(By.TAG_NAME, "summary").click()
-        entries = browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-record")
+        notes = browser.find_elements(By.CSS_SELECTOR, "#activity-list details.activity-step")
+        assert all(not note.get_attribute("open") for note in notes)
+        browser.execute_script("document.querySelectorAll('#activity-list details.activity-step').forEach(el=>el.open=true)")
+        entries = browser.find_elements(By.CSS_SELECTOR, "#activity-list .activity-model-call")
         assert len(entries) == 4
-        assert [entry.find_element(By.TAG_NAME, "h4").text for entry in entries] == [f"Call {i}" for i in range(1, 5)]
-        assert [entry.find_element(By.TAG_NAME, "pre").get_attribute("textContent") for entry in entries[:3]] == texts
-        assert "No reasoning was returned for this call." in entries[-1].text
+        assert [entry.find_element(By.CSS_SELECTOR, ".markdown-body").text for entry in entries[:3]] == [' '.join(text.split()) for text in texts]
+        assert "No reasoning was recorded for this call." in entries[-1].text
         assert "Building a valid plan" in browser.find_element(By.ID, "activity-list").text
         if not reload:
             capture(browser, f"activity-{width}.png")
@@ -384,7 +353,7 @@ def test_interrupted_question_retries_with_its_original_inputs(
         "lost",
         role="user",
         message="Find the communities",
-        mode="interactive",
+        mode="expert",
         inputs=inputs,
         device="cpu",
         previous_workflow_id=None,
@@ -435,7 +404,7 @@ def test_interrupted_question_retries_with_its_original_inputs(
     )
     assert request["message"] == "Find the communities"
     assert request["inputs"] == inputs
-    assert (request["mode"], request["device"]) == ("interactive", "cpu")
+    assert (request["mode"], request["device"]) == ("expert", "cpu")
     assert request["request_id"] != "lost"
 
 
@@ -754,10 +723,11 @@ def test_finished_analysis_answers_in_chat_with_computed_facts(
     )
     open_saved(browser, server)
     bubble = '.chat-message.assistant[data-turn="first"]'
-    lead = browser.find_element(By.CSS_SELECTOR, f"{bubble} .answer-lead")
-    assert lead.text == "Two communities split the network."
-    facts = browser.find_elements(By.CSS_SELECTOR, f"{bubble} .answer-facts li")
-    assert [fact.text for fact in facts] == [statements["f2"], statements["f1"]]
+    answer = browser.find_element(By.CSS_SELECTOR, f"{bubble} .grounded-answer").text
+    assert answer.startswith("Two communities split the network.")
+    assert all(answer.count(statement) == 1 for statement in statements.values())
+    assert browser.find_element(By.CSS_SELECTOR, f"{bubble} .answer-footer").is_displayed()
+    assert not browser.find_elements(By.CSS_SELECTOR, f"{bubble} .answer-facts")
 
 
 def test_question_about_a_selected_clique_sends_its_position(
@@ -819,7 +789,8 @@ def test_reasoning_streams_while_a_stage_runs(loading_browser, loading_server):
     event(server, "reasoning.delta", "live", stage="family", text="centrality.")
     open_saved(browser, server)
     enable_admin_working_notes(browser)
-    live = '#activity-list [data-live="family"] pre'
+    step = '#activity-list [data-turn="live"] .activity-step[data-stage="family"]'
+    live = f'{step} .activity-model-call .markdown-body'
     wait_for(
         browser,
         f"document.querySelector('{live}')?.textContent === 'Hubs suggest centrality.'",
@@ -832,7 +803,8 @@ def test_reasoning_streams_while_a_stage_runs(loading_browser, loading_server):
         model="Authored test model",
         text="Hubs suggest centrality. Done.",
     )
-    wait_for(browser, "!document.querySelector('[data-live]')")
+    wait_for(browser, f"document.querySelector('{live}')?.textContent === 'Hubs suggest centrality. Done.'")
+    assert browser.find_element(By.CSS_SELECTOR, step).get_attribute("data-state") == "done"
 
 
 def test_clarification_choices_are_sent_as_replies(loading_browser, loading_server):
@@ -875,14 +847,14 @@ def test_conversation_can_be_renamed_and_deleted(loading_browser, loading_server
     browser.execute_script(
         "window.prompt = () => 'Renamed study'; window.confirm = () => true;"
     )
-    browser.find_element(By.ID, "toggle-tools").click()
-    browser.find_element(By.CSS_SELECTOR, ".sidebar-disclosure > summary").click()
-    browser.find_element(By.ID, "rename-session").click()
+    browser.find_element(By.CSS_SELECTOR, ".session-menu > summary").click()
+    browser.find_element(By.CSS_SELECTOR, "[data-session-action=rename]").click()
     wait_for(browser, "!GraphMineWorkspace.state.busy")
     assert ("PATCH", "/api/sessions/saved-session", {"title": "Renamed study"}) in (
         server.requests
     )
-    browser.find_element(By.ID, "delete-session").click()
+    browser.find_element(By.CSS_SELECTOR, ".session-menu > summary").click()
+    browser.find_element(By.CSS_SELECTOR, "[data-session-action=delete]").click()
     wait_for(browser, "!GraphMineWorkspace.state.busy")
     assert ("DELETE", "/api/sessions/saved-session", None) in server.requests
 
@@ -1090,7 +1062,7 @@ def test_saved_display_changes_are_carried_out_on_the_results_page(
     wait_for(browser, f"GraphMineWorkspace.state.view === 'results' && ({check})")
 
 
-def test_answers_from_saved_facts_list_each_computed_statement(
+def test_answers_from_saved_facts_present_each_computed_statement_as_prose(
     loading_browser, loading_server
 ):
     browser, server = loading_browser, loading_server
@@ -1113,12 +1085,10 @@ def test_answers_from_saved_facts_list_each_computed_statement(
     )
     open_saved(browser, server)
     bubble = '.chat-message.assistant[data-turn="why"]'
-    items = browser.find_elements(By.CSS_SELECTOR, f"{bubble} .answer-facts li")
-    assert [item.text for item in items] == [fact["statement"] for fact in facts]
-    assert (
-        "These are the clique sizes."
-        in browser.find_element(By.CSS_SELECTOR, bubble).text
-    )
+    answer = browser.find_element(By.CSS_SELECTOR, f"{bubble} .grounded-answer").text
+    assert answer == " ".join(fact["statement"] for fact in facts)
+    assert not browser.find_elements(By.CSS_SELECTOR, f"{bubble} .answer-facts")
+    assert browser.find_element(By.CSS_SELECTOR, f"{bubble} .answer-footer .answer-details").is_displayed()
 
 
 def test_suggested_follow_ups_are_asked_about_their_analysis(
@@ -1153,7 +1123,6 @@ def test_suggested_follow_ups_are_asked_about_their_analysis(
 
     server.plan_handler = plan
     open_saved(browser, server)
-    browser.find_element(By.CSS_SELECTOR, "#messages .answer-explanation > summary").click()
     chips = browser.find_elements(By.CSS_SELECTOR, "[data-suggestion]")
     assert [chip.text for chip in chips] == suggestions
     chips[1].click()

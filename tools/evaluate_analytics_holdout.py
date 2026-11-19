@@ -495,7 +495,7 @@ async def evaluate(settings, suite, output):
                     await service.create(
                         session.id,
                         WorkflowRequest(
-                            mode="interactive",
+                            mode="expert",
                             plan=case["previous_plan"],
                             inputs=inputs,
                             evaluation_id=evaluation_id,

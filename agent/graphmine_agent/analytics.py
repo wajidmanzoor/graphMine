@@ -26,6 +26,7 @@ from .analytics_scheduler import (
     estimate_memory,
     execution_admission,
 )
+from .analytics_modes import AnalysisMode, saved_mode
 from .database import RecordNotFound
 from .errors import AnalyticsError  # Re-export for existing integrations.
 from .evidence_cache import BOOTSTRAP
@@ -44,7 +45,7 @@ class InputReference(BaseModel):
 
 class WorkflowRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    mode: Literal["normal", "interactive", "expert"] = "interactive"
+    mode: AnalysisMode = "expert"
     plan: dict[str, Any]
     inputs: dict[str, InputReference]
     evaluation_id: str | None = Field(default=None, min_length=1, max_length=200)
@@ -106,7 +107,7 @@ LARGE_SEARCH_EDGES = 5000
 # Longer outputs reach the browser in pages instead of all at once.
 SUMMARY_ITEMS = 2000
 SLOW_RUN_SECONDS = 120
-# Saving usually follows planning within seconds; interactive review takes longer.
+# Saving usually follows planning within seconds; manual review takes longer.
 VALIDATION_CACHE_SECONDS = 900
 VALIDATION_CACHE_ENTRIES = 64
 
@@ -270,7 +271,7 @@ class AnalyticsService:
                 + (" WHERE session_id=?" if session_id else ""),
                 (session_id,) if session_id else (),
             )
-            return [json.loads(row[0]) for row in rows]
+            return [saved_mode(json.loads(row[0])) for row in rows]
 
     def list(self, session_id, *, summary=False):
         if summary:
@@ -289,7 +290,7 @@ class AnalyticsService:
             raise RecordNotFound(f"Workflow {workflow_id} not found")
         record = json.loads(row[0])
         self.database.get_session(record["session_id"])
-        return record
+        return saved_mode(record)
 
     def _save(self, record):
         record["updated_at"] = _now()
@@ -703,9 +704,13 @@ class AnalyticsService:
         from .analytics_eligibility import attach_requirements
         attach_requirements(result["operations"], self.settings.repository_root)
         from .result_views import profile
+        from .view_contracts import catalog_roles
         from ._families import PROBLEMS
+        from .analytics_options import quality_guarantees
         for operation in result["operations"]:
+            operation["quality_guarantees"] = quality_guarantees(operation)
             operation["visualization"] = profile(operation["id"])
+            operation["visualization"]["field_roles"] = catalog_roles(operation["id"], operation.get("output_ports", {}))
             problem = PROBLEMS.get(operation.get("family"), {}).get(operation.get("problem_id"), {})
             operation["problem_title"] = problem.get("title", operation.get("problem_id"))
         result["application_limits"] = {
@@ -740,7 +745,7 @@ class AnalyticsService:
             "mode": body.mode,
             "evaluation_id": body.evaluation_id,
             "planning_turn_id": body.planning_turn_id,
-            "status": "awaiting_review" if body.mode == "interactive" else "ready",
+            "status": "ready",
             "created_at": _now(),
             "approved_hash": None,
             "input_files": {k: v.model_dump() for k, v in body.inputs.items()},
@@ -1008,7 +1013,7 @@ class AnalyticsService:
                 "revision": previous["revision"] + 1,
                 "mode": body.mode,
                 "evaluation_id": previous.get("evaluation_id") or body.evaluation_id,
-                "status": "awaiting_review" if body.mode == "interactive" else "ready",
+                "status": "ready",
                 "approved_hash": None,
                 "input_files": {k: v.model_dump() for k, v in body.inputs.items()},
                 "input_provenance": self._input_provenance(body.inputs),
@@ -1145,6 +1150,13 @@ class AnalyticsService:
                     if message["event"] == "step_finished":
                         saved = message["record"]
                         self._write(directory / f"step-{step}.json", saved)
+                        from .view_data import saved_view_manifest
+                        try:
+                            manifest = await asyncio.to_thread(saved_view_manifest, self, record, step, saved)
+                            if manifest is not None:
+                                await asyncio.to_thread(self._write, directory / f"step-{step}.views.json", manifest)
+                        except Exception:
+                            _logger.exception("Could not persist display profile for completed step %s", step)
                         summary = {k: v for k, v in saved.items() if k != "result"}
                         if "result" in saved:
                             summary.update(
@@ -1259,6 +1271,14 @@ class AnalyticsService:
                     )
         return labels
 
+    def _answer_input_context(self, record, saved):
+        from .analytics_answers import bipartite_input_context
+        try:
+            inputs = json.loads((self._directory(record) / "inputs.json").read_text())
+        except (OSError, ValueError):
+            return {}
+        return bipartite_input_context(saved, record.get("validation", {}).get("plan", {}), inputs)
+
     async def _answer(self, record):
         """Publish a chat answer built from the result's facts.
 
@@ -1286,7 +1306,8 @@ class AnalyticsService:
                     record["revision"], saved,
                 )
             labels = await asyncio.to_thread(self._labels, record)
-            facts = build_facts(saved, titles, labels)
+            input_context = await asyncio.to_thread(self._answer_input_context, record, saved)
+            facts = build_facts(saved, titles, labels, input_context)
             if not facts:
                 return
             turn_id = record.get('planning_turn_id') or f"workflow:{record['id']}:{record['revision']}"

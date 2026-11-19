@@ -19,7 +19,7 @@ def open_connections(browser):
             "return GraphMineWorkspace.state.session && !GraphMineWorkspace.state.busy"
         )
     )
-    driver.find_element(By.ID, "toggle-data").click()
+    driver.find_element(By.ID, "data-page-link").click()
     wait.until(lambda d: d.find_element(By.ID, "database-workspace").is_displayed())
     wait.until(lambda d: d.find_element(By.ID, 'add-connection').is_enabled())
     driver.find_element(By.ID, "add-connection").click()
@@ -49,7 +49,7 @@ def test_add_sqlite_map_preview_import_and_remove(collaboration_browser):
     driver.find_element(By.ID, 'run-cypher-chat').click()
     wait.until(lambda d: not d.find_elements(By.ID, 'database-workspace') and d.execute_script('return GraphMineWorkspace.state.view') == 'chat')
     assert driver.execute_script('return GraphMineWorkspace.state.session.id') == sid
-    driver.find_element(By.ID, 'toggle-data').click()
+    driver.find_element(By.ID, 'data-page-link').click()
     wait.until(lambda d: d.find_element(By.ID, 'edit-connection').is_displayed())
     driver.find_element(By.ID, 'edit-connection').click()
     wait.until(lambda d: d.find_element(By.ID, 'delete-connection').is_displayed())

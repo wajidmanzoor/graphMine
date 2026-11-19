@@ -78,7 +78,7 @@ def tools():
             "POST",
             "/api/sessions/{session_id}/workflows",
             WorkflowRequest,
-            "Validate and save a workflow. Interactive mode requires a separate approval; Normal mode starts execution.",
+            "Validate and save a workflow. Expert mode requires a separate approval; Normal mode starts execution.",
         ),
         (
             "list_workflows",
@@ -244,7 +244,7 @@ class Bridge:
                 "protocolVersion": PROTOCOL,
                 "capabilities": {"tools": {}},
                 "serverInfo": {"name": "graphmine-workflows", "version": "1.0.0"},
-                "instructions": "Discover authorized sources, submit a query with a stable request_key, and follow its durable database job. Save or open temporary snapshots to retain them. Page large tables/results; exports preserve complete artifacts and may return authenticated download links. Interactive workflows require review and exact revision approval. Ownership, evidence, quotas and input validation use the same HTTP API as the browser.",
+                "instructions": "Discover authorized sources, submit a query with a stable request_key, and follow its durable database job. Save or open temporary snapshots to retain them. Page large tables/results; exports preserve complete artifacts and may return authenticated download links. Expert workflows require review and exact revision approval. Ownership, evidence, quotas and input validation use the same HTTP API as the browser.",
             }
         elif method == "ping":
             payload = {}

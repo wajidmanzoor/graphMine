@@ -23,8 +23,12 @@ window.GraphMineRendering = ({state, $, onDomain}) => {
       feedback.textContent = message; feedback.scrollIntoView({block: "nearest"});
     }
     $("notice").textContent = message; $("notice").className = `notice${error ? " error" : ""}`; $("notice").hidden = !message;
-    if (message && !error) state.noticeTimer = setTimeout(() => { $("notice").hidden = true; }, 5500);
+    if (message && !error) state.noticeTimer = setTimeout(() => { $("notice").hidden = true; }, 5000);
   }
+  notice.clearError = () => {
+    if ($("notice").classList.contains("error")) notice("");
+    document.querySelectorAll(".dialog-notice").forEach(el => el.remove());
+  };
   function renderDomains() {
     const glyphs = ["◇", "↗", "◎", "⌘", "◈", "⟷", "◉", "✧"];
     $("domain-grid").replaceChildren();

@@ -1,0 +1,397 @@
+{
+  "description": "Anonymous structure derived from a saved analysis. Numeric results retained; IDs, labels, and type names anonymized. Original attributes and text omitted.",
+  "input": {
+    "graph": {
+      "id": "anonymous",
+      "directed": false
+    },
+    "vertices": [
+      {
+        "id": "entity-0",
+        "label": "Entity 1",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-1",
+        "label": "Entity 2",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-2",
+        "label": "Entity 3",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-3",
+        "label": "Entity 4",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-4",
+        "label": "Entity 5",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-5",
+        "label": "Entity 6",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-6",
+        "label": "Entity 7",
+        "type": "Type 1"
+      },
+      {
+        "id": "entity-7",
+        "label": "Entity 8",
+        "type": "Type 1"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-0",
+        "source": "entity-0",
+        "target": "entity-1",
+        "weight": 12.0,
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-1",
+        "source": "entity-0",
+        "target": "entity-2",
+        "weight": 50.0,
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-2",
+        "source": "entity-0",
+        "target": "entity-3",
+        "weight": 10.0,
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-3",
+        "source": "entity-3",
+        "target": "entity-1",
+        "weight": 13.0,
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-4",
+        "source": "entity-3",
+        "target": "entity-2",
+        "weight": 10.0,
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-5",
+        "source": "entity-2",
+        "target": "entity-1",
+        "weight": 10.0,
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-6",
+        "source": "entity-1",
+        "target": "entity-4",
+        "weight": 5.0,
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-7",
+        "source": "entity-4",
+        "target": "entity-5",
+        "weight": 5.0,
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-8",
+        "source": "entity-5",
+        "target": "entity-6",
+        "weight": 5.0,
+        "type": "Type 2"
+      },
+      {
+        "id": "edge-9",
+        "source": "entity-6",
+        "target": "entity-7",
+        "weight": 5.0,
+        "type": "Type 2"
+      }
+    ]
+  },
+  "result": {
+    "operation": "densest-subgraph",
+    "parameters": {},
+    "ports": {
+      "vertices": {
+        "type": "vertex_set",
+        "value": [
+          "entity-0",
+          "entity-1",
+          "entity-2",
+          "entity-3"
+        ],
+        "complete": true
+      }
+    },
+    "result": {
+      "clique_order": 2,
+      "clique_count": 6,
+      "density": 1.5,
+      "induced_edge_value": 6
+    }
+  },
+  "expected": {
+    "vertices": {
+      "spec": {
+        "schema_version": "1.0.0",
+        "rules_version": "2026-11-18.3",
+        "profile": "subgraph",
+        "view": "graph",
+        "title": "Returned subgraph",
+        "layout": {
+          "name": "force",
+          "seed": 0,
+          "sides": [],
+          "positions_source": "browser",
+          "alternates": [
+            "force",
+            "concentric",
+            "grid"
+          ]
+        },
+        "nodes": {
+          "color": {
+            "field": "vertex_type",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": [
+              {
+                "value": "Type 1",
+                "label": "Type 1",
+                "color": "#0072b2",
+                "count": 4
+              }
+            ]
+          },
+          "size": {
+            "field": "degree",
+            "value": null,
+            "scale": "sqrt",
+            "range_px": [
+              14.0,
+              36.0
+            ],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "label": {
+            "field": "display_name",
+            "value": null,
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "shape": {
+            "field": "role",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          }
+        },
+        "edges": {
+          "color": {
+            "field": "relationship_type",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "width": {
+            "field": "weight",
+            "value": null,
+            "scale": "sqrt",
+            "range_px": [
+              1.0,
+              4.0
+            ],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "style": {
+            "field": "edge_role",
+            "value": null,
+            "scale": "categorical",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          },
+          "arrows": {
+            "field": null,
+            "value": false,
+            "scale": "constant",
+            "range_px": [],
+            "domain": [],
+            "density": "all",
+            "categories": []
+          }
+        },
+        "legend": [
+          {
+            "channel": "color",
+            "field": "vertex_type",
+            "title": "Entity type"
+          },
+          {
+            "channel": "size",
+            "field": "degree",
+            "title": "Connections in input"
+          }
+        ],
+        "linked": [
+          {
+            "id": "metrics",
+            "chart": "metrics",
+            "title": "Result and saved input",
+            "dataset": "metrics",
+            "x": null,
+            "y": null,
+            "select": "none"
+          }
+        ],
+        "alternates": [
+          "matrix",
+          "result_only",
+          "concentric"
+        ],
+        "emphasis": {
+          "item": null,
+          "context_opacity": 0.25
+        },
+        "limits": {
+          "shown_vertices": 4,
+          "total_vertices": 4,
+          "shown_edges": 6,
+          "total_edges": 6,
+          "sampled": false,
+          "strategy": "recorded witness first, then saved input order",
+          "collection_complete": true
+        },
+        "rules_applied": [
+          "profile_subgraph",
+          "dense_small_graph"
+        ],
+        "provenance": {
+          "workflow_id": "fixture",
+          "revision": 1,
+          "step": "analysis",
+          "port": "vertices",
+          "input_fingerprint": "9d275e7124ef4bca90df25b60ed1e36047cc6fc23936cc7839c820ab1e53db86",
+          "result_fingerprint": "c3c1867378463767bdc7fced064cc346e3c7b7c3889a9cbb37aff00792f56d62",
+          "recorded_rules_version": "2026-11-18.3"
+        },
+        "notes": [],
+        "renderer": "cytoscape",
+        "field_roles": {
+          "value[]": {
+            "role": "entity",
+            "namespace": "input",
+            "identity": "typed"
+          }
+        }
+      },
+      "facts": {
+        "version": "1.0.0",
+        "operation": "densest-subgraph",
+        "port_type": "vertex_set",
+        "field_roles": {
+          "value[]": {
+            "role": "entity",
+            "namespace": "input",
+            "identity": "typed"
+          }
+        },
+        "input": {
+          "vertices": 8,
+          "edges": 10,
+          "directed": false,
+          "density": 0.35714285714285715,
+          "density_definition": "distinct non-loop connections / possible connections",
+          "parallel_edges": false,
+          "self_loops": false,
+          "vertex_types": {
+            "Type 1": 8
+          },
+          "edge_types": {
+            "Type 2": 10
+          },
+          "named_vertices": 8,
+          "scanned_vertices": 8,
+          "scanned_edges": 10,
+          "statistics_complete": true
+        },
+        "witness": {
+          "vertices": 4,
+          "edges": 6,
+          "directed": false,
+          "density": 1.0,
+          "density_definition": "distinct non-loop connections / possible connections",
+          "parallel_edges": false,
+          "self_loops": false,
+          "vertex_types": {
+            "Type 1": 4
+          },
+          "edge_types": {
+            "Type 2": 6
+          },
+          "named_vertices": 4,
+          "scanned_vertices": 4,
+          "scanned_edges": 6,
+          "statistics_complete": true
+        },
+        "coverage": 0.5,
+        "items": 4,
+        "scanned_items": 4,
+        "collection": {
+          "count": 4,
+          "covered_vertices": 0,
+          "largest_members": 0,
+          "largest_sides": null,
+          "median_members": null,
+          "statistics_complete": true
+        },
+        "statistics_complete": true,
+        "groups": {
+          "count": 0,
+          "sizes": [],
+          "overlap": false,
+          "shared_members": 0,
+          "statistics_complete": true,
+          "smallest": 0,
+          "largest": 0
+        },
+        "scores": null,
+        "budget": {
+          "items": 10000,
+          "graph_records": 20000,
+          "memberships": 100000,
+          "scanned_memberships": 0
+        }
+      }
+    }
+  }
+}
