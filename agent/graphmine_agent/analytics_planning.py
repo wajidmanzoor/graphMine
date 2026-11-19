@@ -51,6 +51,7 @@ PLANNING_DEADLINE_SECONDS = 360
 # Failures that asking again can fix; quota and validation failures cannot.
 RETRYABLE_PLANNING = {
     "cancelled",
+    "admin_cancelled",
     "interrupted",
     "planner_timeout",
     "planner_unavailable",

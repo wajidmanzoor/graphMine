@@ -124,6 +124,43 @@ def register_admin_routes(app):
         from .admin_settings import save
         return save(request.app.state.runtime, body.values)
 
+    @router.get("/jobs")
+    async def jobs(request: Request, view: Literal["active", "finished", "failed"] = "active"):
+        from .admin_jobs import snapshot
+        return snapshot(request.app.state.runtime, view)
+
+    @router.get("/jobs/{kind}/{identifier}")
+    async def job_details(kind: Literal["workflow", "job"], identifier: str, request: Request):
+        from .admin_jobs import detail
+        return detail(request.app.state.runtime, kind, identifier)
+
+    @router.post("/jobs/{kind}/{identifier}/cancel")
+    async def cancel_job(kind: Literal["workflow", "job"], identifier: str, request: Request):
+        from .admin_jobs import cancel
+        return await cancel(request.app.state.runtime, kind, identifier)
+
+    @router.post("/model-calls/{identifier}/cancel")
+    async def cancel_model_call(identifier: str, request: Request):
+        from .admin_model_calls import cancel
+        return await cancel(request.app.state.runtime.accounts, identifier)
+
+    @router.get("/usage")
+    def usage(request: Request, days: int = 14):
+        from .admin_usage import usage as summary
+        return summary(request.app.state.runtime, days)
+
+    @router.get("/usage/export")
+    def usage_csv(request: Request, days: int = 14):
+        from .admin_usage import usage as summary
+        data = summary(request.app.state.runtime, days)
+        rows = [{"section": "summary", "metric": key, "value": value, "previous": data["previous"].get(key)} for key, value in data["summary"].items()]
+        for section, columns in (("daily", ("questions", "calculations", "median_ms", "p95_ms")), ("time_breakdown", ("seconds",)), ("errors", ("count",)), ("tokens_by_user", ("tokens", "missing")), ("datasets", ("count",))):
+            for row in data[section]:
+                label = next((row[k] for k in ("day", "stage", "type", "user", "dataset") if k in row), "")
+                rows.extend({"section": section, "metric": f"{label}: {key}", "value": row[key]} for key in columns)
+        return Response(admin_events.csv_text(rows, ("section", "metric", "value", "previous")), media_type="text/csv",
+                        headers={"Content-Disposition": 'attachment; filename="graphmine-usage.csv"'})
+
     @router.get("/users")
     def users(request: Request):
         return request.app.state.runtime.accounts.admin_users()

@@ -524,6 +524,9 @@ async def compose_sources(settings, question, evidence, *, data_answer=False, fi
                     outcome, error = 'grounding_failed', str(exc)[:1000]
                     errors = [error]
                 except Exception as exc:
+                    if getattr(exc, 'code', None) == 'admin_cancelled':
+                        outcome, error = 'admin_cancelled', str(exc)
+                        raise
                     outcome, error = 'failed', f'{type(exc).__name__}: {exc}'[:1000]
                     break  # An unavailable service is not a factual correction attempt.
                 finally:

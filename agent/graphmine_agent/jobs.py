@@ -110,6 +110,7 @@ class JobManager:
         self.result_handler = result_handler
         self.accounts = accounts
         self._quota_jobs = {}
+        self.admin_refunded = set()
         # SQLite owns the pending backlog. This event is only a wakeup signal,
         # so canceled jobs and pre-existing backlogs consume no in-memory queue.
         self._ready = asyncio.Event()
@@ -276,7 +277,7 @@ class JobManager:
             )
         return jobs
 
-    async def cancel(self, job_id: str) -> JobRecord:
+    async def cancel(self, job_id: str, *, admin=False) -> JobRecord:
         job = self.database.get_job(job_id)
         if job.status in {JobStatus.completed, JobStatus.failed, JobStatus.cancelled}:
             return job
@@ -286,12 +287,15 @@ class JobManager:
         else:
             self._finish_admission(job_id)
         cancelled = job.model_copy(
-            update={"status": JobStatus.cancelled, "finished_at": utc_now()}
+            update={"status": JobStatus.cancelled, "finished_at": utc_now(),
+                    **({"error": {"code": "admin_cancelled", "message": "Cancelled by an administrator"}} if admin else {})}
         )
         self.database.save_job(cancelled)
         await self.event_bus.publish(
-            job.session_id, "job.cancelled", {"job_id": job.id}, job_id=job.id
+            job.session_id, "job.cancelled", {"job_id": job.id, "error": cancelled.error}, job_id=job.id
         )
+        if task:
+            await asyncio.gather(task, return_exceptions=True)
         return cancelled
 
     async def _run_worker(self) -> None:
@@ -337,7 +341,8 @@ class JobManager:
             principal = self.accounts.session_principal(job.session_id)
             with identity_scope(principal):
                 async with self.accounts.execution_slot(
-                    principal.user_id, self._quota_jobs.get(job.id)
+                    principal.user_id, self._quota_jobs.get(job.id),
+                    already_refunded=lambda: job.id in self.admin_refunded,
                 ):
                     await self._execute_unlimited(job)
         except AccountError as error:
@@ -346,6 +351,7 @@ class JobManager:
             self._finish_admission(job.id)
 
     def _finish_admission(self, job_id):
+        self.admin_refunded.discard(job_id)
         admission = self._quota_jobs.pop(job_id, None)
         if admission and admission not in self._quota_jobs.values():
             self.accounts.release(admission)
