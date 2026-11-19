@@ -4,15 +4,15 @@ Chromium screenshots use a disposable account database. Account/event counts com
 from API writes, hardware figures come from server probes, and unconfigured
 services show their availability reason. No example production numbers are seeded.
 
-| Page | Implemented screen | Reference |
+| Page | Implementation | Supplied artboard |
 | --- | --- | --- |
-| Overview | [Desktop](overview.png), [mobile](overview-mobile.png) | [Supplied design](https://claude.ai/artifact/UKFqcyexaJ5vSA8YkzWAeA#page-dcb81aee8d83) · unavailable behind verification |
-| Health | [Desktop](health.png), [self-test dialog](selftest-dialog.png) | Same reference · comparison pending |
-| Model | [Desktop](model.png) | Same reference · comparison pending |
+| Overview | ![Overview](overview.png) | ![Overview reference](../reference/overview.png) |
+| Health | ![Health](health.png) | ![Health reference](../reference/health.png) |
+| Model | ![Model](model.png) | ![Model reference](../reference/model.png) |
 
-The reference page returns a security-verification challenge, including in the
-automated browser. These images demonstrate implementation and responsive behavior;
-they do not establish exact artboard fidelity.
+Also captured: [mobile Overview](overview-mobile.png) and [self-test dialog](selftest-dialog.png).
+The reference images were exported from the supplied local HTML; see [source details](../reference/README.md).
+Layouts follow the artboards. Runtime configuration and unavailable telemetry affect content and card height.
 
 `test_admin_monitor_browser.py` opens every phase-2 page, saves idle/thinking
 settings through the API, checks the values after reload, and finds the corresponding

@@ -5,7 +5,7 @@ from test_admin_browser import browser_app, pw, screenshot, sign_in
 
 def test_monitor_pages_and_live_model_settings(browser_app):
     browser, base, _, _ = browser_app
-    page = browser.new_page(viewport={"width": 1600, "height": 1100}, reduced_motion="reduce")
+    page = browser.new_page(viewport={"width": 1440, "height": 1180}, reduced_motion="reduce")
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     sign_in(page, base, "review-admin")
