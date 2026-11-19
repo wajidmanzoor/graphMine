@@ -7,9 +7,12 @@ research algorithm references. Research references are labeled separately from
 executable implementations. Device support, quality and GPU profile limits are
 visible in each algorithm's details.
 
-The site uses plain HTML, CSS and JavaScript, with no external assets or runtime
-API dependency. `docs/catalog.json` ships with the site, so its data and UI are
-published together. Counts come from that catalog rather than fixed HTML text.
+The site uses plain HTML, CSS and JavaScript. `docs/catalog.json` ships with the
+site, so its data and UI are published together without a runtime API dependency.
+Counts come from that catalog rather than fixed HTML text. The demo section
+embeds the YouTube walkthrough linked in the main README; playback requires
+access to YouTube. The player supports inline mobile playback and fullscreen,
+with a direct YouTube link below it.
 
 ## Update the catalog
 
