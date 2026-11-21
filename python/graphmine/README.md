@@ -47,6 +47,12 @@ Every result includes its input hash, implementation hash, library version,
 device, parameters, numerical diagnostics where applicable, and typed output
 ports. A complete count does not imply that a materialized instance list is
 complete. A budget failure does not return an apparently exhaustive answer.
+Candidate work is unlimited by default in both the native runtime and Python
+reference algorithms (`Budget.max_candidates=None`, or JSON `null`). The agent
+does not add a candidate cap when preparing biclique partitions. Callers may
+still explicitly supply a positive `max_candidates` for a bounded experiment;
+omitting it never imposes the former two-million-work default. Time and output
+budgets remain separate settings.
 Graph-valued ports carry the derived graph's content hash and the source graph's
 hash separately; vertex selections retain the source graph's ID namespace.
 Operations on feature vectors or hypergraphs report `input_kind` and

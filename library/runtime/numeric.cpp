@@ -98,9 +98,7 @@ Matrix laplacian(const Graph& graph, const ViewProfile& profile, bool normalized
 }
 void solver_budget(std::size_t n, Work& work) {
   require(n <= INT_MAX, "Matrix exceeds native LAPACK LP64 dimension");
-  if (n && (n > work.max_candidates / n || n > work.max_candidates / n / n))
-    throw Failure("resource_limit", "Dense solver exceeds candidate budget");
-  work.tick(n * n * n);
+  work.tick_product({n, n, n});
 }
 Eigen symmetric_eigen(Matrix matrix, Work& work) {
   require(matrix.rows == matrix.cols, "Symmetric eigensolver requires square input");

@@ -161,12 +161,28 @@ Graph parse_graph(const json::value& value, bool preserve_int64_weights) {
 }
 
 void Work::tick(std::uint64_t amount) {
-  if (amount > max_candidates - candidates)
+  if (max_candidates && (candidates > *max_candidates || amount > *max_candidates - candidates))
     throw Failure("resource_limit", "Native candidate budget exceeded");
-  candidates += amount;
+  candidates = amount > UINT64_MAX - candidates ? UINT64_MAX : candidates + amount;
   if (std::chrono::duration<double>(std::chrono::steady_clock::now() - started).count() >
       timeout_seconds)
     throw Failure("resource_limit", "Native computation deadline exceeded");
+}
+void Work::tick_product(std::initializer_list<std::uint64_t> factors) {
+  // Work estimates must not wrap when an unlimited request exceeds uint64.
+  for (const auto factor : factors)
+    if (!factor) { tick(0); return; }
+  std::uint64_t amount = 1;
+  for (const auto factor : factors) {
+    if (amount > UINT64_MAX / factor) {
+      if (max_candidates)
+        throw Failure("resource_limit", "Native candidate budget exceeded");
+      amount = UINT64_MAX;
+      break;
+    }
+    amount *= factor;
+  }
+  tick(amount);
 }
 void Work::output(std::uint64_t count) {
   tick(0);

@@ -8,9 +8,8 @@ struct Matrix {
   std::vector<double> values;
   Matrix() = default;
   Matrix(std::size_t r, std::size_t c, Work& work) : rows(r), cols(c) {
-    if (c && r > work.max_candidates / c)
-      throw Failure("resource_limit", "Dense matrix exceeds candidate budget");
-    work.tick(r * c);
+    require(!c || r <= values.max_size() / c, "Dense matrix dimensions exceed native storage range");
+    work.tick_product({r, c});
     values.resize(r * c, 0);
   }
   double& operator()(std::size_t r, std::size_t c) { return values[r + rows * c]; }

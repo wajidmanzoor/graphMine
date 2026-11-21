@@ -37,6 +37,19 @@ std::string hash(const json::value& value) {
     output << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned>(byte);
   return output.str();
 }
+void read_budget(const json::value& value, Work& work) {
+  const auto budget = object(value, "budget");
+  fields(budget, {"max_candidates", "max_output_items", "timeout_seconds"});
+  if (budget.contains("max_candidates") && !budget.at("max_candidates").is_null())
+    work.max_candidates = uint(budget.at("max_candidates"), "max_candidates");
+  if (budget.contains("max_output_items"))
+    work.max_output_items = uint(budget.at("max_output_items"), "max_output_items");
+  if (budget.contains("timeout_seconds"))
+    work.timeout_seconds = number(budget.at("timeout_seconds"), "timeout_seconds");
+  require((!work.max_candidates || *work.max_candidates > 0) && work.max_output_items &&
+              std::isfinite(work.timeout_seconds) && work.timeout_seconds > 0,
+          "Finite budgets must be positive; max_candidates may be null for unlimited work");
+}
 }  // namespace
 
 std::string input_fingerprint(const json::value& input) { return hash(input); }
@@ -63,15 +76,7 @@ json::object backend_capabilities(const json::object& request) {
   }
   Work work;
   work.input_fingerprint = hash(request.at("graph"));
-  if (request.contains("budget")) {
-    const auto budget = object(request.at("budget"), "budget");
-    fields(budget, {"max_candidates", "max_output_items", "timeout_seconds"});
-    if (budget.contains("max_candidates")) work.max_candidates = uint(budget.at("max_candidates"), "max_candidates");
-    if (budget.contains("max_output_items")) work.max_output_items = uint(budget.at("max_output_items"), "max_output_items");
-    if (budget.contains("timeout_seconds")) work.timeout_seconds = number(budget.at("timeout_seconds"), "timeout_seconds");
-    require(work.max_candidates && work.max_output_items && std::isfinite(work.timeout_seconds) &&
-                work.timeout_seconds > 0, "Budgets must be finite and positive");
-  }
+  if (request.contains("budget")) read_budget(request.at("budget"), work);
   auto parameters = request.contains("parameters") ? object(request.at("parameters"), "parameters") : json::object{};
   validate_parameters(card, parameters);
   std::shared_ptr<const Graph> graph;
@@ -165,21 +170,7 @@ json::object execute(const json::object& request) {
   };
   Work work;
   work.input_fingerprint = hash(request.at("graph"));
-  if (request.contains("budget")) {
-    const auto budget = object(request.at("budget"), "budget");
-    fields(budget, {"max_candidates", "max_output_items", "timeout_seconds"});
-    if (budget.contains("max_candidates"))
-      work.max_candidates = uint(budget.at("max_candidates"), "max_candidates");
-    if (budget.contains("max_output_items"))
-      work.max_output_items = uint(budget.at("max_output_items"), "max_output_items");
-    if (budget.contains("timeout_seconds")) {
-      require(budget.at("timeout_seconds").is_number(), "timeout_seconds must be numeric");
-      work.timeout_seconds = budget.at("timeout_seconds").to_number<double>();
-    }
-    require(work.max_candidates && work.max_output_items && std::isfinite(work.timeout_seconds) &&
-                work.timeout_seconds > 0,
-            "Budgets must be finite and positive");
-  }
+  if (request.contains("budget")) read_budget(request.at("budget"), work);
   const auto input_kind = string(card.at("input_kind"), "input_kind");
   std::shared_ptr<const Graph> graph;
   if (input_kind == "graph") graph = cached_graph(request.at("graph"), work);
@@ -275,7 +266,7 @@ json::object execute(const json::object& request) {
                                          : selection_reason;
   result["backend"] = provenance;
   result["representations"] = work.representations;
-  result["budget"] = json::object{{"max_candidates", work.max_candidates},
+  result["budget"] = json::object{{"max_candidates", work.max_candidates ? json::value(*work.max_candidates) : json::value(nullptr)},
                                   {"max_output_items", work.max_output_items},
                                   {"timeout_seconds", work.timeout_seconds}};
   result["elapsed_seconds"] =

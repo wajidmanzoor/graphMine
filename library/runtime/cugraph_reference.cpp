@@ -368,10 +368,12 @@ std::vector<double> cugraph_pagerank(const WeightedGraph& input,
   // call that cannot consult Work during its CUDA iterations.
   std::uint64_t cost = input.rows.size();
   for (const auto& row : input.rows) cost += row.size();
-  const auto remaining = work.max_candidates - std::min(work.candidates, work.max_candidates);
-  const auto allowed =
-      remaining > cost ? std::min(iterations, (remaining - cost) / std::max<std::uint64_t>(1, cost))
-                       : 0;
+  auto allowed = iterations;
+  if (work.max_candidates) {
+    const auto remaining = *work.max_candidates - std::min(work.candidates, *work.max_candidates);
+    allowed = remaining > cost
+        ? std::min(iterations, (remaining - cost) / std::max<std::uint64_t>(1, cost)) : 0;
+  }
   if (!allowed) throw Failure("resource_limit", "PageRank GPU iteration budget exhausted");
   cugraph_centrality_result_t* raw = nullptr;
   Error error;
@@ -384,7 +386,7 @@ std::vector<double> cugraph_pagerank(const WeightedGraph& input,
   error.check(status);
   const auto used = cugraph_centrality_result_get_num_iterations(result.get());
   require(used <= allowed, "libcugraph exceeded its PageRank iteration bound");
-  work.tick(cost * used);
+  work.tick_product({cost, used});
   if (!cugraph_centrality_result_converged(result.get()))
     throw Failure(allowed < iterations ? "resource_limit" : "convergence_failure",
                   "libcugraph PageRank did not converge within its iteration budget");
@@ -445,10 +447,7 @@ std::vector<double> cugraph_betweenness(const WeightedGraph& input, int device, 
   if (input.rows.size() < 3 || edgeless(input)) return std::vector<double>(input.rows.size(), 0);
   std::uint64_t per_source = input.rows.size();
   for (const auto& row : input.rows) per_source += row.size();
-  const auto remaining = work.max_candidates - std::min(work.candidates, work.max_candidates);
-  if (input.rows.size() > remaining / per_source)
-    throw Failure("resource_limit", "All-source betweenness exceeds the GPU work budget");
-  work.tick(per_source * input.rows.size());
+  work.tick_product({per_source, input.rows.size()});
   Instance instance(input, device, work);
   cugraph_centrality_result_t* raw = nullptr;
   Error error;

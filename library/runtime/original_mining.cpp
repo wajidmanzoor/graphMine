@@ -213,10 +213,7 @@ std::vector<double> original_betweenness(const MiningGraph& adj, int device, Wor
     return std::vector<double>(adj.size(), 0);
   std::uint64_t cost = adj.size();
   for (const auto& row : adj) cost += row.size();
-  const auto remaining = work.max_candidates - std::min(work.candidates, work.max_candidates);
-  if (adj.size() > remaining / cost)
-    throw Failure("resource_limit", "All-source TurboBC exceeds the GPU work budget");
-  work.tick(cost * adj.size());
+  work.tick_product({cost, adj.size()});
   auto input = csr(adj, work);
   auto lock = lock_original(work);
   const auto result = detail::run_turbobc(input, device);

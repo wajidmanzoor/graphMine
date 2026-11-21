@@ -72,14 +72,16 @@ class Parameter:
 @dataclass(frozen=True)
 class Budget:
     max_output_items: int = 100_000
-    max_candidates: int = 2_000_000
+    max_candidates: int | None = None
     timeout_seconds: float = 60.0
 
     def __post_init__(self):
         if type(self.max_output_items) is not int or self.max_output_items < 1:
             raise GraphMineError("max_output_items must be a positive integer")
-        if type(self.max_candidates) is not int or self.max_candidates < 1:
-            raise GraphMineError("max_candidates must be a positive integer")
+        if self.max_candidates is not None and (
+            type(self.max_candidates) is not int or self.max_candidates < 1
+        ):
+            raise GraphMineError("max_candidates must be a positive integer or null")
         if (
             type(self.timeout_seconds) not in (int, float)
             or not math.isfinite(self.timeout_seconds)
@@ -96,7 +98,8 @@ class WorkCounter:
 
     def tick(self, amount=1):
         self.candidates += amount
-        if self.candidates > self.budget.max_candidates:
+        if (self.budget.max_candidates is not None
+                and self.candidates > self.budget.max_candidates):
             raise ResourceLimit(
                 "Candidate budget exceeded; no exhaustive result was produced"
             )

@@ -9,7 +9,7 @@ namespace json = boost::json;
 using namespace view_detail;
 rt::Work input_work() {
   rt::Work work;
-  work.max_candidates = work.max_output_items = UINT64_MAX;
+  work.max_output_items = UINT64_MAX;
   work.timeout_seconds = std::numeric_limits<double>::infinity();
   return work;
 }

@@ -25,6 +25,36 @@ def stable(result):
     }
 
 
+@pytest.mark.parametrize("operation", [
+    "maximal-bicliques", "maximal-biclique-counting", "community-detection",
+])
+@pytest.mark.parametrize("explicit_unlimited", [False, True])
+def test_calculations_exceed_old_candidate_cap_without_a_default_work_limit(
+    native, operation, explicit_unlimited,
+):
+    if operation == "community-detection":
+        graph = canonical(800, [(0, vertex) for vertex in range(1, 800)])
+    else:
+        # Isolates inflate the old clique-completion search, but this input has
+        # exactly one nonempty maximal biclique: the single cross-partition edge.
+        graph = canonical(200, [(0, 100)], sides=["left"] * 100 + ["right"] * 100)
+    with pytest.raises(BINDING.NativeError, match="candidate budget exceeded"):
+        native.run(operation, graph, device="cpu", budget={"max_candidates": 2_000_000})
+    options = {"budget": {"max_candidates": None}} if explicit_unlimited else {}
+    result = native.run(operation, graph, device="cpu", **options)
+    assert result["budget"]["max_candidates"] is None
+    assert result["complete"] is True
+    if operation == "maximal-bicliques":
+        assert result["result"]["bicliques"] == [{"left_vertices": [0], "right_vertices": [100]}]
+        assert result["result"]["total_count"] == 1
+    elif operation == "maximal-biclique-counting":
+        assert result["ports"]["count"]["value"] == 1
+    else:
+        rows = result["result"]["community_by_vertex"]
+        assert {row["vertex"] for row in rows} == set(range(800))
+        assert result["result"]["community_count"] == 1
+
+
 def test_public_api_without_python_algorithm_dependencies(native):
     root = Path(__file__).resolve().parents[2]
     program = """
@@ -63,8 +93,8 @@ print(json.dumps(run('triangle-counting', graph, device='cpu')))
 
 
 def test_validation_has_no_algorithm_execution(native):
-    # An exact maximum clique on this size is deliberately outside the default
-    # operation budget. Review only validates its contract and input records.
+    # Review only validates contracts and input records. A deliberately tiny
+    # explicit work budget still applies when the caller requests execution.
     graph = canonical(2500, [])
     reviewed = native.validate("maximum-independent-set", graph)
     assert "result" not in reviewed and "ports" not in reviewed

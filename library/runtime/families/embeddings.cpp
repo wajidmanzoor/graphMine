@@ -55,7 +55,7 @@ json::object node_embedding(const Graph& graph, const json::object& args, const 
   const auto model = choice(args, "model", "line", {"line", "deepwalk", "node2vec"});
   const auto dimension = natural(args, "dimensions", 1, 1), n = graph.vertex_count();
   require(n > 0, "Node embedding requires a nonempty vertex set");
-  if (dimension > work.max_candidates / n / 2)
+  if (work.max_candidates && dimension > *work.max_candidates / n / 2)
     throw Failure("resource_limit", "Embedding dimensions exceed the candidate budget");
   const auto options = object(args.at("training_parameters"), "training_parameters");
   fields(options,

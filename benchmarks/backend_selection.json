@@ -3,7 +3,7 @@
   "bootstrap_examples_per_operation": 3,
   "repeats": 3,
   "timeout_seconds": 1800,
-  "max_candidates": 20000000,
+  "max_candidates": null,
   "max_output_items": 100000,
   "generated_grid": {
     "families": ["erdos_renyi", "power_law", "planted_dense"],

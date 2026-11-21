@@ -102,7 +102,6 @@ json::object project_tables(const json::object& request) {
       request.contains("max_rows") ? uint(request.at("max_rows"), "max_rows") : 100000;
   require(maximum > 0 && maximum <= 1000000, "max_rows must be between 1 and 1,000,000");
   Work work;
-  work.max_candidates = 50000000;
   std::map<std::string, Table> tables;
   json::object provenance;
   bool files_only = true;

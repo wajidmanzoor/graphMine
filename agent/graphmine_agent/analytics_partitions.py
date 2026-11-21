@@ -5,12 +5,6 @@ from copy import deepcopy
 from .analytics import AnalyticsError
 from .graph_context import infer_bipartition
 
-# Completing the two sides creates more search candidates than the source
-# edges suggest. A verified 80-vertex input exceeds the generic 2M budget.
-# Native defaults still bound each step to 60 seconds and 100,000 output items.
-BICLIQUE_CANDIDATES = 20_000_000
-
-
 def prepare_bipartitions(inputs):
     """Offer only two typed sides verified against every vertex and edge."""
     prepared = {}
@@ -47,5 +41,4 @@ def resolve_partitions(plan, prepared):
             if alias not in prepared or kind not in prepared[alias]:
                 raise AnalyticsError("The requested complete input partition is unavailable.")
             step["parameters"][name] = list(prepared[alias][kind])
-            step.setdefault("budget", {"max_candidates": BICLIQUE_CANDIDATES})
     return resolved

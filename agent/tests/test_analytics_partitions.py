@@ -64,7 +64,7 @@ def test_partition_resolution_preserves_ids_isolates_and_explicit_literals():
     assert len(resolved["steps"][0]["parameters"]["left_partition"]) == 51
     assert resolved["steps"][0]["parameters"]["left_partition"][-1] == 42
     assert resolved["steps"][0]["parameters"]["minimum_left_size"] == 2
-    assert resolved["steps"][0]["budget"] == {"max_candidates": 20_000_000}
+    assert "budget" not in resolved["steps"][0]
     assert plan["steps"][0]["parameters"]["left_partition"] == selection("User")
     assert resolve_partitions(resolved, prepared) == resolved
 
@@ -77,12 +77,12 @@ def test_preparation_preserves_an_explicit_execution_budget():
     assert resolve_partitions(plan, prepared)["steps"][0]["budget"] == plan["steps"][0]["budget"]
 
 
-def test_code_owned_full_partitions_preserve_production_budget_and_user_limits():
+def test_code_owned_full_partitions_do_not_inject_a_budget_and_preserve_user_limits():
     inputs = {"main": {"kind": "graph", "data": typed_graph()}}
     plan = proposal("maximal-bicliques", {"entity_type": "User"})["plan"]
     prepared, gap, directed = complete_partitions(plan, inputs)
     assert gap is None and not directed
-    assert prepared["steps"][0]["budget"] == {"max_candidates": 20_000_000}
+    assert "budget" not in prepared["steps"][0]
     plan["steps"][0]["budget"] = {"max_candidates": 100, "timeout_seconds": 5}
     prepared, _, _ = complete_partitions(plan, inputs)
     assert prepared["steps"][0]["budget"] == plan["steps"][0]["budget"]
@@ -134,7 +134,7 @@ async def test_followup_prepares_full_partitions_before_native_validation(partit
         assert parameters[name] == [v["id"] for v in graph["vertices"] if v["type"] == kind]
     assert parameters.get("result_limit") is None
     assert result["plan"]["steps"][0]["budget"] == {
-        "max_candidates": 20_000_000, "max_output_items": 100_000, "timeout_seconds": 60.0,
+        "max_candidates": None, "max_output_items": 100_000, "timeout_seconds": 60.0,
     }
     assert [stage for stage, _, _ in planner.calls] == ["route", "plan"]
     payload = planner.calls[-1][1]

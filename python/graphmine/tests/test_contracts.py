@@ -92,6 +92,18 @@ def test_resource_limit_is_a_failure_not_a_false_complete_result():
         )
 
 
+def test_default_reference_work_budget_does_not_cap_candidate_work():
+    from dataclasses import asdict
+    from graphmine.contracts import WorkCounter
+
+    budget = Budget()
+    assert json.loads(json.dumps(asdict(budget)))["max_candidates"] is None
+    work = WorkCounter(budget)
+    work.tick(20_000_001)
+    work.tick(2**64)
+    work.output(1)
+
+
 def test_cpu_only_does_not_dispatch_cuda_even_with_backend_auto_config():
     # NetworkX can import installed plugin modules during initialization. Import
     # is not GPU execution. Reject every CUDA backend load and hide all devices.

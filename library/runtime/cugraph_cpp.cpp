@@ -57,11 +57,7 @@ std::vector<VertexIndex> solve(const MiningGraph& input, std::uint64_t seed, int
   // Iterative calls cannot consult Work while executing. Charge a conservative
   // n*(n+m) scan bound before entering CUDA, then validate every returned value.
   const auto cost = input.size() + src.size();
-  const auto remaining = work.max_candidates - std::min(work.candidates, work.max_candidates);
-  if (input.size() > remaining / cost)
-    throw Failure("resource_limit",
-                  "cuGraph coloring/independent-set scan bound exceeds the work budget");
-  work.tick(cost * input.size());
+  work.tick_product({cost, input.size()});
   DeviceScope device(ordinal);
   raft::handle_t handle;
   const auto stream = handle.get_stream();

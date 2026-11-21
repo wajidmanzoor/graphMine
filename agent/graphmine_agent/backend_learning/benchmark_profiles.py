@@ -34,10 +34,13 @@ def load_config(path):
     if config["schema_version"] != 1:
         raise ValueError("Unsupported benchmark configuration")
     for name, maximum in (("bootstrap_examples_per_operation", 3), ("repeats", 10),
-                          ("timeout_seconds", 1800), ("max_candidates", 10 ** 12),
+                          ("timeout_seconds", 1800),
                           ("max_output_items", 10 ** 7)):
         if type(config[name]) is not int or not 1 <= config[name] <= maximum:
             raise ValueError(f"{name} must be between 1 and {maximum}")
+    candidates = config.setdefault("max_candidates", None)
+    if candidates is not None and (type(candidates) is not int or candidates < 1):
+        raise ValueError("max_candidates must be a positive integer or null")
     expand_graphs(config)
     for profile in config["operations"].values():
         for values in profile.get("parameter_grid", {}).values():

@@ -118,7 +118,7 @@ def influence(graph, args, work, backend="networkx"):
         states = 1
         for options in choices:
             states *= len(options)
-            if states > work.budget.max_candidates:
+            if work.budget.max_candidates is not None and states > work.budget.max_candidates:
                 work.tick(states)
         work.tick(states)
         for state in product(*choices):

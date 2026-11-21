@@ -1221,7 +1221,7 @@ bool pattern_records(const gm::Graph& graph, const char* profile, std::uint64_t 
   return !expected;
 }
 bool force_layout_input(const gm::Graph& graph, bool weighted, std::size_t dimensions,
-                        std::uint64_t budget = rt::Work{}.max_candidates) {
+                        std::optional<std::uint64_t> budget = std::nullopt) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
   std::optional<gm::legacy_test::ForceLayoutInput> expected;
   std::string old_failure;
@@ -2534,7 +2534,7 @@ int main(int argc, char** argv) {
           const bool rejected = force_layout_input(graph,weighted,dimensions);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
             {"profile",weighted ? "force-directed-layout:cpp:edge_weight" : "force-directed-layout:cpp:unweighted"},
-            {"dimensions",dimensions},{"candidate_budget",rt::Work{}.max_candidates},
+            {"dimensions",dimensions},{"candidate_budget",nullptr},
             {"equal",true},{"rejected",rejected}}) << '\n';
         }
         if (records) for (const auto* profile : record_profiles) {

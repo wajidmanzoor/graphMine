@@ -1,0 +1,26 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "turbo-bc",
+    "gpu_device": 1,
+    "passed_requests": 8,
+    "failed": 0,
+    "implementation_sha256": "2684e4a0e2134c093b3ea2a1f58f56d1d0b1b4631b8272f6fd186a4a5985b7ce"
+  },
+  {
+    "suite": "betweenness",
+    "backend": "turbo-bc",
+    "gpu_device": 1,
+    "passed_requests": 2048,
+    "failed": 0,
+    "implementation_sha256": "2684e4a0e2134c093b3ea2a1f58f56d1d0b1b4631b8272f6fd186a4a5985b7ce"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "turbo-bc",
+    "gpu_device": 1,
+    "passed_requests": 9,
+    "failed": 0,
+    "implementation_sha256": "2684e4a0e2134c093b3ea2a1f58f56d1d0b1b4631b8272f6fd186a4a5985b7ce"
+  }
+]

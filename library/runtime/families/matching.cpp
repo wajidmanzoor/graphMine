@@ -165,10 +165,7 @@ std::vector<std::size_t> blossom(std::size_t n, const Edges& edges, Work& work) 
     // Charge the cubic work bound before an upstream solver whose internal
     // loops cannot consult Work; the worker boundary supplies hard cancellation.
     const auto count = vertices.size();
-    const auto remaining = work.max_candidates - std::min(work.candidates, work.max_candidates);
-    if (count > 0 && count > remaining / count / count)
-      throw Failure("resource_limit", "Exact general matching exceeds its cubic work budget");
-    work.tick(count * count * count);
+    work.tick_product({count, count, count});
     Integer scale = 1;
     for (const auto index : component_edges)
       scale = std::max(scale, denominator(edges[index].value));

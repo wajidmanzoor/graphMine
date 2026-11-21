@@ -4,7 +4,6 @@ from collections import Counter
 from copy import deepcopy
 
 from .graph_context import identity, infer_bipartition
-from .analytics_partitions import BICLIQUE_CANDIDATES
 
 
 CONVERT_CHOICE = "Treat these connections as undirected and find the maximal bicliques."
@@ -97,9 +96,6 @@ def complete_partitions(plan, inputs):
             right_partition=[row["id"] for row in graph["vertices"]
                              if identity(row["id"]) not in left_ids],
         )
-        # Preserve production's budget for complete 80-vertex partitions;
-        # expanding full sides can exceed the generic two-million limit.
-        step.setdefault("budget", {"max_candidates": BICLIQUE_CANDIDATES})
         if graph["graph"]["directed"]:
             directed.add(step["input"]["input"])
     return plan, None, directed
