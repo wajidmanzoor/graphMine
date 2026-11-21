@@ -27,18 +27,6 @@ def prepare_bipartitions(inputs):
     return prepared
 
 
-def partition_choices(groups, alias):
-    """Expose counts and exact references, without enumerating IDs to the model."""
-    return [
-        {
-            "type": kind,
-            "vertex_count": len(vertices),
-            "value": {"input_partition": {"input": alias, "type": kind}},
-        }
-        for kind, vertices in groups.items()
-    ]
-
-
 def resolve_partitions(plan, prepared):
     """Expand planner references without changing literals or graph scope."""
     resolved = deepcopy(plan)

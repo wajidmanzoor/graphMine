@@ -1,7 +1,6 @@
 """Save the benchmark's published schema images and loading pages locally."""
 
 import hashlib
-import json
 import sys
 from html.parser import HTMLParser
 from pathlib import Path

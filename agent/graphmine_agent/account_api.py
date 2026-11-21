@@ -321,16 +321,6 @@ class AccountPassword(BaseModel):
     password: str = Field(min_length=12, max_length=128)
 
 
-class AccountCreate(AccountPassword):
-    username: str = Field(min_length=3, max_length=64)
-    daily_token_limit: int | None = Field(default=None, ge=0, strict=True)
-
-
-class AccountTokenLimit(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    daily_token_limit: int | None = Field(ge=0, strict=True)
-
-
 class AccountPasswordChange(AccountPassword):
     current_password: str = Field(min_length=1, max_length=128)
 

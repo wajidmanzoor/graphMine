@@ -29,6 +29,24 @@ from .teacher import local_endpoint
 VERSION = "conversation-regressions-v1"
 
 
+def save_workflow_report(report, cases, repeats, output, *, finished=False):
+    """Persist progress using complete-trial and per-step evaluation counts."""
+    steps = [step for trial in report["trials"] for step in trial["steps"]]
+    report.update(
+        passed=sum(step["passed"] for step in steps),
+        total=len(steps),
+        expected_total=sum(len(case["steps"]) for case in cases) * repeats,
+        workflows_passed=sum(
+            len(trial["steps"]) == trial["expected_steps"]
+            and all(step["passed"] for step in trial["steps"])
+            for trial in report["trials"]
+        ),
+    )
+    if finished:
+        report["finished_at"] = utc_now().isoformat()
+    HistoryStore.write(output, report)
+
+
 def build_workflows(manifest: dict, graphs: dict) -> list[dict]:
     examples = [row for row in manifest["examples"] if row["split"] != "test"]
     records = {row["id"]: row for row in manifest["graphs"]}

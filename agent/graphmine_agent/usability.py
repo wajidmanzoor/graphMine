@@ -15,9 +15,8 @@ from typing import Any
 import httpx
 
 from .config import Settings
-from .database import Database
 from .history import HistoryStore
-from .models import FeedbackCreate, utc_now
+from .models import utc_now
 from .terminal import ClientError, Terminal, agent_client
 
 
@@ -259,96 +258,3 @@ async def evaluate_applications(
 
 def run_application_evaluation(settings: Settings, **kwargs) -> dict[str, Any]:
     return asyncio.run(evaluate_applications(settings, **kwargs))
-
-
-async def evaluate_followup(
-    settings: Settings, report_path: Path, probe_path: Path, output: Path
-) -> dict:
-    """A focused probe can resume an actual prior run without replaying it."""
-    if output.exists():
-        raise ValueError(f"Evaluation output already exists: {output}")
-    report = json.loads(report_path.read_text(encoding="utf-8"))
-    probe = json.loads(probe_path.read_text(encoding="utf-8"))
-    case = next(item for item in report["cases"] if item["id"] == probe["resume_case"])
-    async with agent_client(settings, data_dir=Path(report["data_directory"])) as (
-        client,
-        history_root,
-    ):
-        terminal = Terminal(client, history_root=history_root)
-        await terminal.start(session_id=case["session_id"])
-        started = time.monotonic()
-        try:
-            outcome = await terminal.ask(probe["query"])
-        except ClientError as error:
-            outcome = terminal.last_outcome
-            outcome["error"] = str(error)
-        issues = assess(probe["expected"], outcome)
-        result = {
-            **probe,
-            "probe_sha256": HistoryStore.digest(probe_path),
-            "session_id": terminal.session_id,
-            "turn_id": terminal.turn_id,
-            "job_id": terminal.job_id,
-            "result_id": terminal.result_id,
-            "elapsed_seconds": time.monotonic() - started,
-            "observed": outcome,
-            "issues": issues,
-            "contract_passed": not issues,
-        }
-        if issues:
-            result["feedback_id"] = (
-                await terminal.feedback(
-                    " ".join(issues),
-                    probe["expected"]["user_expectation"],
-                    source="assistant_evaluation",
-                )
-            )["id"]
-        HistoryStore.write(output, result)
-        HistoryStore.write(
-            history_root / terminal.session_id / "followup-evaluation.json", result
-        )
-        return result
-
-
-def save_review(report_path: Path, reviews_path: Path, output: Path) -> dict:
-    """Persist explicitly authored reviewer observations as labeled feedback.
-
-    This does not call an LLM, infer a pass from successful execution, or use review
-    feedback as model conversation. A new report preserves the original observations.
-    """
-    if output.exists():
-        raise ValueError(f"Reviewed report already exists: {output}")
-    report = json.loads(report_path.read_text(encoding="utf-8"))
-    reviews = json.loads(reviews_path.read_text(encoding="utf-8"))
-    cases = {case["id"]: case for case in report["cases"]}
-    database = Database(Path(report["data_directory"]) / "agent.sqlite3")
-    saved = []
-    for review in reviews["reviews"]:
-        case = cases[review["case_id"]]
-        step = case["steps"][review["step"] - 1]
-        # Use the recorded directory even if the evaluation used an override.
-        database.history = HistoryStore(Path(case["history_path"]).parent)
-        feedback = database.add_feedback(
-            case["session_id"],
-            FeedbackCreate(
-                what_went_wrong=review["finding"],
-                expected_behavior=review["expected_behavior"],
-                turn_id=step["turn_id"],
-                job_id=step.get("job_id"),
-                result_id=step.get("result_id"),
-                source="assistant_evaluation",
-            ),
-        )
-        item = {**review, "feedback_id": feedback.id}
-        saved.append(item)
-        database.history.snapshot(
-            case["session_id"], f"reviews/{feedback.id}.json", item
-        )
-    report["manual_review"] = {
-        "source": "assistant_evaluation",
-        "reviewed_at": utc_now().isoformat(),
-        "reviews_sha256": HistoryStore.digest(reviews_path),
-        "reviews": saved,
-    }
-    HistoryStore.write(output, report)
-    return report

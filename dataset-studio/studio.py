@@ -30,8 +30,8 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from studio_auth import Auth, AuthError, Forbidden
-from studio_captures import GraphMineAccounts, SchemaCache, check_output, dataset_key, key_owner, materialize
-from studio_reviews import Reviews, content_of
+from studio_captures import GraphMineAccounts, SchemaCache, check_output, dataset_key, materialize
+from studio_reviews import Reviews
 
 APP_DIR = Path(__file__).resolve().parent
 STATIC_DIR = APP_DIR / "static"

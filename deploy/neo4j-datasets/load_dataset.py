@@ -8,7 +8,6 @@ import fcntl
 import json
 import os
 import subprocess
-import sys
 import time
 
 import common

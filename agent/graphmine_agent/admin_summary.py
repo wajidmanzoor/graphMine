@@ -1,7 +1,6 @@
 """Measured overview values. Unknown historical telemetry remains unknown."""
 
 import json
-import time
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 

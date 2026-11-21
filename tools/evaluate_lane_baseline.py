@@ -11,7 +11,6 @@ from __future__ import annotations
 import argparse
 import asyncio
 from collections import Counter, defaultdict
-from copy import deepcopy
 from dataclasses import replace
 from datetime import UTC, datetime
 import hashlib

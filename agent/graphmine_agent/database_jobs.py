@@ -16,7 +16,7 @@ from fastapi import Query, Request
 from fastapi.responses import JSONResponse
 from starlette.concurrency import run_in_threadpool
 
-from .analytics import AnalyticsError, _json, _key
+from .analytics import AnalyticsError, _json
 from .database import RecordNotFound
 from .database_job_context import current_database_job
 from .database_pools import pool_scope

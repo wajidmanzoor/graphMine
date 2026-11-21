@@ -1,8 +1,6 @@
 """Complete typed query tables, owned snapshots, paging and streaming exports."""
 
-import csv
 import hashlib
-import io
 import json
 import math
 import time
@@ -13,7 +11,7 @@ from fastapi import Query, Request
 from starlette.concurrency import run_in_threadpool
 
 from .analytics import AnalyticsError, _json
-from .analytics_exports import Budget, Writer, _cell, write_csv
+from .analytics_exports import Budget, Writer, write_csv
 from .export_streams import copy_chunks, prepare_download, temporary
 
 FORMAT = "graphmine.table.v1"
@@ -88,16 +86,6 @@ def _sort_key(value):
         return 2, value
     # Objects and lists sort by canonical JSON, never by lossy string coercion.
     return 3, json.dumps(value, ensure_ascii=False, allow_nan=False, sort_keys=True, separators=(",", ":"))
-
-
-def ordered_rows(table, sort=None, direction="asc"):
-    rows = table["rows"]
-    if sort is None:
-        return rows
-    if sort not in table["columns"]:
-        raise AnalyticsError("Choose a sort column from this table.", "table_sort")
-    nonnull = [row for row in rows if row[sort] is not None]
-    return sorted(nonnull, key=lambda row: _sort_key(row[sort]), reverse=direction == "desc") + [row for row in rows if row[sort] is None]
 
 
 class TableArtifacts:
@@ -203,21 +191,6 @@ class TableArtifacts:
             return output
         except BaseException:
             output.close(); raise
-
-
-def csv_chunks(table):
-    """Use bounded export buffers; the canonical table preserves exact types."""
-    buffer = io.StringIO(newline="")
-    writer = csv.writer(buffer, lineterminator="\r\n")
-    writer.writerow([_cell(name) for name in table["columns"]])
-    yield b"\xef\xbb\xbf"  # Excel-friendly UTF-8 BOM, once per export.
-    for row in table["rows"]:
-        writer.writerow([_json(row[name]) if isinstance(row[name], bool) else _cell(row[name]) for name in table["columns"]])
-        if buffer.tell() >= 64 * 1024:
-            yield buffer.getvalue().encode("utf-8")
-            buffer.seek(0); buffer.truncate()
-    if buffer.tell():
-        yield buffer.getvalue().encode("utf-8")
 
 
 def register_table_routes(router):

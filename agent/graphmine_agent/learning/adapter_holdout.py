@@ -25,7 +25,7 @@ from .presentation_checks import check_presentation
 from .realworld import load_realworld
 from .realworld_eval import _fresh_runtime, protocol_sha256
 from .teacher import local_endpoint
-from .workflows import check_workflow_step, restore_reused_outcome
+from .workflows import check_workflow_step, restore_reused_outcome, save_workflow_report
 
 
 def final_cases(manifest):
@@ -77,20 +77,7 @@ async def evaluate_holdout(
     }
 
     def save(finished=False):
-        steps = [step for trial in report["trials"] for step in trial["steps"]]
-        report.update(
-            passed=sum(step["passed"] for step in steps),
-            total=len(steps),
-            expected_total=sum(len(case["steps"]) for case in cases) * repeats,
-            workflows_passed=sum(
-                len(trial["steps"]) == trial["expected_steps"]
-                and all(step["passed"] for step in trial["steps"])
-                for trial in report["trials"]
-            ),
-        )
-        if finished:
-            report["finished_at"] = utc_now().isoformat()
-        HistoryStore.write(output, report)
+        save_workflow_report(report, cases, repeats, output, finished=finished)
 
     save()
     async with agent_client(

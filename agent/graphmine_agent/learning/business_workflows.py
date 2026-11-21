@@ -384,20 +384,7 @@ async def evaluate_cases(
     }
 
     def save(finished=False):
-        steps = [step for trial in report["trials"] for step in trial["steps"]]
-        report.update(
-            passed=sum(step["passed"] for step in steps),
-            total=len(steps),
-            expected_total=sum(len(case["steps"]) for case in cases) * repeats,
-            workflows_passed=sum(
-                len(trial["steps"]) == trial["expected_steps"]
-                and all(step["passed"] for step in trial["steps"])
-                for trial in report["trials"]
-            ),
-        )
-        if finished:
-            report["finished_at"] = utc_now().isoformat()
-        HistoryStore.write(output, report)
+        workflows.save_workflow_report(report, cases, repeats, output, finished=finished)
 
     save()
     async with workflows.agent_client(settings, data_dir=data_dir) as (client, history):

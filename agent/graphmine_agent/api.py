@@ -4,10 +4,8 @@ import asyncio
 import base64
 import binascii
 import hmac
-import json
 import logging
 import shutil
-import sqlite3
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
@@ -31,7 +29,7 @@ from fastapi import (
     status,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse, Response, StreamingResponse
+from fastapi.responses import HTMLResponse, Response, StreamingResponse
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.concurrency import run_in_threadpool
 

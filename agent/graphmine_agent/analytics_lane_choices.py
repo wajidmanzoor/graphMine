@@ -4,7 +4,7 @@ from copy import deepcopy
 import json
 import re
 
-from .graph_context import display_name, fields, identity
+from .graph_context import fields
 
 
 def describes(profiles):
@@ -187,35 +187,3 @@ ALTERNATIVES = {
     "breadth-first-search": ("single-source-shortest-paths", {}),
     "single-source-shortest-paths": ("breadth-first-search", {}),
 }
-
-
-def ranked_options(selected, cards, profiles, requested, question, parameters, alias):
-    from .analytics_eligibility import eligible, promotion_choices, score_hints
-    by_id = {card["id"]: card for card in cards}
-    first = by_id[selected[0]]
-    alternate, overrides = ALTERNATIVES.get(first["id"], (None, {}))
-    candidates = []
-    for card in cards:
-        if card["id"] in selected or not eligible(card, profiles[alias], requested)[0]:
-            continue
-        score = score_hints(card, profiles[alias], requested)["score"]
-        score += 8 if card["id"] == alternate else 2 if card["family"] == first["family"] else 0
-        missing = sum(spec.get("required", False) for spec in card["parameters"].values())
-        candidates.append((score - missing, card["id"]))
-    if not candidates:
-        return []
-    runner = max(candidates, key=lambda row: (row[0], row[1]))[1]
-    result = []
-    for index, operations in enumerate((selected, [runner])):
-        card = by_id[operations[0]]
-        values = parameters if index == 0 else explicit_parameters(card, question)
-        if index and runner == alternate:
-            values.update(overrides)
-        quality = values.get("solution_quality", card["parameters"].get("solution_quality", {}).get("default", card["quality"]))
-        result.append({"id": f"option_{index + 1}", "operations": operations, "parameters": values,
-                       "input": alias, "title": card["title"], "quality": quality,
-                       "description": card["description"], "rank": index + 1,
-                       "match": "Suggested" if index == 0 else "Alternative",
-                       "promotions": promotion_choices(card, profiles[alias]),
-                       "explanation": "Matches the requested calculation." if index == 0 else "Computes a different result; choose it only if that is what you want."})
-    return result

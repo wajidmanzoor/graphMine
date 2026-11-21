@@ -5,7 +5,7 @@ from __future__ import annotations
 import copy
 
 from ..models import ApplicationIntent
-from .corpus import PROBLEMS, digest
+from .corpus import PROBLEMS
 from .meaning import expected_meaning
 from .oracles import expected_answer
 
@@ -309,7 +309,3 @@ def calibration_controls(cases: list[dict]) -> list[dict]:
     pruning["expected"][0]["goal"] = "single_pass_partner_filter"
     controls.append(pruning)
     return controls
-
-
-def case_digest(case: dict) -> str:
-    return digest(case)

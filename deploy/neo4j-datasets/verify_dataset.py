@@ -9,12 +9,10 @@ import fcntl
 import hashlib
 import json
 import os
-from pathlib import Path
 import subprocess
-import sys
 import time
 
-from neo4j import Query, READ_ACCESS
+from neo4j import READ_ACCESS
 
 import common
 from cypher import statements

@@ -2,11 +2,9 @@
 """Build a public reading edition without copying the old internal PDF."""
 from pathlib import Path
 from xml.sax.saxutils import escape
-import json
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_LEFT
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph
 ROOT=Path(__file__).resolve().parents[1]
 output=ROOT/'docs-src/research-note/graphmine.pdf'
 output.parent.mkdir(parents=True,exist_ok=True)
