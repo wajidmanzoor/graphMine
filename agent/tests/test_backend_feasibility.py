@@ -294,15 +294,36 @@ def test_preflight_failure_cannot_bypass_gate_even_if_logging_fails(observed_env
 
 
 def test_expired_preflight_is_not_recorded_as_native_execution(observed_environment, monkeypatch):
+    from graphmine.contracts import Budget
+
     graph, _ = observed_environment
     times, events = iter([0, 61, 61]), []
     monkeypatch.setattr(worker.time, "monotonic", lambda: next(times))
     with pytest.raises(TimeoutError, match="preflight exhausted"):
         worker.run_observed(lambda *a, **k: pytest.fail("Executed after deadline"), "triangle-counting", graph,
-            context={"leased_gpu_uuid": "GPU-test"}, step_id="count", emit=events.append, device="cpu")
+            context={"leased_gpu_uuid": "GPU-test"}, step_id="count", emit=events.append, device="cpu",
+            budget=Budget(timeout_seconds=60))
     rows = [e["record"] for e in events if e["event"] == "native_finished"]
     assert len(rows) == 1 and rows[0]["censored"]
     assert not rows[0]["execution_started"] and rows[0]["failure_stage"] == "preflight"
+
+
+def test_unlimited_preflight_can_continue_past_the_old_deadline(observed_environment, monkeypatch):
+    graph, _ = observed_environment
+    times, events, calls = iter([0, 61, 62]), [], []
+    monkeypatch.setattr(worker.time, "monotonic", lambda: next(times))
+
+    def invoke(*args, **kwargs):
+        calls.append(kwargs)
+        return {"backend": {"id": "cpp"}}
+
+    worker.run_observed(invoke, "triangle-counting", graph,
+        context={"leased_gpu_uuid": "GPU-test"}, step_id="count", emit=events.append, device="cpu")
+    assert len(calls) == 1 and calls[0]["budget"].timeout_seconds is None
+    rows = [e["record"] for e in events if e["event"] == "native_finished"]
+    assert len(rows) == 1 and rows[0]["execution_started"]
+    assert rows[0]["outcome"] == "completed" and not rows[0]["censored"]
+    assert rows[0]["timeout_seconds"] is None
 
 
 def test_gpu0_is_rejected_before_any_native_cuda_preflight(observed_environment, monkeypatch):
