@@ -70,11 +70,11 @@ def estimate_memory(plan, input_bytes):
     """Conservative admission estimate, not a guarantee about vendor allocation.
 
     Includes canonical/property records, CSR copies, an allocator workspace and
-    bounded output. Actual allocation failures remain explicit worker failures.
+    estimated output. This estimate does not impose a result-size cap.
     """
     output = max(
         (
-            step.get("budget", {}).get("max_output_items", 100000)
+            step.get("budget", {}).get("max_output_items") or 100000
             for step in plan["steps"]
         ),
         default=100000,
@@ -169,7 +169,7 @@ class AnalyticsScheduler:
         if policy not in {"cpu", "gpu", "auto"} or requested <= 0:
             raise AdmissionError("Invalid resource request", "invalid_input")
         lease = None
-        deadline = asyncio.get_running_loop().time() + timeout
+        deadline = asyncio.get_running_loop().time() + timeout if timeout is not None else None
         try:
             while lease is None:
                 devices = self.eligible(await self.probe()) if policy != "cpu" else []
@@ -246,13 +246,13 @@ class AnalyticsScheduler:
                     if lease is not None:
                         self.leases[lease.id] = lease
                         break
-                    remaining = deadline - asyncio.get_running_loop().time()
-                    if remaining <= 0:
+                    remaining = deadline - asyncio.get_running_loop().time() if deadline is not None else None
+                    if remaining is not None and remaining <= 0:
                         raise AdmissionError(
                             "Timed out waiting for an admitted execution slot"
                         )
                     try:
-                        await asyncio.wait_for(self.condition.wait(), min(1, remaining))
+                        await asyncio.wait_for(self.condition.wait(), min(1, remaining) if remaining is not None else 1)
                     except TimeoutError:
                         pass
             yield lease

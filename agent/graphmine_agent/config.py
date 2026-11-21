@@ -55,7 +55,7 @@ class Settings:
     llm_model: str
     llm_enabled: bool
     max_upload_bytes: int
-    job_timeout_seconds: int
+    job_timeout_seconds: int | None
     result_summary_items: int
     llm_route_reasoning_effort: str = "none"
     llm_plan_reasoning_effort: str = "medium"
@@ -80,7 +80,7 @@ class Settings:
     deployment_version: str = "base"
     max_concurrent_uploads: int = 2
     max_pending_jobs: int = 64
-    max_result_bytes: int = 64 * 1024 * 1024
+    max_result_bytes: int | None = None
     llm_planner_model: str | None = None
     llm_analyst_model: str | None = None
     analytics_planner_model: str | None = None
@@ -274,7 +274,7 @@ class Settings:
             raise ValueError("GRAPHMINE_MAX_CONCURRENT_UPLOADS must be positive")
         if self.max_pending_jobs < 1:
             raise ValueError("GRAPHMINE_MAX_PENDING_JOBS must be positive")
-        if self.max_result_bytes < 1:
+        if self.max_result_bytes is not None and self.max_result_bytes < 1:
             raise ValueError("GRAPHMINE_MAX_RESULT_BYTES must be positive")
         if self.analytics_max_input_bytes < 1:
             raise ValueError("GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES must be positive")
@@ -297,7 +297,7 @@ class Settings:
                 )
         if min(self.analytics_gpu_headroom_bytes, self.analytics_llm_reserve_bytes) < 0:
             raise ValueError("Analytics memory reservations must be nonnegative")
-        if self.job_timeout_seconds < 1:
+        if self.job_timeout_seconds is not None and self.job_timeout_seconds < 1:
             raise ValueError("GRAPHMINE_JOB_TIMEOUT_SECONDS must be positive")
         if self.result_summary_items < 1:
             raise ValueError("GRAPHMINE_RESULT_SUMMARY_ITEMS must be positive")
@@ -533,10 +533,10 @@ class Settings:
             database_pool_wait_seconds=_integer("GRAPHMINE_DATABASE_POOL_WAIT_SECONDS", 10),
             database_pool_idle_seconds=_integer("GRAPHMINE_DATABASE_POOL_IDLE_SECONDS", 300),
             max_pending_jobs=_integer("GRAPHMINE_MAX_PENDING_JOBS", 64),
-            max_result_bytes=_integer("GRAPHMINE_MAX_RESULT_BYTES", 64 * 1024 * 1024),
+            max_result_bytes=_budget("GRAPHMINE_MAX_RESULT_BYTES", None),
             analytics_result_cache_bytes=_integer("GRAPHMINE_ANALYTICS_RESULT_CACHE_BYTES", 64 * 1024 * 1024),
             analytics_max_exports=_integer("GRAPHMINE_ANALYTICS_MAX_EXPORTS", 2),
-            job_timeout_seconds=_integer("GRAPHMINE_JOB_TIMEOUT_SECONDS", 86_400),
+            job_timeout_seconds=_budget("GRAPHMINE_JOB_TIMEOUT_SECONDS", None),
             result_summary_items=_integer("GRAPHMINE_RESULT_SUMMARY_ITEMS", 50),
             llm_route_reasoning_effort=os.getenv(
                 "GRAPHMINE_LLM_ROUTE_REASONING_EFFORT", "none"

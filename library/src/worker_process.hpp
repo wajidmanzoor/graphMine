@@ -108,20 +108,20 @@ inline std::string invoke_worker(const std::string& name, std::vector<std::strin
   if (!error) error=posix_spawn(&pid,argv[0],&actions,&attributes,argv.data(),env.data());
   posix_spawn_file_actions_destroy(&actions);posix_spawnattr_destroy(&attributes);
   if (error) throw BackendError(StatusCode::backend_unavailable,"cannot start "+name+": "+std::strerror(error));
-  const auto deadline=deadline_override.value_or(Clock::now()+std::chrono::seconds(options.timeout_seconds));
-  int status=0;bool timeout=false,oversize=false;
+  auto deadline=deadline_override;
+  if (!deadline && options.timeout_seconds) deadline=Clock::now()+std::chrono::seconds(options.timeout_seconds);
+  int status=0;bool timeout=false;
   while (true) {
     const auto result=waitpid(pid,&status,WNOHANG);
     if (result==pid) break;
     if (result<0 && errno!=EINTR) {kill(own_group ? -pid : pid,SIGKILL);while(waitpid(pid,&status,0)<0 && errno==EINTR){};throw BackendError(StatusCode::execution_failed,"cannot wait for worker");}
-    std::error_code ec;const auto bytes=fs::file_size(logfile,ec);
-    timeout=Clock::now()>=deadline;oversize=!ec && bytes>64ULL*1024*1024;
-    if (timeout || oversize) {kill(own_group ? -pid : pid,SIGKILL);while(waitpid(pid,&status,0)<0 && errno==EINTR){};break;}
+    timeout=deadline && Clock::now()>=*deadline;
+    if (timeout) {kill(own_group ? -pid : pid,SIGKILL);while(waitpid(pid,&status,0)<0 && errno==EINTR){};break;}
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
   }
-  if (timeout || oversize) throw BackendError(StatusCode::resource_exhausted,timeout?"GPU worker timed out":"GPU worker exceeded 64 MiB output limit");
-  std::error_code ec;const auto bytes=fs::file_size(logfile,ec);
-  if (ec || bytes>64ULL*1024*1024) throw BackendError(StatusCode::resource_exhausted,"worker output is missing or too large");
+  if (timeout) throw BackendError(StatusCode::resource_exhausted,"GPU worker timed out");
+  std::error_code ec;fs::file_size(logfile,ec);
+  if (ec) throw BackendError(StatusCode::execution_failed,"worker output is missing");
   std::ifstream input(logfile);std::string output((std::istreambuf_iterator<char>(input)),{});
   if (!WIFEXITED(status) || WEXITSTATUS(status)!=0)
     throw BackendError(StatusCode::execution_failed,name+" worker failed: "+output.substr(output.size()>2000?output.size()-2000:0));

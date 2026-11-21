@@ -413,7 +413,7 @@ async def evaluate(settings, root, manifest, output, *, planner, analyst, base_u
                 client,
                 history_root=history,
                 output=lambda _: None,
-                timeout_seconds=configured.job_timeout_seconds + 120,
+                timeout_seconds=configured.job_timeout_seconds + 120 if configured.job_timeout_seconds is not None else None,
             )
             await terminal.start(
                 domain_id=case["domain_id"], title="Adapter evaluation: " + row["id"]

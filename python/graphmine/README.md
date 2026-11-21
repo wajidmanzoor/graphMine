@@ -47,12 +47,17 @@ Every result includes its input hash, implementation hash, library version,
 device, parameters, numerical diagnostics where applicable, and typed output
 ports. A complete count does not imply that a materialized instance list is
 complete. A budget failure does not return an apparently exhaustive answer.
-Candidate work is unlimited by default in both the native runtime and Python
-reference algorithms (`Budget.max_candidates=None`, or JSON `null`). The agent
-does not add a candidate cap when preparing biclique partitions. Callers may
-still explicitly supply a positive `max_candidates` for a bounded experiment;
-omitting it never imposes the former two-million-work default. Time and output
-budgets remain separate settings.
+Calculations have no automatic candidate-work, execution-time, or output-item
+cap in the native runtime or Python reference algorithms. All three `Budget`
+fields default to `None` (JSON `null`). The agent does not inject calculation
+budgets or shorten unlimited runs using backend timing predictions. Callers may
+explicitly supply positive finite budgets for bounded experiments. Unlimited
+runs remain cancellable, and their results remain subject to actual available
+memory and storage.
+Application workflow deadlines and result-byte limits also default to unlimited.
+`GRAPHMINE_JOB_TIMEOUT_SECONDS` and `GRAPHMINE_MAX_RESULT_BYTES` accept `none`
+or an explicit positive limit. Pagination and display summaries do not truncate
+the saved calculation result.
 Graph-valued ports carry the derived graph's content hash and the source graph's
 hash separately; vertex selections retain the source graph's ID namespace.
 Operations on feature vectors or hypergraphs report `input_kind` and

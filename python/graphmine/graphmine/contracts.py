@@ -71,23 +71,25 @@ class Parameter:
 
 @dataclass(frozen=True)
 class Budget:
-    max_output_items: int = 100_000
+    max_output_items: int | None = None
     max_candidates: int | None = None
-    timeout_seconds: float = 60.0
+    timeout_seconds: float | None = None
 
     def __post_init__(self):
-        if type(self.max_output_items) is not int or self.max_output_items < 1:
-            raise GraphMineError("max_output_items must be a positive integer")
+        if self.max_output_items is not None and (
+            type(self.max_output_items) is not int or self.max_output_items < 1
+        ):
+            raise GraphMineError("max_output_items must be a positive integer or null")
         if self.max_candidates is not None and (
             type(self.max_candidates) is not int or self.max_candidates < 1
         ):
             raise GraphMineError("max_candidates must be a positive integer or null")
-        if (
+        if self.timeout_seconds is not None and (
             type(self.timeout_seconds) not in (int, float)
             or not math.isfinite(self.timeout_seconds)
             or self.timeout_seconds <= 0
         ):
-            raise GraphMineError("timeout_seconds must be positive and finite")
+            raise GraphMineError("timeout_seconds must be null or positive and finite")
 
 
 class WorkCounter:
@@ -103,14 +105,15 @@ class WorkCounter:
             raise ResourceLimit(
                 "Candidate budget exceeded; no exhaustive result was produced"
             )
-        if time.monotonic() - self.started > self.budget.timeout_seconds:
+        if (self.budget.timeout_seconds is not None
+                and time.monotonic() - self.started > self.budget.timeout_seconds):
             raise ResourceLimit(
                 "Computation budget exceeded; no completed result was produced"
             )
 
     def output(self, count: int):
         self.tick(0)
-        if count > self.budget.max_output_items:
+        if self.budget.max_output_items is not None and count > self.budget.max_output_items:
             raise ResourceLimit(
                 "Output budget exceeded; request an explicit result limit or a count"
             )

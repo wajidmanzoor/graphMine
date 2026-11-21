@@ -86,7 +86,8 @@ def test_default_graph_grid_and_small_initial_selection():
     expanded = profiles.expand_graphs(config)
     assert len(expanded) == 60 and sum(s["source"] == "neo4j" for s in expanded) == 16
     assert config["bootstrap_examples_per_operation"] == config["repeats"] == 3
-    assert config["timeout_seconds"] == 1800
+    assert config["timeout_seconds"] is None
+    assert config["max_output_items"] is None
     assert config["max_candidates"] is None
     cards = [dict(id=op) for op in config["operations"]]
     selected = profiles.select_graphs(config, cards)

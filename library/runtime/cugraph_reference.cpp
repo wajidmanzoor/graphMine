@@ -154,8 +154,8 @@ std::vector<std::vector<VertexIndex>> cugraph_walks(const WeightedGraph& input,
     return output;
   }
   // cuGraph allocates a dense matrix even when walks reach dead ends early.
-  if (length == UINT64_MAX || starts.size() > work.max_output_items / (length + 1))
-    throw Failure("resource_limit", "Dense GPU walk allocation exceeds the output budget");
+  require(length < UINT64_MAX && starts.size() <= SIZE_MAX / (length + 1),
+          "Dense GPU walk allocation exceeds native storage range");
   const auto capacity = starts.size() * (length + 1);
   work.output(capacity);
   work.tick(capacity);

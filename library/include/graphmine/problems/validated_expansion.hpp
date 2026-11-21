@@ -14,7 +14,8 @@ namespace graphmine {
 // an ExecutionResult failure instead of terminating the calling application.
 struct IsolatedBackendOptions {
   ExecutionOptions execution;
-  std::uint32_t timeout_seconds = 60;
+  // Zero means unlimited execution; callers may opt into a finite deadline.
+  std::uint32_t timeout_seconds = 0;
   // Empty selects GRAPHMINE_WORKER_DIR, the build tree, or installed workers.
   std::string worker_directory;
 };

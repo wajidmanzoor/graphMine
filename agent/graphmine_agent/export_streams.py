@@ -29,7 +29,7 @@ def copy_chunks(source, destination, limit):
     total = 0
     while raw := source.read(CHUNK):
         total += len(raw)
-        if total > limit:
+        if limit is not None and total > limit:
             raise AnalyticsError("Export exceeds the byte budget", "resource_limit")
         destination.write(raw)
     return total

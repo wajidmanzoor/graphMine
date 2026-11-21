@@ -600,7 +600,8 @@ def bandit_worker(observed_environment, monkeypatch):
 
 
 @pytest.mark.parametrize("failure", [TimeoutError, MemoryError])
-def test_fallback_runs_once_on_a_different_feasible_backend_and_logs_both(bandit_worker, failure):
+@pytest.mark.parametrize("timeout", [None, 1800])
+def test_fallback_runs_once_on_a_different_feasible_backend_and_logs_both(bandit_worker, failure, timeout):
     from graphmine.contracts import Budget
     calls, events = [], []
     def invoke(*args, **kwargs):
@@ -610,13 +611,16 @@ def test_fallback_runs_once_on_a_different_feasible_backend_and_logs_both(bandit
         return {"backend": {"id": kwargs["backend"]}}
     result = worker.run_observed(invoke, "triangle-counting", bandit_worker, context={
         "backend_selection": "bandit", "leased_gpu_uuid": "GPU-test", "backend_exploration_enabled": False},
-        step_id="count", emit=events.append, budget=Budget(timeout_seconds=1800), device="auto")
+        step_id="count", emit=events.append, budget=Budget(timeout_seconds=timeout), device="auto")
     rows = [e["record"] for e in events if e["event"] == "native_finished"]
     assert [c["backend"] for c in calls] == ["gpu-first", "cpp"]
     assert result["backend"]["id"] == "cpp" and len(rows) == 2
     assert rows[1]["reason"] == "fallback" and len(rows[1]["fallback_chain"]) == 2
     assert rows[0]["decision_id"] == rows[1]["decision_id"]
     assert len({r["run_id"] for r in rows}) == 2
+    if timeout is None:
+        assert all(call["budget"].timeout_seconds is None for call in calls)
+        assert all(row["step_timeout_seconds"] is None and row["timeout_seconds"] is None for row in rows)
 
 
 def test_second_failure_never_retries_again_and_forced_backend_never_changes(bandit_worker):

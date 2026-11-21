@@ -1439,7 +1439,7 @@ void expansion_backend(const CommonOptions& common, const std::string& expected)
 template<class Options>
 void isolated_options(Options& options, Arguments& arguments, const CommonOptions& common) {
   options.execution=common.execution;
-  if(auto value=arguments.optional("timeout-seconds")) options.timeout_seconds=parse_integer<std::uint32_t>(*value,"timeout-seconds",1);
+  if(auto value=arguments.optional("timeout-seconds")) options.timeout_seconds=parse_integer<std::uint32_t>(*value,"timeout-seconds",0);
   if(auto value=arguments.optional("worker-directory")) options.worker_directory=*value;
 }
 

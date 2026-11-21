@@ -164,8 +164,9 @@ void Work::tick(std::uint64_t amount) {
   if (max_candidates && (candidates > *max_candidates || amount > *max_candidates - candidates))
     throw Failure("resource_limit", "Native candidate budget exceeded");
   candidates = amount > UINT64_MAX - candidates ? UINT64_MAX : candidates + amount;
-  if (std::chrono::duration<double>(std::chrono::steady_clock::now() - started).count() >
-      timeout_seconds)
+  if (timeout_seconds &&
+      std::chrono::duration<double>(std::chrono::steady_clock::now() - started).count() >
+      *timeout_seconds)
     throw Failure("resource_limit", "Native computation deadline exceeded");
 }
 void Work::tick_product(std::initializer_list<std::uint64_t> factors) {
@@ -186,7 +187,15 @@ void Work::tick_product(std::initializer_list<std::uint64_t> factors) {
 }
 void Work::output(std::uint64_t count) {
   tick(0);
-  if (count > max_output_items) throw Failure("resource_limit", "Native output budget exceeded");
+  if (max_output_items && count > *max_output_items)
+    throw Failure("resource_limit", "Native output budget exceeded");
+}
+std::chrono::steady_clock::time_point Work::deadline() const {
+  const auto maximum = std::chrono::steady_clock::time_point::max();
+  const auto available = std::chrono::duration<double>(maximum - started).count();
+  return !timeout_seconds || *timeout_seconds >= available ? maximum
+      : started + std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+          std::chrono::duration<double>(*timeout_seconds));
 }
 
 std::vector<std::vector<VertexIndex>> adjacency(const Graph& graph, Work& work) {

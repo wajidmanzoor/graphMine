@@ -45,7 +45,6 @@ Provenance provenance(const std::string& name) {
 
 void common_support(const Graph& graph, const IsolatedBackendOptions& options) {
   require(options.execution.device_ids.size()==1 && options.execution.device_ids[0]>=0,"exactly one nonnegative CUDA device id is supported");
-  require(options.timeout_seconds>0 && options.timeout_seconds<=86400,"timeout_seconds must be in [1,86400]");
   require(graph.vertex_count()<=1000000 && graph.edge_count()<=10000000,"validated adapter limit: 1,000,000 vertices and 10,000,000 input edges");
   if (!GRAPHMINE_HAS_EXPANSION_WORKERS) throw BackendError(StatusCode::backend_unavailable,"CUDA expansion workers were not built");
 }

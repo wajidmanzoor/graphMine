@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import itertools
 import json
+import math
 
 from .benchmark_graphs import NAME, canonical, digest
 
@@ -33,14 +34,16 @@ def load_config(path):
     config = json.loads(path.read_text())
     if config["schema_version"] != 1:
         raise ValueError("Unsupported benchmark configuration")
-    for name, maximum in (("bootstrap_examples_per_operation", 3), ("repeats", 10),
-                          ("timeout_seconds", 1800),
-                          ("max_output_items", 10 ** 7)):
+    for name, maximum in (("bootstrap_examples_per_operation", 3), ("repeats", 10)):
         if type(config[name]) is not int or not 1 <= config[name] <= maximum:
             raise ValueError(f"{name} must be between 1 and {maximum}")
-    candidates = config.setdefault("max_candidates", None)
-    if candidates is not None and (type(candidates) is not int or candidates < 1):
-        raise ValueError("max_candidates must be a positive integer or null")
+    for name in ("max_candidates", "max_output_items"):
+        value = config.setdefault(name, None)
+        if value is not None and (type(value) is not int or value < 1):
+            raise ValueError(f"{name} must be a positive integer or null")
+    timeout = config.setdefault("timeout_seconds", None)
+    if timeout is not None and (type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0):
+        raise ValueError("timeout_seconds must be null or positive and finite")
     expand_graphs(config)
     for profile in config["operations"].values():
         for values in profile.get("parameter_grid", {}).values():

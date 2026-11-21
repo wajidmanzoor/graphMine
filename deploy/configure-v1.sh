@@ -119,7 +119,7 @@ GRAPHMINE_AGENT_DATA_ROOT=${data_root}
 GRAPHMINE_BINARY=${repo_dir}/library/build/graphmine
 GRAPHMINE_BACKEND_POLICY=${repo_dir}/agent/backend_policy.json
 GRAPHMINE_MAX_UPLOAD_BYTES=2147483648
-GRAPHMINE_JOB_TIMEOUT_SECONDS=86400
+GRAPHMINE_JOB_TIMEOUT_SECONDS=none
 GRAPHMINE_RESULT_SUMMARY_ITEMS=50
 
 # Keep model and compilation caches in the writable service-state tree. This is

@@ -1,0 +1,58 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 48,
+    "failed": 0,
+    "implementation_sha256": "4353d9ea2a34bf79ff1cb7d75ecc4cf9601025c30330db94385e7020fe7421e1"
+  },
+  {
+    "suite": "maximal",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 4104,
+    "failed": 0,
+    "implementation_sha256": "4353d9ea2a34bf79ff1cb7d75ecc4cf9601025c30330db94385e7020fe7421e1"
+  },
+  {
+    "suite": "maximum",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 2052,
+    "failed": 0,
+    "implementation_sha256": "4353d9ea2a34bf79ff1cb7d75ecc4cf9601025c30330db94385e7020fe7421e1"
+  },
+  {
+    "suite": "fixed",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 18468,
+    "failed": 0,
+    "implementation_sha256": "4353d9ea2a34bf79ff1cb7d75ecc4cf9601025c30330db94385e7020fe7421e1"
+  },
+  {
+    "suite": "core",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 4104,
+    "failed": 0,
+    "implementation_sha256": "4353d9ea2a34bf79ff1cb7d75ecc4cf9601025c30330db94385e7020fe7421e1"
+  },
+  {
+    "suite": "optimization",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 3078,
+    "failed": 0,
+    "implementation_sha256": "4353d9ea2a34bf79ff1cb7d75ecc4cf9601025c30330db94385e7020fe7421e1"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cpp",
+    "gpu_device": 0,
+    "passed_requests": 161,
+    "failed": 0,
+    "implementation_sha256": "4353d9ea2a34bf79ff1cb7d75ecc4cf9601025c30330db94385e7020fe7421e1"
+  }
+]

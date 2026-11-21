@@ -507,7 +507,7 @@ async def _capture_suite(
                     client,
                     history_root=history,
                     output=lambda _: None,
-                    timeout_seconds=settings.job_timeout_seconds + 60,
+                    timeout_seconds=settings.job_timeout_seconds + 60 if settings.job_timeout_seconds is not None else None,
                 )
                 await terminal.start(
                     domain_id=case["domain_id"],

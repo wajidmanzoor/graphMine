@@ -277,7 +277,7 @@ class GraphMineRunner:
 
         if plan.operation_id in EXPANSION_OPERATIONS:
             command.extend(
-                ["--timeout-seconds", str(min(60, self.settings.job_timeout_seconds))]
+                ["--timeout-seconds", str(self.settings.job_timeout_seconds or 0)]
             )
 
         for name, specification in operation.instruction["auxiliary_inputs"].items():
@@ -397,7 +397,7 @@ class GraphMineRunner:
         try:
             with path.open("rb") as handle:
                 size = os.fstat(handle.fileno()).st_size
-                if size > limit:
+                if limit is not None and size > limit:
                     raise ExecutionError(
                         "result_too_large",
                         f"The result exceeds the {limit}-byte loading limit. Narrow the selection or request fewer detailed instances.",

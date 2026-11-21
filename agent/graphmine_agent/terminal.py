@@ -107,7 +107,7 @@ class Terminal:
         client: httpx.AsyncClient,
         *,
         history_root: Path | None = None,
-        timeout_seconds: float = 600,
+        timeout_seconds: float | None = None,
         json_output: bool = False,
         output: Callable[[str], None] = print,
         read: Callable[[str], str] = input,
@@ -351,7 +351,7 @@ class Terminal:
         identifier = job_id or self.job_id
         if not identifier:
             raise ClientError("There is no job to wait for.")
-        deadline = time.monotonic() + self.timeout_seconds
+        deadline = time.monotonic() + self.timeout_seconds if self.timeout_seconds is not None else None
         previous_status = None
         while True:
             job = await self.request("GET", f"/api/jobs/{identifier}")
@@ -384,7 +384,7 @@ class Terminal:
                     (job.get("error") or {}).get("message", "Analysis was cancelled."),
                     turn_id=self.turn_id,
                 )
-            if time.monotonic() >= deadline:
+            if deadline is not None and time.monotonic() >= deadline:
                 raise ClientError(
                     f"Stopped waiting for {identifier}. Use /wait {identifier} to check it or /cancel to cancel it.",
                     turn_id=self.turn_id,

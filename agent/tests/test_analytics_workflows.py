@@ -910,6 +910,21 @@ async def test_capabilities_share_one_verification_until_evidence_changes(
     assert len(calls) == 3
 
 
+def test_live_unlimited_workflow_preserves_all_three_null_budgets(settings, triangle_graph):
+    unlimited = replace(settings, job_timeout_seconds=None, max_result_bytes=None)
+    with TestClient(create_app(unlimited)) as client:
+        session, graph = upload(client, triangle_graph)
+        response = client.post(f"/api/sessions/{session}/workflows", headers=AUTH, json=body(graph, "normal"))
+        assert response.status_code == 201, response.text
+        record = wait(client, response.json()["id"])
+        assert record["status"] == "completed", record
+        result = client.get(f"/api/workflows/{record['id']}/result", headers=AUTH).json()
+        for step in result["steps"].values():
+            assert step["result"]["budget"] == {
+                "max_candidates": None, "max_output_items": None, "timeout_seconds": None,
+            }
+
+
 def test_live_failed_step_recovery_reuses_only_valid_steps(settings, triangle_graph):
     with TestClient(create_app(settings)) as client:
         session, graph = upload(client, triangle_graph)
@@ -968,8 +983,10 @@ def test_live_evidence_is_rechecked_at_execution(settings, triangle_graph, tmp_p
         )
         assert response.status_code == 201, response.text
         record = response.json()
-        # Move only the worker's evidence root to an empty temporary repository.
-        # No real source/report is modified and no verification is bypassed.
+        # Keep the current wrapper, but give it a repository with no evidence.
+        # Otherwise an editable installation can supply an older wrapper whose
+        # budget schema rejects the plan before the evidence gate is exercised.
+        (tmp_path / "python").symlink_to(settings.native_repository_root / "python", target_is_directory=True)
         app.state.runtime.analytics.settings = replace(
             settings,
             repository_root=tmp_path,
@@ -1063,7 +1080,7 @@ async def test_process_group_cancellation_and_deadline(
 ):
     script, pidfile = _sleeping_worker(tmp_path)
     service = _service(
-        replace(settings, analytics_python=script, job_timeout_seconds=1),
+        replace(settings, analytics_python=script, job_timeout_seconds=None if cancel else 1),
         database,
         graph_store,
     )

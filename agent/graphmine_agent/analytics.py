@@ -28,6 +28,7 @@ from .analytics_scheduler import (
 )
 from .analytics_modes import AnalysisMode, saved_mode
 from .database import RecordNotFound
+from .calculation_limits import minimum_limit, response_lines
 from .errors import AnalyticsError  # Re-export for existing integrations.
 from .evidence_cache import BOOTSTRAP
 from .identity import current_principal
@@ -310,7 +311,7 @@ class AnalyticsService:
 
     def _write(self, path, value, *, input_snapshot=False):
         raw = _json(value).encode()
-        if not input_snapshot and len(raw) > self.settings.max_result_bytes:
+        if not input_snapshot and self.settings.max_result_bytes is not None and len(raw) > self.settings.max_result_bytes:
             raise AnalyticsError(
                 "Workflow artifact exceeds the byte budget", "resource_limit"
             )
@@ -448,7 +449,7 @@ class AnalyticsService:
         # Inputs have already passed ownership/size validation in _inputs.
         # Database query graphs are complete inputs with no fixed byte ceiling.
         # Give the worker an exact, finite read budget for this trusted request.
-        worker_input_bytes = max(len(raw), self.settings.analytics_max_input_bytes + self.settings.max_result_bytes)
+        worker_input_bytes = max(len(raw), self.settings.analytics_max_input_bytes + (self.settings.max_result_bytes or 0))
         env = os.environ.copy()
         env.update(
             GRAPHMINE_REPOSITORY_ROOT=str(self.settings.native_repository_root),
@@ -515,7 +516,7 @@ class AnalyticsService:
             start_new_session=True,
             # Aggregate telemetry has a separate allowance; enabling logging
             # must not consume the user's native result byte budget.
-            limit=max(self.settings.max_result_bytes + 1, 256 * 1024),
+            limit=256 * 1024,
         )
         tasks = []
         errors = bytearray()
@@ -533,7 +534,9 @@ class AnalyticsService:
         async def receive():
             nonlocal step_deadline
             final, total = None, 0
-            while line := await process.stdout.readline():
+            byte_limit = self.settings.max_result_bytes
+            line_limit = max(byte_limit + 1, 256 * 1024) if byte_limit is not None else None
+            async for line in response_lines(process.stdout, line_limit):
                 try:
                     message = json.loads(line)
                 except ValueError as exc:
@@ -577,7 +580,7 @@ class AnalyticsService:
                     self.run_log.submit(row)
                     continue
                 total += len(line)
-                if len(line) > self.settings.max_result_bytes + 1 or total > self.settings.max_result_bytes * 3:
+                if byte_limit is not None and (len(line) > byte_limit + 1 or total > byte_limit * 3):
                     raise AnalyticsError(
                         "Worker output exceeded the byte budget", "resource_limit"
                     )
@@ -589,8 +592,9 @@ class AnalyticsService:
                 elif message.get("event") in ("step_started", "step_finished"):
                     if message["event"] == "step_started":
                         step = next(s for s in request["plan"]["steps"] if s["id"] == message["step"])
-                        step_deadline = time.monotonic() + min(1800, self.settings.job_timeout_seconds,
-                                                              step.get("budget", {}).get("timeout_seconds", 60))
+                        limit = minimum_limit(self.settings.job_timeout_seconds,
+                                              step.get("budget", {}).get("timeout_seconds"))
+                        step_deadline = time.monotonic() + limit if limit is not None else None
                     else:
                         step_deadline = None
                     if on_event:
@@ -612,10 +616,7 @@ class AnalyticsService:
                 asyncio.create_task(receive()),
                 asyncio.create_task(deadlines()),
             ]
-            timeout = (
-                self.settings.job_timeout_seconds if request["command"] == "run" else 60
-            )
-            async with asyncio.timeout(timeout):
+            async with asyncio.timeout(self.settings.job_timeout_seconds):
                 _, _, final, _ = await asyncio.gather(*tasks)
                 code = await process.wait()
             if code != 0 or final is None:
@@ -1450,7 +1451,7 @@ class AnalyticsService:
         def build(db):
             with path.open("rb") as handle:
                 size = os.fstat(handle.fileno()).st_size
-                if size > self.settings.max_result_bytes:
+                if self.settings.max_result_bytes is not None and size > self.settings.max_result_bytes:
                     raise AnalyticsError("Workflow artifact exceeds the byte budget", "resource_limit")
                 raw = handle.read(size + 1)
             if len(raw) != size:

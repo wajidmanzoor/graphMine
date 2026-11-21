@@ -29,15 +29,8 @@ std::vector<std::int64_t> run_worker(const char* name, const char* marker, int d
         options.worker_directory = candidate.string();
     }
   }
-  const auto maximum = std::chrono::steady_clock::time_point::max();
-  const auto available = std::chrono::duration<double>(maximum - work.started).count();
-  const auto deadline =
-      work.timeout_seconds >= available
-          ? maximum
-          : work.started + std::chrono::duration_cast<std::chrono::steady_clock::duration>(
-                               std::chrono::duration<double>(work.timeout_seconds));
   try {
-    const auto output = invoke_worker(name, std::move(arguments), options, temp, {}, deadline);
+    const auto output = invoke_worker(name, std::move(arguments), options, temp, {}, work.deadline());
     work.tick(0);
     std::istringstream stream(output);
     std::string line;

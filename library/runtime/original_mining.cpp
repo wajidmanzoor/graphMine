@@ -22,14 +22,7 @@ std::timed_mutex original_mutex;
 std::unique_lock<std::timed_mutex> lock_original(Work& work) {
   work.tick(0);
   std::unique_lock<std::timed_mutex> lock(original_mutex, std::defer_lock);
-  const auto maximum = std::chrono::steady_clock::time_point::max();
-  const auto available = std::chrono::duration<double>(maximum - work.started).count();
-  const auto deadline =
-      work.timeout_seconds >= available
-          ? maximum
-          : work.started + std::chrono::duration_cast<std::chrono::steady_clock::duration>(
-                               std::chrono::duration<double>(work.timeout_seconds));
-  if (!lock.try_lock_until(deadline))
+  if (!lock.try_lock_until(work.deadline()))
     throw Failure("resource_limit", "Original backend admission deadline exceeded");
   work.tick(0);
   return lock;

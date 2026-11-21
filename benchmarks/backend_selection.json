@@ -2,9 +2,9 @@
   "schema_version": 1,
   "bootstrap_examples_per_operation": 3,
   "repeats": 3,
-  "timeout_seconds": 1800,
+  "timeout_seconds": null,
   "max_candidates": null,
-  "max_output_items": 100000,
+  "max_output_items": null,
   "generated_grid": {
     "families": ["erdos_renyi", "power_law", "planted_dense"],
     "sizes": [1000, 4000, 16000, 64000],

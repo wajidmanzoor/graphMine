@@ -174,7 +174,7 @@ def _run_once(
     case: dict[str, Any],
     graph_path: Path,
     backend: str,
-    timeout_seconds: int,
+    timeout_seconds: int | None,
 ) -> dict[str, Any]:
     command = [
         str(settings.graphmine_binary),
@@ -274,7 +274,7 @@ def run_benchmarks(
     *,
     warmups: int,
     repetitions: int,
-    timeout_seconds: int,
+    timeout_seconds: int | None,
 ) -> dict[str, Any]:
     manifest = _json_document(manifest_path)
     if manifest.get("schema_version") != "1.0.0":
@@ -316,8 +316,9 @@ def run_benchmarks(
             raise BenchmarkError(
                 f"case {case['id']} requests uncompiled backends: {sorted(unknown)}"
             )
-        case_timeout = int(case.get("timeout_seconds", timeout_seconds))
-        if case_timeout < 1:
+        configured_timeout = case.get("timeout_seconds", timeout_seconds)
+        case_timeout = int(configured_timeout) if configured_timeout is not None else None
+        if case_timeout is not None and case_timeout < 1:
             raise BenchmarkError(f"case {case['id']} timeout must be positive")
         for backend in requested:
             for _ in range(max(0, warmups)):

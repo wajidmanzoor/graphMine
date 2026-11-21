@@ -26,6 +26,7 @@ from .hardware import PeakSampler, hardware_snapshot, merge_peaks
 from .leases import GPULock
 from .memory import effective_rows
 from .storage import SCHEMA_VERSION, RunLog, atomic_json, prepare_directories, read_rows, utc_now
+from ..calculation_limits import minimum_limit, remaining_seconds
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -150,10 +151,10 @@ def child(request_path):
         if digest(data) != job["graph_fingerprint"]:
             raise ValueError("Benchmark graph changed")
         graph = Graph(data)
-        remaining = job["deadline_monotonic"] - time.monotonic()
-        if remaining <= 0:
+        remaining = remaining_seconds(job["deadline_monotonic"])
+        if remaining is not None and remaining <= 0:
             raise TimeoutError("Benchmark startup exceeded its deadline")
-        budget = Budget(**{**job["budget"], "timeout_seconds": min(remaining, job["budget"]["timeout_seconds"])})
+        budget = Budget(**{**job["budget"], "timeout_seconds": minimum_limit(remaining, job["budget"]["timeout_seconds"])})
         run_observed(run, job["operation"], graph, context=dict(source="benchmark", workflow_id=job["benchmark_id"],
                      is_evaluation=job["is_evaluation"], leased_gpu_uuid=job["gpu_uuid"],
                      backend_memory_safety=job["memory_safety"], job_timeout_seconds=remaining),
@@ -174,7 +175,8 @@ async def run_attempt(job, row, directory, *, python, library, lock=None, comman
     path = Path(directory) / "attempts" / job["benchmark_attempt_key"]
     path.mkdir(parents=True, exist_ok=True, mode=0o700)
     started = time.monotonic()
-    job = {**job, "deadline_monotonic": started + job["budget"]["timeout_seconds"]}
+    timeout = job["budget"]["timeout_seconds"]
+    job = {**job, "deadline_monotonic": started + timeout if timeout is not None else None}
     atomic_json(path / "request.json", job)
     state = dict(record=row, process=None, status="starting")
     atomic_json(path / "state.json", state)
@@ -233,8 +235,9 @@ async def run_attempt(job, row, directory, *, python, library, lock=None, comman
         except Exception:
             warnings.append("peak_sampler_failed")
         readers = [asyncio.create_task(stdout()), asyncio.create_task(stderr())]
+        remaining = remaining_seconds(job["deadline_monotonic"])
         await asyncio.wait_for(asyncio.gather(*readers, process.wait()),
-                               max(0.001, job["deadline_monotonic"] - time.monotonic()))
+                               max(0.001, remaining) if remaining is not None else None)
     except TimeoutError:
         timed_out = True
     except asyncio.CancelledError:
@@ -263,7 +266,7 @@ async def run_attempt(job, row, directory, *, python, library, lock=None, comman
         wall = time.monotonic() - started
         if timed_out:
             row.update(outcome="timeout", error_code="timeout", censored=True,
-                       runtime_seconds=max(row["timeout_seconds"], row.get("runtime_seconds") or 0))
+                       runtime_seconds=max(row["timeout_seconds"] or 0, row.get("runtime_seconds") or 0))
         elif cancelled:
             row.update(outcome="error", error_code="cancelled", censored=False, runtime_seconds=wall)
         elif terminal is None:
@@ -332,7 +335,7 @@ async def recover(directory, logger):
             if not alive and not locked:
                 break
             elapsed = (datetime.now(timezone.utc) - datetime.fromisoformat(row["created_at"])).total_seconds()
-            if elapsed >= row["timeout_seconds"]:
+            if row["timeout_seconds"] is not None and elapsed >= row["timeout_seconds"]:
                 if alive:
                     try:
                         os.killpg(identity["pid"], signal.SIGKILL)
@@ -351,10 +354,10 @@ async def recover(directory, logger):
             if state_path.with_name("started.json").exists():
                 row = json.loads(state_path.with_name("started.json").read_text())
             elapsed = max(0, (datetime.now(timezone.utc) - datetime.fromisoformat(row["created_at"])).total_seconds())
-            timed_out = elapsed >= row["timeout_seconds"]
+            timed_out = row["timeout_seconds"] is not None and elapsed >= row["timeout_seconds"]
             row.update(outcome="timeout" if timed_out else "error", censored=timed_out,
                        error_code="interrupted_timeout" if timed_out else "interrupted",
-                       runtime_seconds=min(elapsed, row["timeout_seconds"]))
+                       runtime_seconds=minimum_limit(elapsed, row["timeout_seconds"]))
             row["telemetry_warnings"].append("recovered_without_live_samples")
         await publish(logger, row, directory)
         seen.add(key)

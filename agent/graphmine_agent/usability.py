@@ -110,7 +110,7 @@ async def evaluate_applications(
     output: Path,
     data_dir: Path,
     case_ids: set[str] | None = None,
-    timeout_seconds: float = 600,
+    timeout_seconds: float | None = None,
 ) -> dict[str, Any]:
     if output.exists():
         raise ValueError(

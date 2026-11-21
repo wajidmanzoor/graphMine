@@ -32,7 +32,6 @@ BackendInfo info(const std::string& name,std::vector<std::string> capabilities) 
 }
 void common(const Graph& graph,const IsolatedBackendOptions& options,const std::string& backend) {
   require(options.execution.device_ids.size()==1 && options.execution.device_ids[0]>=0,"exactly one nonnegative CUDA device id is supported");
-  require(options.timeout_seconds>0 && options.timeout_seconds<=86400,"timeout_seconds must be in [1,86400]");
   require(graph.vertex_count()<=1000000 && graph.edge_count()<=10000000,"adapter limit: 1,000,000 vertices and 10,000,000 input edges");
   if (!GRAPHMINE_HAS_REPAIRED_WORKERS || access(worker_path(backend,options).c_str(),X_OK)!=0)
     throw BackendError(StatusCode::backend_unavailable,"repaired worker is not installed: "+backend);
@@ -55,8 +54,8 @@ template<class Output,class F> ExecutionResult<Output> execute(const std::string
   catch(const std::exception& e){return ExecutionResult<Output>::failure({StatusCode::execution_failed,e.what()},p);}
 }
 std::string text_file(const fs::path& path) {
-  std::error_code ec;auto size=fs::file_size(path,ec);
-  certify(!ec && size<=64ULL*1024*1024,"worker result is missing or exceeds 64 MiB");
+  std::error_code ec;fs::file_size(path,ec);
+  certify(!ec,"worker result is missing");
   std::ifstream in(path);std::string result((std::istreambuf_iterator<char>(in)),{});
   certify(!in.bad(),"cannot read worker result");return result;
 }
@@ -223,13 +222,13 @@ ExecutionResult<DensestSubgraphOutput> DensestSubgraph::run(const Graph& graph)c
             "CDS clique partitions exceed the worker's signed-index capacity");
     std::ostringstream text;text<<graph.vertex_count()<<' '<<csr.undirected_edge_count()<<'\n';
     for(std::size_t v=0;v<graph.vertex_count();++v){text<<v;for(auto e=csr.offsets[v];e<csr.offsets[v+1];++e)text<<' '<<csr.neighbors[e];text<<'\n';}write_text(path,text.str());
-    const auto deadline=Clock::now()+std::chrono::seconds(options_.timeout_seconds);
+    const auto deadline=options_.timeout_seconds ? Clock::now()+std::chrono::seconds(options_.timeout_seconds) : Clock::time_point::max();
     json::object output;
     while(true) {
       const auto remaining=std::chrono::duration<double>(deadline-Clock::now()).count();
       if(remaining<=0)throw BackendError(StatusCode::resource_exhausted,"CDS exhausted its total worker time budget");
       auto attempt_options=options_;
-      attempt_options.timeout_seconds=static_cast<std::uint32_t>(std::ceil(remaining));
+      if(options_.timeout_seconds) attempt_options.timeout_seconds=static_cast<std::uint32_t>(std::ceil(remaining));
       try {
         output=json_result(invoke_worker("cds",{path.string(),std::to_string(options_.clique_order),std::to_string(partial_size),std::to_string(candidate_size),std::to_string(std::max<std::size_t>(1024,graph.vertex_count())),"1024","-1"},attempt_options,temp),"CDS_RESULT ");
         break;

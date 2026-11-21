@@ -58,7 +58,7 @@ def read_delimited_graph(settings, path, *, directed, source_column, target_colu
                 try:
                     process.communicate(
                         json.dumps(request, allow_nan=False).encode(),
-                        timeout=min(settings.job_timeout_seconds, 60),
+                        timeout=settings.job_timeout_seconds,
                     )
                 except subprocess.TimeoutExpired as error:
                     try:
@@ -73,7 +73,7 @@ def read_delimited_graph(settings, path, *, directed, source_column, target_colu
             raise IngestionError(
                 f"Cannot launch native cuDF ingestion: {error}"
             ) from error
-        if output.stat().st_size > settings.max_result_bytes:
+        if settings.max_result_bytes is not None and output.stat().st_size > settings.max_result_bytes:
             raise IngestionError(
                 "Native ingestion result exceeds the configured byte limit"
             )

@@ -45,7 +45,7 @@ def stop_tree(pid):
 
 
 def run(operation, graph, *, parameters=None, device="auto", backend=None, budget=None,
-        gpu_device=0, allowed_backends=None, response_limit=64 * 1024 * 1024):
+        gpu_device=0, allowed_backends=None, response_limit=None):
     from graphmine.contracts import Budget
     from graphmine.dispatch import implementation_hash
     from graphmine.exceptions import GraphMineError
@@ -66,11 +66,11 @@ def run(operation, graph, *, parameters=None, device="auto", backend=None, budge
     process = subprocess.Popen([sys.executable, "-m", "graphmine_agent.backend_learning.attempt"],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=env, pass_fds=fds)
     try:
-        remaining = min(1800, budget.timeout_seconds) - (time.monotonic() - start)
-        if remaining <= 0:
+        remaining = budget.timeout_seconds - (time.monotonic() - start) if budget.timeout_seconds is not None else None
+        if remaining is not None and remaining <= 0:
             raise subprocess.TimeoutExpired(process.args, budget.timeout_seconds)
         output, _ = process.communicate(raw, timeout=remaining)
-        if len(output) > response_limit:
+        if response_limit is not None and len(output) > response_limit:
             error = GraphMineError("Native attempt exceeded the response byte limit")
             error.code = "resource_limit"
             raise error
@@ -101,7 +101,7 @@ def main():
 
     protocol = os.fdopen(os.dup(sys.stdout.fileno()), "w", buffering=1)
     os.dup2(sys.stderr.fileno(), sys.stdout.fileno())
-    limit = 64 * 1024 * 1024
+    limit = None
     try:
         expected = int(os.environ["GRAPHMINE_ATTEMPT_INPUT_BYTES"])
         raw = sys.stdin.buffer.read(expected + 1)
@@ -119,7 +119,7 @@ def main():
                             "message": str(error)}}
     try:
         encoded = json.dumps(reply, ensure_ascii=False, allow_nan=False, separators=(",", ":"))
-        if len(encoded.encode()) > limit:
+        if limit is not None and len(encoded.encode()) > limit:
             encoded = json.dumps({"error": {"code": "resource_limit", "message": "Native attempt exceeded the response byte limit"}})
         protocol.write(encoded + "\n")
     finally:

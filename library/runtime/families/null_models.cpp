@@ -157,8 +157,8 @@ json::object null_significance(const Graph& graph, const json::object& args, con
       outgoing.insert(outgoing.end(), base_degrees.first[v], v);
       if (graph.directed()) incoming.insert(incoming.end(), base_degrees.second[v], v);
     }
-  if (return_edges && m > (work.max_output_items / count ? work.max_output_items / count - 1 : 0))
-    throw Failure("resource_limit", "Randomized edge output exceeds budget");
+  require(!return_edges || (m < UINT64_MAX && count <= UINT64_MAX / (m + 1)),
+          "Randomized edge output exceeds native size range");
   work.output(count * (1 + (return_edges ? m : 0)));
   json::array values, random_edges;
   std::vector<Exact> samples;

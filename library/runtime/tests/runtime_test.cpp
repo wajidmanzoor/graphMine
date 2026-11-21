@@ -1,4 +1,5 @@
 #include "graphmine/runtime.hpp"
+#include "../internal.hpp"
 
 #include <algorithm>
 #include <boost/json.hpp>
@@ -168,12 +169,28 @@ void triangle_tests(const std::string& backend, int ordinal) {
   }
 }
 void contract_tests() {
+  graphmine::runtime::Work unlimited;
+  unlimited.started -= std::chrono::hours(24 * 365);
+  unlimited.tick(20000001);
+  unlimited.output(1000001);
+  check(unlimited.deadline() == std::chrono::steady_clock::time_point::max(),
+        "Unlimited work unexpectedly has a deadline");
+  unlimited.timeout_seconds = 60;
+  bool expired = false;
+  try { unlimited.tick(0); }
+  catch (const graphmine::runtime::Failure& failure) { expired = failure.code == "resource_limit"; }
+  check(expired, "An explicit finite computation deadline was ignored");
   auto graph = fixture(3, false, 7);
   const json::object good{{"command", "run"},
                           {"operation", "breadth-first-search"},
                           {"graph", graph},
                           {"parameters", {{"sources", json::array{0}}}},
                           {"device", "cpu"}};
+  const json::object no_caps{{"max_candidates", nullptr}, {"max_output_items", nullptr}, {"timeout_seconds", nullptr}};
+  check(call(good).at("budget") == no_caps, "Default calculation budgets must be unlimited");
+  auto explicit_unlimited = good;
+  explicit_unlimited["budget"] = no_caps;
+  check(call(explicit_unlimited).at("budget") == no_caps, "Null budgets must remain unlimited");
   auto error = [&](json::object request, const std::string& code) {
     auto response = json::parse(graphmine::runtime::request(json::serialize(request))).as_object();
     check(response.contains("error") &&

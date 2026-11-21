@@ -69,7 +69,7 @@ async def native_request(runtime, value, input_bytes, *, device="gpu"):
                 write_request,
                 input_path,
                 value,
-                settings.analytics_max_input_bytes + settings.max_result_bytes,
+                settings.analytics_max_input_bytes + (settings.max_result_bytes or 0),
             )
             with (
                 output.open("wb") as stdout,
@@ -86,7 +86,7 @@ async def native_request(runtime, value, input_bytes, *, device="gpu"):
                     start_new_session=True,
                 )
                 try:
-                    async with asyncio.timeout(min(60, settings.job_timeout_seconds)):
+                    async with asyncio.timeout(settings.job_timeout_seconds):
                         await process.communicate()
                 except TimeoutError as exc:
                     raise AnalyticsError(
@@ -96,7 +96,7 @@ async def native_request(runtime, value, input_bytes, *, device="gpu"):
                     ) from exc
                 finally:
                     await service._stop_process(process)
-            if output.stat().st_size > settings.max_result_bytes:
+            if settings.max_result_bytes is not None and output.stat().st_size > settings.max_result_bytes:
                 raise AnalyticsError(
                     "Projection output exceeds the byte budget", "resource_limit"
                 )

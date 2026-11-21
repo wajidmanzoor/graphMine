@@ -85,8 +85,7 @@ std::timed_mutex extension_mutex;
 std::unique_lock<std::timed_mutex> admission(Work& work) {
   work.tick(0);
   std::unique_lock<std::timed_mutex> lock(extension_mutex, std::defer_lock);
-  const double elapsed = std::chrono::duration<double>(std::chrono::steady_clock::now() - work.started).count();
-  if (!lock.try_lock_for(std::chrono::duration<double>(std::min(86400.0, work.timeout_seconds - elapsed))))
+  if (!lock.try_lock_until(work.deadline()))
     throw Failure("resource_limit", "Original GPU adapter admission timed out");
   work.tick(0);
   return lock;
@@ -108,7 +107,9 @@ template<class T> T isolated(int device, Work& work) {
   options.execution.device_ids = {device};
   const double elapsed = std::chrono::duration<double>(std::chrono::steady_clock::now() - work.started).count();
   work.tick(0);
-  options.timeout_seconds = static_cast<std::uint32_t>(std::max(1.0, std::min(86400.0, std::ceil(work.timeout_seconds - elapsed))));
+  options.timeout_seconds = work.timeout_seconds
+      ? static_cast<std::uint32_t>(std::max(1.0, std::min(static_cast<double>(UINT32_MAX), std::ceil(*work.timeout_seconds - elapsed))))
+      : 0;
   return options;
 }
 CommunityDetectionOptions community_options(const json::object& args, const std::string& backend, int device) {

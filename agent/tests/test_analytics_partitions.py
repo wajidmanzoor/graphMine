@@ -134,7 +134,7 @@ async def test_followup_prepares_full_partitions_before_native_validation(partit
         assert parameters[name] == [v["id"] for v in graph["vertices"] if v["type"] == kind]
     assert parameters.get("result_limit") is None
     assert result["plan"]["steps"][0]["budget"] == {
-        "max_candidates": None, "max_output_items": 100_000, "timeout_seconds": 60.0,
+        "max_candidates": None, "max_output_items": None, "timeout_seconds": None,
     }
     assert [stage for stage, _, _ in planner.calls] == ["route", "plan"]
     payload = planner.calls[-1][1]

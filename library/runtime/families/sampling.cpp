@@ -294,6 +294,8 @@ json::object neighborhood_sampling(const Graph& graph, const json::object& args,
                               : replacement    ? static_cast<std::uint64_t>(count)
                                                : std::min<std::uint64_t>(count, eligible.size());
             work.tick(size);
+            require(size <= chosen.max_size() && size <= rows.max_size() - rows.size(),
+                    "Sampling output exceeds native storage range");
             work.output(rows.size() + size);
             for (std::size_t j = 0; j < size; ++j) {
               if (weighted) {

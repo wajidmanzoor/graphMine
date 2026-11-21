@@ -17,6 +17,7 @@ from .features import cached_features, safe_parameters
 from .hardware import hardware_snapshot, merge_peaks, process_rss
 from .feasibility import filter_candidates, legacy_choice
 from .storage import DEFAULT_DATA_DIR, SCHEMA_VERSION, utc_now
+from ..calculation_limits import minimum_limit, remaining_seconds
 
 
 def outcome_for(error=None, *, timed_out=False):
@@ -130,8 +131,8 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
     data = graph.to_canonical() if hasattr(graph, "to_canonical") else graph
     definition = algorithm(operation)
     budget_object = kwargs.get("budget") or Budget()
-    budget_object = replace(budget_object, timeout_seconds=min(
-        budget_object.timeout_seconds, context.get("job_timeout_seconds", 1800), 1800))
+    budget_object = replace(budget_object, timeout_seconds=minimum_limit(
+        budget_object.timeout_seconds, context.get("job_timeout_seconds")))
     kwargs["budget"] = budget_object
     budget = asdict(budget_object)
     requested = context.get("requested_device", kwargs.get("device", "auto"))
@@ -149,6 +150,10 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
     if features is None:
         from .features import graph_features
         features = graph_features(data, input_kind=definition.input_kind)
+    # Forecast allocation without turning this estimate into a result limit.
+    output_estimate = budget["max_output_items"]
+    if output_estimate is None:
+        output_estimate = max(100000, features.get("n") or 0, features.get("m") or 0)
     caps, preparation_error, warnings, decision = {}, None, [], {}
     try:
         # The worker's logical device 0 must map to the physical GPU 1 lease.
@@ -175,7 +180,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
         hardware = hardware_snapshot(leased_gpu_uuid=context.get("leased_gpu_uuid"))
         hardware["backend_memory_safety"] = context.get("backend_memory_safety", 0.8)
         caps["candidates"] = filter_candidates(operation, caps["candidates"], features, parameters, hardware,
-            output_estimate=budget["max_output_items"], implementation=caps["implementation_sha256"], data_dir=data_dir)
+            output_estimate=output_estimate, implementation=caps["implementation_sha256"], data_dir=data_dir)
         for candidate in caps["candidates"]:
             if candidate["id"] in context.get("attempted_backends", []):
                 candidate.update(feasible=False, infeasible_reason="already_attempted_in_this_step")
@@ -218,10 +223,11 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
                                 for c in caps["candidates"] if c["feasible"]}, hardware=hardware,
                    graph_features=features, outcome=None, error_code=None, runtime_seconds=None,
                    native_elapsed_seconds=None, native_compute_seconds=None, preparation_seconds=None,
-                   timeout_seconds=min(budget.get("timeout_seconds", 60), context.get("job_timeout_seconds", 1800)),
+                   timeout_seconds=budget_object.timeout_seconds,
                    censored=False, peak_memory=dict(gpu_bytes=None, process_rss_bytes=process_rss(os.getpid()),
                                                     sample_interval_seconds=0.1),
-                   output_size=None, output_estimate=budget["max_output_items"], fallback_chain=context.get("fallback_chain", []),
+                   output_size=None, output_estimate=output_estimate, output_limit_items=budget["max_output_items"],
+                   fallback_chain=context.get("fallback_chain", []),
                    decision_id=context["decision_id"], attempt_index=context.get("attempt_index", 0),
                    execution_isolated=context.get("execution_isolated", False),
                    selection_mode=decision.get("selection_mode", context.get("backend_selection", "legacy")),
@@ -249,12 +255,12 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
         if preparation_error is not None:
             raise preparation_error
         now = time.monotonic()
-        remaining = min(budget_object.timeout_seconds - (now - started), context["step_deadline"] - now)
-        if remaining <= 0:
+        remaining = remaining_seconds(context["step_deadline"], now)
+        if remaining is not None and remaining <= 0:
             if row is not None:
                 row.update(execution_started=False, failure_stage="preflight")
             raise TimeoutError("Native preflight exhausted the step execution deadline")
-        if row is not None and row["selector_active"]:
+        if remaining is not None and row is not None and row["selector_active"]:
             from .policy import timeout_seconds
 
             remaining = timeout_seconds(row["predictions"].get(row["chosen_backend"]),
@@ -292,7 +298,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
                     backend=row["chosen_backend"], outcome=outcome, runtime_seconds=row["runtime_seconds"])]
                 row["fallback_eligible"] = (row["selector_active"] and not row["attempt_index"]
                     and outcome in {"timeout", "oom"} and row["execution_started"])
-                if row["fallback_eligible"] and context["step_deadline"] - ended < 60:
+                if row["fallback_eligible"] and context["step_deadline"] is not None and context["step_deadline"] - ended < 60:
                     row.update(fallback_eligible=False, fallback_skipped="fewer_than_60_seconds_remain")
                 event({"event": "native_finished", "record": row})
             except Exception:
@@ -304,9 +310,9 @@ def run_observed(run, operation, graph, *, context, step_id, emit, **kwargs):
 
     started = time.monotonic()
     budget = kwargs.get("budget") or Budget()
-    limit = min(1800, budget.timeout_seconds, context.get("job_timeout_seconds", 1800))
+    limit = minimum_limit(budget.timeout_seconds, context.get("job_timeout_seconds"))
     context = dict(context, decision_id=str(uuid4()), step_timeout_seconds=limit,
-                   step_deadline=started + limit, attempt_index=0)
+                   step_deadline=started + limit if limit is not None else None, attempt_index=0)
     last = None
 
     def event(value):
@@ -323,8 +329,8 @@ def run_observed(run, operation, graph, *, context, step_id, emit, **kwargs):
             if last and last.get("fallback_skipped"):
                 raise TimeoutError("The step has fewer than 60 seconds left; no fallback can fit within its deadline") from error
             raise
-        remaining = context["step_deadline"] - time.monotonic()
-        if remaining < 60:
+        remaining = remaining_seconds(context["step_deadline"])
+        if remaining is not None and remaining < 60:
             raise TimeoutError("The step has fewer than 60 seconds left; fallback was skipped") from error
         context.update(attempt_index=1, attempted_backends=[last["chosen_backend"]], fallback_chain=last["fallback_chain"])
         kwargs["budget"] = replace(budget, timeout_seconds=remaining)
@@ -370,7 +376,7 @@ def install():
 
             step = steps.get(current, {})
             def invoke(*args, **options):
-                return isolated_run(*args, response_limit=context.get("max_result_bytes", 64 * 1024 * 1024), **options)
+                return isolated_run(*args, response_limit=context.get("max_result_bytes"), **options)
 
             try:
                 return run_observed(invoke, operation, graph, context={

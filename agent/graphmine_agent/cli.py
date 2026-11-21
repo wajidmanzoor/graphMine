@@ -103,7 +103,7 @@ def parser() -> argparse.ArgumentParser:
     chat.add_argument(
         "--json", action="store_true", help="emit JSONL records for scripting"
     )
-    chat.add_argument("--timeout-seconds", type=float, default=600)
+    chat.add_argument("--timeout-seconds", type=float, default=None)
     usability = subcommands.add_parser(
         "evaluate-usability",
         help="run live application-language workflows and save linked feedback",
@@ -112,7 +112,7 @@ def parser() -> argparse.ArgumentParser:
     usability.add_argument("--output", type=Path, required=True)
     usability.add_argument("--data-dir", type=Path)
     usability.add_argument("--case-id", action="append")
-    usability.add_argument("--timeout-seconds", type=float, default=600)
+    usability.add_argument("--timeout-seconds", type=float, default=None)
     serve = subcommands.add_parser("serve", help="start the API and bundled web UI")
     serve.add_argument("--host")
     serve.add_argument("--port", type=int)
@@ -167,7 +167,7 @@ def parser() -> argparse.ArgumentParser:
     )
     benchmark.add_argument("--warmups", type=int, default=1)
     benchmark.add_argument("--repetitions", type=int, default=3)
-    benchmark.add_argument("--timeout-seconds", type=int, default=600)
+    benchmark.add_argument("--timeout-seconds", type=int, default=None)
     train_selector = subcommands.add_parser(
         "train-selector", help="create a deterministic backend policy from a report"
     )
@@ -211,7 +211,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if arguments.command == "evaluate-usability":
         from .usability import run_application_evaluation
 
-        if arguments.timeout_seconds <= 0:
+        if arguments.timeout_seconds is not None and arguments.timeout_seconds <= 0:
             raise SystemExit("--timeout-seconds must be positive")
         report = run_application_evaluation(
             settings,
@@ -239,7 +239,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if arguments.command == "chat":
         from .terminal import chat_main
 
-        if arguments.timeout_seconds <= 0:
+        if arguments.timeout_seconds is not None and arguments.timeout_seconds <= 0:
             raise SystemExit("--timeout-seconds must be positive")
         if arguments.base_url and arguments.data_dir:
             raise SystemExit(
@@ -357,7 +357,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             arguments.manifest,
             warmups=max(0, arguments.warmups),
             repetitions=max(1, arguments.repetitions),
-            timeout_seconds=max(1, arguments.timeout_seconds),
+            timeout_seconds=max(1, arguments.timeout_seconds) if arguments.timeout_seconds is not None else None,
         )
         write_json(arguments.output, report)
         print(

@@ -92,16 +92,19 @@ def test_resource_limit_is_a_failure_not_a_false_complete_result():
         )
 
 
-def test_default_reference_work_budget_does_not_cap_candidate_work():
+def test_default_reference_budget_does_not_cap_work_time_or_output():
     from dataclasses import asdict
     from graphmine.contracts import WorkCounter
 
     budget = Budget()
-    assert json.loads(json.dumps(asdict(budget)))["max_candidates"] is None
+    assert json.loads(json.dumps(asdict(budget))) == {
+        "max_candidates": None, "max_output_items": None, "timeout_seconds": None,
+    }
     work = WorkCounter(budget)
+    work.started -= 365 * 24 * 60 * 60
     work.tick(20_000_001)
     work.tick(2**64)
-    work.output(1)
+    work.output(1_000_001)
 
 
 def test_cpu_only_does_not_dispatch_cuda_even_with_backend_auto_config():

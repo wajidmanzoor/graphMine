@@ -55,6 +55,17 @@ def test_calculations_exceed_old_candidate_cap_without_a_default_work_limit(
         assert result["result"]["community_count"] == 1
 
 
+def test_complete_native_output_exceeds_the_former_default_limit(native):
+    graph = canonical(100_001, [])
+    with pytest.raises(BINDING.NativeError, match="output budget exceeded"):
+        native.run("breadth-first-search", graph, device="cpu", parameters={"sources": [0]},
+                   budget={"max_output_items": 100_000})
+    result = native.run("breadth-first-search", graph, device="cpu", parameters={"sources": [0]})
+    assert result["budget"] == {"max_candidates": None, "max_output_items": None, "timeout_seconds": None}
+    assert len(result["result"]["distances"]) == 100_001
+    assert result["complete"] is True
+
+
 def test_public_api_without_python_algorithm_dependencies(native):
     root = Path(__file__).resolve().parents[2]
     program = """

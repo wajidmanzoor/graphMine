@@ -134,8 +134,8 @@ def decide(candidates, row, *, model=None, model_version=None, mode="legacy", li
 
 
 def timeout_seconds(prediction, *, minimum, remaining, cap):
-    if not 0 < minimum <= 1800 or not finite(remaining) or not finite(cap):
+    if not minimum > 0 or not finite(remaining) or not finite(cap):
         raise ValueError("Invalid attempt deadline")
     p90 = prediction.get("p90_seconds") if prediction else None
     proposed = max(minimum, 3 * p90) if finite(p90) and p90 > 0 else cap
-    return max(0.0, min(1800, remaining, cap, proposed))
+    return max(0.0, min(remaining, cap, proposed))

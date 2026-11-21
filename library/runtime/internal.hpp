@@ -29,13 +29,14 @@ struct Work {
   const Graph* input_graph = nullptr;
   json::array representations;
   std::optional<std::uint64_t> max_candidates;
-  std::uint64_t max_output_items = 100000;
-  double timeout_seconds = 60;
+  std::optional<std::uint64_t> max_output_items;
+  std::optional<double> timeout_seconds;
   std::uint64_t candidates = 0;
   std::chrono::steady_clock::time_point started = std::chrono::steady_clock::now();
   void tick(std::uint64_t amount = 1);
   void tick_product(std::initializer_list<std::uint64_t> factors);
   void output(std::uint64_t count);
+  std::chrono::steady_clock::time_point deadline() const;
 };
 
 struct Search {

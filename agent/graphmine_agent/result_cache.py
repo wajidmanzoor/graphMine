@@ -29,7 +29,7 @@ def read_json(path, limit):
         raise AnalyticsError("The result changed while it was being read.", "revision_conflict", 409) from exc
     with handle:
         before = os.fstat(handle.fileno())
-        if before.st_size > limit:
+        if limit is not None and before.st_size > limit:
             raise AnalyticsError("Workflow artifact exceeds the byte budget", "resource_limit")
         raw = handle.read(before.st_size + 1)
         if len(raw) != before.st_size or stamp(os.fstat(handle.fileno())) != stamp(before):
@@ -96,7 +96,7 @@ class ResultCache:
 
         def identity():
             info = file_info(path)
-            if info.st_size > limit:
+            if limit is not None and info.st_size > limit:
                 raise AnalyticsError("Workflow artifact exceeds the byte budget", "resource_limit")
             return (str(path), *stamp(info))
         key = identity()

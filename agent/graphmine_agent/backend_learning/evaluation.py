@@ -41,7 +41,7 @@ def measured_cases(rows, card, implementation):
         for backend in eligible:
             attempts = by_backend[backend]
             measured = [r["runtime_seconds"] if r["outcome"] == "completed" and not r.get("censored")
-                        else max(r["timeout_seconds"], r.get("runtime_seconds") or 0) for r in attempts]
+                        else max(r["timeout_seconds"] or 0, r.get("runtime_seconds") or 0) for r in attempts]
             if not all(isinstance(value, (int, float)) and math.isfinite(value) and value > 0 for value in measured):
                 raise ValueError("Invalid measured comparison duration")
             costs[backend], worst[backend] = statistics.median(measured), max(measured)
@@ -57,10 +57,11 @@ def measured_cases(rows, card, implementation):
         if legacy is None:
             skipped["legacy_unavailable"] += 1
             continue
+        timeout = max((r["timeout_seconds"] for r in group if r["timeout_seconds"] is not None), default=None)
         cases.append(dict(comparison_id=identifier, context=context, eligible=eligible, excluded=excluded,
             costs=costs, worst_costs=worst, failures=failures, oracle=oracle, legacy=legacy,
             fingerprint=context["graph_features"]["snapshot_fingerprint"],
-            timeout=max(r["timeout_seconds"] for r in group)))
+            timeout=timeout, failure_penalty=timeout if timeout is not None else max(worst.values())))
     return cases, dict(skipped)
 
 
@@ -87,7 +88,7 @@ def compare(model, rows, card, *, seed=1729, exploration_budget=0.1, max_explore
     admitted = [b["id"] for b in card["backends"] if b.get("verified")]
     # Select the single-backend baseline using training graphs only. An
     # incompatible backend receives the failure penalty, not a silent fallback.
-    fixed = min(admitted, key=lambda b: (statistics.mean(c["costs"].get(b, c["timeout"]) for c in training), b)) if training else None
+    fixed = min(admitted, key=lambda b: (statistics.mean(c["costs"].get(b, c["failure_penalty"]) for c in training), b)) if training else None
     measurements, exploratory_costs, selections = [], [], []
     explored = 0
     for index, case in enumerate(validation):
@@ -110,7 +111,7 @@ def compare(model, rows, card, *, seed=1729, exploration_budget=0.1, max_explore
             exploration_worst_regret=max(case["worst_costs"][b] for b in possible) / oracle))
         measurements.append(dict(selected=case["costs"][chosen], greedy=case["costs"][best],
             legacy=case["costs"][case["legacy"]],
-            fastest_average=case["costs"].get(fixed, case["timeout"]) if fixed else None,
+            fastest_average=case["costs"].get(fixed, case["failure_penalty"]) if fixed else None,
             oracle=oracle, failure_rate=case["failures"][chosen],
             legacy_failure_rate=case["failures"][case["legacy"]],
             fastest_average_failure_rate=case["failures"].get(fixed, 1),

@@ -63,7 +63,9 @@ limits (maximum input n/m, declared conservatively by native preflight),
 native_feasible, predicted_peak_memory_bytes, memory_model_version and
 memory_prediction_reason. predictions contains memory estimates and null runtime
 predictions until Phase 4. output_estimate is the request's max_output_items
-budget, known before execution; actual output_size is never used as an input.
+budget when finite, otherwise a topology-based allocation estimate; it never
+limits output. output_limit_items and timeout_seconds are null for unlimited
+calculations. Actual output_size is never used as an input.
 execution_started=false and failure_stage=preflight identify requests rejected
 before native execution; they are not completed training observations.
 Memory coefficients are nonnegative a+b*n+c*m+d*output_estimate, scoped by

@@ -452,7 +452,7 @@ void contracts() {
            "unsupported_input");
     auto req = request("random-walks", graph,
                        {{"start_vertices", json::array{0}}, {"length", UINT64_MAX}});
-    invoke(req, "resource_limit");
+    invoke(req, "invalid_input");
     return;
   }
   for (json::value fans :
@@ -467,6 +467,9 @@ void contracts() {
   auto req = request(
       "neighborhood-sampling", graph,
       {{"seeds", json::array{0}}, {"fanouts", json::array{INT64_MAX}}, {"replacement", true}});
+  invoke(req, "invalid_input");
+  req.at("parameters").as_object()["fanouts"] = json::array{1001};
+  req["budget"] = json::object{{"max_output_items", 1000}};
   invoke(req, "resource_limit");
 }
 void boundaries() {

@@ -42,13 +42,14 @@ void read_budget(const json::value& value, Work& work) {
   fields(budget, {"max_candidates", "max_output_items", "timeout_seconds"});
   if (budget.contains("max_candidates") && !budget.at("max_candidates").is_null())
     work.max_candidates = uint(budget.at("max_candidates"), "max_candidates");
-  if (budget.contains("max_output_items"))
+  if (budget.contains("max_output_items") && !budget.at("max_output_items").is_null())
     work.max_output_items = uint(budget.at("max_output_items"), "max_output_items");
-  if (budget.contains("timeout_seconds"))
+  if (budget.contains("timeout_seconds") && !budget.at("timeout_seconds").is_null())
     work.timeout_seconds = number(budget.at("timeout_seconds"), "timeout_seconds");
-  require((!work.max_candidates || *work.max_candidates > 0) && work.max_output_items &&
-              std::isfinite(work.timeout_seconds) && work.timeout_seconds > 0,
-          "Finite budgets must be positive; max_candidates may be null for unlimited work");
+  require((!work.max_candidates || *work.max_candidates > 0) &&
+              (!work.max_output_items || *work.max_output_items > 0) &&
+              (!work.timeout_seconds || (std::isfinite(*work.timeout_seconds) && *work.timeout_seconds > 0)),
+          "Budgets must be null for unlimited execution or finite and positive");
 }
 }  // namespace
 
@@ -267,8 +268,8 @@ json::object execute(const json::object& request) {
   result["backend"] = provenance;
   result["representations"] = work.representations;
   result["budget"] = json::object{{"max_candidates", work.max_candidates ? json::value(*work.max_candidates) : json::value(nullptr)},
-                                  {"max_output_items", work.max_output_items},
-                                  {"timeout_seconds", work.timeout_seconds}};
+                                  {"max_output_items", work.max_output_items ? json::value(*work.max_output_items) : json::value(nullptr)},
+                                  {"timeout_seconds", work.timeout_seconds ? json::value(*work.timeout_seconds) : json::value(nullptr)}};
   result["elapsed_seconds"] =
       std::chrono::duration<double>(std::chrono::steady_clock::now() - work.started).count();
   return result;

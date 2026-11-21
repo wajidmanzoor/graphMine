@@ -113,10 +113,9 @@ class BinaryModel:
             (np.asarray(values, dtype=np.float64), (indices, columns)),
             shape=(len(self.rows), len(self.costs)),
         ).tocsc()
-        remaining = self.work.budget.timeout_seconds - (
-            time.monotonic() - self.work.started
-        )
-        if remaining <= 0:
+        timeout = self.work.budget.timeout_seconds
+        remaining = timeout - (time.monotonic() - self.work.started) if timeout is not None else None
+        if remaining is not None and remaining <= 0:
             raise ResourceLimit("Optimization time budget exhausted")
         for cost in self.costs:
             coefficient(cost)
@@ -126,7 +125,7 @@ class BinaryModel:
             integrality=np.ones(len(self.costs)),
             bounds=Bounds(0, 1),
             constraints=LinearConstraint(matrix, lower, upper),
-            options={"time_limit": remaining, "mip_rel_gap": 0.0},
+            options={"mip_rel_gap": 0.0, **({"time_limit": remaining} if remaining is not None else {})},
         )
         self.work.tick(int(getattr(result, "mip_node_count", 0) or 0))
         if result.status == 2:
