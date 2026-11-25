@@ -1,0 +1,12 @@
+{
+  "version": "family-topic-routing-v1",
+  "scope": "Targeted clarification presentation regression; authored development case, not held-out quality evidence.",
+  "cases": [
+    {
+      "id": "dense-1",
+      "family": "dense",
+      "question": "find tightly knit groups",
+      "problems": []
+    }
+  ]
+}

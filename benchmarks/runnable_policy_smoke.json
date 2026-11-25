@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "bootstrap_examples_per_problem": 3,
+  "repeats": 1,
+  "timeout_seconds": 30,
+  "max_candidates": 100000,
+  "max_output_items": 100000,
+  "generated_grid": {
+    "families": [
+      "erdos_renyi",
+      "power_law"
+    ],
+    "sizes": [
+      32,
+      128,
+      512,
+      2048
+    ],
+    "average_degrees": [
+      2,
+      6
+    ],
+    "seed": 1729
+  },
+  "special_graphs": [],
+  "neo4j_extracts": {
+    "datasets": [],
+    "edge_limits": []
+  },
+  "bootstrap_general_graphs": [
+    "erdos_renyi-32-2"
+  ],
+  "problems": {
+    "triangle-counting": {
+      "graph_tag": "general",
+      "parameter_grid": {
+        "mode": [
+          "count",
+          "enumerate"
+        ]
+      }
+    }
+  }
+}

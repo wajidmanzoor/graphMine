@@ -1,0 +1,53 @@
+{
+  "scope": "Isolated evaluation; no production traffic and no online training. Live override applies only to this test process.",
+  "observations": [
+    {
+      "selection_mode": "shadow",
+      "model_version": "20261125t044107.934698z-20452552d0f7",
+      "chosen_backend": "tot",
+      "eligible_backends": [
+        "cpp",
+        "tot",
+        "wetric"
+      ],
+      "probabilities": {
+        "cpp": 0.0,
+        "tot": 1.0,
+        "wetric": 0.0
+      },
+      "selection_probability": 1.0,
+      "shadow_choice": "cpp",
+      "shadow_probability": 1.0,
+      "outcome": "completed",
+      "runtime_seconds": 0.5890395622700453,
+      "timeout_seconds": 1.3513261377811432,
+      "implementation_sha256": "cbc23ca48eb0b5272af4763727f1625df1806cd32df8cf51df47f807309d6849",
+      "is_evaluation": true,
+      "triangle_count": 4
+    },
+    {
+      "selection_mode": "bandit",
+      "model_version": "20261125t044107.934698z-20452552d0f7",
+      "chosen_backend": "cpp",
+      "eligible_backends": [
+        "cpp",
+        "tot",
+        "wetric"
+      ],
+      "probabilities": {
+        "cpp": 1.0,
+        "tot": 0.0,
+        "wetric": 0.0
+      },
+      "selection_probability": 1.0,
+      "shadow_choice": null,
+      "shadow_probability": null,
+      "outcome": "completed",
+      "runtime_seconds": 0.1995006687939167,
+      "timeout_seconds": 1.3513261377811432,
+      "implementation_sha256": "cbc23ca48eb0b5272af4763727f1625df1806cd32df8cf51df47f807309d6849",
+      "is_evaluation": true,
+      "triangle_count": 4
+    }
+  ]
+}

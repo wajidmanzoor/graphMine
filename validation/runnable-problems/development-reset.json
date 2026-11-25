@@ -1,0 +1,14 @@
+{
+  "environment": "devlopment",
+  "removed_development_files": {
+    "history": 4846,
+    "captures": 489,
+    "jobs": 0,
+    "analytics": 2
+  },
+  "shared_production_stores": "preserved",
+  "new_backend_data_dir": "/data/labdata/wajid/graphmine_data/environments/devlopment/backend-runs",
+  "new_backend_model_dir": "/data/labdata/wajid/graphmine_data/environments/devlopment/backend-models",
+  "backend_selection_at_reset": "native",
+  "backend_selection_after_validation": "shadow"
+}

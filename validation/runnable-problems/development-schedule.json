@@ -1,0 +1,12 @@
+{
+  "timer": "graphmine-devlopment-backend-model.timer",
+  "status": "active",
+  "schedule": "03:15 local time daily, plus up to 15 minutes randomized delay",
+  "source_environment": "devlopment",
+  "cpu_only": true,
+  "benchmarks_launched": false,
+  "unit_files": {
+    "graphmine-devlopment-backend-model.service": "[Unit]\nDescription=GraphMine nightly backend models from observed runs\n\n[Service]\nType=oneshot\nWorkingDirectory=/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher\nExecStart=:\"/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/.venv/bin/python\" \"/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/deploy/train-backend-models.py\" --config \"/home/wajid/projects/graphDatabaseAgent/graphmine-data/environments/config/environments.json\" --environment devlopment\nTimeoutStartSec=1800\nKillMode=control-group\nNice=10\nEnvironment=OPENBLAS_NUM_THREADS=1\nUMask=0077\nNoNewPrivileges=true\n",
+    "graphmine-devlopment-backend-model.timer": "[Unit]\nDescription=Fit GraphMine backend models nightly\n\n[Timer]\nOnCalendar=*-*-* 03:15:00\nRandomizedDelaySec=15m\nPersistent=true\nUnit=graphmine-devlopment-backend-model.service\n\n[Install]\nWantedBy=timers.target\n"
+  }
+}

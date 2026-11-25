@@ -1,0 +1,129 @@
+{
+  "benchmark_id": "runnable-policy-final-20261125",
+  "rows": 192,
+  "graphs": 16,
+  "training_graphs": 13,
+  "held_out_graphs": 3,
+  "problem_ids": [
+    "triangle-counting"
+  ],
+  "K": [
+    3
+  ],
+  "outcomes": {
+    "completed": 192
+  },
+  "graph_sizes": [
+    32,
+    128,
+    512,
+    2048
+  ],
+  "feature_count": 875,
+  "active_feature_count": 11,
+  "active_features": [
+    "log_n",
+    "log_m",
+    "average_degree",
+    "log_max_degree",
+    "degree_cv",
+    "log_degeneracy",
+    "free_core_fraction",
+    "log_free_ram",
+    "gpu_utilization",
+    "parameter:triangle-counting:mode:count",
+    "parameter:triangle-counting:mode:enumerate"
+  ],
+  "backend_vocabulary_size": 38,
+  "problem_vocabulary_size": 82,
+  "run_log": "/data/labdata/wajid/graphmine_data/environments/devlopment/backend-runs/benchmarks/runnable-policy-final-20261125/runs.jsonl",
+  "run_log_sha256": "9047ab0ce79fa6734dd50ecea84459c478ab2d22f06be3f9ad7b2065f9bd9143",
+  "config": {
+    "schema_version": 1,
+    "mode": "full",
+    "is_evaluation": false,
+    "config": {
+      "schema_version": 1,
+      "bootstrap_examples_per_problem": 3,
+      "repeats": 1,
+      "timeout_seconds": 30,
+      "max_candidates": 100000,
+      "max_output_items": 100000,
+      "generated_grid": {
+        "families": [
+          "erdos_renyi",
+          "power_law"
+        ],
+        "sizes": [
+          32,
+          128,
+          512,
+          2048
+        ],
+        "average_degrees": [
+          2,
+          6
+        ],
+        "seed": 1729
+      },
+      "special_graphs": [],
+      "neo4j_extracts": {
+        "datasets": [],
+        "edge_limits": []
+      },
+      "bootstrap_general_graphs": [
+        "erdos_renyi-32-2"
+      ],
+      "problems": {
+        "triangle-counting": {
+          "graph_tag": "general",
+          "parameter_grid": {
+            "mode": [
+              "count",
+              "enumerate"
+            ]
+          }
+        }
+      }
+    },
+    "implementation_sha256": "cbc23ca48eb0b5272af4763727f1625df1806cd32df8cf51df47f807309d6849",
+    "native_library_sha256": "162b68bf2542a0bf134fd768ccda3a96e73525e810fbaaf1b61a5cf12d4ac013",
+    "benchmark_code_sha256": "a3d2ca0b9085469f372df42a8ce3d3cdd699a07617e9629bd4d442e41465a917",
+    "gpu_index": 1,
+    "gpu_uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+    "load_regimes": "idle,busy_cpu",
+    "busy_cpu_workers": 2,
+    "load_warmup_seconds": 65.0,
+    "problems": [
+      {
+        "problem": "triangle-counting",
+        "backends": [
+          "cpp",
+          "tot",
+          "wetric"
+        ]
+      }
+    ]
+  },
+  "model_version": "20261125t044107.934698z-20452552d0f7",
+  "load_regimes": {
+    "idle": {
+      "rows": 96,
+      "mean_free_core_fraction": 0.06865151723225911,
+      "free_core_fraction_range": [
+        8.7738037109375e-05,
+        0.12720489501953125
+      ],
+      "mean_gpu_utilization_percent": 55.104166666666664
+    },
+    "busy_cpu": {
+      "rows": 96,
+      "mean_free_core_fraction": 0.131963849067688,
+      "free_core_fraction_range": [
+        0.08848953247070312,
+        0.1939544677734375
+      ],
+      "mean_gpu_utilization_percent": 58.583333333333336
+    }
+  }
+}

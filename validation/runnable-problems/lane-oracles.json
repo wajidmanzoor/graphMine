@@ -1,0 +1,245 @@
+{
+  "suite_sha256": "d46135eb4547ed702e8a5e12fe5fc6eeb16b1d713c489029749d2ef9e080c44a",
+  "implementation_sha256": "cbc23ca48eb0b5272af4763727f1625df1806cd32df8cf51df47f807309d6849",
+  "passed": 34,
+  "cases": [
+    {
+      "id": "lookup_los_agaves",
+      "problem": "node-lookup",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "view_grid",
+      "problem": "maximal-cliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "calculate_picked_components",
+      "problem": "connected-components",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "explain_triangles",
+      "problem": "triangle-counting",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "view_search_tracy",
+      "problem": "maximal-bicliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "view_highlight_ada",
+      "problem": "maximal-cliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "view_bicliques_output",
+      "problem": "maximal-bicliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "explain_yelp_bicliques",
+      "problem": "maximal-bicliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "options_maximal_cliques",
+      "problem": "maximal-cliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "lookup_ada",
+      "problem": "node-lookup",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "lookup_most_connections",
+      "problem": "degree-centrality",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "options_pagerank",
+      "problem": "pagerank",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "lookup_ada_neighbors",
+      "problem": "neighbors",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "options_core",
+      "problem": "k-core",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "explain_components",
+      "problem": "connected-components",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "explain_clique_count",
+      "problem": "maximal-cliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "explain_clique_guarantee",
+      "problem": "maximal-cliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "view_largest_clique",
+      "problem": "maximal-cliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "view_open_results",
+      "problem": "maximal-bicliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "options_maximum_clique",
+      "problem": "maximum-clique",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "calculate_picked_triangles",
+      "problem": "triangle-counting",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "explain_clique_members",
+      "problem": "maximal-cliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "view_all_cliques",
+      "problem": "maximal-cliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "options_degrees",
+      "problem": "degree-centrality",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "options_components",
+      "problem": "connected-components",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "lookup_tracy",
+      "problem": "node-lookup",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "options_bicliques",
+      "problem": "maximal-bicliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "options_triangles",
+      "problem": "triangle-counting",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "calculate_picked_maximum",
+      "problem": "maximum-clique",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "explain_yelp_guarantee",
+      "problem": "maximal-bicliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "lookup_us_accounts",
+      "problem": "node-lookup",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "explain_yelp_triangles",
+      "problem": "triangle-counting",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "calculate_picked_bicliques",
+      "problem": "maximal-bicliques",
+      "checks": [
+        true
+      ]
+    },
+    {
+      "id": "view_circle",
+      "problem": "maximal-cliques",
+      "checks": [
+        true
+      ]
+    }
+  ]
+}

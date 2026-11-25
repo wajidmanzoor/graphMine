@@ -1,0 +1,51 @@
+{
+  "scope": "Development measurements, not production rollout evidence.",
+  "agent_shards": [
+    {
+      "path": "validation/runnable-problems/agent-verified-0.xml",
+      "tests": 707,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1
+    },
+    {
+      "path": "validation/runnable-problems/agent-verified-1.xml",
+      "tests": 557,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 16
+    },
+    {
+      "path": "validation/runnable-problems/agent-verified-2.xml",
+      "tests": 738,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 42
+    }
+  ],
+  "agent_complete": true,
+  "native_ctest": {
+    "passed": 61,
+    "disabled": 15
+  },
+  "native_contract_and_migration": {
+    "passed": 178
+  },
+  "native_triangle_gpu": {
+    "passed": 2
+  },
+  "frontend": {
+    "passed": 31,
+    "typecheck": true,
+    "contracts_check": true
+  },
+  "lane_oracles": {
+    "passed": 34
+  },
+  "shared_worker_smoke": {
+    "passed": 2
+  },
+  "routing_critical_sources_unchanged_during_full_evaluation": true,
+  "clarification_probe_sources_unchanged": true,
+  "recommendation": "keep_native_with_shared_nn_shadow"
+}
