@@ -442,7 +442,7 @@ async def test_real_gpu1_worker_records_executed_backend_and_physical_lease(
         pytest.skip("Set GRAPHMINE_TELEMETRY_TEST_GPU_UUID to physical GPU 1")
     inventory = hardware_snapshot(leased_gpu_uuid=uuid)
     assert inventory["leased_gpu_index"] == 1, "This test must never execute on GPU 0"
-    service = AnalyticsService(replace(settings, backend_data_dir=telemetry_dir,
+    service = AnalyticsService(replace(settings, backend_data_dir=telemetry_dir, backend_selection="native",
                                        job_timeout_seconds=60), database, graph_store, EventBus(database))
     plan = {"version": 1, "device": "auto", "steps": [
         {"id": "triangles", "problem": "triangle-counting", "input": {"input": "g"}}]}
@@ -463,7 +463,8 @@ async def test_real_gpu1_worker_records_executed_backend_and_physical_lease(
         assert item["chosen_backend"] == backend["id"]
         assert item["hardware"]["leased_gpu_index"] == 1
         assert len(item["hardware"]["gpus"]) >= 2
-        assert item["reason"] == "legacy_auto" and item["is_evaluation"]
+        assert item["reason"] == "native_rule" and item["is_evaluation"]
+        assert item["selection_mode"] == "native" and item["selection_probability"] == 1.0
         assert item["peak_memory"]["gpu_bytes"] is not None
         assert not item["telemetry_warnings"]
     finally:

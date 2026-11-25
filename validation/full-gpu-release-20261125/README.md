@@ -85,6 +85,12 @@ external API terminology; their original bytes were restored so the published
 source audits pass. The original failed testing report remains in the private
 release directory.
 
+The real GPU telemetry fixture now checks the current `native_rule` reason,
+selection mode and probability. Table projection is checked on CPU and physical
+GPU 1 only; GPU 0 stays reserved. All three targeted checks passed. cuFile logs
+are routed to private data/scratch stores, with a real projection verifying that
+the code checkout stays unchanged.
+
 Promotion uses the environment controller: the testing environment
 must pass its configured application, frontend, binding and native checks on
 the exact candidate commit before the production branch can advance. The

@@ -120,6 +120,10 @@ Each checkout also needs its locked Node dependencies in both `agent/frontend`
 and `agent/visualization` (`npm ci` in each directory). The visualization
 dependencies are needed by the running application as well as tests.
 
+The controller routes cuFile driver logs into each environment's data root via
+`CUFILE_LOGFILE_PATH`, and into the isolated scratch store during verification.
+GPU table loading therefore does not modify a code checkout.
+
 The configuration selects exact code, Python, service, and storage paths.
 `deploy/environments.py` validates that writable paths, ports, and services do
 not overlap. A developer shell cannot override its GraphMine storage settings.

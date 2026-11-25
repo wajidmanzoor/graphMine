@@ -1,4 +1,4 @@
-"""Actual API → native cuDF projection → native CPU workflow on each GPU."""
+"""Actual API → native projection → CPU workflow, using CPU or physical GPU 1."""
 
 import os
 import time
@@ -11,14 +11,20 @@ from graphmine_agent.api import create_app
 AUTH = {"Authorization": "Bearer test-secret"}
 
 
-@pytest.mark.parametrize("gpu_index", [None, 0, 1])
+@pytest.mark.parametrize("gpu_index", [None, 1])
 def test_native_table_join_builds_a_scoped_reusable_input(settings, gpu_index):
+    from graphmine_agent.backend_learning.hardware import hardware_snapshot
+
     devices = os.environ.get("GRAPHMINE_ANALYTICS_TEST_GPUS", "").split(",")
-    if gpu_index is not None and len(devices) != 2:
-        pytest.skip("Set GRAPHMINE_ANALYTICS_TEST_GPUS for GPU table-loading checks")
+    device = None
+    if gpu_index is not None:
+        device = next((g["uuid"] for g in hardware_snapshot()["gpus"]
+                       if g["index"] == 1 and g["uuid"] in devices), None)
+        if device is None:
+            pytest.skip("Configure physical GPU 1 in GRAPHMINE_ANALYTICS_TEST_GPUS")
     settings = replace(
         settings,
-        graph_gpu_uuid=devices[gpu_index] if gpu_index is not None else "",
+        graph_gpu_uuid=device or "",
         llm_gpu_uuid=None,
         job_timeout_seconds=30,
     )
@@ -86,9 +92,7 @@ def test_native_table_join_builds_a_scoped_reusable_input(settings, gpu_index):
         result = r.json()
         assert result["provenance"]["edge_count"] == 1
         assert result["provenance"]["outside_time_window"] == 1
-        assert result["allocation"]["gpu_uuid"] == (
-            devices[gpu_index] if gpu_index is not None else None
-        )
+        assert result["allocation"]["gpu_uuid"] == device
         assert client.app.state.runtime.analytics.scheduler.snapshot() == []
         file_id = result["file"]["id"]
         r = client.post(

@@ -125,6 +125,8 @@ def environment(role):
     code = Path(role["code"])
     env.update(PYTHONPATH=os.pathsep.join((str(code / "agent"), str(code / "python/graphmine"))),
                PYTHONDONTWRITEBYTECODE="1", GRAPHMINE_REPO=str(code))
+    env["CUFILE_LOGFILE_PATH"] = role["env"].get(
+        "CUFILE_LOGFILE_PATH", str(Path(role["env"]["GRAPHMINE_AGENT_DATA_ROOT"]) / "cufile.log"))
     return env
 
 
@@ -264,6 +266,7 @@ def verify_testing(config):
     # the controller's private state directory and remove it after the checks.
     with tempfile.TemporaryDirectory(prefix="graphmine-release-check-", dir=config["state_directory"]) as scratch:
         env["GRAPHMINE_AGENT_DATA_ROOT"] = scratch
+        env["CUFILE_LOGFILE_PATH"] = str(Path(scratch) / "cufile.log")
         for args in config["validation_commands"]:
             expanded = [item.replace("{python}", role["python"]).replace("{code}", role["code"]) for item in args]
             command(expanded, cwd=role["code"], env=env, capture=False)

@@ -82,10 +82,12 @@ def test_duplicate_ports_are_rejected(config):
 def test_developer_shell_does_not_leak_data_paths(config, monkeypatch):
     monkeypatch.setenv("GRAPHMINE_CAPTURE_ROOT", "/production/captures")
     monkeypatch.setenv("PYTHONPATH", "/production/code")
+    monkeypatch.setenv("CUFILE_LOGFILE_PATH", "/production/cufile.log")
     role = config["environments"]["testing"]
     env = controller.environment(role)
     assert "GRAPHMINE_CAPTURE_ROOT" not in env
     assert env["PYTHONPATH"].startswith(role["code"])
+    assert Path(env["CUFILE_LOGFILE_PATH"]).parent == Path(role["env"]["GRAPHMINE_AGENT_DATA_ROOT"])
 
 
 def test_pending_work_includes_database_jobs_and_only_live_leases(config):
@@ -138,6 +140,7 @@ def test_failed_checks_do_not_approve_a_candidate(config, monkeypatch):
     def fail(*args, **kwargs):
         scratch = Path(kwargs["env"]["GRAPHMINE_AGENT_DATA_ROOT"])
         assert scratch.is_dir() and scratch.parent == Path(config["state_directory"])
+        assert Path(kwargs["env"]["CUFILE_LOGFILE_PATH"]).parent == scratch
         assert all(not controller.overlaps(scratch, live)
                    for role in config["environments"].values()
                    for live in controller.writable_paths(role))
