@@ -150,8 +150,10 @@ def main():
                 browser.set_window_size(1440, 1050); browser.get(base)
                 for cookie in client.cookies.jar:
                     browser.add_cookie(dict(name=cookie.name, value=cookie.value, path=cookie.path, secure=cookie.secure, httpOnly=True))
+                # Hash navigation alone does not rerun the authentication bootstrap.
+                browser.refresh()
                 browser.get(base + f"/#workspace/{session['id']}/results/{workflows[-1]}")
-                WebDriverWait(browser, 90).until(lambda d: d.execute_script('return GraphMineWorkspace.state.result && !GraphMineWorkspace.state.busy'))
+                WebDriverWait(browser, 90).until(lambda d: d.execute_script('return GraphMineWorkspace.state.result && GraphMineWorkspace.state.caps && !GraphMineWorkspace.state.busy'))
                 assert browser.execute_script('return GraphMineWorkspace.state.caps.problems.length') == 82
                 browser.save_screenshot(str(args.report.with_suffix('.png')))
                 proof['browser_saved_result'] = 'passed'
