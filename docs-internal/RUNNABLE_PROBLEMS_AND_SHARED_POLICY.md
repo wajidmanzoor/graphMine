@@ -47,12 +47,22 @@ the same features and preference layer; its weights are not published.
 
 Features contain log1p vertex/edge counts, average degree, log1p maximum degree,
 degree CV, log1p degeneracy, directed/weighted flags and bipartite ratio;
-problem one-hot indicators; catalog numeric, boolean and categorical parameters
-and collection sizes; free/total CPU cores from the logged one-minute load
+problem one-hot indicators; free/total CPU cores from the logged one-minute load
 estimate, logical cores and log1p available RAM; physical GPU 1 utilization and
-log1p available VRAM; isolated execution and missing-value indicators. Triangle
-mode and result limit are included. GPU 0 is reserved for the LLM. Arbitrary
-identifiers and free text are excluded. Defaults come from the catalog.
+log1p available VRAM; isolated execution and missing-value indicators. GPU 0 is
+reserved for the LLM. Arbitrary identifiers, free text and all problem/backend
+parameters are excluded, including categorical values, collection sizes and
+parameter-missing indicators. The catalog's 82 problems give 112 feature columns
+before constant-column removal. Adding or changing parameters cannot expand this
+schema or change the NN context/scores for otherwise identical inputs.
+
+Shared model schema 2 enforces this parameter-free feature list and rejects older
+artifacts; fitting a new artifact is required. Parameters still reach execution,
+native preflight, deterministic memory admission, empirical timeout/exploration
+controls and privacy-safe telemetry. Benchmark comparisons still group identical
+settings. Those rules may change the eligible set or sampling allowance, even
+though parameters do not enter the NN. Both the NN and offline linear comparison
+use the same parameter-free representation.
 
 The normalizer is fitted only on training graphs, stored in the artifact, and
 reused at inference. Features with zero variance, including their optional

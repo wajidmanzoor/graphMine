@@ -42,7 +42,8 @@ backend order/repetition, benchmark_attempt_key; all timings remain authoritativ
 Versions 1-4 are readable for inspection; legacy operation keys normalize to
 problem on read. Shared model fitting requires current implementation provenance.
 No auxiliary memory or runtime models are maintained. No graph identities or
-free-form parameters enter learned features. Evaluation rows never train models.
+parameters enter learned features. Safe parameters remain in logs for benchmark
+pairing, feasibility and execution controls. Evaluation rows never train models.
 """
 
 

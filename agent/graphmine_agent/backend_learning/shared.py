@@ -12,7 +12,7 @@ from collections import defaultdict
 
 import numpy as np
 
-MODEL_SCHEMA = 1
+MODEL_SCHEMA = 2
 
 
 def finite(value):
@@ -25,7 +25,7 @@ def digest(value):
 
 
 def feature_schema(cards):
-    """Catalog vocabulary, independent of train/test measurements."""
+    """Graph, problem and hardware features; parameter schemas never enter the NN."""
     result = []
     for name in ("log_n", "log_m", "average_degree", "log_max_degree", "degree_cv",
                  "log_degeneracy", "directed", "weighted", "bipartite_ratio",
@@ -36,28 +36,6 @@ def feature_schema(cards):
     for card in sorted(cards, key=lambda c: c["id"]):
         problem = card["id"]
         result.append(dict(name="problem:" + problem, kind="problem", problem=problem))
-        for key, spec in sorted(card["parameters"].items()):
-            if hasattr(spec, "schema"):
-                spec = spec.schema()
-            kind = spec.get("kind", spec.get("type"))
-            enum = spec.get("choices", spec.get("enum", []))
-            common = dict(problem=problem, parameter=key, default=spec.get("default"))
-            prefix = f"parameter:{problem}:{key}"
-            # Identity values never enter the context, even when numeric.
-            if kind == "vertex_id" or key.endswith("_id") or key in {
-                "source", "target", "sink", "vertex", "seed_vertex", "anchor_edge", "root"
-            }:
-                continue
-            if enum:
-                result.extend(dict(name=prefix + ":" + str(value), kind="category",
-                                   value=value, **common) for value in enum)
-            elif kind in {"integer", "number", "boolean"}:
-                result.append(dict(name=prefix, kind="number", **common))
-            elif kind in {"array", "object"}:
-                result.append(dict(name=prefix, kind="count", **common))
-            else:
-                continue
-            result.append(dict(name=prefix + ":missing", kind="parameter_missing", **common))
     return result
 
 
@@ -86,16 +64,8 @@ def raw_features(row, schema):
             value = not finite(aggregates[item["feature"]])
         elif kind == "problem":
             value = row["problem"] == item["problem"]
-        elif row["problem"] != item["problem"]:
-            value = 0.
         else:
-            value = row.get("parameters", {}).get(item["parameter"], item.get("default"))
-            if kind == "category":
-                value = value == item["value"]
-            elif kind == "count":
-                value = value.get("count") if isinstance(value, dict) else len(value) if isinstance(value, list) else None
-            elif kind == "parameter_missing":
-                value = value is None or isinstance(value, dict) and value.get("redacted", False)
+            raise ValueError("Unsupported shared-policy feature kind")
         result.append(float(value) if finite(value) else 0.)
     return np.asarray(result, dtype=float)
 
@@ -131,6 +101,8 @@ def validate(model, *, serving=True):
         raise ValueError("The linear ablation is offline only")
     if not model["backend_ids"] or len(set(model["backend_ids"])) != len(model["backend_ids"]):
         raise ValueError("Invalid backend vocabulary")
+    if model["feature_schema"] != feature_schema({"id": problem} for problem in model["problem_ids"]):
+        raise ValueError("Shared policy requires a parameter-free feature schema")
     stats = model["normalization"]
     indices = stats["indices"]
     if len(set(indices)) != len(indices) or any(type(i) is not int or not 0 <= i < len(model["feature_schema"]) for i in indices):

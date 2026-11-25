@@ -6,6 +6,10 @@ have been removed as requested. Development now explicitly enables live NN/bandi
 selection as described below. That override does not establish production rollout
 evidence or change the measured results in this report.
 
+The initial experiment below used parameter features. The current schema-2 model
+excludes them; its retraining and execution verification are recorded in the
+final section.
+
 ## Scope and data
 
 The final hierarchy has 14 families and 82 runnable problems. Topics provide
@@ -169,3 +173,36 @@ clipped probability correction, shadow exclusion, eligibility masking, explicit
 requests, daily-budget concurrency, hard timeouts and the single fallback attempt.
 The development web services remain in their existing stopped state; their next
 launch uses the live selector configuration.
+
+## Parameter-free model, 2026-11-25
+
+The encoder now uses graph features, problem identity, hardware state and the
+isolated-run flag, with missing indicators for aggregate measurements. Numeric,
+boolean, categorical, collection-size and missing-value features derived from
+parameters are all excluded. The schema shrank from 875 to 112 columns. Nine
+columns vary in the existing paired training data, yielding a 9→64→32→38 network
+with 3,974 learned weights and biases. The output remains one shared backend
+preference layer. Model schema 2 validates the exact permitted feature list and
+rejects schema-1 artifacts, including the previously active model.
+
+Version `20261125t055931.857267z-20452552d0f7` was trained for 2,000 epochs using the
+same 192 measurements, 52 training comparisons and three held-out graphs. It is
+published as development's current model with live `bandit` selection retained.
+The mean held-out runtime ratio remains 1.0047; median, p90 and p99 are 1.0,
+with zero measured failures or timeouts. These are the same small triangle-only
+test cases, so this does not establish broader performance equivalence. Full
+results are in [the new model metadata](../validation/runnable-problems/shared-policy-no-parameters.json)
+and [the before/after summary](../validation/runnable-problems/no-parameter-features-summary.json).
+
+All 108 targeted policy, telemetry, feasibility and benchmark tests passed; one
+optional GPU telemetry test was skipped. Two additional real supervised worker
+checks admitted all three triangle backends and executed the NN's selected `cpp`
+backend. Count mode returned four triangles; enumeration with `result_limit=2`
+returned the same total count and exactly two groups. The loaded model produced
+identical 32-dimensional contexts and backend scores when only parameters changed.
+These verification rows are evaluation-only and cannot enter training.
+
+Parameters remain in native requests, feasibility/memory checks, telemetry,
+benchmark grouping and empirical timeout/exploration controls. Consequently,
+parameter changes can still affect eligibility or sampling allowance while the
+NN scores remain parameter-independent. Nightly retraining uses the new schema.

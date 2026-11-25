@@ -1,0 +1,58 @@
+{
+  "scope": "Parameter features removed from the encoder; parameters retained for execution and fixed controls.",
+  "model_version": "20261125t055931.857267z-20452552d0f7",
+  "model_schema": 2,
+  "selection_mode": "bandit",
+  "raw_feature_count": 112,
+  "active_features": [
+    "log_n",
+    "log_m",
+    "average_degree",
+    "log_max_degree",
+    "degree_cv",
+    "log_degeneracy",
+    "free_core_fraction",
+    "log_free_ram",
+    "gpu_utilization"
+  ],
+  "dropped_feature_count": 103,
+  "learned_parameter_count": 3974,
+  "previous_parameter_model_rejected": true,
+  "paired_training_comparisons": 52,
+  "application_feedback_training_rows": 0,
+  "held_out_graphs": 3,
+  "same_dataset_before_after": {
+    "with_parameter_features": {
+      "mean": 1.004731999803129,
+      "median": 1.0,
+      "p90": 1.0,
+      "p99": 1.0,
+      "tail_seconds_p90": 0.28576712869107723,
+      "tail_seconds_p99": 0.3393749240785837,
+      "failure_rate": 0.0,
+      "timeout_rate": 0.0
+    },
+    "without_parameter_features": {
+      "mean": 1.0047319485023452,
+      "median": 1.0,
+      "p90": 1.0,
+      "p99": 1.0,
+      "tail_seconds_p90": 0.28576712869107723,
+      "tail_seconds_p99": 0.3393749240785837,
+      "failure_rate": 0.0,
+      "timeout_rate": 0.0
+    }
+  },
+  "tests": {
+    "tests": 109,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "passed": 108
+  },
+  "real_worker_checks": [
+    "no-parameters-live-count.json",
+    "no-parameters-live-enumerate.json"
+  ],
+  "verification_runs_excluded_from_training": true
+}

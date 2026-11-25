@@ -106,14 +106,53 @@ def test_graph_holdout_and_train_only_normalization(fitted):
     assert 'free_core_fraction' not in before['dropped_features']
 
 
-def test_safe_features_defaults_missing_flags_and_physical_gpu1():
-    row=context();row['parameters']={'sources': {'count': 4},'result_limit': 7}
+def test_graph_problem_hardware_features_and_missing_flags():
+    row=context()
     schema=shared.feature_schema([card()]);features=dict(zip([s['name'] for s in schema],shared.raw_features(row,schema)))
     assert features['gpu_utilization']==0 and features['logical_cores']==8
     assert features['bipartite_ratio:missing']==1
-    assert features['parameter:triangle-counting:mode:count']==1
-    assert features['parameter:triangle-counting:sources']==4
-    assert features['parameter:triangle-counting:result_limit']==7
+    assert features['problem:triangle-counting']==1
+    assert len(schema)==31
+
+
+def test_catalog_parameter_growth_does_not_change_feature_schema():
+    original=card()
+    expanded=copy.deepcopy(original)
+    expanded['parameters'].update({
+        'mode': {'kind': 'string', 'choices': ['count','enumerate','new-mode']},
+        'new_flag': {'kind': 'boolean', 'default': True},
+        'new_threshold': {'kind': 'number', 'default': .1},
+        'new_collection': {'kind': 'array'},
+    })
+    assert shared.feature_schema([original])==shared.feature_schema([expanded])
+    assert shared.feature_schema([original])==shared.feature_schema([{'id':original['id']}])
+
+
+@pytest.mark.parametrize('parameters', [
+    {}, {'mode':'enumerate','result_limit':10000,'sources':{'count':100}},
+    {'mode':None,'result_limit':None,'new_flag':True,'new_threshold':.123},
+])
+def test_parameter_changes_leave_features_context_and_scores_unchanged(fitted,parameters):
+    model,training,_=fitted
+    original=training[0]['context']
+    changed=dict(original,parameters=parameters)
+    np.testing.assert_array_equal(shared.raw_features(original,model['feature_schema']),
+                                  shared.raw_features(changed,model['feature_schema']))
+    np.testing.assert_array_equal(shared.encode(model,original),shared.encode(model,changed))
+    eligible=['cpp','gpu-first']
+    assert shared.preferences(model,original,eligible)==shared.preferences(model,changed,eligible)
+
+
+def test_parameter_features_and_old_artifacts_cannot_be_loaded(fitted):
+    model,_,_=fitted
+    legacy=copy.deepcopy(model);legacy['schema_version']=1
+    with pytest.raises(ValueError,match='Unknown shared policy format'):
+        shared.validate(legacy)
+    invalid=copy.deepcopy(model)
+    invalid['feature_schema'].append(dict(name='parameter:triangle-counting:mode',
+                                          kind='category',problem='triangle-counting',parameter='mode',value='count'))
+    with pytest.raises(ValueError,match='parameter-free'):
+        shared.validate(invalid)
 
 
 def test_loss_penalizes_slow_misses_more_than_near_ties():

@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "model_version": "20261125t055931.857267z-20452552d0f7",
+  "created_at": "2026-11-25T05:59:31.859783+00:00",
+  "implementation_sha256": "cbc23ca48eb0b5272af4763727f1625df1806cd32df8cf51df47f807309d6849",
+  "admission_fingerprint": "d6350ea646d79d2a0f7044999f4fc66caba8be0807f6335f49b8d5549f87a9a3",
+  "model_sha256": "fd84f93f5d181457888ca4a89f00136e2517ad11e65f9e2ef6d344d35bc20a26",
+  "configuration": {
+    "temperature": 1.0,
+    "floor": 0.02,
+    "exploration_enabled": true,
+    "exploration_budget": 0.1
+  },
+  "comparison": {
+    "policies": {
+      "shared_nn": {
+        "metrics": {
+          "mean": 1.0047319485023452,
+          "median": 1.0,
+          "p90": 1.0,
+          "p99": 1.0,
+          "tail_seconds_p90": 0.28576712869107723,
+          "tail_seconds_p99": 0.3393749240785837,
+          "failure_rate": 0.0,
+          "timeout_rate": 0.0
+        },
+        "cases": 12,
+        "by_problem": {
+          "triangle-counting": {
+            "mean": 1.0047319485023452,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.28576712869107723,
+            "tail_seconds_p99": 0.3393749240785837,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "by_k": {
+          "3": {
+            "mean": 1.0047319485023452,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.28576712869107723,
+            "tail_seconds_p99": 0.3393749240785837,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "native_to_oracle_gap_closed": 0.9945091668407383
+      },
+      "shared_linear": {
+        "metrics": {
+          "mean": 1.0047347454687172,
+          "median": 1.0,
+          "p90": 1.0,
+          "p99": 1.0,
+          "tail_seconds_p90": 0.28576712869107723,
+          "tail_seconds_p99": 0.3393749240785837,
+          "failure_rate": 0.0,
+          "timeout_rate": 0.0
+        },
+        "cases": 12,
+        "by_problem": {
+          "triangle-counting": {
+            "mean": 1.0047347454687172,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.28576712869107723,
+            "tail_seconds_p99": 0.3393749240785837,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "by_k": {
+          "3": {
+            "mean": 1.0047347454687172,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.28576712869107723,
+            "tail_seconds_p99": 0.3393749240785837,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "native_to_oracle_gap_closed": 0.9945059213118207
+      },
+      "native": {
+        "metrics": {
+          "mean": 1.861790618125682,
+          "median": 1.7225479587421202,
+          "p90": 2.263141848784136,
+          "p99": 2.6168844927736297,
+          "tail_seconds_p90": 0.48943251371383667,
+          "tail_seconds_p99": 0.4987283442169428,
+          "failure_rate": 0.0,
+          "timeout_rate": 0.0
+        },
+        "cases": 12,
+        "by_problem": {
+          "triangle-counting": {
+            "mean": 1.861790618125682,
+            "median": 1.7225479587421202,
+            "p90": 2.263141848784136,
+            "p99": 2.6168844927736297,
+            "tail_seconds_p90": 0.48943251371383667,
+            "tail_seconds_p99": 0.4987283442169428,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "by_k": {
+          "3": {
+            "mean": 1.861790618125682,
+            "median": 1.7225479587421202,
+            "p90": 2.263141848784136,
+            "p99": 2.6168844927736297,
+            "tail_seconds_p90": 0.48943251371383667,
+            "tail_seconds_p99": 0.4987283442169428,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "native_to_oracle_gap_closed": 0.0
+      },
+      "oracle": {
+        "metrics": {
+          "mean": 1.0,
+          "median": 1.0,
+          "p90": 1.0,
+          "p99": 1.0,
+          "tail_seconds_p90": 0.28576712869107723,
+          "tail_seconds_p99": 0.3393749240785837,
+          "failure_rate": 0.0,
+          "timeout_rate": 0.0
+        },
+        "cases": 12,
+        "by_problem": {
+          "triangle-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.28576712869107723,
+            "tail_seconds_p99": 0.3393749240785837,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "by_k": {
+          "3": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.28576712869107723,
+            "tail_seconds_p99": 0.3393749240785837,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "native_to_oracle_gap_closed": 1.0
+      }
+    },
+    "whole_graph_holdout": true,
+    "graph_count": 3,
+    "probability_integration": "Exact masked distribution within measured sizes; deterministic greedy outside. Daily budget exhaustion can only remove exploration; no synthetic traffic ledger is assumed.",
+    "failure_cost": "Configured multiple of the slowest completed paired runtime; all measured timings retained.",
+    "removed_policy": "Per-problem regressions were removed at the user request; no current-policy comparison is fabricated.",
+    "live_ready": false,
+    "recommendation": "keep_native_until_paired_shadow_evidence",
+    "shadow": {
+      "rows": 0,
+      "agreement_count": 0,
+      "distinct_graphs": 0,
+      "metrics": null,
+      "live_ready": false,
+      "reason": "Paired real-traffic measurements are required to measure counterfactual runtime, failure and timeout rates."
+    }
+  },
+  "skipped_rows": 0,
+  "excluded_comparisons": {},
+  "dropped_features": [
+    "log_n:missing",
+    "log_m:missing",
+    "average_degree:missing",
+    "log_max_degree:missing",
+    "degree_cv:missing",
+    "log_degeneracy:missing",
+    "directed",
+    "directed:missing",
+    "weighted",
+    "weighted:missing",
+    "bipartite_ratio",
+    "bipartite_ratio:missing",
+    "free_core_fraction:missing",
+    "logical_cores",
+    "logical_cores:missing",
+    "log_free_ram:missing",
+    "gpu_utilization:missing",
+    "log_free_vram",
+    "log_free_vram:missing",
+    "isolated",
+    "isolated:missing",
+    "problem:balanced-partitioning",
+    "problem:betweenness-centrality",
+    "problem:biconnected-components",
+    "problem:bipartite-matching",
+    "problem:bounded-paths-cycles",
+    "problem:breadth-first-search",
+    "problem:butterfly-counting",
+    "problem:common-neighbors",
+    "problem:community-detection",
+    "problem:connected-components",
+    "problem:degree-centrality",
+    "problem:densest-k-subgraph",
+    "problem:densest-subgraph",
+    "problem:dynamic-triangle-counting",
+    "problem:edge-filter",
+    "problem:entity-resolution",
+    "problem:force-directed-layout",
+    "problem:frequent-subgraphs",
+    "problem:graph-aggregate",
+    "problem:graph-anomalies",
+    "problem:graph-coarsening",
+    "problem:graph-condensation",
+    "problem:graph-edit-distance",
+    "problem:graph-geolocation",
+    "problem:graph-learning",
+    "problem:graph-signal-denoising",
+    "problem:graphlet-counting",
+    "problem:group-steiner-tree",
+    "problem:hypergraph-node-learning",
+    "problem:hypergraph-partitioning",
+    "problem:induced-subgraph",
+    "problem:influence-maximization",
+    "problem:k-cliques",
+    "problem:k-core",
+    "problem:k-truss",
+    "problem:knn-graph",
+    "problem:knowledge-graph-embedding",
+    "problem:laplacian-eigenpairs",
+    "problem:link-prediction",
+    "problem:many-source-shortest-paths",
+    "problem:max-flow-min-cut",
+    "problem:maximal-biclique-counting",
+    "problem:maximal-bicliques",
+    "problem:maximal-cliques",
+    "problem:maximal-independent-set",
+    "problem:maximum-clique",
+    "problem:maximum-common-subgraph",
+    "problem:maximum-independent-set",
+    "problem:minimum-vertex-cover",
+    "problem:motif-counting",
+    "problem:neighborhood-sampling",
+    "problem:neighbors",
+    "problem:network-alignment",
+    "problem:node-embedding",
+    "problem:node-learning",
+    "problem:node-lookup",
+    "problem:null-model-significance",
+    "problem:overlapping-communities",
+    "problem:pagerank",
+    "problem:persistent-homology",
+    "problem:personalized-pagerank",
+    "problem:quasi-cliques",
+    "problem:query-paths",
+    "problem:query-subgraph",
+    "problem:random-walks",
+    "problem:seeded-local-community",
+    "problem:signed-balance",
+    "problem:simrank",
+    "problem:single-graph-frequent-subgraphs",
+    "problem:single-source-shortest-paths",
+    "problem:spanning-tree-forest",
+    "problem:spectral-sparsification",
+    "problem:subgraph-isomorphism",
+    "problem:temporal-motifs",
+    "problem:temporal-paths",
+    "problem:top-k-critical-paths",
+    "problem:topological-sort",
+    "problem:transitive-closure",
+    "problem:triangle-counting",
+    "problem:vertex-coloring",
+    "problem:weighted-matching",
+    "problem:widest-paths"
+  ]
+}
