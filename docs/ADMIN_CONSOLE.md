@@ -71,7 +71,7 @@ The `accounts` command remains an alias. Passwords are entered through a hidden
 terminal prompt. `--data-root` belongs immediately after `users` or `accounts` and
 selects the same store as the running agent.
 
-## Problemal events and migration
+## Operational events and migration
 
 Schema 12 renames the old private `events` table to `conversation_events`, preserving
 its sequence numbers, payloads, and conversation timeline. The new `events` table

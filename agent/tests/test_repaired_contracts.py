@@ -18,7 +18,6 @@ from graphmine_agent.llm import constrain_plan_schema
 from graphmine_agent.models import ExecutionPlan, FileRole, PlanDraft
 from graphmine_agent.planning import PlanValidationError, PlanValidator
 from graphmine_agent.profiles import ProfileInputError, prepare_problem_graph
-from graphmine_agent.selector import BackendSelector
 from jsonschema import Draft202012Validator
 
 AUTH = {"Authorization": "Bearer test-secret"}
@@ -119,10 +118,7 @@ def test_repaired_profiles_are_explicit_validated_contracts(catalog, settings, b
     assert normalized.backend_id == backend
     original = copy.deepcopy(fixtures()[backend][1])
     assert prepare_problem_graph(original, normalized) == original
-    selector = BackendSelector(
-        settings.backend_policy_path, catalog, PlanValidator(catalog)
-    )
-    assert selector.select(normalized, None, {backend}).backend_id == backend
+
 
 
 @pytest.mark.parametrize(

@@ -49,11 +49,12 @@ reports with retired family labels were removed at the user's request; their
 original contents remain in Git history. This release retains the existing
 algorithms, GPU adapters and optional biclique partition contract.
 
-Production uses the current backend models for live selection, as explicitly
+The pinned production release (before the runnable-problem redesign) uses its
+existing backend models for live selection, as explicitly
 requested by the operator. Its configuration sets `GRAPHMINE_BACKEND_SELECTION=bandit`
 and `GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE=false`; measured rollout metrics
 remain unchanged. Graph execution uses CPU and physical
-GPU 1 only; GPU 0 remains reserved for the existing model service. Initial
+GPU 1 only; GPU 0 remains reserved for the existing model service. On that pinned release, initial
 collection is capped at three attempts per algorithm. Pooled observations and
 models remain in the configured `/data` roots. The nightly backend-model timer
 fits only those existing observations; it never launches a benchmark sweep.
@@ -83,8 +84,9 @@ Production keeps its existing `/data/labdata/wajid/graphmine_data/store` data.
 Studio's production workspace and dataset root are under
 `/data/labdata/wajid/graphmine_data/dataset-studio/`. Development and testing data
 are under `graphmine_data/environments/devlopment/` and
-`graphmine_data/environments/testing/`. Raw benchmark downloads and model weights
-remain shared files on the data disk.
+`graphmine_data/environments/testing/`. Raw benchmark downloads remain on the data disk. Development backend logs and
+models now use private `backend-runs` and `backend-models` directories under its
+environment root. Production remains on its pinned release until separately promoted.
 
 Private host configuration, the installed controller, and deployment state live
 under `graphmine-data/environments/`, outside the Git checkout. The installed

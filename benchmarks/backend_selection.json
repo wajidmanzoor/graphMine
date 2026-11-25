@@ -2,7 +2,7 @@
   "schema_version": 1,
   "bootstrap_examples_per_problem": 3,
   "repeats": 3,
-  "timeout_seconds": null,
+  "timeout_seconds": 1800,
   "max_candidates": null,
   "max_output_items": null,
   "generated_grid": {

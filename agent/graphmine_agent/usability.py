@@ -152,7 +152,6 @@ async def evaluate_applications(
                 settings.catalog_path,
                 settings.manifest_path,
                 settings.program_instructions_path,
-                settings.backend_policy_path,
             )
         },
         "data_directory": str(data_dir.resolve()),

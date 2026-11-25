@@ -1,43 +1,78 @@
-"""Constrained Thompson decisions; this module never admits a native backend."""
-
+"""One masked shared policy with exact behavior propensities and fixed controls."""
 from __future__ import annotations
 
 import fcntl
 import json
 import math
 import os
+import random
 import re
 import secrets
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .feasibility import legacy_choice
-from .linear import finite, predict
-from .memory import effective_rows
+from .feasibility import native_choice
+from .shared import digest, finite, preferences
 from .storage import atomic_json
 
 NAME = re.compile(r"[a-z0-9][a-z0-9_-]{0,127}\Z")
 
 
-def size_allows_exploration(head, features):
-    size = {k: features.get(k) for k in ("n", "m")}
-    if not all(type(v) is int and v >= 0 for v in size.values()):
-        return False
-    completed = head.get("completed_max")
-    if completed and all(size[k] <= completed[k] for k in size):
-        return True
-    bounds = head.get("benchmark_range")
-    # No measured range means no speculative enlargement, even for a new head.
-    return bool(head.get("run_count", 0) < 5 and bounds
-                and all(bounds[k][0] <= size[k] <= bounds[k][1] for k in size))
+def distribution(scores, temperature=1., floor=.02):
+    if not finite(temperature) or temperature <= 0 or not finite(floor) or not 0 <= floor <= 1:
+        raise ValueError("Invalid softmax controls")
+    if not scores or any(not finite(value) for value in scores.values()):
+        raise ValueError("Invalid backend preferences")
+    peak = max(scores.values())
+    values = {key: math.exp((value - peak) / temperature) for key, value in scores.items()}
+    total = sum(values.values())
+    return {key: (1 - floor) * value / total + floor / len(values) for key, value in values.items()}
 
 
-def reserve_exploration(data_dir, problem, decision_id, mode, fraction, *, now=None):
-    """Reserve numerator slots atomically against authoritative logged runs.
+def sample(probabilities, seed):
+    return random.Random(seed).choices(list(probabilities), weights=list(probabilities.values()), k=1)[0]
 
-    In-flight and crashed reservations never inflate the denominator. A lost
-    telemetry row can only reduce exploration. Fallback attempts share a
-    decision_id and count once. Benchmark and evaluation rows count neither.
+
+def measured_ranges(model, row):
+    return [r for r in model.get("controls", {}).get(row["problem"], [])
+            if r["parameters_sha256"] == digest(row.get("parameters", {}))]
+
+
+def size_allows_exploration(model, row):
+    ranges = measured_ranges(model, row)
+    shape = row["graph_features"]
+    return bool(ranges) and all(type(shape.get(k)) is int and
+        min(r[k][0] for r in ranges) <= shape[k] <= max(r[k][1] for r in ranges) for k in ("n", "m"))
+
+
+def control_range(model, row):
+    ranges = measured_ranges(model, row) or model.get("controls", {}).get(row["problem"], [])
+    if not ranges:
+        return None
+    shape = row["graph_features"]
+    def distance(r):
+        return sum(max(0., math.log1p(r[k][0]) - math.log1p(shape[k]),
+                       math.log1p(shape[k]) - math.log1p(r[k][1])) for k in ("n", "m"))
+    # Use the slowest measured bound on a tie, including different parameter settings.
+    return min(ranges, key=lambda r: (distance(r), -r["slowest_seconds"]))
+
+
+def timeout_seconds(model, row, *, remaining=None, multiple=3., default=300.):
+    if not finite(multiple) or multiple < 1 or not finite(default) or default <= 0:
+        raise ValueError("Invalid empirical timeout configuration")
+    if remaining is not None and (not finite(remaining) or remaining < 0):
+        raise ValueError("Invalid remaining deadline")
+    bounds = control_range(model or {}, row)
+    value = multiple * bounds["slowest_seconds"] if bounds else default
+    return min(value, remaining) if remaining is not None else value
+
+
+def reserve_exploration(data_dir, problem, decision_id, mode, fraction, *, probabilities, best, seed, now=None):
+    """Budget gating and the draw share a lock so the logged probability is exact.
+
+    A rejected budget changes the distribution BEFORE drawing, including when
+    the original softmax would have drawn the greedy backend. Fallbacks do not
+    reserve; crashes retain reservations and cannot inflate the denominator.
     """
     if not NAME.fullmatch(problem) or mode not in {"shadow", "bandit"} or not 0 <= fraction <= 1:
         raise ValueError("Invalid exploration ledger request")
@@ -49,93 +84,97 @@ def reserve_exploration(data_dir, problem, decision_id, mode, fraction, *, now=N
     try:
         fcntl.flock(fd, fcntl.LOCK_EX)
         state = json.loads(path.read_text()) if path.exists() else {"reserved_decisions": []}
-        rows = []
+        records = {}
         day = Path(data_dir) / "runs" / now.strftime("%Y/%m/%d")
         for log in sorted(day.glob("runs-*.jsonl")):
             for line in log.read_text().splitlines():
                 try:
                     row = json.loads(line)
-                    if (row.get("problem") == problem and row.get("source") == "application"
-                            and row.get("is_evaluation") is False):
-                        rows.append(row)
-                except (ValueError, TypeError, AttributeError):
-                    # Malformed or incomplete lines never grant budget.
+                    if row.get("problem") == problem and row.get("source") == "application" and row.get("is_evaluation") is False:
+                        records[row["run_id"]] = row
+                except (ValueError, KeyError, TypeError, AttributeError):
                     continue
-        rows = effective_rows(rows)
+        superseded = {r["supersedes"] for r in records.values() if r.get("supersedes")}
+        rows = [r for key, r in records.items() if key not in superseded]
         decisions = {r.get("decision_id", r["run_id"]) for r in rows}
-        explored = {r.get("decision_id", r["run_id"]) for r in rows
-                    if (r.get("selection_mode") == mode and
-                        (r.get("shadow_reason") if mode == "shadow" else
-                         r.get("backend_choice_reason") or r.get("reason")) == "explore")}
-        explored.update(state["reserved_decisions"])
+        reserved = set(state["reserved_decisions"])
+        reserved.update(r.get("decision_id", r["run_id"]) for r in rows if r.get("selection_mode") == mode
+                        and r.get("shadow_reason" if mode == "shadow" else "backend_choice_reason") == "explore")
         limit = math.floor(len(decisions) * fraction + 1e-12)
-        allowed = decision_id in explored or len(explored) < limit
-        if allowed:
-            explored.add(decision_id)
-            atomic_json(path, {"reserved_decisions": sorted(explored)})
-        return dict(allowed=allowed, logged_decisions=len(decisions), reserved_explorations=len(explored), limit=limit)
+        allowed = len(reserved) < limit
+        actual = dict(probabilities) if allowed else {b: float(b == best) for b in probabilities}
+        choice = sample(actual, seed)
+        if choice != best:
+            reserved.add(decision_id)
+            atomic_json(path, {"reserved_decisions": sorted(reserved)})
+        return dict(choice=choice, probabilities=actual, allowed=allowed,
+                    logged_decisions=len(decisions), reserved_explorations=len(reserved), limit=limit)
     finally:
         os.close(fd)
 
 
-def decide(candidates, row, *, model=None, model_version=None, mode="legacy", live_allowed=False,
+def decide(candidates, row, *, model=None, model_version=None, mode="native", live_allowed=False,
            requested_backend="auto", requested_device="auto", seed=None,
-           exploration_enabled=True, exploration_budget=0.10, max_explore_ratio=1.5,
-           reserve=None):
-    """Return a decision over the already filtered native candidate set only."""
-    if mode not in {"legacy", "shadow", "bandit"} or not 1 <= max_explore_ratio <= 1.5:
-        raise ValueError("Invalid backend policy")
-    feasible = [c["id"] for c in candidates if c.get("feasible") is True]
-    legacy = legacy_choice(candidates, requested_backend)
-    if legacy is None:
-        raise ValueError("No feasible backend")
-    result = dict(chosen_backend=legacy, native_backend=requested_backend,
-        reason="forced" if requested_device != "auto" or requested_backend != "auto" else "legacy_auto",
-        selection_mode=mode, model_version=model_version, predictions={}, selection_seed=None,
-        shadow_choice=None, shadow_reason=None, policy_warning=None, exploration={})
-    if mode == "legacy":
+           exploration_enabled=True, exploration_budget=.10, temperature=1., floor=.02, reserve=None):
+    if mode not in {"native", "shadow", "bandit"}:
+        raise ValueError("Unknown backend selection mode")
+    eligible = [c for c in candidates if c.get("feasible") is True and
+                (requested_device == "auto" or c["device"] == requested_device)]
+    chosen = native_choice(eligible, requested_backend)
+    if chosen is None:
+        raise ValueError("No feasible backend for the requested backend/device")
+    ids = [c["id"] for c in eligible]
+    forced = requested_backend != "auto"
+    result = dict(chosen_backend=chosen, native_backend=chosen, reason="forced" if forced or requested_device != "auto" else "native_rule",
+        selection_mode="native", model_version=model_version, eligible_backends=ids,
+        probabilities={b: float(b == chosen) for b in ids}, selection_probability=1.,
+        selection_seed=None, shadow_choice=None, shadow_reason=None, shadow_probability=None,
+        shadow_probabilities=None, policy_warning=None, exploration={}, context_features=None,
+        cost_scale_seconds=None, failure_cost=None)
+    if forced or len(ids) == 1 or mode == "native":
+        if len(ids) == 1 and not forced and requested_device == "auto":
+            result["reason"] = "only_option"
         return result
     if model is None:
-        result["policy_warning"] = "runtime_model_unavailable"
+        result["policy_warning"] = "shared_model_unavailable"
         return result
+    scores = preferences(model, row, ids)
+    best = max(ids, key=lambda b: scores[b])
     seed = secrets.randbits(63) if seed is None else seed
-    predictions = predict(model, row, feasible, seed=seed)
-    result.update(predictions=predictions, selection_seed=seed)
-    if requested_backend != "auto":
-        return result  # Never replace an explicitly named native backend.
-    best = min(feasible, key=lambda b: (predictions[b]["p50_seconds"], b))
-    proposed = max(feasible, key=lambda b: (predictions[b]["sampled_value"], b))
-    reason, choice = ("only_option", best) if len(feasible) == 1 else ("exploit", best)
+    proposed = distribution(scores, temperature, floor)
     blocked = []
-    if len(feasible) > 1 and proposed != best:
-        if not exploration_enabled:
-            blocked.append("kill_switch")
-        if predictions[proposed]["p50_seconds"] > max_explore_ratio * predictions[best]["p50_seconds"]:
-            blocked.append("predicted_slowdown")
-        if not size_allows_exploration(model["heads"].get(proposed, {}), row["graph_features"]):
-            blocked.append("unmeasured_size")
-        if not blocked:
-            budget = reserve() if reserve else {"allowed": False}
-            result["exploration"]["daily_budget"] = budget
-            if not budget["allowed"]:
-                blocked.append("daily_budget")
-        if not blocked:
-            choice, reason = proposed, "explore"
-    result["exploration"].update(proposed_backend=proposed, best_p50_backend=best,
-                                  blocked_by=blocked, fraction=exploration_budget)
+    if not exploration_enabled:
+        blocked.append("disabled")
+    if not size_allows_exploration(model, row):
+        blocked.append("unmeasured_size_or_parameters")
+    if blocked:
+        proposed = {b: float(b == best) for b in ids}
+        choice = best
+    elif reserve is not None:
+        budget = reserve(probabilities=proposed, best=best, seed=seed)
+        proposed, choice = budget["probabilities"], budget["choice"]
+        result["exploration"]["daily_budget"] = {k: v for k, v in budget.items() if k not in {"choice", "probabilities"}}
+        if not budget["allowed"]:
+            blocked.append("daily_budget")
+    else:
+        # Online serving cannot spend an unaccounted budget. Offline evaluation
+        # passes an explicit draw callback to measure the configured distribution.
+        proposed, choice = {b: float(b == best) for b in ids}, best
+        blocked.append("ledger_unavailable")
+    reason = "exploit" if choice == best else "explore"
+    bounds = control_range(model, row)
+    from .shared import raw_features
+    result.update(selection_seed=seed, context_features=raw_features(row, model["feature_schema"]).tolist(),
+        cost_scale_seconds=bounds["fastest_seconds"] if bounds else None,
+        failure_cost=model["training"]["failure_penalty"] * bounds["slowest_seconds"] / bounds["fastest_seconds"] if bounds else None)
+    result["exploration"].update(best_backend=best, blocked_by=blocked, fraction=exploration_budget)
     if mode == "shadow" or not live_allowed:
-        result.update(shadow_choice=choice, shadow_reason=reason, selection_mode="shadow")
-        if mode == "bandit" and not live_allowed:
+        result.update(selection_mode="shadow", shadow_choice=choice, shadow_reason=reason,
+                      shadow_probability=proposed[choice], shadow_probabilities=proposed)
+        if mode == "bandit":
             result["policy_warning"] = "rollout_gate_not_met"
-        return result  # Native auto ordering and its budget remain unchanged.
-    result.update(chosen_backend=choice, native_backend=choice, backend_choice_reason=reason,
-                  reason="forced" if requested_device != "auto" else reason)
+    else:
+        result.update(chosen_backend=choice, native_backend=choice, reason="forced" if requested_device != "auto" else reason,
+                      backend_choice_reason=reason, selection_mode="bandit",
+                      probabilities=proposed, selection_probability=proposed[choice])
     return result
-
-
-def timeout_seconds(prediction, *, minimum, remaining, cap):
-    if not minimum > 0 or not finite(remaining) or not finite(cap):
-        raise ValueError("Invalid attempt deadline")
-    p90 = prediction.get("p90_seconds") if prediction else None
-    proposed = max(minimum, 3 * p90) if finite(p90) and p90 > 0 else cap
-    return max(0.0, min(remaining, cap, proposed))

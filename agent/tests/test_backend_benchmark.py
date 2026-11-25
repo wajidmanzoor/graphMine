@@ -86,7 +86,7 @@ def test_default_graph_grid_and_small_initial_selection():
     expanded = profiles.expand_graphs(config)
     assert len(expanded) == 60 and sum(s["source"] == "neo4j" for s in expanded) == 16
     assert config["bootstrap_examples_per_problem"] == config["repeats"] == 3
-    assert config["timeout_seconds"] is None
+    assert config["timeout_seconds"] == 1800
     assert config["max_output_items"] is None
     assert config["max_candidates"] is None
     cards = [dict(id=op) for op in config["problems"]]
@@ -294,22 +294,42 @@ async def test_collection_caps_per_problem_across_graphs_and_ids_and_full_is_exp
         executions.append(job)
         return {**record, "outcome": "completed", "runtime_seconds": 0.1}
     monkeypatch.setattr(bench, "run_attempt", execute)
-    args = SimpleNamespace(registry=None, instances=None, password_file=None, data_dir=data_dir,
+    from graphmine_agent.backend_learning import paired
+    from contextlib import asynccontextmanager
+    @asynccontextmanager
+    async def no_load(regime, **kw):
+        yield
+    async def admit(job, *args, **kwargs):
+        from graphmine_agent.backend_learning.features import graph_features
+        graph = json.loads(Path(job['graph_path']).read_text())
+        return dict(eligible=list(ids), context=dict(problem=job['problem'], parameters={},
+            graph_features=graph_features(graph), hardware={}, execution_isolated=True))
+    monkeypatch.setattr(paired, 'cpu_load', no_load)
+    monkeypatch.setattr(paired, 'admit_pair', admit)
+    args = SimpleNamespace(load_regimes='idle,busy_cpu', busy_cpu_workers=1, load_warmup_seconds=0,
+        registry=None, instances=None, password_file=None, data_dir=data_dir,
         model_dir=storage.DEFAULT_MODEL_DIR, native_library=Path(os.environ.get("GRAPHMINE_NATIVE_LIBRARY")
             or ROOT / "library/build/runtime/libgraphmine_runtime.so"),
         config=ROOT / "benchmarks/backend_selection.json", examples_per_problem=None, is_evaluation=True,
         full=False, benchmark_id="initial", problems=None, python=None)
-    assert await bench.collect(args) == 0 and len(executions) == 3
-    assert (data_dir / "benchmarks/initial/summary.csv").read_text().startswith("problem,graph_id,backend,")
-    assert [j["backend"] for j in executions] == (ids[:3] if backend_count > 2 else ["cpp", ids[1], "cpp"])
-    assert all(j["graph_id"] == "first" for j in executions)
-    assert await bench.collect(args) == 0 and len(executions) == 3
-    args.benchmark_id = "another"
-    assert await bench.collect(args) == 0 and len(executions) == 3
-    args.benchmark_id, args.full = "explicit-full", True
+    initial = 2 if backend_count == 2 else 0
+    assert await bench.collect(args) == 0 and len(executions) == initial
+    if initial:
+        assert {j['backend'] for j in executions} == set(ids)
+        assert all(j['graph_id'] == 'first' for j in executions)
+    assert await bench.collect(args) == 0 and len(executions) == initial
+    args.benchmark_id = 'another'
+    assert await bench.collect(args) == 0 and len(executions) == initial
+    args.benchmark_id, args.full = 'explicit-full', True
     assert await bench.collect(args) == 0
-    assert len(executions) == 3 + 2 * backend_count * 3
-    assert all(j["is_evaluation"] for j in executions)
+    assert len(executions) == initial + 2 * 2 * backend_count * 3
+    assert all(j['is_evaluation'] for j in executions)
+    groups = {}
+    for j in executions:
+        groups.setdefault(j['comparison_id'], []).append(j)
+    assert all({j['backend'] for j in group} == set(ids) for group in groups.values())
+    assert {j['load_regime'] for j in executions} == {'idle', 'busy_cpu'}
+    assert any(group[0]['backend'] != 'cpp' for group in groups.values())
 
 
 def test_summary_uses_identical_completed_comparisons_and_reports_missing_coverage():

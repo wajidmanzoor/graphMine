@@ -255,7 +255,7 @@ def verify_testing(config):
     health(role)
     env = {k: v for k, v in environment(role).items() if not k.startswith("GRAPHMINE_")}
     for key in ("GRAPHMINE_RUNTIME_REPOSITORY", "GRAPHMINE_BINARY", "GRAPHMINE_NATIVE_BINARY",
-                "GRAPHMINE_NATIVE_LIBRARY", "GRAPHMINE_ANALYTICS_PYTHON", "GRAPHMINE_BACKEND_POLICY",
+                "GRAPHMINE_NATIVE_LIBRARY", "GRAPHMINE_ANALYTICS_PYTHON",
                 "GRAPHMINE_WORKER_DIR"):
         if key in role["env"]:
             env[key] = role["env"][key]

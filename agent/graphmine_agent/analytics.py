@@ -478,8 +478,10 @@ class AnalyticsService:
                     "backend_require_rollout_evidence": self.settings.backend_require_rollout_evidence,
                     "backend_exploration_enabled": self.settings.backend_exploration_enabled,
                     "backend_exploration_budget": self.settings.backend_exploration_budget,
-                    "backend_max_explore_ratio": self.settings.backend_max_explore_ratio,
-                    "backend_min_timeout_seconds": self.settings.backend_min_timeout_seconds,
+                    "backend_temperature": self.settings.backend_temperature,
+                    "backend_exploration_floor": self.settings.backend_exploration_floor,
+                    "backend_default_timeout_seconds": self.settings.backend_default_timeout_seconds,
+                    "backend_timeout_multiple": self.settings.backend_timeout_multiple,
                     "max_result_bytes": self.settings.max_result_bytes,
                     "execution_isolated": True,
                 }),
@@ -1411,10 +1413,10 @@ class AnalyticsService:
 
     def _result_path(self, workflow_id, *, step=None, expected_revision=None):
         record = self.get(workflow_id)
-        from .admin_data import touch
-        touch(self.database, "workflow", workflow_id)
         if expected_revision is not None and record["revision"] != expected_revision:
             raise AnalyticsError("This analysis revision changed. Reopen the analysis to load its current result.", "revision_conflict", 409)
+        from .admin_data import touch
+        touch(self.database, "workflow", workflow_id)
         if step is not None and step not in {
             s["id"] for s in record["validation"]["plan"]["steps"]
         }:

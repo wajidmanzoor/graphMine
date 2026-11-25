@@ -910,7 +910,7 @@ async def test_capabilities_share_one_verification_until_evidence_changes(
     assert len(calls) == 3
 
 
-def test_live_unlimited_workflow_preserves_all_three_null_budgets(settings, triangle_graph):
+def test_live_unlimited_workflow_uses_configured_attempt_timeout(settings, triangle_graph):
     unlimited = replace(settings, job_timeout_seconds=None, max_result_bytes=None)
     with TestClient(create_app(unlimited)) as client:
         session, graph = upload(client, triangle_graph)
@@ -921,7 +921,7 @@ def test_live_unlimited_workflow_preserves_all_three_null_budgets(settings, tria
         result = client.get(f"/api/workflows/{record['id']}/result", headers=AUTH).json()
         for step in result["steps"].values():
             assert step["result"]["budget"] == {
-                "max_candidates": None, "max_output_items": None, "timeout_seconds": None,
+                "max_candidates": None, "max_output_items": None, "timeout_seconds": unlimited.backend_default_timeout_seconds,
             }
 
 

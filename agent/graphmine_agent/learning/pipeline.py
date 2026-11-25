@@ -103,7 +103,7 @@ async def audit_native(
             name: HistoryStore.digest(Path(__file__).parent.parent / name)
             for name in (
                 "execution.py",
-                "selector.py",
+                "backend_learning/shared.py",
                 "planning.py",
                 "graph_context.py",
             )
@@ -330,7 +330,7 @@ async def evaluate_agent(
                     "planning.py",
                     "answers.py",
                     "visualization.py",
-                    "selector.py",
+                    "backend_learning/shared.py",
                 )
             },
             "data_directory": str(data_dir.resolve()),

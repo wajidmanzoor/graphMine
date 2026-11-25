@@ -175,7 +175,12 @@ def safe_parameters(parameters, schemas):
     result = {}
     identifiers = {"source", "target", "sink", "vertex", "seed_vertex", "anchor_edge",
                    "vertex_id", "edge_id", "root"}
-    for key, value in parameters.items():
+    defaults = {}
+    for key, schema in schemas.items():
+        spec = schema.schema() if hasattr(schema, "schema") else schema
+        if "default" in spec:
+            defaults[key] = spec["default"]
+    for key, value in {**defaults, **parameters}.items():
         spec = schemas.get(key, {})
         if hasattr(spec, "schema"):
             spec = spec.schema()

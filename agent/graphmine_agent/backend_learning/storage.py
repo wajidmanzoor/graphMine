@@ -15,111 +15,34 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
-DEFAULT_DATA_DIR = Path("/data/labdata/wajid/graphmine_data/rlModelData")
-DEFAULT_MODEL_DIR = Path("/data/labdata/wajid/graphmine-models/rlModel")
-SCHEMA_VERSION = 4
+DEFAULT_DATA_DIR = Path.home() / ".local/state/graphmine/backend-runs"
+DEFAULT_MODEL_DIR = Path.home() / ".local/state/graphmine/backend-models"
+SCHEMA_VERSION = 5
 LOG = logging.getLogger(__name__)
-SCHEMA = """# Backend run log
+SCHEMA = """# Shared backend policy run log (schema 5)
 
-Schema history: version 1 added Phase 1 telemetry; version 2 adds Phase 2
-feasibility, native limits, memory predictions and preflight rejections;
-version 3 adds offline benchmark provenance and resumable attempt identity;
-version 4 adds linear Thompson decisions, shadow predictions and fallback chains.
-Readers accept all four versions. Rows contain aggregate data only.
-Corrections append a new run_id with supersedes pointing at the original run_id.
-JSONL is authoritative. A per-file flock serializes writers on the same host;
-O_APPEND plus fsync makes a successfully acknowledged write durable.
-
-Identity: run_id, workflow_id, step_id, created_at (UTC ISO 8601).
-Problem: problem, topic_id, family, parameters (typed scalars, catalog
-enums, collection counts; identifiers and free text are redacted).
-Selection: requested_device, requested_backend, candidates (id, compiled,
-admitted, feasible, infeasible_reason), chosen_backend, reason, policy_version,
-model_version, predictions. Phase 1 policy/model/predictions are null.
-Hardware: hostname, CPU model/cores/free cores, total/free RAM bytes; all physical
-GPUs with index/model/total/free memory bytes/utilisation/process count/driver
-and CUDA version; leased_gpu_index. Unavailable measurements are null with a
-telemetry warning, never zero. CUDA logical ordinal 0 may be physical GPU 1.
-Graph: graph_features, including snapshot_fingerprint and feature_version.
-n/m count input vertices/edge instances. Shape (degree, density, Gini, CV,
-degeneracy and weak components) uses the simple undirected projection without
-self-loops. Logs use log1p; empty graphs have zero-valued shape statistics.
-Known bipartite sides use canonical attributes.side; only counts are stored.
-Structured inputs have null shape statistics; hyperedges are never expanded.
-Outcome: outcome (completed/timeout/oom/unsupported_input/error), error_code,
-runtime_seconds (wall time), native_elapsed_seconds, native_compute_seconds, preparation_seconds,
-timeout_seconds, censored (a timeout is a lower bound, not a completed run).
-Peak memory: peak_memory.gpu_bytes is sampled NVML memory of the worker and its
-descendants on the leased GPU; process_rss_bytes is the sampled process-tree RSS.
-Sampling can miss brief peaks; peak_memory.sample_interval_seconds records the
-interval. Device-wide used memory is not attributed to this run.
-Output: output_size (result item count if known, otherwise null).
-Other: fallback_chain, is_evaluation, source, implementation_sha256,
-prediction_error (null without predictions), telemetry_warnings (fixed codes).
-Evaluation/test rows are never training observations. No user identity is stored.
-
-Version 2: policy_version=feasibility-v1. Each candidate also carries device,
-limits (maximum input n/m, declared conservatively by native preflight),
-native_feasible, predicted_peak_memory_bytes, memory_model_version and
-memory_prediction_reason. predictions contains memory estimates and null runtime
-predictions until Phase 4. output_estimate is the request's max_output_items
-budget when finite, otherwise a topology-based allocation estimate; it never
-limits output. output_limit_items and timeout_seconds are null for unlimited
-calculations. Actual output_size is never used as an input.
-execution_started=false and failure_stage=preflight identify requests rejected
-before native execution; they are not completed training observations.
-Memory coefficients are nonnegative a+b*n+c*m+d*output_estimate, scoped by
-problem, implementation, hardware model, input kind/flags and safe parameters.
-At least 20 completed non-evaluation rows and 5 distinct snapshots are required.
-The held-out split groups whole snapshots. Fits include a 25% margin, must not
-underpredict any held-out peak, and apply only within the training size range.
-OOM observations never enter least-squares fitting: for the same context and
-snapshot they impose a 1.25x lower bound on the previously available memory.
-The workflow scheduler always retains its conservative admission reservation.
-
-Version 3 benchmark fields: benchmark_id, benchmark_mode (bootstrap/full),
-graph_id (configuration name, never a vertex ID), comparison_id (hash of graph,
-parameters, budget and implementation), benchmark_pair_id (also backend),
-benchmark_attempt_key (also repetition), repetition (zero-based),
-attempt_wall_seconds (including worker startup), worker_diagnostic_bytes.
-Benchmark rows use source=benchmark and is_evaluation=false for real warm starts.
-Test collections are marked is_evaluation=true and never enter training.
-Initial bootstrap collection is capped at 1-3 terminal rows per problem across
-benchmark IDs for the same implementation. Full grids require explicit --full.
-Interrupted attempts are recovered from durable aggregate journals; an active
-worker is never restarted. Canonical anonymous graphs and query/generator
-provenance are stored only beneath benchmarks/<id>/graphs. JSONL is authoritative.
-
-Version 4: decision_id identifies a step across at most two attempts; attempt_index
-is 0 or 1. Each native attempt still has exactly one terminal row and run_id.
-The final attempt's fallback_chain contains both measured outcomes; an earlier
-row contains the history known when it finished. fallback_skipped explains an
-unavailable retry. The shared step_timeout_seconds includes all preparation and
-fallback time, and never exceeds 1800. A fallback needs at least 60 seconds left.
-execution_isolated distinguishes killable native child calls from earlier direct
-calls; it is an aggregate runtime-context feature, never a user feature.
-selection_mode is legacy/shadow/bandit; requested_selection_mode records the
-configured mode. An unmet rollout gate executes legacy auto in shadow mode.
-rollout_evidence_required records the deployment setting (default true). An
-explicit false permits live selection from valid existing weights before the
-rollout metrics pass; admission, feasibility and exploration limits still apply.
-shadow_choice/shadow_reason describe the constrained counterfactual choice.
-An explicit device or backend retains reason=forced. For live selection within
-a forced device, backend_choice_reason records exploit/explore/only_option and
-still counts any exploration against the daily budget.
-selection_seed permits replay of Thompson draws. exploration records the
-proposed backend, best p50 backend, blocking limits and daily reservation counts.
-Only authoritative, non-evaluation application decisions grant daily budget;
-in-flight reservations count only in its numerator. Benchmarks grant no budget.
-policy_warning explains model or selector fallback without changing admission.
-predictions add p50_seconds, p90_seconds, sampled_value (reward), reward_mean,
-reward_std and prior_only. prediction_error is log(actual_runtime / predicted_p50)
-for completed runs. Unmeasured counterfactual regret remains unknown.
-The runtime reward is -log(seconds); censored timeouts use -log(2 * timeout).
-OOM never updates the runtime posterior. After append/fsync the asynchronous
-writer updates its memory lower bound; nightly fitting rebuilds from JSONL.
-Model training and held-out comparison group whole snapshot fingerprints with
-a permanent hash split. Evaluation rows enter neither models nor rollout gates.
+Rows are append-only, aggregate-only JSONL; supersedes identifies corrections.
+Identity: run_id, decision_id, attempt_index, workflow_id, step_id, created_at,
+problem (the executable ID), topic_id (documentation only), implementation_sha256.
+Context: graph_features including snapshot_fingerprint, hardware (one-minute
+load estimate, logical cores, RAM, physical GPU 1 utilization and VRAM), safe
+parameters (catalog enums/scalars and collection counts), execution_isolated.
+Decision: eligible_backends after native preflight and conservative memory
+admission, chosen_backend, probabilities, selection_probability, model_version,
+context_features in the artifact feature_schema order, selection_mode, reason.
+The probability belongs to the actual choice after all constraints and budget
+checks. Explicit choices and single-backend decisions have probability one.
+Shadow proposal fields are separate and never become behavior propensities.
+Outcome: runtime_seconds, outcome, timeout_seconds, native timing fields,
+peak_memory, fallback_chain, execution_started, telemetry_warnings.
+Cost: cost_scale_seconds and failure_cost are empirical benchmark controls, not
+runtime predictions. Retraining uses clipped inverse propensity cost offline.
+Benchmark: comparison_id, paired_eligible_backends, pair_context, load_regime,
+backend order/repetition, benchmark_attempt_key; all timings remain authoritative.
+Versions 1-4 are readable for inspection; legacy operation keys normalize to
+problem on read. Shared model fitting requires current implementation provenance.
+No auxiliary memory or runtime models are maintained. No graph identities or
+free-form parameters enter learned features. Evaluation rows never train models.
 """
 
 
@@ -172,7 +95,7 @@ def prepare_directories(data_dir, model_dir, repository_root):
         except OSError as exc:
             raise ValueError(f"{label} is not writable: {path} ({exc.strerror})") from exc
     path = Path(data_dir)
-    for name in ("runs", "benchmarks", "features", "memory_models", "reports"):
+    for name in ("runs", "benchmarks", "features", "reports"):
         (path / name).mkdir(exist_ok=True, mode=0o700)
     schema = path / "SCHEMA.md"
     try:
@@ -261,13 +184,6 @@ class RunLog:
                 host = re.sub(r"[^A-Za-z0-9_.-]", "_", socket.gethostname())
                 path = self.destination or self.data_dir / "runs" / date.strftime("%Y/%m/%d") / f"runs-{host}.jsonl"
                 append_row(path, row)
-                if row.get("outcome") == "oom" and row.get("is_evaluation") is False:
-                    try:
-                        from .memory import note_oom
-
-                        note_oom(self.data_dir, row)
-                    except Exception:
-                        self._warn("memory_oom_update_failed")
                 features = row.get("graph_features") or {}
                 fingerprint = features.get("snapshot_fingerprint", "")
                 if re.fullmatch(r"[0-9a-f]{64}", fingerprint):
@@ -318,8 +234,10 @@ def read_rows(data_dir, *, since=None, problem=None, include_benchmarks=True):
             for line in handle:
                 try:
                     row = json.loads(line)
-                    if not isinstance(row, dict) or row.get("schema_version") not in (1, 2, 3, SCHEMA_VERSION):
+                    if not isinstance(row, dict) or row.get("schema_version") not in (1, 2, 3, 4, SCHEMA_VERSION):
                         raise ValueError("Unknown run schema")
+                    if "operation" in row:
+                        row["problem"] = row.pop("operation")
                     created = datetime.fromisoformat(row["created_at"].replace("Z", "+00:00"))
                     if (not after or created >= after) and (not problem or row["problem"] == problem):
                         yield row

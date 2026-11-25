@@ -18,7 +18,7 @@ from .storage import DEFAULT_DATA_DIR, DEFAULT_MODEL_DIR, prepare_directories, r
 def add_parser(commands):
     runs = commands.add_parser("backend-runs", help="export or summarize the native run log")
     actions = runs.add_subparsers(dest="backend_runs_command", required=True)
-    for name in ("export", "report", "fit-memory"):
+    for name in ("export", "report"):
         command = actions.add_parser(name)
         command.add_argument("--since", help="ISO 8601 UTC date or timestamp")
         command.add_argument("--problem")
@@ -74,19 +74,6 @@ def run_command(arguments, settings=None):
         for row in rows:
             print(json.dumps(row, ensure_ascii=False, allow_nan=False))
         return 0
-    if arguments.backend_runs_command == "fit-memory":
-        from .memory import rebuild
-
-        # Always rebuild from the complete authoritative history, so a changed
-        # implementation or a correction cannot retain a stale active fit.
-        if arguments.since or arguments.problem:
-            raise ValueError("fit-memory requires the complete run history; omit --since and --problem")
-        models, skipped = rebuild(data)
-        print(json.dumps(dict(backends=len(models), skipped_rows=skipped,
-            validated_profiles=sum(p["validated"] for m in models.values() for p in m["profiles"].values()),
-            completed_rows=sum(p["completed_count"] for m in models.values() for p in m["profiles"].values()),
-            oom_rows=sum(p["oom_count"] for m in models.values() for p in m["profiles"].values())), indent=2))
-        return 0
     summary = report(rows)
     from ..config import Settings
     from .model_cli import comparison_report, native_context
@@ -96,9 +83,8 @@ def run_command(arguments, settings=None):
         cards, implementation, _ = native_context(settings, data)
         summary["backend_selection"] = comparison_report(list(read_rows(data)), cards, model, implementation,
             dict(exploration_budget=settings.backend_exploration_budget,
-                 max_explore_ratio=settings.backend_max_explore_ratio,
-                 exploration_enabled=settings.backend_exploration_enabled), arguments.problem,
-            benchmark_compatibility(settings.native_repository_root / "catalog/native_execution_evidence.json", implementation))
+                 temperature=settings.backend_temperature, floor=settings.backend_exploration_floor,
+                 exploration_enabled=settings.backend_exploration_enabled))
         summary["backend_selection"]["history_scope"] = "Complete authoritative history; --since filters run summaries only"
     except (ImportError, OSError, ValueError, KeyError, TypeError, RuntimeError) as error:
         summary["backend_selection"] = dict(live_ready=False, insufficient_evidence=True,
@@ -122,7 +108,7 @@ def run_command(arguments, settings=None):
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="graphmine backend-runs")
     actions = parser.add_subparsers(dest="backend_runs_command", required=True)
-    for name in ("export", "report", "fit-memory"):
+    for name in ("export", "report"):
         command = actions.add_parser(name)
         command.add_argument("--since")
         command.add_argument("--problem")

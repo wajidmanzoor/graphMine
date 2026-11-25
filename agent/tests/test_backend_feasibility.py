@@ -11,7 +11,7 @@ from uuid import uuid4
 import pytest
 
 from graphmine_agent.backend_learning import memory, storage, worker
-from graphmine_agent.backend_learning.feasibility import feasible, filter_candidates, legacy_choice
+from graphmine_agent.backend_learning.feasibility import feasible, filter_candidates, native_choice
 
 GIB = 1024 ** 3
 IMPLEMENTATION = "a" * 64
@@ -70,140 +70,19 @@ def test_exact_80_percent_limit_uses_leased_gpu_and_cpu_ram():
     assert feasible("test", candidate(), features(), {}, host)[1] == "invalid_memory_safety"
 
 
-def samples(count=40):
-    rows = []
-    for i in range(count):
-        shape = features(1 + i, (i * 7) % 31)
-        output = 1 + (i * 11) % 17
-        peak = 1024 + 30 * shape["n"] + 50 * shape["m"] + 2 * output
-        rows.append(dict(schema_version=2, run_id=f"fixture-{i}", created_at=storage.utc_now(),
-            problem="test", chosen_backend="cpp", candidates=[candidate()], hardware=hardware(),
-            graph_features=shape, parameters={"mode": "count"}, output_estimate=output,
-            peak_memory={"process_rss_bytes": peak}, implementation_sha256=IMPLEMENTATION,
-            is_evaluation=False, source="benchmark", outcome="completed", censored=False))
-    return rows
-
-
-def prediction(directory, row):
-    return memory.predict_memory("test", candidate(), row["graph_features"], row["parameters"], row["hardware"],
-        output_estimate=row["output_estimate"], implementation=row["implementation_sha256"], data_dir=directory)
-
-
-def test_nonnegative_fit_matches_known_coefficients_and_boundary_optimum():
-    rows = samples()
-    x = [memory.coordinates(r["graph_features"], r["output_estimate"]) for r in rows]
-    y = [r["peak_memory"]["process_rss_bytes"] for r in rows]
-    assert memory.nonnegative_fit(x, y) == pytest.approx([1024, 30, 50, 2])
-    # A decreasing response cannot acquire a negative size coefficient.
-    result = memory.nonnegative_fit([[1, i, 0, 0] for i in range(10)], [20 - i for i in range(10)])
-    assert result == pytest.approx([15.5, 0, 0, 0])
-
-
-def test_fewer_than_twenty_and_evaluation_runs_never_enable_fit(memory_dir):
-    rows = samples(19)
-    evaluations = [{**row, "run_id": "eval-" + row["run_id"], "is_evaluation": True} for row in samples(40)]
-    models, skipped = memory.fit_models(rows + evaluations)
-    profile = next(iter(models["cpp"]["profiles"].values()))
-    assert profile["completed_count"] == 19 and not profile["validated"] and not skipped
-    memory.save_models(memory_dir, models)
-    assert prediction(memory_dir, rows[0])[0] > 512 * 1024 ** 2
-    assert prediction(memory_dir, rows[0])[1] is None
-    assert memory.fit_models(evaluations)[0] == {}
-
-
-def test_validated_fit_is_positive_scoped_and_never_extrapolated(memory_dir):
-    rows = samples()
-    models, skipped = memory.fit_models(rows)
-    profile = next(iter(models["cpp"]["profiles"].values()))
-    assert profile["validated"] and profile["held_out_count"] == 8 and not skipped
-    assert profile["coefficients"] == pytest.approx([1280, 37.5, 62.5, 2.5])
-    memory.save_models(memory_dir, models)
-    value, version, reason = prediction(memory_dir, rows[20])
-    assert version and reason == "validated_fit"
-    assert value == pytest.approx(1.25 * rows[20]["peak_memory"]["process_rss_bytes"])
-    outside = copy.deepcopy(rows[20])
-    outside["graph_features"]["n"] = 10 ** 6
-    assert prediction(memory_dir, outside)[2] == "outside_memory_fit_range"
-    changed = copy.deepcopy(rows[20])
-    changed["implementation_sha256"] = "b" * 64
-    assert prediction(memory_dir, changed)[2] == "unseen_memory_context"
-    changed = copy.deepcopy(rows[20])
-    changed["parameters"]["mode"] = "list"
-    assert prediction(memory_dir, changed)[2] == "unseen_memory_context"
-
-
-def test_held_out_underprediction_rejects_model():
-    rows = samples()
-    snapshots = sorted({r["graph_features"]["snapshot_fingerprint"] for r in rows}, key=memory._digest)
-    for row in rows:
-        if row["graph_features"]["snapshot_fingerprint"] == snapshots[-1]:
-            row["peak_memory"]["process_rss_bytes"] *= 100
-    models, _ = memory.fit_models(rows)
-    profile = next(iter(models["cpp"]["profiles"].values()))
-    assert not profile["validated"] and profile["validation_reason"] == "held_out_underprediction"
-
-
-def test_repeated_snapshot_cannot_leak_into_validation():
-    rows = [{**samples(1)[0], "run_id": f"repeat-{i}"} for i in range(25)]
-    models, _ = memory.fit_models(rows)
-    assert next(iter(models["cpp"]["profiles"].values()))["validation_reason"] == "insufficient_distinct_graphs"
-
-
-def test_oom_is_a_memory_lower_bound_not_a_completed_training_sample(memory_dir):
-    rows = samples(2)
-    rows[1].update(outcome="oom", peak_memory={})
-    models, _ = memory.fit_models(rows)
-    profile = next(iter(models["cpp"]["profiles"].values()))
-    assert profile["completed_count"] == 1 and profile["oom_count"] == 1
-    memory.save_models(memory_dir, models)
-    value, _, reason = prediction(memory_dir, rows[1])
-    assert value == 10 * GIB and reason == "observed_oom_lower_bound"
-    assert not feasible("test", candidate(predicted_peak_memory_bytes=value), features(), {}, hardware())[0]
-    assert prediction(memory_dir, rows[0])[2] == "conservative_default"
-
-
-def test_gpu_fits_use_gpu_peaks_and_oom_uses_only_gpu1_free_memory():
-    rows = samples()
-    for row in rows:
-        row.update(chosen_backend="gpu", candidates=[candidate("gpu")])
-        row["peak_memory"] = {"gpu_bytes": row["peak_memory"]["process_rss_bytes"],
-                              "process_rss_bytes": 100 * GIB}
-    failed = copy.deepcopy(rows[0])
-    failed.update(run_id="oom-gpu", outcome="oom", peak_memory={})
-    models, skipped = memory.fit_models(rows + [failed])
-    profile = next(iter(models["gpu"]["profiles"].values()))
-    assert not skipped and profile["validated"] and profile["completed_count"] == 40
-    assert profile["coefficients"] == pytest.approx([1280, 37.5, 62.5, 2.5])
-    assert profile["oom_floors"][0]["lower_bound_bytes"] == GIB
-
-
 def test_legacy_order_preserves_native_support_and_explicit_backend():
     cards = [candidate(), candidate("first", feasible=False), candidate("second"), candidate("third")]
-    assert legacy_choice(cards) == "second"
-    assert legacy_choice(cards, "third") == "third"
-    assert legacy_choice(cards, "first") is None
-
-
-def test_corrupt_memory_model_and_superseded_training_rows_fall_back(memory_dir):
-    rows = samples()
-    models, _ = memory.fit_models(rows)
-    memory.save_models(memory_dir, models)
-    path = memory_dir / "memory_models/cpp.json"
-    path.write_text('{"bad"')
-    assert prediction(memory_dir, rows[20])[2] == "invalid_memory_model"
-    corrections = [{**r, "run_id": "corrected-" + r["run_id"], "supersedes": r["run_id"],
-                    "is_evaluation": True} for r in rows]
-    models, _ = memory.fit_models(rows + corrections)
-    memory.save_models(memory_dir, models)
-    assert json.loads(path.read_text())["profiles"] == {}
+    assert native_choice(cards) == "second"
+    assert native_choice(cards, "third") == "third"
+    assert native_choice(cards, "first") is None
 
 
 def test_memory_exclusion_keeps_legacy_order_and_forced_backend(memory_dir):
     cards = [candidate(), candidate("gpu-first"), candidate("gpu-second")]
     result = filter_candidates("test", cards, features(), {}, hardware(free_gpu=100),
                               output_estimate=100, implementation=IMPLEMENTATION, data_dir=memory_dir)
-    assert legacy_choice(result) == "cpp"
-    assert legacy_choice(result, "gpu-first") is None
+    assert native_choice(result) == "cpp"
+    assert native_choice(result, "gpu-first") is None
     assert result[1]["infeasible_reason"] == "predicted_memory_exceeds_free_memory"
 
 
@@ -241,7 +120,7 @@ def observed_environment(memory_dir, monkeypatch):
         for card in cards:
             if query["device"] != "auto" and query["device"] != card["device"]:
                 card.update(feasible=False, infeasible_reason="device_policy")
-        return dict(candidates=cards, legacy_backend="gpu-first", implementation_sha256=IMPLEMENTATION)
+        return dict(candidates=cards, native_rule_backend="gpu-first", implementation_sha256=IMPLEMENTATION)
 
     monkeypatch.setattr(graphmine.dispatch, "native_request", preflight)
     return graph, queries
@@ -267,14 +146,14 @@ def test_worker_memory_gate_and_forced_policies(observed_environment, device, ba
     if expected:
         assert execute()["backend"]["id"] == expected
         assert calls[0]["allowed_backends"] == ["cpp"]
-        assert calls[0]["backend"] == backend
+        assert calls[0]["backend"] == expected
     else:
         with pytest.raises(ValueError, match="No feasible"):
             execute()
         assert not calls
     rows = [e["record"] for e in events if e["event"] == "native_finished"]
     assert len(rows) == 1 and rows[0]["execution_started"] == bool(expected)
-    if device != "auto" or backend != "auto":
+    if backend != "auto":
         assert rows[0]["reason"] == "forced"
     assert queries
 
@@ -319,11 +198,11 @@ def test_unlimited_preflight_can_continue_past_the_old_deadline(observed_environ
 
     worker.run_observed(invoke, "triangle-counting", graph,
         context={"leased_gpu_uuid": "GPU-test"}, step_id="count", emit=events.append, device="cpu")
-    assert len(calls) == 1 and calls[0]["budget"].timeout_seconds is None
+    assert len(calls) == 1 and calls[0]["budget"].timeout_seconds == 300
     rows = [e["record"] for e in events if e["event"] == "native_finished"]
     assert len(rows) == 1 and rows[0]["execution_started"]
     assert rows[0]["outcome"] == "completed" and not rows[0]["censored"]
-    assert rows[0]["timeout_seconds"] is None
+    assert rows[0]["timeout_seconds"] == 300
 
 
 def test_gpu0_is_rejected_before_any_native_cuda_preflight(observed_environment, monkeypatch):

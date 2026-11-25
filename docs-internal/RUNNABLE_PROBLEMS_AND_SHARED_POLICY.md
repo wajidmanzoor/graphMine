@@ -24,25 +24,113 @@ library with a new binding.
 
 The development redesign removes the old linear backend selectors and policies.
 Development backend data is isolated from the shared production stores. The new
-shared neural policy will have one 64-unit ReLU layer, one 32-unit ReLU layer,
+shared neural policy has one 64-unit ReLU layer, one 32-unit ReLU layer,
 and one backend-score output layer. Unavailable models use native feasible
 backend ordering. Memory admission remains deterministic, with no auxiliary
-learned memory model. The remainder of the policy implementation, training,
-logging and evaluation controls is documented with Phase 2.
+learned memory model. The implementation, training, logging and evaluation controls are described below.
 
-Validation reports distinguish deterministic contract tests from live routing
-accuracy. The initial live routing attempt could not reach the model service;
-its failures are infrastructure failures and do not establish a calculation
-accuracy baseline. GPU admission requires new matching correctness evidence.
+Validation distinguishes contract tests from live model quality. The final native
+build passed 61 CTest cases (15 optional integrations disabled), 178 CPU contract
+and migration tests, and both ToT/WeTriC GPU triangle oracle tests. Matching CPU
+admission covers all 82 runnable problems. Frontend contracts and TypeScript
+checks pass. See [the evaluation report](RUNNABLE_POLICY_EVALUATION.md) for paired
+measurements, routing metrics and the limits of this development validation.
 
-Phase 1 verification (CPU build, 2026-11-24): 53 native CTest cases passed;
-all 82 runnable contracts have regenerated CPU correctness evidence (10 oracle
-reports). The native binding suite passed 52 tests and skipped 96 tests requiring
-optional GPU builds. Catalog/taxonomy checks passed 85 tests; option/taxonomy
-checks passed 67. Routing/lane/parameter integration passed 111 tests (including
-the two dependent-workflow tests rerun after updating model-call assertions),
-with two GPU-only skips. Three migration tests verify legacy reads, canonical
-hashing, conflicting-key rejection, and the native request alias. Frontend API
-contracts regenerate and TypeScript checks pass. These are deterministic tests,
-not measured LLM accuracy. Live routing baseline: 42 cases could not reach the
-configured model service; correct-calculation and clarification rates are unknown.
+## Shared model and learning
+
+The runtime has exactly one trained artifact: `shared/<version>/model.json`,
+selected by `shared/current`. Its input passes through Dense(64, ReLU),
+Dense(32, ReLU), then a single Dense(B) preference layer for all known backend
+IDs. There are no task heads, runtime regressors, Bayesian layers, ensembles,
+or learned memory estimators. The linear encoder is an offline ablation using
+the same features and preference layer; its weights are not published.
+
+Features contain log1p vertex/edge counts, average degree, log1p maximum degree,
+degree CV, log1p degeneracy, directed/weighted flags and bipartite ratio;
+problem one-hot indicators; catalog numeric, boolean and categorical parameters
+and collection sizes; free/total CPU cores from the logged one-minute load
+estimate, logical cores and log1p available RAM; physical GPU 1 utilization and
+log1p available VRAM; isolated execution and missing-value indicators. Triangle
+mode and result limit are included. GPU 0 is reserved for the LLM. Arbitrary
+identifiers and free text are excluded. Defaults come from the catalog.
+
+The normalizer is fitted only on training graphs, stored in the artifact, and
+reused at inference. Features with zero variance, including their optional
+missing indicators when constant, are dropped and listed in metadata. All
+repetitions, parameter settings and load regimes for a snapshot fingerprint
+remain on the same side of the held-out split. Neither held-out measurements
+nor evaluation-tagged traffic enter fitting or normalization.
+
+For a complete paired row, cost is measured seconds divided by the fastest
+eligible cost. The full-information objective is expected regret,
+`sum_b softmax(score)_b * (cost_b - 1)`. Thus a 3x slowdown has greater loss and
+gradient than a near tie. Failed choices receive a configurable penalty above
+the slowest completed timing. Original wall times and outcomes remain in JSONL;
+tail latency uses actual observed wall times, while the cost ratio applies the
+stated failure penalty. Incomplete comparisons and all-failed rows have no
+measured oracle and are excluded with counts.
+
+Online feedback is used only during offline retraining. Its additional loss is
+`mean(min(1 / behavior_probability, ipw_clip) * policy_probability(chosen) * cost)`.
+Only actual bandit choices with valid behavior probabilities and matching
+implementation provenance qualify. Shadow proposals never supply behavior
+propensities. Training uses NumPy backpropagation and Adam; requests do not train.
+
+## Decisions, logging and execution controls
+
+Native preflight and conservative memory admission determine the eligible set.
+Explicit backend requests are retained; explicit devices restrict the set. K=1
+returns the only backend with probability one. Otherwise the policy masks its
+preferences and samples softmax with temperature and an exploration floor.
+Exploration is permitted only within measured n/m bounds for the problem and
+parameter settings. Budget checks and sampling occur under the same daily
+ledger lock, so a rejected budget produces a deterministic distribution *before*
+the draw. The logged probability is always from the final distribution.
+
+Schema 5 logs problem ID, safe parameters, aggregate graph/hardware features,
+eligible IDs, choice, complete distribution, exact selection probability,
+feature vector, model version, native implementation hash, UTC timestamp,
+runtime/outcome and per-attempt fallback identity. Shadow choice, distribution
+and probability are separate fields beside the actual native behavior.
+
+Timeouts use a configurable multiple of the slowest completed training benchmark
+in the nearest log-size bin for that problem/settings, capped by the remaining
+step deadline. Without measurements a configured finite default applies. A
+single fallback is allowed after timeout/OOM, with fresh admission excluding the
+first backend, when at least 60 seconds remain (or no total step deadline exists).
+An explicitly requested backend is never replaced. Memory admission always uses
+the conservative allocation estimate and current free RAM/VRAM.
+
+Defaults: `GRAPHMINE_BACKEND_SELECTION=native`, temperature 1, floor .02, daily
+exploration fraction .10, default attempt timeout 300 s, measured timeout multiple
+3, IPW clip 20 and failure penalty 10. See `agent/.env.example`. `shadow` evaluates
+the shared policy while executing native ordering; `bandit` requests live use.
+Without a valid artifact it falls back to native ordering. Evidence-gated live
+use remains off without paired shadow evidence; an explicit development
+`GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE=false` override is available.
+
+## Collection and operation
+
+`tools/benchmark_backends.py --full --benchmark-id <unique-name>` admits all
+eligible backends on the same graph/settings, holds the analytics GPU lease
+across the pair, randomizes backend order, and collects idle and busy CPU regimes.
+The configurable warmup defaults to 65 seconds to give load-average features
+signal. Each attempt has a finite benchmark deadline. A bootstrap cap never
+truncates a pair. Logs retain every timing; retraining rejects pairs with changed
+contexts or more than .15 free-core-fraction drift. A nominal idle label does
+not replace the actual hardware measurements.
+
+`graphmine-agent backend-model train` trains the shared NN and an offline linear
+ablation, writes held-out tables, and publishes one immutable shared version.
+`backend-model report` reports current held-out and observed shadow evidence;
+`backend-model rollback` restores the prior shared version. The existing nightly
+training timer uses the new command without launching benchmarks. Set selection
+to `native` for an immediate model-free rollback. Old selector files and commands
+have been removed at the user's request.
+
+Development now uses private `environments/devlopment/backend-runs` and
+`backend-models` directories. Its old history/capture/workflow files were cleared;
+production's shared old models and logs were preserved. Development accounts,
+uploads, and database datasets were not removed. No model-quality claim is made
+until matching paired measurements and real-traffic evidence exist. Ordinary
+shadow logs cannot measure an unexecuted backend's runtime.

@@ -7,7 +7,6 @@ a killed native process. The supervisor synthesizes a terminal row if necessary.
 from __future__ import annotations
 
 import os
-import math
 import sys
 import time
 from dataclasses import asdict, replace
@@ -15,7 +14,7 @@ from uuid import uuid4
 
 from .features import cached_features, safe_parameters
 from .hardware import hardware_snapshot, merge_peaks, process_rss
-from .feasibility import filter_candidates, legacy_choice
+from .feasibility import filter_candidates, native_choice
 from .storage import DEFAULT_DATA_DIR, SCHEMA_VERSION, utc_now
 from ..calculation_limits import minimum_limit, remaining_seconds
 
@@ -57,60 +56,49 @@ def _decision(problem, candidates, features, parameters, hardware, context, back
     from . import models, policy
     from .storage import DEFAULT_MODEL_DIR
 
-    observation = dict(graph_features=features, parameters=parameters, hardware=hardware,
+    observation = dict(problem=problem, graph_features=features, parameters=parameters, hardware=hardware,
                        execution_isolated=context.get("execution_isolated", False))
-    mode = context.get("backend_selection", "legacy")
+    mode = context.get("backend_selection", "native")
     model, version, allowed, warning = None, None, False, None
-    if mode != "legacy":
-        try:
-            model_dir = context.get("backend_model_dir", str(DEFAULT_MODEL_DIR))
-            model, metadata = models.load(model_dir, problem, implementation)
-            version = metadata["model_version"]
-            if mode == "bandit":
-                try:
-                    # An explicit deployment setting can waive the rollout wait.
-                    # Loading above still verifies the model and implementation;
-                    # native admission, feasibility and policy limits stay in force.
-                    allowed = context.get("backend_require_rollout_evidence", True) is False or models.live_permitted(model_dir, problem, metadata, implementation,
-                        context.get("admission_fingerprint"), configuration=dict(
-                            exploration_budget=context.get("backend_exploration_budget", 0.10),
-                            max_explore_ratio=context.get("backend_max_explore_ratio", 1.5),
-                            exploration_enabled=context.get("backend_exploration_enabled", True)))
-                except (OSError, ValueError, KeyError, TypeError):
-                    allowed = False
-        except Exception:
-            warning = "runtime_model_unavailable_or_invalid"
+    configuration = dict(temperature=context.get("backend_temperature", 1.),
+        floor=context.get("backend_exploration_floor", .02),
+        exploration_budget=context.get("backend_exploration_budget", .10),
+        exploration_enabled=context.get("backend_exploration_enabled", True))
+    try:
+        model_dir = context.get("backend_model_dir", str(DEFAULT_MODEL_DIR))
+        model, metadata = models.load(model_dir, implementation)
+        version = metadata["model_version"]
+        allowed = context.get("backend_require_rollout_evidence", True) is False or models.live_permitted(
+            model_dir, metadata, implementation, context.get("admission_fingerprint"), configuration=configuration)
+    except (OSError, ValueError, KeyError, TypeError, IndexError):
+        if mode != "native":
+            warning = "shared_model_unavailable_or_invalid"
     scope = "bandit" if mode == "bandit" and allowed else "shadow"
 
-    def reserve():
+    def reserve(**options):
         if context.get("is_evaluation") or os.environ.get("PYTEST_CURRENT_TEST") or os.environ.get("GRAPHMINE_IS_EVALUATION") == "true":
-            return {"allowed": False, "reason": "evaluation_does_not_reserve_live_budget"}
+            best = options["best"]
+            return dict(choice=best, probabilities={b: float(b == best) for b in options["probabilities"]},
+                        allowed=False, reason="evaluation_does_not_reserve_live_budget")
         return policy.reserve_exploration(os.environ.get("GRAPHMINE_BACKEND_DATA_DIR", str(DEFAULT_DATA_DIR)),
-            problem, context["decision_id"], scope, context.get("backend_exploration_budget", 0.10))
-
+            problem, context["decision_id"], scope, configuration["exploration_budget"], **options)
     try:
+        settings = dict(configuration)
+        if context.get("attempt_index", 0):
+            settings["exploration_enabled"] = False
         decision = policy.decide(candidates, observation, model=model, model_version=version,
             mode=mode, live_allowed=allowed, requested_backend=backend, requested_device=requested,
-            seed=context.get("backend_random_seed"), reserve=reserve,
-            exploration_enabled=context.get("backend_exploration_enabled", True),
-            exploration_budget=context.get("backend_exploration_budget", 0.10),
-            max_explore_ratio=context.get("backend_max_explore_ratio", 1.5))
-        if context.get("attempt_index", 0):
-            available = [c["id"] for c in candidates if c["feasible"]]
-            predictions = decision["predictions"]
-            choice = min(available, key=lambda b: (predictions[b]["p50_seconds"], b)) if predictions else legacy_choice(candidates)
-            decision.update(chosen_backend=choice, native_backend=choice, reason="fallback",
-                            backend_choice_reason="fallback", selection_mode="bandit")
+            seed=context.get("backend_random_seed"), reserve=reserve, **settings)
         decision["policy_warning"] = warning or decision["policy_warning"]
-        return decision
     except Exception:
-        # Selection errors cannot remove admission constraints or an explicit
-        # native backend. Native auto remains the deterministic fallback.
+        # An invalid artifact cannot alter feasibility or an explicit request.
         decision = policy.decide(candidates, observation, requested_backend=backend, requested_device=requested)
-        decision["policy_warning"] = "backend_selector_failed"
-        if context.get("attempt_index", 0):
-            decision.update(native_backend=decision["chosen_backend"], reason="fallback", backend_choice_reason="fallback")
-        return decision
+        decision["policy_warning"] = "shared_policy_failed"
+    decision["attempt_timeout_seconds"] = policy.timeout_seconds(model, observation,
+        multiple=context.get("backend_timeout_multiple", 3.), default=context.get("backend_default_timeout_seconds", 300.))
+    if context.get("attempt_index", 0):
+        decision.update(reason="fallback", backend_choice_reason="fallback")
+    return decision
 
 
 def _run_attempt(run, problem, graph, *, context, step_id, emit, started, **kwargs):
@@ -184,8 +172,8 @@ def _run_attempt(run, problem, graph, *, context, step_id, emit, started, **kwar
         for candidate in caps["candidates"]:
             if candidate["id"] in context.get("attempted_backends", []):
                 candidate.update(feasible=False, infeasible_reason="already_attempted_in_this_step")
-        caps["legacy_backend"] = legacy_choice(caps["candidates"], backend)
-        if caps["legacy_backend"] is None:
+        caps["native_rule_backend"] = native_choice(caps["candidates"], backend)
+        if caps["native_rule_backend"] is None:
             reasons = sorted({c["infeasible_reason"] for c in caps["candidates"]
                               if c["infeasible_reason"] and (backend == "auto" or c["id"] == backend)})
             raise ResourceLimit("No feasible admitted backend: " + "; ".join(reasons or ["backend_not_declared"]))
@@ -207,20 +195,22 @@ def _run_attempt(run, problem, graph, *, context, step_id, emit, started, **kwar
             caps = dict(candidates=[dict(id=c["id"], device=c["device"], compiled=c["compiled"],
                         admitted=admitted is None or c["id"] in admitted,
                         feasible=False, infeasible_reason="preflight_unavailable") for c in card["backends"]],
-                        legacy_backend=None)
+                        native_rule_backend=None)
         row = dict(schema_version=SCHEMA_VERSION, run_id=str(uuid4()),
                    workflow_id=context.get("workflow_id"), step_id=step_id, created_at=utc_now(),
                    problem=problem, topic_id=definition.topic_id, family=definition.family,
                    parameters=parameters,
                    requested_device=requested, requested_backend=backend, candidates=caps["candidates"],
-                   chosen_backend=decision.get("chosen_backend", caps.get("legacy_backend")),
-                   reason=decision.get("reason", "forced" if requested != "auto" or backend != "auto" else "legacy_auto"),
-                   policy_version="feasibility-v1" if context.get("backend_selection", "legacy") == "legacy" else "linear-thompson-v1",
+                   chosen_backend=decision.get("chosen_backend", caps.get("native_rule_backend")),
+                   reason=decision.get("reason", "forced" if requested != "auto" or backend != "auto" else "native_rule"),
+                   policy_version="shared-nn-softmax-v1" if decision.get("model_version") else "native-rule-v1",
                    model_version=decision.get("model_version"),
-                   predictions={c["id"]: dict(dict(p50_seconds=None, p90_seconds=None, sampled_value=None,
-                                peak_memory_bytes=c["predicted_peak_memory_bytes"],
-                                memory_model_version=c["memory_model_version"]), **decision.get("predictions", {}).get(c["id"], {}))
-                                for c in caps["candidates"] if c["feasible"]}, hardware=hardware,
+                   eligible_backends=decision.get("eligible_backends", []),
+                   selection_probability=decision.get("selection_probability"),
+                   probabilities=decision.get("probabilities", {}),
+                   context_features=decision.get("context_features"),
+                   cost_scale_seconds=decision.get("cost_scale_seconds"),
+                   failure_cost=decision.get("failure_cost"), hardware=hardware,
                    graph_features=features, outcome=None, error_code=None, runtime_seconds=None,
                    native_elapsed_seconds=None, native_compute_seconds=None, preparation_seconds=None,
                    timeout_seconds=budget_object.timeout_seconds,
@@ -230,21 +220,22 @@ def _run_attempt(run, problem, graph, *, context, step_id, emit, started, **kwar
                    fallback_chain=context.get("fallback_chain", []),
                    decision_id=context["decision_id"], attempt_index=context.get("attempt_index", 0),
                    execution_isolated=context.get("execution_isolated", False),
-                   selection_mode=decision.get("selection_mode", context.get("backend_selection", "legacy")),
-                   requested_selection_mode=context.get("backend_selection", "legacy"),
+                   selection_mode=decision.get("selection_mode", context.get("backend_selection", "native")),
+                   requested_selection_mode=context.get("backend_selection", "native"),
                    rollout_evidence_required=context.get("backend_require_rollout_evidence", True),
                    shadow_choice=decision.get("shadow_choice"), shadow_reason=decision.get("shadow_reason"),
+                   shadow_probability=decision.get("shadow_probability"),
+                   shadow_probabilities=decision.get("shadow_probabilities"),
                    backend_choice_reason=decision.get("backend_choice_reason"),
                    selection_seed=decision.get("selection_seed"), exploration=decision.get("exploration", {}),
                    policy_warning=decision.get("policy_warning"),
-                   selector_active=(decision.get("selection_mode") == "bandit" and decision.get("native_backend") not in {None, "auto"}
-                                    and not decision.get("policy_warning") and backend == "auto"),
+                   selector_active=(backend == "auto" and len(decision.get("eligible_backends", [])) > 1),
                    step_timeout_seconds=context["step_timeout_seconds"],
                    execution_started=preparation_error is None,
                    failure_stage="preflight" if preparation_error else None,
                    is_evaluation=bool(context.get("is_evaluation") or os.environ.get("PYTEST_CURRENT_TEST")
                                       or os.environ.get("GRAPHMINE_IS_EVALUATION") == "true"),
-                   source=context.get("source", "application"), prediction_error=None,
+                   source=context.get("source", "application"),
                    implementation_sha256=caps.get("implementation_sha256"),
                    telemetry_warnings=warnings + hardware.get("warnings", []))
     except Exception:
@@ -260,12 +251,10 @@ def _run_attempt(run, problem, graph, *, context, step_id, emit, started, **kwar
             if row is not None:
                 row.update(execution_started=False, failure_stage="preflight")
             raise TimeoutError("Native preflight exhausted the step execution deadline")
-        if remaining is not None and row is not None and row["selector_active"]:
-            from .policy import timeout_seconds
-
-            remaining = timeout_seconds(row["predictions"].get(row["chosen_backend"]),
-                minimum=context.get("backend_min_timeout_seconds", 60), remaining=remaining,
-                cap=budget_object.timeout_seconds)
+        # Benchmarks measure the configured benchmark deadline; application
+        # requests use empirical controls even when the overall step is unbounded.
+        if context.get("source", "application") != "benchmark":
+            remaining = minimum_limit(remaining, decision.get("attempt_timeout_seconds"))
         kwargs["budget"] = replace(budget_object, timeout_seconds=remaining)
         if row is not None:
             row["timeout_seconds"] = remaining
@@ -288,12 +277,11 @@ def _run_attempt(run, problem, graph, *, context, step_id, emit, started, **kwar
                                native_elapsed_seconds=result.get("elapsed_seconds"),
                                native_compute_seconds=result.get("compute_seconds"),
                                output_size=output_size(result))
+                    if row['chosen_backend'] != decision.get('chosen_backend'):
+                        row.update(selection_probability=None, probabilities={}, policy_warning='backend_contract_violation')
                     # Only report a separate transfer/preparation measurement
                     # when the native runtime actually provides one.
                     row["preparation_seconds"] = result.get("preparation_seconds")
-                prediction = row["predictions"].get(row["chosen_backend"], {}).get("p50_seconds")
-                if outcome == "completed" and prediction:
-                    row["prediction_error"] = math.log(max(row["runtime_seconds"], 1e-6) / prediction)
                 row["fallback_chain"] = [*context.get("fallback_chain", []), dict(run_id=row["run_id"],
                     backend=row["chosen_backend"], outcome=outcome, runtime_seconds=row["runtime_seconds"])]
                 row["fallback_eligible"] = (row["selector_active"] and not row["attempt_index"]

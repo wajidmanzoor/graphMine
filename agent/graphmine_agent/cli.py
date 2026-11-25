@@ -11,9 +11,7 @@ import uvicorn
 from . import __version__
 from .api import build_runtime, create_app
 from .benchmarking import (
-    evaluate_backend_policy,
     run_benchmarks,
-    train_backend_policy,
     write_json,
 )
 from .config import Settings
@@ -168,17 +166,6 @@ def parser() -> argparse.ArgumentParser:
     benchmark.add_argument("--warmups", type=int, default=1)
     benchmark.add_argument("--repetitions", type=int, default=3)
     benchmark.add_argument("--timeout-seconds", type=int, default=None)
-    train_selector = subcommands.add_parser(
-        "train-selector", help="create a deterministic backend policy from a report"
-    )
-    train_selector.add_argument("report", type=Path)
-    train_selector.add_argument("--output", type=Path)
-    evaluate_selector = subcommands.add_parser(
-        "evaluate-selector", help="measure policy regret on a benchmark report"
-    )
-    evaluate_selector.add_argument("report", type=Path)
-    evaluate_selector.add_argument("--policy", type=Path)
-    evaluate_selector.add_argument("--output", type=Path)
     smoke = subcommands.add_parser(
         "smoke-test", help="exercise the live v1 API, GPUs, model, and follow-up flow"
     )
@@ -371,30 +358,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         )
         return 0 if report["correct_records"] == report["total_records"] else 1
-    if arguments.command == "train-selector":
-        report = json.loads(arguments.report.read_text(encoding="utf-8"))
-        policy = train_backend_policy(report)
-        destination = arguments.output or settings.backend_policy_path
-        write_json(destination, policy)
-        print(
-            json.dumps(
-                {
-                    "output": str(destination),
-                    "problem_count": len(policy["problems"]),
-                },
-                indent=2,
-            )
-        )
-        return 0
-    if arguments.command == "evaluate-selector":
-        report = json.loads(arguments.report.read_text(encoding="utf-8"))
-        policy_path = arguments.policy or settings.backend_policy_path
-        policy = json.loads(policy_path.read_text(encoding="utf-8"))
-        evaluation = evaluate_backend_policy(report, policy)
-        if arguments.output:
-            write_json(arguments.output, evaluation)
-        print(json.dumps(evaluation, indent=2))
-        return 0 if evaluation["evaluated_cases"] > 0 else 1
     if arguments.command == "smoke-test":
         if not settings.api_token:
             raise SystemExit("GRAPHMINE_API_TOKEN is required for smoke-test")

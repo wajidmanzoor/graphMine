@@ -43,7 +43,6 @@ class Settings:
     manifest_path: Path
     program_instructions_path: Path
     graph_schema_path: Path
-    backend_policy_path: Path
     api_host: str
     api_port: int
     api_token: str | None
@@ -152,15 +151,19 @@ class Settings:
     neo4j_datasets_registry: Path | None = None
     neo4j_instances_root: Path | None = None
     neo4j_datasets_password_file: Path | None = None
-    backend_data_dir: Path = Path("/data/labdata/wajid/graphmine_data/rlModelData")
-    backend_model_dir: Path = Path("/data/labdata/wajid/graphmine-models/rlModel")
-    backend_selection: str = "legacy"
+    backend_data_dir: Path = Path.home() / ".local/state/graphmine/backend-runs"
+    backend_model_dir: Path = Path.home() / ".local/state/graphmine/backend-models"
+    backend_selection: str = "native"
     backend_require_rollout_evidence: bool = True
     backend_exploration_enabled: bool = True
     backend_exploration_budget: float = 0.10
-    backend_max_explore_ratio: float = 1.5
+    backend_temperature: float = 1.0
+    backend_exploration_floor: float = 0.02
+    backend_ipw_clip: float = 20.0
+    backend_failure_penalty: float = 10.0
     backend_memory_safety: float = 0.8
-    backend_min_timeout_seconds: int = 60
+    backend_default_timeout_seconds: float = 300.0
+    backend_timeout_multiple: float = 3.0
 
     @property
     def dual_adapters_active(self) -> bool:
@@ -201,14 +204,18 @@ class Settings:
             raise ValueError("GRAPHMINE_LLM_SLEEP_LEVEL supports only level 1")
         if not 0 < self.llm_idle_sleep_minutes < float("inf"):
             raise ValueError("GRAPHMINE_LLM_IDLE_SLEEP_MINUTES must be a finite positive number")
-        if self.backend_selection not in {"legacy", "shadow", "bandit"}:
-            raise ValueError("backend_selection must be legacy, shadow or bandit")
+        if self.backend_selection not in {"native", "shadow", "bandit"}:
+            raise ValueError("backend_selection must be native, shadow or bandit")
         if not 0 <= self.backend_exploration_budget <= 1:
             raise ValueError("backend_exploration_budget must be between 0 and 1")
-        if not 0 < self.backend_memory_safety <= 0.8 or not 1 <= self.backend_max_explore_ratio <= 1.5:
-            raise ValueError("Invalid backend memory safety or exploration ratio")
-        if not 0 < self.backend_min_timeout_seconds <= 1800:
-            raise ValueError("backend_min_timeout_seconds must be between 1 and 1800")
+        if not 0 < self.backend_memory_safety <= 0.8:
+            raise ValueError("Invalid backend memory safety")
+        if not 0 <= self.backend_exploration_floor <= 1 or not 0 < self.backend_temperature < float("inf"):
+            raise ValueError("Invalid shared-policy exploration controls")
+        if not 1 <= self.backend_ipw_clip < float("inf") or not 1 < self.backend_failure_penalty < float("inf"):
+            raise ValueError("Invalid shared-policy training controls")
+        if not 0 < self.backend_default_timeout_seconds < float("inf") or not 1 <= self.backend_timeout_multiple < float("inf"):
+            raise ValueError("Invalid empirical timeout controls")
         for name, maximum in (("database_pool_limit", 128), ("database_pool_size", 32),
                               ("database_pool_wait_seconds", 120), ("database_pool_idle_seconds", 3600)):
             if not 1 <= getattr(self, name) <= maximum:
@@ -346,19 +353,26 @@ class Settings:
             ).split(",")
             if item.strip()
         )
+        import hashlib
+        backend_root = data_root if root not in data_root.parents and data_root != root else (
+            Path.home() / ".local/state/graphmine" / hashlib.sha256(str(root).encode()).hexdigest()[:12])
         token = os.getenv("GRAPHMINE_API_TOKEN", "").strip() or None
         return cls(
             llm_thinking_stages=tuple(x.strip() for x in os.environ["GRAPHMINE_LLM_THINKING_STAGES"].split(",") if x.strip())
             if "GRAPHMINE_LLM_THINKING_STAGES" in os.environ else None,
-            backend_data_dir=Path(os.getenv("GRAPHMINE_BACKEND_DATA_DIR", "/data/labdata/wajid/graphmine_data/rlModelData")).expanduser().resolve(),
-            backend_model_dir=Path(os.getenv("GRAPHMINE_BACKEND_MODEL_DIR", "/data/labdata/wajid/graphmine-models/rlModel")).expanduser().resolve(),
-            backend_selection=os.getenv("GRAPHMINE_BACKEND_SELECTION", "legacy"),
+            backend_data_dir=Path(os.getenv("GRAPHMINE_BACKEND_DATA_DIR", str(backend_root / "backend-runs"))).expanduser().resolve(),
+            backend_model_dir=Path(os.getenv("GRAPHMINE_BACKEND_MODEL_DIR", str(backend_root / "backend-models"))).expanduser().resolve(),
+            backend_selection=os.getenv("GRAPHMINE_BACKEND_SELECTION", "native"),
             backend_require_rollout_evidence=_boolean("GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE", True),
             backend_exploration_enabled=_boolean("GRAPHMINE_BACKEND_EXPLORATION_ENABLED", True),
             backend_exploration_budget=float(os.getenv("GRAPHMINE_BACKEND_EXPLORATION_BUDGET", "0.10")),
-            backend_max_explore_ratio=float(os.getenv("GRAPHMINE_BACKEND_MAX_EXPLORE_RATIO", "1.5")),
+            backend_temperature=float(os.getenv("GRAPHMINE_BACKEND_TEMPERATURE", "1.0")),
+            backend_exploration_floor=float(os.getenv("GRAPHMINE_BACKEND_EXPLORATION_FLOOR", "0.02")),
+            backend_ipw_clip=float(os.getenv("GRAPHMINE_BACKEND_IPW_CLIP", "20")),
+            backend_failure_penalty=float(os.getenv("GRAPHMINE_BACKEND_FAILURE_PENALTY", "10")),
             backend_memory_safety=float(os.getenv("GRAPHMINE_BACKEND_MEMORY_SAFETY", "0.8")),
-            backend_min_timeout_seconds=_integer("GRAPHMINE_BACKEND_MIN_TIMEOUT_SECONDS", 60),
+            backend_default_timeout_seconds=float(os.getenv("GRAPHMINE_BACKEND_DEFAULT_TIMEOUT_SECONDS", "300")),
+            backend_timeout_multiple=float(os.getenv("GRAPHMINE_BACKEND_TIMEOUT_MULTIPLE", "3")),
             database_credentials_file=Path(os.environ["GRAPHMINE_DATABASE_CREDENTIALS_FILE"]).expanduser().absolute()
             if os.getenv("GRAPHMINE_DATABASE_CREDENTIALS_FILE") else None,
             database_dataset_allowlist=tuple(
@@ -458,12 +472,6 @@ class Settings:
                 root / "agent" / "program_instructions.json"
             ).resolve(),
             graph_schema_path=(root / "problems" / "graph_input.schema.json").resolve(),
-            backend_policy_path=Path(
-                os.getenv(
-                    "GRAPHMINE_BACKEND_POLICY",
-                    str(root / "agent" / "backend_policy.json"),
-                )
-            ).resolve(),
             api_host=os.getenv("GRAPHMINE_API_HOST", "0.0.0.0"),
             api_port=_integer("GRAPHMINE_API_PORT", 8000),
             api_token=token,

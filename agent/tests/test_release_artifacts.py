@@ -48,7 +48,8 @@ def test_v1_qwen_reports_remain_historical_not_current_release_evidence() -> Non
     }
     for relative, total in expected.items():
         report = _json(relative)
-        # Archived accuracy belongs to the original schema and source revision.
+        # Archived reports predate the runnable-problem schema. Never relabel
+        # their recorded accuracy as a current release result.
         assert report["cases_sha256"] == "11b3bb847f13142cc24ad34e38f2608881c9f9cecc61d6b3e159af4560928640"
         assert report["cases_sha256"] != corpus_hash
         assert report["model"] == "Qwen/Qwen3.8-27B-FP8"
@@ -62,7 +63,7 @@ def test_v1_qwen_reports_remain_historical_not_current_release_evidence() -> Non
         )
 
 
-def test_v1_benchmark_summary_and_policy_are_hash_linked() -> None:
+def test_v1_smoke_summary_is_historical_and_old_policy_is_removed() -> None:
     summary = _json("benchmarks/reports/v1-smoke-rtx6000-ada.json")
     assert summary["correct_records"] == summary["total_records"] == 69
     assert summary["compiled_backends_exercised"] == 23
@@ -75,9 +76,5 @@ def test_v1_benchmark_summary_and_policy_are_hash_linked() -> None:
         "note": "This is an in-sample smoke evaluation, not a generalization claim.",
     }
     assert summary["sha256"]["manifest"] == _sha256("benchmarks/v1-smoke.json")
-    assert summary["sha256"]["backend_policy"] == _sha256(
-        "benchmarks/reports/v1-backend-policy.json"
-    )
-    policy = _json("benchmarks/reports/v1-backend-policy.json")
-    assert policy["schema_version"] == "1.0.0"
-    assert len(policy["operations"]) == 13
+    assert not (REPOSITORY_ROOT / "benchmarks/reports/v1-backend-policy.json").exists()
+    assert not (REPOSITORY_ROOT / "agent/backend_policy.json").exists()

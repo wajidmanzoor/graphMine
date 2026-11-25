@@ -55,7 +55,7 @@ def replay_contract_sha256() -> str:
         "planning.py",
         "answers.py",
         "presentation.py",
-        "selector.py",
+        "backend_learning/shared.py",
         "graph_context.py",
         "models.py",
         "visualization.py",

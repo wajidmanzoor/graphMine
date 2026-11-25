@@ -620,9 +620,6 @@ class CapabilityReport(StrictModel):
     compiled_backend_count: int
     problems: list[dict[str, Any]]
     error: str | None = None
-    backend_policy_path: str | None = None
-    backend_policy_loaded: bool = False
-    backend_policy_error: str | None = None
     backend_correctness_exclusions: dict[str, dict[str, str]] = Field(
         default_factory=dict
     )

@@ -160,7 +160,4 @@ def run_live_smoke_test(
             "compiled_backend_count": health["graphmine"][
                 "compiled_backend_count"
             ],
-            "backend_policy_loaded": health["graphmine"].get(
-                "backend_policy_loaded", False
-            ),
         }

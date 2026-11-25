@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 
-from .memory import predict_memory
+from .memory import estimate_candidate_memory
 
 
 def feasible(problem, backend, features, parameters, hardware):
@@ -56,17 +56,16 @@ def filter_candidates(problem, candidates, features, parameters, hardware, *, ou
     for native in candidates:
         candidate = dict(native, native_feasible=native.get("feasible"),
                          native_infeasible_reason=native.get("infeasible_reason"))
-        predicted, version, reason = predict_memory(problem, candidate, features, parameters, hardware,
+        predicted, reason = estimate_candidate_memory(problem, candidate, features, parameters, hardware,
             output_estimate=output_estimate, implementation=implementation, data_dir=data_dir)
-        candidate.update(predicted_peak_memory_bytes=predicted, memory_model_version=version,
-                         memory_prediction_reason=reason)
+        candidate.update(predicted_peak_memory_bytes=predicted, memory_estimate_reason=reason)
         ok, reason = feasible(problem, candidate, features, parameters, hardware)
         candidate.update(feasible=ok, infeasible_reason=reason)
         result.append(candidate)
     return result
 
 
-def legacy_choice(candidates, requested_backend="auto"):
+def native_choice(candidates, requested_backend="auto"):
     if requested_backend != "auto":
         return next((c["id"] for c in candidates if c["id"] == requested_backend and c["feasible"]), None)
     return next((c["id"] for c in candidates if c["device"] == "gpu" and c["feasible"]),

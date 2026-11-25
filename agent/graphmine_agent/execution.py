@@ -17,7 +17,6 @@ from .history import HistoryStore
 from .models import CapabilityReport, ExecutionPlan, FileRole
 from .planning import PlanValidator
 from .profiles import EXPANSION_PROBLEMS, ProfileInputError, prepare_problem_graph
-from .selector import CORRECTNESS_EXCLUSIONS, BackendSelector
 
 
 class ExecutionError(RuntimeError):
@@ -41,9 +40,6 @@ class GraphMineRunner:
         self.catalog = catalog
         self.graph_store = graph_store
         self.validator = validator
-        self.selector = BackendSelector(
-            settings.backend_policy_path, catalog, validator
-        )
         self._capabilities: CapabilityReport | None = None
 
     def probe(self) -> CapabilityReport:
@@ -62,10 +58,6 @@ class GraphMineRunner:
                 compiled_backend_count=0,
                 problems=[],
                 error="GraphMine binary is missing or not executable",
-                backend_policy_path=str(self.selector.path),
-                backend_policy_loaded=self.selector.loaded,
-                backend_policy_error=self.selector.error,
-                backend_correctness_exclusions=CORRECTNESS_EXCLUSIONS,
             )
             self._capabilities = report
             return report
@@ -105,10 +97,6 @@ class GraphMineRunner:
                         f"version {__version__}"
                     )
                 ),
-                backend_policy_path=str(self.selector.path),
-                backend_policy_loaded=self.selector.loaded,
-                backend_policy_error=self.selector.error,
-                backend_correctness_exclusions=CORRECTNESS_EXCLUSIONS,
             )
         except (
             OSError,
@@ -131,10 +119,6 @@ class GraphMineRunner:
                 compiled_backend_count=0,
                 problems=[],
                 error=str(error),
-                backend_policy_path=str(self.selector.path),
-                backend_policy_loaded=self.selector.loaded,
-                backend_policy_error=self.selector.error,
-                backend_correctness_exclusions=CORRECTNESS_EXCLUSIONS,
             )
         self._capabilities = report
         return report
@@ -193,8 +177,6 @@ class GraphMineRunner:
         graph_record = self.graph_store.database.get_file(plan.graph_id)
         if graph_record.role != FileRole.graph:
             raise UploadError("graph_id must identify a main graph file")
-        if compiled is not None:
-            plan = self.selector.select(plan, graph_record.metadata, compiled)
         plan = self.validator.validate(
             plan, compiled_backends=compiled, for_execution=True
         )

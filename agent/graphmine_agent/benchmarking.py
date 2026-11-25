@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any
 
 from .config import Settings
-from .selector import feature_bucket
 
 
 class BenchmarkError(RuntimeError):
@@ -75,7 +74,6 @@ def _graph_features(path: Path) -> dict[str, Any]:
         "directed": directed,
         "has_timestamps": has_timestamps,
     }
-    metadata["feature_bucket"] = feature_bucket(metadata)
     return metadata
 
 
@@ -343,7 +341,6 @@ def run_benchmarks(
                         "graph": str(graph_path),
                         "graph_sha256": _sha256(graph_path),
                         "features": features,
-                        "feature_bucket": features["feature_bucket"],
                         **result,
                     }
                 )
@@ -364,139 +361,6 @@ def run_benchmarks(
         "correct_records": correct,
         "total_records": len(records),
         "records": records,
-    }
-
-
-def train_backend_policy(report: dict[str, Any]) -> dict[str, Any]:
-    if report.get("schema_version") != "1.0.0":
-        raise BenchmarkError("unsupported benchmark report schema")
-    records = report.get("records", [])
-    if not isinstance(records, list):
-        raise BenchmarkError("benchmark report records must be a list")
-    if not records:
-        raise BenchmarkError("benchmark report has no records")
-    failed = [
-        item
-        for item in records
-        if not isinstance(item, dict)
-        or item.get("status") != "success"
-        or item.get("correct") is not True
-    ]
-    if failed:
-        raise BenchmarkError(
-            "backend policy training requires every timing record to pass the "
-            f"correctness gate; rejected {len(failed)} of {len(records)} records"
-        )
-    problems: dict[str, Any] = {}
-    by_problem: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for record in records:
-        by_problem[str(record["problem_id"])].append(record)
-    for problem_id, problem_records in sorted(by_problem.items()):
-        global_times: dict[str, list[float]] = defaultdict(list)
-        bucket_times: dict[str, dict[str, list[float]]] = defaultdict(
-            lambda: defaultdict(list)
-        )
-        for record in problem_records:
-            backend = str(record["backend_id"])
-            duration = float(record["wall_ms"])
-            global_times[backend].append(duration)
-            bucket_times[str(record["feature_bucket"])][backend].append(duration)
-
-        def ranking(values: dict[str, list[float]]) -> tuple[list[str], dict[str, float]]:
-            medians = {
-                backend: round(statistics.median(samples), 6)
-                for backend, samples in values.items()
-            }
-            return sorted(medians, key=lambda item: (medians[item], item)), medians
-
-        global_ranked, global_medians = ranking(global_times)
-        buckets: dict[str, Any] = {}
-        for bucket, values in sorted(bucket_times.items()):
-            ranked, medians = ranking(values)
-            buckets[bucket] = {
-                "ranked_backends": ranked,
-                "median_wall_ms": medians,
-                "sample_count": sum(len(samples) for samples in values.values()),
-            }
-        problems[problem_id] = {
-            "global_ranked_backends": global_ranked,
-            "global_median_wall_ms": global_medians,
-            "buckets": buckets,
-            "sample_count": len(problem_records),
-        }
-    source = json.dumps(report, sort_keys=True, separators=(",", ":")).encode()
-    return {
-        "schema_version": "1.0.0",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "source_report_sha256": hashlib.sha256(source).hexdigest(),
-        "problems": problems,
-    }
-
-
-def evaluate_backend_policy(
-    report: dict[str, Any], policy: dict[str, Any]
-) -> dict[str, Any]:
-    if policy.get("schema_version") != "1.0.0":
-        raise BenchmarkError("unsupported backend policy schema")
-    grouped: dict[tuple[str, str], dict[str, list[float]]] = defaultdict(
-        lambda: defaultdict(list)
-    )
-    problem_for_case: dict[str, str] = {}
-    for record in report.get("records", []):
-        if record.get("status") != "success" or record.get("correct") is not True:
-            continue
-        case_id = str(record["case_id"])
-        bucket = str(record["feature_bucket"])
-        grouped[(case_id, bucket)][str(record["backend_id"])].append(
-            float(record["wall_ms"])
-        )
-        problem_for_case[case_id] = str(record["problem_id"])
-    cases: list[dict[str, Any]] = []
-    for (case_id, bucket), times in sorted(grouped.items()):
-        medians = {
-            backend: statistics.median(samples) for backend, samples in times.items()
-        }
-        problem_id = problem_for_case[case_id]
-        problem_policy = policy.get("problems", {}).get(problem_id, {})
-        ranked = list(
-            problem_policy.get("buckets", {})
-            .get(bucket, {})
-            .get("ranked_backends", [])
-        )
-        ranked.extend(problem_policy.get("global_ranked_backends", []))
-        selected = next((item for item in ranked if item in medians), None)
-        if selected is None:
-            continue
-        oracle = min(medians, key=medians.get)  # type: ignore[arg-type]
-        selected_ms = medians[selected]
-        oracle_ms = medians[oracle]
-        cases.append(
-            {
-                "case_id": case_id,
-                "problem_id": problem_id,
-                "feature_bucket": bucket,
-                "selected_backend": selected,
-                "oracle_backend": oracle,
-                "selected_median_wall_ms": round(selected_ms, 6),
-                "oracle_median_wall_ms": round(oracle_ms, 6),
-                "regret_ratio": round(selected_ms / oracle_ms, 6)
-                if oracle_ms > 0
-                else 1.0,
-            }
-        )
-    regrets = [item["regret_ratio"] for item in cases]
-    return {
-        "schema_version": "1.0.0",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "evaluated_cases": len(cases),
-        "oracle_matches": sum(
-            item["selected_backend"] == item["oracle_backend"] for item in cases
-        ),
-        "median_regret_ratio": round(statistics.median(regrets), 6)
-        if regrets
-        else None,
-        "maximum_regret_ratio": round(max(regrets), 6) if regrets else None,
-        "cases": cases,
     }
 
 

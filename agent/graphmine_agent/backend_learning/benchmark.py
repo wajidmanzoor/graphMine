@@ -83,6 +83,9 @@ def _decorate(row, job):
                benchmark_pair_id=job["benchmark_pair_id"], benchmark_attempt_key=job["benchmark_attempt_key"],
                repetition=job["repetition"], source="benchmark", is_evaluation=job["is_evaluation"],
                implementation_sha256=job["implementation_sha256"])
+    for field in ("load_regime", "pair_context", "paired_eligible_backends", "backend_order"):
+        if field in job:
+            row[field] = job[field]
     return row
 
 
@@ -99,7 +102,7 @@ def initial_row(job, graph, card, gpu_uuid):
                parameters=safe_parameters(job["parameters"], algorithm(job["problem"]).parameters),
                requested_device="cpu" if backend == "cpp" else "gpu", requested_backend=backend,
                candidates=candidates, chosen_backend=backend, reason="forced", policy_version="feasibility-v1",
-               model_version=None, predictions={}, hardware=hardware,
+               model_version=None, eligible_backends=[], probabilities={}, selection_probability=1., hardware=hardware,
                graph_features=graph_features(graph, input_kind="graph"), outcome=None, error_code=None,
                runtime_seconds=None, native_elapsed_seconds=None, native_compute_seconds=None,
                preparation_seconds=None, timeout_seconds=job["budget"]["timeout_seconds"], censored=False,
@@ -155,7 +158,7 @@ def child(request_path):
         if remaining is not None and remaining <= 0:
             raise TimeoutError("Benchmark startup exceeded its deadline")
         budget = Budget(**{**job["budget"], "timeout_seconds": minimum_limit(remaining, job["budget"]["timeout_seconds"])})
-        run_observed(run, job["problem"], graph, context=dict(source="benchmark", workflow_id=job["benchmark_id"],
+        run_observed(run, job["problem"], graph, context=dict(source="benchmark", workflow_id=job["benchmark_id"], execution_isolated=True,
                      is_evaluation=job["is_evaluation"], leased_gpu_uuid=job["gpu_uuid"],
                      backend_memory_safety=job["memory_safety"], job_timeout_seconds=remaining),
                      step_id=job["benchmark_attempt_key"], emit=emit, parameters=job["parameters"],
@@ -479,6 +482,8 @@ async def collect(arguments):
     manifest = dict(schema_version=1, mode=mode, is_evaluation=is_evaluation, config=config,
                     implementation_sha256=implementation, native_library_sha256=hashlib.sha256(library.read_bytes()).hexdigest(),
                     benchmark_code_sha256=frozen_code, gpu_index=1, gpu_uuid=gpu["uuid"],
+                    load_regimes=arguments.load_regimes, busy_cpu_workers=arguments.busy_cpu_workers,
+                    load_warmup_seconds=arguments.load_warmup_seconds,
                     problems=[dict(problem=c["id"], backends=[b["id"] for b in c["backends"] if b.get("verified")]) for c in cards])
     selection = select_graphs(config, cards, full=arguments.full)
     with exclusive(directory / "collection.lock"), exclusive(Path(data_dir) / "locks" / ("bootstrap.lock" if not arguments.full else identifier + ".lock")):
@@ -493,66 +498,11 @@ async def collect(arguments):
             rows = await recover(directory, logger)
             seen = {r["benchmark_attempt_key"] for r in rows}
             totals = bootstrap_totals(data_dir, implementation, is_evaluation)
-            for card in sorted(cards, key=lambda c: c["id"]):
-                problem = card["id"]
-                admitted = [b["id"] for b in card["backends"] if b.get("verified")]
-                # CPU first, then native declaration order; repeat only after
-                # every backend has had an opportunity within the initial cap.
-                backends = ["cpp", *(b for b in admitted if b != "cpp")]
-                if "cpp" not in admitted:
-                    raise ValueError("The benchmark requires admitted cpp evidence")
-                if not arguments.full and "bootstrap_backends" in config["problems"][problem]:
-                    backends = config["problems"][problem]["bootstrap_backends"]
-                    if (not isinstance(backends, list) or not backends or backends[0] != "cpp"
-                            or len(set(backends)) != len(backends) or not set(backends) <= set(admitted)):
-                        raise ValueError("Bootstrap backend subsets must start with cpp and contain unique admitted backends")
-                limit = None if arguments.full else config["bootstrap_examples_per_problem"]
-                for spec in selection[problem]:
-                    if limit is not None and totals[problem] >= limit:
-                        break
-                    graph_path, graph_meta = prepare_graph(directory, spec, settings)
-                    graph = json.loads(graph_path.read_text())
-                    for options in parameter_grid(config["problems"][problem]):
-                        parameters = bind_parameters(problem, graph, options)
-                        budget = {k: config[k] for k in ("timeout_seconds", "max_candidates", "max_output_items")}
-                        for repetition in range(config["repeats"]):
-                            for backend in backends:
-                                if limit is not None and totals[problem] >= limit:
-                                    break
-                                comparison, pair, key = attempt_keys(implementation, problem, backend,
-                                    graph_meta["snapshot_fingerprint"], parameters, budget, repetition)
-                                if key in seen:
-                                    continue
-                                if code_hash() != frozen_code or implementation_hash() != implementation:
-                                    raise ValueError("Benchmark code or native implementation changed during collection")
-                                lock = None
-                                try:
-                                    if backend != "cpp":
-                                        while lock is None:
-                                            lock = GPULock.acquire(data_dir)
-                                            if lock is None:
-                                                await asyncio.sleep(1)
-                                    job = dict(run_id=str(uuid4()), benchmark_id=identifier, benchmark_mode=mode,
-                                        problem=problem, backend=backend, parameters=parameters, budget=budget,
-                                        graph_path=str(graph_path), graph_id=spec["id"], graph_fingerprint=graph_meta["snapshot_fingerprint"],
-                                        comparison_id=comparison, benchmark_pair_id=pair, benchmark_attempt_key=key,
-                                        repetition=repetition, is_evaluation=is_evaluation, data_dir=str(data_dir),
-                                        repository_root=str(ROOT), implementation_sha256=implementation,
-                                        gpu_uuid=None if backend == "cpp" else gpu["uuid"], memory_safety=settings.backend_memory_safety)
-                                    row = initial_row(job, graph, card, job["gpu_uuid"])
-                                    row = await run_attempt(job, row, directory, python=arguments.python or sys.executable,
-                                                            library=library, lock=lock)
-                                finally:
-                                    if lock:
-                                        lock.close()
-                                await publish(logger, row, directory)
-                                rows.append(row)
-                                seen.add(key)
-                                totals[problem] += 1
-                                print(f"{problem} {backend} {row['outcome']} {row['runtime_seconds']:.4f}s", flush=True)
-                                atomic_json(directory / "status.json", dict(status="running", rows=len(rows), per_problem=dict(totals)))
-                                if row.get("benchmark_cancelled"):
-                                    raise asyncio.CancelledError()
+            from .paired import collect_pairs
+            await collect_pairs(cards=cards, selection=selection, config=config, settings=settings,
+                arguments=arguments, directory=directory, logger=logger, data_dir=data_dir, library=library,
+                gpu=gpu, implementation=implementation, identifier=identifier, is_evaluation=is_evaluation,
+                mode=mode, rows=rows, seen=seen, totals=totals, frozen_code=frozen_code)
             summary = summarize(rows, cards)
             summary.update(benchmark_id=identifier, mode=mode, implementation_sha256=implementation,
                            configured_graph_count=len(expand_graphs(config)),
@@ -582,6 +532,9 @@ def main(argv=None):
     parser.add_argument("--password-file", type=Path)
     parser.add_argument("--problems", nargs="+")
     parser.add_argument("--examples-per-problem", type=int, choices=(1, 2, 3))
+    parser.add_argument("--load-regimes", help="idle,busy_cpu; full collection defaults to both")
+    parser.add_argument("--busy-cpu-workers", type=int, default=2)
+    parser.add_argument("--load-warmup-seconds", type=float, default=65.)
     parser.add_argument("--full", action="store_true", help="explicitly run the complete grid instead of the small bootstrap")
     parser.add_argument("--is-evaluation", action="store_true", help="exclude this collection from all model training")
     args = parser.parse_args(argv)
