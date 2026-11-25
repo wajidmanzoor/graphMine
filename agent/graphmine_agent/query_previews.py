@@ -58,7 +58,7 @@ class QueryPreviews:
             validate_table(value)
         raw = _json(value).encode()
         unlimited = kind == "graph" and is_database_query(source)
-        if not unlimited and len(raw) > self.runtime.settings.analytics_max_input_bytes:
+        if self.runtime.settings.analytics_max_input_bytes is not None and not unlimited and len(raw) > self.runtime.settings.analytics_max_input_bytes:
             raise AnalyticsError("Preview exceeds the input byte budget", "resource_limit")
         now = self.clock()
         expire_previews(self.database, now)

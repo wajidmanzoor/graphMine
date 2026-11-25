@@ -13,6 +13,7 @@ from pydantic import Field
 from starlette.concurrency import run_in_threadpool
 
 from .analytics import AnalyticsError, _json, _key
+from .calculation_limits import minimum_limit
 from .database import RecordNotFound
 from .database_sources import (
     RelationshipMapping,
@@ -329,7 +330,7 @@ def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
             "Query parameters exceed the byte limit.", "resource_limit"
         )
     if byte_limit is not None:
-        byte_limit = min(byte_limit, source.max_bytes)
+        byte_limit = minimum_limit(byte_limit, source.max_bytes)
     collector_class = RowGraphCollector if body.projection == "rows" else GraphCollector
     collector, sample_records, rows, used = collector_class(source, byte_limit, body.weight_property), [], 0, 0
     scalar_rows = []
@@ -369,7 +370,7 @@ def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
                     if rows > source.max_rows:
                         raise AnalyticsError("Query exceeds the row limit. Add a filter or an explicit LIMIT.", "resource_limit")
                     used += len(_json(item).encode())
-                    if used > source.max_bytes:
+                    if source.max_bytes is not None and used > source.max_bytes:
                         raise AnalyticsError("Query exceeds the result byte limit.", "resource_limit")
                 if byte_limit is not None:
                     used += len(_json(item).encode())
@@ -422,7 +423,8 @@ def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
         from .table_artifacts import make_table
 
         table = make_table(columns, scalar_rows)
-        if len(_json(table).encode()) > (source.max_bytes if byte_limit is None else byte_limit):
+        table_limit = source.max_bytes if byte_limit is None else byte_limit
+        if table_limit is not None and len(_json(table).encode()) > table_limit:
             raise AnalyticsError("Query table exceeds the result byte limit.", "resource_limit")
     return graph, collector.lineage, sample, rows, table
 

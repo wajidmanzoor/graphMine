@@ -54,8 +54,6 @@ std::string read(const std::string& path) {
   char block[8192];
   while (input.read(block, sizeof(block)) || input.gcount()) {
     result.append(block, static_cast<std::size_t>(input.gcount()));
-    if (result.size() > 64 * 1024 * 1024)
-      throw std::runtime_error("File exceeds 64 MiB request limit");
   }
   if (input.bad()) throw std::runtime_error("Input read failed");
   return result;

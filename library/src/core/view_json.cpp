@@ -70,8 +70,7 @@ struct InputGuard {
 }  // namespace
 
 json::value strict_json(std::string_view raw) {
-  if (raw.size() > 64 * 1024 * 1024)
-    throw std::length_error("Native JSON input exceeds 64 MiB");
+  // Validate tokens at every input size; transport length has no fixed ceiling.
   json::basic_parser<InputGuard> guard(json::parse_options{});
   boost::system::error_code error;
   const auto consumed = guard.write_some(false, raw.data(), raw.size(), error);

@@ -206,8 +206,6 @@ json::object read_csv(const json::object& request) {
           "Delimited input must be a regular local file");
   const auto bytes = std::filesystem::file_size(path);
   require(bytes > 0, "Delimited input is empty");
-  if (bytes > 64 * 1024 * 1024)
-    throw Failure("resource_limit", "File exceeds the current 64 MiB ingestion profile");
   const auto ordinal =
       request.contains("gpu_device") ? uint(request.at("gpu_device"), "gpu_device") : 0;
   require(ordinal <= INT32_MAX, "gpu_device is out of range");

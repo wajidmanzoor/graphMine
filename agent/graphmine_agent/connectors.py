@@ -20,6 +20,7 @@ from starlette.concurrency import run_in_threadpool
 
 from . import managed_connectors as managed
 from .analytics import AnalyticsError, _json
+from .calculation_limits import minimum_limit
 from .csv_ingestion import MAX_CELLS, MAX_ROWS, graph_from_table, read_table
 from .database import RecordNotFound
 from .datasets import DatasetLibrary
@@ -118,7 +119,7 @@ def rows_graph(rows, config, limit):
             "The source exceeds the column or cell limit.", "resource_limit"
         )
     raw = _json(rows).encode()
-    if len(raw) > limit:
+    if limit is not None and len(raw) > limit:
         raise AnalyticsError(
             "The source exceeds the input byte limit.", "resource_limit"
         )
@@ -158,7 +159,8 @@ def sqlite_rows(config, limit):
     ) as connection:
         connection.execute("PRAGMA query_only=ON")
         connection.execute("PRAGMA trusted_schema=OFF")
-        connection.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, min(limit, 1024 * 1024))
+        if limit is not None:
+            connection.setlimit(sqlite3.SQLITE_LIMIT_LENGTH, min(limit, connection.getlimit(sqlite3.SQLITE_LIMIT_LENGTH)))
         connection.set_progress_handler(
             lambda: int(time.monotonic() - started > 15), 1000
         )
@@ -185,7 +187,7 @@ def sqlite_rows(config, limit):
             row = dict(zip(columns, record, strict=True))
             used += len(_json(row).encode())
             if (
-                used > limit
+                (limit is not None and used > limit)
                 or len(rows) >= MAX_ROWS
                 or (len(rows) + 1) * len(columns) > MAX_CELLS
             ):
@@ -241,7 +243,7 @@ def rest_bytes(config, limit, *, settings=None, payload=None):
                 502,
             )
         for chunk in response.iter_bytes():
-            if len(data) + len(chunk) > limit or time.monotonic() - started > 30:
+            if (limit is not None and len(data) + len(chunk) > limit) or time.monotonic() - started > 30:
                 raise AnalyticsError(
                     "The source exceeds the time or byte limit; no partial import was saved.",
                     "resource_limit",
@@ -302,7 +304,7 @@ def neo4j_rows(runtime, config, limit):
 
 
 def fetch(runtime, config):
-    limit = min(
+    limit = minimum_limit(
         runtime.settings.analytics_max_input_bytes,
         runtime.settings.account_upload_bytes,
     )
@@ -394,7 +396,7 @@ def preview(runtime, connector_id):
             "The connector configuration changed. Preview again.", "source_changed", 409
         )
     raw = _json(graph).encode()
-    if len(raw) > runtime.settings.analytics_max_input_bytes:
+    if runtime.settings.analytics_max_input_bytes is not None and len(raw) > runtime.settings.analytics_max_input_bytes:
         raise AnalyticsError(
             "The graph exceeds the input byte limit.", "resource_limit"
         )
@@ -498,7 +500,7 @@ def register_connector_routes(router):
     async def upload_database(file: UploadFile, request: Request):
         runtime = request.app.state.runtime
         user = managed.principal()
-        limit = min(
+        limit = minimum_limit(
             runtime.settings.max_upload_bytes,
             runtime.settings.account_upload_bytes,
             user.accounts.upload_remaining(user.user_id),

@@ -189,7 +189,7 @@ def test_expired_preflight_is_not_recorded_as_native_execution(observed_environm
 
 def test_unlimited_preflight_can_continue_past_the_old_deadline(observed_environment, monkeypatch):
     graph, _ = observed_environment
-    times, events, calls = iter([0, 61, 62]), [], []
+    times, events, calls = iter([0, 301, 302]), [], []
     monkeypatch.setattr(worker.time, "monotonic", lambda: next(times))
 
     def invoke(*args, **kwargs):
@@ -198,11 +198,11 @@ def test_unlimited_preflight_can_continue_past_the_old_deadline(observed_environ
 
     worker.run_observed(invoke, "triangle-counting", graph,
         context={"leased_gpu_uuid": "GPU-test"}, step_id="count", emit=events.append, device="cpu")
-    assert len(calls) == 1 and calls[0]["budget"].timeout_seconds == 300
+    assert len(calls) == 1 and calls[0]["budget"].timeout_seconds == 21600
     rows = [e["record"] for e in events if e["event"] == "native_finished"]
     assert len(rows) == 1 and rows[0]["execution_started"]
     assert rows[0]["outcome"] == "completed" and not rows[0]["censored"]
-    assert rows[0]["timeout_seconds"] == 300
+    assert rows[0]["timeout_seconds"] == 21600
 
 
 def test_gpu0_is_rejected_before_any_native_cuda_preflight(observed_environment, monkeypatch):

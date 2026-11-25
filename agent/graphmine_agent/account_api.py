@@ -194,15 +194,13 @@ class AccountMiddleware:
                 path.endswith(("/files", "/files/preview"))
                 or path == "/api/connectors/sqlite"
             ) and method == "POST":
-                maximum = (
-                    min(
-                        runtime.settings.max_upload_bytes,
-                        runtime.settings.account_upload_bytes,
-                    )
-                    + 65536
-                )
+                from .calculation_limits import minimum_limit
+
+                maximum = minimum_limit(runtime.settings.max_upload_bytes, runtime.settings.account_upload_bytes)
+                if maximum is not None:
+                    maximum += 65536
             length = headers.get("content-length")
-            if length and (not length.isdecimal() or int(length) > maximum):
+            if length and (not length.isdecimal() or maximum is not None and int(length) > maximum):
                 raise AccountError(
                     "The request exceeds the upload/request size limit.",
                     "request_too_large",
@@ -215,7 +213,7 @@ class AccountMiddleware:
                 message = await receive()
                 if message["type"] == "http.request":
                     consumed += len(message.get("body", b""))
-                    if consumed > maximum:
+                    if maximum is not None and consumed > maximum:
                         raise AccountError(
                             "The request exceeds the upload/request size limit.",
                             "request_too_large",

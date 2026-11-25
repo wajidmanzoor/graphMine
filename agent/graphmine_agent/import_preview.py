@@ -9,6 +9,7 @@ from fastapi import File, Form, HTTPException, Request, UploadFile
 from starlette.concurrency import run_in_threadpool
 
 from .csv_ingestion import graph_from_table, read_table
+from .calculation_limits import minimum_limit
 from .graph_store import UploadError
 from .identity import current_principal
 
@@ -16,16 +17,16 @@ from .identity import current_principal
 def preview(runtime, stream, filename, *, directed, source_column, target_column):
     limit = runtime.settings.max_upload_bytes
     if current_principal.get():
-        limit = min(limit, runtime.settings.account_upload_bytes)
+        limit = minimum_limit(limit, runtime.settings.account_upload_bytes)
     with tempfile.TemporaryDirectory(prefix="graphmine-import-") as directory:
         path = Path(directory) / (
             "input.csv" if filename.lower().endswith(".csv") else "input.txt"
         )
         digest, size = hashlib.sha256(), 0
         with path.open("wb") as output:
-            while chunk := stream.read(min(1024 * 1024, limit - size + 1)):
+            while chunk := stream.read(1024 * 1024 if limit is None else min(1024 * 1024, limit - size + 1)):
                 size += len(chunk)
-                if size > limit:
+                if limit is not None and size > limit:
                     raise UploadError("Import preview exceeds the upload byte limit")
                 digest.update(chunk)
                 output.write(chunk)

@@ -12,6 +12,7 @@ from typing import Any, BinaryIO
 from jsonschema import Draft202012Validator, FormatChecker
 
 from .config import Settings
+from .calculation_limits import minimum_limit
 from .csv_ingestion import read_graph as read_csv_graph
 from .database import Database
 from .graph_context import semantic_context
@@ -92,7 +93,7 @@ class GraphStore:
         # storage allowances still apply; HTTP uploads cannot set this option.
         upload_limit = None if unlimited else self.settings.max_upload_bytes
         if principal:
-            upload_limit = principal.accounts.upload_remaining(principal.user_id) if unlimited else min(
+            upload_limit = principal.accounts.upload_remaining(principal.user_id) if unlimited else minimum_limit(
                 upload_limit,
                 self.settings.account_upload_bytes,
                 principal.accounts.upload_remaining(principal.user_id),

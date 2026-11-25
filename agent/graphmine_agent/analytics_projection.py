@@ -34,7 +34,7 @@ def write_request(path, value, limit):
         ):
             raw = chunk.encode()
             size += len(raw)
-            if size > limit:
+            if limit is not None and size > limit:
                 raise AnalyticsError(
                     "Table construction request exceeds the byte budget",
                     "resource_limit",
@@ -69,7 +69,7 @@ async def native_request(runtime, value, input_bytes, *, device="gpu"):
                 write_request,
                 input_path,
                 value,
-                settings.analytics_max_input_bytes + (settings.max_result_bytes or 0),
+                None if settings.analytics_max_input_bytes is None else settings.analytics_max_input_bytes + (settings.max_result_bytes or 0),
             )
             with (
                 output.open("wb") as stdout,
@@ -150,7 +150,7 @@ def register_projection_routes(router):
     async def schema(session_id: str, file_id: str, request: Request):
         runtime = request.app.state.runtime
         path = source(runtime, session_id, file_id)
-        if path.stat().st_size > runtime.settings.analytics_max_input_bytes:
+        if runtime.settings.analytics_max_input_bytes is not None and path.stat().st_size > runtime.settings.analytics_max_input_bytes:
             raise AnalyticsError(
                 "Table exceeds the input byte budget", "resource_limit"
             )
@@ -179,7 +179,7 @@ def register_projection_routes(router):
             for alias, file_id in body.tables.items()
         }
         total = sum(path.stat().st_size for path in tables.values())
-        if total > runtime.settings.analytics_max_input_bytes:
+        if runtime.settings.analytics_max_input_bytes is not None and total > runtime.settings.analytics_max_input_bytes:
             raise AnalyticsError(
                 "Combined tables exceed the input byte budget", "resource_limit"
             )

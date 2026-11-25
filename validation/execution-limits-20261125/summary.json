@@ -1,0 +1,68 @@
+{
+  "status": "passed",
+  "implementation_sha256": "58fceaaa38721068dc12b91b1f349390db63ac379442c4e5cb0befca24af885b",
+  "configuration": {
+    "backend_timeout_seconds": 21600,
+    "workflow_timeout_seconds": 21600,
+    "account_timeout_seconds": 21600,
+    "upload_bytes": null,
+    "account_upload_bytes": null,
+    "workflow_input_bytes": null,
+    "backend_selection": "bandit",
+    "production_and_testing_unchanged": true,
+    "native_binary": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/build/runtime/graphmine-native",
+    "native_library": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/build/runtime/libgraphmine_runtime.so"
+  },
+  "tests": {
+    "agent_passed": 1958,
+    "agent_skipped": 55,
+    "agent_batches": [
+      {
+        "report": "diagnostic-agent-concurrent.xml",
+        "passed_cases": 423
+      },
+      {
+        "report": "diagnostic-agent-native-path.xml",
+        "passed_cases": 1041
+      },
+      {
+        "report": "agent-remaining.xml",
+        "passed_cases": 494
+      }
+    ],
+    "notes": [
+      "Passed cases were deselected when resuming; the batches have disjoint passing test IDs.",
+      "GPU lease contention and missing test-only native-binary configuration caused diagnostic failures. Every affected test passed on the subsequent serial run.",
+      "Optional browser, external database and unavailable GPU integration tests remain skipped."
+    ],
+    "native_ctests_passed": 61,
+    "native_ctests_disabled": 15,
+    "native_cpu_contract_tests_passed": 178,
+    "native_gpu_oracles_passed": 2,
+    "large_native_request_tests_passed": 2,
+    "isolated_gpu_repetitions_passed": 20,
+    "native_oracle_requests_passed": 129076,
+    "frontend_tests_passed": 31,
+    "frontend_typecheck": "passed",
+    "frontend_contract_check": "passed"
+  },
+  "model_version": "20261125t070655.721137z-7f48923fc36a",
+  "model_schema": 2,
+  "raw_feature_count": 112,
+  "active_feature_count": 9,
+  "parameter_features": false,
+  "benchmark_rows": 192,
+  "benchmark_graphs": 16,
+  "held_out_graphs": 3,
+  "held_out_metrics": {
+    "mean": 1.007157370893635,
+    "median": 1.0,
+    "p90": 1.0,
+    "p99": 1.0,
+    "tail_seconds_p90": 0.19923789240419865,
+    "tail_seconds_p99": 0.19931687973439693,
+    "failure_rate": 0.0,
+    "timeout_rate": 0.0
+  },
+  "development_services": "Already stopped; configuration applies on their next start. Real workers were verified separately."
+}

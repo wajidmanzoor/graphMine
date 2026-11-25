@@ -126,7 +126,7 @@ class DatasetLibrary:
         if body.file_id:
             file = self.database.get_file(body.file_id)
             path = self.runtime.graph_store.execution_path(file.id, file.session_id)
-            if not (body.kind == "graph" and is_database_query(file.provenance.get("source"))) and path.stat().st_size > self.runtime.settings.analytics_max_input_bytes:
+            if self.runtime.settings.analytics_max_input_bytes is not None and not (body.kind == "graph" and is_database_query(file.provenance.get("source"))) and path.stat().st_size > self.runtime.settings.analytics_max_input_bytes:
                 raise AnalyticsError(
                     "Dataset exceeds the input byte budget", "resource_limit"
                 )
@@ -231,7 +231,7 @@ class DatasetLibrary:
         elif not isinstance(value, (list, dict)):
             raise AnalyticsError("Reusable inputs must be structured JSON")
         raw = _json(value).encode()
-        if not (kind == "graph" and is_database_query(source)) and len(raw) > self.runtime.settings.analytics_max_input_bytes:
+        if self.runtime.settings.analytics_max_input_bytes is not None and not (kind == "graph" and is_database_query(source)) and len(raw) > self.runtime.settings.analytics_max_input_bytes:
             raise AnalyticsError(
                 "Dataset exceeds the input byte budget", "resource_limit"
             )

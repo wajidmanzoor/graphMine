@@ -11,6 +11,7 @@ import secrets
 from datetime import datetime, timezone
 from pathlib import Path
 
+from ..calculation_limits import DEFAULT_EXECUTION_TIMEOUT_SECONDS
 from .feasibility import native_choice
 from .shared import digest, finite, preferences
 from .storage import atomic_json
@@ -57,14 +58,13 @@ def control_range(model, row):
     return min(ranges, key=lambda r: (distance(r), -r["slowest_seconds"]))
 
 
-def timeout_seconds(model, row, *, remaining=None, multiple=3., default=300.):
-    if not finite(multiple) or multiple < 1 or not finite(default) or default <= 0:
-        raise ValueError("Invalid empirical timeout configuration")
+def timeout_seconds(*, remaining=None, default=DEFAULT_EXECUTION_TIMEOUT_SECONDS):
+    """A fixed attempt allowance; training timings never shorten execution."""
+    if not finite(default) or default <= 0:
+        raise ValueError("Invalid attempt timeout configuration")
     if remaining is not None and (not finite(remaining) or remaining < 0):
         raise ValueError("Invalid remaining deadline")
-    bounds = control_range(model or {}, row)
-    value = multiple * bounds["slowest_seconds"] if bounds else default
-    return min(value, remaining) if remaining is not None else value
+    return min(default, remaining) if remaining is not None else default
 
 
 def reserve_exploration(data_dir, problem, decision_id, mode, fraction, *, probabilities, best, seed, now=None):

@@ -81,6 +81,27 @@ def test_default_native_constructor_uses_explicit_installation(monkeypatch):
     assert Path(implicit.path).samefile(explicit.path)
 
 
+@pytest.mark.parametrize("transport", ["c_api", "cli"])
+def test_requests_larger_than_old_64_mib_cap(transport):
+    # Padding keeps the calculation tiny while exercising the real transport boundary.
+    raw = b" " * (64 * 1024 * 1024) + b'{"command":"catalog"}'
+    if transport == "cli":
+        process = subprocess.run([str(CPU / "graphmine-native"), "request"],
+                                 input=raw, capture_output=True, timeout=30, check=True)
+        result = json.loads(process.stdout)
+    else:
+        native = binding.NativeLibrary(CPU / "libgraphmine_runtime.so")
+        output, length = ctypes.c_void_p(), ctypes.c_size_t()
+        status = native._library.graphmine_runtime_request(raw, len(raw), ctypes.byref(output), ctypes.byref(length))
+        assert status == 0
+        try:
+            result = json.loads(ctypes.string_at(output, length.value))
+        finally:
+            native._library.graphmine_runtime_free(output)
+    assert "error" not in result
+    assert any(card["id"] == "triangle-counting" for card in result["problems"])
+
+
 def graph():
     return {
         "graph": {

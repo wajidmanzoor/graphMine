@@ -58,7 +58,7 @@ schema or change the NN context/scores for otherwise identical inputs.
 
 Shared model schema 2 enforces this parameter-free feature list and rejects older
 artifacts; fitting a new artifact is required. Parameters still reach execution,
-native preflight, deterministic memory admission, empirical timeout/exploration
+native preflight, deterministic memory admission, measured exploration
 controls and privacy-safe telemetry. Benchmark comparisons still group identical
 settings. Those rules may change the eligible set or sampling allowance, even
 though parameters do not enter the NN. Both the NN and offline linear comparison
@@ -103,21 +103,28 @@ feature vector, model version, native implementation hash, UTC timestamp,
 runtime/outcome and per-attempt fallback identity. Shadow choice, distribution
 and probability are separate fields beside the actual native behavior.
 
-Timeouts use a configurable multiple of the slowest completed training benchmark
-in the nearest log-size bin for that problem/settings, capped by the remaining
-step deadline. Without measurements a configured finite default applies. A
+Backend attempts use a fixed configurable six-hour allowance (21,600 seconds),
+capped by the remaining step deadline. Benchmark timings never shorten this
+allowance. Workflow and account calculation deadlines also default to six hours. A
 single fallback is allowed after timeout/OOM, with fresh admission excluding the
 first backend, when at least 60 seconds remain (or no total step deadline exists).
 An explicitly requested backend is never replaced. Memory admission always uses
 the conservative allocation estimate and current free RAM/VRAM.
 
 Defaults: `GRAPHMINE_BACKEND_SELECTION=native`, temperature 1, floor .02, daily
-exploration fraction .10, default attempt timeout 300 s, measured timeout multiple
-3, IPW clip 20 and failure penalty 10. See `agent/.env.example`. `shadow` evaluates
+exploration fraction .10, default attempt timeout 21,600 s, IPW clip 20 and failure
+penalty 10. See `agent/.env.example`. `shadow` evaluates
 the shared policy while executing native ordering; `bandit` requests live use.
 Without a valid artifact it falls back to native ordering. Evidence-gated live
 use remains off without paired shadow evidence; an explicit development
 `GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE=false` override is available.
+
+Upload and combined workflow input-byte budgets default to `None` (environment
+value `none`). The native JSON, CLI, worker and cuDF file reader have no fixed
+64 MiB transport ceiling. Explicit byte budgets remain available for deployments
+that configure them; account storage quotas, source row budgets and backend
+memory/representation feasibility still apply. Unlimited input bytes do not
+disable cancellation or the six-hour execution deadline.
 
 ## Collection and operation
 

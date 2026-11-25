@@ -16,7 +16,7 @@ def sample_schema(source):
         result = []
         for value in values:
             used += len(value.encode("utf-8")) if isinstance(value, str) else 0
-            if used > min(source.max_bytes, 256 * 1024):
+            if used > min(source.max_bytes if source.max_bytes is not None else 256 * 1024, 256 * 1024):
                 raise AnalyticsError("Graph schema exceeds the discovery byte limit. Use the Cypher editor to select a smaller scope.", "resource_limit")
             if isinstance(value, str) and value and len(value) <= 128 and not value.startswith(("gm_", "_gm_")):
                 result.append(value)

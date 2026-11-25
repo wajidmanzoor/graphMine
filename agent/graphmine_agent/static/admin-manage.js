@@ -10,16 +10,18 @@
   routes.set("capacity", async (container, params, revision) => {
     const data = await api("/api/admin/capacity"); if (revision !== state.revision) return;
     const inputs = new Map(), rows = new Map(), bar = el("div", {class: "capacity-savebar", hidden: true, role: "status"});
-    const changes = () => Object.fromEntries(data.rows.filter(row => Number(inputs.get(row.key).value) !== row.value || inputs.get(row.key).value === "").map(row => [row.key, Number(inputs.get(row.key).value)]));
+    const value = row => row.nullable && inputs.get(row.key).value === "" ? null : Number(inputs.get(row.key).value);
+    const display = number => number == null ? "No limit" : n(number);
+    const changes = () => Object.fromEntries(data.rows.filter(row => value(row) !== row.value || !row.nullable && inputs.get(row.key).value === "").map(row => [row.key, value(row)]));
     const update = () => {
       const changed = changes(), entries = data.rows.filter(row => row.key in changed);
       for (const row of data.rows) rows.get(row.key).classList.toggle("changed", row.key in changed);
       bar.hidden = !entries.length;
       const restart = entries.some(row => row.restart);
       bar.replaceChildren(el("div", {}, el("strong", {}, `${entries.length} unsaved change${entries.length === 1 ? "" : "s"}`),
-        el("p", {}, entries.map(row => `${row.label} ${n(row.value)} → ${n(changed[row.key])}`).join(" · ")),
+        el("p", {}, entries.map(row => `${row.label} ${display(row.value)} → ${display(changed[row.key])}`).join(" · ")),
         restart ? el("small", {}, "vLLM requests take effect after a model restart.") : el("small", {}, "Applies live. Existing work keeps its current limits.")),
-      el("div", {class: "actions"}, button("Discard", () => { for (const row of data.rows) inputs.get(row.key).value = row.value; update(); }),
+      el("div", {class: "actions"}, button("Discard", () => { for (const row of data.rows) inputs.get(row.key).value = row.value ?? ""; update(); }),
         button(restart && data.model_restart_available ? "Save and restart model…" : "Save…", save, "primary")));
     };
     function save() {
@@ -32,7 +34,7 @@
         d.close(); await A.route(); notice(result.restart ? "Settings saved. Model restart requested; check Health for its status." : result.restart_required.length ? "Settings saved. A model restart is still required." : "Settings saved and applied. The change is recorded in Activity.");
       }), "primary");
       d.node.append(el("p", {}, "Review these changes. They apply to all users and are recorded in Activity."),
-        details(entries.map(row => [row.label, `${n(row.value)} → ${n(changed[row.key])}${row.unit ? ` ${row.unit}` : ""}`])),
+        details(entries.map(row => [row.label, `${display(row.value)} → ${display(changed[row.key])}${row.unit ? ` ${row.unit}` : ""}`])),
         needsRestart && data.model_restart_available ? restart.label : needsRestart ? hint("The model must be restarted by the operator before its new request limit takes effect.") : hint("These changes apply without restarting the service."), error, footer(d, submit)); d.open();
     }
     container.replaceChildren(heading("Capacity settings", "How much work GraphMine can do at once. Changes apply to everyone."));
@@ -41,13 +43,13 @@
     for (const section of [...new Set(data.rows.map(row => row.section))]) {
       const list = el("div", {class: "capacity-rows"});
       for (const row of data.rows.filter(row => row.section === section)) {
-        const input = el("input", {id: `capacity-${row.key}`, type: "number", min: row.minimum, max: row.maximum, step: 1, required: true, value: row.value, "aria-label": row.label});
+        const input = el("input", {id: `capacity-${row.key}`, type: "number", min: row.minimum, max: row.maximum, step: 1, required: !row.nullable, value: row.value ?? "", placeholder: row.nullable ? "No limit" : "", "aria-label": row.label});
         inputs.set(row.key, input); input.addEventListener("input", update);
         const limit = row.maximum === Number.MAX_SAFE_INTEGER ? `${n(row.minimum)} or more` : `${n(row.minimum)}–${n(row.maximum)}`;
         const node = el("div", {class: "capacity-row"}, el("div", {}, el("label", {for: input.id, class: "capacity-label"}, row.label), row.restart ? badge("Model restart", "warning") : null, hint(row.description)),
           el("div", {class: "capacity-value"}, input, row.unit ? el("span", {class: "hint"}, row.unit) : null),
-          el("div", {class: "capacity-baseline"}, `Was ${n(row.value)} · default ${n(row.default)}`, el("br"), `Allowed ${limit}`, row.effective_reason ? hint(`Not available yet · ${row.effective_reason}`) : null),
-          button("Reset", () => { input.value = row.default; update(); }, "quiet"));
+          el("div", {class: "capacity-baseline"}, `Was ${display(row.value)} · default ${display(row.default)}`, el("br"), `Allowed ${limit}${row.nullable ? ", or blank for no limit" : ""}`, row.effective_reason ? hint(`Not available yet · ${row.effective_reason}`) : null),
+          button("Reset", () => { input.value = row.default ?? ""; update(); }, "quiet"));
         rows.set(row.key, node); list.append(node);
       }
       container.append(card(section, list));

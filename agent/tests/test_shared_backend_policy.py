@@ -231,11 +231,11 @@ def test_budget_exhaustion_changes_every_propensity_and_reservation_is_atomic(tm
     assert final['choice']=='cpp' and final['probabilities']['cpp']==1
 
 
-def test_empirical_timeout_nearest_range_and_deadline(fitted):
-    model,training,_=fitted;row=training[0]['context']
-    assert policy.timeout_seconds(model,row,remaining=2)==2
-    assert policy.timeout_seconds(model,row,remaining=None,multiple=3)>0
-    assert policy.timeout_seconds(None,row,remaining=900,default=42)==42
+def test_fixed_six_hour_attempt_allowance_and_remaining_deadline():
+    assert policy.timeout_seconds() == 21600
+    assert policy.timeout_seconds(remaining=2) == 2
+    assert policy.timeout_seconds(remaining=21500) == 21500
+    assert policy.timeout_seconds(remaining=900, default=42) == 42
 
 
 def test_published_shared_artifact_integrity_and_no_per_problem_directories(tmp_path):
@@ -386,8 +386,8 @@ def test_fallback_runs_once_on_a_different_feasible_backend_and_logs_both(bandit
     assert rows[0]["decision_id"] == rows[1]["decision_id"]
     assert len({r["run_id"] for r in rows}) == 2
     if timeout is None:
-        assert all(call["budget"].timeout_seconds == 300 for call in calls)
-        assert all(row["step_timeout_seconds"] is None and row["timeout_seconds"] == 300 for row in rows)
+        assert all(call["budget"].timeout_seconds == 21600 for call in calls)
+        assert all(row["step_timeout_seconds"] is None and row["timeout_seconds"] == 21600 for row in rows)
 
 def test_second_failure_never_retries_again_and_forced_backend_never_changes(bandit_worker):
     from graphmine.contracts import Budget

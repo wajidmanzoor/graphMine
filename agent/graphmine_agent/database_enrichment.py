@@ -11,6 +11,7 @@ from pydantic import Field, StrictInt, StrictStr
 from starlette.concurrency import run_in_threadpool
 
 from .analytics import AnalyticsError, _json, _key
+from .calculation_limits import minimum_limit
 from .database import RecordNotFound
 from .database_sources import (
     RelationshipMapping,
@@ -348,10 +349,11 @@ def expand(runtime, file_id, body):
             }
         graph[kind] = list(before.values())
         lineage[kind] = {**provenance.get("lineage", {}).get(kind, {}), **lineage[kind]}
-    if len(_json(graph).encode()) > min(
+    limit = minimum_limit(
         runtime.settings.analytics_max_input_bytes,
         runtime.settings.account_upload_bytes,
-    ):
+    )
+    if limit is not None and len(_json(graph).encode()) > limit:
         raise AnalyticsError(
             "Expanded graph exceeds the input limit.", "resource_limit"
         )

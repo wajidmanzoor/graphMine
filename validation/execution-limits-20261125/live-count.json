@@ -1,0 +1,57 @@
+{
+  "scope": "Development live configuration verified through a real isolated native worker. This verification row is evaluation-only and excluded from training.",
+  "settings": {
+    "backend_selection": "bandit",
+    "backend_require_rollout_evidence": false,
+    "job_timeout_seconds": 21600,
+    "account_job_seconds": 21600,
+    "backend_default_timeout_seconds": 21600.0,
+    "input_bytes": null
+  },
+  "observation": {
+    "selection_mode": "bandit",
+    "requested_selection_mode": "bandit",
+    "rollout_evidence_required": false,
+    "chosen_backend": "cpp",
+    "eligible_backends": [
+      "cpp",
+      "tot",
+      "wetric"
+    ],
+    "selection_probability": 1.0,
+    "probabilities": {
+      "cpp": 1.0,
+      "tot": 0.0,
+      "wetric": 0.0
+    },
+    "runtime_seconds": 0.32697523944079876,
+    "cost_scale_seconds": 0.10138076357543468,
+    "outcome": "completed",
+    "model_version": "20261125t070655.721137z-7f48923fc36a",
+    "timeout_seconds": 21599.75339489244,
+    "step_timeout_seconds": 21600,
+    "implementation_sha256": "58fceaaa38721068dc12b91b1f349390db63ac379442c4e5cb0befca24af885b",
+    "is_evaluation": true,
+    "exploration": {
+      "best_backend": "cpp",
+      "blocked_by": [
+        "unmeasured_size_or_parameters"
+      ],
+      "fraction": 0.1
+    },
+    "policy_warning": null
+  },
+  "triangle_count": 4,
+  "context_dimensions": 32,
+  "parameters": {
+    "mode": "count",
+    "result_limit": null
+  },
+  "returned_groups": 0,
+  "model_schema": 2,
+  "raw_feature_count": 112,
+  "active_feature_count": 9,
+  "parameter_changes_leave_nn_context_and_scores_identical": true,
+  "request_changed_model_weights": false,
+  "telemetry_directory": "/data/labdata/wajid/graphmine_data/environments/devlopment/backend-runs/evaluations/live-bandit-2026-11-25T07-09-34.434349+00-00"
+}

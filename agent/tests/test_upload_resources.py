@@ -32,11 +32,12 @@ class ChunkSource:
         return data
 
 
+@pytest.mark.parametrize("limit", [8 * 1024 * 1024, None])
 def test_large_attachment_has_bounded_allocations_and_exact_source(
-    settings, database, session
+    settings, database, session, limit
 ):
     size = 8 * 1024 * 1024
-    store = GraphStore(replace(settings, max_upload_bytes=size), database)
+    store = GraphStore(replace(settings, max_upload_bytes=limit), database)
     source = ChunkSource(size)
     tracemalloc.start()
     try:

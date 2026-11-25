@@ -328,7 +328,7 @@ class AnalyticsService:
             record = self.database.get_file(reference.file_id)
             if not (reference.kind == "graph" and is_database_query(record.provenance.get("source"))):
                 total += path.stat().st_size
-            if total > self.settings.analytics_max_input_bytes:
+            if self.settings.analytics_max_input_bytes is not None and total > self.settings.analytics_max_input_bytes:
                 raise AnalyticsError(
                     "Combined workflow inputs exceed the byte budget", "resource_limit"
                 )
@@ -449,7 +449,7 @@ class AnalyticsService:
         # Inputs have already passed ownership/size validation in _inputs.
         # Database query graphs are complete inputs with no fixed byte ceiling.
         # Give the worker an exact, finite read budget for this trusted request.
-        worker_input_bytes = max(len(raw), self.settings.analytics_max_input_bytes + (self.settings.max_result_bytes or 0))
+        worker_input_bytes = len(raw)
         env = os.environ.copy()
         env.update(
             GRAPHMINE_REPOSITORY_ROOT=str(self.settings.native_repository_root),
@@ -481,7 +481,6 @@ class AnalyticsService:
                     "backend_temperature": self.settings.backend_temperature,
                     "backend_exploration_floor": self.settings.backend_exploration_floor,
                     "backend_default_timeout_seconds": self.settings.backend_default_timeout_seconds,
-                    "backend_timeout_multiple": self.settings.backend_timeout_multiple,
                     "max_result_bytes": self.settings.max_result_bytes,
                     "execution_isolated": True,
                 }),

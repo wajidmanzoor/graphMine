@@ -717,7 +717,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     ) -> FileInfo:
         runtime = _runtime(request)
         runtime.database.get_session(session_id)
-        if file.size is not None and file.size > runtime.settings.max_upload_bytes:
+        if runtime.settings.max_upload_bytes is not None and file.size is not None and file.size > runtime.settings.max_upload_bytes:
             raise UploadError(
                 f"upload exceeds {runtime.settings.max_upload_bytes} byte limit"
             )

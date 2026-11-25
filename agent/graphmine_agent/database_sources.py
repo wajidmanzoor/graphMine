@@ -84,7 +84,7 @@ class DatabaseSource(Strict):
     )
     timeout_seconds: int = Field(default=30, ge=1, le=120)
     max_rows: int = Field(default=100_000, ge=1, le=100_000)
-    max_bytes: int = Field(default=64 * 1024 * 1024, ge=1024, le=64 * 1024 * 1024)
+    max_bytes: int | None = Field(default=None, ge=1024)
 
     @model_validator(mode="after")
     def mappings(self):
@@ -526,7 +526,7 @@ def read_rows(db, source, mapping, *, keys=None, where_keys=None, fields=None, v
                 raise AnalyticsError("This source key matches multiple rows. Use a unique table mapping.", "database_mapping", 409)
             seen.add(identity)
             used += len(_json(json_value(item)).encode())
-            if len(rows) >= source.max_rows or used > source.max_bytes:
+            if len(rows) >= source.max_rows or (source.max_bytes is not None and used > source.max_bytes):
                 raise AnalyticsError(
                     "Source read exceeds the row or byte limit; narrow the selection.",
                     "resource_limit",

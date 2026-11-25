@@ -1,0 +1,7 @@
+{
+  "isolated_repetitions": 20,
+  "backend": "tot",
+  "correct_triangle_count": 38,
+  "failures": 0,
+  "cuda_architecture": "89-real"
+}

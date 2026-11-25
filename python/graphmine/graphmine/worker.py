@@ -80,11 +80,12 @@ def main():
         protocol.write(json.dumps(value, allow_nan=False, separators=(",", ":")) + "\n")
 
     try:
-        limit = int(
-            os.environ.get("GRAPHMINE_WORKER_INPUT_BYTES", str(64 * 1024 * 1024))
-        )
-        raw = sys.stdin.buffer.read(limit + 1)
-        if len(raw) > limit:
+        configured = os.environ.get("GRAPHMINE_WORKER_INPUT_BYTES", "none")
+        limit = None if configured.strip().lower() in {"", "none"} else int(configured)
+        if limit is not None and limit < 1:
+            raise ValueError("Worker input budget must be positive or none")
+        raw = sys.stdin.buffer.read(-1 if limit is None else limit + 1)
+        if limit is not None and len(raw) > limit:
             raise ResourceLimit("Workflow input exceeds the worker byte budget")
         with contextlib.redirect_stdout(sys.stderr):
             result = handle(json.loads(raw), emit)

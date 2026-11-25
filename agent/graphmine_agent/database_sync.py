@@ -13,6 +13,7 @@ from fastapi import Request
 from starlette.concurrency import run_in_threadpool
 
 from .analytics import AnalyticsError, _json
+from .calculation_limits import minimum_limit
 from .config import Settings
 from .database_job_context import begin_commit, checkpoint
 from .database_sources import (
@@ -69,7 +70,7 @@ def mapped_records(source, db, build, *, relationship=None, selected=None):
                 rows = read_rows(db, source, m, fields=m.graph_attributes, validate_schema=True)
                 count += len(rows)
                 used += len(_json(json_value(rows)).encode())
-                if count > source.max_rows or used > source.max_bytes:
+                if count > source.max_rows or (source.max_bytes is not None and used > source.max_bytes):
                     raise AnalyticsError(
                         "Mapped graph exceeds the source read budget.", "resource_limit"
                     )
@@ -100,7 +101,7 @@ def mapped_records(source, db, build, *, relationship=None, selected=None):
                     if key not in found:
                         found[key] = row
                         used += len(_json(json_value(row)).encode())
-                    if len(found) > source.max_rows or used > source.max_bytes:
+                    if len(found) > source.max_rows or (source.max_bytes is not None and used > source.max_bytes):
                         raise AnalyticsError(
                             "Relationship expansion exceeds the source read budget.",
                             "resource_limit",
@@ -186,7 +187,7 @@ def mapped_records(source, db, build, *, relationship=None, selected=None):
             )
     if (
         len(nodes) + len(edges) > source.max_rows
-        or len(_json({"nodes": nodes, "edges": edges}).encode()) > source.max_bytes
+        or (source.max_bytes is not None and len(_json({"nodes": nodes, "edges": edges}).encode()) > source.max_bytes)
     ):
         raise AnalyticsError(
             "Mapped graph exceeds the source row budget.", "resource_limit"
@@ -210,7 +211,7 @@ def reconcile_records(source, nodes, edges, byte_limit):
             return summary
 
 
-def sync_source(source, byte_limit=64 * 1024 * 1024):
+def sync_source(source, byte_limit=None):
     if source.sql_type is None:
         raise AnalyticsError("This connection has no SQL source to synchronize.", "sql_unavailable", 409)
     if not source.entities:
@@ -224,8 +225,8 @@ def sync_source(source, byte_limit=64 * 1024 * 1024):
         if (isinstance(error, sqlite3.OperationalError) and str(error).startswith(("no such table:", "no such column:"))) or getattr(error, "sqlstate", None) in {"42703", "42P01"}:
             raise AnalyticsError("A mapped SQL table or column is missing. Update the mapping before retrying; the graph was not changed.", "database_schema", 409) from error
         raise
-    byte_limit = min(byte_limit, source.max_bytes)
-    if len(_json({"nodes": nodes, "edges": edges}).encode()) > byte_limit:
+    byte_limit = minimum_limit(byte_limit, source.max_bytes)
+    if byte_limit is not None and len(_json({"nodes": nodes, "edges": edges}).encode()) > byte_limit:
         raise AnalyticsError("Import exceeds the byte budget.", "resource_limit")
     checksum = hashlib.sha256()
     for kind, rows in (("node", nodes), ("relationship", edges)):

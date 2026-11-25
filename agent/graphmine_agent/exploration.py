@@ -304,7 +304,7 @@ class Exploration:
         root = (self.runtime.settings.data_root / "sessions" / session_id).resolve()
         if not path.is_relative_to(root) or not path.is_file():
             raise AnalyticsError("The saved enrichment file is unavailable.", "data_integrity", 409)
-        if path.stat().st_size > self.runtime.settings.analytics_max_input_bytes:
+        if self.runtime.settings.analytics_max_input_bytes is not None and path.stat().st_size > self.runtime.settings.analytics_max_input_bytes:
             raise AnalyticsError("The saved enrichment exceeds the input byte budget.", "resource_limit")
         raw = path.read_bytes()
         if len(raw) != file.size_bytes or hashlib.sha256(raw).hexdigest() != file.sha256:

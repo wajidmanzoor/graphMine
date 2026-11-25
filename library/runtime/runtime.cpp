@@ -278,8 +278,6 @@ json::object execute(const json::object& request) {
 int abi_version() noexcept { return 2; }
 std::string request(std::string_view raw) {
   try {
-    if (raw.size() > 64 * 1024 * 1024)
-      throw Failure("resource_limit", "Native request exceeds 64 MiB");
     auto value = object(strict_json(raw), "request");
     // Read the former wire key only at the boundary; all responses use problem.
     if (value.contains("operation")) {

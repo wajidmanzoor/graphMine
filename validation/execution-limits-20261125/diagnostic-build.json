@@ -1,0 +1,16 @@
+{
+  "scope": "Diagnostic pre-release build; collection interrupted before publication. All observations retained.",
+  "benchmark_id": "runnable-limits-20261125",
+  "implementation_sha256": "0dfbc933c936dca19cc281418e6beaa13b4f5d3907d23bb1bb23214d69c513de",
+  "cuda_architectures": {
+    "tot": "70",
+    "wetric": "70"
+  },
+  "rows": 166,
+  "outcomes": {
+    "completed": 152,
+    "error": 14
+  },
+  "failure": "Isolated ToT workers intermittently returned radix_sort cudaErrorInvalidValue. The previous Ada build passed 12 identical isolated repetitions; this build failed 5 of 12.",
+  "resolution": "Restore the previously verified 89-real GPU targets, revalidate and recollect before publishing a shared policy."
+}

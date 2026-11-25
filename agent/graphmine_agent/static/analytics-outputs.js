@@ -29,7 +29,13 @@ window.GraphMineOutputs = {
       limits.append(node("summary", {}, "Supported data and resource limits"), node("p", {}, selected.description || "Input requirements are checked during plan validation."));
       limits.append(node("p", {}, `Input: ${selected.input_kind.replaceAll("_", " ")}. Available compute: ${[selected.execution.cpu && "CPU", selected.execution.gpu && "GPU"].filter(Boolean).join(" and ") || "unavailable"}.`));
       if (selected.gpu_limitations?.length) { const list = node("ul"); for (const text of selected.gpu_limitations) list.append(node("li", {}, text)); limits.append(list); }
-      if (configuration) limits.append(node("p", {}, `Server limits: ${(configuration.input_bytes / 1048576).toFixed(0)} MiB of inputs; ${(configuration.result_bytes / 1048576).toFixed(0)} MiB per result artifact; ${configuration.run_timeout_seconds} seconds of run time. ${configuration.memory_admission}`));
+      if (configuration) {
+        const inputs = configuration.input_bytes == null ? "no input-size cap" : `${(configuration.input_bytes / 1048576).toFixed(0)} MiB of inputs`;
+        const results = configuration.result_bytes == null ? "no result-size cap" : `${(configuration.result_bytes / 1048576).toFixed(0)} MiB per result artifact`;
+        const seconds = configuration.run_timeout_seconds;
+        const duration = seconds == null ? "no run deadline" : seconds % 3600 === 0 ? `${seconds / 3600} hours of run time` : `${seconds} seconds of run time`;
+        limits.append(node("p", {}, `Server limits: ${inputs}; ${results}; ${duration}. ${configuration.memory_admission}`));
+      }
       limits.append(node("p", {class: "muted"}, "Each step can also have candidate, output and time budgets. The reviewed plan shows those settings and its memory estimate. Output completeness and algorithm quality are recorded separately."));
       const parameters = node("dl");
       for (const [key, spec] of Object.entries(selected.parameters)) {

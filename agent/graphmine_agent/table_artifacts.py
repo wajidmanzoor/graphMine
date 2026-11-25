@@ -184,7 +184,8 @@ class TableArtifacts:
                 if format == "csv":
                     if sort is not None and sort not in fields:
                         raise AnalyticsError("Choose a sort column from this table.", "table_sort")
-                    writer = Writer(output, Budget(4 * self.runtime.settings.analytics_max_input_bytes))
+                    limit = self.runtime.settings.analytics_max_input_bytes
+                    writer = Writer(output, Budget(None if limit is None else 4 * limit))
                     write_csv(writer, index.rows("table", sort=sort, descending=direction == "desc"), fields, json_booleans=True)
                 else:
                     self._copy_blob(identifier, metadata, output)

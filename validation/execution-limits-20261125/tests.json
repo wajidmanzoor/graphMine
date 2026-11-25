@@ -1,0 +1,33 @@
+{
+  "agent_passed": 1958,
+  "agent_skipped": 55,
+  "agent_batches": [
+    {
+      "report": "diagnostic-agent-concurrent.xml",
+      "passed_cases": 423
+    },
+    {
+      "report": "diagnostic-agent-native-path.xml",
+      "passed_cases": 1041
+    },
+    {
+      "report": "agent-remaining.xml",
+      "passed_cases": 494
+    }
+  ],
+  "notes": [
+    "Passed cases were deselected when resuming; the batches have disjoint passing test IDs.",
+    "GPU lease contention and missing test-only native-binary configuration caused diagnostic failures. Every affected test passed on the subsequent serial run.",
+    "Optional browser, external database and unavailable GPU integration tests remain skipped."
+  ],
+  "native_ctests_passed": 61,
+  "native_ctests_disabled": 15,
+  "native_cpu_contract_tests_passed": 178,
+  "native_gpu_oracles_passed": 2,
+  "large_native_request_tests_passed": 2,
+  "isolated_gpu_repetitions_passed": 20,
+  "native_oracle_requests_passed": 129076,
+  "frontend_tests_passed": 31,
+  "frontend_typecheck": "passed",
+  "frontend_contract_check": "passed"
+}

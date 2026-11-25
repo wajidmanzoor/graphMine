@@ -21,15 +21,16 @@ CAPACITY_DEFINITIONS = (
     ("GRAPHMINE_ACCOUNT_RUNNING_JOBS", "account_running_jobs", 1, 16, False, "Calculations", "Running at once, all users", "Graph calculations on CPU and GPU together.", ""),
     ("GRAPHMINE_ACCOUNT_USER_RUNNING_JOBS", "account_user_running_jobs", 1, 4, False, "Calculations", "Running at once, per user", "Limits each person's admitted calculations.", ""),
     ("GRAPHMINE_ANALYTICS_CPU_WORKERS", "analytics_cpu_workers", 1, 16, False, "Calculations", "CPU workers", "Native workflow workers that run on the CPU.", ""),
-    ("GRAPHMINE_ACCOUNT_JOB_SECONDS", "account_job_seconds", 30, 3600, False, "Calculations", "Time limit per calculation", "Longer new calculations are stopped and marked timed out.", "s"),
+    ("GRAPHMINE_ACCOUNT_JOB_SECONDS", "account_job_seconds", 30, 21600, False, "Calculations", "Time limit per calculation", "Defaults to six hours. Longer new calculations are stopped and marked timed out.", "s"),
     ("GRAPHMINE_ACCOUNT_QUEUE_SECONDS", "account_queue_seconds", 30, 3600, False, "Calculations", "Wait in line up to", "A calculation that cannot start by then is refunded.", "s"),
     ("GRAPHMINE_ACCOUNT_DAILY_TOKENS", "account_daily_tokens", 1, 2**53 - 1, False, "Defaults for new users", "Daily tokens per user", "Used by accounts without an individual limit on the Users page.", "tokens"),
     ("GRAPHMINE_ACCOUNT_STORAGE_BYTES", "account_storage_bytes", 1, 2**53 - 1, False, "Defaults for new users", "Storage per user", "Uploads, saved inputs and results; individual limits take priority.", "bytes"),
-    ("GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES", "analytics_max_input_bytes", 1, 2**53 - 1, False, "Defaults for new users", "Largest upload", "Applies to uploads and analytics inputs. Storage quota still applies.", "bytes"),
+    ("GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES", "analytics_max_input_bytes", 1, 2**53 - 1, False, "Defaults for new users", "Largest upload", "Leave blank for no input-size cap. Storage quota still applies.", "bytes"),
     ("GRAPHMINE_BACKUP_KEEP", "backup_keep", 1, 365, False, "Retention", "Daily snapshots to keep", "Older scheduled snapshots are removed only after a verified backup.", "snapshots"),
     ("GRAPHMINE_ADMIN_EVENT_RETENTION_DAYS", "admin_event_retention_days", 1, 3650, False, "Retention", "Activity history", "Retention for problemal events, independent of conversations.", "days"),
 )
 CAPACITY_KEYS = {key: (attribute, "integer", low, high, restart) for key, attribute, low, high, restart, *_ in CAPACITY_DEFINITIONS}
+NULLABLE_KEYS = {"GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES"}
 ALLOWLIST = {**MODEL_KEYS, **CAPACITY_KEYS}
 _save_lock = RLock()
 
@@ -41,6 +42,8 @@ def initialize(db):
 def validate(key, value):
     if key not in ALLOWLIST:
         raise ValueError("This setting is not editable.")
+    if key in NULLABLE_KEYS and value is None:
+        return None
     _, kind, low, high, _ = ALLOWLIST[key]
     if kind == "bool":
         if type(value) is not bool:
@@ -119,7 +122,7 @@ def capacity(runtime):
     defaults = {field.name: field.default for field in fields(runtime.settings)}
     return {"values": values(desired, CAPACITY_KEYS), "effective": values(runtime.settings, CAPACITY_KEYS),
             "rows": [{"key": key, "value": getattr(desired, attribute), "effective": getattr(runtime.settings, attribute),
-                      "default": defaults[attribute], "minimum": low, "maximum": high, "restart": restart,
+                      "default": defaults[attribute], "minimum": low, "maximum": high, "restart": restart, "nullable": key in NULLABLE_KEYS,
                       "section": section, "label": label, "description": description, "unit": unit}
                      for key, attribute, low, high, restart, section, label, description, unit in CAPACITY_DEFINITIONS]}
 

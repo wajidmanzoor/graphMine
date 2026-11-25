@@ -30,7 +30,7 @@ def read_state(tx, source, byte_limit):
         for row in tx.run(statement, source=source.id, limit=source.max_rows + 1):
             value = json_value(dict(row))
             count += 1; used += len(_json(value).encode())
-            if count > source.max_rows or used > byte_limit:
+            if count > source.max_rows or (byte_limit is not None and used > byte_limit):
                 raise AnalyticsError("The existing managed graph exceeds the synchronization read budget. Increase the source limit before retrying.", "resource_limit")
             props = value["properties"]
             identifier = props.get("gm_id")

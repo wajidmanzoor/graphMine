@@ -206,3 +206,26 @@ Parameters remain in native requests, feasibility/memory checks, telemetry,
 benchmark grouping and empirical timeout/exploration controls. Consequently,
 parameter changes can still affect eligibility or sampling allowance while the
 NN scores remain parameter-independent. Nightly retraining uses the new schema.
+
+## Execution limits follow-up (2026-11-25)
+
+Development now uses 21,600 seconds (six hours) for backend attempts, workflows
+and account calculations. Benchmark timings no longer shorten attempts. Fixed
+input byte caps are disabled, including the native parser's 64 MiB ceiling;
+memory admission, storage quotas and configured source row budgets remain.
+
+The verified runtime was rebuilt with the previous development build's Ada CUDA
+targets. A fresh paired collection completed all 192 measurements on 16 synthetic
+graphs. Model `20261125t070655.721137z-7f48923fc36a` retains the shared NN, schema 2,
+112 raw features, nine varying features and no parameter features. On the three
+held-out graphs, its mean selected/oracle runtime ratio is 1.007157; median, p90
+and p99 are 1.0, with no measured failures or timeouts. This remains a triangle-only
+K=3 evaluation. Development retains its requested live `bandit` configuration.
+
+All 1,958 agent cases passed across the completed regression batches; 55 optional
+checks were skipped. Native and frontend checks passed. Two actual supervised
+worker runs used the current NN, returned the correct count/enumeration results,
+and logged the six-hour allowance. Production/testing configuration is unchanged.
+Development web services were already stopped; the configuration applies on their
+next start. See the [execution-limit validation report](../validation/execution-limits-20261125/README.md)
+for exact build options, model metadata, test reports and retained diagnostics.

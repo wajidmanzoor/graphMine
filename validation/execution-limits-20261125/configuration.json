@@ -1,0 +1,12 @@
+{
+  "backend_timeout_seconds": 21600,
+  "workflow_timeout_seconds": 21600,
+  "account_timeout_seconds": 21600,
+  "upload_bytes": null,
+  "account_upload_bytes": null,
+  "workflow_input_bytes": null,
+  "backend_selection": "bandit",
+  "production_and_testing_unchanged": true,
+  "native_binary": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/build/runtime/graphmine-native",
+  "native_library": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/build/runtime/libgraphmine_runtime.so"
+}

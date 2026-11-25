@@ -4,6 +4,8 @@ import time
 
 from .errors import AnalyticsError
 
+DEFAULT_EXECUTION_TIMEOUT_SECONDS = 6 * 60 * 60
+
 
 def minimum_limit(*limits):
     return min((value for value in limits if value is not None), default=None)

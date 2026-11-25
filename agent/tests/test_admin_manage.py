@@ -30,6 +30,19 @@ def cleanup_body(preview):
     return {key: preview[key] for key in ("kind", "days", "preview_token")} | {"identifiers": [row["id"] for row in preview["items"]], "confirm": True}
 
 
+def test_unlimited_upload_setting_persists_and_allows_authenticated_uploads(console, triangle_graph):
+    client, accounts, admin, _ = console
+    runtime = client.app.state.runtime
+    changed = {"GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES": None, "GRAPHMINE_ACCOUNT_JOB_SECONDS": 21600}
+    response = client.patch("/api/admin/capacity", headers=admin, json={"values": changed, "confirm": True})
+    assert response.status_code == 200, response.text
+    loaded = admin_settings.load(runtime.settings, runtime.database)
+    assert loaded.max_upload_bytes is loaded.account_upload_bytes is loaded.analytics_max_input_bytes is None
+    assert loaded.account_job_seconds == 21600
+    file_id, _, _ = upload(console, triangle_graph)
+    assert runtime.database.get_file(file_id).size_bytes == len(triangle_graph)
+
+
 def test_capacity_ranges_conflicts_live_consumers_and_restart(console):
     client, accounts, admin, _ = console
     runtime = client.app.state.runtime

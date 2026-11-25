@@ -12,6 +12,11 @@ Let the current calculation finish before starting another in the same working c
 
 “The model is busy” means a language-model request cannot be accepted yet. Wait, then retry once the current work or queue has cleared. Opening more tabs does not increase your allowance. If the message persists, keep the visible error and contact the person who invited you.
 
+Calculations default to a six-hour execution deadline. An explicitly shorter
+calculation deadline still applies. Uploads and workflow inputs have no fixed
+byte-size cap by default; available memory, backend compatibility and account
+storage allowances still apply.
+
 ## Storage
 
 Saved uploads, analyses, dataset versions, project snapshots, and exploration settings can count toward storage. Remove work you no longer need using its own controls. Deleting one source file does not remove every independent saved or shared copy. Unused query previews expire after 24 hours; see [privacy](privacy.md) for the other retention boundaries.

@@ -5,6 +5,8 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from .calculation_limits import DEFAULT_EXECUTION_TIMEOUT_SECONDS
+
 
 def _boolean(name: str, default: bool) -> bool:
     value = os.getenv(name)
@@ -53,7 +55,7 @@ class Settings:
     llm_api_key: str
     llm_model: str
     llm_enabled: bool
-    max_upload_bytes: int
+    max_upload_bytes: int | None
     job_timeout_seconds: int | None
     result_summary_items: int
     llm_route_reasoning_effort: str = "none"
@@ -95,7 +97,7 @@ class Settings:
     analytics_route_thinking_token_budget: int | None = ROUTE_THINKING_TOKEN_BUDGET
     allow_shared_gpu: bool = False
     analytics_python: Path | None = None
-    analytics_max_input_bytes: int = 64 * 1024 * 1024
+    analytics_max_input_bytes: int | None = None
     analytics_result_cache_bytes: int = 64 * 1024 * 1024
     analytics_max_exports: int = 2
     native_runtime_binary: Path | None = None
@@ -121,7 +123,7 @@ class Settings:
     account_pending_jobs: int = 8
     account_running_jobs: int = 4
     account_user_running_jobs: int = 1
-    account_job_seconds: int = 300
+    account_job_seconds: int = DEFAULT_EXECUTION_TIMEOUT_SECONDS
     account_queue_seconds: int = 900
     # Delete conversations after this many days without activity; 0 keeps them.
     retention_days: int = 0
@@ -132,7 +134,7 @@ class Settings:
     backup_keep: int = 14
     perf_confirm_shared_gpu: bool = False
     account_storage_bytes: int = 512 * 1024 * 1024
-    account_upload_bytes: int = 64 * 1024 * 1024
+    account_upload_bytes: int | None = None
     # Serve HTTPS directly when no reverse proxy terminates TLS.
     tls_certfile: Path | None = None
     tls_keyfile: Path | None = None
@@ -162,8 +164,7 @@ class Settings:
     backend_ipw_clip: float = 20.0
     backend_failure_penalty: float = 10.0
     backend_memory_safety: float = 0.8
-    backend_default_timeout_seconds: float = 300.0
-    backend_timeout_multiple: float = 3.0
+    backend_default_timeout_seconds: float = DEFAULT_EXECUTION_TIMEOUT_SECONDS
 
     @property
     def dual_adapters_active(self) -> bool:
@@ -214,8 +215,8 @@ class Settings:
             raise ValueError("Invalid shared-policy exploration controls")
         if not 1 <= self.backend_ipw_clip < float("inf") or not 1 < self.backend_failure_penalty < float("inf"):
             raise ValueError("Invalid shared-policy training controls")
-        if not 0 < self.backend_default_timeout_seconds < float("inf") or not 1 <= self.backend_timeout_multiple < float("inf"):
-            raise ValueError("Invalid empirical timeout controls")
+        if not 0 < self.backend_default_timeout_seconds < float("inf"):
+            raise ValueError("Invalid backend attempt timeout")
         for name, maximum in (("database_pool_limit", 128), ("database_pool_size", 32),
                               ("database_pool_wait_seconds", 120), ("database_pool_idle_seconds", 3600)):
             if not 1 <= getattr(self, name) <= maximum:
@@ -236,7 +237,6 @@ class Settings:
             "account_job_seconds",
             "account_queue_seconds",
             "account_storage_bytes",
-            "account_upload_bytes",
         ):
             if getattr(self, name) < 1:
                 raise ValueError(f"{name} must be positive")
@@ -275,7 +275,7 @@ class Settings:
             )
         if not 1 <= self.api_port <= 65_535:
             raise ValueError("GRAPHMINE_API_PORT must be between 1 and 65535")
-        if self.max_upload_bytes < 1:
+        if self.max_upload_bytes is not None and self.max_upload_bytes < 1:
             raise ValueError("GRAPHMINE_MAX_UPLOAD_BYTES must be positive")
         if self.max_concurrent_uploads < 1:
             raise ValueError("GRAPHMINE_MAX_CONCURRENT_UPLOADS must be positive")
@@ -283,7 +283,9 @@ class Settings:
             raise ValueError("GRAPHMINE_MAX_PENDING_JOBS must be positive")
         if self.max_result_bytes is not None and self.max_result_bytes < 1:
             raise ValueError("GRAPHMINE_MAX_RESULT_BYTES must be positive")
-        if self.analytics_max_input_bytes < 1:
+        if self.account_upload_bytes is not None and self.account_upload_bytes < 1:
+            raise ValueError("GRAPHMINE_ACCOUNT_UPLOAD_BYTES must be positive")
+        if self.analytics_max_input_bytes is not None and self.analytics_max_input_bytes < 1:
             raise ValueError("GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES must be positive")
         if type(self.analytics_result_cache_bytes) is not int or self.analytics_result_cache_bytes < 0:
             raise ValueError("GRAPHMINE_ANALYTICS_RESULT_CACHE_BYTES must be nonnegative")
@@ -371,8 +373,7 @@ class Settings:
             backend_ipw_clip=float(os.getenv("GRAPHMINE_BACKEND_IPW_CLIP", "20")),
             backend_failure_penalty=float(os.getenv("GRAPHMINE_BACKEND_FAILURE_PENALTY", "10")),
             backend_memory_safety=float(os.getenv("GRAPHMINE_BACKEND_MEMORY_SAFETY", "0.8")),
-            backend_default_timeout_seconds=float(os.getenv("GRAPHMINE_BACKEND_DEFAULT_TIMEOUT_SECONDS", "300")),
-            backend_timeout_multiple=float(os.getenv("GRAPHMINE_BACKEND_TIMEOUT_MULTIPLE", "3")),
+            backend_default_timeout_seconds=float(os.getenv("GRAPHMINE_BACKEND_DEFAULT_TIMEOUT_SECONDS", str(DEFAULT_EXECUTION_TIMEOUT_SECONDS))),
             database_credentials_file=Path(os.environ["GRAPHMINE_DATABASE_CREDENTIALS_FILE"]).expanduser().absolute()
             if os.getenv("GRAPHMINE_DATABASE_CREDENTIALS_FILE") else None,
             database_dataset_allowlist=tuple(
@@ -418,7 +419,7 @@ class Settings:
             account_pending_jobs=_integer("GRAPHMINE_ACCOUNT_PENDING_JOBS", 8),
             account_running_jobs=_integer("GRAPHMINE_ACCOUNT_RUNNING_JOBS", 4),
             account_user_running_jobs=_integer("GRAPHMINE_ACCOUNT_USER_RUNNING_JOBS", 1),
-            account_job_seconds=_integer("GRAPHMINE_ACCOUNT_JOB_SECONDS", 300),
+            account_job_seconds=_integer("GRAPHMINE_ACCOUNT_JOB_SECONDS", DEFAULT_EXECUTION_TIMEOUT_SECONDS),
             account_queue_seconds=_integer("GRAPHMINE_ACCOUNT_QUEUE_SECONDS", 900),
             retention_days=_integer("GRAPHMINE_RETENTION_DAYS", 0),
             admin_event_retention_days=max(1, _integer("GRAPHMINE_ADMIN_EVENT_RETENTION_DAYS", 180)),
@@ -433,8 +434,8 @@ class Settings:
             account_storage_bytes=_integer(
                 "GRAPHMINE_ACCOUNT_STORAGE_BYTES", 512 * 1024 * 1024
             ),
-            account_upload_bytes=_integer(
-                "GRAPHMINE_ACCOUNT_UPLOAD_BYTES", 64 * 1024 * 1024
+            account_upload_bytes=_budget(
+                "GRAPHMINE_ACCOUNT_UPLOAD_BYTES", None
             ),
             tls_certfile=Path(os.environ["GRAPHMINE_TLS_CERTFILE"])
             .expanduser()
@@ -485,8 +486,8 @@ class Settings:
             .absolute()
             if os.getenv("GRAPHMINE_ANALYTICS_PYTHON")
             else None,
-            analytics_max_input_bytes=_integer(
-                "GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES", 64 * 1024 * 1024
+            analytics_max_input_bytes=_budget(
+                "GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES", None
             ),
             analytics_cpu_workers=_integer("GRAPHMINE_ANALYTICS_CPU_WORKERS", 2),
             analytics_gpu_uuids=tuple(
@@ -534,7 +535,7 @@ class Settings:
                 "GRAPHMINE_ANALYTICS_ROUTE_THINKING_TOKEN_BUDGET",
                 ROUTE_THINKING_TOKEN_BUDGET,
             ),
-            max_upload_bytes=_integer("GRAPHMINE_MAX_UPLOAD_BYTES", 2_147_483_648),
+            max_upload_bytes=_budget("GRAPHMINE_MAX_UPLOAD_BYTES", None),
             max_concurrent_uploads=_integer("GRAPHMINE_MAX_CONCURRENT_UPLOADS", 2),
             database_pool_limit=_integer("GRAPHMINE_DATABASE_POOL_LIMIT", 16),
             database_pool_size=_integer("GRAPHMINE_DATABASE_POOL_SIZE", 4),
@@ -544,7 +545,7 @@ class Settings:
             max_result_bytes=_budget("GRAPHMINE_MAX_RESULT_BYTES", None),
             analytics_result_cache_bytes=_integer("GRAPHMINE_ANALYTICS_RESULT_CACHE_BYTES", 64 * 1024 * 1024),
             analytics_max_exports=_integer("GRAPHMINE_ANALYTICS_MAX_EXPORTS", 2),
-            job_timeout_seconds=_budget("GRAPHMINE_JOB_TIMEOUT_SECONDS", None),
+            job_timeout_seconds=_budget("GRAPHMINE_JOB_TIMEOUT_SECONDS", DEFAULT_EXECUTION_TIMEOUT_SECONDS),
             result_summary_items=_integer("GRAPHMINE_RESULT_SUMMARY_ITEMS", 50),
             llm_route_reasoning_effort=os.getenv(
                 "GRAPHMINE_LLM_ROUTE_REASONING_EFFORT", "none"

@@ -171,8 +171,6 @@ def prepare_graph(directory, spec, settings):
     else:
         raise ValueError("Benchmarks accept generated and registered Neo4j graphs only")
     raw = json.dumps(graph, separators=(",", ":"), allow_nan=False).encode()
-    if len(raw) > 60 * 1024 * 1024:
-        raise ValueError("Graph exceeds the native 64 MiB request transport after allowing for parameters")
     atomic_json(path, graph)
     saved = dict(graph_id=spec["id"], n=len(graph["vertices"]), m=len(graph["edges"]),
                  spec_sha256=digest(spec), content_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),

@@ -16,7 +16,7 @@ from .features import cached_features, safe_parameters
 from .hardware import hardware_snapshot, merge_peaks, process_rss
 from .feasibility import filter_candidates, native_choice
 from .storage import DEFAULT_DATA_DIR, SCHEMA_VERSION, utc_now
-from ..calculation_limits import minimum_limit, remaining_seconds
+from ..calculation_limits import DEFAULT_EXECUTION_TIMEOUT_SECONDS, minimum_limit, remaining_seconds
 
 
 def outcome_for(error=None, *, timed_out=False):
@@ -94,8 +94,8 @@ def _decision(problem, candidates, features, parameters, hardware, context, back
         # An invalid artifact cannot alter feasibility or an explicit request.
         decision = policy.decide(candidates, observation, requested_backend=backend, requested_device=requested)
         decision["policy_warning"] = "shared_policy_failed"
-    decision["attempt_timeout_seconds"] = policy.timeout_seconds(model, observation,
-        multiple=context.get("backend_timeout_multiple", 3.), default=context.get("backend_default_timeout_seconds", 300.))
+    decision["attempt_timeout_seconds"] = policy.timeout_seconds(
+        default=context.get("backend_default_timeout_seconds", DEFAULT_EXECUTION_TIMEOUT_SECONDS))
     if context.get("attempt_index", 0):
         decision.update(reason="fallback", backend_choice_reason="fallback")
     return decision

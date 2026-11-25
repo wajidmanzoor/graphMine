@@ -122,7 +122,7 @@ def export_partial_json(service, workflow_id, *, expected_revision=None):
         raise AnalyticsError("This analysis revision changed. Reopen its results.", "revision_conflict", 409)
     output = temporary()
     writer = Writer(output, Budget(4 * (service.settings.analytics_max_input_bytes + service.settings.max_result_bytes)
-                                  if service.settings.max_result_bytes is not None else None))
+                                  if service.settings.analytics_max_input_bytes is not None and service.settings.max_result_bytes is not None else None))
     try:
         writer.write(b'{"partial_workflow":true,"complete":false,"workflow":')
         write_json(writer, record); writer.write(b',"steps":{')
@@ -283,7 +283,7 @@ def report_bundle(service, workflow_id, *, expected_revision=None, default_image
     report_rows = list(islice(named_rows(main_result["ports"][main_port], main_graph), 200))
     output, files = temporary(), {}
     budget = Budget(4 * (service.settings.analytics_max_input_bytes + service.settings.max_result_bytes)
-                    if service.settings.max_result_bytes is not None else None)
+                    if service.settings.analytics_max_input_bytes is not None and service.settings.max_result_bytes is not None else None)
     try:
         with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
             def entry(name, write, *, include=True):
