@@ -134,3 +134,29 @@ production's shared old models and logs were preserved. Development accounts,
 uploads, and database datasets were not removed. No model-quality claim is made
 until matching paired measurements and real-traffic evidence exist. Ordinary
 shadow logs cannot measure an unexecuted backend's runtime.
+
+The development environment now explicitly enables
+`GRAPHMINE_BACKEND_SELECTION=bandit` and
+`GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE=false`. An automatic request executes
+the shared policy's chosen eligible backend and logs its actual runtime, outcome
+and final selection probability. Explicit backend requests and K=1 retain their
+deterministic behavior. The production configuration is unchanged. The existing
+development web services remain stopped; subsequent launches load these settings.
+
+For eligible scores `s`, temperature `T` and exploration floor `epsilon`, the
+sampling distribution is `(1-epsilon) * softmax(s/T) + epsilon/K`. The floor is a
+total uniform mixture: .02 gives each of three eligible backends at least .00667
+probability when sampling is permitted. Outside the measured size/settings range,
+or when the daily ledger has no exploration allowance, the highest-scoring backend
+has probability one. The initial empty ledger needs ten recorded application
+decisions for that problem on that day before its .10 budget allows the first
+exploratory choice.
+
+Nightly training reads genuine bandit feedback alongside paired benchmarks and
+excludes evaluation rows and held-out graph fingerprints. Feedback currently
+requires an empirical cost scale from the problem's benchmark controls; native,
+forced-only and shadow decisions do not train the bandit. The training objective
+uses observed runtime divided by that recorded scale and clipped inverse
+selection probability. Only the executed backend supplies an observed outcome.
+New weights are fitted offline and published atomically; a request never edits
+weights. See [live execution verification](../validation/runnable-problems/development-live-bandit.json).

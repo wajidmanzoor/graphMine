@@ -1,8 +1,10 @@
 # Runnable problems and shared policy evaluation
 
-Development implementation and measurements, 2026-11-25 UTC. Recommendation:
+Development implementation and measurements, 2026-11-25 UTC. Benchmark recommendation:
 **keep native execution with the shared NN in shadow**. The old learned selectors
-have been removed as requested. This is not approval to switch production.
+have been removed as requested. Development now explicitly enables live NN/bandit
+selection as described below. That override does not establish production rollout
+evidence or change the measured results in this report.
 
 ## Scope and data
 
@@ -131,8 +133,8 @@ switch; the small development result does not meet the original switch criteria.
 Development uses private `backend-runs` and `backend-models` directories. Its old
 history, captures and workflow artifacts were cleared. Previously shared
 production logs/models were preserved and are no longer development's paths.
-The default configured development mode is `shadow`, with rollout evidence
-required. Setting selection to `native` provides a model-free rollback.
+At evaluation completion, the configured development mode was `shadow`, with
+rollout evidence required. Setting selection to `native` provides a model-free rollback.
 
 The development checkout and private environment configuration now use this
 implementation. A startup smoke through the development interpreter loaded all
@@ -144,3 +146,26 @@ time daily, plus up to 15 minutes of randomized delay. It retrains offline on CP
 from development's recorded data and launches no benchmarks. The existing
 production timer is unchanged. See [startup evidence](../validation/runnable-problems/development-startup.json)
 and [schedule evidence](../validation/runnable-problems/development-schedule.json).
+
+## Development live selection, 2026-11-25
+
+Development now uses `GRAPHMINE_BACKEND_SELECTION=bandit` with the explicitly
+authorized `GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE=false` override. Production
+and testing configuration entries were compared and left unchanged. The nightly
+trainer reads the development store; live application choices with valid
+propensities, matching implementation provenance and benchmark cost scales are
+eligible for its clipped inverse-propensity objective.
+
+A real supervised worker loaded the configured shared model, admitted `cpp`,
+`tot` and `wetric`, chose `cpp` and executed it successfully in 0.2631 seconds,
+returning the independently known count of four triangles. Its exact logged
+selection probability was one because exploration was disabled for the unmeasured
+input range. The worker recorded the runtime, cost scale and terminal outcome
+without changing model weights. This verification is marked evaluation-only and
+excluded from training. See [the execution record](../validation/runnable-problems/development-live-bandit.json).
+
+All 26 shared-policy tests passed, including feedback changing learned weights,
+clipped probability correction, shadow exclusion, eligibility masking, explicit
+requests, daily-budget concurrency, hard timeouts and the single fallback attempt.
+The development web services remain in their existing stopped state; their next
+launch uses the live selector configuration.
