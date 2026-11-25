@@ -14,7 +14,7 @@ REPO = Path(__file__).resolve().parents[2]
 
 @pytest.fixture
 def bundle():
-    plan = {"version": 1, "device": "cpu", "steps": [{"id": "core", "operation": "k-core", "input": {"input": "main"}, "parameters": {"requested_k": 1}, "bindings": {}}]}
+    plan = {"version": 1, "device": "cpu", "steps": [{"id": "core", "problem": "k-core", "input": {"input": "main"}, "parameters": {"requested_k": 1}, "bindings": {}}]}
     result = {"complete": True, "workflow_hash": "a" * 64, "steps": {"core": {"status": "completed", "result": {"complete": True, "count": 9007199254740993}}}}
     provenance = {"workflow_id": "w1", "expected_revision": 3, "workflow_hash": "a" * 64, "implementation_sha256": "b" * 64, "result_sha256": digest(result)}
     review = {"id": "example-1", "status": "approved", "question": "Find the core — réseau", "plan": plan, "provenance": provenance, "inputs": {"main": {"kind": "graph", "file_sha256": "c" * 64}}, "authorship": {"target_author": None, "reviewer": {"name": "source-reviewer", "user_id": "u1"}}}

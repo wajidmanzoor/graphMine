@@ -29,7 +29,7 @@ def test_slash_menu_keyboard_filter_and_pointer(
     assert question.get_attribute("aria-expanded") == "true"
     assert (
         len(browser.find_elements(By.CSS_SELECTOR, "#command-options [role=option]"))
-        == 10  # Seven local commands, templates, calculation picker, and one operation.
+        == 10  # Seven local commands, templates, calculation picker, and one problem.
     )
     question.send_keys(Keys.ARROW_DOWN, Keys.ENTER)
     assert question.get_attribute("value") == "/feedback "

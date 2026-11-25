@@ -23,13 +23,13 @@ def test_biclique_columns_and_unloaded_item_keep_typed_members(
     ]
     server.graph["edge_count"] = 4
     record = server.workflows[0]
-    record["validation"]["plan"]["steps"][0]["operation"] = "maximal-bicliques"
+    record["validation"]["plan"]["steps"][0]["problem"] = "maximal-bicliques"
     output = server.results["saved-analysis"]["steps"]["core"]["result"]
     rows = [
         {"left_vertices": [1], "right_vertices": [2, 3]},
         {"left_vertices": ["1"], "right_vertices": [4, 5]},
     ]
-    output.update(operation="maximal-bicliques", quality="exact", ports={
+    output.update(problem="maximal-bicliques", quality="exact", ports={
         "bicliques": {"type": "bipartite_groups", "value": rows, "complete": True}
     })
     saved = deepcopy(output)
@@ -43,7 +43,7 @@ def test_biclique_columns_and_unloaded_item_keep_typed_members(
     def route(handler, method):
         parsed = urlsplit(handler.path)
         if parsed.path == "/api/analytics/capabilities":
-            handler.respond({"operations": [{
+            handler.respond({"problems": [{
                 "id": "maximal-bicliques", "title": "Maximal bicliques", "input_kind": "graph",
                 "parameters": {}, "execution": {"cpu": True, "gpu": False},
                 "visualization": PROFILES["maximal-bicliques"],

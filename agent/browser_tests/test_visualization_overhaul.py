@@ -31,9 +31,9 @@ def gallery(tmp_path_factory):
     cut = deepcopy(next(c for c in CASES if c["kind"] == "flow"))
     cut["result"]["result"].update(source_side=[0, "0"], sink_side=[2])
     walk = deepcopy(next(c for c in CASES if c["kind"] == "path"))
-    walk["result"] = {"operation": "random-walks", "parameters": {}, "ports": {"out": {"type": "walk_sample", "value": [[0, "0", 2, "0", 0]], "complete": True}}}
+    walk["result"] = {"problem": "random-walks", "parameters": {}, "ports": {"out": {"type": "walk_sample", "value": [[0, "0", 2, "0", 0]], "complete": True}}}
     temporal = deepcopy(next(c for c in CASES if c["kind"] == "path"))
-    temporal["result"]["operation"] = "temporal-paths"
+    temporal["result"]["problem"] = "temporal-paths"
     temporal["result"]["ports"]["out"]["value"][0].update(departure=10, arrival=14)
     cases = [(c["kind"], c) for c in CASES] + [(p.stem, json.loads(p.read_text())) for p in GOLDENS] + [("recorded-cut", cut), ("recorded-walk", walk), ("recorded-time", temporal)]
     for i, (name, item) in enumerate(cases):
@@ -110,8 +110,8 @@ def test_all_profiles_and_saved_golden_views_in_real_browser(browser, gallery):
 def test_view_styles_selection_exports_and_named_restore(browser, tmp_path):
     upload(browser, tmp_path)
     manual(browser)
-    Select(browser.find_element(By.ID, "operation-select")).select_by_value("degree-centrality")
-    browser.find_element(By.ID, "use-operation").click()
+    Select(browser.find_element(By.ID, "problem-select")).select_by_value("degree-centrality")
+    browser.find_element(By.ID, "use-problem").click()
     done(browser)
     wait = WebDriverWait(browser, 15)
     wait.until(lambda d: d.execute_script("return !!GraphMineWorkspace.state.resultView?.view_spec && !GraphMineWorkspace.state.resultViewPending"))

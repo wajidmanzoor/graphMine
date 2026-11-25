@@ -1,0 +1,66 @@
+{
+  "application_latest_results": {
+    "passed": 1904,
+    "failed": 0,
+    "skipped": 44
+  },
+  "superseded_failures": {
+    "report": "application.xml",
+    "count": 13,
+    "cause": "Dataset Studio still used operation fields; its integration, catalog, replay and current fixtures now use runnable problem fields.",
+    "replacement_report": "studio.xml"
+  },
+  "suites": {
+    "cpu-completion": {
+      "cases": 175,
+      "failed": 0,
+      "skipped": 0
+    },
+    "gpu-original": {
+      "cases": 34,
+      "failed": 0,
+      "skipped": 0
+    },
+    "ctest": {
+      "cases": 77,
+      "failed": 0,
+      "skipped": 0
+    },
+    "history-migration": {
+      "cases": 28,
+      "failed": 0,
+      "skipped": 0
+    },
+    "browser-current-contracts": {
+      "cases": 16,
+      "failed": 0,
+      "skipped": 0
+    },
+    "browser-native": {
+      "cases": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    "browser-results": {
+      "cases": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    "bindings": {
+      "cases": 374,
+      "failed": 0,
+      "skipped": 0
+    },
+    "studio": {
+      "cases": 25,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "native_oracle_requests": 173960,
+  "frontend": {
+    "tests_passed": 31,
+    "types": "passed",
+    "api_contracts": "passed"
+  }
+}

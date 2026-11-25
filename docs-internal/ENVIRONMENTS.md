@@ -25,14 +25,18 @@ The workspace root is `/home/wajid/projects/graphDatabaseAgent`.
 | Development | `graphMine-database-cypher` | 18002 / 8879 | Loopback; SSH forwarding |
 | Testing | `graphMine-testing` | 18001 / 8878 | Loopback; SSH forwarding |
 
-`graphMine-runtime-20261118-backends` is the detached native runtime for backend
-telemetry, feasibility and shadow selection. Its verified binaries are copied
+`graphMine-runtime-20261125-full-gpu` is the detached native runtime for the
+runnable-problem release, with 82 CPU problems and 58 admitted GPU profiles across
+35 problems. All 59 GPU profiles are compiled; cuMBE is quarantined by the
+correctness manifest after a reproducible intermittent counting failure.
+Its verified binaries are copied
 without rebuilding or patching them, and worker paths are relocated in the
 correctness manifest. `deploy/snapshot-backend-runtime.py` verifies every copied
 hash and supplies launchers that load the pinned library and the correct worker
 ABI. `GRAPHMINE_WORKER_DIR` selects its `library/build/runtime/verified-workers`
 for native workflows; `bin/graphmine` selects the separate classic CLI workers.
-Keep the earlier `graphMine-runtime-20261117-families` checkout for rollback.
+Keep the earlier `graphMine-runtime-20261121-unlimited-all` checkout and its
+model directories for rollback to the previous production application.
 The compiled CPU/GPU engine and execution evidence are promoted together with
 the application. The existing
 `graphMine-repo` checkout still supplies the analytics Python and vLLM
@@ -44,20 +48,26 @@ The build reuses the unchanged Kokkos/KokkosKernels installation under
 `graphMine-runtime-20261116-views/library/build/native-dependencies/` and the
 existing research workers. Keep those pinned dependencies available. Build
 settings, source hashes, device-specific admission and validation reports for
-this runtime are recorded in `validation/backend-bandit-phase4/`. Earlier
+this runtime are recorded in `validation/full-gpu-release-20261125/`. Earlier
 reports with retired family labels were removed at the user's request; their
 original contents remain in Git history. This release retains the existing
 algorithms, GPU adapters and optional biclique partition contract.
 
-The pinned production release (before the runnable-problem redesign) uses its
-existing backend models for live selection, as explicitly
-requested by the operator. Its configuration sets `GRAPHMINE_BACKEND_SELECTION=bandit`
-and `GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE=false`; measured rollout metrics
-remain unchanged. Graph execution uses CPU and physical
-GPU 1 only; GPU 0 remains reserved for the existing model service. On that pinned release, initial
-collection is capped at three attempts per algorithm. Pooled observations and
-models remain in the configured `/data` roots. The nightly backend-model timer
-fits only those existing observations; it never launches a benchmark sweep.
+The runnable-problem release uses one shared neural encoder and one masked
+backend policy, with no algorithm parameter features. The operator explicitly
+requested enabling it and promoting through testing to production. Configuration
+sets `GRAPHMINE_BACKEND_SELECTION=bandit` and
+`GRAPHMINE_BACKEND_REQUIRE_ROLLOUT_EVIDENCE=false`; this override does not establish
+paired shadow-traffic performance. The evaluation report records the measured
+limits separately. Graph execution uses CPU and physical GPU 1 only; GPU 0
+remains reserved for the existing model service. Paired collection is explicitly
+requested with `benchmarks/full_gpu_policy.json`. The nightly backend-model timer
+only fits saved observations; it never launches a benchmark sweep.
+
+Execution allowances are six hours (`21600` seconds) for the backend attempt,
+job and account job limit. Upload and analytics input byte limits are disabled.
+Native feasibility, available-memory admission and backend-specific input
+contracts still apply. User-selected backends and devices remain binding.
 
 `GRAPHMINE_GOOGLE_SEARCH_ENABLED=false` is explicit in all three host
 environments and is also the application default. The prototype is retained for
@@ -85,8 +95,12 @@ Studio's production workspace and dataset root are under
 `/data/labdata/wajid/graphmine_data/dataset-studio/`. Development and testing data
 are under `graphmine_data/environments/devlopment/` and
 `graphmine_data/environments/testing/`. Raw benchmark downloads remain on the data disk. Development backend logs and
-models now use private `backend-runs` and `backend-models` directories under its
-environment root. Production remains on its pinned release until separately promoted.
+models use private `backend-runs` and `backend-models` directories under its
+environment root. Testing and production use their own directories of the same
+names under their environment roots, seeded with the release's shared model and
+paired training rows. The previous shared production model/log directories are
+retained for rollback. Saved workflows and result artifacts are read through a
+compatibility adapter; their original bytes and approval hashes are preserved.
 
 Private host configuration, the installed controller, and deployment state live
 under `graphmine-data/environments/`, outside the Git checkout. The installed

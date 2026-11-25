@@ -24,7 +24,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 STATIC = Path(__file__).resolve().parents[1] / "graphmine_agent/static"
 SESSION = {"id": "saved-session", "domain_id": "general", "title": "Saved conversation"}
 CAPABILITIES = {
-    "operations": [
+    "problems": [
         {
             "id": "k-core",
             "title": "K-core",
@@ -50,7 +50,7 @@ WORKFLOW = {
             "steps": [
                 {
                     "id": "core",
-                    "operation": "k-core",
+                    "problem": "k-core",
                     "input": {"input": "main"},
                     "parameters": {"requested_k": 2},
                     "bindings": {},
@@ -345,8 +345,13 @@ def open_domains(browser, server):
 
 
 def reconnect(browser):
+    previous = browser.execute_script("return location.hash")
+    browser.find_element(By.CSS_SELECTOR, ".sidebar-brand .brand").click()
+    wait_for(browser, "document.body.dataset.page === 'domains'")
     browser.find_element(By.ID, "connection-button").click()
     browser.find_element(By.CSS_SELECTOR, "#connection-form [type=submit]").click()
+    wait_for(browser, "GraphMineWorkspace.state.caps && !GraphMineWorkspace.state.busy")
+    browser.execute_script("location.hash = arguments[0]", previous)
 
 
 def test_domains_and_new_conversation_do_not_wait_for_capabilities(
@@ -362,9 +367,9 @@ def test_domains_and_new_conversation_do_not_wait_for_capabilities(
     assert browser.find_element(By.ID, "workspace-view").is_displayed()
     assert browser.find_element(By.ID, "data-upload").is_enabled()
     assert not browser.find_element(By.ID, "plan-question").is_enabled()
-    assert not browser.find_element(By.ID, "use-operation").is_enabled()
+    assert not browser.find_element(By.ID, "use-problem").is_enabled()
     assert (
-        browser.find_element(By.ID, "connection-state").text == "Checking calculations…"
+        browser.find_element(By.ID, "connection-state").get_attribute("textContent") == "Checking calculations…"
     )
     server.responses[0].release.set()
     wait_for(
@@ -372,7 +377,7 @@ def test_domains_and_new_conversation_do_not_wait_for_capabilities(
         "document.getElementById('connection-state').dataset.state === 'ready'",
     )
     assert browser.find_element(By.ID, "plan-question").is_enabled()
-    assert browser.find_element(By.ID, "use-operation").is_enabled()
+    assert browser.find_element(By.ID, "use-problem").is_enabled()
 
 
 def test_capability_failure_preserves_navigation_and_can_reconnect(

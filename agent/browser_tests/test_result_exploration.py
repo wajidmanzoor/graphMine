@@ -63,14 +63,14 @@ def browser():
         driver.quit()
 
 
-def answer_for(graph, operation, output):
+def answer_for(graph, problem, output):
     return build_answer(
         graph,
         ExecutionPlan(
             session_id="fixture",
             graph_id="fixture",
-            operation_id=operation,
-            problem_id="presentation_fixture",
+            problem_id=problem,
+            topic_id="presentation_fixture",
             application_intent=ApplicationIntent(
                 objective="Explore the computed answer"
             ),
@@ -84,7 +84,7 @@ def open_report(browser, tmp_path, answer, views=None):
     result = ResultRecord(
         job_id="fixture",
         session_id="fixture",
-        operation_id=answer["operation_id"],
+        problem_id=answer["problem_id"],
         payload={"provenance": {"authored_browser_fixture": True}},
         summary={},
         answer=answer,
@@ -217,7 +217,7 @@ def test_custom_composed_charts_explanations_linking_and_offline_export(
     result = ResultRecord(
         job_id="fixture",
         session_id="fixture",
-        operation_id="maximal-cliques",
+        problem_id="maximal-cliques",
         payload={"provenance": {"authored_browser_fixture": True}},
         summary={},
         answer=answer,

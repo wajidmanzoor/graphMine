@@ -72,6 +72,7 @@
           <option value="file">File order</option>
           <option value="question">Question A–Z</option>
           <option value="problem">Problem</option>
+          <option value="topic">Topic</option>
           <option value="issues">Issues first</option>
           <option value="updated">Recently edited</option>
           <option value="output">Longest output</option>
@@ -79,8 +80,8 @@
       </div>
       <div class="bulkbar" id="bulkbar" hidden>
         <span id="bulk-count"></span>
+        <select id="bulk-topic"><option value="">Topic…</option></select>
         <select id="bulk-problem"><option value="">Problem…</option></select>
-        <select id="bulk-operation"><option value="">Operation…</option></select>
         <select id="bulk-backend"><option value="">Implementation…</option></select>
         <select id="bulk-review">
           <option value="">Review…</option>
@@ -263,7 +264,7 @@
             <dt><kbd>Esc</kbd></dt><dd>Cancel editing · back from step details</dd>
           </dl>
           <dl>
-            <dt><code>op:k-core</code></dt><dd>Operation (also <code>problem:</code>, <code>impl:</code>)</dd>
+            <dt><code>op:k-core</code></dt><dd>Problem (also <code>problem:</code>, <code>impl:</code>)</dd>
             <dt><code>stage:PlanDraft</code></dt><dd>Output schema</dd>
             <dt><code>split:validation</code></dt><dd>Split (also <code>model:analyst</code>)</dd>
             <dt><code>review:needs_fix</code></dt><dd>Review state</dd>

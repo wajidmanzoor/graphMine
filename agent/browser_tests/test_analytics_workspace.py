@@ -16,7 +16,7 @@ from pathlib import Path
 from urllib.request import urlopen
 
 import pytest
-from graphmine_agent._families import OPERATION_FAMILY, PROBLEMS
+from graphmine_agent._families import PROBLEM_FAMILY
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -78,15 +78,15 @@ def authored_model_transport():
             body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
             is_writer = body.get('response_format', {}).get('json_schema', {}).get('name') == 'AnalyticsAnswer'
             payload = json.loads(body["messages"][1 if is_writer else -1]["content"])
-            operation = "maximal-bicliques" if "biclique" in payload.get("question", "").lower() else "triangle-counting"
+            problem = "maximal-bicliques" if "biclique" in payload.get("question", "").lower() else "triangle-counting"
             if "k-cliques" in payload.get("question", ""):
-                operation = "k-cliques"
+                problem = "k-cliques"
             elif "subgraph-isomorphism" in payload.get("question", ""):
-                operation = "subgraph-isomorphism"
+                problem = "subgraph-isomorphism"
             elif payload.get("question") == "What is a k-core?":
-                operation = "k-core"
+                problem = "k-core"
             elif payload.get("question") == "How many vertices are loaded?":
-                operation = "graph-aggregate"
+                problem = "graph-aggregate"
             if "stage" in payload:
                 seen.append(payload["stage"])
                 payloads.append(payload)
@@ -97,22 +97,16 @@ def authored_model_transport():
                     "source_ids": identifiers,
                 }
             elif payload["stage"] == "family":
-                result = {"family_id": OPERATION_FAMILY[operation], "reason": "Authored family selection."}
-            elif payload["stage"] == "problem":
-                identifier = next(key for key, value in PROBLEMS[payload["family_id"]].items()
-                                  if operation in value["operation_ids"])
-                result = {"status": "selected", "candidates": [{"problem_id": identifier,
-                          "reason": "Authored problem selection."}], "requires_cross_family_steps": False,
-                          "message": "The requested problem fits."}
+                result = {"family_id": PROBLEM_FAMILY[problem], "reason": "Authored family selection."}
             elif payload["stage"] == "clarify":
                 result = {"message": payload["prompt"]} if payload["task"] == "word_question" else {"choice_id": None}
             elif payload["stage"] == "candidates":
                 if "k-cliques" in payload["question"]:
-                    operation = "k-cliques"
+                    problem = "k-cliques"
                 elif "subgraph-isomorphism" in payload["question"]:
-                    operation = "subgraph-isomorphism"
-                offered = next(row for row in payload["choices"] if row["operation"] == operation)
-                result = {"operation": operation, "parameter_choice": offered["choices"][0]["id"],
+                    problem = "subgraph-isomorphism"
+                offered = next(row for row in payload["choices"] if row["problem"] == problem)
+                result = {"problem": problem, "parameter_choice": offered["choices"][0]["id"],
                           "interpretation": "Find the requested connections."}
             elif payload["stage"] == "route":
                 if payload["question"] == "What is a k-core?":
@@ -122,18 +116,11 @@ def authored_model_transport():
                     fact = next(row for row in payload["input_facts"] if row["property"] == "vertices_count")
                     result = {"intent": "describe_input", "fact_ids": [fact["id"]], "message": "Use the snapshot count."}
                 elif "k-cliques" in payload["question"]:
-                    result = {"intent": "options", "operations": ["k-cliques"], "message": "Find complete groups."}
+                    result = {"intent": "options", "problems": ["k-cliques"], "message": "Find complete groups."}
                 elif "subgraph-isomorphism" in payload["question"]:
-                    result = {"intent": "needs_information", "operation": "subgraph-isomorphism", "message": "Which query graph?"}
+                    result = {"intent": "needs_information", "problem": "subgraph-isomorphism", "message": "Which query graph?"}
                 else:
-                    result = {"intent": "options", "operations": [operation], "message": "Choose the requested shape."}
-            elif payload["stage"] == "operation":
-                result = {
-                    "status": "selected",
-                    "operations": ["triangle-counting"],
-                    "reroute_families": [],
-                    "message": "Count triangles.",
-                }
+                    result = {"intent": "options", "problems": [problem], "message": "Choose the requested shape."}
             else:
                 result = {
                     "status": "ready",
@@ -143,7 +130,7 @@ def authored_model_transport():
                         "device": payload["device_policy"],
                         "steps": [
                             {
-                                "operation": operation,
+                                "problem": problem,
                                 "input": {"source": "input", "input": "main"},
                                 "arguments": [],
                             }
@@ -348,8 +335,8 @@ def manual(browser):
     question.send_keys("/calculate")
     WebDriverWait(browser, 5).until(lambda d: d.find_element(By.ID, "command-menu").is_displayed())
     browser.find_element(By.ID, "command-option-calculate").click()
-    WebDriverWait(browser, 5).until(lambda d: d.find_element(By.ID, "operation-dialog").is_displayed())
-    Select(browser.find_element(By.ID, "operation-select")).select_by_value("")
+    WebDriverWait(browser, 5).until(lambda d: d.find_element(By.ID, "problem-dialog").is_displayed())
+    Select(browser.find_element(By.ID, "problem-select")).select_by_value("")
 
 
 def choose_device(browser, value):
@@ -484,7 +471,7 @@ def test_biclique_conversion_uses_confirmed_snapshot(browser, tmp_path, authored
     button.click()
     pick_first_option(browser)
     status(browser, "completed")
-    assert authored_model_transport[1][start:] == ["family", "problem", "route", "clarify", "candidates"]
+    assert authored_model_transport[1][start:] == ["family", "route", "clarify"]
     WebDriverWait(browser, 15).until(lambda d: d.execute_script("return !!window.GraphMineWorkspace.state.result"))
     state = browser.execute_script("""
         const s = window.GraphMineWorkspace.state;
@@ -516,7 +503,7 @@ def test_two_preparations_keep_the_saved_analysis_inputs(browser, tmp_path):
     button.click()
     done(browser)
     record = browser.execute_script("return window.GraphMineWorkspace.state.record")
-    assert record["validation"]["plan"]["steps"][0]["operation"] == "maximal-biclique-counting"
+    assert record["validation"]["plan"]["steps"][0]["problem"] == "maximal-biclique-counting"
     assert record["input_files"]["main"]["file_id"] == original
     alias = record["validation"]["plan"]["steps"][0]["input"]["input"]
     assert alias == "prepared_2" and record["input_files"][alias]["file_id"] != original
@@ -546,7 +533,7 @@ def test_clarification_at_composer_survives_reload_accepts_text_and_tracks_each_
     browser.find_element(By.ID, "question").send_keys(Keys.ENTER)
     pick_first_option(browser, reload=True)
     status(browser, "completed")
-    assert authored_model_transport[1][start:] == ["family", "problem", "route", "clarify", "candidates"]
+    assert authored_model_transport[1][start:] == ["family", "route", "clarify"]
     browser.find_element(By.ID, "toggle-activity").click()
     assert "Authored reasoning" not in browser.find_element(By.ID, "activity-list").text
     # Both real call IDs retain their reasoning; invalid/valid numeric answers
@@ -562,7 +549,7 @@ def test_pending_composer_question_can_be_cancelled(browser, tmp_path, authored_
     WebDriverWait(browser, 45).until(lambda d: d.find_element(By.CSS_SELECTOR, '[data-cancel-clarification]')).click()
     WebDriverWait(browser, 30).until(lambda d: not d.find_element(By.ID, "clarification-panel").is_displayed())
     assert browser.execute_script("return window.GraphMineWorkspace.state.workflows.length") == 0
-    assert authored_model_transport[1][start:] == ["family", "problem", "route", "clarify"]
+    assert authored_model_transport[1][start:] == ["family", "route", "clarify"]
 
 
 def test_new_query_input_can_be_confirmed_with_free_text(browser, tmp_path, authored_model_transport):
@@ -582,22 +569,22 @@ def test_new_query_input_can_be_confirmed_with_free_text(browser, tmp_path, auth
     assert saved["inputs"]["main"]["file_id"] == original
     assert saved["clarification_context"]["bindings"]["query_graph"] == {"input": "added_input"}
     assert browser.execute_script("return window.GraphMineWorkspace.state.workflows.length") == 0
-    assert authored_model_transport[1][start:] == ["family", "problem", "route", "clarify", "candidates"]
+    assert authored_model_transport[1][start:] == ["family", "route", "clarify"]
 
 
 def test_lookup_family_filters_and_links_original_ids(browser, tmp_path):
     upload(browser, tmp_path)
     manual(browser)
-    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+    Select(browser.find_element(By.ID, "problem-select")).select_by_value(
         "node-lookup"
     )
     browser.find_element(
-        By.CSS_SELECTOR, "#operation-parameters details summary"
+        By.CSS_SELECTOR, "#problem-parameters details summary"
     ).click()
     field = browser.find_element(By.ID, "parameter-vertex_filters")
     field.clear()
     field.send_keys('[{"field":"id","op":"eq","value":"0"}]')
-    browser.find_element(By.ID, "use-operation").click()
+    browser.find_element(By.ID, "use-problem").click()
     done(browser)
     Select(browser.find_element(By.ID, "result-port")).select_by_value("rows")
     WebDriverWait(browser, 15).until(lambda d: d.execute_script(
@@ -625,16 +612,16 @@ def test_aggregate_exact_values_and_query_truncation_views(browser, tmp_path):
         edge["weight"] = weight
     upload(browser, tmp_path, graph)
     manual(browser)
-    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+    Select(browser.find_element(By.ID, "problem-select")).select_by_value(
         "graph-aggregate"
     )
     browser.find_element(
-        By.CSS_SELECTOR, "#operation-parameters details summary"
+        By.CSS_SELECTOR, "#problem-parameters details summary"
     ).click()
     Select(browser.find_element(By.ID, "parameter-metric")).select_by_value('"avg"')
     browser.find_element(By.ID, "parameter-field").send_keys("weight")
     browser.find_element(By.ID, "parameter-group_by").send_keys("vertex")
-    browser.find_element(By.ID, "use-operation").click()
+    browser.find_element(By.ID, "use-problem").click()
     done(browser)
     assert "≈" in browser.find_element(By.ID, "result-table").text
     assert (
@@ -648,17 +635,17 @@ def test_aggregate_exact_values_and_query_truncation_views(browser, tmp_path):
     )
     capture(browser, "query-aggregate-exact.png")
     manual(browser)
-    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+    Select(browser.find_element(By.ID, "problem-select")).select_by_value(
         "node-lookup"
     )
     browser.find_element(
-        By.CSS_SELECTOR, "#operation-parameters details summary"
+        By.CSS_SELECTOR, "#problem-parameters details summary"
     ).click()
     browser.find_element(By.ID, "parameter-result_limit").send_keys("1")
     previous_workflow = browser.execute_script(
         "return window.GraphMineWorkspace.state.record.id"
     )
-    browser.find_element(By.ID, "use-operation").click()
+    browser.find_element(By.ID, "use-problem").click()
     WebDriverWait(browser, 20).until(
         lambda d: (
             d.execute_script("return window.GraphMineWorkspace.state.record?.id")
@@ -680,12 +667,12 @@ def test_expert_review_edit_linked_views_and_large_ids(browser, tmp_path):
     chat(browser)
     browser.find_element(By.CSS_SELECTOR, '[data-mode="expert"]').click()
     manual(browser)
-    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+    Select(browser.find_element(By.ID, "problem-select")).select_by_value(
         "degree-centrality"
     )
-    browser.find_element(By.ID, "use-operation").click()
+    browser.find_element(By.ID, "use-problem").click()
     status(browser, "ready")
-    assert browser.execute_script("return JSON.parse(document.getElementById('plan-editor').value).steps[0].operation") == "degree-centrality"
+    assert browser.execute_script("return JSON.parse(document.getElementById('plan-editor').value).steps[0].problem") == "degree-centrality"
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.result") is None
     )
@@ -782,20 +769,20 @@ def test_expert_dependent_plan_and_incomplete_output(browser, tmp_path):
         "steps": [
             {
                 "id": "core",
-                "operation": "k-core",
+                "problem": "k-core",
                 "input": {"input": "main"},
                 "parameters": {"requested_k": 2},
             },
             {
                 "id": "sub",
-                "operation": "induced-subgraph",
+                "problem": "induced-subgraph",
                 "input": {"input": "main"},
                 "parameters": {"mode": "induced"},
                 "bindings": {"vertices_or_seeds": {"step": "core", "port": "vertices"}},
             },
             {
                 "id": "rank",
-                "operation": "pagerank",
+                "problem": "pagerank",
                 "input": {"step": "sub", "port": "graph"},
             },
         ],
@@ -822,7 +809,7 @@ def test_expert_dependent_plan_and_incomplete_output(browser, tmp_path):
     plan["steps"] = [
         {
             "id": "pairs",
-            "operation": "k-cliques",
+            "problem": "k-cliques",
             "input": {"input": "main"},
             "parameters": {"k": 2, "mode": "enumerate", "result_limit": 1},
         }
@@ -862,10 +849,10 @@ def test_normal_mode_paging_and_complete_saved_view_fixed_renderers(browser, tmp
     }
     upload(browser, tmp_path, graph)
     manual(browser)
-    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+    Select(browser.find_element(By.ID, "problem-select")).select_by_value(
         "degree-centrality"
     )
-    browser.find_element(By.ID, "use-operation").click()
+    browser.find_element(By.ID, "use-problem").click()
     done(browser)
     assert (
         browser.execute_script("return window.GraphMineWorkspace.state.record.mode")
@@ -919,13 +906,13 @@ def test_pattern_input_can_bind_another_uploaded_graph(browser, tmp_path):
     data_files(browser)
     Select(browser.find_element(By.ID, "active-input")).select_by_value(data_id)
     manual(browser)
-    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+    Select(browser.find_element(By.ID, "problem-select")).select_by_value(
         "subgraph-isomorphism"
     )
     Select(
         browser.find_element(By.CSS_SELECTOR, '[data-binding-parameter="query_graph"]')
     ).select_by_value("data_2")
-    browser.find_element(By.ID, "use-operation").click()
+    browser.find_element(By.ID, "use-problem").click()
     done(browser)
     assert (
         browser.execute_script(
@@ -961,12 +948,12 @@ def test_collection_patterns_have_independent_graph_views_and_can_feed_workflow(
     ).get_attribute("textContent")
     assert browser.execute_script("return window.GraphMineWorkspace.state.cy") is None
     manual(browser)
-    Select(browser.find_element(By.ID, "operation-select")).select_by_value(
+    Select(browser.find_element(By.ID, "problem-select")).select_by_value(
         "frequent-subgraphs"
     )
     browser.find_element(By.ID, "parameter-minimum_support_fraction").send_keys("1")
     browser.find_element(By.ID, "parameter-maximum_edges").send_keys("2")
-    browser.find_element(By.ID, "use-operation").click()
+    browser.find_element(By.ID, "use-problem").click()
     done(browser)
     rows = browser.execute_script(
         "return window.GraphMineWorkspace.state.rows.map(r=>[r.vertex_count,r.edge_count,r.support_graph_count,r.support_fraction])"
@@ -1003,7 +990,7 @@ def test_collection_patterns_have_independent_graph_views_and_can_feed_workflow(
     plan["steps"].append(
         {
             "id": "degree",
-            "operation": "degree-centrality",
+            "problem": "degree-centrality",
             "input": {
                 "step": plan["steps"][0]["id"],
                 "port": "patterns",
@@ -1040,7 +1027,7 @@ def test_mni_pattern_images_and_count_only_output(browser, tmp_path):
         "steps": [
             {
                 "id": "mni",
-                "operation": "single-graph-frequent-subgraphs",
+                "problem": "single-graph-frequent-subgraphs",
                 "input": {"input": "main"},
                 "parameters": {
                     "minimum_image_support": 3,
@@ -1123,7 +1110,7 @@ def test_graph_comparison_exact_cost_and_edit_script_views(browser, tmp_path):
         "steps": [
             {
                 "id": "compare",
-                "operation": "graph-edit-distance",
+                "problem": "graph-edit-distance",
                 "input": {"input": "main"},
                 "bindings": {"other_graph": {"input": "data_2"}},
                 "parameters": {
@@ -1167,13 +1154,13 @@ def test_graph_comparison_exact_cost_and_edit_script_views(browser, tmp_path):
     plan["steps"] = [
         {
             "id": "common",
-            "operation": "maximum-common-subgraph",
+            "problem": "maximum-common-subgraph",
             "input": {"input": "main"},
             "bindings": {"other_graph": {"input": "data_2"}},
         },
         {
             "id": "degree",
-            "operation": "degree-centrality",
+            "problem": "degree-centrality",
             "input": {"step": "common", "port": "graph"},
         },
     ]
@@ -1223,7 +1210,7 @@ def test_force_layout_displays_computed_coordinates_with_explicit_projection(
         "steps": [
             {
                 "id": "drawing",
-                "operation": "force-directed-layout",
+                "problem": "force-directed-layout",
                 "input": {"input": "main"},
                 "parameters": {
                     "iterations": 0,
@@ -1276,7 +1263,7 @@ def test_reply_without_input_and_description_need_no_workflow(browser, tmp_path,
     browser.find_element(By.ID, "question").send_keys("What is a k-core?", Keys.ENTER)
     WebDriverWait(browser, 30).until(lambda d: "A k-core retains vertices" in d.find_element(By.ID, "messages").text)
     assert browser.execute_script("return window.GraphMineWorkspace.state.workflows.length") == 0
-    assert authored_model_transport[1][start:] == ["family", "problem", "route"]
+    assert authored_model_transport[1][start:] == ["family", "route"]
     browser.find_element(By.CSS_SELECTOR, "#messages .answer-details").click()
     assert browser.find_element(By.ID, "activity-sidebar").is_displayed()
     assert "k-core" in browser.find_element(By.ID, "messages").text
@@ -1285,10 +1272,10 @@ def test_reply_without_input_and_description_need_no_workflow(browser, tmp_path,
     browser.find_element(By.ID, "question").send_keys("How many vertices are loaded?", Keys.ENTER)
     WebDriverWait(browser, 30).until(lambda d: "contains 5 vertices" in d.find_element(By.ID, "messages").text)
     assert browser.execute_script("return window.GraphMineWorkspace.state.workflows.length") == 0
-    assert authored_model_transport[1][start:] == ["family", "problem", "route", "family", "problem", "route"]
+    assert authored_model_transport[1][start:] == ["family", "route", "family", "route"]
     browser.find_element(By.ID, "toggle-activity").click()
     assert not browser.find_elements(By.CSS_SELECTOR, "#activity-list .reasoning-record")
-    assert browser.find_element(By.ID, "reasoning-count").text == "6"
+    assert browser.find_element(By.ID, "reasoning-count").text == "4"
     assert browser.find_elements(By.CSS_SELECTOR, '#activity-list [data-stage="grounding"][data-state="done"]')
     capture(browser, "phase2-code-facts.png")
 
@@ -1305,7 +1292,7 @@ def test_question_waits_for_relevant_options_then_runs_without_planning_call(
     browser.find_element(By.ID, "plan-question").click()
     pick_first_option(browser, reload=True)
     done(browser)
-    assert authored_model_transport[1][start:] == ["family", "problem", "route", "candidates"]
+    assert authored_model_transport[1][start:] == ["family", "route"]
     chat(browser)
     browser.find_element(By.ID, "toggle-activity").click()
     assert (
@@ -1315,7 +1302,7 @@ def test_question_waits_for_relevant_options_then_runs_without_planning_call(
     assert (
         "How many three-way connections" in browser.find_element(By.ID, "messages").text
     )
-    assert browser.find_element(By.ID, "reasoning-count").text == "4"
+    assert browser.find_element(By.ID, "reasoning-count").text == "2"
     browser.find_element(By.CSS_SELECTOR, "#activity-sidebar [data-close-panel]").click()
     browser.find_element(By.ID, "results-page-link").click()
     assert (
@@ -1418,7 +1405,7 @@ def test_domain_chat_reasoning_persists_and_results_have_their_own_page(
     )
     assert question in browser.find_element(By.ID, "messages").text
     browser.find_element(By.ID, "toggle-activity").click()
-    assert browser.find_element(By.ID, "reasoning-count").text == "4"
+    assert browser.find_element(By.ID, "reasoning-count").text == "2"
     browser.find_element(By.CSS_SELECTOR, "#activity-sidebar [data-close-panel]").click()
     assert (
         browser.execute_script(
@@ -1481,7 +1468,7 @@ def test_native_csv_projection_preserves_ids_and_computes_in_browser(browser, tm
         "steps": [
             {
                 "id": "flow",
-                "operation": "max-flow-min-cut",
+                "problem": "max-flow-min-cut",
                 "input": {"input": "main"},
                 "parameters": {
                     "source": "001",

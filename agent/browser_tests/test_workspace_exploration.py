@@ -59,7 +59,7 @@ def exploration_server(loading_server):
             return True
         if method == "GET" and path == "/api/analytics/capabilities" and server.visualization:
             capabilities = deepcopy(CAPABILITIES)
-            capabilities["operations"].append({"id": "community-detection", "title": "Communities", "input_kind": "graph", "execution": {"cpu": True, "gpu": False}, "parameters": {}, "visualization": {"kind": "subgraph", "title": "Community"}})
+            capabilities["problems"].append({"id": "community-detection", "title": "Communities", "input_kind": "graph", "execution": {"cpu": True, "gpu": False}, "parameters": {}, "visualization": {"kind": "subgraph", "title": "Community"}})
             handler.respond(capabilities)
             return True
         if method == "GET" and path.endswith("/view"):

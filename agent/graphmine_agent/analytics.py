@@ -296,6 +296,9 @@ class AnalyticsService:
         return saved_mode(record)
 
     def _save(self, record):
+        from .workflow_compat import saved_workflow
+
+        record = saved_workflow(record)
         record["updated_at"] = _now()
         with closing(sqlite3.connect(self.path)) as db, db:
             db.execute(
@@ -1466,7 +1469,9 @@ class AnalyticsService:
 
     def _read_result(self, path):
         """Share immutable parses only while their byte budget permits."""
-        return self.result_cache.read(path, self.settings.max_result_bytes)
+        from .workflow_compat import saved_result
+
+        return saved_result(self.result_cache.read(path, self.settings.max_result_bytes))
 
     def result_summary(self, workflow_id, limit=SUMMARY_ITEMS, *, expected_revision=None):
         """Read a bounded summary from the saved artifact's row index."""

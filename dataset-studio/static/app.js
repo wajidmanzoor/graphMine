@@ -61,7 +61,7 @@ const hideTip = () => (tip.hidden = true);
 const STAGES = ["AnalyticsRoute", "AnalyticsPlan", "AnalyticsPlanNormalized", "AnalyticsAnswer", "RouteDecision", "PlanDraft", "GroundedNarrative", "TurnDecision"];
 const STAGE_LABEL = { AnalyticsRoute: "Analytics routing", AnalyticsPlan: "Analytics planning", AnalyticsPlanNormalized: "Reviewed workflow", AnalyticsAnswer: "Analytics answer", RouteDecision: "Understanding", PlanDraft: "Planning", GroundedNarrative: "Analyst answer", TurnDecision: "Follow-up check" };
 const STAGE_HELP = {
-  RouteDecision: "RouteDecision (planner): which problem/operation answers the question, or what to ask the user",
+  RouteDecision: "RouteDecision (planner): which problem/problem answers the question, or what to ask the user",
   PlanDraft: "PlanDraft (planner): concrete plan with parameters, outputs and backend",
   GroundedNarrative: "GroundedNarrative (analyst): answer grounded in the computed facts",
   TurnDecision: "TurnDecision (planner): what a follow-up message needs: explain, analyze again or clarify",
@@ -102,7 +102,7 @@ const S = {
   view: "browse", tab: "conversation", outputMode: store.get("outputMode", "tree"),
   editing: null,
   visible: [], flatOrder: [], rendered: 0,
-  problems: new Map(), operations: new Map(),
+  families: new Map(), topics: new Map(), problems: new Map(),
   contextCache: new Map(),
   coverageFiltered: false,
   // Server summaries per conversation: graph and domain, last build, freshness, next steps.
@@ -112,10 +112,10 @@ const S = {
 };
 
 // ------------------------------------------------------------------ catalog helpers
-const problemName = (id) => (id && S.problems.get(id)?.name) || id || "(untagged)";
+const topicName = (id) => (id && S.topics.get(id)?.name) || id || "(untagged)";
 const categoryLabel = (c) => CATEGORY_LABEL[c] || String(c || "other").replace(/_/g, " ");
-const opsOfProblem = (pid) => S.problems.get(pid)?.operation_ids || [];
-const backendsOf = (op) => S.operations.get(op)?.backends || [];
+const problemsOfTopic = (pid) => S.topics.get(pid)?.problem_ids || [];
+const backendsOf = (op) => S.problems.get(op)?.backends || [];
 function outcome(e) {
   const o = e.output || {};
   if (e.schema === "AnalyticsRoute") return o.intent || "unknown";
@@ -148,7 +148,7 @@ function prepare(e) {
   e._outLen = J.stringify(e.output ?? "").length;
   e._blob = [
     e.id, ...e.prompts.map((p) => p.value), ...e.turns.map((t) => t.text), J.stringify(e.output ?? ""),
-    e.notes, ...e.labels, e.tags.problem_id, problemName(e.tags.problem_id), e.tags.operation_id, e.tags.backend, e.lineage,
+    e.notes, ...e.labels, e.tags.topic_id, topicName(e.tags.topic_id), e.tags.problem_id, e.tags.backend, e.lineage,
   ].join("\n").toLowerCase();
   return e;
 }
@@ -285,8 +285,8 @@ function buildConvs() {
     c.live = c.steps.filter((e) => !e.deleted);
     const pool = c.live.length ? c.live : c.steps;
     c.opener = pool.find((e) => e._section === "main") || pool[0];
-    // The opening route of a clarification asks a question and has no operation to show.
-    c.tagged = pool.find((e) => e._section === "main" && e.tags.problem_id) || c.opener;
+    // The opening route of a clarification asks a question and has no problem to show.
+    c.tagged = pool.find((e) => e._section === "main" && e.tags.topic_id) || c.opener;
     c.question = openingQuestion(c.opener);
     c.split = c.opener.split;
     c.lineage = c.opener.lineage;
@@ -310,8 +310,9 @@ const FACETS = [
   { key: "outcome", label: "Expected outcome", get: (e) => [e._outcome], fmt: (v) => v.replace(/_/g, " ") },
   { key: "conv", label: "Conversation", get: (e) => [e.turns.length ? "multi-turn" : "single turn", ...(e._clarify ? ["asks for more info"] : [])] },
   { key: "progress", label: "Progress", get: (e) => [e._progress], fmt: (v) => PROGRESS[v] || v, order: PROGRESS_ORDER },
-  { key: "problem", label: "Problem", get: (e) => [e.tags.problem_id || NONE], fmt: (v) => (v === NONE ? "(untagged)" : problemName(v)), search: true, grouped: true },
-  { key: "operation", label: "Operation", get: (e) => [e.tags.operation_id || NONE], fmt: (v) => (v === NONE ? "(untagged)" : v), search: true },
+  { key: "family", label: "Family", get: (e) => [S.problems.get(e.tags.problem_id)?.family || NONE], fmt: (v) => S.families.get(v)?.title || (v === NONE ? "(untagged)" : v), search: true },
+  { key: "topic", label: "Topic", get: (e) => [e.tags.topic_id || NONE], fmt: (v) => (v === NONE ? "(untagged)" : topicName(v)), search: true, grouped: true },
+  { key: "problem", label: "Problem", get: (e) => [e.tags.problem_id || NONE], fmt: (v) => (v === NONE ? "(untagged)" : v), search: true },
   { key: "backend", label: "Implementation", get: (e) => [e.tags.backend || NONE], fmt: (v) => (v === NONE ? "(auto / unknown)" : v), search: true },
   { key: "review", label: "Review", get: (e) => [e.review], fmt: (v) => REVIEW[v]?.label || v, order: REVIEW_ORDER },
   { key: "labels", label: "Labels", get: (e) => (e.labels.length ? e.labels : [NONE]), fmt: (v) => (v === NONE ? "(no label)" : v), search: true },
@@ -325,7 +326,7 @@ const FACETS = [
 ];
 const FACET_BY_KEY = Object.fromEntries(FACETS.map((f) => [f.key, f]));
 const FIELD_ALIASES = {
-  op: "operation", operation: "operation", problem: "problem", impl: "backend", backend: "backend", implementation: "backend",
+  op: "problem", problem: "problem", topic: "topic", family: "family", impl: "backend", backend: "backend", implementation: "backend",
   stage: "schema", schema: "schema", split: "split", model: "adapter", adapter: "adapter", review: "review",
   label: "labels", labels: "labels", status: "outcome", outcome: "outcome", lineage: "lineage", source: "lineage",
   kind: "kind", variant: "variant", has: "has", id: "id", progress: "progress",
@@ -435,7 +436,8 @@ function sortExamples(list) {
   const cmp = {
     file: (a, b) => idx.get(a.id) - idx.get(b.id),
     question: (a, b) => a._q.localeCompare(b._q) || STAGES.indexOf(a.schema) - STAGES.indexOf(b.schema),
-    problem: (a, b) => problemName(a.tags.problem_id).localeCompare(problemName(b.tags.problem_id)) || STAGES.indexOf(a.schema) - STAGES.indexOf(b.schema),
+    problem: (a, b) => (a.tags.problem_id || "").localeCompare(b.tags.problem_id || ""),
+    topic: (a, b) => topicName(a.tags.topic_id).localeCompare(topicName(b.tags.topic_id)) || STAGES.indexOf(a.schema) - STAGES.indexOf(b.schema),
     issues: (a, b) => sev[b._issue] - sev[a._issue] || idx.get(a.id) - idx.get(b.id),
     updated: (a, b) => (b.updated_at || "").localeCompare(a.updated_at || "") || idx.get(a.id) - idx.get(b.id),
     output: (a, b) => b._outLen - a._outLen,
@@ -449,7 +451,7 @@ function renderFacets() {
   const focusKey = document.activeElement?.dataset?.ffilter;
   const openState = {};
   $$(".facet", host).forEach((d) => (openState[d.dataset.key] = d.open));
-  const defaults = new Set(["adapter", "split", "schema", "outcome", "conv", "progress", "problem", "review", "issues", "kind"]);
+  const defaults = new Set(["adapter", "split", "schema", "outcome", "conv", "progress", "topic", "review", "issues", "kind"]);
   host.innerHTML = FACETS.map((f) => {
     const counts = S.facetCounts[f.key];
     const sel = S.facetSel[f.key] || new Set();
@@ -468,7 +470,7 @@ function renderFacets() {
     const valueHtml = (v) => {
       const c = counts.get(v) || 0;
       const label = f.fmt ? f.fmt(v) : v;
-      const unsupported = f.key === "problem" && v !== NONE && S.problems.get(v) && S.problems.get(v).status !== "validated";
+      const unsupported = f.key === "topic" && v !== NONE && S.topics.get(v) && S.topics.get(v).status !== "validated";
       const dot = f.dot && STAGES.includes(v) ? `<span class="chip stage-${v}" style="padding:0;border:0;background:none"><span class="dot"></span></span>` : "";
       const reviewIc = f.key === "review" ? reviewIcon(v) : "";
       return `<label class="fv${c ? "" : " zero"}${unsupported ? " unsupported" : ""}" title="${esc(label)}${unsupported ? " — no validated backend" : ""}">
@@ -479,7 +481,7 @@ function renderFacets() {
     if (f.grouped && !filterText) {
       const byCat = new Map();
       for (const v of shownValues) {
-        const cat = v === NONE ? "zz" : S.problems.get(v)?.category || "other";
+        const cat = v === NONE ? "zz" : S.topics.get(v)?.category || "other";
         if (!byCat.has(cat)) byCat.set(cat, []);
         byCat.get(cat).push(v);
       }
@@ -523,8 +525,8 @@ function rowHtml(e) {
   const cur = e.id === S.currentId;
   const kindChip = kindChipHtml(e);
   const pills = [];
-  if (e.tags.problem_id) pills.push(`<span class="tag-pill${e.manual_tags.problem_id ? " manual" : ""}" title="Problem">${esc(problemName(e.tags.problem_id))}</span>`);
-  if (e.tags.operation_id) pills.push(`<span class="tag-pill${e.manual_tags.operation_id ? " manual" : ""}" title="Operation">${esc(e.tags.operation_id)}</span>`);
+  if (e.tags.topic_id) pills.push(`<span class="tag-pill${e.manual_tags.topic_id ? " manual" : ""}" title="Topic">${esc(topicName(e.tags.topic_id))}</span>`);
+  if (e.tags.problem_id) pills.push(`<span class="tag-pill${e.manual_tags.problem_id ? " manual" : ""}" title="Problem">${esc(e.tags.problem_id)}</span>`);
   if (e.tags.backend) pills.push(`<span class="tag-pill${e.manual_tags.backend ? " manual" : ""}" title="Implementation">⚙ ${esc(e.tags.backend)}</span>`);
   for (const l of e.labels.slice(0, 3)) pills.push(`<span class="label-chip ro">${esc(l)}</span>`);
   return `<div class="row${cur ? " current" : ""}${e.deleted ? " deleted" : ""}" data-id="${esc(e.id)}">
@@ -571,8 +573,8 @@ function convRowHtml(key) {
   const t = c.tagged.tags;
   const m = c.tagged.manual_tags;
   const pills = [];
-  if (t.problem_id) pills.push(`<span class="tag-pill${m.problem_id ? " manual" : ""}" title="Problem">${esc(problemName(t.problem_id))}</span>`);
-  if (t.operation_id) pills.push(`<span class="tag-pill${m.operation_id ? " manual" : ""}" title="Operation">${esc(t.operation_id)}</span>`);
+  if (t.topic_id) pills.push(`<span class="tag-pill${m.topic_id ? " manual" : ""}" title="Topic">${esc(topicName(t.topic_id))}</span>`);
+  if (t.problem_id) pills.push(`<span class="tag-pill${m.problem_id ? " manual" : ""}" title="Problem">${esc(t.problem_id)}</span>`);
   if (t.backend) pills.push(`<span class="tag-pill${m.backend ? " manual" : ""}" title="Implementation">⚙ ${esc(t.backend)}</span>`);
   if (c.lineage) pills.push(`<span class="tag-pill" title="Graph source">${esc(c.lineage)}</span>`);
   const matched = steps.filter((e) => S.visibleSet.has(e.id)).length;
@@ -729,28 +731,28 @@ function issuesHtml(issues) {
   }).join("")}</div>`;
 }
 
-function problemOptions(selected, auto) {
+function topicOptions(selected, auto) {
   const cats = new Map();
-  for (const p of S.problems.values()) {
+  for (const p of S.topics.values()) {
     if (!cats.has(p.category)) cats.set(p.category, []);
     cats.get(p.category).push(p);
   }
-  let html = `<option value="">${auto ? `Auto: ${esc(problemName(auto))}` : "Auto: (none)"}</option>`;
+  let html = `<option value="">${auto ? `Auto: ${esc(topicName(auto))}` : "Auto: (none)"}</option>`;
   for (const [cat, ps] of [...cats.entries()].sort(([a], [b]) => a.localeCompare(b))) {
     html += `<optgroup label="${esc(categoryLabel(cat))}">` + ps.sort((a, b) => a.name.localeCompare(b.name)).map((p) =>
-      `<option value="${esc(p.id)}"${p.id === selected ? " selected" : ""}>${esc(p.name)}${p.status !== "validated" ? " — no validated backend" : ""}</option>`).join("") + "</optgroup>";
+      `<option value="${esc(p.id)}"${p.id === selected ? " selected" : ""}>${esc(p.name)}</option>`).join("") + "</optgroup>";
   }
-  if (selected && !S.problems.has(selected)) html += `<option value="${esc(selected)}" selected>${esc(selected)}</option>`;
+  if (selected && !S.topics.has(selected)) html += `<option value="${esc(selected)}" selected>${esc(selected)}</option>`;
   return html;
 }
-function operationOptions(selected, auto, problem) {
-  const mine = opsOfProblem(problem);
-  const all = [...S.operations.keys()].sort();
+function problemOptions(selected, auto, problem) {
+  const mine = problemsOfTopic(problem);
+  const all = [...S.problems.keys()].sort();
   let html = `<option value="">${auto ? `Auto: ${esc(auto)}` : "Auto: (none)"}</option>`;
   const opt = (o) => `<option value="${esc(o)}"${o === selected ? " selected" : ""}>${esc(o)}</option>`;
-  if (mine.length) html += `<optgroup label="For this problem">${mine.map(opt).join("")}</optgroup>`;
-  html += `<optgroup label="All operations">${all.filter((o) => !mine.includes(o)).map(opt).join("")}</optgroup>`;
-  if (selected && !S.operations.has(selected)) html += `<option value="${esc(selected)}" selected>${esc(selected)}</option>`;
+  if (mine.length) html += `<optgroup label="Related to this topic">${mine.map(opt).join("")}</optgroup>`;
+  html += `<optgroup label="All problems">${all.filter((o) => !mine.includes(o)).map(opt).join("")}</optgroup>`;
+  if (selected && !S.problems.has(selected)) html += `<option value="${esc(selected)}" selected>${esc(selected)}</option>`;
   return html;
 }
 function backendOptions(selected, auto, op) {
@@ -770,12 +772,12 @@ function tagCardHtml(e) {
       ${Object.keys(m).length ? '<button class="link-btn" data-act="reset-tags">Reset to auto</button>' : ""}</div>
     <div class="card-body">
       <div class="tag-grid">
+        <label class="tag-field"><span class="tf-label">Topic ${m.topic_id ? '<span class="tag-pill manual">manual</span>' : ""}</span>
+          <select data-tag="topic_id">${topicOptions(m.topic_id, a.topic_id)}</select>${autoNote("topic_id", a.topic_id && topicName(a.topic_id))}</label>
         <label class="tag-field"><span class="tf-label">Problem ${m.problem_id ? '<span class="tag-pill manual">manual</span>' : ""}</span>
-          <select data-tag="problem_id">${problemOptions(m.problem_id, a.problem_id)}</select>${autoNote("problem_id", a.problem_id && problemName(a.problem_id))}</label>
-        <label class="tag-field"><span class="tf-label">Operation ${m.operation_id ? '<span class="tag-pill manual">manual</span>' : ""}</span>
-          <select data-tag="operation_id">${operationOptions(m.operation_id, a.operation_id, e.tags.problem_id)}</select>${autoNote("operation_id", a.operation_id)}</label>
+          <select data-tag="problem_id">${problemOptions(m.problem_id, a.problem_id, e.tags.topic_id)}</select>${autoNote("problem_id", a.problem_id)}</label>
         <label class="tag-field"><span class="tf-label">Implementation ${m.backend ? '<span class="tag-pill manual">manual</span>' : ""}</span>
-          <select data-tag="backend">${backendOptions(m.backend, a.backend, e.tags.operation_id)}</select>
+          <select data-tag="backend">${backendOptions(m.backend, a.backend, e.tags.problem_id)}</select>
           ${autoNote("backend", a.backend, refs ? `reference run used ${refs}` : a.planned_backend ? `plan says ${a.planned_backend}` : "")}</label>
       </div>
       <div class="tag-row2">
@@ -855,7 +857,8 @@ function feedbackValues(items) {
 function captureCardHtml(c) {
   const cap = c.live.find((e) => e.capture)?.capture || {};
   const asked = cap.asked_at ? new Date(cap.asked_at).toLocaleString() : "";
-  const ops = cap.workflow?.operations?.length ? cap.workflow.operations.join(" → ") : "";
+  const recorded = cap.workflow?.problems || cap.workflow?.operations || [];
+  const ops = recorded.join(" → ");
   const facts = (cap.answer?.facts || []).map((f) => `<li>${esc(f.statement || f.text || f.id)}</li>`).join("");
   const feedback = (cap.feedback || []).map((f) => `<li class="feedback-item">
       <span class="chip">${esc(FEEDBACK_LABEL[f.category] || f.category || "Feedback")}</span>
@@ -971,8 +974,8 @@ function convTagCardHtml(c, steps) {
     return `<label class="tag-field"><span class="tf-label">${label} ${anyManual(key) ? '<span class="tag-pill manual">manual</span>' : ""}</span>
       <select data-ctag="${key}">${html}</select>${note}</label>`;
   };
-  const op = commonManual("operation_id") || mixedNote(pool, "operation_id", String).value;
-  const prob = commonManual("problem_id") || mixedNote(pool, "problem_id", String).value;
+  const op = commonManual("problem_id") || mixedNote(pool, "problem_id", String).value;
+  const prob = commonManual("topic_id") || mixedNote(pool, "topic_id", String).value;
   const rev = Object.fromEntries(REVIEW_ORDER.map((r) => [r, pool.filter((e) => e.review === r).length]));
   const labels = new Map();
   for (const e of pool) for (const l of e.labels) labels.set(l, (labels.get(l) || 0) + 1);
@@ -980,8 +983,8 @@ function convTagCardHtml(c, steps) {
       ${pool.some((e) => Object.keys(e.manual_tags).length) ? '<button class="link-btn" data-act="conv-reset-tags">Reset to auto</button>' : ""}</div>
     <div class="card-body">
       <div class="tag-grid">
-        ${field("problem_id", "Problem", problemOptions(commonManual("problem_id"), null), problemName)}
-        ${field("operation_id", "Operation", operationOptions(commonManual("operation_id"), null, prob), String)}
+        ${field("topic_id", "Topic", topicOptions(commonManual("topic_id"), null), topicName)}
+        ${field("problem_id", "Problem", problemOptions(commonManual("problem_id"), null, prob), String)}
         ${field("backend", "Implementation", backendOptions(commonManual("backend"), null, op), String)}
       </div>
       <div class="tag-row2">
@@ -1111,7 +1114,7 @@ function convThreadHtml(c, steps) {
   let nextPlaced = false;
   const closeBox = () => { if (box) parts.push(`<div class="branch">${box.join("")}</div>`); box = null; };
   const runDivider = (request) => {
-    const op = (plan || steps.find((x) => x.schema === "PlanDraft"))?.tags.operation_id || c.tagged.tags.operation_id;
+    const op = (plan || steps.find((x) => x.schema === "PlanDraft"))?.tags.problem_id || c.tagged.tags.problem_id;
     return `<div class="run-divider"><span>⚙ GraphMine runs ${op ? `<code>${esc(op)}</code>` : "the plan"}${c.lineage ? ` on ${esc(c.lineage)}` : ""}; the analyst gets the computed result${request ? ` and the request “${esc(request)}”` : ""}</span></div>`;
   };
   const placeNext = () => { if (!nextPlaced) { nextPlaced = true; parts.push(nextStepHtml(c, plan, runDivider)); } };
@@ -1350,10 +1353,10 @@ function contextHtml(ctx, e) {
   const gm = p.graph_metadata || {};
   const graphPairs = [["Graph", gm.name], ["Vertices", gm.vertex_count], ["Edges", gm.edge_count], ["Directed", gm.directed], ["Weighted", gm.has_weights], ["Timestamps", gm.has_timestamps], ["Density", gm.density]];
   const planPairs = [
-    ["Domain", p.domain?.name], ["Selected operation", p.selected_operation && `${p.selected_operation.problem_id} → ${p.selected_operation.operation_id}`],
+    ["Domain", p.domain?.name], ["Selected problem", p.selected_problem && `${p.selected_problem.topic_id} → ${p.selected_problem.problem_id}`],
     ["Objective", p.application_intent?.objective], ["Filters", p.application_intent?.filters], ["Supplied parameters", p.supplied_parameters],
     ["Requested outputs", p.requested_optional_outputs], ["Requested backend", p.requested_backend], ["Previous question", p.previous_question],
-    ["Previous operation", p.previous_operation], ["Pending request", p.pending_request], ["Active constraints", p.active_constraints],
+    ["Previous problem", p.previous_problem], ["Pending request", p.pending_request], ["Active constraints", p.active_constraints],
     ["Files", (p.available_files || []).map((f) => `${f.role}: ${f.name}`)],
   ];
   const kv1 = kvHtml(planPairs), kv2 = kvHtml(graphPairs);
@@ -1883,7 +1886,7 @@ function renderCoverage() {
   const counts = new Map();
   const splitCounts = new Map();
   for (const e of base) {
-    const p = e.tags.problem_id || NONE;
+    const p = e.tags.topic_id || NONE;
     const k = p + "|" + e.schema;
     counts.set(k, (counts.get(k) || 0) + 1);
     const sc = splitCounts.get(k) || { train: 0, validation: 0 };
@@ -1892,15 +1895,15 @@ function renderCoverage() {
   }
   const max = Math.max(1, ...counts.values());
   const cats = new Map();
-  for (const p of S.problems.values()) {
+  for (const p of S.topics.values()) {
     if (!cats.has(p.category)) cats.set(p.category, []);
     cats.get(p.category).push(p);
   }
-  const extra = [...new Set(base.map((e) => e.tags.problem_id || NONE))].filter((p) => !S.problems.has(p));
+  const extra = [...new Set(base.map((e) => e.tags.topic_id || NONE))].filter((p) => !S.topics.has(p));
   let rows = "";
   for (const [cat, ps] of [...cats.entries()].sort(([a], [b]) => a.localeCompare(b))) {
     rows += `<tr class="cat"><th colspan="${stagesPresent.length + 2}">${esc(categoryLabel(cat))}</th></tr>`;
-    for (const p of ps.sort((a, b) => a.name.localeCompare(b.name))) rows += heatRow(p.id, p.name, p.status !== "validated");
+    for (const p of ps.sort((a, b) => a.name.localeCompare(b.name))) rows += heatRow(p.id, p.name, false);
   }
   if (extra.length) {
     rows += `<tr class="cat"><th colspan="${stagesPresent.length + 2}">Untagged / outside catalog</th></tr>`;
@@ -1917,16 +1920,16 @@ function renderCoverage() {
     return `<tr class="${unsupported ? "unsupported" : ""}"><th title="${unsupported ? "No validated backend: examples should be refusals" : ""}">${esc(name)}${unsupported ? " ⊘" : ""}</th>${cells}<td class="total">${total || ""}</td></tr>`;
   }
   const ramp = [1, 2, 3, 4, 5, 6, 7].map((q) => `<span class="sw q${q}"></span>`).join("");
-  const heat = `<div class="cov-section"><h2>Problem × stage coverage</h2>
-    <p class="desc">Rows are all ${S.problems.size} catalog problems; ⊘ marks problems with no validated backend (examples should teach refusal). Click a cell to browse those examples.</p>
+  const heat = `<div class="cov-section"><h2>Topic × stage coverage</h2>
+    <p class="desc">Rows are the ${S.topics.size} documentation topics. A topic groups related runnable problems; it has no execution contract. Click a cell to browse examples.</p>
     <div class="legend-ramp">fewer ${ramp} more (log scale) · <span class="sw" style="box-shadow:inset 0 0 0 1px var(--border)"></span> none</div>
     <table class="heat" style="margin-top:8px"><thead><tr><th></th>${stagesPresent.map((s) => `<th class="col" title="${esc(STAGE_HELP[s])}">${esc(STAGE_LABEL[s])}</th>`).join("")}<th class="col">Total</th></tr></thead>
     <tbody>${rows}</tbody></table></div>`;
 
-  // implementations per operation
+  // implementations per problem
   const byOp = new Map();
   for (const e of base) {
-    const op = e.tags.operation_id;
+    const op = e.tags.problem_id;
     if (!op) continue;
     if (!byOp.has(op)) byOp.set(op, new Map());
     const m = byOp.get(op);
@@ -1945,7 +1948,7 @@ function renderCoverage() {
         <span class="bt"><span class="bf${c ? "" : " zero"}" style="width:${c ? Math.max(1, (100 * c) / maxB) : 0}%;display:block"></span></span><span class="bv">${c}</span></div>`;
     }
   }
-  const impl = `<div class="cov-section"><h2>Implementations</h2><p class="desc">Examples per backend, including validated backends with no examples (0).</p><div class="barlist">${bars || '<span class="muted">No operation tags.</span>'}</div></div>`;
+  const impl = `<div class="cov-section"><h2>Implementations</h2><p class="desc">Examples per backend, including validated backends with no examples (0).</p><div class="barlist">${bars || '<span class="muted">No problem tags.</span>'}</div></div>`;
 
   // reused questions
   const qmap = new Map();
@@ -2077,16 +2080,16 @@ async function findTemplate(schema, want, op) {
   const live = S.examples.filter((e) => !e.deleted && e.schema === schema && e.kind !== "new");
   const fits = (e) => (want === "ask" ? asksForInfo(e.output) : want === "supported" ? e.output?.supported === true
     : want === "ready" ? e.output?.status === "ready" : true);
-  const ex = live.find((e) => fits(e) && (!op || e.tags.operation_id === op)) || live.find(fits);
+  const ex = live.find((e) => fits(e) && (!op || e.tags.problem_id === op)) || live.find(fits);
   if (ex) return { output: ex.output, source: ex.id };
-  return api("/api/template", { schema, want, operation: op || null });
+  return api("/api/template", { schema, want, problem: op || null });
 }
 const WANT_FOR = { askRoute: "ask", route: "supported", plan: "ready" };
 async function loadNextTemplate() {
   const ed = S.editing;
   const c = S.convs.get(ed.key);
   try {
-    const t = await findTemplate(ed.schema, ed.schema === "RouteDecision" ? "supported" : ed.schema === "PlanDraft" ? "ready" : "any", c.tagged.tags.operation_id);
+    const t = await findTemplate(ed.schema, ed.schema === "RouteDecision" ? "supported" : ed.schema === "PlanDraft" ? "ready" : "any", c.tagged.tags.problem_id);
     $("#next-editor").value = ed.text = J.stringify(t.output, null, 2);
     $("#next-editor").dispatchEvent(new Event("input"));
     toast(`Template copied from ${t.source}`);
@@ -2124,7 +2127,7 @@ function openAdd(c = null) {
     mainQ: reply ? userMessage(reply) : c?.question || "",
     ctx: reply ? reply.turns : [],
     split: c ? c.split : "train",
-    tags: { problem_id: "", operation_id: "", backend: "", ...(c ? c.tagged.tags : {}) },
+    tags: { topic_id: "", problem_id: "", backend: "", ...(c ? c.tagged.tags : {}) },
     // A graph is chosen here for a new conversation, or for one that has none yet.
     graph: c && (sum?.settings || sum?.case) ? null : { domain_id: "general", pick: "" },
     clarify: false, askRoute: "", reply: "",
@@ -2161,12 +2164,12 @@ function renderBuilder() {
       : "The GraphMine agent is not available here, so steps written now have no model input and export to <code>needs-context.jsonl</code>."}</div>`];
   if (conv) {
     parts.push(`<div class="cb-context"><span class="chip split ${esc(B.split)}">${esc(B.split)}</span>
-      ${B.tags.operation_id ? `<span class="tag-pill">${esc(B.tags.operation_id)}</span>` : ""}<span class="muted">New steps use this conversation's split and tags.</span></div>`);
+      ${B.tags.problem_id ? `<span class="tag-pill">${esc(B.tags.problem_id)}</span>` : ""}<span class="muted">New steps use this conversation's split and tags.</span></div>`);
   } else {
     parts.push(`<div class="form-grid">
-      ${tagSelect("problem_id", "Problem", problemOptions(B.tags.problem_id, "").replace("Auto: (none)", "(none)"))}
-      ${tagSelect("operation_id", "Operation", operationOptions(B.tags.operation_id, "", B.tags.problem_id).replace("Auto: (none)", "(none)"))}
-      ${tagSelect("backend", "Implementation", backendOptions(B.tags.backend, "", B.tags.operation_id).replace("Auto: (none)", "(auto)"))}
+      ${tagSelect("topic_id", "Topic", topicOptions(B.tags.topic_id, "").replace("Auto: (none)", "(none)"))}
+      ${tagSelect("problem_id", "Problem", problemOptions(B.tags.problem_id, "", B.tags.topic_id).replace("Auto: (none)", "(none)"))}
+      ${tagSelect("backend", "Implementation", backendOptions(B.tags.backend, "", B.tags.problem_id).replace("Auto: (none)", "(auto)"))}
       <label>Split<select id="b-split">${["train", "validation"].map((s) => `<option${s === B.split ? " selected" : ""}>${s}</option>`).join("")}</select></label></div>`);
   }
   if (B.graph && engineOn()) parts.push(`<div class="cb-section"><div class="cb-title"><b>Graph and domain</b><span class="muted">the data the agent replays the conversation on</span></div>${graphPickerHtml(B.graph)}</div>`);
@@ -2308,7 +2311,7 @@ async function validateBuilderField(id) {
 async function builderTemplate(id) {
   const schema = bSchema(id);
   try {
-    const t = await findTemplate(schema, WANT_FOR[id.replace(FU_ID, "$2")] || "any", B.tags.operation_id);
+    const t = await findTemplate(schema, WANT_FOR[id.replace(FU_ID, "$2")] || "any", B.tags.problem_id);
     if (!B) return;
     bSet(id, J.stringify(t.output, null, 2));
     const area = $(`[data-bjson="${id}"]`);
@@ -2554,9 +2557,9 @@ function refreshLabelOptions() {
   $("#label-options").innerHTML = labels.map((l) => `<option value="${esc(l)}">`).join("");
 }
 function fillBulkSelects() {
-  $("#bulk-problem").innerHTML = '<option value="">Problem…</option>' + problemOptions("", "").replace(/<option value="">[^<]*<\/option>/, "") + '<option value="__clear__">↺ Reset to auto</option>';
-  $("#bulk-operation").innerHTML = '<option value="">Operation…</option>' + [...S.operations.keys()].sort().map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join("") + '<option value="__clear__">↺ Reset to auto</option>';
-  $("#bulk-backend").innerHTML = '<option value="">Implementation…</option>' + [...S.operations.values()].sort((a, b) => a.id.localeCompare(b.id))
+  $("#bulk-topic").innerHTML = '<option value="">Topic…</option>' + topicOptions("", "").replace(/<option value="">[^<]*<\/option>/, "") + '<option value="__clear__">↺ Reset to auto</option>';
+  $("#bulk-problem").innerHTML = '<option value="">Problem…</option>' + [...S.problems.keys()].sort().map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join("") + '<option value="__clear__">↺ Reset to auto</option>';
+  $("#bulk-backend").innerHTML = '<option value="">Implementation…</option>' + [...S.problems.values()].sort((a, b) => a.id.localeCompare(b.id))
     .map((o) => `<optgroup label="${esc(o.id)}">${o.backends.map((b) => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("")}</optgroup>`).join("") + '<option value="__clear__">↺ Reset to auto</option>';
 }
 function setView(v) {
@@ -2695,8 +2698,8 @@ function bind() {
     ev.target.value = "";
     await fn(v === "__clear__" ? null : v);
   });
-  bulkSel("#bulk-problem", (v) => bulk({ tags: { problem_id: v } }, v ? `Problem → ${problemName(v)}` : "Problem tag reset"));
-  bulkSel("#bulk-operation", (v) => bulk({ tags: { operation_id: v } }, v ? `Operation → ${v}` : "Operation tag reset"));
+  bulkSel("#bulk-topic", (v) => bulk({ tags: { topic_id: v } }, v ? `Topic → ${topicName(v)}` : "Topic tag reset"));
+  bulkSel("#bulk-problem", (v) => bulk({ tags: { problem_id: v } }, v ? `Problem → ${v}` : "Problem tag reset"));
   bulkSel("#bulk-backend", (v) => bulk({ tags: { backend: v } }, v ? `Implementation → ${v}` : "Implementation tag reset"));
   bulkSel("#bulk-review", (v) => bulk({ review: v || "unreviewed" }, `Review → ${REVIEW[v || "unreviewed"].label}`));
   bulkSel("#bulk-split", (v) => bulk({ split: v }, `Moved to ${v}`));
@@ -2791,7 +2794,7 @@ function bind() {
         break;
       }
       case "conv-restore": bulk({ deleted: false }, "Conversation restored", currentConv().steps.map((x) => x.id)); break;
-      case "conv-reset-tags": bulk({ tags: { problem_id: null, operation_id: null, backend: null } }, "Tags reset to auto", convLiveIds()); break;
+      case "conv-reset-tags": bulk({ tags: { topic_id: null, problem_id: null, backend: null } }, "Tags reset to auto", convLiveIds()); break;
       case "duplicate": duplicateConversation(e.group); break;
       case "delete": update(e.id, { deleted: true }, "Deleted (restorable until export)"); break;
       case "restore": update(e.id, { deleted: false }, "Restored"); break;
@@ -2799,7 +2802,7 @@ function bind() {
       case "discard": if (confirm("Discard this added example?")) revert([e.id], "Discarded"); break;
       case "copy-id": copyText(e.id, "ID copied"); break;
       case "copy-output": copyText(J.stringify(e.output, null, 2), "Output JSON copied"); break;
-      case "reset-tags": update(e.id, { tags: { problem_id: null, operation_id: null, backend: null } }, "Tags reset to auto"); break;
+      case "reset-tags": update(e.id, { tags: { topic_id: null, problem_id: null, backend: null } }, "Tags reset to auto"); break;
       case "edit-output": startEdit("output"); break;
       case "edit-prompts": startEdit("prompts"); break;
       case "cancel-edit": cancelEdit(); break;
@@ -2820,12 +2823,12 @@ function bind() {
       const key = csel.dataset.ctag;
       const tags = { [key]: csel.value || null };
       const pool = convLiveIds().map((id) => S.byId.get(id));
-      if (key === "problem_id" && csel.value) {
-        const ops = opsOfProblem(csel.value);
-        if (ops.length === 1 && pool.some((x) => x.tags.operation_id !== ops[0])) { tags.operation_id = ops[0]; tags.backend = null; }
-        if (!ops.length) { tags.operation_id = null; tags.backend = null; }
+      if (key === "topic_id" && csel.value) {
+        const ops = problemsOfTopic(csel.value);
+        if (ops.length === 1 && pool.some((x) => x.tags.problem_id !== ops[0])) { tags.problem_id = ops[0]; tags.backend = null; }
+        if (!ops.length) { tags.problem_id = null; tags.backend = null; }
       }
-      if (key === "operation_id") tags.backend = null;
+      if (key === "problem_id") tags.backend = null;
       await bulk({ tags }, "Tags saved", pool.map((x) => x.id));
       return;
     }
@@ -2833,13 +2836,13 @@ function bind() {
     if (!sel) return;
     const key = sel.dataset.tag;
     const tags = { [key]: sel.value || null };
-    if (key === "problem_id" && sel.value) {
-      const ops = opsOfProblem(sel.value);
+    if (key === "topic_id" && sel.value) {
+      const ops = problemsOfTopic(sel.value);
       const e = current();
-      if (ops.length === 1 && e.tags.operation_id !== ops[0]) { tags.operation_id = ops[0]; tags.backend = null; }
-      if (!ops.length) { tags.operation_id = null; tags.backend = null; }
+      if (ops.length === 1 && e.tags.problem_id !== ops[0]) { tags.problem_id = ops[0]; tags.backend = null; }
+      if (!ops.length) { tags.problem_id = null; tags.backend = null; }
     }
-    if (key === "operation_id") tags.backend = null;
+    if (key === "problem_id") tags.backend = null;
     await update(S.currentId, { tags }, "Tags saved");
   });
   $("#detail").addEventListener("keydown", (ev) => {
@@ -2871,7 +2874,7 @@ function bind() {
       S.facetSel = { problem: new Set([p]), schema: new Set([s]) };
     } else if (impl) {
       const [op, b] = impl.dataset.impl.split("|");
-      S.facetSel = { operation: new Set([op]), backend: new Set([b]) };
+      S.facetSel = { problem: new Set([op]), backend: new Set([b]) };
     } else if (q) {
       S.facetSel = {};
       S.query = `"${q.dataset.q}"`;
@@ -2888,9 +2891,9 @@ function bind() {
     const cell = ev.target.closest("[data-heat]");
     if (!cell) return hideTip();
     const [p, s] = cell.dataset.heat.split("|");
-    const rows = S.examples.filter((e) => !e.deleted && (e.tags.problem_id || NONE) === p && e.schema === s && (!S.coverageFiltered || S.visibleSet.has(e.id)));
+    const rows = S.examples.filter((e) => !e.deleted && (e.tags.topic_id || NONE) === p && e.schema === s && (!S.coverageFiltered || S.visibleSet.has(e.id)));
     const tr = rows.filter((e) => e.split === "train").length;
-    showTip(ev, `<div>${esc(p === NONE ? "(untagged)" : problemName(p))}</div><div class="muted">${esc(STAGE_LABEL[s])} · ${esc(STAGE_HELP[s])}</div>
+    showTip(ev, `<div>${esc(p === NONE ? "(untagged)" : topicName(p))}</div><div class="muted">${esc(STAGE_LABEL[s])} · ${esc(STAGE_HELP[s])}</div>
       <div><b>${rows.length}</b> example${rows.length === 1 ? "" : "s"} · ${tr} train · ${rows.length - tr} validation</div>`);
   });
   $("#coverage-view").addEventListener("mouseleave", hideTip);
@@ -2925,7 +2928,7 @@ function bind() {
     else if (t.dataset.gp === "domain") { B.graph.domain_id = t.value; B.preview = null; }
     else if (t.dataset.btag) {
       B.tags[t.dataset.btag] = t.value;
-      if (t.dataset.btag === "problem_id") { const ops = opsOfProblem(t.value); B.tags.operation_id = ops.length === 1 ? ops[0] : ""; }
+      if (t.dataset.btag === "topic_id") { const ops = problemsOfTopic(t.value); B.tags.problem_id = ops.length === 1 ? ops[0] : ""; }
       if (t.dataset.btag !== "backend") B.tags.backend = "";
       renderBuilder();
     }
@@ -3099,8 +3102,9 @@ async function init() {
     S.meta = meta;
     S.me = meta.me;
     renderAccount();
-    for (const p of meta.catalog.problems) S.problems.set(p.id, p);
-    for (const o of meta.catalog.operations) S.operations.set(o.id, o);
+    for (const family of meta.catalog.families || []) S.families.set(family.id, family);
+    for (const p of meta.catalog.topics) S.topics.set(p.id, p);
+    for (const o of meta.catalog.problems) S.problems.set(o.id, o);
     $("#dataset-select").innerHTML = datasetOptions(ds.datasets);
     fillBulkSelects();
     if (ds.current) await loadExamples(); else showNoDataset();

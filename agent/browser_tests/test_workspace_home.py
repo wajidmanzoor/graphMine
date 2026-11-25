@@ -23,7 +23,7 @@ def home(loading_server, data_page):
             "datasets": [{"id": "version-0", "dataset_id": "dataset-0", "name": "Saved network", "kind": "graph", "version": 2,
                           "source_complete": True, "updated_at": updated}],
             "analyses": [{"id": row["id"], "session_id": SESSION["id"], "conversation": SESSION["title"],
-                          "status": row["status"], "revision": 1, "updated_at": updated, "operations": ["k-core"]} for row in server.workflows],
+                          "status": row["status"], "revision": 1, "updated_at": updated, "problems": ["k-core"]} for row in server.workflows],
         },
     )
     original = server.route_handler

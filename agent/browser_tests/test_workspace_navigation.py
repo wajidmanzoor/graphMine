@@ -37,7 +37,7 @@ def result(value):
         "steps": {
             "core": {
                 "result": {
-                    "operation": "k-core",
+                    "problem": "k-core",
                     "complete": True,
                     "quality": "exact",
                     "backend": {"device": "cpu"},

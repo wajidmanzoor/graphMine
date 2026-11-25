@@ -312,8 +312,8 @@ def test_12_run_selection_uses_input_requirements(page):
     page, cases = page
     open_case(page, cases, 'bicliques'); page.locator('#network').scroll_into_view_if_needed(); click_entity(page,'Tracy'); click_entity(page,'Mesa Verde')
     more(page); page.locator('#view-run').click()
-    page.locator('#operation-dialog').wait_for(state='visible')
-    values = page.locator('#operation-select option').evaluate_all('(els)=>els.map(e=>e.value).filter(Boolean)')
-    assert values and len(values) < page.evaluate('() => GraphMineWorkspace.state.caps.operations.length')
+    page.locator('#problem-dialog').wait_for(state='visible')
+    values = page.locator('#problem-select option').evaluate_all('(els)=>els.map(e=>e.value).filter(Boolean)')
+    assert values and len(values) < page.evaluate('() => GraphMineWorkspace.state.caps.problems.length')
     assert 'temporal-motifs' not in values and 'subgraph-isomorphism' not in values
-    assert page.evaluate('ids=>ids.every(id=>GraphMineWorkspace.state.caps.operations.find(c=>c.id===id).input_kind==="graph")', values)
+    assert page.evaluate('ids=>ids.every(id=>GraphMineWorkspace.state.caps.problems.find(c=>c.id===id).input_kind==="graph")', values)

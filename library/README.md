@@ -5,13 +5,17 @@ passed this repository's GPU correctness validation. Applications provide one
 canonical `graphmine::Graph`; dense IDs, CSR variants, temporal incidence
 indexes, and artifact-specific representations stay inside backend adapters.
 
-The ongoing [native runtime migration](../docs/NATIVE_CORE_MIGRATION.md) adds
-a shared family catalog, CPU/GPU dispatch, a standalone `graphmine-native` CLI,
-and thin Python bindings over a C ABI. It currently exposes 28 operations with
-supported profiles for 26 of 70 formal problems. Its implementation lives in
-`runtime/`; the existing typed APIs documented below remain available while
-their remaining profiles migrate. See the [selection and sampling checkpoint](../validation/native_selection/README.md)
-for the latest verification scope.
+The native runtime exposes **82 runnable problems** through the hierarchy
+**Family → Runnable Problem → Backend**, a standalone `graphmine-native` CLI,
+and thin Python bindings over a C ABI. Its implementation lives in `runtime/`.
+With every optional dependency enabled, 36 problems have 59 GPU execution
+profiles in addition to their C++ implementations. The typed APIs below remain
+available alongside these runnable contracts.
+
+The full-GPU release currently admits 58 GPU profiles across 35 problems.
+cuMBE remains compiled for reproduction but is excluded by the execution-evidence
+gate after an intermittent counting mismatch; see the
+[release validation](../validation/full-gpu-release-20261125/README.md).
 
 Every problem class follows the same high-level shape:
 
@@ -141,6 +145,26 @@ later makes that startup cost important, the same dispatcher can be hosted in
 a long-lived service without changing the manifest or library APIs.
 
 ## Build and test
+
+Use the `full-gpu` preset to explicitly enable every GPU option, including when
+an existing build cache previously disabled individual adapters:
+
+```bash
+cd library
+cmake --preset full-gpu \
+  -DGRAPHMINE_RAPIDS_ROOT=/path/to/native-rapids \
+  -DGRAPHMINE_REPAIRED_WORKER_DIR=/path/to/prepared-workers \
+  -DCMAKE_PREFIX_PATH=/path/to/kokkos/install
+cmake --build --preset full-gpu --parallel 4
+```
+
+The RAPIDS libraries, CUDA-enabled Kokkos/KokkosKernels, and prepared research
+workers must already be installed. Select CUDA architecture overrides for the
+target hardware; the current Ada release uses `89-real` for ToT and WeTriC.
+Compilation alone does not admit a backend to the application: run the native
+oracle suites and generate matching `catalog/native_execution_evidence.json`
+before deploying the runtime. The shared selector also needs paired timings
+for that exact implementation.
 
 ```bash
 cmake -S library -B library/build -DCMAKE_BUILD_TYPE=Release

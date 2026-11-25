@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="77"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="49"
+	timestamp="2026-11-25T02:49:47"
+	>
+	<testcase name="graphmine_repaired_algorithms_test" classname="graphmine_repaired_algorithms_test" time="1.96532" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_validated_expansion_test" classname="graphmine_validated_expansion_test" time="1.37306" status="run">
+		<properties/>
+		<system-out>computing the maximum degree
+Found 1 devices
+  Device[0]: NVIDIA RTX 6000 Ada Generation
+  Compute capability: 8.9
+  Warp size: 32
+  Total # SM: 142
+Unknown device type
+  Total # CUDA cores: 0
+  Total amount of shared memory per block: 49152 bytes
+  Total # registers per block: 65536
+  Total amount of constant memory: 65536 bytes
+  Total global memory: 47.4 GB
+  Memory Clock Rate: 9.54 GHz
+  Memory Bus Width: 384 bits
+  Peak Memory Bandwidth: 960.10 GB/s
+
+GPU_total_mem = 47 GB, graph_mem = 0 GB
+Time on generating the edgelist: 1e-06 sec
+4-motif: max_blocks_per_SM = 4
+CUDA 4-motif listing (1 CTAs, 256 threads/CTA)
+frontier list size: 0 MB
+runtime [cuda_base] = 3.3e-05 sec
+</system-out>
+	</testcase>
+	<testcase name="graphmine_graph_test" classname="graphmine_graph_test" time="0.00529357" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_cli_version_test" classname="graphmine_cli_version_test" time="0.00697827" status="run">
+		<properties/>
+		<system-out>GraphMine 1.0.0
+</system-out>
+	</testcase>
+	<testcase name="graphmine_cli_list_test" classname="graphmine_cli_list_test" time="0.00638726" status="run">
+		<properties/>
+		<system-out>{"schema_version":"1.0.0","library_version":"1.0.0","problem_count":24,"validated_backend_count":38,"compiled_backend_count":38,"problems":[{"id":"k-truss","topic_id":"k_truss_decomposition","usage":"graphmine run k-truss --graph GRAPH.json [--backend acctd]","backends":[{"id":"acctd","display_name":"acctd","topic":"k_truss_decomposition","source_commit":"a8faa445ccb45c18383087db488eff9d1836d8d1","compiled":true,"validated":true,"capabilities":["exact full per-edge truss decomposition; single GPU","unweighted undirected; loops removed; parallel edges use smallest external edge ID"]}]},{"id":"densest-subgraph","topic_id":"densest_subgraph","usage":"graphmine run densest-subgraph --graph GRAPH.json [--backend cds] [--clique-order K]","backends":[{"id":"cds","display_name":"cds","topic":"densest_subgraph","source_commit":"3e704f98cf873336e2cf789570774039c8d6f092","compiled":true,"validated":true,"capabilities":["exact unweighted k-clique density C_k(S)/|S| with checked vertex witness; clique_order &gt;= 2","single ...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="graphmine_cli_validate_test" classname="graphmine_cli_validate_test" time="0.00580644" status="run">
+		<properties/>
+		<system-out>{"ok":true,"graph":{"id":"triangle","directed":false,"allows_self_loops":false,"allows_parallel_edges":false,"vertex_count":3,"edge_count":3}}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_cli_triangle_run_test" classname="graphmine_cli_triangle_run_test" time="0.241885" status="run">
+		<properties/>
+		<system-out>{"ok":true,"provenance":{"topic":"triangle_counting_listing","backend":"tot","backend_version":"ToT tensor-core artifact","source_commit":"5f9cde83a528","execution_path":"original ToT bitmap/tensor count + optional common materializer"},"warnings":[],"statistics":{"end_to_end_ms":1.5736978E2,"backend_ms":3.140094E0,"output_materialization_ms":1.0917E-2},"output":{"global_triangle_count":1,"instances_complete":true,"triangles":[[0,1,2]]}}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_maximal_cliques_test" classname="graphmine_maximal_cliques_test" time="0.236925" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_k_core_test" classname="graphmine_k_core_test" time="0.227807" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_maximum_clique_test" classname="graphmine_maximum_clique_test" time="0.423496" status="run">
+		<properties/>
+		<system-out>Found clique of size 3.
+Found clique of size 3.
+Found clique of size 3.
+Found clique of size 3.
+Found clique of size 3.
+Found clique of size 3.
+</system-out>
+	</testcase>
+	<testcase name="graphmine_triangle_counting_test" classname="graphmine_triangle_counting_test" time="0.232191" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_dynamic_triangle_counting_test" classname="graphmine_dynamic_triangle_counting_test" time="0.184507" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_k_cliques_test" classname="graphmine_k_cliques_test" time="5.52626" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_betweenness_centrality_test" classname="graphmine_betweenness_centrality_test" time="0.278767" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_maximal_bicliques_test" classname="graphmine_maximal_bicliques_test" time="0.283629" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_quasi_cliques_test" classname="graphmine_quasi_cliques_test" time="0.283688" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_subgraph_isomorphism_test" classname="graphmine_subgraph_isomorphism_test" time="0.431865" status="run">
+		<properties/>
+		<system-out>Matching order: 0 1 2 
+Found 6 automorphisms of the query graph.
+0 -&gt; 1
+1 -&gt; 2
+# Candidate Filtering, time (ms): 0(host), 0(kernel)
+|C(0)| = 12
+|C(1)| = 12
+|C(2)| = 12
+Total number of candidates: 36
+Maximal size of candidate set: 12
+# Build Candidate Graph, time (ms): 0(host), 0(kernel)
+Candidate set moved to GPU.
+Total number of candidate edges in the candidate graph: 120
++------------------------------+---------------+
+| Memory Allocation Details    | Size (bytes)  |
++------------------------------+---------------+
+| Candidate Set                | 144           |
+| Candidate Offset             | 16            |
+| Edge Offset                  | 4096          |
+| Candidate Graph Offset       | 156           |
+| Candidate Graph Array        | 240           |
+| Bitmap Offset                | 4096          |
+| Bitmap Array                 | 144           |
++------------------------------+---------------+
+| Total (bytes)                | 8892          |
+| Total (KB)                   | 8.68          |
++----------...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="graphmine_gmatch_pool_test" classname="graphmine_gmatch_pool_test" time="0.187096" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_graph_motifs_test" classname="graphmine_graph_motifs_test" time="5.45291" status="run">
+		<properties/>
+		<system-out>Memory Usage:
+  Graph (GB): 0.000 
+  Global memory usage (GB): 0.000 
+  Total memory usage (GB): 0.000 
+  Shared memory for vertex set per block: 320 bytes
+max number of active warps per SM: 32
+computing the maximum degree
+Found 1 devices
+  Device[0]: NVIDIA RTX 6000 Ada Generation
+  Compute capability: 8.9
+  Warp size: 32
+  Total # SM: 142
+Unknown device type
+  Total # CUDA cores: 0
+  Total amount of shared memory per block: 49152 bytes
+  Total # registers per block: 65536
+  Total amount of constant memory: 65536 bytes
+  Total global memory: 47.4 GB
+  Memory Clock Rate: 9.54 GHz
+  Memory Bus Width: 384 bits
+  Peak Memory Bandwidth: 960.10 GB/s
+
+GPU_total_mem = 47 GB, graph_mem = 0 GB
+Time on generating the edgelist: 1e-06 sec
+3-motif: max_blocks_per_SM = 6
+CUDA 3-motif listing (5 CTAs, 256 threads/CTA)
+frontier list size: 0 MB
+runtime [cuda_base] = 3.2e-05 sec
+computing the maximum degree
+Found 1 devices
+  Device[0]: NVIDIA RTX 6000 Ada Generation
+  Compute capability: 8.9
+  Warp size: 32
+  Total # SM: 142
+U...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="graphmine_temporal_motif_mining_test" classname="graphmine_temporal_motif_mining_test" time="0.195654" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_community_detection_gleiden_test" classname="graphmine_community_detection_gleiden_test" time="0.224667" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_community_detection_parallel_louvain_test" classname="graphmine_community_detection_parallel_louvain_test" time="0.262345" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_community_detection_parallel_leiden_test" classname="graphmine_community_detection_parallel_leiden_test" time="0.298389" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_community_detection_parallel_leiden_plus_test" classname="graphmine_community_detection_parallel_leiden_plus_test" time="0.283884" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_cpu_view_declarations" classname="graphmine_cpu_view_declarations" time="0.35255" status="run">
+		<properties/>
+		<system-out>CPU traversal declaration, arrays and budgets passed
+</system-out>
+	</testcase>
+	<testcase name="graphmine_core_views" classname="graphmine_core_views" time="0.00528229" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="graphmine_normalizer_edge_cases" classname="graphmine_normalizer_edge_cases" time="0.346893" status="run">
+		<properties/>
+		<system-out>9600 cold/warm budget and rejection comparisons passed
+</system-out>
+	</testcase>
+	<testcase name="graphmine_views_spec" classname="graphmine_views_spec" time="0.181476" status="run">
+		<properties/>
+		<system-out>spec: 24 checks passed
+</system-out>
+	</testcase>
+	<testcase name="graphmine_views_normalization" classname="graphmine_views_normalization" time="0.192328" status="run">
+		<properties/>
+		<system-out>normalization: 2397 checks passed
+</system-out>
+	</testcase>
+	<testcase name="graphmine_views_weights" classname="graphmine_views_weights" time="0.192019" status="run">
+		<properties/>
+		<system-out>weights: 22 checks passed
+</system-out>
+	</testcase>
+	<testcase name="graphmine_views_records_exact" classname="graphmine_views_records_exact" time="0.1895" status="run">
+		<properties/>
+		<system-out>records_exact: 45 checks passed
+</system-out>
+	</testcase>
+	<testcase name="graphmine_views_bipartite" classname="graphmine_views_bipartite" time="0.21059" status="run">
+		<properties/>
+		<system-out>bipartite: 17 checks passed
+</system-out>
+	</testcase>
+	<testcase name="graphmine_views_structured" classname="graphmine_views_structured" time="0.195617" status="run">
+		<properties/>
+		<system-out>structured: 36 checks passed
+</system-out>
+	</testcase>
+	<testcase name="graphmine_views_determinism" classname="graphmine_views_determinism" time="0.193932" status="run">
+		<properties/>
+		<system-out>determinism: 95 checks passed
+</system-out>
+	</testcase>
+	<testcase name="graphmine_views_cache" classname="graphmine_views_cache" time="0.177859" status="run">
+		<properties/>
+		<system-out>cache: 37 checks passed
+</system-out>
+	</testcase>
+	<testcase name="graphmine_selection_contracts_cpu" classname="graphmine_selection_contracts_cpu" time="0.202487" status="run">
+		<properties/>
+		<system-out>{"suite":"contracts","backend":"cpp","gpu_device":0,"passed_requests":29,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_selection_independent_cpu" classname="graphmine_selection_independent_cpu" time="0.552163" status="run">
+		<properties/>
+		<system-out>Validated 500 selection requests
+Validated 1000 selection requests
+Validated 1500 selection requests
+Validated 2000 selection requests
+{"suite":"independent","backend":"cpp","gpu_device":0,"passed_requests":2286,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_selection_coloring_cpu" classname="graphmine_selection_coloring_cpu" time="0.514055" status="run">
+		<properties/>
+		<system-out>Validated 500 selection requests
+Validated 1000 selection requests
+Validated 1500 selection requests
+Validated 2000 selection requests
+{"suite":"coloring","backend":"cpp","gpu_device":0,"passed_requests":2200,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_selection_subgraphs_cpu" classname="graphmine_selection_subgraphs_cpu" time="2.59361" status="run">
+		<properties/>
+		<system-out>Validated 500 selection requests
+Validated 1000 selection requests
+Validated 1500 selection requests
+Validated 2000 selection requests
+Validated 2500 selection requests
+Validated 3000 selection requests
+Validated 3500 selection requests
+Validated 4000 selection requests
+Validated 4500 selection requests
+Validated 5000 selection requests
+Validated 5500 selection requests
+Validated 6000 selection requests
+Validated 6500 selection requests
+Validated 7000 selection requests
+Validated 7500 selection requests
+Validated 8000 selection requests
+Validated 8500 selection requests
+Validated 9000 selection requests
+Validated 9500 selection requests
+Validated 10000 selection requests
+Validated 10500 selection requests
+Validated 11000 selection requests
+Validated 11500 selection requests
+Validated 12000 selection requests
+Validated 12500 selection requests
+Validated 13000 selection requests
+Validated 13500 selection requests
+{"suite":"subgraphs","backend":"cpp","gpu_device":0,"passed_requests":13762,"failed":0,"implementat...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="graphmine_selection_walks_cpu" classname="graphmine_selection_walks_cpu" time="0.469894" status="run">
+		<properties/>
+		<system-out>Validated 500 selection requests
+Validated 1000 selection requests
+Validated 1500 selection requests
+{"suite":"walks","backend":"cpp","gpu_device":0,"passed_requests":1788,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_selection_sampling_cpu" classname="graphmine_selection_sampling_cpu" time="0.641587" status="run">
+		<properties/>
+		<system-out>Validated 500 selection requests
+Validated 1000 selection requests
+Validated 1500 selection requests
+Validated 2000 selection requests
+{"suite":"sampling","backend":"cpp","gpu_device":0,"passed_requests":2304,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_selection_probability_cpu" classname="graphmine_selection_probability_cpu" time="0.343989" status="run">
+		<properties/>
+		<system-out>{"suite":"probability","backend":"cpp","gpu_device":0,"passed_requests":7,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_selection_boundaries_cpu" classname="graphmine_selection_boundaries_cpu" time="0.200179" status="run">
+		<properties/>
+		<system-out>{"suite":"boundaries","backend":"cpp","gpu_device":0,"passed_requests":16,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_selection_large_cpu" classname="graphmine_selection_large_cpu" time="0.203184" status="run">
+		<properties/>
+		<system-out>{"suite":"large","backend":"cpp","gpu_device":0,"passed_requests":11,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_flow_contracts_cpu" classname="graphmine_flow_contracts_cpu" time="0.171092" status="run">
+		<properties/>
+		<system-out>{"suite":"contracts","backend":"cpp","gpu_device":null,"passed_requests":16,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_flow_edges_cpu" classname="graphmine_flow_edges_cpu" time="4.77564" status="run">
+		<properties/>
+		<system-out>Validated 500 flow requests
+Validated 1000 flow requests
+Validated 1500 flow requests
+Validated 2000 flow requests
+Validated 2500 flow requests
+Validated 3000 flow requests
+Validated 3500 flow requests
+Validated 4000 flow requests
+Validated 4500 flow requests
+Validated 5000 flow requests
+Validated 5500 flow requests
+Validated 6000 flow requests
+Validated 6500 flow requests
+Validated 7000 flow requests
+Validated 7500 flow requests
+Validated 8000 flow requests
+Validated 8500 flow requests
+Validated 9000 flow requests
+Validated 9500 flow requests
+Validated 10000 flow requests
+Validated 10500 flow requests
+Validated 11000 flow requests
+Validated 11500 flow requests
+Validated 12000 flow requests
+Validated 12500 flow requests
+Validated 13000 flow requests
+Validated 13500 flow requests
+Validated 14000 flow requests
+Validated 14500 flow requests
+Validated 15000 flow requests
+Validated 15500 flow requests
+Validated 16000 flow requests
+Validated 16500 flow requests
+Validated 17000 flow requests
+{"suite":"edges","backen...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="graphmine_flow_vertices_cpu" classname="graphmine_flow_vertices_cpu" time="1.72784" status="run">
+		<properties/>
+		<system-out>Validated 500 flow requests
+Validated 1000 flow requests
+Validated 1500 flow requests
+Validated 2000 flow requests
+Validated 2500 flow requests
+Validated 3000 flow requests
+Validated 3500 flow requests
+Validated 4000 flow requests
+Validated 4500 flow requests
+Validated 5000 flow requests
+Validated 5500 flow requests
+Validated 6000 flow requests
+Validated 6500 flow requests
+Validated 7000 flow requests
+Validated 7500 flow requests
+Validated 8000 flow requests
+{"suite":"vertices","backend":"cpp","gpu_device":null,"passed_requests":8192,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_flow_boundaries_cpu" classname="graphmine_flow_boundaries_cpu" time="1.70414" status="run">
+		<properties/>
+		<system-out>{"suite":"boundaries","backend":"cpp","gpu_device":null,"passed_requests":10,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_matching_contracts_cpu" classname="graphmine_matching_contracts_cpu" time="0.147046" status="run">
+		<properties/>
+		<system-out>{"suite":"contracts","backend":"cpp","gpu_device":null,"passed_requests":19,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_matching_general_cpu" classname="graphmine_matching_general_cpu" time="0.69187" status="run">
+		<properties/>
+		<system-out>Validated 500 matching requests
+Validated 1000 matching requests
+Validated 1500 matching requests
+Validated 2000 matching requests
+Validated 2500 matching requests
+Validated 3000 matching requests
+Validated 3500 matching requests
+Validated 4000 matching requests
+Validated 4500 matching requests
+Validated 5000 matching requests
+{"suite":"general","backend":"cpp","gpu_device":null,"passed_requests":5120,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_matching_bipartite_cpu" classname="graphmine_matching_bipartite_cpu" time="1.16408" status="run">
+		<properties/>
+		<system-out>Validated 500 matching requests
+Validated 1000 matching requests
+Validated 1500 matching requests
+Validated 2000 matching requests
+Validated 2500 matching requests
+Validated 3000 matching requests
+Validated 3500 matching requests
+Validated 4000 matching requests
+Validated 4500 matching requests
+Validated 5000 matching requests
+Validated 5500 matching requests
+Validated 6000 matching requests
+Validated 6500 matching requests
+Validated 7000 matching requests
+{"suite":"bipartite","backend":"cpp","gpu_device":null,"passed_requests":7446,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_matching_boundaries_cpu" classname="graphmine_matching_boundaries_cpu" time="0.271177" status="run">
+		<properties/>
+		<system-out>{"suite":"boundaries","backend":"cpp","gpu_device":null,"passed_requests":155,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_runtime_contracts" classname="graphmine_runtime_contracts" time="0.198344" status="run">
+		<properties/>
+		<system-out>{"suite":"contracts","backend":"cpu","gpu_device":0,"passed_requests":22,"failed":0}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_runtime_bfs_cpu" classname="graphmine_runtime_bfs_cpu" time="0.530866" status="run">
+		<properties/>
+		<system-out>{"suite":"bfs","backend":"cpu","gpu_device":0,"passed_requests":4608,"failed":0}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_runtime_triangles_cpu" classname="graphmine_runtime_triangles_cpu" time="0.361877" status="run">
+		<properties/>
+		<system-out>{"suite":"triangles","backend":"cpp","gpu_device":0,"passed_requests":2048,"failed":0}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_reference_contracts_cpu" classname="graphmine_reference_contracts_cpu" time="0.195233" status="run">
+		<properties/>
+		<system-out>{"suite":"contracts","backend":"cpu","gpu_device":0,"passed_requests":28,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_reference_paths_cpu" classname="graphmine_reference_paths_cpu" time="0.582153" status="run">
+		<properties/>
+		<system-out>Validated 500 native requests on cpu 0
+Validated 1000 native requests on cpu 0
+Validated 1500 native requests on cpu 0
+Validated 2000 native requests on cpu 0
+Validated 2500 native requests on cpu 0
+Validated 3000 native requests on cpu 0
+Validated 3500 native requests on cpu 0
+{"suite":"paths","backend":"cpu","gpu_device":0,"passed_requests":3645,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_reference_forests_cpu" classname="graphmine_reference_forests_cpu" time="0.377503" status="run">
+		<properties/>
+		<system-out>Validated 500 native requests on cpu 0
+Validated 1000 native requests on cpu 0
+{"suite":"forests","backend":"cpu","gpu_device":0,"passed_requests":1458,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_reference_connectivity_cpu" classname="graphmine_reference_connectivity_cpu" time="0.208294" status="run">
+		<properties/>
+		<system-out>{"suite":"connectivity","backend":"cpu","gpu_device":0,"passed_requests":320,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_reference_rank_cpu" classname="graphmine_reference_rank_cpu" time="0.267517" status="run">
+		<properties/>
+		<system-out>Validated 500 native requests on cpu 0
+{"suite":"rank","backend":"cpu","gpu_device":0,"passed_requests":706,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_reference_similarity_cpu" classname="graphmine_reference_similarity_cpu" time="0.288505" status="run">
+		<properties/>
+		<system-out>Validated 500 native requests on cpu 0
+Validated 1000 native requests on cpu 0
+{"suite":"similarity","backend":"cpu","gpu_device":0,"passed_requests":1024,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_structure_contracts_cpu" classname="graphmine_structure_contracts_cpu" time="0.197773" status="run">
+		<properties/>
+		<system-out>{"suite":"contracts","backend":"cpp","gpu_device":0,"passed_requests":14,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_structure_truss_cpu" classname="graphmine_structure_truss_cpu" time="0.83579" status="run">
+		<properties/>
+		<system-out>Validated 500 structure requests
+Validated 1000 structure requests
+Validated 1500 structure requests
+Validated 2000 structure requests
+Validated 2500 structure requests
+Validated 3000 structure requests
+Validated 3500 structure requests
+Validated 4000 structure requests
+Validated 4500 structure requests
+Validated 5000 structure requests
+{"suite":"truss","backend":"cpp","gpu_device":0,"passed_requests":5135,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_structure_blocks_cpu" classname="graphmine_structure_blocks_cpu" time="0.392536" status="run">
+		<properties/>
+		<system-out>Validated 500 structure requests
+Validated 1000 structure requests
+{"suite":"blocks","backend":"cpp","gpu_device":0,"passed_requests":1027,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_structure_boundaries_cpu" classname="graphmine_structure_boundaries_cpu" time="1.27765" status="run">
+		<properties/>
+		<system-out>{"suite":"boundaries","backend":"cpp","gpu_device":0,"passed_requests":37,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_centrality_contracts_cpu" classname="graphmine_centrality_contracts_cpu" time="0.15952" status="run">
+		<properties/>
+		<system-out>{"suite":"contracts","backend":"cpp","gpu_device":0,"passed_requests":14,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_centrality_degree_cpu" classname="graphmine_centrality_degree_cpu" time="1.45695" status="run">
+		<properties/>
+		<system-out>Validated 500 centrality requests
+Validated 1000 centrality requests
+Validated 1500 centrality requests
+Validated 2000 centrality requests
+Validated 2500 centrality requests
+Validated 3000 centrality requests
+Validated 3500 centrality requests
+Validated 4000 centrality requests
+Validated 4500 centrality requests
+Validated 5000 centrality requests
+Validated 5500 centrality requests
+Validated 6000 centrality requests
+Validated 6500 centrality requests
+Validated 7000 centrality requests
+Validated 7500 centrality requests
+Validated 8000 centrality requests
+Validated 8500 centrality requests
+Validated 9000 centrality requests
+Validated 9500 centrality requests
+Validated 10000 centrality requests
+Validated 10500 centrality requests
+{"suite":"degree","backend":"cpp","gpu_device":0,"passed_requests":10632,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_centrality_betweenness_cpu" classname="graphmine_centrality_betweenness_cpu" time="0.613617" status="run">
+		<properties/>
+		<system-out>Validated 500 centrality requests
+Validated 1000 centrality requests
+Validated 1500 centrality requests
+Validated 2000 centrality requests
+Validated 2500 centrality requests
+{"suite":"betweenness","backend":"cpp","gpu_device":0,"passed_requests":2658,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_centrality_weighted_cpu" classname="graphmine_centrality_weighted_cpu" time="0.570255" status="run">
+		<properties/>
+		<system-out>Validated 500 centrality requests
+Validated 1000 centrality requests
+Validated 1500 centrality requests
+Validated 2000 centrality requests
+Validated 2500 centrality requests
+{"suite":"weighted","backend":"cpp","gpu_device":0,"passed_requests":2916,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_centrality_boundaries_cpu" classname="graphmine_centrality_boundaries_cpu" time="0.210588" status="run">
+		<properties/>
+		<system-out>{"suite":"boundaries","backend":"cpp","gpu_device":0,"passed_requests":39,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_mining_contracts_cpu" classname="graphmine_mining_contracts_cpu" time="0.15239" status="run">
+		<properties/>
+		<system-out>{"suite":"contracts","backend":"cpp","gpu_device":0,"passed_requests":48,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_mining_maximal_cpu" classname="graphmine_mining_maximal_cpu" time="0.39908" status="run">
+		<properties/>
+		<system-out>Validated 500 requests with cpp
+Validated 1000 requests with cpp
+Validated 1500 requests with cpp
+Validated 2000 requests with cpp
+Validated 2500 requests with cpp
+Validated 3000 requests with cpp
+Validated 3500 requests with cpp
+Validated 4000 requests with cpp
+{"suite":"maximal","backend":"cpp","gpu_device":0,"passed_requests":4104,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_mining_maximum_cpu" classname="graphmine_mining_maximum_cpu" time="0.285667" status="run">
+		<properties/>
+		<system-out>Validated 500 requests with cpp
+Validated 1000 requests with cpp
+Validated 1500 requests with cpp
+Validated 2000 requests with cpp
+{"suite":"maximum","backend":"cpp","gpu_device":0,"passed_requests":2052,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_mining_fixed_cpu" classname="graphmine_mining_fixed_cpu" time="1.27707" status="run">
+		<properties/>
+		<system-out>Validated 500 requests with cpp
+Validated 1000 requests with cpp
+Validated 1500 requests with cpp
+Validated 2000 requests with cpp
+Validated 2500 requests with cpp
+Validated 3000 requests with cpp
+Validated 3500 requests with cpp
+Validated 4000 requests with cpp
+Validated 4500 requests with cpp
+Validated 5000 requests with cpp
+Validated 5500 requests with cpp
+Validated 6000 requests with cpp
+Validated 6500 requests with cpp
+Validated 7000 requests with cpp
+Validated 7500 requests with cpp
+Validated 8000 requests with cpp
+Validated 8500 requests with cpp
+Validated 9000 requests with cpp
+Validated 9500 requests with cpp
+Validated 10000 requests with cpp
+Validated 10500 requests with cpp
+Validated 11000 requests with cpp
+Validated 11500 requests with cpp
+Validated 12000 requests with cpp
+Validated 12500 requests with cpp
+Validated 13000 requests with cpp
+Validated 13500 requests with cpp
+Validated 14000 requests with cpp
+Validated 14500 requests with cpp
+Validated 15000 requests with cpp
+Validated 15500 requests...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="graphmine_mining_core_cpu" classname="graphmine_mining_core_cpu" time="0.460118" status="run">
+		<properties/>
+		<system-out>Validated 500 requests with cpp
+Validated 1000 requests with cpp
+Validated 1500 requests with cpp
+Validated 2000 requests with cpp
+Validated 2500 requests with cpp
+Validated 3000 requests with cpp
+Validated 3500 requests with cpp
+Validated 4000 requests with cpp
+{"suite":"core","backend":"cpp","gpu_device":0,"passed_requests":4104,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_mining_optimization_cpu" classname="graphmine_mining_optimization_cpu" time="0.447761" status="run">
+		<properties/>
+		<system-out>Validated 500 requests with cpp
+Validated 1000 requests with cpp
+Validated 1500 requests with cpp
+Validated 2000 requests with cpp
+Validated 2500 requests with cpp
+Validated 3000 requests with cpp
+{"suite":"optimization","backend":"cpp","gpu_device":0,"passed_requests":3078,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+	<testcase name="graphmine_mining_boundaries_cpu" classname="graphmine_mining_boundaries_cpu" time="0.263685" status="run">
+		<properties/>
+		<system-out>{"suite":"boundaries","backend":"cpp","gpu_device":0,"passed_requests":161,"failed":0,"implementation_sha256":"62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"}
+</system-out>
+	</testcase>
+</testsuite>

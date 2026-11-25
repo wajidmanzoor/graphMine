@@ -15,20 +15,20 @@ from graphmine_agent.analytics_options import candidate_menu, make_cards, rank_c
 def option_cards(server):
     saved_network(server)
     fields = [
-        {"operation": "k-core", "name": "requested_k", "label": "requested k", "kind": "integer",
+        {"problem": "k-core", "name": "requested_k", "label": "requested k", "kind": "integer",
          "schema": {"type": "integer", "minimum": 0}, "has_value": True, "value": 3},
-        {"operation": "k-core", "name": "direction_mode", "label": "direction", "kind": "string",
+        {"problem": "k-core", "name": "direction_mode", "label": "direction", "kind": "string",
          "schema": {"enum": ["undirected", "in", "out"]}, "has_value": True, "value": "undirected"},
-        {"operation": "k-core", "name": "vertices", "label": "vertices", "kind": "array",
+        {"problem": "k-core", "name": "vertices", "label": "vertices", "kind": "array",
          "schema": {"type": "array"}, "has_value": True, "value": [9007199254740993, "001"]},
     ]
-    first = {"id": "option_1", "title": "K-core", "operations": ["k-core"], "parameters": {"requested_k": 3},
+    first = {"id": "option_1", "title": "K-core", "problems": ["k-core"], "parameters": {"requested_k": 3},
              "parameter_fields": fields, "quality": "exact", "match": "High", "preselected": True,
              "interpretation": "Find groups with at least three connections per person.",
              "cost_hint": "Processes six vertices and seven connections.",
              "difference": "Requires a minimum degree; the alternative requires a complete group.",
              "description": "Find the core subgraph."}
-    second = {**deepcopy(first), "id": "option_2", "title": "Maximal cliques", "operations": ["maximal-cliques"],
+    second = {**deepcopy(first), "id": "option_2", "title": "Maximal cliques", "problems": ["maximal-cliques"],
               "parameter_fields": [], "parameters": {}, "match": "Low", "preselected": False,
               "interpretation": "Find complete groups.", "description": "Every person connects to every other person."}
     event(server, "chat", "proposal", role="user", message="Find connected groups", mode="normal")
@@ -66,7 +66,7 @@ def test_preselection_waits_and_edits_keep_typed_values_after_reload(loading_bro
     wait_for(browser, "!GraphMineWorkspace.state.busy")
     assert len(submissions) == 1
     sent = submissions[0]
-    assert sent["intent"] == "calculate" and sent["operations"] == ["k-core"]
+    assert sent["intent"] == "calculate" and sent["problems"] == ["k-core"]
     assert sent["parameters"] == {"requested_k": 2, "direction_mode": "out", "vertices": [9007199254740993, "001"]}
     assert sent["option_id"] == "option_1" and sent["option_turn_id"] == "proposal"
 
@@ -90,16 +90,16 @@ def test_density_single_exact_card_and_historical_duplicates(loading_browser, lo
     browser, server = loading_browser, loading_server
     browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": 1440, "height": 1000})
     saved_network(server)
-    operation = {"id": "densest-subgraph", "title": "Find the densest subgraph", "description": "Find the most connections per vertex.",
+    problem = {"id": "densest-subgraph", "title": "Find the densest subgraph", "description": "Find the most connections per vertex.",
         "quality": "exact", "input_kind": "graph", "execution": {"cpu": True, "gpu": False},
         "parameters": {"solution_quality": {"kind": "string", "default": "exact", "choices": ["exact", "approximate"]}},
         "requirements": {"input_kind": "graph", "direction": "undirected", "weights": "optional", "needs": []}}
-    operation["quality_guarantees"] = quality_guarantees(operation)
-    monkeypatch.setitem(loading_fixtures.CAPABILITIES, "operations", [*loading_fixtures.CAPABILITIES["operations"], operation])
+    problem["quality_guarantees"] = quality_guarantees(problem)
+    monkeypatch.setitem(loading_fixtures.CAPABILITIES, "problems", [*loading_fixtures.CAPABILITIES["problems"], problem])
     profiles = {"main": {"input_kind": "graph", "directed": False, "vertices_count": 6, "edges_count": 7}}
-    menu = candidate_menu([operation], profiles, "Find the densest subgraph")
-    samples = [{"decision": {"operation": operation["id"], "parameter_choice": menu[0]["id"], "interpretation": "Find the densest region."}, "operation_logprob": {"mean": -.01}} for _ in range(5)]
-    choices = make_cards(rank_candidates(menu, samples), [operation], profiles, "Find the densest subgraph")
+    menu = candidate_menu([problem], profiles, "Find the densest subgraph")
+    samples = [{"decision": {"problem": problem["id"], "parameter_choice": menu[0]["id"], "interpretation": "Find the densest region."}, "problem_logprob": {"mean": -.01}} for _ in range(5)]
+    choices = make_cards(rank_candidates(menu, samples), [problem], profiles, "Find the densest subgraph")
     if historical:
         choices[0].pop("quality_guarantees")
         old = deepcopy(choices[0]); old.update(id="option_2", quality="approximate")

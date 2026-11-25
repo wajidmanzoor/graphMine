@@ -19,9 +19,9 @@ REPO = Path(__file__).resolve().parents[2]
 PASSWORD = "graphmine-password"
 CARDS = [{"id": "k-core", "parameters": {"requested_k": {"kind": "integer"}}, "output_ports": {"count": {"type": "scalar"}}}]
 FACTS = [{"id": "f1", "statement": "The core has four members."}]
-ROUTE = {"intent": "calculate", "operations": ["k-core"], "message": "Find the core."}
+ROUTE = {"intent": "calculate", "problems": ["k-core"], "message": "Find the core."}
 PLAN = {"status": "ready", "message": "Find the core.", "plan": {"version": 1, "device": "cpu", "steps": [
-    {"operation": "k-core", "input": {"source": "input", "input": "main"},
+    {"problem": "k-core", "input": {"source": "input", "input": "main"},
      "arguments": [{"name": "requested_k", "value": {"literal": 2}}]}]}}
 ANSWER = {"lead": "Here is the tightest core.", "fact_ids": ["f1"]}
 
@@ -159,11 +159,11 @@ def test_edits_are_checked_as_graphmine_checks_the_model_and_later_steps_are_hel
     store = app.store_for(key)
     rows = by_stage(store)
     invented = json.loads(json.dumps(PLAN))
-    invented["plan"]["steps"][0]["operation"] = "made-up-operation"
+    invented["plan"]["steps"][0]["problem"] = "made-up-operation"
     result = store.update(rows["plan"]["id"], {"output": invented}, rows["plan"]["revision"])
     rejected = [i["message"] for i in result["example"]["issues"] if "GraphMine would reject" in i["message"]]
     # The reason names the wrong field, not the whole plan.
-    assert rejected and "'k-core' was expected (at plan/steps/0/operation)" in rejected[0]
+    assert rejected and "'k-core' was expected (at plan/steps/0/problem)" in rejected[0]
     corrected = json.loads(json.dumps(PLAN))
     corrected["plan"]["steps"][0]["arguments"][0]["value"]["literal"] = 3
     plan = store.update(rows["plan"]["id"], {"output": corrected}, store.effective(rows["plan"]["id"])["revision"])

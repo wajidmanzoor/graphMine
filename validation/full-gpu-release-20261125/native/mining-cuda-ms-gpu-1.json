@@ -1,0 +1,34 @@
+[
+  {
+    "suite": "contracts",
+    "backend": "cuda-ms",
+    "gpu_device": 0,
+    "passed_requests": 12,
+    "failed": 0,
+    "implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"
+  },
+  {
+    "suite": "maximum",
+    "backend": "cuda-ms",
+    "gpu_device": 0,
+    "passed_requests": 132,
+    "failed": 0,
+    "implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"
+  },
+  {
+    "suite": "optimization",
+    "backend": "cuda-ms",
+    "gpu_device": 0,
+    "passed_requests": 198,
+    "failed": 0,
+    "implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"
+  },
+  {
+    "suite": "boundaries",
+    "backend": "cuda-ms",
+    "gpu_device": 0,
+    "passed_requests": 25,
+    "failed": 0,
+    "implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"
+  }
+]

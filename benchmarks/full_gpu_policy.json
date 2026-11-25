@@ -1,0 +1,748 @@
+{
+  "schema_version": 1,
+  "bootstrap_examples_per_problem": 3,
+  "repeats": 1,
+  "timeout_seconds": 21600,
+  "max_candidates": null,
+  "max_output_items": null,
+  "generated_grid": {
+    "families": [
+      "erdos_renyi",
+      "power_law"
+    ],
+    "sizes": [
+      32,
+      128,
+      512
+    ],
+    "average_degrees": [
+      4
+    ],
+    "seed": 20261125
+  },
+  "special_graphs": [
+    {
+      "id": "exact-8-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 8,
+      "seed": 20261125,
+      "tags": [
+        "exact"
+      ],
+      "average_degree": 3
+    },
+    {
+      "id": "exact-8-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 8,
+      "seed": 20261126,
+      "tags": [
+        "exact"
+      ],
+      "average_degree": 3
+    },
+    {
+      "id": "exact-12-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 12,
+      "seed": 20261127,
+      "tags": [
+        "exact"
+      ],
+      "average_degree": 3
+    },
+    {
+      "id": "exact-12-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 12,
+      "seed": 20261128,
+      "tags": [
+        "exact"
+      ],
+      "average_degree": 3
+    },
+    {
+      "id": "exact-16-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 16,
+      "seed": 20261129,
+      "tags": [
+        "exact"
+      ],
+      "average_degree": 3
+    },
+    {
+      "id": "exact-16-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 16,
+      "seed": 20261130,
+      "tags": [
+        "exact"
+      ],
+      "average_degree": 3
+    },
+    {
+      "id": "bipartite-12-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 12,
+      "seed": 20261131,
+      "tags": [
+        "bipartite"
+      ],
+      "average_degree": 3,
+      "bipartite": true
+    },
+    {
+      "id": "bipartite-12-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 12,
+      "seed": 20261132,
+      "tags": [
+        "bipartite"
+      ],
+      "average_degree": 3,
+      "bipartite": true
+    },
+    {
+      "id": "bipartite-16-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 16,
+      "seed": 20261133,
+      "tags": [
+        "bipartite"
+      ],
+      "average_degree": 3,
+      "bipartite": true
+    },
+    {
+      "id": "bipartite-16-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 16,
+      "seed": 20261134,
+      "tags": [
+        "bipartite"
+      ],
+      "average_degree": 3,
+      "bipartite": true
+    },
+    {
+      "id": "bipartite-20-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 20,
+      "seed": 20261135,
+      "tags": [
+        "bipartite"
+      ],
+      "average_degree": 3,
+      "bipartite": true
+    },
+    {
+      "id": "bipartite-20-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 20,
+      "seed": 20261136,
+      "tags": [
+        "bipartite"
+      ],
+      "average_degree": 3,
+      "bipartite": true
+    },
+    {
+      "id": "assignment-8-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 8,
+      "seed": 20261137,
+      "tags": [
+        "assignment"
+      ],
+      "probability": 1,
+      "bipartite": true,
+      "weights": "integer"
+    },
+    {
+      "id": "assignment-8-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 8,
+      "seed": 20261138,
+      "tags": [
+        "assignment"
+      ],
+      "probability": 1,
+      "bipartite": true,
+      "weights": "integer"
+    },
+    {
+      "id": "assignment-12-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 12,
+      "seed": 20261139,
+      "tags": [
+        "assignment"
+      ],
+      "probability": 1,
+      "bipartite": true,
+      "weights": "integer"
+    },
+    {
+      "id": "assignment-12-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 12,
+      "seed": 20261140,
+      "tags": [
+        "assignment"
+      ],
+      "probability": 1,
+      "bipartite": true,
+      "weights": "integer"
+    },
+    {
+      "id": "assignment-16-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 16,
+      "seed": 20261141,
+      "tags": [
+        "assignment"
+      ],
+      "probability": 1,
+      "bipartite": true,
+      "weights": "integer"
+    },
+    {
+      "id": "assignment-16-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 16,
+      "seed": 20261142,
+      "tags": [
+        "assignment"
+      ],
+      "probability": 1,
+      "bipartite": true,
+      "weights": "integer"
+    },
+    {
+      "id": "costs-8-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 8,
+      "seed": 20261143,
+      "tags": [
+        "costs"
+      ],
+      "probability": 1,
+      "weights": "integer"
+    },
+    {
+      "id": "costs-8-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 8,
+      "seed": 20261144,
+      "tags": [
+        "costs"
+      ],
+      "probability": 1,
+      "weights": "integer"
+    },
+    {
+      "id": "costs-10-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 10,
+      "seed": 20261145,
+      "tags": [
+        "costs"
+      ],
+      "probability": 1,
+      "weights": "integer"
+    },
+    {
+      "id": "costs-10-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 10,
+      "seed": 20261146,
+      "tags": [
+        "costs"
+      ],
+      "probability": 1,
+      "weights": "integer"
+    },
+    {
+      "id": "costs-12-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 12,
+      "seed": 20261147,
+      "tags": [
+        "costs"
+      ],
+      "probability": 1,
+      "weights": "integer"
+    },
+    {
+      "id": "costs-12-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 12,
+      "seed": 20261148,
+      "tags": [
+        "costs"
+      ],
+      "probability": 1,
+      "weights": "integer"
+    },
+    {
+      "id": "probabilities-8-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 8,
+      "seed": 20261149,
+      "tags": [
+        "probabilities"
+      ],
+      "average_degree": 0.75,
+      "directed": true,
+      "weights": "probability"
+    },
+    {
+      "id": "probabilities-8-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 8,
+      "seed": 20261150,
+      "tags": [
+        "probabilities"
+      ],
+      "average_degree": 0.75,
+      "directed": true,
+      "weights": "probability"
+    },
+    {
+      "id": "probabilities-10-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 10,
+      "seed": 20261151,
+      "tags": [
+        "probabilities"
+      ],
+      "average_degree": 0.75,
+      "directed": true,
+      "weights": "probability"
+    },
+    {
+      "id": "probabilities-10-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 10,
+      "seed": 20261152,
+      "tags": [
+        "probabilities"
+      ],
+      "average_degree": 0.75,
+      "directed": true,
+      "weights": "probability"
+    },
+    {
+      "id": "probabilities-12-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 12,
+      "seed": 20261153,
+      "tags": [
+        "probabilities"
+      ],
+      "average_degree": 0.75,
+      "directed": true,
+      "weights": "probability"
+    },
+    {
+      "id": "probabilities-12-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 12,
+      "seed": 20261154,
+      "tags": [
+        "probabilities"
+      ],
+      "average_degree": 0.75,
+      "directed": true,
+      "weights": "probability"
+    },
+    {
+      "id": "temporal-8-0",
+      "source": "generated",
+      "generator": "planted_dense",
+      "n": 8,
+      "seed": 20261155,
+      "tags": [
+        "temporal"
+      ],
+      "average_degree": 2,
+      "planted_size": 3,
+      "directed": true,
+      "timestamps": true
+    },
+    {
+      "id": "temporal-8-1",
+      "source": "generated",
+      "generator": "planted_dense",
+      "n": 8,
+      "seed": 20261156,
+      "tags": [
+        "temporal"
+      ],
+      "average_degree": 2,
+      "planted_size": 3,
+      "directed": true,
+      "timestamps": true
+    },
+    {
+      "id": "temporal-12-0",
+      "source": "generated",
+      "generator": "planted_dense",
+      "n": 12,
+      "seed": 20261157,
+      "tags": [
+        "temporal"
+      ],
+      "average_degree": 2,
+      "planted_size": 3,
+      "directed": true,
+      "timestamps": true
+    },
+    {
+      "id": "temporal-12-1",
+      "source": "generated",
+      "generator": "planted_dense",
+      "n": 12,
+      "seed": 20261158,
+      "tags": [
+        "temporal"
+      ],
+      "average_degree": 2,
+      "planted_size": 3,
+      "directed": true,
+      "timestamps": true
+    },
+    {
+      "id": "temporal-16-0",
+      "source": "generated",
+      "generator": "planted_dense",
+      "n": 16,
+      "seed": 20261159,
+      "tags": [
+        "temporal"
+      ],
+      "average_degree": 2,
+      "planted_size": 3,
+      "directed": true,
+      "timestamps": true
+    },
+    {
+      "id": "temporal-16-1",
+      "source": "generated",
+      "generator": "planted_dense",
+      "n": 16,
+      "seed": 20261160,
+      "tags": [
+        "temporal"
+      ],
+      "average_degree": 2,
+      "planted_size": 3,
+      "directed": true,
+      "timestamps": true
+    },
+    {
+      "id": "closure-32-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 32,
+      "seed": 20261161,
+      "tags": [
+        "closure"
+      ],
+      "average_degree": 2,
+      "directed": true,
+      "acyclic": true
+    },
+    {
+      "id": "closure-32-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 32,
+      "seed": 20261162,
+      "tags": [
+        "closure"
+      ],
+      "average_degree": 2,
+      "directed": true,
+      "acyclic": true
+    },
+    {
+      "id": "closure-64-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 64,
+      "seed": 20261163,
+      "tags": [
+        "closure"
+      ],
+      "average_degree": 2,
+      "directed": true,
+      "acyclic": true
+    },
+    {
+      "id": "closure-64-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 64,
+      "seed": 20261164,
+      "tags": [
+        "closure"
+      ],
+      "average_degree": 2,
+      "directed": true,
+      "acyclic": true
+    },
+    {
+      "id": "closure-128-0",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 128,
+      "seed": 20261165,
+      "tags": [
+        "closure"
+      ],
+      "average_degree": 2,
+      "directed": true,
+      "acyclic": true
+    },
+    {
+      "id": "closure-128-1",
+      "source": "generated",
+      "generator": "erdos_renyi",
+      "n": 128,
+      "seed": 20261166,
+      "tags": [
+        "closure"
+      ],
+      "average_degree": 2,
+      "directed": true,
+      "acyclic": true
+    }
+  ],
+  "neo4j_extracts": {
+    "edge_limits": [],
+    "datasets": []
+  },
+  "bootstrap_general_graphs": [
+    "erdos_renyi-32-4",
+    "power_law-128-4",
+    "erdos_renyi-512-4"
+  ],
+  "problems": {
+    "temporal-motifs": {
+      "graph_tag": "temporal",
+      "parameters": {
+        "maximum_duration_seconds": 32
+      }
+    },
+    "subgraph-isomorphism": {
+      "graph_tag": "exact"
+    },
+    "motif-counting": {
+      "graph_tag": "exact",
+      "parameters": {
+        "list_instances": false
+      },
+      "parameter_grid": {
+        "induced": [
+          true,
+          false
+        ]
+      }
+    },
+    "group-steiner-tree": {
+      "graph_tag": "costs"
+    },
+    "influence-maximization": {
+      "graph_tag": "probabilities",
+      "parameters": {
+        "diffusion_model": "independent_cascade",
+        "seed_set_size": 1,
+        "solution_quality": "heuristic",
+        "sample_count": 64
+      }
+    },
+    "community-detection": {
+      "graph_tag": "general",
+      "parameters": {
+        "solution_quality": "heuristic",
+        "seed": 0,
+        "resolution": 1
+      }
+    },
+    "densest-subgraph": {
+      "graph_tag": "exact",
+      "parameters": {
+        "clique_order": 2
+      }
+    },
+    "quasi-cliques": {
+      "graph_tag": "exact",
+      "parameters": {
+        "gamma": 0.8,
+        "minimum_size": 3
+      }
+    },
+    "maximal-bicliques": {
+      "graph_tag": "bipartite"
+    },
+    "butterfly-counting": {
+      "graph_tag": "bipartite",
+      "parameters": {
+        "mode": "count"
+      }
+    },
+    "transitive-closure": {
+      "graph_tag": "closure"
+    },
+    "breadth-first-search": {
+      "graph_tag": "general"
+    },
+    "triangle-counting": {
+      "graph_tag": "general",
+      "parameter_grid": {
+        "mode": [
+          "count",
+          "enumerate"
+        ]
+      }
+    },
+    "single-source-shortest-paths": {
+      "graph_tag": "general"
+    },
+    "many-source-shortest-paths": {
+      "graph_tag": "general",
+      "parameters": {
+        "weight_mode": "unweighted"
+      }
+    },
+    "spanning-tree-forest": {
+      "graph_tag": "general"
+    },
+    "connected-components": {
+      "graph_tag": "general"
+    },
+    "pagerank": {
+      "graph_tag": "general"
+    },
+    "betweenness-centrality": {
+      "graph_tag": "exact"
+    },
+    "personalized-pagerank": {
+      "graph_tag": "closure",
+      "parameters": {
+        "solution_quality": "approximate",
+        "restart_probability": 0.2,
+        "epsilon": 0.01
+      }
+    },
+    "link-prediction": {
+      "graph_tag": "general",
+      "parameters": {
+        "top_k": 10,
+        "exclude_existing_edges": false
+      }
+    },
+    "maximal-independent-set": {
+      "graph_tag": "general"
+    },
+    "vertex-coloring": {
+      "graph_tag": "general"
+    },
+    "random-walks": {
+      "graph_tag": "general",
+      "parameters": {
+        "length": 20,
+        "random_seed": 42
+      }
+    },
+    "induced-subgraph": {
+      "graph_tag": "general",
+      "parameters": {
+        "mode": "ego",
+        "radius": 2
+      }
+    },
+    "max-flow-min-cut": {
+      "graph_tag": "costs",
+      "parameters": {
+        "capacity_mode": "unit_capacity"
+      }
+    },
+    "bipartite-matching": {
+      "graph_tag": "assignment",
+      "parameters": {
+        "objective": "minimum_cost",
+        "weight_mode": "edge_weight",
+        "perfect_matching_required": true
+      }
+    },
+    "maximal-cliques": {
+      "graph_tag": "exact"
+    },
+    "maximum-clique": {
+      "graph_tag": "exact"
+    },
+    "k-cliques": {
+      "graph_tag": "general",
+      "parameter_grid": {
+        "k": [
+          3,
+          4
+        ]
+      },
+      "parameters": {
+        "mode": "count"
+      }
+    },
+    "k-truss": {
+      "graph_tag": "general"
+    },
+    "k-core": {
+      "graph_tag": "general"
+    },
+    "maximum-independent-set": {
+      "graph_tag": "exact"
+    },
+    "minimum-vertex-cover": {
+      "graph_tag": "exact"
+    },
+    "dynamic-triangle-counting": {
+      "graph_tag": "exact"
+    },
+    "maximal-biclique-counting": {
+      "graph_tag": "bipartite"
+    }
+  }
+}

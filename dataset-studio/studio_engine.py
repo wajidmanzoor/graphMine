@@ -295,7 +295,7 @@ class Engine:
             return main
         if record:
             report.main = {"status": outcome.status, "message": outcome.message,
-                           "operation_id": outcome.plan.operation_id if outcome.plan else None,
+                           "problem_id": outcome.plan.problem_id if outcome.plan else None,
                            "plan": outcome.plan.model_dump(mode="json") if outcome.plan else None}
             if outcome.status != "ready":
                 report.event("info", "Planning", f"The agent stops here and tells the user: {outcome.message}")
@@ -358,7 +358,7 @@ class Engine:
         try:
             return [rt.validator.validate(
                 plan,
-                compiled_backends=rt.runner.compiled_backends_for(plan.operation_id) if caps.binary_available else None,
+                compiled_backends=rt.runner.compiled_backends_for(plan.problem_id) if caps.binary_available else None,
                 for_execution=True,
             ) for plan in plans]
         except Exception as error:  # noqa: BLE001
@@ -391,7 +391,7 @@ class Engine:
                 if record:
                     report.needs_run = True
                     report.next.append({"branch": branch, "schema": "run", "messages": None,
-                                        "operation_id": plan.operation_id})
+                                        "problem_id": plan.problem_id})
                 return None
             else:
                 if not rt.runner.capabilities.binary_available:
@@ -401,9 +401,9 @@ class Engine:
                 try:
                     payload, command = await rt.runner.execute(plan, rt.settings.workspaces_root / f"run-{uuid.uuid4().hex[:12]}")
                     if payload.get("ok"):
-                        m.validate_result(rt.catalog, plan.operation_id, payload)
+                        m.validate_result(rt.catalog, plan.problem_id, payload)
                 except Exception as error:  # noqa: BLE001
-                    report.event("error", stage, f"GraphMine could not run {plan.operation_id}: {_explain(error)}", branch)
+                    report.event("error", stage, f"GraphMine could not run {plan.problem_id}: {_explain(error)}", branch)
                     return None
                 if not payload.get("ok"):
                     detail = payload.get("error") or {}
@@ -411,15 +411,15 @@ class Engine:
                                                  f"{detail.get('message', 'no message')}", branch)
                     return None
                 seconds = round(time.monotonic() - started, 2)
-                cache.write_text(json.dumps({"operation_id": plan.operation_id, "ran_at": _now(), "seconds": seconds,
+                cache.write_text(json.dumps({"problem_id": plan.problem_id, "ran_at": _now(), "seconds": seconds,
                                              "command": [str(c) for c in command], "payload": payload}))
                 report.runs += 1
-                report.event("info", stage, f"GraphMine ran {plan.operation_id} in {seconds} s.", branch)
+                report.event("info", stage, f"GraphMine ran {plan.problem_id} in {seconds} s.", branch)
             job = m.JobRecord(session_id=session.id, plan=plan, analysis_id=analysis_id, step_index=index,
                               step_count=len(plans), status=m.JobStatus.completed)
             rt.database.save_job(job)
             result = rt.database.save_result(m.ResultRecord(
-                job_id=job.id, session_id=session.id, operation_id=plan.operation_id,
+                job_id=job.id, session_id=session.id, problem_id=plan.problem_id,
                 payload=payload, summary=m.summarize_result(payload, 20)))
             rt.database.save_job(job.model_copy(update={"result_id": result.id}))
             results.append(result)

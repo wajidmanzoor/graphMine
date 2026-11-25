@@ -42,7 +42,7 @@ def test_account_login_logout_and_private_workspaces(tmp_path, monkeypatch):
 
     async def capabilities(_self, refresh=False):
         return {
-            "operations": [],
+            "problems": [],
             "question_planner_enabled": False,
             "device_configuration": {"gpu_configured": False},
         }

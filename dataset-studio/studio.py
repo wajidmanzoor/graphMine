@@ -141,7 +141,7 @@ class Schemas:
         """Return (canonical_json, error)."""
         if schema in ANALYTICS_SCHEMAS:
             if not self.analytics_check or not context:
-                return None, "Current analytics schemas require the current agent and operation/fact context"
+                return None, "Current analytics schemas require the current agent and problem/fact context"
             try:
                 return self.analytics_check(schema, output, context), None
             except Exception as error:
@@ -164,23 +164,24 @@ class Schemas:
 
 class Catalog:
     def __init__(self, repo: Path):
+        self.topics: dict[str, dict] = {}
         self.problems: dict[str, dict] = {}
-        self.operations: dict[str, dict] = {}
+        self.families: dict[str, dict] = {}
         self.domains: list[dict] = []
         self.loaded_from = None
         catalog_path = repo / "graphmine_catalog.json"
         if catalog_path.is_file():
             data = json.loads(catalog_path.read_text())
             self.loaded_from = str(catalog_path)
-            for pid, info in data.get("problem_index", {}).items():
-                self.problems[pid] = {
+            for pid, info in data.get("topic_index", {}).items():
+                self.topics[pid] = {
                     "id": pid,
                     "name": info.get("name", pid),
                     "category": info.get("category", "other"),
                     "status": info.get("library_status", "unknown"),
-                    "operation_ids": list(info.get("operation_ids", [])),
+                    "problem_ids": list(info.get("problem_ids", [])),
                 }
-            for op in data.get("operations", []):
+            for op in data.get("problems", []):
                 backends = []
                 for b in op.get("backend_details") or []:
                     backends.append(
@@ -194,31 +195,60 @@ class Catalog:
                 if not backends:
                     backends = [{"id": b, "name": b, "capabilities": [], "validated": True}
                                 for b in op.get("backends", []) if isinstance(b, str)]
-                self.operations[op["id"]] = {
+                self.problems[op["id"]] = {
                     "id": op["id"],
-                    "problem_id": op.get("research_problem_id"),
+                    "topic_id": op.get("topic_id"),
                     "backends": backends,
                 }
+        families_path, problems_path = repo / "catalog/family.json", repo / "catalog/problems.json"
+        if families_path.is_file() and problems_path.is_file():
+            self.families = {key: {"id": key, **value} for key, value in json.loads(families_path.read_text()).items()}
+            topics_path = repo / "catalog/topics.json"
+            topics = json.loads(topics_path.read_text()) if topics_path.is_file() else {}
+            for family, entries in json.loads(problems_path.read_text()).items():
+                for identifier, info in entries.items():
+                    problem = self.problems.setdefault(identifier, {"id": identifier, "backends": []})
+                    problem.update(name=info["title"], family=family, topic_id=info.get("topic"))
+                    topic_id = info.get("topic")
+                    if topic_id:
+                        description = topics.get(topic_id, {})
+                        topic = self.topics.setdefault(topic_id, {"id": topic_id, "name": description.get("title", topic_id),
+                            "category": family, "status": "documentation", "problem_ids": []})
+                        if identifier not in topic["problem_ids"]:
+                            topic["problem_ids"].append(identifier)
         profiles = repo / "agent" / "domain_profiles.json"
         if profiles.is_file():
             data = json.loads(profiles.read_text())
             self.domains = [{"id": d["id"], "name": d["name"]} for d in data.get("domains", [])]
 
-    def problem_of_operation(self, operation_id):
-        op = self.operations.get(operation_id or "")
-        return op and op.get("problem_id")
+    def topic_of_problem(self, problem_id):
+        op = self.problems.get(problem_id or "")
+        return op and op.get("topic_id")
 
-    def backend_ids(self, operation_id) -> set[str]:
-        op = self.operations.get(operation_id or "")
+    def backend_ids(self, problem_id) -> set[str]:
+        op = self.problems.get(problem_id or "")
         return {b["id"] for b in op["backends"]} if op else set()
 
     def public(self) -> dict:
         return {
+            "families": list(self.families.values()),
+            "topics": list(self.topics.values()),
             "problems": list(self.problems.values()),
-            "operations": list(self.operations.values()),
             "domains": self.domains,
             "loaded_from": self.loaded_from,
         }
+
+
+def current_tags(value, catalog=None):
+    """Read legacy annotations without changing source rows or their hashes."""
+    result = dict(value or {})
+    if "operation_id" in result:
+        if "topic_id" not in result:
+            result["topic_id"] = result.get("problem_id")
+        result["problem_id"] = result.pop("operation_id")
+    elif catalog and result.get("problem_id") in catalog.topics and result.get("problem_id") not in catalog.problems:
+        result["topic_id"] = result.pop("problem_id")
+    return result
 
 
 # --------------------------------------------------------------------------
@@ -339,7 +369,7 @@ def infer_schema(output) -> str | None:
     keys = set(output)
     if {"action", "request"} <= keys:
         return "TurnDecision"
-    if "supported" in keys and "operation_id" in keys:
+    if "supported" in keys and "problem_id" in keys:
         return "RouteDecision"
     if "status" in keys and "plan" in keys:
         return "PlanDraft"
@@ -371,8 +401,10 @@ def _base_record(*, rid, adapter, split, file, row, offset, row_obj) -> dict:
     except ValueError:
         output = messages[-1]["content"]
     history = [parse_turn(m["role"], m["content"]) for m in messages[1:-2]]
-    selected = payload.get("selected_operation") if isinstance(payload.get("selected_operation"), dict) else {}
+    selected = payload.get("selected_problem", payload.get("selected_operation"))
+    selected = current_tags(selected) if isinstance(selected, dict) else {}
     answer_prov = get_path(payload, "answer.provenance") or {}
+    answer_prov = current_tags(answer_prov) if isinstance(answer_prov, dict) else {}
     return {
         "id": rid,
         "adapter": adapter,
@@ -385,9 +417,9 @@ def _base_record(*, rid, adapter, split, file, row, offset, row_obj) -> dict:
         "prompts": prompt_fields(payload),
         "output": output,
         "payload_hints": {
-            "selected_operation": selected.get("operation_id"),
             "selected_problem": selected.get("problem_id"),
-            "answer_operation": answer_prov.get("operation_id") if isinstance(answer_prov, dict) else None,
+            "selected_topic": selected.get("topic_id"),
+            "answer_problem": answer_prov.get("problem_id"),
             "answer_backend": answer_prov.get("backend") if isinstance(answer_prov, dict) else None,
             "domain_id": get_path(payload, "domain.id"),
         },
@@ -408,14 +440,14 @@ def _index_reusable(ds: Path) -> list[dict]:
             r = json.loads(line)
             if r.get("status") != "accepted":
                 continue
-            contract = r.get("reference_contract") or {}
+            contract = current_tags(r.get("reference_contract"))
             teacher[r["id"]] = {
                 "case_id": r.get("case_id"),
                 "case_sha256": r.get("case_sha256"),
                 "schema": r.get("schema"),
                 "variant": r.get("variant"),
+                "topic_id": contract.get("topic_id"),
                 "problem_id": contract.get("problem_id"),
-                "operation_id": contract.get("operation_id"),
                 "teacher": (r.get("teacher") or {}).get("model"),
                 "human_review": r.get("human_review"),
             }
@@ -424,14 +456,14 @@ def _index_reusable(ds: Path) -> list[dict]:
     if cases_path.is_file():
         for line in cases_path.open():
             c = json.loads(line)
-            task = c.get("task") or {}
+            task = current_tags(c.get("task"))
             cases[c["id"]] = {
                 "domain_id": c.get("domain_id"),
                 "lineage": c.get("lineage"),
                 "case_tags": c.get("tags", []),
                 "expected_status": task.get("expected_status"),
+                "topic_id": task.get("topic_id"),
                 "problem_id": task.get("problem_id"),
-                "operation_id": task.get("operation_id"),
                 "label_source": (c.get("provenance") or {}).get("label_source"),
             }
     backends = defaultdict(set)
@@ -465,8 +497,8 @@ def _index_reusable(ds: Path) -> list[dict]:
                 domain_id=c.get("domain_id") or rec["payload_hints"].get("domain_id"),
                 teacher=t.get("teacher"),
                 label_source=c.get("label_source"),
-                auto=_auto_tags(rec, t.get("problem_id") or c.get("problem_id"),
-                                t.get("operation_id") or c.get("operation_id"),
+                auto=_auto_tags(rec, t.get("topic_id") or c.get("topic_id"),
+                                t.get("problem_id") or c.get("problem_id"),
                                 sorted(backends.get(t.get("case_sha256") or "", set()))),
             )
             if rec["row_sha256"] != item.get("row_sha256"):
@@ -691,11 +723,16 @@ def link_clarifications(records: list[dict]) -> dict[str, str]:
     return alias
 
 
-def _auto_tags(rec, problem_id, operation_id, ref_backends) -> dict:
-    output = rec["output"] if isinstance(rec["output"], dict) else {}
+def _auto_tags(rec, topic_id, problem_id, ref_backends) -> dict:
+    output = current_tags(rec["output"]) if isinstance(rec["output"], dict) else {}
     hints = rec["payload_hints"]
-    operation_id = operation_id or output.get("operation_id") or hints.get("selected_operation") or hints.get("answer_operation")
-    problem_id = problem_id or output.get("problem_id") or hints.get("selected_problem")
+    problem_id = problem_id or output.get("problem_id") or hints.get("selected_problem") or hints.get("answer_problem")
+    topic_id = topic_id or output.get("topic_id") or hints.get("selected_topic")
+    # Native analytics targets describe one or more runnable steps directly.
+    steps = (output.get("plan") or {}).get("steps", []) if isinstance(output.get("plan"), dict) else []
+    selected = output.get("problems") or [step.get("problem", step.get("operation")) for step in steps]
+    if not problem_id and len(selected) == 1:
+        problem_id = selected[0]
     planned = (output.get("plan") or {}).get("backend_id") if isinstance(output.get("plan"), dict) else None
     backend = ref_backends[0] if len(ref_backends) == 1 else None
     if not backend and planned and planned != "auto":
@@ -703,8 +740,8 @@ def _auto_tags(rec, problem_id, operation_id, ref_backends) -> dict:
     if not backend and hints.get("answer_backend"):
         backend = hints["answer_backend"]
     return {
+        "topic_id": topic_id,
         "problem_id": problem_id,
-        "operation_id": operation_id,
         "backend": backend,
         "reference_backends": ref_backends,
         "planned_backend": planned,
@@ -931,7 +968,7 @@ class Studio:
             self.refresh_datasets()
             return str(target)
 
-    def template(self, schema: str, want: str, operation: str | None, store: "Store | None",
+    def template(self, schema: str, want: str, problem: str | None, store: "Store | None",
                  allowed: set[str]) -> dict:
         """A real expected output to start a new step from: the open dataset first,
         then the other datasets this person may see."""
@@ -960,7 +997,7 @@ class Studio:
                         self._template_bases[info["key"]] = self.load_base(info)
                     base = self._template_bases[info["key"]]
             matches = [r for r in base if fits(r)]
-            pick = next((r for r in matches if operation and (r.get("auto") or {}).get("operation_id") == operation), None)
+            pick = next((r for r in matches if problem and (r.get("auto") or {}).get("problem_id") == problem), None)
             pick = pick or (matches[0] if matches else None)
             if pick:
                 return {"output": pick["output"], "source": f"{info['name']} · {pick['id']}"}
@@ -1206,10 +1243,10 @@ class Store(Reviews):
                 "fresh": settings is not None and report.get("fingerprint") == self._fingerprint_of(group, rows),
                 "built_at": report.get("built_at"), "needs_run": report.get("needs_run", False),
                 "ran": bool(report.get("facts")) or bool(report.get("runs")) or bool(report.get("cached_runs")),
-                "main": {k: (report.get("main") or {}).get(k) for k in ("status", "message", "operation_id")},
+                "main": {k: (report.get("main") or {}).get(k) for k in ("status", "message", "problem_id")},
                 "facts": len(report.get("facts") or []),
                 "captured": sorted(report.get("steps") or {}),
-                "next": [{k: n.get(k) for k in ("branch", "schema", "operation_id")} for n in report.get("next") or []],
+                "next": [{k: n.get(k) for k in ("branch", "schema", "problem_id")} for n in report.get("next") or []],
                 "events": report.get("events") or [],
                 "notes": report.get("notes") or [],
             })
@@ -1409,19 +1446,21 @@ class Store(Reviews):
         for p in prompts:
             if p["path"] in (state.get("prompts") or {}):
                 p["value"] = state["prompts"][p["path"]]
-        auto = dict(base.get("auto") or {"problem_id": None, "operation_id": None, "backend": None,
-                                         "reference_backends": [], "planned_backend": None})
+        auto = current_tags(base.get("auto") or {"topic_id": None, "problem_id": None, "backend": None,
+                                         "reference_backends": [], "planned_backend": None}, self.catalog)
         output = state["output"] if "output" in state else base.get("output")
         if kind != "original" and isinstance(output, dict):
             # Tags derived from an edited output should follow the edit.
-            if output.get("operation_id"):
-                auto["operation_id"] = output["operation_id"]
-                auto["problem_id"] = output.get("problem_id") or auto["problem_id"]
+            if output.get("problem_id"):
+                auto["problem_id"] = output["problem_id"]
+                auto["topic_id"] = output.get("topic_id") or auto["topic_id"]
             plan = output.get("plan")
             if isinstance(plan, dict):
                 auto["planned_backend"] = plan.get("backend_id")
-        manual = {k: v for k, v in (state.get("tags") or {}).items() if v}
-        tags = {k: manual.get(k) or auto.get(k) for k in ("problem_id", "operation_id", "backend")}
+        manual = {k: v for k, v in current_tags(state.get("tags"), self.catalog).items() if v}
+        if not auto.get("topic_id") and auto.get("problem_id"):
+            auto["topic_id"] = self.catalog.topic_of_problem(auto["problem_id"])
+        tags = {k: manual.get(k) or auto.get(k) for k in ("topic_id", "problem_id", "backend")}
         changed = sorted(k for k in ("prompts", "turns", "output", "split", "tags", "labels", "review", "notes") if k in state)
         group = state.get("group") or base.get("group") or rid
         ex = {
@@ -1503,16 +1542,16 @@ class Store(Reviews):
             evidence_error = self._analytics_error(ex)
             if evidence_error:
                 add("error", "evidence", evidence_error)
-            op = output.get("operation_id")
-            problem = output.get("problem_id")
-            if op and op not in self.catalog.operations:
-                add("error", "output.operation_id", f"Operation {op!r} is not in the GraphMine catalog.")
-            if problem and problem not in self.catalog.problems:
-                add("error", "output.problem_id", f"Problem {problem!r} is not in the GraphMine catalog.")
-            if op and problem and self.catalog.problem_of_operation(op) not in (None, problem):
-                add("error", "output", f"Operation {op} belongs to {self.catalog.problem_of_operation(op)}, not {problem}.")
+            op = output.get("problem_id")
+            problem = output.get("topic_id")
+            if op and op not in self.catalog.problems:
+                add("error", "output.problem_id", f"Problem {op!r} is not in the GraphMine catalog.")
+            if problem and problem not in self.catalog.topics:
+                add("error", "output.topic_id", f"Topic {problem!r} is not in the GraphMine catalog.")
+            if op and problem and self.catalog.topic_of_problem(op) not in (None, problem):
+                add("error", "output", f"Problem {op} belongs to {self.catalog.topic_of_problem(op)}, not {problem}.")
             if schema == "RouteDecision" and output.get("supported") and not op:
-                add("error", "output.operation_id", "supported=true requires an operation_id.")
+                add("error", "output.problem_id", "supported=true requires a problem_id.")
             plan = output.get("plan")
             if schema == "PlanDraft":
                 status = output.get("status")
@@ -1522,24 +1561,24 @@ class Store(Reviews):
                     add("error", "output.plan", f"status={status} requires plan=null.")
             if isinstance(plan, dict):
                 backend = plan.get("backend_id")
-                op_for_plan = ex["tags"].get("operation_id")
+                op_for_plan = ex["tags"].get("problem_id")
                 allowed = self.catalog.backend_ids(op_for_plan)
                 if backend and backend != "auto" and allowed and backend not in allowed:
                     add("error", "output.plan.backend_id", f"Backend {backend!r} is not a backend of {op_for_plan}.")
         tags = ex.get("tags") or {}
-        if tags.get("operation_id") and tags["operation_id"] not in self.catalog.operations:
-            add("warning", "tags.operation_id", "Tagged operation is not in the catalog.")
-        if tags.get("problem_id") and tags.get("operation_id"):
-            owner = self.catalog.problem_of_operation(tags["operation_id"])
-            if owner and owner != tags["problem_id"]:
-                add("warning", "tags", f"Tagged operation belongs to {owner}, not {tags['problem_id']}.")
-        if tags.get("backend") and tags.get("operation_id"):
-            allowed = self.catalog.backend_ids(tags["operation_id"])
+        if tags.get("problem_id") and tags["problem_id"] not in self.catalog.problems:
+            add("warning", "tags.problem_id", "Tagged problem is not in the catalog.")
+        if tags.get("topic_id") and tags.get("problem_id"):
+            owner = self.catalog.topic_of_problem(tags["problem_id"])
+            if owner and owner != tags["topic_id"]:
+                add("warning", "tags", f"Tagged problem belongs to {owner}, not {tags['topic_id']}.")
+        if tags.get("backend") and tags.get("problem_id"):
+            allowed = self.catalog.backend_ids(tags["problem_id"])
             if allowed and tags["backend"] not in allowed:
-                add("warning", "tags.backend", f"{tags['backend']} is not an implementation of {tags['operation_id']}.")
-        if isinstance(output, dict) and output.get("operation_id") and ex["manual_tags"].get("operation_id") \
-                and output["operation_id"] != ex["manual_tags"]["operation_id"]:
-            add("warning", "tags.operation_id", "Manual operation tag differs from the operation in the expected output.")
+                add("warning", "tags.backend", f"{tags['backend']} is not an implementation of {tags['problem_id']}.")
+        if isinstance(output, dict) and output.get("problem_id") and ex["manual_tags"].get("problem_id") \
+                and output["problem_id"] != ex["manual_tags"]["problem_id"]:
+            add("warning", "tags.problem_id", "Manual problem tag differs from the problem in the expected output.")
         prompts = ex.get("prompts") or []
         if not prompts or not any((p.get("value") or "").strip() for p in prompts):
             add("error", "prompts", "The user question is empty.")
@@ -1673,8 +1712,8 @@ class Store(Reviews):
             if key == "split" and value not in ("train", "validation", "test"):
                 raise ValueError("split must be train, validation or test")
             if key == "tags":
-                merged = dict(state.get("tags") or {})
-                for k in ("problem_id", "operation_id", "backend"):
+                merged = current_tags(state.get("tags"), self.catalog)
+                for k in ("topic_id", "problem_id", "backend"):
                     if k in value:
                         merged[k] = value[k] or None
                 value = {k: v for k, v in merged.items() if v}
@@ -2327,7 +2366,7 @@ class Handler(BaseHTTPRequestHandler):
             store = self._store()
             if url.path == "/api/template":
                 return self._json(st.template(body.get("schema"), body.get("want") or "any",
-                                              body.get("operation") or None, store, self._allowed()))
+                                              body.get("problem") or None, store, self._allowed()))
             if url.path == "/api/update":
                 return self._json(self._with_summaries(store, store.update(body["id"], body.get("patch") or {}, body.get("expected_revision"))))
             if url.path == "/api/bulk":

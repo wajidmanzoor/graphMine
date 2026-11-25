@@ -1,0 +1,21 @@
+{
+  "implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66",
+  "graph": "cumbe-counterexample.json",
+  "vertices": 20,
+  "edges": 32,
+  "cpp_count": 26,
+  "independent_count": 26,
+  "gpu_uuid": "GPU-f9f2c156-0de4-a1f3-0c8a-a77ca24d10f7",
+  "attempts": [
+    {
+      "status": "completed"
+    },
+    {
+      "status": "rejected",
+      "code": "correctness_mismatch",
+      "message": "cuMBE count disagreed with the exact output materializer"
+    }
+  ],
+  "source_graph_file_sha256": "d3652fc908bc8b14c99720d61d6a66fef7dc177e439c47c2d42ddba8bbe31fd9",
+  "counterexample_file_sha256": "15345ba4ea6c55c197eb53a7b680fba6f6c056fe34d26a05969f8233f4249a9d"
+}

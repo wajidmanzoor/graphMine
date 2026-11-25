@@ -53,7 +53,7 @@ def saved_network(server):
     )
     workflow["input_files"] = {"main": {"kind": "graph", "file_id": "network"}}
     workflow["validation"]["plan"]["steps"][0].update(
-        operation="community-detection", parameters={}
+        problem="community-detection", parameters={}
     )
     workflow["steps"] = {"core": {"status": "completed"}}
     server.workflows = [workflow]
@@ -66,7 +66,7 @@ def saved_network(server):
         "steps": {
             "core": {
                 "result": {
-                    "operation": "community-detection",
+                    "problem": "community-detection",
                     "complete": True,
                     "quality": "heuristic",
                     "backend": {"device": "cpu"},
@@ -95,7 +95,7 @@ def saved_network(server):
 
 def saved_turn(server, turn, question, *, retry=False):
     event(server, "chat", turn, role="user", message=question, mode="normal")
-    for stage in ["family", "operation", "plan"] + (["plan"] if retry else []):
+    for stage in ["family", "route", "plan"] + (["plan"] if retry else []):
         event(server, "planning", turn, stage=stage, status="running")
         event(
             server,
@@ -490,9 +490,9 @@ def test_community_overview_filter_and_reset_preserve_typed_ids(
 def saved_cliques(server, *, complete=True):
     saved_network(server)
     workflow = server.workflows[0]
-    workflow["validation"]["plan"]["steps"][0]["operation"] = "maximal-cliques"
+    workflow["validation"]["plan"]["steps"][0]["problem"] = "maximal-cliques"
     result = server.results[workflow["id"]]["steps"]["core"]["result"]
-    result.update(operation="maximal-cliques", quality="exact", complete=complete)
+    result.update(problem="maximal-cliques", quality="exact", complete=complete)
     groups = [
         {"group": 0, "vertices": [1, 2, 3], "size": 3},
         {"group": 1, "vertices": ["1", 2, 3], "size": 3},
@@ -634,14 +634,14 @@ def test_saved_cliques_open_when_latest_analysis_returns_a_graph(
     saved_cliques(server)
     latest = deepcopy(server.workflows[0])
     latest["id"] = "newest-graph"
-    latest["validation"]["plan"]["steps"][0]["operation"] = "induced-subgraph"
+    latest["validation"]["plan"]["steps"][0]["problem"] = "induced-subgraph"
     server.workflows.append(latest)
     server.results[latest["id"]] = {
         "complete": True,
         "steps": {
             "core": {
                 "result": {
-                    "operation": "induced-subgraph",
+                    "problem": "induced-subgraph",
                     "complete": True,
                     "quality": "exact",
                     "backend": {"device": "cpu"},
@@ -891,7 +891,7 @@ def test_scores_size_nodes_and_paths_highlight_their_connections(
     browser, server = loading_browser, loading_server
     saved_network(server)
     result = server.results["saved-analysis"]["steps"]["core"]["result"]
-    result["operation"] = "pagerank"
+    result["problem"] = "pagerank"
     result["ports"] = {
         "scores": {
             "type": "vertex_scores",

@@ -21,7 +21,7 @@ def failed_analysis(server):
         status="failed", complete=False, error={"message": "Memory limit reached"}
     )
     record["validation"]["plan"]["steps"][0].update(
-        operation="k-core", parameters={"requested_k": 2}
+        problem="k-core", parameters={"requested_k": 2}
     )
     record["steps"]["core"] = {"status": "failed"}
 
@@ -297,7 +297,7 @@ def test_flow_arrows_use_assignment_direction_on_undirected_graph(
     saved_network(server)
     result = server.results["saved-analysis"]["steps"]["core"]["result"]
     result.update(
-        operation="max-flow-min-cut",
+        problem="max-flow-min-cut",
         result={
             "flows": [
                 {"edge": 0, "source": 2, "target": 1, "flow": 3, "capacity": 4},

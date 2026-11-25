@@ -184,7 +184,7 @@ def test_incomplete_collection_and_complete_count_are_described_per_output(loadi
 def test_derived_steps_include_bound_input_lineage_without_unrelated_inputs(loading_browser, context_server):
     record = context_server.record
     record["input_provenance"]["reference"] = provenance("Reference-v4.json", 4)
-    record["validation"]["plan"]["steps"].insert(0, {"id": "prepare", "operation": "induced-subgraph", "input": {"input": "main"}, "parameters": {}})
+    record["validation"]["plan"]["steps"].insert(0, {"id": "prepare", "problem": "induced-subgraph", "input": {"input": "main"}, "parameters": {}})
     record["validation"]["plan"]["steps"][1].update(input={"step": "prepare", "port": "graph"}, bindings={"other_graph": {"input": "reference"}})
     context_server.primary_graph = {"vertex_count": 18, "edge_count": 30, "directed": False}
     open_context(loading_browser, context_server)
@@ -355,7 +355,7 @@ def test_partial_group_reports_unknown_connection_coverage(loading_browser, cont
 
 def test_positive_flow_filter_is_not_mislabeled_as_missing_connections(loading_browser, context_server):
     context_server.server.visualization = False
-    context_server.output.update(operation="max-flow-min-cut", ports={"flow": {"type": "scalar", "complete": True, "value": 4}},
+    context_server.output.update(problem="max-flow-min-cut", ports={"flow": {"type": "scalar", "complete": True, "value": 4}},
                                  result={"flows": [{"source": 1, "target": 2, "flow": 4}, {"source": 2, "target": 3, "flow": 0}]})
     browser = loading_browser; open_context(browser, context_server)
     browser.execute_script("const control=document.getElementById('flow-direction'); control.checked=true; control.dispatchEvent(new Event('change', {bubbles:true}));")

@@ -28,7 +28,7 @@ PASSWORD = "browser-test-password-42"
 def collaboration_browser(tmp_path, monkeypatch):
     async def capabilities(_self, refresh=False):
         return {
-            "operations": [],
+            "problems": [],
             "question_planner_enabled": False,
             "device_configuration": {"gpu_configured": False},
         }

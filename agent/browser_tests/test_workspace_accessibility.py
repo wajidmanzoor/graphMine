@@ -210,10 +210,10 @@ def test_location_points_select_results_with_enter_and_space(loading_browser, lo
     saved_network(server)
     profile = {"kind": "locations", "title": "Estimated locations"}
     capabilities = deepcopy(CAPABILITIES)
-    capabilities["operations"].append({"id": "graph-geolocation", "title": "Locations", "input_kind": "graph", "execution": {"cpu": True, "gpu": False}, "parameters": {}, "visualization": profile})
-    server.workflows[0]["validation"]["plan"]["steps"][0]["operation"] = "graph-geolocation"
+    capabilities["problems"].append({"id": "graph-geolocation", "title": "Locations", "input_kind": "graph", "execution": {"cpu": True, "gpu": False}, "parameters": {}, "visualization": profile})
+    server.workflows[0]["validation"]["plan"]["steps"][0]["problem"] = "graph-geolocation"
     result = server.results["saved-analysis"]["steps"]["core"]["result"]
-    result.update(operation="graph-geolocation", ports={"locations": {"type": "coordinates", "complete": True, "value": [
+    result.update(problem="graph-geolocation", ports={"locations": {"type": "coordinates", "complete": True, "value": [
         {"vertex": 1, "location": {"longitude": -70, "latitude": 40}},
         {"vertex": "1", "location": {"longitude": -60, "latitude": 50}},
     ]}})

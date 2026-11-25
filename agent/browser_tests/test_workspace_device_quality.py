@@ -17,7 +17,7 @@ def test_gpu_first_picker_and_quality_are_independent(
     browser, server = loading_browser, loading_server
     caps = deepcopy(workspace.CAPABILITIES)
     caps["device_configuration"] = {"gpu_available": True, "gpu_configured": False}
-    caps["operations"] = [
+    caps["problems"] = [
         {
             "id": "gpu-count",
             "title": "Count on GPU",
@@ -61,39 +61,39 @@ def test_gpu_first_picker_and_quality_are_independent(
     wait_for(browser, "GraphMineWorkspace.state.caps && !GraphMineWorkspace.state.busy")
     browser.find_element(By.ID, "question").send_keys("/calculate")
     browser.find_element(By.ID, "command-option-calculate").click()
-    operation = Select(browser.find_element(By.ID, "operation-select"))
+    problem = Select(browser.find_element(By.ID, "problem-select"))
     assert "gpu-count" in [
-        option.get_attribute("value") for option in operation.options
+        option.get_attribute("value") for option in problem.options
     ]
-    operation.select_by_value("community")
+    problem.select_by_value("community")
     quality = Select(
         browser.find_element(By.CSS_SELECTOR, '[data-parameter="solution_quality"]')
     )
     assert (
         quality._el.is_displayed()
     )  # A material choice is visible without expanding optional settings.
-    assert "Heuristic" in browser.find_element(By.ID, "operation-quality").text
+    assert "Heuristic" in browser.find_element(By.ID, "problem-quality").text
     quality.select_by_value('"exact"')
     assert (
-        "Exact — establishes" in browser.find_element(By.ID, "operation-quality").text
+        "Exact — establishes" in browser.find_element(By.ID, "problem-quality").text
     )
-    operation.select_by_value("numerical")
-    assert "Numerical —" in browser.find_element(By.ID, "operation-quality").text
+    problem.select_by_value("numerical")
+    assert "Numerical —" in browser.find_element(By.ID, "problem-quality").text
     assert (
         "Exact — establishes"
-        not in browser.find_element(By.ID, "operation-quality").text
+        not in browser.find_element(By.ID, "problem-quality").text
     )
-    browser.find_element(By.CSS_SELECTOR, '[data-close="operation-dialog"]').click()
+    browser.find_element(By.CSS_SELECTOR, '[data-close="problem-dialog"]').click()
     browser.find_element(By.CSS_SELECTOR, "#compute-settings > summary").click()
     device = Select(browser.find_element(By.ID, "device"))
     assert device.first_selected_option.text == "Automatic (GPU first)"
     assert "prefers a verified GPU" in browser.find_element(By.ID, "device-note").text
     device.select_by_value("cpu")
     assert "gpu-count" not in [
-        option.get_attribute("value") for option in operation.options
+        option.get_attribute("value") for option in problem.options
     ]
     device.select_by_value("gpu")
-    assert [option.get_attribute("value") for option in operation.options] == [
+    assert [option.get_attribute("value") for option in problem.options] == [
         "",
         "gpu-count",
     ]
@@ -104,7 +104,7 @@ def test_review_and_chat_label_default_heuristic_and_explicit_exact(
 ):
     browser, server = loading_browser, loading_server
     caps = deepcopy(workspace.CAPABILITIES)
-    caps["operations"][0].update(
+    caps["problems"][0].update(
         quality="parameter_dependent",
         parameters={
             "solution_quality": {

@@ -1,0 +1,34 @@
+﻿index,left_names,right_names,left_size,right_size,left_ids,right_ids
+1,Tracy,Entity 2; Entity 3; Entity 4; Entity 5; Mesa Verde; Entity 7; Entity 8; Entity 9; Entity 10,1,9,entity-0,entity-1; entity-2; entity-3; entity-4; entity-5; entity-6; entity-7; entity-8; entity-9
+2,Tracy; Entity 12,Entity 2; Entity 3; Entity 4; Entity 5; Entity 7; Entity 9; Entity 10,2,7,entity-0; entity-11,entity-1; entity-2; entity-3; entity-4; entity-6; entity-8; entity-9
+3,Tracy; Entity 14,Entity 2; Entity 3; Entity 4; Mesa Verde; Entity 8; Entity 9; Entity 10,2,7,entity-0; entity-13,entity-1; entity-2; entity-3; entity-5; entity-7; entity-8; entity-9
+4,Tracy; Entity 12; Entity 14,Entity 2; Entity 3; Entity 4; Entity 9; Entity 10,3,5,entity-0; entity-11; entity-13,entity-1; entity-2; entity-3; entity-8; entity-9
+5,Tracy; Entity 11,Entity 2; Entity 3; Entity 4; Entity 5; Mesa Verde; Entity 7; Entity 8; Entity 9,2,8,entity-0; entity-10,entity-1; entity-2; entity-3; entity-4; entity-5; entity-6; entity-7; entity-8
+6,Tracy; Entity 11; Entity 14; Entity 17,Entity 2; Entity 3; Entity 4; Mesa Verde; Entity 8; Entity 9,4,6,entity-0; entity-10; entity-13; entity-16,entity-1; entity-2; entity-3; entity-5; entity-7; entity-8
+7,Tracy; Entity 11; Entity 18,Entity 2; Entity 3; Entity 4; Entity 5; Mesa Verde; Entity 9,3,6,entity-0; entity-10; entity-17,entity-1; entity-2; entity-3; entity-4; entity-5; entity-8
+8,Tracy; Entity 11; Entity 14; Entity 17; Entity 18,Entity 2; Entity 3; Entity 4; Mesa Verde; Entity 9,5,5,entity-0; entity-10; entity-13; entity-16; entity-17,entity-1; entity-2; entity-3; entity-5; entity-8
+9,Tracy; Entity 11; Entity 15,Entity 2; Entity 3; Entity 4; Entity 5; Entity 7; Entity 8; Entity 9,3,7,entity-0; entity-10; entity-14,entity-1; entity-2; entity-3; entity-4; entity-6; entity-7; entity-8
+10,Tracy; Entity 11; Entity 15; Entity 16,Entity 2; Entity 3; Entity 4; Entity 7; Entity 8; Entity 9,4,6,entity-0; entity-10; entity-14; entity-15,entity-1; entity-2; entity-3; entity-6; entity-7; entity-8
+11,Tracy; Entity 11; Entity 14; Entity 15; Entity 16; Entity 17,Entity 2; Entity 3; Entity 4; Entity 8; Entity 9,6,5,entity-0; entity-10; entity-13; entity-14; entity-15; entity-16,entity-1; entity-2; entity-3; entity-7; entity-8
+12,Tracy; Entity 11; Entity 12; Entity 15,Entity 2; Entity 3; Entity 4; Entity 5; Entity 7; Entity 9,4,6,entity-0; entity-10; entity-11; entity-14,entity-1; entity-2; entity-3; entity-4; entity-6; entity-8
+13,Tracy; Entity 11; Entity 12; Entity 15; Entity 18,Entity 2; Entity 3; Entity 4; Entity 5; Entity 9,5,5,entity-0; entity-10; entity-11; entity-14; entity-17,entity-1; entity-2; entity-3; entity-4; entity-8
+14,Tracy; Entity 11; Entity 12; Entity 15; Entity 16,Entity 2; Entity 3; Entity 4; Entity 7; Entity 9,5,5,entity-0; entity-10; entity-11; entity-14; entity-15,entity-1; entity-2; entity-3; entity-6; entity-8
+15,Tracy; Entity 11; Entity 12; Entity 14; Entity 15; Entity 16; Entity 17; Entity 18,Entity 2; Entity 3; Entity 4; Entity 9,8,4,entity-0; entity-10; entity-11; entity-13; entity-14; entity-15; entity-16; entity-17,entity-1; entity-2; entity-3; entity-8
+16,Tracy; Entity 11; Entity 14; Entity 17; Entity 19,Entity 2; Entity 3; Entity 4; Mesa Verde; Entity 8,5,5,entity-0; entity-10; entity-13; entity-16; entity-18,entity-1; entity-2; entity-3; entity-5; entity-7
+17,Tracy; Entity 11; Entity 14; Entity 17; Entity 18; Entity 19,Entity 2; Entity 3; Entity 4; Mesa Verde,6,4,entity-0; entity-10; entity-13; entity-16; entity-17; entity-18,entity-1; entity-2; entity-3; entity-5
+18,Tracy; Entity 11; Entity 14; Entity 15; Entity 16; Entity 17; Entity 19,Entity 2; Entity 3; Entity 4; Entity 8,7,4,entity-0; entity-10; entity-13; entity-14; entity-15; entity-16; entity-18,entity-1; entity-2; entity-3; entity-7
+19,Tracy; Entity 11; Entity 12; Entity 14; Entity 15; Entity 16; Entity 17; Entity 18; Entity 19,Entity 2; Entity 3; Entity 4,9,3,entity-0; entity-10; entity-11; entity-13; entity-14; entity-15; entity-16; entity-17; entity-18,entity-1; entity-2; entity-3
+20,Tracy; Entity 13,Entity 3; Entity 4; Entity 5; Mesa Verde; Entity 7; Entity 9; Entity 10,2,7,entity-0; entity-12,entity-2; entity-3; entity-4; entity-5; entity-6; entity-8; entity-9
+21,Tracy; Entity 12; Entity 13,Entity 3; Entity 4; Entity 5; Entity 7; Entity 9; Entity 10,3,6,entity-0; entity-11; entity-12,entity-2; entity-3; entity-4; entity-6; entity-8; entity-9
+22,Tracy; Entity 13; Entity 14,Entity 3; Entity 4; Mesa Verde; Entity 9; Entity 10,3,5,entity-0; entity-12; entity-13,entity-2; entity-3; entity-5; entity-8; entity-9
+23,Tracy; Entity 12; Entity 13; Entity 14,Entity 3; Entity 4; Entity 9; Entity 10,4,4,entity-0; entity-11; entity-12; entity-13,entity-2; entity-3; entity-8; entity-9
+24,Tracy; Entity 11; Entity 13,Entity 3; Entity 4; Entity 5; Mesa Verde; Entity 7; Entity 9,3,6,entity-0; entity-10; entity-12,entity-2; entity-3; entity-4; entity-5; entity-6; entity-8
+25,Tracy; Entity 11; Entity 13; Entity 18,Entity 3; Entity 4; Entity 5; Mesa Verde; Entity 9,4,5,entity-0; entity-10; entity-12; entity-17,entity-2; entity-3; entity-4; entity-5; entity-8
+26,Tracy; Entity 11; Entity 13; Entity 14; Entity 17; Entity 18,Entity 3; Entity 4; Mesa Verde; Entity 9,6,4,entity-0; entity-10; entity-12; entity-13; entity-16; entity-17,entity-2; entity-3; entity-5; entity-8
+27,Tracy; Entity 11; Entity 12; Entity 13; Entity 15,Entity 3; Entity 4; Entity 5; Entity 7; Entity 9,5,5,entity-0; entity-10; entity-11; entity-12; entity-14,entity-2; entity-3; entity-4; entity-6; entity-8
+28,Tracy; Entity 11; Entity 12; Entity 13; Entity 15; Entity 18,Entity 3; Entity 4; Entity 5; Entity 9,6,4,entity-0; entity-10; entity-11; entity-12; entity-14; entity-17,entity-2; entity-3; entity-4; entity-8
+29,Tracy; Entity 11; Entity 12; Entity 13; Entity 15; Entity 16,Entity 3; Entity 4; Entity 7; Entity 9,6,4,entity-0; entity-10; entity-11; entity-12; entity-14; entity-15,entity-2; entity-3; entity-6; entity-8
+30,Tracy; Entity 11; Entity 12; Entity 13; Entity 14; Entity 15; Entity 16; Entity 17; Entity 18,Entity 3; Entity 4; Entity 9,9,3,entity-0; entity-10; entity-11; entity-12; entity-13; entity-14; entity-15; entity-16; entity-17,entity-2; entity-3; entity-8
+31,Tracy; Entity 11; Entity 13; Entity 14; Entity 17; Entity 18; Entity 19,Entity 3; Entity 4; Mesa Verde,7,3,entity-0; entity-10; entity-12; entity-13; entity-16; entity-17; entity-18,entity-2; entity-3; entity-5
+32,Tracy; Entity 11; Entity 12; Entity 13; Entity 14; Entity 15; Entity 16; Entity 17; Entity 18; Entity 19,Entity 3; Entity 4,10,2,entity-0; entity-10; entity-11; entity-12; entity-13; entity-14; entity-15; entity-16; entity-17; entity-18,entity-2; entity-3
+33,Entity 19,Entity 2; Entity 3; Entity 4; Mesa Verde; Entity 8; Entity 20,1,6,entity-18,entity-1; entity-2; entity-3; entity-5; entity-7; entity-19

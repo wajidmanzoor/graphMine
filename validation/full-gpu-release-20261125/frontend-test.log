@@ -1,0 +1,43 @@
+
+> test
+> node --test tests/*.test.cjs
+
+✔ three model calls produce three entries, not one per event or code stage (1.785939ms)
+✔ a retry keeps the failed call's partial text separate from the successful call (1.130488ms)
+✔ legacy reasoning and diagnostics pair, while repeated attempts remain separate (0.23781ms)
+✔ historical answer calls are counted without inventing or duplicating reasoning (0.312712ms)
+✔ a new answer call remains live after the planner's assistant message (0.186021ms)
+✔ code-only work and scalar fact answers do not invent a model call (0.141243ms)
+✔ one parallel completion records five samples without inventing five requests (0.157858ms)
+✔ planning status updates replace the same Activity stage (0.368817ms)
+✔ a finished turn never leaves an uncompleted stage spinning (0.215375ms)
+✔ completed model diagnostics finish candidates even without a selected event (3.472666ms)
+✔ a pending answer stays live after planning has finished (0.230328ms)
+✔ failed calls retain their failure state (0.179551ms)
+✔ current server guarantees correct historical approximate badges without changing the saved request (0.865908ms)
+✔ quality edits use server guarantees and restoring the default restores its label (0.176997ms)
+✔ multi-operation choices retain mixed guarantees after edits (0.234585ms)
+✔ historical duplicate cards collapse by server equivalence while inputs and objectives remain distinct (1.590944ms)
+✔ transport keeps exact IDs, authorization and structured API errors (34.296104ms)
+✔ aborting during a concurrency retry stops its timer and prevents a second request (17.084882ms)
+✔ mutations never repeat automatically even when read retries are requested (1.274315ms)
+✔ unreadable proxy errors retain status and retry timing (1.618836ms)
+✔ a superseded read rejects late data even if transport ignores cancellation (1.019521ms)
+✔ a superseded read rejects late errors even if transport ignores cancellation (1.111349ms)
+✔ an invalid read scope never starts HTTP work (0.862423ms)
+✔ client encodes path and query values while retaining bigint JSON bodies (1.935674ms)
+✔ empty responses, binary exports and multipart uploads preserve their contracts (2.386746ms)
+✔ retry hints are bounded and completed delay listeners are removed (4.374599ms)
+✔ entity labels quote string IDs only where they could be misread (1.292673ms)
+✔ score ramps stay finite with extreme values and distinguish negative, zero, positive (2.213093ms)
+✔ typed IDs, parallel directed records and display rule bounds survive rendering (0.538513ms)
+✔ many categories share gray without merging their identity or permitting unsafe field paths (8.894868ms)
+✔ saved property filters handle absence and explicit dates consistently in private and shared views (0.445673ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 147.018304

@@ -194,7 +194,9 @@ class RowIndex:
             yield json.loads(row[0])
 
     def summary(self, limit):
-        saved = json.loads(self.db.execute("SELECT value FROM meta WHERE key='header'").fetchone()[0])
+        from .workflow_compat import saved_result
+
+        saved = saved_result(json.loads(self.db.execute("SELECT value FROM meta WHERE key='header'").fetchone()[0]))
         for step, value in saved.get("steps", {}).items():
             if not value.get("result"):
                 continue

@@ -65,7 +65,7 @@ async def seeded_lifespan(application):
                 )
                 result = fixture["result"]
                 parameters = dict(fixture.get("parameters", result.get("parameters", {})))
-                if not directory and result["operation"] == "maximal-bicliques":
+                if not directory and result["problem"] == "maximal-bicliques":
                     # The anonymized fixture retains the two declared types,
                     # while its sanitized parameters omit source identifiers.
                     for side, kind in (("left_partition", "User"), ("right_partition", "Business")):
@@ -73,7 +73,7 @@ async def seeded_lifespan(application):
                 body = WorkflowRequest.model_validate({
                     "mode": "expert", "inputs": {"main": {"kind": "graph", "file_id": uploaded.id}},
                     "plan": {"version": 1, "device": "cpu", "steps": [{
-                        "id": "analysis", "operation": result["operation"],
+                        "id": "analysis", "problem": result["problem"],
                         "input": {"input": "main"}, "parameters": parameters,
                     }]},
                 })

@@ -29,12 +29,15 @@ and one backend-score output layer. Unavailable models use native feasible
 backend ordering. Memory admission remains deterministic, with no auxiliary
 learned memory model. The implementation, training, logging and evaluation controls are described below.
 
-Validation distinguishes contract tests from live model quality. The final native
-build passed 61 CTest cases (15 optional integrations disabled), 178 CPU contract
-and migration tests, and both ToT/WeTriC GPU triangle oracle tests. Matching CPU
-admission covers all 82 runnable problems. Frontend contracts and TypeScript
-checks pass. See [the evaluation report](RUNNABLE_POLICY_EVALUATION.md) for paired
-measurements, routing metrics and the limits of this development validation.
+Validation distinguishes contract tests from live model quality. The full-GPU
+release passed all 77 CTest cases, 175 CPU contract checks, 34 original GPU
+adapter checks, and 173,960 native oracle requests. Admission covers all 82 CPU
+problems and 58 GPU profiles across 35 problems. The full build includes 59 GPU
+profiles; the wider benchmark found a nondeterministic cuMBE correctness failure,
+so the evidence gate quarantines it and retains CPU biclique enumeration. See the
+[full-GPU release report](../validation/full-gpu-release-20261125/README.md) for
+the current paired measurements and deployment checks, and the
+[initial evaluation](RUNNABLE_POLICY_EVALUATION.md) for the routing comparison.
 
 ## Shared model and learning
 

@@ -1,5 +1,10 @@
 # Runnable problems and shared policy evaluation
 
+This records the initial development experiment. The later
+[full-GPU release report](../validation/full-gpu-release-20261125/README.md)
+records broader backend coverage and the operator-requested production rollout.
+Historical measurements below are preserved.
+
 Development implementation and measurements, 2026-11-25 UTC. Benchmark recommendation:
 **keep native execution with the shared NN in shadow**. The old learned selectors
 have been removed as requested. Development now explicitly enables live NN/bandit

@@ -1,0 +1,318 @@
+{
+  "cache": {
+    "CMAKE_BUILD_TYPE": "Release",
+    "CMAKE_CUDA_ARCHITECTURES": "52",
+    "GRAPHMINE_BOOST_JSON_INCLUDE_DIR": "/usr/include",
+    "GRAPHMINE_BUILD_CLI": "ON",
+    "GRAPHMINE_BUILD_EXAMPLES": "OFF",
+    "GRAPHMINE_BUILD_NATIVE_RUNTIME": "ON",
+    "GRAPHMINE_BUILD_TESTS": "ON",
+    "GRAPHMINE_CUDADEVRT_LIBRARY": "/usr/lib/x86_64-linux-gnu/libcudadevrt.a",
+    "GRAPHMINE_CUDF_INCLUDE": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/include",
+    "GRAPHMINE_CUDF_LIBRARY": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcudf/lib64/libcudf.so",
+    "GRAPHMINE_CUGRAPH_CPP_LIBRARY": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph.so",
+    "GRAPHMINE_CUGRAPH_INCLUDE": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/include",
+    "GRAPHMINE_CUGRAPH_LIBRARY": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libcugraph/lib64/libcugraph_c.so",
+    "GRAPHMINE_CUQC_CUDA_ARCHITECTURES": "native",
+    "GRAPHMINE_DUMATO_MOTIF_CUDA_ARCHITECTURES": "native",
+    "GRAPHMINE_EDTC_CUDA_ARCHITECTURES": "native",
+    "GRAPHMINE_ENABLE_CUDAMS": "ON",
+    "GRAPHMINE_ENABLE_CUDA_BACKENDS": "ON",
+    "GRAPHMINE_ENABLE_CUMBE": "ON",
+    "GRAPHMINE_ENABLE_CUQC": "ON",
+    "GRAPHMINE_ENABLE_DUMATO_MOTIF": "ON",
+    "GRAPHMINE_ENABLE_EDTC": "ON",
+    "GRAPHMINE_ENABLE_EVEREST": "ON",
+    "GRAPHMINE_ENABLE_G": "ON",
+    "GRAPHMINE_ENABLE_G2_AIMD": "ON",
+    "GRAPHMINE_ENABLE_GAMMA_KCLIQUE": "ON",
+    "GRAPHMINE_ENABLE_GLEIDEN": "ON",
+    "GRAPHMINE_ENABLE_GMATCH": "ON",
+    "GRAPHMINE_ENABLE_GPU_MAXIMUM_CLIQUE": "ON",
+    "GRAPHMINE_ENABLE_GRAPHMINER_MOTIF": "ON",
+    "GRAPHMINE_ENABLE_GRAPHSET_KCLIQUE": "ON",
+    "GRAPHMINE_ENABLE_GRAPHSET_MOTIF": "ON",
+    "GRAPHMINE_ENABLE_KCGPU": "ON",
+    "GRAPHMINE_ENABLE_KCOREGPU": "ON",
+    "GRAPHMINE_ENABLE_MAXIMUM_CLIQUE_ON_GPU": "ON",
+    "GRAPHMINE_ENABLE_MAYURA": "ON",
+    "GRAPHMINE_ENABLE_MCE_GPU": "ON",
+    "GRAPHMINE_ENABLE_PGGC": "ON",
+    "GRAPHMINE_ENABLE_RDMCE": "ON",
+    "GRAPHMINE_ENABLE_REPAIRED_WORKERS": "ON",
+    "GRAPHMINE_ENABLE_TOT": "ON",
+    "GRAPHMINE_ENABLE_TURBOBC": "ON",
+    "GRAPHMINE_ENABLE_VALIDATED_EXPANSION": "ON",
+    "GRAPHMINE_ENABLE_WETRIC": "ON",
+    "GRAPHMINE_EVEREST_CUDA_ARCHITECTURES": "89-real;89-virtual",
+    "GRAPHMINE_EXPANSION_CUDA_ARCHITECTURES": "89-real;89-virtual",
+    "GRAPHMINE_G2_AIMD_CUDA_ARCHITECTURES": "native",
+    "GRAPHMINE_GLEIDEN_CUDA_ARCHITECTURES": "89-real;89-virtual",
+    "GRAPHMINE_GMATCH_CUDA_ARCHITECTURES": "native",
+    "GRAPHMINE_GMATCH_POOL_MIB": "512",
+    "GRAPHMINE_GPU_MAXIMUM_CLIQUE_CUDA_ARCHITECTURES": "89-real;89-virtual",
+    "GRAPHMINE_GRAPHSET_MOTIF_CUDA_ARCHITECTURES": "70",
+    "GRAPHMINE_LIBCUDF_ROOT": "",
+    "GRAPHMINE_LIBCUGRAPH_ROOT": "",
+    "GRAPHMINE_MAXIMUM_CLIQUE_ON_GPU_CUDA_ARCHITECTURES": "86-real;86-virtual",
+    "GRAPHMINE_MAYURA_CUDA_ARCHITECTURES": "89-real;89-virtual",
+    "GRAPHMINE_MCE_GPU_CUDA_ARCHITECTURES": "80-real;80-virtual",
+    "GRAPHMINE_NATIVE_CUDF": "ON",
+    "GRAPHMINE_NATIVE_CUGRAPH": "ON",
+    "GRAPHMINE_NATIVE_CUGRAPH_CPP": "ON",
+    "GRAPHMINE_NATIVE_LAPACK": "/usr/lib/x86_64-linux-gnu/liblapack.so.3",
+    "GRAPHMINE_NATIVE_OPTIMIZATION": "ON",
+    "GRAPHMINE_NATIVE_OPTIMIZATION_ARCHITECTURES": "89-real;89-virtual",
+    "GRAPHMINE_RAPIDS_INCLUDE_DIRS": "",
+    "GRAPHMINE_RAPIDS_LIBRARY_DIRS": "",
+    "GRAPHMINE_RAPIDS_ROOT": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages",
+    "GRAPHMINE_REPAIRED_WORKER_DIR": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/library/repaired-workers",
+    "GRAPHMINE_RUNTIME_BOOST_INCLUDE": "/usr/include",
+    "GRAPHMINE_TOT_CUDA_ARCHITECTURES": "89-real",
+    "GRAPHMINE_VIEWS_BOOST_INCLUDE": "/usr/include",
+    "GRAPHMINE_WETRIC_CUDA_ARCHITECTURES": "89-real",
+    "KokkosKernels_DIR": "/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/native-dependencies/install/lib/cmake/KokkosKernels",
+    "Kokkos_COMPILE_LAUNCHER": "/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/native-dependencies/install/bin/kokkos_launch_compiler",
+    "Kokkos_DIR": "/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/native-dependencies/install/lib/cmake/Kokkos",
+    "Kokkos_NVCC_WRAPPER": "/home/wajid/projects/graphDatabaseAgent/graphMine-runtime-20261116-views/library/build/native-dependencies/install/bin/nvcc_wrapper"
+  },
+  "implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66",
+  "gpu_profiles": [
+    [
+      "temporal-motifs",
+      "everest"
+    ],
+    [
+      "temporal-motifs",
+      "mayura"
+    ],
+    [
+      "subgraph-isomorphism",
+      "gmatch"
+    ],
+    [
+      "motif-counting",
+      "graphminer"
+    ],
+    [
+      "motif-counting",
+      "graphset"
+    ],
+    [
+      "motif-counting",
+      "dumato"
+    ],
+    [
+      "group-steiner-tree",
+      "gpu4gst"
+    ],
+    [
+      "influence-maximization",
+      "superfuser"
+    ],
+    [
+      "community-detection",
+      "gleiden"
+    ],
+    [
+      "community-detection",
+      "parallel-louvain"
+    ],
+    [
+      "community-detection",
+      "parallel-leiden"
+    ],
+    [
+      "community-detection",
+      "parallel-leiden-plus"
+    ],
+    [
+      "densest-subgraph",
+      "cds"
+    ],
+    [
+      "quasi-cliques",
+      "cuqc"
+    ],
+    [
+      "maximal-bicliques",
+      "cumbe"
+    ],
+    [
+      "butterfly-counting",
+      "graphminer"
+    ],
+    [
+      "butterfly-counting",
+      "gamma-butterfly"
+    ],
+    [
+      "transitive-closure",
+      "gdlog"
+    ],
+    [
+      "breadth-first-search",
+      "libcugraph"
+    ],
+    [
+      "triangle-counting",
+      "tot"
+    ],
+    [
+      "triangle-counting",
+      "wetric"
+    ],
+    [
+      "single-source-shortest-paths",
+      "libcugraph"
+    ],
+    [
+      "many-source-shortest-paths",
+      "libcugraph"
+    ],
+    [
+      "spanning-tree-forest",
+      "libcugraph"
+    ],
+    [
+      "connected-components",
+      "libcugraph"
+    ],
+    [
+      "connected-components",
+      "ecl-scc"
+    ],
+    [
+      "pagerank",
+      "libcugraph"
+    ],
+    [
+      "betweenness-centrality",
+      "libcugraph"
+    ],
+    [
+      "betweenness-centrality",
+      "turbo-bc"
+    ],
+    [
+      "personalized-pagerank",
+      "libcugraph"
+    ],
+    [
+      "personalized-pagerank",
+      "kpar"
+    ],
+    [
+      "link-prediction",
+      "libcugraph"
+    ],
+    [
+      "maximal-independent-set",
+      "libcugraph"
+    ],
+    [
+      "vertex-coloring",
+      "libcugraph"
+    ],
+    [
+      "random-walks",
+      "libcugraph"
+    ],
+    [
+      "induced-subgraph",
+      "libcugraph"
+    ],
+    [
+      "max-flow-min-cut",
+      "ecl-maxflow"
+    ],
+    [
+      "bipartite-matching",
+      "hungarian-cuda"
+    ],
+    [
+      "maximal-cliques",
+      "rdmce"
+    ],
+    [
+      "maximal-cliques",
+      "mce-gpu"
+    ],
+    [
+      "maximal-cliques",
+      "g2-aimd"
+    ],
+    [
+      "maximum-clique",
+      "cuda-ms"
+    ],
+    [
+      "maximum-clique",
+      "gpu-maximum-clique"
+    ],
+    [
+      "maximum-clique",
+      "maximum-clique-on-gpu"
+    ],
+    [
+      "k-cliques",
+      "graphset"
+    ],
+    [
+      "k-cliques",
+      "gamma"
+    ],
+    [
+      "k-cliques",
+      "kcgpu"
+    ],
+    [
+      "k-truss",
+      "libcugraph"
+    ],
+    [
+      "k-truss",
+      "acctd"
+    ],
+    [
+      "k-core",
+      "libcugraph"
+    ],
+    [
+      "k-core",
+      "kcore-gpu"
+    ],
+    [
+      "maximum-independent-set",
+      "cuda-ms"
+    ],
+    [
+      "maximum-independent-set",
+      "gpu-maximum-clique"
+    ],
+    [
+      "maximum-independent-set",
+      "maximum-clique-on-gpu"
+    ],
+    [
+      "minimum-vertex-cover",
+      "cuda-ms"
+    ],
+    [
+      "minimum-vertex-cover",
+      "gpu-maximum-clique"
+    ],
+    [
+      "minimum-vertex-cover",
+      "maximum-clique-on-gpu"
+    ],
+    [
+      "dynamic-triangle-counting",
+      "edtc"
+    ],
+    [
+      "maximal-biclique-counting",
+      "mbe-gpu"
+    ]
+  ]
+}

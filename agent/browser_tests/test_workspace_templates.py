@@ -14,7 +14,7 @@ def test_template_parameter_edit_and_review(loading_browser, loading_server):
     browser, server = loading_browser, loading_server
     saved_network(server)
     plan = deepcopy(server.workflows[0]["validation"]["plan"])
-    plan["steps"][0]["operation"] = "k-core"
+    plan["steps"][0]["problem"] = "k-core"
     plan["steps"][0]["parameters"] = {"requested_k": 2}
     server.templates = [
         {

@@ -37,6 +37,7 @@ def test_time_sliders_filter_only_the_visible_graph(loading_browser, loading_ser
     for index, edge in enumerate(server.graph["edges"][:-1]):
         edge["timestamp"] = 9007199254740993 + index
     open_saved(browser, server, "results/saved-analysis")
+    wait_for(browser, "GraphMineWorkspace.state.cy && !document.getElementById('time-controls').hidden")
     browser.find_element(By.CSS_SELECTOR, "#time-controls summary").click()
     browser.execute_script(
         "const s=document.querySelector('#time-end'); s.value='0'; s.dispatchEvent(new Event('input'))"
@@ -58,7 +59,7 @@ def test_time_sliders_filter_only_the_visible_graph(loading_browser, loading_ser
     assert not server.requests
 
 
-def test_embedding_dimensions_preserve_identity_and_png_export(
+def test_embedding_dimensions_preserve_identity(
     loading_browser, loading_server
 ):
     browser, server = loading_browser, loading_server
@@ -83,13 +84,5 @@ def test_embedding_dimensions_preserve_identity_and_png_export(
     assert browser.execute_script("return [...GraphMineWorkspace.state.selected]") == [
         "s:1"
     ]
-    browser.execute_script(
-        "const original=URL.createObjectURL; URL.createObjectURL=blob=>{window.exportedBlob=blob; return original(blob)}; HTMLAnchorElement.prototype.click=function(){window.exportedName=this.download}"
-    )
-    browser.find_element(By.CSS_SELECTOR, "#result-actions-panel summary").click()
-    browser.find_element(By.ID, "export-image").click()
-    wait_for(browser, "window.exportedBlob?.type === 'image/png'")
-    assert browser.execute_script("return window.exportedBlob.size") > 1000
-    assert browser.execute_script("return window.exportedName").endswith(
-        "visible-graph.png"
-    )
+    # Image downloads use the current view-spec API, exercised with the real
+    # server by test_results_page_playwright.test_10_downloads_have_unique_named_content_and_report.

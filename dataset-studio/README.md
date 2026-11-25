@@ -16,7 +16,7 @@ Legacy planner steps are `RouteDecision` (**Understanding**), `PlanDraft`
 `GroundedNarrative` (**Analyst answer**). Current analytics contracts are
 `AnalyticsRoute`, `AnalyticsPlan`, `AnalyticsPlanNormalized`, and
 `AnalyticsAnswer`; validation uses the selected repository's production schema
-builders with the example's operation, input and fact context.
+builders with the example's runnable problem, input and fact context.
 
 There is no build step and no CDN: a standard-library Python server and three
 static files.
@@ -174,7 +174,7 @@ GRAPHMINE_AGENT_DATA_ROOT=... ./run.sh --host 0.0.0.0 --tls-certfile graphmine.c
   GraphMine sent them, and the model's raw output (for plans, the positional
   format the model emits) as the target. **Edit output** changes only the target.
   An edit is checked against the contract GraphMine held the model to, so a
-  plan naming an unknown operation or missing argument cannot be approved.
+  plan naming an unknown problem or missing argument cannot be approved.
 - **Edits flow forward.** A step's input came from the steps before it, so
   editing an earlier step holds back the later ones from training export.
   Delete them, or revert the edit.
@@ -297,9 +297,9 @@ Consequences:
 
 | View | Features |
 | --- | --- |
-| **Browse** | Filters with live counts: model, split, stage, expected outcome, single/multi-turn, asks for more info, progress, problem, operation, implementation, review, labels, validation, changes, tag source, variant, graph source. Sort by file order, question, problem, issues, recently edited or output length. In Conversations mode a count is a number of conversations. |
+| **Browse** | Filters with live counts: model, split, stage, expected outcome, single/multi-turn, asks for more info, progress, family, topic, problem, implementation, review, labels, validation, changes, tag source, variant, graph source. Sort by file order, question, problem, issues, recently edited or output length. In Conversations mode a count is a number of conversations. |
 | **Step details** | One step: earlier turns, the final user message and the highlighted training target. Tabs: *Model context* (the payload, system prompt and, for steps written here, the replayed history and whether it is current), *Diff vs original*, *History*. |
-| **Tag** | Problem, operation and implementation (auto-detected; manual overrides are marked and **Reset to auto** clears them), review state, labels and notes. |
+| **Tag** | Topic (documentation), runnable problem and implementation (auto-detected; manual overrides are marked and **Reset to auto** clears them), review state, labels and notes. |
 | **Bulk** | Select conversations or rows to set tags, review state or split, add a label, delete or restore. |
 | **Coverage** | Stat tiles, a problem × stage heatmap over all catalog problems, examples per implementation, most reused questions, graph sources and their splits. |
 | **Changes** | Every pending change; open or undo each one. |

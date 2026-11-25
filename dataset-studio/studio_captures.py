@@ -172,7 +172,7 @@ def _turns(records: list[dict]) -> dict[str, dict]:
         if workflow:
             plan = (workflow.get("validation") or {}).get("plan") or {}
             value["workflow"] = {"id": workflow.get("id"), "status": workflow.get("status"),
-                                 "operations": [s.get("operation") for s in plan.get("steps") or []]}
+                                 "problems": [s.get("problem", s.get("operation")) for s in plan.get("steps") or []]}
         used = [datasets[f] for f in inputs.get(turn_id, []) if f in datasets]
         value["dataset"] = used[0] if used else None
     return turns
