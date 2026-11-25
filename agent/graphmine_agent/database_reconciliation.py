@@ -99,7 +99,7 @@ def plan_changes(source, nodes, edges, old_nodes, old_edges):
 
 
 def change_summary(source, changes, old_nodes, old_edges):
-    counts = {kind: {action: values if action == "unchanged" else len(values) for action, values in operations.items()} for kind, operations in changes.items()}
+    counts = {kind: {action: values if action == "unchanged" else len(values) for action, values in problems.items()} for kind, problems in changes.items()}
     counts["relationships"]["recreated"] = sum(row["recreated"] for row in changes["relationships"]["updated"])
     hashes = set()
     for row in [*old_nodes.values(), *old_edges.values()]:
@@ -120,7 +120,7 @@ def prepare_constraints(session, source):
 
 def apply_changes(tx, source, changes):
     """Touch changed records only; never detach-delete someone else's edges."""
-    total = sum(len(rows) for operations in changes.values() for action, rows in operations.items() if action != "unchanged")
+    total = sum(len(rows) for problems in changes.values() for action, rows in problems.items() if action != "unchanged")
     written = 0
     checkpoint("writing", written, total)
 

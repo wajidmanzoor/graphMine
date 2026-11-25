@@ -26,7 +26,7 @@ QUALITY = {
     "numerical": "a numerical calculation",
     "stochastic": "randomized, so repeated runs can differ",
 }
-CLIQUE_OPERATIONS = {"maximal-cliques", "maximum-clique", "k-cliques"}
+CLIQUE_PROBLEMS = {"maximal-cliques", "maximum-clique", "k-cliques"}
 
 _NUMBER_WORDS = {
     word: value
@@ -88,14 +88,14 @@ def suggested_questions(saved, facts=()):
     choosing it changes the view or cites facts without another model call.
     The others are sent to the planner as ordinary questions.
     """
-    ports, operations = [], set()
+    ports, problems = [], set()
     for step in saved.get("steps", {}).values():
         result = step.get("result") or {}
-        operations.add(result.get("operation"))
+        problems.add(result.get("problem"))
         ports.extend(result.get("ports", {}).values())
     # Empty count-only collections cannot support questions about their members.
     kinds = {port.get("type") for port in ports if port.get("value") or port.get("type") == "scalar"}
-    noun = "clique" if operations & CLIQUE_OPERATIONS else "group"
+    noun = "clique" if problems & CLIQUE_PROBLEMS else "group"
     scored = bool(kinds & {"vertex_scores", "edge_scores"})
     suggestions = []
     if kinds & {"vertex_groups", "vertex_partition"}:
@@ -186,7 +186,7 @@ def bipartite_input_context(saved, plan, inputs):
     """Name sides only when the saved memberships establish one type per side."""
     context = {}
     for step in plan.get("steps", []):
-        if step.get("operation") not in {"maximal-bicliques", "maximal-biclique-counting"}:
+        if step.get("problem") not in {"maximal-bicliques", "maximal-biclique-counting"}:
             continue
         graph = inputs.get(step.get("input", {}).get("input"), {}).get("data", {})
         vertices = graph.get("vertices", [])
@@ -212,8 +212,8 @@ def result_sentence(result, sides=()):
     singular_sides = list(sides)
     sides = [name + ("es" if name.endswith("s") else "s") for name in sides]
     ports = result.get("ports", {})
-    operation = result.get("operation")
-    if operation in {"maximal-bicliques", "maximal-biclique-counting"}:
+    problem = result.get("problem")
+    if problem in {"maximal-bicliques", "maximal-biclique-counting"}:
         port = next((p for p in ports.values() if p.get("type") == "bipartite_groups"), None)
         scalar = next((p.get("value") for p in ports.values() if p.get("type") == "scalar"), None)
         rows = port.get("value", []) if port else []
@@ -227,12 +227,12 @@ def result_sentence(result, sides=()):
             nouns = [(singular_sides[i] if count == 1 else sides[i]).lower() for i, count in enumerate((left, right))] if len(sides) == 2 else ["left members", "right members"]
             text += f" The largest{' retained' if not port.get('complete', result.get('complete', False)) else ''} has {left} {nouns[0]} × {right} {nouns[1]}."
         return text
-    if operation == "community-detection":
+    if problem == "community-detection":
         port = next((p for p in ports.values() if p.get("type") == "vertex_groups"), None)
         if port:
             sizes = [len(row.get("vertices", [])) for row in port.get("value", [])]
             return f"Found {len(sizes)} communities. The largest has {max(sizes, default=0)} members."
-    if operation == "densest-subgraph":
+    if problem == "densest-subgraph":
         port = next((p for p in ports.values() if p.get("type") == "vertex_set"), None)
         if port:
             return f"Found a densest subgraph with {len(port.get('value', []))} vertices." if result.get("quality") == "exact" else f"Found a dense subgraph with {len(port.get('value', []))} vertices."
@@ -253,7 +253,7 @@ def build_facts(saved, titles, labels, input_context=None):
             text = "The result is " + text
             if result.get("quality") == "exact" and result.get("complete"):
                 text = "The result is exact."
-        elif result.get("operation") in {"maximal-bicliques", "maximal-biclique-counting"}:
+        elif result.get("problem") in {"maximal-bicliques", "maximal-biclique-counting"}:
             match = re.fullmatch(r"(?:returned (.+) bicliques?|count is (.+))\.", text)
             if match:
                 count = match[1] or match[2]
@@ -269,7 +269,7 @@ def build_facts(saved, titles, labels, input_context=None):
                 "id": f"f{len(facts) + 1}",
                 "kind": kind,
                 "step": step,
-                "operation_title": method,
+                "problem_title": method,
                 "statement": statement,
                 "text": text,
             }
@@ -280,7 +280,7 @@ def build_facts(saved, titles, labels, input_context=None):
         result = step.get("result") or {}
         if step.get("status") != "completed" or not result:
             continue
-        method = titles.get(result.get("operation"), result.get("operation") or step_id)
+        method = titles.get(result.get("problem"), result.get("problem") or step_id)
         ports = result.get("ports") or {}
         # A partition and its group list describe the same grouping: state it once.
         partitioned = next(

@@ -199,10 +199,10 @@ class Graph:
             raise GraphMineError("Unknown self-loop policy")
         if direction == "require_undirected" and self.directed:
             raise GraphMineError(
-                "This operation requires an undirected graph; project explicitly first"
+                "This problem requires an undirected graph; project explicitly first"
             )
         if direction == "require_directed" and not self.directed:
-            raise GraphMineError("This operation requires a directed graph")
+            raise GraphMineError("This problem requires a directed graph")
         directed = self.directed and direction != "undirected"
         graph = (
             nx.DiGraph(backend="networkx") if directed else nx.Graph(backend="networkx")
@@ -215,16 +215,16 @@ class Graph:
             u, v = self.index(edge["source"]), self.index(edge["target"])
             weight = edge.get("weight", 1) if weighted else 1
             if nonnegative and weight < 0:
-                raise GraphMineError("This operation requires nonnegative edge weights")
+                raise GraphMineError("This problem requires nonnegative edge weights")
             if u == v:
                 if self_loops == "reject":
-                    raise GraphMineError("This operation does not accept self-loops")
+                    raise GraphMineError("This problem does not accept self-loops")
                 if self_loops == "drop":
                     continue
             if graph.has_edge(u, v):
                 if parallel_edges == "reject":
                     raise GraphMineError(
-                        "This operation needs an explicit parallel-edge aggregation"
+                        "This problem needs an explicit parallel-edge aggregation"
                     )
                 old = graph[u][v]["weight"]
                 if parallel_edges == "sum":

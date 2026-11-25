@@ -155,9 +155,9 @@ def test_owner_scope_covers_all_job_and_result_actions(workspace):
         job = service.enqueue("query", "demo", CypherRequest(**QUERY), request_key="shared-key")
     with identity_scope(Principal("bob", "bob", accounts)):
         assert not service.list()["items"]
-        for operation in (service.get, service.result, service.cancel, service.retry):
+        for problem in (service.get, service.result, service.cancel, service.retry):
             with pytest.raises(RecordNotFound):
-                operation(job["id"])
+                problem(job["id"])
         other = service.enqueue("query", "demo", CypherRequest(**QUERY), request_key="shared-key")
         service.cancel(other["id"])
     with identity_scope(Principal("alice", "alice", accounts)):

@@ -69,7 +69,7 @@ async def run(app, result):
             graph = json.dumps({"graph": {"id": "selftest", "directed": False, "allows_self_loops": False, "allows_parallel_edges": False},
                                 "vertices": [{"id": i} for i in range(3)], "edges": [{"id": "01", "source": 0, "target": 1}, {"id": "12", "source": 1, "target": 2}, {"id": "02", "source": 0, "target": 2}]})
             file = await request("POST", f"/api/sessions/{session}/files", files={"file": ("selftest.json", graph, "application/json")}, data={"role": "graph", "directed": "false"})
-            record = await request("POST", f"/api/sessions/{session}/workflows", json={"mode": "expert", "plan": {"version": 1, "device": "cpu", "steps": [{"id": "core", "operation": "k-core", "input": {"input": "main"}, "parameters": {"requested_k": 2}}]}, "inputs": {"main": {"file_id": file["id"], "kind": "graph"}}})
+            record = await request("POST", f"/api/sessions/{session}/workflows", json={"mode": "expert", "plan": {"version": 1, "device": "cpu", "steps": [{"id": "core", "problem": "k-core", "input": {"input": "main"}, "parameters": {"requested_k": 2}}]}, "inputs": {"main": {"file_id": file["id"], "kind": "graph"}}})
             workflow = record["id"]
             await request("POST", f"/api/workflows/{workflow}/run", json={"workflow_hash": record["validation"]["workflow_hash"], "expected_revision": record["revision"]})
             while time.monotonic() - started < 120:

@@ -7,7 +7,7 @@ from threading import RLock
 
 from .identity import AccountError, current_principal
 
-THINKING_STAGES = ("family", "problem", "route", "clarify", "analyst")
+THINKING_STAGES = ("family", "topic", "route", "clarify", "analyst")
 MODEL_KEYS = {
     "GRAPHMINE_LLM_SLEEP_MODE": ("llm_sleep_mode", "bool", None, None, True),
     "GRAPHMINE_LLM_IDLE_SLEEP_MINUTES": ("llm_idle_sleep_minutes", "minutes", 10, 60, False),
@@ -27,7 +27,7 @@ CAPACITY_DEFINITIONS = (
     ("GRAPHMINE_ACCOUNT_STORAGE_BYTES", "account_storage_bytes", 1, 2**53 - 1, False, "Defaults for new users", "Storage per user", "Uploads, saved inputs and results; individual limits take priority.", "bytes"),
     ("GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES", "analytics_max_input_bytes", 1, 2**53 - 1, False, "Defaults for new users", "Largest upload", "Applies to uploads and analytics inputs. Storage quota still applies.", "bytes"),
     ("GRAPHMINE_BACKUP_KEEP", "backup_keep", 1, 365, False, "Retention", "Daily snapshots to keep", "Older scheduled snapshots are removed only after a verified backup.", "snapshots"),
-    ("GRAPHMINE_ADMIN_EVENT_RETENTION_DAYS", "admin_event_retention_days", 1, 3650, False, "Retention", "Activity history", "Retention for operational events, independent of conversations.", "days"),
+    ("GRAPHMINE_ADMIN_EVENT_RETENTION_DAYS", "admin_event_retention_days", 1, 3650, False, "Retention", "Activity history", "Retention for problemal events, independent of conversations.", "days"),
 )
 CAPACITY_KEYS = {key: (attribute, "integer", low, high, restart) for key, attribute, low, high, restart, *_ in CAPACITY_DEFINITIONS}
 ALLOWLIST = {**MODEL_KEYS, **CAPACITY_KEYS}
@@ -47,7 +47,7 @@ def validate(key, value):
             raise ValueError(f"{key} must be true or false.")
     elif kind == "stages":
         if not isinstance(value, (list, tuple)) or any(x not in THINKING_STAGES for x in value) or len(set(value)) != len(value):
-            raise ValueError("Choose distinct Family, Problem, Route, Clarify or Explanation steps.")
+            raise ValueError("Choose distinct Family, Topic, Route, Clarify or Explanation steps.")
         value = tuple(value)
     elif type(value) is not int or not low <= value <= high or kind == "minutes" and value not in (10, 20, 60):
         raise ValueError(f"{key} must be one of 10, 20 or 60 minutes." if kind == "minutes" else f"{key} must be a whole number from {low} to {high}.")

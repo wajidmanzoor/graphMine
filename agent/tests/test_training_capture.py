@@ -83,7 +83,7 @@ async def test_planner_calls_keep_the_exact_request_and_raw_response(
         AnalyticsService(settings, database, graph_store, events),
         events,
     )
-    decision = {"intent": "calculate", "operations": ["triangle-counting"], "message": "Count them."}
+    decision = {"intent": "calculate", "problems": ["triangle-counting"], "message": "Count them."}
     replies = [
         httpx.Response(200, json={"choices": [{"message": {
             "content": json.dumps(decision), "reasoning": "Triangles were asked for.",

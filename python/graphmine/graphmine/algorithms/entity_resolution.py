@@ -136,7 +136,7 @@ def _rule(spec, records, work):
 
 @register(
     id="entity-resolution",
-    problem_id="entity_resolution_blocking",
+    topic_id="entity_resolution_blocking",
     title="Generate candidate record pairs and resolve entities using declared rules",
     description="RapidFuzz Levenshtein and declared equality/token/numeric predicates generate complete candidate pairs. NetworkX components provide transitive resolution; SciPy/HiGHS can minimize unit candidate-pair disagreements instead. Noncandidate pairs are neutral; clusters never cross candidate-graph components. Input graph edges are unused hints, not match decisions.",
     library="rapidfuzz",

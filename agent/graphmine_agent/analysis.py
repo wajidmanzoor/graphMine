@@ -565,7 +565,7 @@ def validate_narrative(
     narrative: GroundedNarrative,
     answer: dict,
     defaults: list,
-    supported_operations: set[str],
+    supported_problems: set[str],
     *,
     compile_charts: bool = True,
 ) -> list[VisualizationSpec]:
@@ -583,12 +583,12 @@ def validate_narrative(
         validate_statement(statement, facts)
     if narrative.analysis_request:
         if (
-            not narrative.analysis_operation_ids
-            or not set(narrative.analysis_operation_ids) <= supported_operations
+            not narrative.analysis_problem_ids
+            or not set(narrative.analysis_problem_ids) <= supported_problems
         ):
-            raise ValueError("Further analysis must identify supported operations")
-    elif narrative.analysis_operation_ids:
-        raise ValueError("Further-analysis operations require an explicit question")
+            raise ValueError("Further analysis must identify supported problems")
+    elif narrative.analysis_problem_ids:
+        raise ValueError("Further-analysis problems require an explicit question")
     views = []
     for index, chart in enumerate(narrative.charts):
         if not set(chart.fact_ids) <= facts.keys():
@@ -684,10 +684,10 @@ def analyst_payload(answer, defaults, catalog, domain_id, user_message):
             "limitations": answer["limitations"],
             "provenance": answer["provenance"],
         },
-        "supported_operations": [
+        "supported_problems": [
             {
-                "operation_id": key,
-                "description": catalog.problem(catalog.operation(key).problem_id)[
+                "problem_id": key,
+                "description": catalog.topic(catalog.problem(key).topic_id)[
                     "spec"
                 ]["problem_statement"],
             }

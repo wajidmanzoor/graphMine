@@ -121,11 +121,11 @@ struct IntegerFlowArc {
   VertexIndex source, target;
   std::int64_t capacity;
 };
-json::array original_optimization_backends(const std::string& operation);
+json::array original_optimization_backends(const std::string& problem);
 std::vector<std::int64_t> original_flow(std::size_t, const std::vector<IntegerFlowArc>&,
                                         VertexIndex, VertexIndex, int, Work&);
 std::vector<std::size_t> original_assignment(const std::vector<std::vector<int>>&, int, Work&);
-json::array original_mining_backends(const std::string& operation);
+json::array original_mining_backends(const std::string& problem);
 std::uint64_t original_maximal_count(const MiningGraph&, const std::string&, int, Work&);
 std::vector<VertexIndex> original_maximum_clique(const MiningGraph&, const std::string&, int,
                                                  Work&);
@@ -133,8 +133,8 @@ std::uint64_t original_k_clique_count(const MiningGraph&, std::uint32_t, const s
                                       Work&);
 std::vector<std::uint32_t> original_core_numbers(const MiningGraph&, int, Work&);
 std::vector<double> original_betweenness(const MiningGraph&, int, Work&);
-json::array original_extension_backends(const std::string& operation);
-bool original_extension_backend(const std::string& operation, const std::string& backend);
+json::array original_extension_backends(const std::string& problem);
+bool original_extension_backend(const std::string& problem, const std::string& backend);
 std::string original_extension_support(const std::string&, const std::string&, const Graph&,
                                        const json::object&, Work&);
 json::object original_extension_run(const std::string&, const Graph&, const json::object&,
@@ -152,16 +152,16 @@ bool original_triangles_compiled(const std::string& backend);
 using NativeAlgorithm = json::object (*)(const Graph&, const json::object&, const std::string&, int,
                                          Work&);
 using NativeInputAlgorithm = json::object (*)(const json::value&, const json::object&, Work&);
-NativeAlgorithm operation_handler(const std::string& operation);
-const json::object& operation_card(const std::string& operation);
+NativeAlgorithm problem_handler(const std::string& problem);
+const json::object& problem_card(const std::string& problem);
 void validate_parameters(const json::object&, const json::object&, bool partial = false);
 void validate_query_parameters(const std::string&, const Graph&, const json::object&, Work&);
 json::object inspect_input(const std::string&, const json::value&, Work&);
 json::object validate_request(const json::object&);
-NativeInputAlgorithm input_operation_handler(const std::string& operation);
-std::string gpu_support_reason(const std::string& operation, const Graph& graph,
+NativeInputAlgorithm input_problem_handler(const std::string& problem);
+std::string gpu_support_reason(const std::string& problem, const Graph& graph,
                                const json::object& args);
-std::string backend_support_reason(const std::string& operation, const std::string& backend,
+std::string backend_support_reason(const std::string& problem, const std::string& backend,
                                    const Graph&, const json::object&, Work&);
 json::object shortest_paths(const Graph&, const json::object&, const std::string&, int, Work&);
 json::object many_shortest_paths(const Graph&, const json::object&, const std::string&, int, Work&);
@@ -262,7 +262,7 @@ json::object selected_graph(const Graph&, const std::vector<bool>&, Work&);
 bool cugraph_cpp_compiled() noexcept;
 std::vector<VertexIndex> cugraph_maximal_independent(const MiningGraph&, std::uint64_t, int, Work&);
 std::vector<std::uint32_t> cugraph_vertex_coloring(const MiningGraph&, std::uint64_t, int, Work&);
-json::array operation_cards();
+json::array problem_cards();
 json::object catalog();
 json::object execute(const json::object& request);
 bool cudf_compiled() noexcept;

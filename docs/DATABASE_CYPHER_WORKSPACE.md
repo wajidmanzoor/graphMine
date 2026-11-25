@@ -303,7 +303,7 @@ queries and snapshots remain private and use their selected connections.
 
 Benchmark connections expose no SQL mappings or writer credentials. **Add table
 attributes** and **Add relationships** are hidden for their snapshots; the API
-also rejects those operations. The Transfers demo retains mapped SQL enrichment,
+also rejects those problems. The Transfers demo retains mapped SQL enrichment,
 and expansion. Ordinary Neo4j connections expose their default
 graph even when an optional SQL service is unavailable.
 
@@ -336,7 +336,7 @@ properties and aliases while rejecting administrative and writing clauses.
 each statement as read-only before execution; reads use READ_ACCESS and rollback.
 Interactive Cypher disables the transaction timeout and keeps complete graph
 results without fixed query-row, node/edge, or per-result byte caps. Account
-storage allowances still apply; scalar tables and SQL operations retain their
+storage allowances still apply; scalar tables and SQL problems retain their
 separate budgets. Administrative verification separately consumes every result from four
 representative published queries without changing their text. The user approved
 this scope after long Yelp traversals. Remaining queries are explicitly untested;
@@ -530,7 +530,7 @@ PostgreSQL pools. Requests, connection-status checks and durable database jobs
 share this registry. Resources are isolated by account, source, revision,
 endpoint and credential generation; Neo4j readers and writers have separate
 drivers. Catalog dataset selections on the same connection can reuse its pool.
-Each operation gets a new Neo4j session or a separately borrowed PostgreSQL
+Each problem gets a new Neo4j session or a separately borrowed PostgreSQL
 connection. SQLite reads retain their short-lived read-only connections.
 
 | Setting | Default | Meaning |
@@ -771,7 +771,7 @@ or correspondence mapping before source enrichment; the UI does not guess it.
 ## Presentation contracts
 
 `result_views.py` declares an intentional presentation contract for all 82
-current native operations and exposes it in capabilities. Existing graph,
+current native problems and exposes it in capabilities. Existing graph,
 table, bars, embedding and temporal controls are reused. Additional building
 blocks cover focused witnesses, path sequences, pair matrices, histograms,
 spectra, persistence intervals, location coordinates and source attributes.

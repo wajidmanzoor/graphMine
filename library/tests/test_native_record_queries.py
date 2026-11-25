@@ -345,7 +345,7 @@ def test_native_query_subgraphs_preserve_records(
 
 
 @pytest.mark.parametrize(
-    "operation,parameters",
+    "problem,parameters",
     [
         ("node-lookup", {"vertices": ["unknown"]}),
         (
@@ -371,21 +371,21 @@ def test_native_query_subgraphs_preserve_records(
         ("graph-aggregate", {"group_by": "attributes.absent"}),
     ],
 )
-def test_native_record_query_contract_errors(native, operation, parameters):
+def test_native_record_query_contract_errors(native, problem, parameters):
     with pytest.raises(BINDING.NativeError):
-        run(native, operation, records(), **parameters)
+        run(native, problem, records(), **parameters)
 
 
 def test_native_query_collection_completeness_and_budget(native):
     data = records()
-    for operation, parameters in (
+    for problem, parameters in (
         ("node-lookup", {}),
         ("edge-filter", {}),
         ("neighbors", {"entity": 0, "hops": 2}),
         ("query-paths", {"source": 0, "target": 2**60 + 1}),
         ("graph-aggregate", {"group_by": "vertex"}),
     ):
-        result = run(native, operation, data, result_limit=1, **parameters)
+        result = run(native, problem, data, result_limit=1, **parameters)
         assert not result["complete"]
         assert result["ports"]["count"]["complete"]
         assert result["ports"]["count"]["value"] > 1

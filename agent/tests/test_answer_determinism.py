@@ -20,8 +20,8 @@ def test_group_attribute_facts_are_identical_across_process_hash_seeds(catalog):
     plan = ExecutionPlan(
         session_id="fixture",
         graph_id="fixture",
+        topic_id=task["topic_id"],
         problem_id=task["problem_id"],
-        operation_id=task["operation_id"],
         parameters=task["parameters"],
         application_intent=task["intent"],
     )

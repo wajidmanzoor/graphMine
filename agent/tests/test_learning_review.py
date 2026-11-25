@@ -85,7 +85,7 @@ def proposal_file(root, manifest, tmp_path):
     example = next(
         row
         for row in manifest["examples"]
-        if row["split"] == "train" and row["task"]["operation_id"] == "maximal-cliques"
+        if row["split"] == "train" and row["task"]["problem_id"] == "maximal-cliques"
     )
     query = "Please help me with this: " + example["task"]["query"]
     row = {
@@ -421,7 +421,7 @@ async def reviewed_case(settings, synthetic, tmp_path, monkeypatch):
             },
         },
         "result": {
-            "operation_id": task["operation_id"],
+            "problem_id": task["problem_id"],
             "payload": {"output": output},
             "answer": {
                 "rows": [],

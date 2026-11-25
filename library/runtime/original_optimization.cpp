@@ -57,13 +57,13 @@ std::vector<std::int64_t> run_worker(const char* name, const char* marker, int d
 }
 #endif
 }  // namespace
-json::array original_optimization_backends(const std::string& operation) {
+json::array original_optimization_backends(const std::string& problem) {
 #ifdef GRAPHMINE_NATIVE_OPTIMIZATION
   constexpr bool compiled = true;
 #else
   constexpr bool compiled = false;
 #endif
-  if (operation == "max-flow-min-cut")
+  if (problem == "max-flow-min-cut")
     return {json::object{
         {"id", "ecl-maxflow"},
         {"device", "gpu"},

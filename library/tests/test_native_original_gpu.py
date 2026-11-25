@@ -39,8 +39,8 @@ def native(request):
             backend = result["backend"]
             assert backend["device"] == POLICY
             assert backend["python_runtime_required"] is False
-            key = result["operation"] + ":" + backend["id"]
-            counts = request.session.native_observed_operations
+            key = result["problem"] + ":" + backend["id"]
+            counts = request.session.native_observed_problems
             counts[key] = counts.get(key, 0) + 1
             if POLICY == "gpu":
                 assert backend["hardware"]["uuid"]
@@ -257,7 +257,7 @@ def test_cli_keeps_kernel_diagnostics_out_of_json():
     backend = "gmatch" if POLICY == "gpu" else "cpp"
     request = {
         "command": "run",
-        "operation": "subgraph-isomorphism",
+        "problem": "subgraph-isomorphism",
         "graph": graph(4, [(0, 1), (0, 2), (1, 2), (2, 3)]),
         "parameters": {"query_graph": graph(3, [(0, 1), (0, 2), (1, 2)])},
         "device": POLICY,
@@ -444,7 +444,7 @@ def test_superfuser_declared_heuristic(native):
 
 
 @pytest.mark.parametrize(
-    "operation,backend,params",
+    "problem,backend,params",
     [
         ("community-detection", "gleiden", {"solution_quality": "exact"}),
         (
@@ -462,13 +462,13 @@ def test_superfuser_declared_heuristic(native):
         ),
     ],
 )
-def test_gpu_rejects_incompatible_quality(native, operation, backend, params):
+def test_gpu_rejects_incompatible_quality(native, problem, backend, params):
     # No CUDA launch should be required to reject incompatible semantics.
     if POLICY == "cpu":
         return
     with pytest.raises(BINDING.NativeError) as caught:
         native.run(
-            operation,
+            problem,
             graph(3, [(0, 1), (1, 2)]),
             parameters=params,
             device="gpu",
@@ -483,7 +483,7 @@ def test_gpu_validation_checks_community_quality(native):
         return
     request = {
         "command": "validate",
-        "operation": "community-detection",
+        "problem": "community-detection",
         "graph": graph(3, [(0, 1), (1, 2)]),
         "device": "gpu",
         "parameters": {"solution_quality": "exact"},
@@ -492,7 +492,7 @@ def test_gpu_validation_checks_community_quality(native):
         native.request(request)
     assert caught.value.code == "unsupported_input"
     request["parameters"]["solution_quality"] = "heuristic"
-    assert native.request(request)["operation"] == "community-detection"
+    assert native.request(request)["problem"] == "community-detection"
 
 
 def test_catalog_restores_all_original_choices(native):
@@ -519,7 +519,7 @@ def test_catalog_restores_all_original_choices(native):
         "group-steiner-tree": {"gpu4gst"},
         "influence-maximization": {"superfuser"},
     }
-    cards = {c["id"]: c for c in native.catalog()["operations"]}
+    cards = {c["id"]: c for c in native.catalog()["problems"]}
     assert sum(map(len, expected.values())) == 23
     for op, backends in expected.items():
         actual = {

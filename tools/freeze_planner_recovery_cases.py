@@ -39,7 +39,7 @@ def build():
                 "id": name,
                 "question": question,
                 "input": data,
-                "operations": [r["operation"] for r in requests],
+                "problems": [r["problem"] for r in requests],
                 "expected_status": "ready",
                 "checks": checks,
                 "required_parameters": required or {},
@@ -48,8 +48,8 @@ def build():
             }
         )
 
-    def check(operation, port, kind, value):
-        return {"operation": operation, "port": port, "kind": kind, "value": value}
+    def check(problem, port, kind, value):
+        return {"problem": problem, "port": port, "kind": kind, "value": value}
 
     for i, pairs in enumerate(
         [
@@ -82,7 +82,7 @@ def build():
             f"fresh_cover_{i}",
             wording,
             data,
-            [{"operation": "minimum-vertex-cover", "parameters": {}}],
+            [{"problem": "minimum-vertex-cover", "parameters": {}}],
             [check("minimum-vertex-cover", "vertices", "one_of_sets", covers)],
         )
 
@@ -117,7 +117,7 @@ def build():
             data,
             [
                 {
-                    "operation": "single-source-shortest-paths",
+                    "problem": "single-source-shortest-paths",
                     "parameters": {"source": source},
                 }
             ],
@@ -163,7 +163,7 @@ def build():
             f"fresh_neighbors_{i}",
             wording,
             data,
-            [{"operation": "neighbors", "parameters": params}],
+            [{"problem": "neighbors", "parameters": params}],
             [check("neighbors", "vertices", "set", neighbors)],
             required={"neighbors": params},
         )
@@ -182,11 +182,11 @@ def build():
         )
         requests = [
             {
-                "operation": "query-subgraph",
+                "problem": "query-subgraph",
                 "parameters": {"mode": "vertices", "vertices": selected},
             },
             {
-                "operation": "triangle-counting",
+                "problem": "triangle-counting",
                 "parameters": {},
                 "graph_from": "query-subgraph",
             },
@@ -213,10 +213,10 @@ def build():
         data,
         [
             {
-                "operation": "query-subgraph",
+                "problem": "query-subgraph",
                 "parameters": {"mode": "vertices", "vertices": selected},
             },
-            {"operation": "triangle-counting", "parameters": {}},
+            {"problem": "triangle-counting", "parameters": {}},
         ],
         [
             check("query-subgraph", "vertices", "set", selected),
@@ -251,14 +251,14 @@ def main():
                 if not request.get("graph_from")
                 else results[request["graph_from"]]["ports"]["graph"]["value"]
             )
-            results[request["operation"]] = library.run(
-                request["operation"],
+            results[request["problem"]] = library.run(
+                request["problem"],
                 data,
                 parameters=request["parameters"],
                 device="cpu",
             )
         checks = [
-            check_value(c, results[c["operation"]]["ports"][c["port"]])
+            check_value(c, results[c["problem"]]["ports"][c["port"]])
             for c in case["checks"]
         ]
         assert all(checks), case["id"]

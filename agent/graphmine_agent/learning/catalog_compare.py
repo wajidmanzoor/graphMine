@@ -124,9 +124,9 @@ def regrade_report(catalog, suite, report):
         case = known[case_id]
         _require(
             row.get("case_sha256") == case["sha256"]
-            and row.get("operation_id") == case["task"]["operation_id"]
-            and row.get("problem_id") == case["task"]["problem_id"],
-            "Trial case content or operation binding differs",
+            and row.get("problem_id") == case["task"]["problem_id"]
+            and row.get("topic_id") == case["task"]["topic_id"],
+            "Trial case content or problem binding differs",
         )
         raw = {
             key: value
@@ -292,7 +292,7 @@ def compare_reports(settings, *, suite_path, before_path, after_path):
         {
             "case_id": key[0],
             "trial": key[1],
-            "operation_id": first[key]["operation_id"],
+            "problem_id": first[key]["problem_id"],
             "before_passed": first[key]["grade"]["workflow_contract_passed"],
             "after_passed": second[key]["grade"]["workflow_contract_passed"],
             "after_issues": second[key]["grade"]["issues"],

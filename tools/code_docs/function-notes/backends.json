@@ -432,7 +432,7 @@
       "BackendGraph converts counts, offsets, and degrees to unsigned 32-bit values. Conversion errors are caught as execution_failed by this wrapper.",
       "At each level the kernels select and process vertices, synchronize, and read the cumulative processed count. The loop ends when all vertices have been processed.",
       "Device adjacency, degree, progress, and work buffers are allocated for the call and explicitly freed along the handled success and CUDA-error paths.",
-      "The final degree buffer is interpreted as core numbers. CUDA operation failures and caught exceptions return execution_failed with no result vector.",
+      "The final degree buffer is interpreted as core numbers. CUDA problem failures and caught exceptions return execution_failed with no result vector.",
       "When this backend is disabled at build time, the linked stub returns backend_unavailable immediately, with empty or zero result fields and zero elapsed time; it does not attempt a CPU fallback."
     ]
   },
@@ -532,7 +532,7 @@
     ]
   },
   "namespacegraphmine_1_1detail_1ace30ca592e00ce634f2eb43cc9415b85": {
-    "summary": "Builds a unit-weight device COO matrix, converts it to ToT's bitmap representation, and counts triangles through tensor operations.",
+    "summary": "Builds a unit-weight device COO matrix, converts it to ToT's bitmap representation, and counts triangles through tensor problems.",
     "parameters": {
       "graph": "Borrowed simple, symmetric, undirected CSR in dense zero-based vertex order. Offsets and neighbor indices must be valid and rows sorted; this adapter does not validate the entire CSR contract.",
       "device_id": "CUDA device ordinal to select for this call; the enabled backend must be able to use that device. The input graph remains owned by the caller."
@@ -578,10 +578,10 @@
     ]
   },
   "namespacegraphmine_1_1detail_1_1anonymous__namespace_02cumbe_8cu_03_1aacf537e528d2be5f3731400505f2e240": {
-    "summary": "Converts a failed CUDA runtime result into a C++ exception with the operation name and CUDA error description.",
+    "summary": "Converts a failed CUDA runtime result into a C++ exception with the problem name and CUDA error description.",
     "parameters": {
-      "code": "CUDA status code returned by the operation being checked.",
-      "operation": "Description of the failed operation; a C-string argument must be non-null."
+      "code": "CUDA status code returned by the problem being checked.",
+      "problem": "Description of the failed problem; a C-string argument must be non-null."
     },
     "returns": "Returns normally for cudaSuccess; otherwise throws std::runtime_error. It does not clear CUDA error state or release resources.",
     "details": [
@@ -704,12 +704,12 @@
     ]
   },
   "namespacegraphmine_1_1detail_1_1anonymous__namespace_02gleiden_8cu_03_1a9fdc642a87d73b39a301ff64a6fb7d4d": {
-    "summary": "Wraps a CUDA runtime result in the GraphMine Status type and adds the operation context on failure.",
+    "summary": "Wraps a CUDA runtime result in the GraphMine Status type and adds the problem context on failure.",
     "parameters": {
       "code": "CUDA status code to translate.",
-      "operation": "Non-null operation description included in an error message."
+      "problem": "Non-null problem description included in an error message."
     },
-    "returns": "Status::success() for cudaSuccess; otherwise execution_failed with the operation and CUDA error text.",
+    "returns": "Status::success() for cudaSuccess; otherwise execution_failed with the problem and CUDA error text.",
     "details": [
       "This helper does not throw intentionally, synchronize work, or query a new CUDA error; it describes the supplied code."
     ]
@@ -780,12 +780,12 @@
     ]
   },
   "namespacegraphmine_1_1detail_1_1anonymous__namespace_02kcore__gpu_8cu_03_1abdb46029fbb04434d756f1439d0c3d1d": {
-    "summary": "Wraps a CUDA runtime result in the GraphMine Status type and adds the operation context on failure.",
+    "summary": "Wraps a CUDA runtime result in the GraphMine Status type and adds the problem context on failure.",
     "parameters": {
       "code": "CUDA status code to translate.",
-      "operation": "Non-null operation description included in an error message."
+      "problem": "Non-null problem description included in an error message."
     },
-    "returns": "Status::success() for cudaSuccess; otherwise execution_failed with the operation and CUDA error text.",
+    "returns": "Status::success() for cudaSuccess; otherwise execution_failed with the problem and CUDA error text.",
     "details": [
       "This helper does not throw intentionally, synchronize work, or query a new CUDA error; it describes the supplied code."
     ]
@@ -899,10 +899,10 @@
     ]
   },
   "namespacegraphmine_1_1detail_1_1temporal__cuda_1a2e56bc0e7bee1ab3696a6223fb26eeba": {
-    "summary": "Converts a failed CUDA runtime result into a C++ exception with the operation name and CUDA error description.",
+    "summary": "Converts a failed CUDA runtime result into a C++ exception with the problem name and CUDA error description.",
     "parameters": {
-      "code": "CUDA status code returned by the operation being checked.",
-      "operation": "Description of the failed operation; a C-string argument must be non-null."
+      "code": "CUDA status code returned by the problem being checked.",
+      "problem": "Description of the failed problem; a C-string argument must be non-null."
     },
     "returns": "Returns normally for cudaSuccess; otherwise throws std::runtime_error. It does not clear CUDA error state or release resources.",
     "details": [
@@ -973,7 +973,7 @@
     "returns": "The device range contains a byte copy of source. Empty matching vectors require no CUDA copy; ownership of both allocations stays unchanged.",
     "details": [
       "A size mismatch throws std::logic_error before copying. A failed cudaMemcpy throws std::runtime_error.",
-      "The operation uses cudaMemcpyHostToDevice and does not resize or allocate the buffer. T must be suitable for this raw-memory copy."
+      "The problem uses cudaMemcpyHostToDevice and does not resize or allocate the buffer. T must be suitable for this raw-memory copy."
     ]
   },
   "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1afdeb093a6cc7f3346cfbb13276564852": {
@@ -981,7 +981,7 @@
     "parameters": {},
     "returns": "A borrowed mutable T* into the owned CUDA allocation, or nullptr for an empty buffer. It is valid only while the owner retains the allocation.",
     "details": [
-      "The returned address is for CUDA work or CUDA copy operations; it is not a host copy and must not be freed by the caller."
+      "The returned address is for CUDA work or CUDA copy problems; it is not a host copy and must not be freed by the caller."
     ]
   },
   "classgraphmine_1_1detail_1_1temporal__cuda_1_1DeviceBuffer_1abb8557e00b70723c4476a329854fe47d": {
@@ -989,7 +989,7 @@
     "parameters": {},
     "returns": "A borrowed const T* into the owned CUDA allocation, or nullptr for an empty buffer. It is valid only while the owner retains the allocation.",
     "details": [
-      "The returned address is for CUDA work or CUDA copy operations; it is not a host copy and must not be freed by the caller."
+      "The returned address is for CUDA work or CUDA copy problems; it is not a host copy and must not be freed by the caller."
     ]
   },
   "namespacegraphmine_1_1detail_1_1temporal__cuda_1aba33776b11ee7d70c15f8729df170cea": {
@@ -1032,12 +1032,12 @@
     ]
   },
   "namespacegraphmine_1_1detail_1_1anonymous__namespace_02turbobc_8cu_03_1a861d1b586fb77b8b7be669684d82910f": {
-    "summary": "Wraps a CUDA runtime result in the GraphMine Status type and adds the operation context on failure.",
+    "summary": "Wraps a CUDA runtime result in the GraphMine Status type and adds the problem context on failure.",
     "parameters": {
       "code": "CUDA status code to translate.",
-      "operation": "Non-null operation description included in an error message."
+      "problem": "Non-null problem description included in an error message."
     },
-    "returns": "Status::success() for cudaSuccess; otherwise execution_failed with the operation and CUDA error text.",
+    "returns": "Status::success() for cudaSuccess; otherwise execution_failed with the problem and CUDA error text.",
     "details": [
       "This helper does not throw intentionally, synchronize work, or query a new CUDA error; it describes the supplied code."
     ]

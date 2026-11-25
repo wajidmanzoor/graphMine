@@ -73,12 +73,12 @@
     ]
   },
   "namespaceanonymous__namespace_02cli_8cpp_03_1ab5bc8cfd74e5082628797129788fca15": {
-    "summary": "Restrict a catalog response to one known problem family.",
+    "summary": "Restrict a catalog response to one known topic family.",
     "parameters": {
       "catalog": "Catalog object modified in place.",
       "selected": "Family identifier to retain."
     },
-    "returns": "No value; replaces families, operations, and problems with matching rows.",
+    "returns": "No value; replaces families, problems, and topics with matching rows.",
     "details": [
       "Throws std::runtime_error for an unknown family and lists valid identifiers."
     ]
@@ -350,7 +350,7 @@
   "namespacegraphmine_1_1runtime_1_1family__util_1ae37e2d4e19549d55bdaf6c3363cf306b": {
     "summary": "Read an enumerated string parameter and validate its allowed values.",
     "parameters": {
-      "args": "Operation parameters.",
+      "args": "Problem parameters.",
       "key": "Parameter key.",
       "initial": "Default used when the key is absent.",
       "choices": "Allowed string values."
@@ -360,7 +360,7 @@
   "namespacegraphmine_1_1runtime_1_1family__util_1a488289aa7b8d651049df0745a6e86170": {
     "summary": "Read a nonnegative integer parameter with a minimum.",
     "parameters": {
-      "args": "Operation parameters.",
+      "args": "Problem parameters.",
       "key": "Parameter key.",
       "initial": "Default used when absent.",
       "minimum": "Smallest accepted value."
@@ -370,7 +370,7 @@
   "namespacegraphmine_1_1runtime_1_1family__util_1ad2c4778800a185f0b7365e5b6bc8d6f2": {
     "summary": "Read an optional positive result-collection bound.",
     "parameters": {
-      "args": "Operation parameters.",
+      "args": "Problem parameters.",
       "key": "Limit key, normally result_limit.",
       "minimum": "Minimum accepted explicit limit."
     },
@@ -526,10 +526,10 @@
     ]
   },
   "namespacegraphmine_1_1runtime_1_1family__util_1aa9933c3d9333d79aac5080be8dc5f098": {
-    "summary": "Assemble the common operation response envelope.",
+    "summary": "Assemble the common problem response envelope.",
     "parameters": {
       "args": "Resolved parameters.",
-      "data": "Operation-specific answer fields.",
+      "data": "Problem-specific answer fields.",
       "ports": "Typed output ports.",
       "complete": "Whether the computation or requested collection completed.",
       "quality": "Declared algorithm quality, normally exact."
@@ -801,20 +801,20 @@
   "namespacegraphmine_1_1runtime_1a50d45c7c61164d8b938f1387fb47f08d": {
     "summary": "Check declared backend feasibility for one request without running its algorithm.",
     "parameters": {
-      "request": "Operation, literal input, parameters, device/backend preference, optional budget, and optional allowed_backends."
+      "request": "Problem, literal input, parameters, device/backend preference, optional budget, and optional allowed_backends."
     },
-    "returns": "Operation metadata and candidate rows containing compilation, admission, feasibility, rejection reasons, and size limits.",
+    "returns": "Problem metadata and candidate rows containing compilation, admission, feasibility, rejection reasons, and size limits.",
     "details": [
       "Uses the same native support functions as execution. Each candidate gets its own work-budget copy.",
       "CPU-only requests do not initialize CUDA. A selected legacy_backend is a proposal, not proof that a later computation will complete."
     ]
   },
   "namespacegraphmine_1_1runtime_1a7bc68fb25fcd110b6e3c241d554352a4": {
-    "summary": "Validate an operation request, choose an admitted backend, compute its result, and attach provenance.",
+    "summary": "Validate an problem request, choose an admitted backend, compute its result, and attach provenance.",
     "parameters": {
-      "request": "Run request containing operation and graph or structured input, with optional parameters, device/backend choice, budget, and allowed_backends."
+      "request": "Run request containing problem and graph or structured input, with optional parameters, device/backend choice, budget, and allowed_backends."
     },
-    "returns": "The operation response enriched with schema version, fingerprints, backend information, representation provenance, budget, and elapsed time.",
+    "returns": "The problem response enriched with schema version, fingerprints, backend information, representation provenance, budget, and elapsed time.",
     "details": [
       "Automatic selection tries compatible compiled GPU candidates before the native CPU implementation. Explicit policies reject conflicts or unavailable/incompatible backends.",
       "Input and algorithm failures are thrown as Failure here; the public request wrapper converts them to JSON error objects.",
@@ -863,7 +863,7 @@
     ]
   },
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02validation_8cpp_03_1addbf2101f3e4010b43e54edd9d4bd1d3": {
-    "summary": "Validate one operation parameter using its catalog specification.",
+    "summary": "Validate one problem parameter using its catalog specification.",
     "parameters": {
       "value": "Supplied value.",
       "spec": "Parameter contract including kind, nullable, bounds, choices, and optional nested schema.",
@@ -875,9 +875,9 @@
     ]
   },
   "namespacegraphmine_1_1runtime_1a1a4295837537e4f344645c1b24052ee7": {
-    "summary": "Check supplied operation parameters and required-field completeness.",
+    "summary": "Check supplied problem parameters and required-field completeness.",
     "parameters": {
-      "card": "Operation catalog card.",
+      "card": "Problem catalog card.",
       "parameters": "Supplied parameter object.",
       "partial": "When true, allow required parameters to remain absent."
     },
@@ -899,22 +899,22 @@
     ]
   },
   "namespacegraphmine_1_1runtime_1a472e5771b576874b009e513155f87241": {
-    "summary": "Validate an operation contract and any literal input before execution.",
+    "summary": "Validate an problem contract and any literal input before execution.",
     "parameters": {
-      "request": "Request with operation and optional graph, parameters, device, and partial_parameters."
+      "request": "Request with problem and optional graph, parameters, device, and partial_parameters."
     },
     "returns": "Validated parameter/input metadata and a statement of the validation scope.",
     "details": [
-      "Explicit GPU requests require a compiled compatible profile, but this does not execute the operation or certify later resource availability.",
+      "Explicit GPU requests require a compiled compatible profile, but this does not execute the problem or certify later resource availability.",
       "Dependent inputs and constraints only known during execution remain execution-time checks."
     ]
   },
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02registry_8cpp_03_1a97e5d6c3f307f79dc031acb2cf030fe9": {
-    "summary": "Build the immutable operation-to-family map from the compiled shared taxonomy.",
+    "summary": "Build the immutable problem-to-family map from the compiled shared taxonomy.",
     "parameters": {},
     "returns": "A const reference with static lifetime.",
     "details": [
-      "Rejects an operation assigned to more than one family."
+      "Rejects an problem assigned to more than one family."
     ]
   },
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02registry_8cpp_03_1aa1bac5a92bebd174ef727367133477f8": {
@@ -928,70 +928,70 @@
     "returns": "A parameter-contract object; required parameters do not receive a default entry."
   },
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02registry_8cpp_03_1ace4a3023a5fa4a755ed663e64ab7d2a1": {
-    "summary": "Construct the common metadata for a graph operation.",
+    "summary": "Construct the common metadata for a graph problem.",
     "parameters": {
-      "id": "Operation identifier.",
-      "problem": "Formal problem identifier.",
+      "id": "Problem identifier.",
+      "topic": "Formal topic identifier.",
       "title": "Human-readable title.",
-      "description": "Operation description.",
+      "description": "Problem description.",
       "parameters": "Parameter specifications.",
       "ports": "Output-port declarations.",
       "gpu_backends": "Additional GPU backend rows."
     },
     "returns": "A catalog card with its taxonomy family and an available native CPU entry.",
     "details": [
-      "The operation must appear in the family taxonomy. Later registry construction can refine input kind, quality, schemas, and backend limitations."
+      "The problem must appear in the family taxonomy. Later registry construction can refine input kind, quality, schemas, and backend limitations."
     ]
   },
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02registry_8cpp_03_1aac23cdf2aa45014ef1929aa0d628b1fc": {
-    "summary": "Construct the static registry binding operation contracts to native handlers.",
+    "summary": "Construct the static registry binding problem contracts to native handlers.",
     "parameters": {},
-    "returns": "A const reference to operation metadata and graph/structured-input function pointers.",
+    "returns": "A const reference to problem metadata and graph/structured-input function pointers.",
     "details": [
-      "Uses compile-time backend probes and augments individual operations with precise schemas, quality labels, and GPU restrictions."
+      "Uses compile-time backend probes and augments individual problems with precise schemas, quality labels, and GPU restrictions."
     ]
   },
   "namespacegraphmine_1_1runtime_1ae5275ef1f20fa204cd069fafaba656f0": {
-    "summary": "Copy all native operation metadata out of the registry.",
+    "summary": "Copy all native problem metadata out of the registry.",
     "parameters": {},
-    "returns": "A JSON array of operation cards in registry order."
+    "returns": "A JSON array of problem cards in registry order."
   },
   "namespacegraphmine_1_1runtime_1a830485858575c6479a48bbe70c5f085e": {
-    "summary": "Look up the metadata contract for a native operation.",
+    "summary": "Look up the metadata contract for a native problem.",
     "parameters": {
-      "operation": "Operation identifier."
+      "problem": "Problem identifier."
     },
     "returns": "A const reference to registry-owned metadata with static lifetime.",
     "details": [
-      "Raises unsupported_operation when the identifier is not registered."
+      "Raises unsupported_problem when the identifier is not registered."
     ]
   },
   "namespacegraphmine_1_1runtime_1af69a66f973249035bfce496b513ca6c4": {
-    "summary": "Resolve the graph-input function pointer for a native operation.",
+    "summary": "Resolve the graph-input function pointer for a native problem.",
     "parameters": {
-      "operation": "Operation identifier."
+      "problem": "Problem identifier."
     },
     "returns": "The registered NativeAlgorithm pointer.",
     "details": [
-      "Raises unsupported_operation when no graph handler exists, including structured-input-only operations."
+      "Raises unsupported_problem when no graph handler exists, including structured-input-only problems."
     ]
   },
   "namespacegraphmine_1_1runtime_1ad37bb8cc8299259eb83db453370eaf6f": {
-    "summary": "Resolve the structured-input function pointer for a native operation.",
+    "summary": "Resolve the structured-input function pointer for a native problem.",
     "parameters": {
-      "operation": "Operation identifier."
+      "problem": "Problem identifier."
     },
     "returns": "The registered NativeInputAlgorithm pointer.",
     "details": [
-      "Raises unsupported_operation when no structured-input handler exists."
+      "Raises unsupported_problem when no structured-input handler exists."
     ]
   },
   "namespacegraphmine_1_1runtime_1acd083018ef706d8632bc7c62d39b0297": {
-    "summary": "Combine formal taxonomy, executable operation contracts, and compiled capabilities. ",
+    "summary": "Combine formal taxonomy, executable problem contracts, and compiled capabilities. ",
     "parameters": {},
-    "returns": "A self-contained JSON catalog including families, problems, operations, ABI/build identity, file readers, and table-projection capabilities.",
+    "returns": "A self-contained JSON catalog including families, topics, problems, ABI/build identity, file readers, and table-projection capabilities.",
     "details": [
-      "Verifies that every catalog operation belongs to a single declared family and that formal-problem operation assignments are consistent."
+      "Verifies that every catalog problem belongs to a single declared family and that formal-topic problem assignments are consistent."
     ]
   },
   "structgraphmine_1_1runtime_1_1numeric_1_1Matrix_1a009d8ef08294741c8e9675b9e2bf3aa6": {
@@ -1089,7 +1089,7 @@
   "namespacegraphmine_1_1runtime_1_1numeric_1a4a1b8fcfd57481b80ad9afe71f5c4ff5": {
     "summary": "Read a positive numerical tolerance from parameters or a caller-supplied default.",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
       "key": "Tolerance field name.",
       "initial": "Finite positive default used when the field is absent."
     },
@@ -1267,14 +1267,14 @@
     "returns": "A mutable map used while profiles register themselves; lookups return its stored declarations."
   },
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02view__profiles_8cpp_03_1a3e5b3cf98662b2f06d3772fcd81d3282": {
-    "summary": "Copy literal operation names into owned strings.",
+    "summary": "Copy literal problem names into owned strings.",
     "parameters": {
-      "values": "Initializer list of operation identifiers."
+      "values": "Initializer list of problem identifiers."
     },
     "returns": "An owned vector preserving declaration order."
   },
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02view__profiles_8cpp_03_1a866baa4d0408d7542aede5c38e7a34fb": {
-    "summary": "Record which normalized representation a runtime operation consumed.",
+    "summary": "Record which normalized representation a runtime problem consumed.",
     "parameters": {
       "profile": "Declared graph-view profile controlling normalization, layout, and retained metadata.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure.",
@@ -1288,12 +1288,12 @@
     ]
   },
   "structgraphmine_1_1runtime_1_1ViewProfile_1a77185edee9a95a8a6021aaa6897b2dbd": {
-    "summary": "Parse and register an immutable operation view declaration.",
+    "summary": "Parse and register an immutable problem view declaration.",
     "parameters": {
       "id": "Unique profile identifier.",
-      "operations": "Operations using this profile.",
+      "problems": "Problems using this profile.",
       "spec_json": "Serialized ViewSpec.",
-      "partition_parameters": "Bind explicit left/right partitions from operation parameters when true."
+      "partition_parameters": "Bind explicit left/right partitions from problem parameters when true."
     },
     "returns": "A registered profile containing its validated view specification.",
     "details": [
@@ -1303,7 +1303,7 @@
   "structgraphmine_1_1runtime_1_1ViewProfile_1a7ffbd87748de433c5d495bc34a5d72d8": {
     "summary": "Resolve a profile into a validated request-specific view specification.",
     "parameters": {
-      "parameters": "Operation parameters; partition-bound profiles require both left_partition and right_partition ID arrays."
+      "parameters": "Problem parameters; partition-bound profiles require both left_partition and right_partition ID arrays."
     },
     "returns": "A copied ViewSpec with any partition IDs bound.",
     "details": [
@@ -1320,7 +1320,7 @@
   "namespacegraphmine_1_1runtime_1ab2c39b4df38dd10692cd8f6927393647": {
     "summary": "Export registered CPU view declarations for catalog and validation consumers.",
     "parameters": {},
-    "returns": "JSON rows containing profile IDs, operations, canonical specs, and partition bindings when applicable."
+    "returns": "JSON rows containing profile IDs, problems, canonical specs, and partition bindings when applicable."
   },
   "namespacegraphmine_1_1runtime_1a336b08e6843a7e1825d57f02efb461ad": {
     "summary": "Copy CSR neighbor slices into the vector-row mining layout.",
@@ -1340,13 +1340,13 @@
     "returns": "An owned WeightedGraph preserving direction, targets, and weights."
   },
   "namespacegraphmine_1_1runtime_1a51f1d8b91d3a37db17ab9cce6c67f25b": {
-    "summary": "Acquire the representation declared by an operation profile and preserve its work-accounting policy.",
+    "summary": "Acquire the representation declared by an problem profile and preserve its work-accounting policy.",
     "parameters": {
       "graph": "Validated canonical graph; external identifiers retain their integer or string type.",
       "profile": "Declared graph-view profile controlling normalization, layout, and retained metadata.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure.",
       "budget": "Accounting mode selecting original-edge, view-build, record-edge, or algorithm-owned charges.",
-      "parameters": "Operation parameters used to bind profile partitions."
+      "parameters": "Problem parameters used to bind profile partitions."
     },
     "returns": "Shared ownership of an immutable ViewResult.",
     "details": [
@@ -1868,7 +1868,7 @@
     "returns": "No value; adds container capacities and relevant allocation overhead to the byte estimate."
   },
   "namespacegraphmine_1_1anonymous__namespace_02views__input_8cpp_03_1adb0e00364e5f381de6554690ae35d737": {
-    "summary": "Create a structural-parser work context without operation-specific limits.",
+    "summary": "Create a structural-parser work context without problem-specific limits.",
     "parameters": {},
     "returns": "A Work value with maximal count bounds and an infinite timeout.",
     "details": [
@@ -1979,7 +1979,7 @@
   "namespacegraphmine_1_1runtime_1a17a0fdbe46c84e01b736ec1b8600ac37": {
     "summary": "Describe integrated research mining backends and whether this build links them.",
     "parameters": {
-      "operation": "Mining operation identifier."
+      "problem": "Mining problem identifier."
     },
     "returns": "GPU backend metadata rows including compilation state and execution notes.",
     "details": [
@@ -1990,7 +1990,7 @@
     "summary": "Count maximal cliques through an enabled research GPU adapter, preserving isolated singleton cliques.",
     "parameters": {
       "adj": "Normalized simple undirected mining graph.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "device": "CUDA device ordinal selected by the caller.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
@@ -2004,13 +2004,13 @@
     "summary": "Obtain a maximum-clique witness from the selected research GPU adapter.",
     "parameters": {
       "adj": "Normalized mining graph.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "device": "CUDA device ordinal selected by the caller.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
     "returns": "Dense vertex indices returned by the backend.",
     "details": [
-      "Handles empty and edgeless graphs directly. The enclosing operation performs the native witness/optimality checks; this adapter alone returns the kernel result.",
+      "Handles empty and edgeless graphs directly. The enclosing problem performs the native witness/optimality checks; this adapter alone returns the kernel result.",
       "Unavailable builds raise backend_unavailable."
     ]
   },
@@ -2019,13 +2019,13 @@
     "parameters": {
       "adj": "Normalized mining graph.",
       "k": "Required clique order.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "device": "CUDA device ordinal selected by the caller.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
     "returns": "The backend uint64 clique count.",
     "details": [
-      "Serializes the kernel call and translates Status failures; profile admission and any optional CPU materialization belong to the enclosing operation."
+      "Serializes the kernel call and translates Status failures; profile admission and any optional CPU materialization belong to the enclosing problem."
     ]
   },
   "namespacegraphmine_1_1runtime_1a7aeff7d1f5d3b8d25bea271815571206": {
@@ -2070,7 +2070,7 @@
   "namespacegraphmine_1_1runtime_1a6d1cf3fb0995c0f0fd0266129e8c9395": {
     "summary": "Describe the native flow or assignment adapter available to this build.",
     "parameters": {
-      "operation": "max-flow-min-cut selects the flow adapter; assignment callers select the assignment adapter."
+      "problem": "max-flow-min-cut selects the flow adapter; assignment callers select the assignment adapter."
     },
     "returns": "GPU backend metadata with compile-time availability and verification description."
   },
@@ -2099,7 +2099,7 @@
     },
     "returns": "For each row, its assigned column index.",
     "details": [
-      "Supports at most 64 rows; an empty matrix returns an empty assignment. Duplicate, invalid, or missing output columns raise correctness_mismatch. Optimality is checked by the enclosing operation."
+      "Supports at most 64 rows; an empty matrix returns an empty assignment. Duplicate, invalid, or missing output columns raise correctness_mismatch. Optimality is checked by the enclosing problem."
     ]
   },
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1a0e7193cb8b9855cce20fa1e20deb81ac": {
@@ -2200,8 +2200,8 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1adc160fef3ff7269e1f3754d31003771c": {
     "summary": "Translate runtime community parameters into the selected legacy community adapter options. ",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "device": "CUDA device ordinal selected by the caller."
     },
     "returns": "Options selecting the matching community backend, resolution, and device."
@@ -2209,7 +2209,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1a8a3544e36ea109a14e50147f0290d6e7": {
     "summary": "Configure the cuQC profile from degree ratio and minimum clique size. ",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
       "device": "CUDA device ordinal selected by the caller."
     },
     "returns": "QuasiCliqueOptions with gamma, minimum size, backend, and device."
@@ -2217,7 +2217,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1a8db3210edb6dcf99489d3fd28d497c78": {
     "summary": "Configure the cuMBE profile with explicit left-side IDs and minimum side sizes. ",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
       "device": "CUDA device ordinal selected by the caller."
     },
     "returns": "MaximalBicliqueOptions requesting a total count and the selected device.",
@@ -2228,8 +2228,8 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1a763c5a8a7196619ec777f911d3eb8e9b": {
     "summary": "Translate motif semantics and backend choice for a legacy motif adapter. ",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "device": "CUDA device ordinal selected by the caller."
     },
     "returns": "Options specifying induced matching, occurrence identity, selected backend, and device."
@@ -2237,7 +2237,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1a0161ca9a8f1ed8804f4961641327b2c4": {
     "summary": "Parse the motif graph array supplied to a counting request. ",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter."
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter."
     },
     "returns": "Owned validated Graph objects in motif-array order."
   },
@@ -2251,8 +2251,8 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1a41d3993c1a792900ec92414277e6d09f": {
     "summary": "Configure an original temporal-motif adapter with an admitted duration bound. ",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "device": "CUDA device ordinal selected by the caller."
     },
     "returns": "Options for Everest or Mayura with an integer maximum time span.",
@@ -2263,7 +2263,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1a706619a50f556e311151b8b165245dd8": {
     "summary": "Check whether a temporal query matches the original kernels’ strict feed-forward pattern. ",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter."
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter."
     },
     "returns": "An empty string when compatible, otherwise a reason explaining the unsupported profile.",
     "details": [
@@ -2273,7 +2273,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1ac3a9afe74f5c3f6bc46844cbd142abf9": {
     "summary": "Configure group-Steiner membership and required-vertex constraints for the native adapter. ",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
       "device": "CUDA device ordinal selected by the caller.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
@@ -2286,7 +2286,7 @@
     "summary": "Configure the admitted sampled personalized-PageRank adapter. ",
     "parameters": {
       "graph": "Validated canonical graph; external identifiers retain their integer or string type.",
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
       "device": "CUDA device ordinal selected by the caller.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
@@ -2298,7 +2298,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1a91b5ec5bc5f9961a6f1a9f7eabba9070": {
     "summary": "Configure sampled influence maximization for an admitted native adapter. ",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
       "device": "CUDA device ordinal selected by the caller.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
@@ -2310,7 +2310,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02original__extensions_8cpp_03_1a1792fa0a997e3f897bda77d380310871": {
     "summary": "Decode edge insertions and deletions for the legacy dynamic-triangle interface. ",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter."
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter."
     },
     "returns": "Typed TriangleUpdate records in request order.",
     "details": [
@@ -2318,9 +2318,9 @@
     ]
   },
   "namespacegraphmine_1_1runtime_1a9246e9255490e2fb7db6f19940dcc0c4": {
-    "summary": "Check whether a backend identifier belongs to an operation’s extension registry. ",
+    "summary": "Check whether a backend identifier belongs to an problem’s extension registry. ",
     "parameters": {
-      "operation": "Operation identifier.",
+      "problem": "Problem identifier.",
       "backend": "Backend identifier."
     },
     "returns": "True when the pair is registered, independently of compilation state."
@@ -2328,17 +2328,17 @@
   "namespacegraphmine_1_1runtime_1a426b6588e9902eeadef7fae4a3cb8fce": {
     "summary": "Export registered extension adapters with their actual compilation flags. ",
     "parameters": {
-      "operation": "Operation identifier."
+      "problem": "Problem identifier."
     },
-    "returns": "Metadata rows for that operation, or an empty array if it has no extension registration."
+    "returns": "Metadata rows for that problem, or an empty array if it has no extension registration."
   },
   "namespacegraphmine_1_1runtime_1a359d6b49fcdede8f014e5e3580c3991d": {
-    "summary": "Check the operation-specific input restrictions of an extension backend. ",
+    "summary": "Check the problem-specific input restrictions of an extension backend. ",
     "parameters": {
-      "operation": "Operation identifier.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "problem": "Problem identifier.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "graph": "Validated canonical graph; external identifiers retain their integer or string type.",
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
     "returns": "An empty string for a compatible profile, otherwise an explanatory reason.",
@@ -2351,8 +2351,8 @@
     "summary": "Run a community adapter and verify a total per-vertex assignment. ",
     "parameters": {
       "graph": "Validated canonical graph; external identifiers retain their integer or string type.",
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "device": "CUDA device ordinal selected by the caller.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
@@ -2364,14 +2364,14 @@
   "namespacegraphmine_1_1runtime_1a502bec5d80c87bf55fe552d058b809a0": {
     "summary": "Dispatch an extension calculation while preserving the native result contract and its declared quality. ",
     "parameters": {
-      "operation": "Operation identifier.",
+      "problem": "Problem identifier.",
       "graph": "Validated canonical graph; external identifiers retain their integer or string type.",
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "device": "CUDA device ordinal selected by the caller.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
-    "returns": "The enriched operation response.",
+    "returns": "The enriched problem response.",
     "details": [
       "For exact profiles, retains the CPU materialization and checks the GPU count, objective, groups, or witness against it before returning.",
       "Sampled personalized PageRank and influence maximization retain approximate/heuristic quality and explicitly avoid certifying a global optimum or error bound."
@@ -2382,7 +2382,7 @@
     "parameters": {
       "graph": "Validated canonical graph; external identifiers retain their integer or string type.",
       "args": "Empty parameter object; sides come from each vertex attributes.side.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "device": "CUDA device ordinal selected by the caller.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
@@ -2406,8 +2406,8 @@
     "summary": "Apply a batch of deletions then insertions and compute exact triangle-count changes. ",
     "parameters": {
       "graph": "Validated canonical graph; external identifiers retain their integer or string type.",
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
-      "backend": "Selected backend identifier, already checked against the operation contract.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
+      "backend": "Selected backend identifier, already checked against the problem contract.",
       "device": "CUDA device ordinal selected by the caller.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
@@ -3195,11 +3195,11 @@
     "returns": "Rows with query_vertex and data_vertex fields preserving external ID types."
   },
   "namespacegraphmine_1_1runtime_1a78b22c3355f2464244d06972aaee6956": {
-    "summary": "Validate graph-record query selections, filters, and operation-specific parameter combinations.",
+    "summary": "Validate graph-record query selections, filters, and problem-specific parameter combinations.",
     "parameters": {
-      "operation": "Operation identifier; other problem families return immediately.",
+      "problem": "Problem identifier; other topic families return immediately.",
       "graph": "Validated canonical graph; external identifiers retain their integer or string type.",
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
     "returns": "No value; invalid references or incompatible query parameters raise a runtime validation error.",
@@ -3301,7 +3301,7 @@
   "structgraphmine_1_1runtime_1_1record__query_1_1Index_1a93cc3365a29a3c0903d7bb8ad5851e4a": {
     "summary": "Resolve an optional typed-ID selection into index positions.",
     "parameters": {
-      "args": "Operation parameters.",
+      "args": "Problem parameters.",
       "key": "Selection field name.",
       "is_edge": "Resolve edge IDs when true and vertex IDs otherwise."
     },
@@ -3313,7 +3313,7 @@
   "structgraphmine_1_1runtime_1_1record__query_1_1Index_1ae09e9d1af9bc1ddf75ec4bd202e14ca9": {
     "summary": "Construct validated filters for one parameter field and record kind.",
     "parameters": {
-      "args": "Operation parameters.",
+      "args": "Problem parameters.",
       "key": "Filter field name.",
       "edge": "Use edge records when true and vertex records otherwise."
     },
@@ -3347,7 +3347,7 @@
   "namespacegraphmine_1_1runtime_1_1record__query_1a140b569f6b7b99480631f385dcc2c6d6": {
     "summary": "Package bounded record-query rows separately from the complete matched count.",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
       "rows": "Rows actually materialized.",
       "count": "Total matching row count.",
       "ports": "Existing result ports, augmented by rows if absent and always by count."
@@ -3428,9 +3428,9 @@
     ]
   },
   "namespacegraphmine_1_1runtime_1_1learning_1a321ada647894bec21c3d7bbcb8572611": {
-    "summary": "Parse the numerical optimizer configuration for a learning operation.",
+    "summary": "Parse the numerical optimizer configuration for a learning problem.",
     "parameters": {
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter."
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter."
     },
     "returns": "Training settings: epochs, learning rate, L2 penalty, and gradient tolerance.",
     "details": [
@@ -3529,7 +3529,7 @@
     "parameters": {
       "data": "Owned dataset with aligned IDs, features, split labels, and targets.",
       "task": "classification for softmax regression or regression for a scalar linear response.",
-      "args": "Validated operation parameters; operation-specific defaults are resolved by the adapter.",
+      "args": "Validated problem parameters; problem-specific defaults are resolved by the adapter.",
       "work": "Mutable work budget and provenance context; traversal or allocation charges can raise a resource-limit failure."
     },
     "returns": "Predictions, per-split metrics, reusable coefficient/preprocessing state, and a numerical training summary.",

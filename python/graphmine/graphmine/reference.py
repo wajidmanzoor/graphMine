@@ -15,7 +15,7 @@ from pathlib import Path
 from threading import RLock
 
 from .contracts import Budget, WorkCounter
-from .exceptions import BackendUnavailable, GraphMineError, UnsupportedOperation
+from .exceptions import BackendUnavailable, GraphMineError, UnsupportedProblem
 from .graph import Graph
 from .inputs import FeatureVectors, GraphCollection, Hypergraph, load_input
 from .ports import validate_ports
@@ -37,7 +37,7 @@ def implementation_hash() -> str:
 
 
 def run(
-    operation: str,
+    problem: str,
     graph: Graph | GraphCollection | FeatureVectors | Hypergraph | dict,
     *,
     parameters: dict | None = None,
@@ -45,14 +45,14 @@ def run(
     backend: str | None = None,
     budget: Budget | None = None,
 ) -> dict:
-    """Run a declared library operation with explicit execution provenance.
+    """Run a declared library problem with explicit execution provenance.
 
     CPU always invokes the declared CPU library integration. GPU requests never
     silently execute an unsupported CPU algorithm. Automatic selection may use
     CPU when the GPU capability is absent, preserving all requested parameters.
     """
-    if not isinstance(operation, str):
-        raise GraphMineError("operation must be a string")
+    if not isinstance(problem, str):
+        raise GraphMineError("problem must be a string")
     if not isinstance(device, str) or device not in {"auto", "cpu", "gpu"}:
         raise GraphMineError("device must be auto, cpu, or gpu")
     if backend is not None and (
@@ -65,7 +65,7 @@ def run(
         raise GraphMineError("Backend conflicts with the requested device policy")
     if backend:
         device = "gpu" if backend == "cugraph" else "cpu"
-    definition = algorithm(operation)
+    definition = algorithm(problem)
     graph = load_input(graph, definition.input_kind)
     args = definition.arguments({} if parameters is None else parameters)
     if definition.input_validator is not None:
@@ -75,8 +75,8 @@ def run(
     except (ValueError, TypeError) as exc:
         raise GraphMineError("parameters must contain finite JSON values") from exc
     if backend in _CPU_BACKENDS and backend != definition.library:
-        raise UnsupportedOperation(
-            f"{operation} uses the {definition.library} CPU integration"
+        raise UnsupportedProblem(
+            f"{problem} uses the {definition.library} CPU integration"
         )
     if budget is not None and not isinstance(budget, Budget):
         raise GraphMineError("budget must be a Budget")
@@ -108,9 +108,9 @@ def run(
         from .backends import cugraph
 
         try:
-            provenance = cugraph.prepare(operation, args, graph)
+            provenance = cugraph.prepare(problem, args, graph)
             selected = "cugraph"
-        except (UnsupportedOperation, BackendUnavailable) as exc:
+        except (UnsupportedProblem, BackendUnavailable) as exc:
             if device == "gpu":
                 raise
             provenance["selection_reason"] = str(exc)
@@ -126,7 +126,7 @@ def run(
     ):
         output = definition.function(graph, args, work, selected)
     work.tick(0)
-    validate_ports(operation, output.ports)
+    validate_ports(problem, output.ports)
     try:
         json.dumps(
             {
@@ -154,8 +154,8 @@ def run(
                 port.setdefault("graph_fingerprint", graph.fingerprint)
     return {
         "schema_version": "2.0.0",
-        "operation": operation,
-        "problem_id": definition.problem_id,
+        "problem": problem,
+        "topic_id": definition.topic_id,
         "parameters": args,
         "requested_device": device,
         "backend": provenance,

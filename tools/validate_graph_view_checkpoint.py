@@ -83,7 +83,7 @@ def main():
         subprocess.run([args.python, "-c", code], env=environment, cwd=ROOT, stdout=stream, check=True)
     admission = json.loads(report.read_text())
     assert not admission["verification_issues"], admission["verification_issues"]
-    admitted = [op["id"] for op in admission["operations"]
+    admitted = [op["id"] for op in admission["problems"]
                 if any(b["id"] == "cpp" and b["verified"] for b in op["backends"])]
     assert len(admitted) == 82, admitted
     assert sha(build / "libgraphmine_runtime.so") == binary_before
@@ -93,7 +93,7 @@ def main():
         assert not document.findall(".//failure") and not document.findall(".//error"), name
         tests[name] = len(document.findall(".//testcase"))
     summary = {"implementation_sha256": admission["implementation_sha256"], "binary_sha256": binary_before,
-               "tests": tests, "admitted_cpp_operations": admitted, "verification_issues": [],
+               "tests": tests, "admitted_cpp_problems": admitted, "verification_issues": [],
                "runner_sha256": sha(Path(__file__)), "production_changed": False}
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps({"tests": tests, "admitted_cpp": len(admitted)}), flush=True)

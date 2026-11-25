@@ -594,7 +594,7 @@
     ]
   },
   "result": {
-    "operation": "maximal-bicliques",
+    "problem": "maximal-bicliques",
     "parameters": {},
     "ports": {
       "bicliques": {
@@ -1300,7 +1300,7 @@
           "step": "analysis",
           "port": "bicliques",
           "input_fingerprint": "36eeec3138145130080713ebe62831716037b25e91ede782054b6b1544cb25eb",
-          "result_fingerprint": "3abcb65aa54bc15d0c2a4cb8732d52c1fe65035c2b999ed1d9bdb70ebb7ac3a7",
+          "result_fingerprint": "588daf110ccbeb59462c42c3a264e1d4f4f27e15762c117d0227f0281ee4b053",
           "recorded_rules_version": "2026-11-18.3"
         },
         "notes": [],
@@ -1323,7 +1323,7 @@
       },
       "facts": {
         "version": "1.0.0",
-        "operation": "maximal-bicliques",
+        "problem": "maximal-bicliques",
         "port_type": "bipartite_groups",
         "field_roles": {
           "item": {

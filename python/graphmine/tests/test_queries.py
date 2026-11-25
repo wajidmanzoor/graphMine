@@ -5,12 +5,12 @@ from itertools import pairwise, permutations, product
 
 import pytest
 from graphmine.reference import Budget, Graph, list_algorithms, run
-from graphmine.exceptions import GraphMineError, ResourceLimit, UnsupportedOperation
+from graphmine.exceptions import GraphMineError, ResourceLimit, UnsupportedProblem
 from graphmine.reference_workflows import execute_workflow, validate_workflow
 
 
-def query(operation, graph, **parameters):
-    return run(operation, graph, parameters=parameters, device="cpu")
+def query(problem, graph, **parameters):
+    return run(problem, graph, parameters=parameters, device="cpu")
 
 
 def records():
@@ -420,11 +420,11 @@ def inputs(graph):
     return {"main": {"kind": "graph", "data": graph.to_canonical()}}
 
 
-def workflow(operation, parameters, second=None):
+def workflow(problem, parameters, second=None):
     steps = [
         {
             "id": "query",
-            "operation": operation,
+            "problem": problem,
             "input": {"input": "main"},
             "parameters": parameters,
         }
@@ -441,7 +441,7 @@ def test_query_edge_binding_and_lineage_into_dependent_calculation():
         {"edge_ids": [0, "0"]},
         {
             "id": "sub",
-            "operation": "query-subgraph",
+            "problem": "query-subgraph",
             "input": {"input": "main"},
             "parameters": {"mode": "edges"},
             "bindings": {"edge_ids": {"step": "query", "port": "edges"}},
@@ -463,7 +463,7 @@ def test_query_edge_binding_and_lineage_into_dependent_calculation():
 
 
 @pytest.mark.parametrize(
-    "operation,parameters,port",
+    "problem,parameters,port",
     [
         ("node-lookup", {}, "vertices"),
         ("edge-filter", {}, "edges"),
@@ -472,9 +472,9 @@ def test_query_edge_binding_and_lineage_into_dependent_calculation():
         ("graph-aggregate", {"group_by": "vertex"}, "scores"),
     ],
 )
-def test_capped_collection_cannot_feed_a_dependent_step(operation, parameters, port):
+def test_capped_collection_cannot_feed_a_dependent_step(problem, parameters, port):
     graph = records()
-    source = query(operation, graph, **parameters, result_limit=1)
+    source = query(problem, graph, **parameters, result_limit=1)
     assert not source["complete"]
     assert not source["ports"][port]["complete"]
     assert source["ports"]["count"]["complete"]
@@ -483,13 +483,13 @@ def test_capped_collection_cannot_feed_a_dependent_step(operation, parameters, p
         reference["select"] = {"kind": "top_vertices", "k": 1}
     child = {
         "id": "sub",
-        "operation": "query-subgraph",
+        "problem": "query-subgraph",
         "input": {"input": "main"},
         "parameters": {"mode": "edges" if port == "edges" else "vertices"},
         "bindings": {"edge_ids" if port == "edges" else "vertices": reference},
     }
     result = execute_workflow(
-        workflow(operation, {**parameters, "result_limit": 1}, child), inputs(graph)
+        workflow(problem, {**parameters, "result_limit": 1}, child), inputs(graph)
     )
     assert result["steps"]["sub"]["status"] == "failed"
     assert "incomplete" in result["steps"]["sub"]["error"]["message"].lower()
@@ -518,7 +518,7 @@ def test_top_vertex_selection_uses_exact_aggregate_not_rounded_display():
         {"group_by": "vertex", "metric": "avg", "field": "weight"},
         {
             "id": "chosen",
-            "operation": "node-lookup",
+            "problem": "node-lookup",
             "input": {"input": "main"},
             "bindings": {
                 "vertices": {
@@ -535,7 +535,7 @@ def test_top_vertex_selection_uses_exact_aggregate_not_rounded_display():
 
 
 @pytest.mark.parametrize(
-    "operation,parameters",
+    "problem,parameters",
     [
         (
             "node-lookup",
@@ -586,12 +586,12 @@ def test_top_vertex_selection_uses_exact_aggregate_not_rounded_display():
         ("edge-filter", {"edge_ids": ["absent"]}),
     ],
 )
-def test_invalid_queries_rejected_before_queueing(operation, parameters):
+def test_invalid_queries_rejected_before_queueing(problem, parameters):
     graph = records()
     with pytest.raises(GraphMineError):
-        query(operation, graph, **parameters)
+        query(problem, graph, **parameters)
     with pytest.raises(GraphMineError):
-        validate_workflow(workflow(operation, parameters), inputs(graph))
+        validate_workflow(workflow(problem, parameters), inputs(graph))
 
 
 def test_derived_input_fields_revalidated_on_actual_records():
@@ -601,7 +601,7 @@ def test_derived_input_fields_revalidated_on_actual_records():
         {"vertices": ["isolate"]},
         {
             "id": "lookup",
-            "operation": "node-lookup",
+            "problem": "node-lookup",
             "input": {"step": "query", "port": "graph"},
             "parameters": {
                 "vertex_filters": [
@@ -616,7 +616,7 @@ def test_derived_input_fields_revalidated_on_actual_records():
 
 
 @pytest.mark.parametrize(
-    "operation,parameters",
+    "problem,parameters",
     [
         ("node-lookup", {}),
         ("edge-filter", {}),
@@ -626,17 +626,17 @@ def test_derived_input_fields_revalidated_on_actual_records():
         ("query-subgraph", {"vertices": [0]}),
     ],
 )
-def test_queries_obey_work_limits_and_never_claim_gpu(operation, parameters):
+def test_queries_obey_work_limits_and_never_claim_gpu(problem, parameters):
     with pytest.raises(ResourceLimit):
         run(
-            operation,
+            problem,
             records(),
             parameters=parameters,
             device="cpu",
             budget=Budget(max_candidates=1),
         )
-    with pytest.raises(UnsupportedOperation):
-        run(operation, records(), parameters=parameters, device="gpu")
+    with pytest.raises(UnsupportedProblem):
+        run(problem, records(), parameters=parameters, device="gpu")
 
 
 def test_query_cards_are_declared_with_nested_filter_schemas():
@@ -722,7 +722,7 @@ def test_neighborhood_edge_scope_controls_reachability_not_only_output():
 
 
 @pytest.mark.parametrize(
-    "operation,parameters",
+    "problem,parameters",
     [
         ("query-subgraph", {"vertices": [0], "entity": "0"}),
         ("query-subgraph", {"vertices": [0], "hops": 3}),
@@ -735,9 +735,9 @@ def test_neighborhood_edge_scope_controls_reachability_not_only_output():
         ),
     ],
 )
-def test_irrelevant_mode_parameters_are_rejected_not_ignored(operation, parameters):
+def test_irrelevant_mode_parameters_are_rejected_not_ignored(problem, parameters):
     with pytest.raises(GraphMineError):
-        validate_workflow(workflow(operation, parameters), inputs(records()))
+        validate_workflow(workflow(problem, parameters), inputs(records()))
 
 
 def test_empty_record_scopes_do_not_invent_field_values_or_fail_queries():
@@ -758,7 +758,7 @@ def test_empty_query_extraction_can_feed_a_domain_aggregate():
         {"vertices": []},
         {
             "id": "sum",
-            "operation": "graph-aggregate",
+            "problem": "graph-aggregate",
             "input": {"step": "query", "port": "graph"},
             "parameters": {"metric": "sum", "field": "attributes.amount"},
         },

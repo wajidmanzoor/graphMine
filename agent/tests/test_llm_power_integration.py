@@ -140,7 +140,7 @@ async def test_completed_calculation_and_saved_results_do_not_wake(settings, dat
     registry.managers[server_root(settings.llm_base_url)] = power
     service = AnalyticsService(settings, database, graph_store, EventBus(database), llm_power=registry)
     async def capabilities():
-        return {'operations': [{'id': key, 'title': value} for key, value in TITLES.items()]}
+        return {'problems': [{'id': key, 'title': value} for key, value in TITLES.items()]}
     monkeypatch.setattr(service, 'capabilities', capabilities)
     monkeypatch.setattr(service, '_saved', lambda *_args, **_kwargs: SAVED)
     try:

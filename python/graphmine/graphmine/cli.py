@@ -19,12 +19,12 @@ def main():
     listing.add_argument("--family", help="Select a family from the native catalog")
     commands.add_parser("families")
     execute = commands.add_parser("run")
-    execute.add_argument("operation")
+    execute.add_argument("problem")
     execute.add_argument("graph", type=Path)
     execute.add_argument(
         "--parameters",
         type=Path,
-        help="JSON object containing the exact operation parameters",
+        help="JSON object containing the exact problem parameters",
     )
     execute.add_argument("--device", choices=("auto", "cpu", "gpu"), default="auto")
     execute.add_argument("--backend", default="auto")
@@ -37,7 +37,7 @@ def main():
             result = list_families()
         else:
             result = run(
-                args.operation,
+                args.problem,
                 json.loads(args.graph.read_text()),
                 parameters=json.loads(args.parameters.read_text())
                 if args.parameters

@@ -65,7 +65,7 @@ def native_completion_evidence(request):
         return {str(path.relative_to(ROOT)): sha(path) for path in sorted(set(files))}
 
     before, binary = snapshot(), sha(library)
-    request.session.native_observed_operations = {}
+    request.session.native_observed_problems = {}
     yield
     unchanged, same_binary = before == snapshot(), binary == sha(library)
     report = getattr(request.config.option, "xmlpath", None)
@@ -83,7 +83,7 @@ def native_completion_evidence(request):
                     "gpu_hardware": getattr(request.session, "native_gpu_hardware", None),
                     "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
                     "collected_test_count": len(request.session.items),
-                    "observed_operations": request.session.native_observed_operations,
+                    "observed_problems": request.session.native_observed_problems,
                     "scope": "Native C ABI calls with independent mathematical, learning, record and transport checks",
                 },
                 indent=2,

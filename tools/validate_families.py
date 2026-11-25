@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the operation taxonomy and grep repository family references."""
+"""Validate the problem taxonomy and grep repository family references."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-FAMILY_FIELDS = {"id", "title", "description", "deciding_question", "operations"}
+FAMILY_FIELDS = {"id", "title", "description", "deciding_question", "problems"}
 IDENTIFIER = r"[a-z][a-z0-9_-]*"
 LITERAL = rf"""["'](?P<family>{IDENTIFIER})["']"""
 FAMILY_REFERENCES = tuple(re.compile(pattern) for pattern in (
@@ -22,7 +22,7 @@ FAMILY_REFERENCES = tuple(re.compile(pattern) for pattern in (
     rf"""\b(?:family_id|preferred_family|data-family)\s*=\s*{LITERAL}""",
     rf"""["'](?:family_id|preferred_family)["']\s*:\s*{LITERAL}""",
     rf"""\b(?:family_id|preferred_family|family\.id|\w+\.family)\s*(?:===?|!==?)\s*{LITERAL}""",
-    rf"""\b(?:card|operation|problem)\s*\[\s*["']family["']\s*\]\s*(?:===?|!==?)\s*{LITERAL}""",
+    rf"""\b(?:card|problem|topic)\s*\[\s*["']family["']\s*\]\s*(?:===?|!==?)\s*{LITERAL}""",
     rf"""(?:#family/|--family[= ]+)["']?(?P<family>{IDENTIFIER})""",
 ))
 TEXT_SUFFIXES = {
@@ -34,18 +34,18 @@ TEXT_SUFFIXES = {
 
 
 def registry_cards(root: Path) -> list[tuple[str, str]]:
-    """Read literal operation/problem IDs from native cards, without a build."""
+    """Read literal problem/topic IDs from native cards, without a build."""
     source = (root / "library/runtime/registry.cpp").read_text()
     cards = re.findall(
         rf'\bcard\s*\(\s*"({IDENTIFIER})"\s*,\s*"({IDENTIFIER})"', source
     )
     if not cards:
-        raise ValueError("No native operation-card declarations found")
+        raise ValueError("No native problem-card declarations found")
     return cards
 
 
-def registry_operations(root: Path) -> list[str]:
-    return [operation for operation, _problem in registry_cards(root)]
+def registry_problems(root: Path) -> list[str]:
+    return [problem for problem, _problem in registry_cards(root)]
 
 
 def validate_taxonomy(document: dict, registered: list[str]) -> list[str]:
@@ -58,14 +58,14 @@ def validate_taxonomy(document: dict, registered: list[str]) -> list[str]:
     if not isinstance(families, list) or len(families) != 14:
         return errors + ["Expected 14 families in display order"]
     if len(registered) != 82 or len(set(registered)) != len(registered):
-        errors.append("Expected 82 unique native registry operation IDs")
-    identifiers, operations = [], []
+        errors.append("Expected 82 unique native registry problem IDs")
+    identifiers, problems = [], []
     for index, family in enumerate(families):
         location = f"families[{index}]"
         if not isinstance(family, dict) or set(family) != FAMILY_FIELDS:
             errors.append(f"{location}: expected {sorted(FAMILY_FIELDS)}; aliases are not allowed")
             continue
-        for field in FAMILY_FIELDS - {"operations"}:
+        for field in FAMILY_FIELDS - {"problems"}:
             value = family[field]
             if not isinstance(value, str) or not value.strip():
                 errors.append(f"{location}.{field}: expected nonempty text")
@@ -77,26 +77,26 @@ def validate_taxonomy(document: dict, registered: list[str]) -> list[str]:
         description, question = family["description"], family["deciding_question"]
         if isinstance(description, str) and isinstance(question, str) and question not in description:
             errors.append(f"{location}: description must include the deciding question")
-        members = family["operations"]
+        members = family["problems"]
         if not isinstance(members, list):
-            errors.append(f"{location}.operations: expected an array")
+            errors.append(f"{location}.problems: expected an array")
             continue
         if not 2 <= len(members) <= 10:
-            errors.append(f"{location}: expected between 2 and 10 operations, got {len(members)}")
-        for operation in members:
-            if not isinstance(operation, str) or not re.fullmatch(IDENTIFIER, operation):
-                errors.append(f"{location}: invalid operation ID {operation!r}")
+            errors.append(f"{location}: expected between 2 and 10 problems, got {len(members)}")
+        for problem in members:
+            if not isinstance(problem, str) or not re.fullmatch(IDENTIFIER, problem):
+                errors.append(f"{location}: invalid problem ID {problem!r}")
             else:
-                operations.append(operation)
+                problems.append(problem)
     duplicate_ids = sorted(key for key, count in Counter(identifiers).items() if count > 1)
-    duplicates = sorted(key for key, count in Counter(operations).items() if count > 1)
-    missing = sorted(set(registered) - set(operations))
-    unknown = sorted(set(operations) - set(registered))
+    duplicates = sorted(key for key, count in Counter(problems).items() if count > 1)
+    missing = sorted(set(registered) - set(problems))
+    unknown = sorted(set(problems) - set(registered))
     for label, values in (
         ("Duplicate family IDs", duplicate_ids),
-        ("Operations assigned more than once", duplicates),
-        ("Missing registry operations", missing),
-        ("Unknown operation IDs", unknown),
+        ("Problems assigned more than once", duplicates),
+        ("Missing registry problems", missing),
+        ("Unknown problem IDs", unknown),
     ):
         if values:
             errors.append(f"{label}: {', '.join(values)}")
@@ -108,7 +108,7 @@ def _declared_json_families(value, record_ids, pointer="$"):
     if isinstance(value, dict):
         if isinstance(value.get("id"), str) and value["id"] in record_ids and isinstance(value.get("family"), str):
             yield f"{pointer}.family", value["family"]
-        if (isinstance(value.get("problem_id"), str) and value["problem_id"] in record_ids
+        if (isinstance(value.get("topic_id"), str) and value["topic_id"] in record_ids
                 and "graph_input" in value and isinstance(value.get("category"), str)):
             yield f"{pointer}.category", value["category"]
         for key, child in value.items():
@@ -134,7 +134,7 @@ def _family_accessor(node):
         return node.attr in {"family", "family_id"}
     if isinstance(node, ast.Subscript):
         return (isinstance(node.value, ast.Name)
-                and node.value.id in {"card", "operation", "problem"}
+                and node.value.id in {"card", "problem", "topic"}
                 and isinstance(node.slice, ast.Constant) and node.slice.value == "family")
     return (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
             and node.func.attr == "get" and node.args
@@ -203,7 +203,7 @@ def _markdown_family_columns(source):
             continue
         cells = [cell.strip().strip(chr(96)) for cell in line.strip().strip("|").split("|")]
         headers = [index for index, cell in enumerate(cells)
-                   if cell.casefold() in {"family", "family id", "problem family", "routing family"}]
+                   if cell.casefold() in {"family", "family id", "topic family", "routing family"}]
         if headers:
             columns = headers
         else:
@@ -283,7 +283,7 @@ def main():
     args = parser.parse_args()
     from family_catalog import taxonomy
     document = taxonomy(ROOT)
-    registered = registry_operations(ROOT)
+    registered = registry_problems(ROOT)
     errors = validate_taxonomy(document, registered)
     if not errors and not args.taxonomy_only:
         errors = invalid_family_references(ROOT, {row["id"] for row in document["families"]})
@@ -296,7 +296,7 @@ def main():
             print(f"... and {len(errors) - 60} more; use --report for the complete list")
         print(f"FAIL: {len(errors)} taxonomy/reference errors")
         return 1
-    print(f"PASS: {len(document['families'])} families cover {len(registered)} operations exactly once")
+    print(f"PASS: {len(document['families'])} families cover {len(registered)} problems exactly once")
     return 0
 
 

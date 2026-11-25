@@ -13,16 +13,16 @@ Follow-ups receive bounded conversation context; evaluation requests exclude it.
 The task-family picker is removed from the UI. The first model call's catalog
 context is only `catalog/family.json`: the 14 family titles, descriptions and
 deciding questions. The second receives only the chosen family's entries from
-`catalog/problems.json`, and selects up to two ranked problem candidates.
+`catalog/problems.json`, and selects up to two ranked topic candidates.
 Both receive the question and, for follow-ups, at most four conversation
 messages capped at 1,000 characters each. Plans, input samples and result
 records enter only later planning stages.
-These are alternatives, not a request to execute both. The existing operation,
-implementation and parameter planning then uses their operation contracts.
+These are alternatives, not a request to execute both. The existing problem,
+implementation and parameter planning then uses their problem contracts.
 When the question explicitly needs steps across families, those dependencies
-are available in the later operation stage. One family reroute is allowed;
+are available in the later problem stage. One family reroute is allowed;
 a second failure asks for clarification. Confirmed choices and saved UI actions
-retain their existing direct paths. [Families and problems](https://wajidmanzoor.github.io/graphMine/problem/taxonomy/) is
+retain their existing direct paths. [Families and topics](https://wajidmanzoor.github.io/graphMine/topic/taxonomy/) is
 generated from the same catalogs.
 
 Calculation choices contain one or two supported alternatives. The second needs
@@ -31,7 +31,7 @@ kept in diagnostic evidence but is not displayed. A single supported calculation
 still waits for the person's choice. Related calculations with different
 objectives are not added just to fill a second card.
 
-Choice identity includes the input, operations and effective parameter values.
+Choice identity includes the input, problems and effective parameter values.
 The native catalog's fixed guarantee takes precedence over a weaker requested
 quality: the current exact densest-subgraph contract accepts approximate requests
 but still uses its exact solver. Those requests form one choice. Contracts with
@@ -85,8 +85,8 @@ explicit approval, including structured JSON workflows with validator errors
 shown directly. Editing increments the revision and
 invalidates prior approval. `/classic` retains the earlier application.
 
-A routed clarification stays pending even when the router suggests an operation:
-if that operation has no missing input, the application still asks which objective
+A routed clarification stays pending even when the router suggests an problem:
+if that problem has no missing input, the application still asks which objective
 the person intended before sampling calculation options. For shortest paths,
 an explicit request between selected endpoints must supply those endpoints;
 the nullable native default means all vertices, not unknown accounts. Named
@@ -268,7 +268,7 @@ The domain subtitle opens the domain picker. Each sidebar conversation has a
 Rename / Archive / Delete menu. Data contains upload settings, a single input-kind
 control, nested derived inputs, dataset and project actions, and saved analyses.
 The composer gear holds per-conversation compute settings. The `/` palette opens
-workflow templates and advanced calculations, searchable by title or operation ID
+workflow templates and advanced calculations, searchable by title or problem ID
 with guarantee badges. New conversations offer sample data and editable question
 suggestions. Activity closes with Escape and restores focus to its trigger.
 On phones, the sidebar button opens conversation history while the composer
@@ -321,7 +321,7 @@ exact fractions where provided by the engine.
   verifies admission; changed file identities force rehashing. Actual native
   checks reject a modified source even when its size and modification time are
   preserved. A local cold/warm check measured 4.2 versus 1.5 seconds with the
-  same admitted operations.
+  same admitted problems.
 - Planner-adapter retraining still requires reviewed examples: the production
   store contains zero. Synthetic deployment probes are excluded from review and
   training. This was the P1 deployment checkpoint; the P2 implementation is
@@ -350,7 +350,7 @@ their scope are recorded with the local release.
 ### P2 release gate — 2026-10-15
 
 The ten P2 roadmap areas are implemented: reusable datasets and provenance,
-parameterized workflow templates and comparison, operation/resource guidance,
+parameterized workflow templates and comparison, problem/resource guidance,
 suggested follow-ups, visual workflows and exploration, exports/reports, CPU CSV
 imports and dataset versions, administrator activity, local release checks, and
 shared UI controls with classic-interface deprecation. The sections below
@@ -370,7 +370,7 @@ Deployed as `p2-20261015T092509Z` with a verified pre-migration backup. HTTPS,
 served asset hashes, authentication and SQLite integrity checks passed; existing
 production record counts were preserved. Both services are enabled and active,
 with the model process unchanged. The deployed application and environment also
-passed an isolated native CPU calculation and admitted all 82 operations. Schema
+passed an isolated native CPU calculation and admitted all 82 problems. Schema
 2 rollback requires compatible code or the pre-upgrade backup.
 
 ### P3 release gate — 2026-10-15
@@ -394,7 +394,7 @@ links and SQLite integrity checks passed; existing production record counts
 were preserved. Both services remain enabled and active, with lingering enabled
 and the model process unchanged. The deployed application and service
 environment passed an isolated native CPU calculation and admitted all 82
-operations. Wheels, test reports, screenshots, migration evidence and deployment
+problems. Wheels, test reports, screenshots, migration evidence and deployment
 checks are retained under the release's `validation/p3` directory. Schema 3
 rollback requires compatible code or the verified pre-upgrade backup.
 
@@ -539,7 +539,7 @@ to 64 MiB; `0` disables retention. An entry larger than the cache budget is used
 for its current read without evicting other cached files. Cold cache reads are
 serialized, and file identity, size and timestamps invalidate replaced artifacts.
 The source byte limit still applies before parsing. This bounds retained cache
-memory, not total process memory: active graph operations, a cold index build,
+memory, not total process memory: active graph problems, a cold index build,
 report inputs and individual large rows or strings need working allocations.
 
 **Save as template** captures the validated steps and settings without approval
@@ -570,7 +570,7 @@ table projections, reused outputs and resaved datasets. Query text, exact typed
 parameters, source/mapping revision and fetch time are disclosed when recorded.
 Expanded inputs identify the query as the initial selection. Missing legacy
 metadata is labelled as unrecorded, without substituting the active input or
-current operation catalog. A complete source selection does not establish
+current problem catalog. A complete source selection does not establish
 coverage of the entire database, and complete output does not make a heuristic
 exact. Retained completed steps of failed/interrupted workflows remain clearly
 identified.
@@ -581,7 +581,7 @@ their own version and fetch time; they do not replace calculation provenance.
 **Hide context** collapses the cards. Desktop uses two columns; narrow screens
 stack the cards with keyboard-accessible disclosures.
 
-Advanced calculation controls show the verified operation's input description,
+Advanced calculation controls show the verified problem's input description,
 quality, available devices, GPU restrictions and parameter bounds. Server byte
 and runtime limits are shown alongside the plan's memory estimate and step
 budgets. Completed answers offer follow-up prompts based on their actual output
@@ -641,7 +641,7 @@ retain the complete history; their size is not capped by the per-result limit.
 Archive source snapshots still construct existing transcript/event views, and
 large report inputs still need parsing. Temporary disk space must accommodate
 the admitted downloads. These changes avoid whole encoded export buffers and
-do not promise constant memory for every source operation.
+do not promise constant memory for every source problem.
 
 The browser saves workflow JSON directly as a Blob, preserving source bytes and
 large integers without parsing and re-encoding the download. Interrupted or
@@ -766,7 +766,7 @@ graph. `--with-benchmarks` additionally checks its completed benchmark import.
 flags; reports identify unrequested phases and individual skipped tests.
 
 `catalog/native_execution_evidence.json` must match the binary, implementation,
-source files, linked dependencies, operation profile and, for GPU execution,
+source files, linked dependencies, problem profile and, for GPU execution,
 physical GPU UUID. Missing or stale evidence disables the profile. Reproduce
 native tests and run `tools/build_native_execution_evidence.py` for each build;
 its `--help` documents required reports. `tools/audit_native_completion.py`
@@ -778,7 +778,7 @@ The native planner uses `GRAPHMINE_LLM_MODEL` by default. A compatible model or
 adapter can be selected with `GRAPHMINE_ANALYTICS_PLANNER_MODEL`. Native planning
 uses `GRAPHMINE_ANALYTICS_REASONING_EFFORT=medium` by default. The legacy V1
 planner/analyst adapter settings remain scoped to the old protocol. Family and
-problem selection narrow the catalog before operation selection. A separate
+topic selection narrow the catalog before problem selection. A separate
 constrained stage builds the workflow, followed by the same actual-input validation used for manually edited
 plans. Routing can also return a display change or an answer from the saved
 result's facts; neither computes anything. Routing may
@@ -803,8 +803,8 @@ default. Answer composition only chooses computed facts and runs without
 reasoning.
 
 Routing decisions choose an intent first. A calculation requires at least one
-operation from the catalog; clarification and unsupported decisions cannot also
-select operations; display changes and fact answers can only name what the
+problem from the catalog; clarification and unsupported decisions cannot also
+select problems; display changes and fact answers can only name what the
 saved result contains. The JSON schemas enforce these states during generation
 and response validation. The catalog sits at the end of the fixed instructions,
 so the model server can reuse its cached prefix between questions.
@@ -813,13 +813,13 @@ Model generation assigns each argument either a literal or a reference to an
 earlier result. Each reference first selects `source: input` for an uploaded
 input or `source: step` for a previous result. Steps use zero-based positional
 references (`step_index`) rather than model-generated names. Their schemas allow
-only indices of earlier steps. Operation selection sees output-port contracts,
-and generated references can name only ports from selected operations. The
+only indices of earlier steps. Problem selection sees output-port contracts,
+and generated references can name only ports from selected problems. The
 server assigns stable step IDs and converts references to the public workflow
 format. It rejects duplicate argument names, missing or forward references,
 and invalid typed dependencies. An invalid reference enters the bounded repair
 path; the server never guesses which input the model intended. Planning retains
-the operation selection's explanation as fallible context and distinguishes
+the problem selection's explanation as fallible context and distinguishes
 calculations on derived graphs from independent calculations on original inputs.
 There is at most one plan repair. Individual model
 requests have a 120-second deadline and the entire planning attempt is bounded
@@ -922,7 +922,7 @@ After a complete successful workflow, **Review as a reusable example** opens an
 explicit review form. A successful run alone never approves an example. The
 server checks the current workflow revision, plan hash and result hash before
 storing the review. Examples are scoped to the workspace, native implementation,
-input kinds and selected operations; their provenance is included in planning.
+input kinds and selected problems; their provenance is included in planning.
 They supply hints, not executable instructions or correctness evidence.
 
 Evaluation workflows carry an immutable `evaluation_id`. They cannot be saved
@@ -946,7 +946,7 @@ Content edits invalidate approval; changes to a question or plan require newly
 executed and reviewed evidence. Concurrent saves and exports use revision checks.
 
 The bounded 4 MiB exchange contains a normalized workflow, derived prompt,
-operation/input contracts, explicit source review and complete saved result.
+problem/input contracts, explicit source review and complete saved result.
 Its adapter is `workflow` and schema is `AnalyticsPlanNormalized`; it is distinct
 from the original planner's positional `AnalyticsPlan` model response. Studio
 also validates `AnalyticsRoute`, `AnalyticsPlan` and `AnalyticsAnswer` against

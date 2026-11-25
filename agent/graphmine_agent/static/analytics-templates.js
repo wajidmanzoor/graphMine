@@ -26,8 +26,8 @@ window.GraphMineTemplates = ({state, api, W, node, runAction, notice, card, para
         if (alias === "main") select.value = state.active; label.append(select); inputs.append(label);
       }
       for (const step of template.plan.steps) {
-        const selected = card(step.operation), section = node("fieldset", {"data-template-step": step.id});
-        section.append(node("legend", {}, selected?.title || step.operation));
+        const selected = card(step.problem), section = node("fieldset", {"data-template-step": step.id});
+        section.append(node("legend", {}, selected?.title || step.problem));
         if (!selected) { use.disabled = true; section.append(node("p", {}, "This calculation is unavailable. Reconnect to load its capabilities.")); }
         for (const [key, spec] of Object.entries(selected?.parameters || {})) if (!(key in (step.bindings || {}))) {
           const field = parameterControl(key, spec, step.parameters[key] ?? spec.default, `template-${step.id}`);
@@ -42,7 +42,7 @@ window.GraphMineTemplates = ({state, api, W, node, runAction, notice, card, para
       for (const select of inputs.querySelectorAll("[data-template-input]")) bound[select.dataset.templateInput] = {file_id: select.value, kind: template.input_kinds[select.dataset.templateInput]};
       for (const section of parameters.querySelectorAll("[data-template-step]")) {
         const step = template.plan.steps.find(s => s.id === section.dataset.templateStep);
-        settings[step.id] = parametersFrom(section, card(step.operation), step.parameters);
+        settings[step.id] = parametersFrom(section, card(step.problem), step.parameters);
       }
       const record = await api(`/api/sessions/${sessionId}/workflow-templates/${template.id}/use`, {method: "POST", body: W.stringify({inputs: bound, parameters: settings})});
       dialog.close(); dialog.remove(); await onCreated(record); notice("Template validated. Review the plan before running it.");

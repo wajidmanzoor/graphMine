@@ -18,9 +18,9 @@ def actions(parser):
     for name in ("train", "report", "rollback"):
         command = commands.add_parser(name)
         if name == "rollback":
-            command.add_argument("operation")
+            command.add_argument("problem")
         else:
-            command.add_argument("--operation")
+            command.add_argument("--problem")
         command.add_argument("--data-dir", type=Path)
         command.add_argument("--model-dir", type=Path)
         command.add_argument("--seed", type=int, default=1729)
@@ -31,21 +31,21 @@ def add_parser(commands):
     return actions(commands.add_parser("backend-model", help="fit, inspect or roll back backend runtime models"))
 
 
-def comparison_report(rows, cards, model_dir, implementation, options=None, operation=None, compatibility=None):
+def comparison_report(rows, cards, model_dir, implementation, options=None, problem=None, compatibility=None):
     reports = []
     accepted, skipped = models.admissible_rows(rows, cards, implementation, compatibility)
     for card in sorted(cards, key=lambda c: c["id"]):
-        if sum(b.get("verified", False) for b in card["backends"]) <= 1 or operation and card["id"] != operation:
+        if sum(b.get("verified", False) for b in card["backends"]) <= 1 or problem and card["id"] != problem:
             continue
         try:
             model, metadata = models.load(model_dir, card["id"], implementation)
             report = evaluation.compare(model, accepted, card, **(options or {}))
             report["model_version"] = metadata["model_version"]
         except (OSError, ValueError, KeyError, TypeError) as error:
-            report = dict(operation=card["id"], model_version=None, live_ready=False,
+            report = dict(problem=card["id"], model_version=None, live_ready=False,
                           insufficient_evidence=True, model_error=type(error).__name__)
         reports.append(report)
-    return dict(schema_version=1, created_at=utc_now(), operations=reports, skipped_rows=skipped,
+    return dict(schema_version=1, created_at=utc_now(), problems=reports, skipped_rows=skipped,
                 live_ready=bool(reports) and all(r["live_ready"] for r in reports))
 
 
@@ -70,7 +70,7 @@ def native_context(settings, data):
         caps = evidence.capabilities(native_root)
         implementation = implementation_hash()
         admitted = hashlib.sha256((native_root / "catalog/native_execution_evidence.json").read_bytes()).hexdigest()
-        return caps["operations"], implementation, admitted
+        return caps["problems"], implementation, admitted
     finally:
         sys.path[:] = paths
         for key, value in before.items():
@@ -89,17 +89,17 @@ def run_command(arguments, settings=None):
     cards, implementation, admitted = native_context(settings, data)
     from .compatibility import benchmark_compatibility
     compatibility = benchmark_compatibility(settings.native_repository_root / "catalog/native_execution_evidence.json", implementation)
-    if arguments.operation and arguments.operation not in {c["id"] for c in cards if sum(b.get("verified", False) for b in c["backends"]) > 1}:
-        raise ValueError("The operation has no admitted backend comparison")
+    if arguments.problem and arguments.problem not in {c["id"] for c in cards if sum(b.get("verified", False) for b in c["backends"]) > 1}:
+        raise ValueError("The problem has no admitted backend comparison")
     options = dict(seed=arguments.seed, exploration_budget=settings.backend_exploration_budget,
                    max_explore_ratio=settings.backend_max_explore_ratio,
                    exploration_enabled=settings.backend_exploration_enabled)
     rows = list(read_rows(data))
     if arguments.backend_model_command == "rollback":
-        report = models.rollback(model, arguments.operation)
+        report = models.rollback(model, arguments.problem)
     elif arguments.backend_model_command == "train":
         report = models.train(rows, cards, model_dir=model, implementation=implementation,
-                              admission_fingerprint=admitted, options=options, operation=arguments.operation,
+                              admission_fingerprint=admitted, options=options, problem=arguments.problem,
                               compatibility=compatibility)
         # OOM rows affect only memory; this rebuild uses the same authoritative
         # history and never manufactures samples to reach a fitting threshold.
@@ -107,7 +107,7 @@ def run_command(arguments, settings=None):
         report["memory"] = dict(backends=len(fitted), skipped_rows=skipped,
             validated_profiles=sum(p["validated"] for m in fitted.values() for p in m["profiles"].values()))
     else:
-        report = comparison_report(rows, cards, model, implementation, options, arguments.operation, compatibility)
+        report = comparison_report(rows, cards, model, implementation, options, arguments.problem, compatibility)
     name = utc_now()[:10] + "-backend-model-" + arguments.backend_model_command + "-" + uuid4().hex[:12] + ".json"
     atomic_json(Path(data) / "reports" / name, report)
     print(json.dumps(report, indent=2, allow_nan=False))

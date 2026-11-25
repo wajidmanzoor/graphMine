@@ -126,7 +126,7 @@ def test_worker_enforces_evidence_and_review_hash(monkeypatch):
         for card in list_algorithms()
     ]
     monkeypatch.setattr(
-        "graphmine.worker.capabilities", lambda root: {"operations": cards}
+        "graphmine.worker.capabilities", lambda root: {"problems": cards}
     )
     graph = Graph.from_edges([(0, 1), (1, 2), (2, 0)])
     inputs = {"g": {"kind": "graph", "data": graph.to_canonical()}}
@@ -134,7 +134,7 @@ def test_worker_enforces_evidence_and_review_hash(monkeypatch):
         "version": 1,
         "device": "cpu",
         "steps": [
-            {"id": "count", "operation": "triangle-counting", "input": {"input": "g"}}
+            {"id": "count", "problem": "triangle-counting", "input": {"input": "g"}}
         ],
     }
     request = {"command": "run", "plan": plan, "inputs": inputs}

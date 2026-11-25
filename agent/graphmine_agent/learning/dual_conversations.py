@@ -118,7 +118,7 @@ async def augment(
         if count > 8:
             buckets = {}
             for item in eligible:
-                buckets.setdefault(item[0]["task"]["operation_id"], []).append(item)
+                buckets.setdefault(item[0]["task"]["problem_id"], []).append(item)
             eligible = []
             while any(buckets.values()):
                 for bucket in buckets.values():
@@ -142,7 +142,7 @@ async def augment(
                 ResultRecord(
                     session_id=session.id,
                     job_id=native_job.id,
-                    operation_id=plan.operation_id,
+                    problem_id=plan.problem_id,
                     payload=reference["payload"],
                     summary={},
                     answer=answer,
@@ -219,7 +219,7 @@ async def augment(
                     records.append(row)
             # A complete clarification exchange uses production pending-request
             # state, not labels hidden in the student's prompt.
-            if case["task"]["operation_id"] != "betweenness-centrality":
+            if case["task"]["problem_id"] != "betweenness-centrality":
                 continue
             session, graph, _ = materialize_case(store, database, case)
             ambiguous = copy.deepcopy(case)
@@ -227,8 +227,8 @@ async def augment(
             ambiguous["tags"] = ["ambiguous", "simulated_conversation"]
             ambiguous["task"] = {
                 "question": "Which records should we focus on?",
+                "topic_id": None,
                 "problem_id": None,
-                "operation_id": None,
                 "parameters": {},
                 "optional_outputs": [],
                 "intent": ApplicationIntent(

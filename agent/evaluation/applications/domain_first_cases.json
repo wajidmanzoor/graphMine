@@ -11,7 +11,7 @@
           "query": "Show every group of at least three accounts where each account has exchanged payments with every other account in that group. Do not show smaller groups contained in a larger one. Give me the account names to investigate, and explain what this does and does not tell me about fraud.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "maximal-cliques"
             ],
             "checks": [
@@ -46,7 +46,7 @@
           "query": "I am looking for a candidate protein complex. Find the largest group in which every protein physically interacts with every other member, list its protein names, and explain the limits of calling it a complex.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "maximum-clique"
             ],
             "checks": [
@@ -82,7 +82,7 @@
           "query": "Keep removing proteins with fewer than three interaction partners, including proteins that fall below three after others are removed. Which proteins remain? List their names so I can select a well-supported experimental panel.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "k-core"
             ],
             "checks": [
@@ -111,7 +111,7 @@
           "query": "Which router lies on the most shortest connection routes between other devices? Rank the devices by this measure, show their names, and explain which router I should monitor first without claiming this measures actual traffic.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "betweenness-centrality"
             ],
             "checks": [
@@ -140,7 +140,7 @@
           "query": "Find groups of at least two customers who all bought the same set of at least two products. Give me every group that cannot be enlarged, with the customer names and product names for a bundle promotion.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "maximal-bicliques"
             ],
             "checks": [
@@ -163,7 +163,7 @@
           "query": "I have added the customer list. Please find groups of at least two customers who all bought the same set of at least two products. Give every group that cannot be enlarged, including customer and product names.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "maximal-bicliques"
             ],
             "checks": [
@@ -187,7 +187,7 @@
           "query": "Count all groups of exactly three coworkers where everyone has collaborated directly with the other two. List the names in each group.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "triangle-counting",
               "k-cliques"
             ],
@@ -208,7 +208,7 @@
           "query": "Now show the single largest group where everybody has collaborated directly with everyone else.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "maximum-clique"
             ],
             "checks": [
@@ -232,7 +232,7 @@
           "query": "Split these coworkers into collaboration circles based on who tends to work together. Tell me who belongs to each circle and suggest a view where the circles have different colors.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "community-detection"
             ],
             "checks": [
@@ -276,7 +276,7 @@
           "query": "Find sequences where host A contacts B, then B contacts C, then A contacts C, all within 60 seconds. Count them and list the actual hosts and event IDs in time order so I can inspect the connections.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "temporal-motif-mining"
             ],
             "checks": [
@@ -339,11 +339,11 @@
           "query": "Which groups of people mainly work together, and which people connect different parts of the organization? Show their names and departments.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "betweenness-centrality",
               "community-detection"
             ],
-            "analysis_operations": [
+            "analysis_problems": [
               "community-detection",
               "betweenness-centrality"
             ],
@@ -362,7 +362,7 @@
           "query": "Now show the groups using only collaborations from 2026. Keep the employee names and departments.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "community-detection"
             ],
             "checks": [
@@ -385,7 +385,7 @@
           "query": "Which coworkers now sit on the most shortest collaboration routes between other coworkers? Rank everyone's names, still using only collaborations from 2026.",
           "expected": {
             "behavior": "execute",
-            "operations": [
+            "problems": [
               "betweenness-centrality"
             ],
             "checks": [

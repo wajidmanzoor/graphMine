@@ -124,6 +124,8 @@ def test_launcher_rejects_unmatched_names_before_model_loading(
     shutil.copyfile(
         Path(__file__).resolve().parents[2] / "deploy/start-vllm.sh", script
     )
+    shutil.copyfile(Path(__file__).resolve().parents[2] / "deploy/admin-model-settings.py",
+                    repo / "deploy/admin-model-settings.py")
     (repo / ".venv/bin").mkdir(parents=True)
     (repo / ".venv/bin/python").symlink_to(sys.executable)
     (repo / ".venv-vllm/bin").mkdir(parents=True)
@@ -136,6 +138,7 @@ def test_launcher_rejects_unmatched_names_before_model_loading(
     ).hexdigest()
     settings = {
         "GRAPHMINE_LLM_GPU_UUID": "authored-cpu-fixture",
+        "GRAPHMINE_LLM_SLEEP_MODE": "0",
         "GRAPHMINE_LLM_MODEL": "Qwen/Qwen3.8-27B-FP8",
     }
     for stage in ("PLANNER", "ANALYST"):

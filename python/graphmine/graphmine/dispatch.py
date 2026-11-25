@@ -67,7 +67,7 @@ def execution_environment():
 
 
 def run(
-    operation,
+    problem,
     graph,
     *,
     parameters=None,
@@ -84,7 +84,7 @@ def run(
         graph = graph.to_canonical()
     request = {
         "command": "run",
-        "operation": operation,
+        "problem": problem,
         "graph": graph,
         "parameters": {} if parameters is None else parameters,
         "device": device,

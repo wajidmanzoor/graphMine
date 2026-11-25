@@ -13,7 +13,7 @@ const ViewProfile threshold_profile{"influence-maximization:cpp:linear_threshold
        "weights":"rational_exact","require_edge_weights":true,"nonnegative_weights":true})"};
 }
 InfluenceInput influence_input(const Graph& graph, bool independent_cascade, Work& work) {
-  // Retain this common operation constraint and its validation/budget order.
+  // Retain this common problem constraint and its validation/budget order.
   // Weight casting, loop removal and parallel composition occur in make_view.
   for (const auto& edge : graph.canonical().edges) {
     work.tick();

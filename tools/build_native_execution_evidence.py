@@ -142,8 +142,8 @@ def build_record(build, source_root, directory, junit):
                 if report["device"] == "cpu"
                 else ("libcugraph" if row["backend"] == "gpu" else row["backend"])
             )
-            for operation in SUITES[group].get(row["suite"], []):
-                observed.setdefault(operation, {}).setdefault(backend, set()).add(
+            for problem in SUITES[group].get(row["suite"], []):
+                observed.setdefault(problem, {}).setdefault(backend, set()).add(
                     report["id"]
                 )
     for path in junit:
@@ -155,15 +155,15 @@ def build_record(build, source_root, directory, junit):
         assert checked["status"] == "passed", checked
         reports.append(report)
         for key, count in json.loads(metadata.read_text())[
-            "observed_operations"
+            "observed_problems"
         ].items():
-            operation, backend = key.rsplit(":", 1)
+            problem, backend = key.rsplit(":", 1)
             assert count > 0
-            observed.setdefault(operation, {}).setdefault(backend, set()).add(
+            observed.setdefault(problem, {}).setdefault(backend, set()).add(
                 report["id"]
             )
     profiles = {}
-    for card in catalog["operations"]:
+    for card in catalog["problems"]:
         profiles[card["id"]] = {
             "profile_sha256": profile_hash(card),
             "backends": {

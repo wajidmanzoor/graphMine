@@ -44,7 +44,7 @@ def graph():
                 "label": f"Person {i}",
                 "type": "employee",
                 "attributes": {
-                    "department": "Design" if i < 3 else "Operations",
+                    "department": "Design" if i < 3 else "Problems",
                     "tenure": i + 1,
                 },
             }
@@ -64,19 +64,19 @@ def graph():
     }
 
 
-def plan(operation="community-detection", **kwargs):
-    problem = {
+def plan(problem="community-detection", **kwargs):
+    topic = {
         "community-detection": "community_detection",
         "k-core": "k_core_decomposition",
         "temporal-motif-mining": "temporal_motif_mining",
         "maximal-cliques": "maximal_clique_enumeration",
         "betweenness-centrality": "centrality_influential_node_mining",
-    }[operation]
+    }[problem]
     return ExecutionPlan(
         session_id="session",
         graph_id="graph",
+        topic_id=topic,
         problem_id=problem,
-        operation_id=operation,
         **kwargs,
     )
 
@@ -156,7 +156,7 @@ def test_groups_join_all_original_attributes_and_count_real_boundary_connections
     assert answer["rows"][0]["attributes"]["department"] == "Design"
     assert answer["groups"][1]["attribute_summary"]["attributes.department"][
         "examples"
-    ] == [{"value": "Operations", "count": 3}]
+    ] == [{"value": "Problems", "count": 3}]
     assert len(answer["network"]["nodes"]) == 6 and len(answer["network"]["edges"]) == 7
     assert answer["provenance"]["source_sha256"] == "abc"
     views = answer_visualizations(answer)
@@ -374,8 +374,8 @@ def test_temporal_window_uses_original_request_exactly_once(
         async def model(**kwargs):
             if kwargs["schema"] is RouteDecision:
                 return RouteDecision(
-                    problem_id="temporal_motif_mining",
-                    operation_id="temporal-motif-mining",
+                    topic_id="temporal_motif_mining",
+                    problem_id="temporal-motif-mining",
                     supported=True,
                     confidence=1,
                     explanation="Ordered event sequence",
@@ -451,8 +451,8 @@ def test_multistep_domain_request_combines_results_and_natural_followup(settings
         async def model(**kwargs):
             if kwargs["schema"] is RouteDecision:
                 return RouteDecision(
-                    problem_id="community_detection",
-                    operation_id="community-detection",
+                    topic_id="community_detection",
+                    problem_id="community-detection",
                     supported=True,
                     confidence=1,
                     explanation="Find groups and connectors",
@@ -460,8 +460,8 @@ def test_multistep_domain_request_combines_results_and_natural_followup(settings
                     additional_analyses=[
                         {
                             "question": "Who connects groups?",
-                            "operation_id": "betweenness-centrality",
-                            "problem_id": "centrality_influential_node_mining",
+                            "problem_id": "betweenness-centrality",
+                            "topic_id": "centrality_influential_node_mining",
                         }
                     ],
                 )
@@ -472,8 +472,8 @@ def test_multistep_domain_request_combines_results_and_natural_followup(settings
             return await original(**kwargs)
 
         async def execute(current, workspace):
-            if current.operation_id == "community-detection":
-                return communities(), ["test-double", current.operation_id]
+            if current.problem_id == "community-detection":
+                return communities(), ["test-double", current.problem_id]
             return payload(
                 {
                     "score_by_vertex": [
@@ -481,12 +481,12 @@ def test_multistep_domain_request_combines_results_and_natural_followup(settings
                         for i in range(6)
                     ]
                 }
-            ), ["test-double", current.operation_id]
+            ), ["test-double", current.problem_id]
 
         runtime.agent.model.generate = model
         runtime.runner.execute = execute
-        runtime.runner.compiled_backends_for = lambda operation: set(
-            runtime.catalog.operation(operation).backends
+        runtime.runner.compiled_backends_for = lambda problem: set(
+            runtime.catalog.problem(problem).backends
         )
 
         def ask(message):

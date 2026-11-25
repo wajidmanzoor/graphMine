@@ -134,7 +134,7 @@ def parser() -> argparse.ArgumentParser:
     schemas = subcommands.add_parser("export-schemas", help="write public JSON Schemas")
     schemas.add_argument("destination", nargs="?", type=Path)
     evaluation = subcommands.add_parser(
-        "evaluate-routing", help="evaluate domain-aware problem/operation routing"
+        "evaluate-routing", help="evaluate domain-aware topic/problem routing"
     )
     evaluation.add_argument("--cases", type=Path)
     evaluation.add_argument("--split", default="held_out_evaluation")
@@ -147,7 +147,7 @@ def parser() -> argparse.ArgumentParser:
     evaluation.add_argument("--concurrency", type=int, default=8)
     plan_evaluation = subcommands.add_parser(
         "evaluate-planning",
-        help="evaluate operation-specific parameters, outputs, and auxiliary files",
+        help="evaluate problem-specific parameters, outputs, and auxiliary files",
     )
     plan_evaluation.add_argument("--cases", type=Path)
     plan_evaluation.add_argument("--split", default="held_out_evaluation")
@@ -289,8 +289,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(
             json.dumps(
                 {
-                    "catalog_problem_count": len(runtime.catalog.problems),
-                    "operation_count": len(runtime.catalog.instructions),
+                    "catalog_topic_count": len(runtime.catalog.topics),
+                    "problem_count": len(runtime.catalog.instructions),
                     "domain_count": len(runtime.catalog.domains),
                     "capabilities": report.model_dump(mode="json"),
                 },
@@ -380,7 +380,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             json.dumps(
                 {
                     "output": str(destination),
-                    "operation_count": len(policy["operations"]),
+                    "problem_count": len(policy["problems"]),
                 },
                 indent=2,
             )

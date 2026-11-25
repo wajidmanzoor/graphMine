@@ -39,6 +39,8 @@ def record_evidence(request):
     files += list((ROOT / "library/runtime").rglob("*.in"))
     files += [ROOT / "library/runtime/CMakeLists.txt"]
     for directory in {CPU, GPU, ORIGINAL}:
+        if directory != CPU and not (directory / "libgraphmine_runtime.so").is_file():
+            continue
         files += [
             directory / "libgraphmine_runtime.so",
             directory / "graphmine-native",
@@ -96,6 +98,8 @@ def graph():
 
 
 def library(path=CPU):
+    if path != CPU and not (path / "libgraphmine_runtime.so").is_file():
+        pytest.skip("Optional GPU runtime build is unavailable")
     return binding.NativeLibrary(path / "libgraphmine_runtime.so")
 
 
@@ -114,14 +118,14 @@ def test_native_catalog_and_python_families_are_identical():
     assert lib.list_families() == native["families"]
     from graphmine._families import FAMILIES
     assert native["families"] == FAMILIES
-    assert lib.list_algorithms() == native["operations"]
-    problems = {row["id"]: row for row in native["problems"]}
-    assert len(problems) == 71
+    assert lib.list_algorithms() == native["problems"]
+    topics = {row["id"]: row for row in native["topics"]}
+    assert len(topics) == 71
     for card in lib.list_algorithms():
-        assert card["family"] == problems[card["problem_id"]]["family"]
+        assert card["family"] == topics[card["topic_id"]]["family"]
         assert card in lib.family(card["family"]).list_algorithms()
     lib.list_algorithms()[0]["family"] = "tampered"
-    assert lib.list_algorithms() == native["operations"]
+    assert lib.list_algorithms() == native["problems"]
     with pytest.raises(AttributeError):
         _ = lib.family("paths").triangle_counting
 
@@ -151,8 +155,8 @@ def test_native_cli_family_filters_match_python():
             [CPU / "graphmine-native", "catalog", "--family", identifier]
         ))
         assert result["families"] == [family]
-        assert result["operations"] == lib.list_algorithms(family=identifier)
-        assert all(row["family"] == identifier for row in result["problems"])
+        assert result["problems"] == lib.list_algorithms(family=identifier)
+        assert all(row["family"] == identifier for row in result["topics"])
     unknown = lib.list_families()[0]["id"] + "_removed"
     failed = subprocess.run(
         [CPU / "graphmine-native", "list", "--family", unknown],
@@ -195,7 +199,7 @@ def test_cpp_cli_python_binding_and_family_method_return_same_results(tmp_path):
     )
     request = {
         "command": "run",
-        "operation": "breadth-first-search",
+        "problem": "breadth-first-search",
         "graph": graph(),
         "parameters": parameters,
         "device": "cpu",
@@ -241,7 +245,7 @@ print(len(library.list_algorithms()))
 
 
 @pytest.mark.parametrize(
-    ("operation", "parameters", "undirected"),
+    ("problem", "parameters", "undirected"),
     [
         ("single-source-shortest-paths", {"source": 0}, False),
         ("many-source-shortest-paths", {"origins": [0, "0"]}, False),
@@ -299,20 +303,20 @@ print(len(library.list_algorithms()))
     ],
 )
 def test_migrated_families_match_native_cli(
-    operation, parameters, undirected, tmp_path
+    problem, parameters, undirected, tmp_path
 ):
     lib = library()
     data = graph()
     data["graph"]["directed"] = not undirected
-    card = next(row for row in lib.list_algorithms() if row["id"] == operation)
-    method = getattr(lib.family(card["family"]), operation.replace("-", "_"))
+    card = next(row for row in lib.list_algorithms() if row["id"] == problem)
+    method = getattr(lib.family(card["family"]), problem.replace("-", "_"))
     wrapped = method(data, parameters=parameters, device="cpu")
     process = subprocess.run(
         [CPU / "graphmine-native", "request"],
         input=json.dumps(
             {
                 "command": "run",
-                "operation": operation,
+                "problem": problem,
                 "graph": data,
                 "parameters": parameters,
                 "device": "cpu",
@@ -330,7 +334,7 @@ def test_migrated_families_match_native_cli(
 
 @pytest.mark.parametrize("gpu_device", [0, 1])
 @pytest.mark.parametrize(
-    ("operation", "parameters", "undirected"),
+    ("problem", "parameters", "undirected"),
     [
         ("maximal-independent-set", {"random_seed": 19}, True),
         ("vertex-coloring", {"distance": 1, "random_seed": 19}, True),
@@ -363,7 +367,7 @@ def test_migrated_families_match_native_cli(
     ],
 )
 def test_native_selection_gpu_matches_cli_and_restores_device(
-    operation, parameters, undirected, gpu_device, tmp_path
+    problem, parameters, undirected, gpu_device, tmp_path
 ):
     lib = library(ORIGINAL)
     data = graph()
@@ -372,8 +376,8 @@ def test_native_selection_gpu_matches_cli_and_restores_device(
     runtime.cudaSetDevice.argtypes = [ctypes.c_int]
     runtime.cudaGetDevice.argtypes = [ctypes.POINTER(ctypes.c_int)]
     assert runtime.cudaSetDevice(1 - gpu_device) == 0
-    card = next(row for row in lib.list_algorithms() if row["id"] == operation)
-    wrapped = getattr(lib.family(card["family"]), operation.replace("-", "_"))(
+    card = next(row for row in lib.list_algorithms() if row["id"] == problem)
+    wrapped = getattr(lib.family(card["family"]), problem.replace("-", "_"))(
         data, parameters=parameters, device="gpu", gpu_device=gpu_device
     )
     after = ctypes.c_int()
@@ -385,7 +389,7 @@ def test_native_selection_gpu_matches_cli_and_restores_device(
             input=json.dumps(
                 {
                     "command": "run",
-                    "operation": operation,
+                    "problem": problem,
                     "graph": data,
                     "parameters": parameters,
                     "device": "gpu",
@@ -404,7 +408,7 @@ def test_native_selection_gpu_matches_cli_and_restores_device(
 @pytest.mark.parametrize("gpu_device", [0, 1])
 def test_native_selection_auto_preserves_unsupported_gpu_semantics(gpu_device):
     lib = library(ORIGINAL)
-    for operation, parameters in [
+    for problem, parameters in [
         (
             "random-walks",
             {
@@ -420,7 +424,7 @@ def test_native_selection_auto_preserves_unsupported_gpu_semantics(gpu_device):
     ]:
         with pytest.raises(binding.NativeError) as error:
             lib.run(
-                operation,
+                problem,
                 graph(),
                 parameters=parameters,
                 device="gpu",
@@ -428,13 +432,13 @@ def test_native_selection_auto_preserves_unsupported_gpu_semantics(gpu_device):
             )
         assert error.value.code in {"unsupported_input", "backend_unavailable"}
         automatic = lib.run(
-            operation,
+            problem,
             graph(),
             parameters=parameters,
             device="auto",
             gpu_device=gpu_device,
         )
-        cpu = library().run(operation, graph(), parameters=parameters, device="cpu")
+        cpu = library().run(problem, graph(), parameters=parameters, device="cpu")
         assert automatic["backend"]["id"] == "cpp"
         assert automatic["backend"]["selection_reason"]
         assert automatic["result"] == cpu["result"]
@@ -591,7 +595,7 @@ def test_cudf_reader_refuses_cpu_only_build(tmp_path):
 @pytest.mark.parametrize("shape", ["triangle", "cycle"])
 @pytest.mark.parametrize("gpu_device", [0, 1])
 @pytest.mark.parametrize(
-    ("operation", "backend", "parameters", "field", "expected"),
+    ("problem", "backend", "parameters", "field", "expected"),
     [("triangle-counting", b, {}, "count", 1) for b in ("tot", "wetric")]
     + [("maximal-cliques", b, {}, "count", 2) for b in ("rdmce", "mce-gpu", "g2-aimd")]
     + [
@@ -605,7 +609,7 @@ def test_cudf_reader_refuses_cpu_only_build(tmp_path):
     ],
 )
 def test_original_cuda_backends_keep_cli_json_and_restore_device(
-    operation, backend, parameters, field, expected, gpu_device, shape
+    problem, backend, parameters, field, expected, gpu_device, shape
 ):
     lib = library(ORIGINAL)
     runtime = ctypes.CDLL(ctypes.util.find_library("cudart"))
@@ -629,9 +633,9 @@ def test_original_cuda_backends_keep_cli_json_and_restore_device(
             "maximum-clique": 2,
             "k-cliques": 0,
             "k-core": [2] * 5,
-        }[operation]
+        }[problem]
     result = lib.run(
-        operation,
+        problem,
         value,
         parameters=parameters,
         device="gpu",
@@ -650,7 +654,7 @@ def test_original_cuda_backends_keep_cli_json_and_restore_device(
     assert result["backend"]["hardware"]["device_ordinal"] == selected
     request = {
         "command": "run",
-        "operation": operation,
+        "problem": problem,
         "parameters": parameters,
         "graph": value,
         "device": "gpu",
@@ -724,7 +728,7 @@ def test_native_betweenness_backends_match_cli_and_restore_device(
     )
     request = {
         "command": "run",
-        "operation": "betweenness-centrality",
+        "problem": "betweenness-centrality",
         "graph": value,
         "parameters": {"normalized": normalized},
         "backend": backend,
@@ -770,9 +774,9 @@ def test_native_betweenness_path_overflow_selects_cpu_before_execution(
     assert result["quality"] == "exact"
 
 
-def optimization_graph(operation):
+def optimization_graph(problem):
     value = graph()
-    if operation == "bipartite-matching":
+    if problem == "bipartite-matching":
         value["graph"]["directed"] = False
         value["vertices"] = [
             {"id": identifier, "attributes": {"side": "left" if i < 2 else "right"}}
@@ -800,14 +804,14 @@ def optimization_graph(operation):
         )
     for edge in value["edges"]:
         edge["weight"] = 2
-    if operation == "weighted-matching":
+    if problem == "weighted-matching":
         value["graph"]["directed"] = False
         return value, {}, "selection", "objective_value", 2
     return value, {"source": 0, "sink": 9007199254740993}, "connectivity", "max_flow_value", 2
 
 
 @pytest.mark.parametrize(
-    "operation,backend,gpu_device",
+    "problem,backend,gpu_device",
     [
         ("weighted-matching", "cpp", 0),
         ("bipartite-matching", "cpp", 0),
@@ -818,11 +822,11 @@ def optimization_graph(operation):
         ("max-flow-min-cut", "ecl-maxflow", 1),
     ],
 )
-def test_native_optimization_family_wrapper_matches_cli(operation, backend, gpu_device):
+def test_native_optimization_family_wrapper_matches_cli(problem, backend, gpu_device):
     build = CPU if backend == "cpp" else ORIGINAL
     lib = library(build)
-    value, parameters, family, key, expected = optimization_graph(operation)
-    selected = getattr(lib.family(family), operation.replace("-", "_"))
+    value, parameters, family, key, expected = optimization_graph(problem)
+    selected = getattr(lib.family(family), problem.replace("-", "_"))
     result = selected(
         value,
         parameters=parameters,
@@ -834,7 +838,7 @@ def test_native_optimization_family_wrapper_matches_cli(operation, backend, gpu_
     assert result["quality"] == "exact"
     request = {
         "command": "run",
-        "operation": operation,
+        "problem": problem,
         "graph": value,
         "parameters": parameters,
         "backend": backend,
@@ -868,7 +872,7 @@ def test_native_flow_vertex_capacities_preserve_typed_identity():
 
 
 @pytest.mark.parametrize(
-    "operation,backend,script,code",
+    "problem,backend,script,code",
     [
         (
             "max-flow-min-cut",
@@ -887,15 +891,15 @@ def test_native_flow_vertex_capacities_preserve_typed_identity():
     ],
 )
 def test_native_cuda_worker_failure_has_no_silent_fallback(
-    tmp_path, monkeypatch, operation, backend, script, code
+    tmp_path, monkeypatch, problem, backend, script, code
 ):
     worker = tmp_path / f"graphmine-worker-{backend}"
     worker.write_text("#!/bin/sh\n" + script + "\n")
     worker.chmod(0o755)
     monkeypatch.setenv("GRAPHMINE_WORKER_DIR", str(tmp_path))
-    value, parameters, *_ = optimization_graph(operation)
+    value, parameters, *_ = optimization_graph(problem)
     with pytest.raises(binding.NativeError) as error:
-        library(ORIGINAL).run(operation, value, parameters=parameters, device="auto")
+        library(ORIGINAL).run(problem, value, parameters=parameters, device="auto")
     assert error.value.code == code
 
 

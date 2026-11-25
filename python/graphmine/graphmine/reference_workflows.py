@@ -33,11 +33,18 @@ def _reference(reference, inputs, steps):
         reference,
         inputs,
         steps,
-        lambda operation: OUTPUT_PORTS.get(operation, {}),
+        lambda problem: OUTPUT_PORTS.get(problem, {}),
     )
 
 
 def validate_workflow(plan, inputs):
+    plan = deepcopy(plan)
+    if isinstance(plan, dict) and isinstance(plan.get("steps"), list):
+        for step in plan["steps"]:
+            if isinstance(step, dict) and "operation" in step:
+                if "problem" in step and step["problem"] != step["operation"]:
+                    raise GraphMineError("Conflicting problem and operation identifiers")
+                step["problem"] = step.pop("operation")
     fingerprint(plan)
     loaded = prepare_inputs(inputs)
     _object(plan, {"version", "device", "steps"}, "workflow")
@@ -52,15 +59,15 @@ def validate_workflow(plan, inputs):
     for source in plan["steps"]:
         _object(
             source,
-            {"id", "operation", "input", "parameters", "bindings", "device", "budget"},
+            {"id", "problem", "input", "parameters", "bindings", "device", "budget"},
             "step",
         )
         name = source.get("id")
         if not isinstance(name, str) or not _NAME.fullmatch(name) or name in steps:
             raise GraphMineError("Step IDs must be valid and unique")
-        if not isinstance(source.get("operation"), str):
-            raise GraphMineError("Step operation must be a registered name")
-        definition = algorithm(source["operation"])
+        if not isinstance(source.get("problem"), str):
+            raise GraphMineError("Step problem must be a registered name")
+        definition = algorithm(source["problem"])
         parameters, bindings = source.get("parameters", {}), source.get("bindings", {})
         _object(parameters, definition.parameters, "parameters")
         _object(bindings, definition.parameters, "bindings")
@@ -82,7 +89,7 @@ def validate_workflow(plan, inputs):
         _object(budget, Budget.__dataclass_fields__, "budget")
         steps[name] = {
             "id": name,
-            "operation": definition.id,
+            "problem": definition.id,
             "input": deepcopy(source.get("input")),
             "parameters": normalized,
             "bindings": deepcopy(bindings),
@@ -91,7 +98,7 @@ def validate_workflow(plan, inputs):
         }
     dependencies = {}
     for name, step in steps.items():
-        definition = algorithm(step["operation"])
+        definition = algorithm(step["problem"])
         if _reference(step["input"], loaded, steps) != definition.input_kind:
             raise GraphMineError(f"Input kind mismatch for {name}")
         if definition.input_validator is not None and "input" in step["input"]:
@@ -172,7 +179,7 @@ def _resolve(reference, inputs, results):
     port = source["result"]["ports"].get(reference["port"])
     if port is None:
         raise GraphMineError(
-            "The selected operation variant did not produce the required port"
+            "The selected problem variant did not produce the required port"
         )
     if not port["complete"]:
         raise GraphMineError(
@@ -234,7 +241,7 @@ def _resolve(reference, inputs, results):
 
 
 def execute_workflow(
-    plan, inputs, *, emit=None, resume=None, verified_gpu_operations=None
+    plan, inputs, *, emit=None, resume=None, verified_gpu_problems=None
 ):
     """Execute a checked DAG; resume records must come from trusted local storage.
 
@@ -293,12 +300,12 @@ def execute_workflow(
                     for vertex in vertices:
                         graph.index(vertex)
                 parameters[key] = value
-            parameters = algorithm(step["operation"]).arguments(parameters)
+            parameters = algorithm(step["problem"]).arguments(parameters)
             execution_device = step["device"]
             if (
                 execution_device == "auto"
-                and verified_gpu_operations is not None
-                and step["operation"] not in verified_gpu_operations
+                and verified_gpu_problems is not None
+                and step["problem"] not in verified_gpu_problems
             ):
                 execution_device = "cpu"
             key = fingerprint(
@@ -323,7 +330,7 @@ def execute_workflow(
                 reused = True
             else:
                 result = run(
-                    step["operation"],
+                    step["problem"],
                     graph,
                     parameters=parameters,
                     device=execution_device,

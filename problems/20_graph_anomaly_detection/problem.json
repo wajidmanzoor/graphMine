@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "graph_anomaly_detection",
+  "topic_id": "graph_anomaly_detection",
   "name": "Graph Anomaly Detection",
   "category": "statistics",
   "problem_statement": "Rank graph entities by how strongly their declared structural or temporal features deviate from a specified normality reference.",

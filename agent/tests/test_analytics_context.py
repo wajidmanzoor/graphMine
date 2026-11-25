@@ -26,7 +26,7 @@ def saved(*ports):
             "core": {
                 "status": "completed",
                 "result": {
-                    "operation": "maximal-cliques",
+                    "problem": "maximal-cliques",
                     "complete": True,
                     "quality": "exact",
                     "ports": dict(ports),
@@ -73,7 +73,7 @@ def test_result_summaries_shrink_to_fit_the_budget():
     full = summarize_result(saved(("cliques", huge)))
     small = summarize_result(saved(("cliques", huge)), budget=600)
     assert len(json.dumps(small)) <= 600 < len(json.dumps(full))
-    assert small[0]["operation"] == "maximal-cliques"
+    assert small[0]["problem"] == "maximal-cliques"
 
 
 def test_selection_is_resolved_from_the_saved_result():

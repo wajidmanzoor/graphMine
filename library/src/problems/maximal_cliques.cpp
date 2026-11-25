@@ -201,7 +201,7 @@ CsrGraph without_isolated_vertices(const CsrGraph& graph,
 
 Provenance provenance_for(MaximalCliqueBackend backend) {
   Provenance provenance;
-  provenance.problem = "maximal_clique_enumeration";
+  provenance.topic = "maximal_clique_enumeration";
   provenance.backend = to_string(backend);
   provenance.execution_path =
       "original GPU count kernel + GraphMine exact output materializer";

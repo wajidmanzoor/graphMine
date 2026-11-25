@@ -58,7 +58,7 @@
       ]
     },
     "result": {
-      "operation": "query-paths",
+      "problem": "query-paths",
       "parameters": {},
       "ports": {
         "out": {
@@ -142,7 +142,7 @@
       ]
     },
     "result": {
-      "operation": "single-source-shortest-paths",
+      "problem": "single-source-shortest-paths",
       "parameters": {},
       "ports": {
         "out": {
@@ -230,7 +230,7 @@
       ]
     },
     "result": {
-      "operation": "densest-subgraph",
+      "problem": "densest-subgraph",
       "parameters": {},
       "ports": {
         "out": {
@@ -304,7 +304,7 @@
       ]
     },
     "result": {
-      "operation": "maximal-cliques",
+      "problem": "maximal-cliques",
       "parameters": {},
       "ports": {
         "out": {
@@ -390,7 +390,7 @@
       ]
     },
     "result": {
-      "operation": "community-detection",
+      "problem": "community-detection",
       "parameters": {},
       "ports": {
         "out": {
@@ -478,7 +478,7 @@
       ]
     },
     "result": {
-      "operation": "maximal-bicliques",
+      "problem": "maximal-bicliques",
       "parameters": {},
       "ports": {
         "out": {
@@ -566,7 +566,7 @@
       ]
     },
     "result": {
-      "operation": "spanning-tree-forest",
+      "problem": "spanning-tree-forest",
       "parameters": {},
       "ports": {
         "out": {
@@ -640,7 +640,7 @@
       ]
     },
     "result": {
-      "operation": "common-neighbors",
+      "problem": "common-neighbors",
       "parameters": {},
       "ports": {
         "out": {
@@ -714,7 +714,7 @@
       ]
     },
     "result": {
-      "operation": "degree-centrality",
+      "problem": "degree-centrality",
       "parameters": {},
       "ports": {
         "out": {
@@ -800,7 +800,7 @@
       ]
     },
     "result": {
-      "operation": "query-subgraph",
+      "problem": "query-subgraph",
       "parameters": {},
       "ports": {
         "out": {
@@ -926,7 +926,7 @@
       ]
     },
     "result": {
-      "operation": "frequent-subgraphs",
+      "problem": "frequent-subgraphs",
       "parameters": {},
       "ports": {
         "out": {
@@ -1058,7 +1058,7 @@
       ]
     },
     "result": {
-      "operation": "subgraph-isomorphism",
+      "problem": "subgraph-isomorphism",
       "parameters": {},
       "ports": {
         "out": {
@@ -1140,7 +1140,7 @@
       ]
     },
     "result": {
-      "operation": "max-flow-min-cut",
+      "problem": "max-flow-min-cut",
       "parameters": {
         "source": 0,
         "sink": 2
@@ -1235,7 +1235,7 @@
       ]
     },
     "result": {
-      "operation": "many-source-shortest-paths",
+      "problem": "many-source-shortest-paths",
       "parameters": {},
       "ports": {
         "out": {
@@ -1322,7 +1322,7 @@
       ]
     },
     "result": {
-      "operation": "network-alignment",
+      "problem": "network-alignment",
       "parameters": {
         "other_graph": {
           "graph": {
@@ -1461,7 +1461,7 @@
       ]
     },
     "result": {
-      "operation": "node-embedding",
+      "problem": "node-embedding",
       "parameters": {},
       "ports": {
         "out": {
@@ -1557,7 +1557,7 @@
       ]
     },
     "result": {
-      "operation": "node-learning",
+      "problem": "node-learning",
       "parameters": {
         "task": "classification",
         "training_labels": {
@@ -1655,7 +1655,7 @@
       ]
     },
     "result": {
-      "operation": "graph-geolocation",
+      "problem": "graph-geolocation",
       "parameters": {},
       "ports": {
         "out": {
@@ -1741,7 +1741,7 @@
       ]
     },
     "result": {
-      "operation": "force-directed-layout",
+      "problem": "force-directed-layout",
       "parameters": {},
       "ports": {
         "out": {
@@ -1834,7 +1834,7 @@
       ]
     },
     "result": {
-      "operation": "topological-sort",
+      "problem": "topological-sort",
       "parameters": {},
       "ports": {
         "out": {
@@ -1909,7 +1909,7 @@
       ]
     },
     "result": {
-      "operation": "vertex-coloring",
+      "problem": "vertex-coloring",
       "parameters": {},
       "ports": {
         "out": {
@@ -1994,7 +1994,7 @@
       ]
     },
     "result": {
-      "operation": "persistent-homology",
+      "problem": "persistent-homology",
       "parameters": {},
       "ports": {
         "out": {
@@ -2081,7 +2081,7 @@
       ]
     },
     "result": {
-      "operation": "null-model-significance",
+      "problem": "null-model-significance",
       "parameters": {},
       "ports": {
         "out": {
@@ -2160,7 +2160,7 @@
       ]
     },
     "result": {
-      "operation": "laplacian-eigenpairs",
+      "problem": "laplacian-eigenpairs",
       "parameters": {},
       "ports": {
         "out": {
@@ -2265,7 +2265,7 @@
       ]
     },
     "result": {
-      "operation": "maximal-biclique-counting",
+      "problem": "maximal-biclique-counting",
       "parameters": {},
       "ports": {
         "out": {

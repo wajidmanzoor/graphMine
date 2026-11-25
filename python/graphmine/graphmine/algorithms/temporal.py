@@ -17,7 +17,7 @@ from .patterns import _predicates
 
 @register(
     id="temporal-paths",
-    problem_id="temporal_fastest_paths",
+    topic_id="temporal_fastest_paths",
     title="Find earliest arrivals or fastest journeys through timed events",
     description="NetworkX shortest paths on an exact-rational time-expanded graph. Waiting is allowed; fastest duration excludes waiting before the first departure. Parallel events remain distinct candidates.",
     parameters={
@@ -136,7 +136,7 @@ def temporal_paths(graph, args, work, backend="networkx"):
 
 @register(
     id="temporal-motifs",
-    problem_id="temporal_motif_mining",
+    topic_id="temporal_motif_mining",
     title="Count ordered temporal edge patterns",
     description="NetworkX VF2 structural matching followed by injective event assignment, exact UTC time comparisons, order constraints and optional temporal inducedness. Distinct tuples in motif-edge order identify occurrences.",
     parameters={

@@ -270,7 +270,7 @@ window.GraphMineVisualization = ({state, api, W, node, notice, renderGraph, rend
     else if (choice === "map") await renderMap(primaryHost, view, request);
     else if (alternatives.supported.has(choice)) { await alternatives.render(primaryHost, view, choice); }
     else charts.renderPrimary(primaryHost, view, choice);
-    if (choice === "metric" && ["maximal-biclique-counting", "triangle-counting", "k-cliques", "motif-counting", "graphlet-counting", "temporal-motifs"].includes(view.profile_facts?.operation)) button("view-enumerate", "List the instances in a new calculation", enumerateResult, primaryHost);
+    if (choice === "metric" && ["maximal-biclique-counting", "triangle-counting", "k-cliques", "motif-counting", "graphlet-counting", "temporal-motifs"].includes(view.profile_facts?.problem)) button("view-enumerate", "List the instances in a new calculation", enumerateResult, primaryHost);
     const graphMode = !$("network").hidden;
     $("graph-layout").parentElement.hidden = !graphMode; $("fit-graph").hidden = !graphMode;
     $("view-lasso").hidden = !graphMode; $("view-surrounding").hidden = !graphMode;
@@ -580,11 +580,11 @@ window.GraphMineVisualization = ({state, api, W, node, notice, renderGraph, rend
   }
   async function compare() {
     dialog("Compare with another run", (form, close) => {
-      const candidates = state.workflows.filter(r => r.id !== state.record.id && r.status === "completed"), picker = selectInput(form, "Saved run", candidates.map(r => [r.id, (state.session?.title || "Saved input") + " · " + r.validation?.plan?.steps?.map(s => s.operation.replaceAll("-", " ")).join(", ") + " · " + new Intl.DateTimeFormat("en-GB", {day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true}).format(new Date(r.updated_at || r.created_at))]));
-      const explicit = selectInput(form, "Compatibility", [["same", "Same saved input and operation"], ["any", "Explicit comparison of different runs"]]);
+      const candidates = state.workflows.filter(r => r.id !== state.record.id && r.status === "completed"), picker = selectInput(form, "Saved run", candidates.map(r => [r.id, (state.session?.title || "Saved input") + " · " + r.validation?.plan?.steps?.map(s => s.problem.replaceAll("-", " ")).join(", ") + " · " + new Intl.DateTimeFormat("en-GB", {day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true}).format(new Date(r.updated_at || r.created_at))]));
+      const explicit = selectInput(form, "Compatibility", [["same", "Same saved input and problem"], ["any", "Explicit comparison of different runs"]]);
       button("compare-selected-runs", "Compare", async () => {
         const record = candidates.find(r => r.id === picker.value); if (!record) throw new Error("Choose another completed run.");
-        const saved = await api(`/api/workflows/${encodeURIComponent(record.id)}/result?summary=true&expected_revision=${record.revision}`), step = record.validation.order.find(id => saved.steps[id]?.result.operation === state.result.steps[$("result-step").value]?.result.operation) || record.validation.order.at(-1), result = saved.steps[step].result, port = result.ports[$("result-port").value] ? $("result-port").value : Object.keys(result.ports)[0];
+        const saved = await api(`/api/workflows/${encodeURIComponent(record.id)}/result?summary=true&expected_revision=${record.revision}`), step = record.validation.order.find(id => saved.steps[id]?.result.problem === state.result.steps[$("result-step").value]?.result.problem) || record.validation.order.at(-1), result = saved.steps[step].result, port = result.ports[$("result-port").value] ? $("result-port").value : Object.keys(result.ports)[0];
         const data = await action("compare", {workflow_id: record.id, revision: record.revision, step, port, allow_different_inputs: explicit.value === "any"}); close();
         dialog("Run comparison", (host, finish) => {
           host.closest("dialog").style.maxWidth = "min(1400px, 95vw)"; const grid = node("div", {class: "view-comparison"}); host.append(grid);

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "entity_resolution_blocking",
+  "topic_id": "entity_resolution_blocking",
   "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
   "category": "preparation",
   "problem_statement": "Given a collection of candidate entity records and one or more declared blocking rules over record attributes, generate the reduced set of candidate record pairs worth comparing, and optionally confirm matches and merge them into resolved-entity clusters.",

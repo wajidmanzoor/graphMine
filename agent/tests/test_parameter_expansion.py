@@ -8,13 +8,13 @@ from graphmine_agent.models import ExecutionPlan, PlanDraft
 from graphmine_agent.planning import PlanValidationError, PlanValidator
 
 
-def plan(catalog, operation, backend, parameters):
-    return ExecutionPlan(session_id="test", graph_id="g", operation_id=operation,
-                         problem_id=catalog.operation(operation).problem_id,
+def plan(catalog, problem, backend, parameters):
+    return ExecutionPlan(session_id="test", graph_id="g", problem_id=problem,
+                         topic_id=catalog.problem(problem).topic_id,
                          backend_id=backend, parameters=parameters)
 
 
-@pytest.mark.parametrize("operation,backend,parameters", [
+@pytest.mark.parametrize("problem,backend,parameters", [
     ("k-cliques", "kcgpu", {"k": 11}),
     ("k-cliques", "gamma", {"k": 8}),
     ("k-cliques", "graphset", {"k": 7}),
@@ -28,12 +28,12 @@ def plan(catalog, operation, backend, parameters):
     ("densest-subgraph", "cds", {"clique_order": 1}),
     ("densest-subgraph", "cds", {"clique_order": 2**31}),
 ])
-def test_reject_before_execution(catalog, operation, backend, parameters):
+def test_reject_before_execution(catalog, problem, backend, parameters):
     with pytest.raises(PlanValidationError):
-        PlanValidator(catalog).validate(plan(catalog, operation, backend, parameters))
+        PlanValidator(catalog).validate(plan(catalog, problem, backend, parameters))
 
 
-@pytest.mark.parametrize("operation,backend,parameters", [
+@pytest.mark.parametrize("problem,backend,parameters", [
     ("k-cliques", "kcgpu", {"k": 10}),
     ("k-cliques", "gamma", {"k": 7}),
     ("k-cliques", "graphset", {"k": 6}),
@@ -44,8 +44,8 @@ def test_reject_before_execution(catalog, operation, backend, parameters):
     ("community-detection", "auto", {"resolution": 0}),
     ("densest-subgraph", "cds", {"clique_order": 7}),
 ])
-def test_extended_parameters_are_accepted(catalog, operation, backend, parameters):
-    PlanValidator(catalog).validate(plan(catalog, operation, backend, parameters))
+def test_extended_parameters_are_accepted(catalog, problem, backend, parameters):
+    PlanValidator(catalog).validate(plan(catalog, problem, backend, parameters))
 
 
 def test_auto_requires_a_compatible_compiled_backend(catalog):
@@ -59,7 +59,7 @@ def test_auto_requires_a_compatible_compiled_backend(catalog):
 
 def test_generation_schema_hides_inapplicable_knobs(catalog):
     schema=copy.deepcopy(PlanDraft.model_json_schema())
-    payload={"requested_backend":"tot", "operation_context":catalog.operation_context("triangle-counting")}
+    payload={"requested_backend":"tot", "problem_context":catalog.problem_context("triangle-counting")}
     constrain_plan_schema(schema,payload)
     parameters=schema["$defs"]["PlanConfiguration"]["properties"]["parameters"]["properties"]
     assert "wetric_spread" not in parameters
@@ -69,7 +69,7 @@ def test_generation_schema_hides_inapplicable_knobs(catalog):
 @pytest.mark.parametrize("backend,maximum",[("kcgpu",10),("gamma",7),("graphset",6),("auto",10)])
 def test_generation_schema_encodes_backend_order_limit(catalog,backend,maximum):
     schema=copy.deepcopy(PlanDraft.model_json_schema())
-    constrain_plan_schema(schema,{"requested_backend":backend,"operation_context":catalog.operation_context("k-cliques")})
+    constrain_plan_schema(schema,{"requested_backend":backend,"problem_context":catalog.problem_context("k-cliques")})
     parameters=schema["$defs"]["PlanConfiguration"]["properties"]["parameters"]["properties"]
     assert parameters["k"]["anyOf"][0]["maximum"]==maximum
 
@@ -79,7 +79,7 @@ def test_generation_schema_excludes_unsupported_all_ties(catalog, backend):
     schema = copy.deepcopy(PlanDraft.model_json_schema())
     constrain_plan_schema(schema, {
         "requested_backend": backend,
-        "operation_context": catalog.operation_context("maximum-clique"),
+        "problem_context": catalog.problem_context("maximum-clique"),
     })
     parameters = schema["$defs"]["PlanConfiguration"]["properties"]["parameters"]["properties"]
     assert parameters["return_all_ties"]["anyOf"][0]["enum"] == [False]

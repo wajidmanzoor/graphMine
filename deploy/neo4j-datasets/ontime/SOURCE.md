@@ -113,7 +113,7 @@ still leaves at least 64 GiB for other services. The retry receipt is
 On 2026-11-16 at 03:15 UTC, the user requested stopping OnTime to focus on the
 four already verified benchmarks and the demo. The service shut down cleanly
 and was disabled. Six monthly FLIGHT files had finished with zero failed
-operations; the seventh (`load/008.cypher`) was interrupted. The partial store,
+problems; the seventh (`load/008.cypher`) was interrupted. The partial store,
 inputs and receipts are preserved, with `status=paused`, `phase=paused_by_user`
 and `resume_requires_review=true`. OnTime is not in the registry or interface.
 The cancellation details are in `ontime/user-stop-request.json` and

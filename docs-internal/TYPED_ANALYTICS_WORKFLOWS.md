@@ -67,7 +67,7 @@ inputs. Neither algorithm code nor expressions are generated or evaluated.
 
 The default browser workspace at `/` uses this library with Normal and Expert modes.
 The previous native workspace remains at `/classic`. Native adaptation,
-multi-table operations and MCP access are still
+multi-table problems and MCP access are still
 separate work in the active implementation plan.
 
 The **Look up & summarize records** family provides deterministic entity and
@@ -100,7 +100,7 @@ JSONL through `graphmine backend-runs export` and `graphmine backend-runs report
 
 `graphmine backend-runs fit-memory` rebuilds the per-backend memory documents
 from non-evaluation rows. Fits use nonnegative intercept, vertex, edge and
-output-budget coefficients. Each operation/implementation/hardware/parameter
+output-budget coefficients. Each problem/implementation/hardware/parameter
 context needs at least 20 completed observations across five snapshots, an
 independent snapshot holdout with no underprediction, and a 25% safety margin.
 Outside a validated fit's range, the existing conservative estimate applies.
@@ -117,7 +117,7 @@ requires the measured gates described below.
 Run `tools/benchmark_backends.py` with the agent Python environment in a named
 `tmux` session, outside the web app. The default bootstrap records at most three
 terminal attempts **per algorithm across all graphs and benchmark IDs** for the
-same native implementation. `--examples-per-operation 1` or `2` lowers that cap.
+same native implementation. `--examples-per-problem 1` or `2` lowers that cap.
 It measures `cpp` first, then admitted GPUs in native order (or a configured
 bootstrap subset for incompatible parameter profiles), repeating only after
 each selected backend has had an opportunity within the cap. Failures and unfinished
@@ -131,7 +131,7 @@ tmux new-session -d -s graphmine-bootstrap \
 `benchmarks/backend_selection.json` describes 60 fixed graph configurations:
 36 seeded Erdos-Renyi, preferential-attachment and planted-dense graphs, eight
 typed small inputs, and 16 bounded extracts from the four verified Neo4j datasets.
-The bootstrap lazily prepares one appropriate snapshot per operation. Neo4j
+The bootstrap lazily prepares one appropriate snapshot per problem. Neo4j
 reads use the registered read-only path, transaction timeouts, row/byte limits,
 and rollback. Only anonymous simple topology is saved, with its extraction
 query and parameters; source labels, properties and element IDs are discarded.
@@ -164,7 +164,7 @@ choice must be compiled, admitted, input-compatible and consistent with the
 device policy. Forced choices are never replaced. An unavailable or corrupt
 model leaves native `auto` in control and records a warning.
 
-Each multi-backend operation has a Bayesian linear model with a separate reward head per
+Each multi-backend problem has a Bayesian linear model with a separate reward head per
 backend. The reward is `-log(seconds)`. Aggregate graph sizes and shape,
 input flags, safe parameter values/counts, physical GPU 1 memory, busy state and
 model are standardized using training rows only. An isolation flag distinguishes
@@ -179,7 +179,7 @@ Train and report from the existing authoritative history:
 ```sh
 graphmine backend-model train
 graphmine backend-model report
-graphmine backend-runs report --operation triangle-counting
+graphmine backend-runs report --problem triangle-counting
 graphmine backend-model rollback triangle-counting
 ```
 
@@ -194,7 +194,7 @@ Standalone installs can instead supply `--env-file <private-environment-file>`.
 
 Models live only under `backend_model_dir` (default
 `/data/labdata/wajid/graphmine-models/rlModel`), as
-`<operation>/<UTC-timestamp>-<data-hash>/{model.json,metadata.json}`. Versions are
+`<problem>/<UTC-timestamp>-<data-hash>/{model.json,metadata.json}`. Versions are
 immutable plain JSON. `current` and `previous` are atomic text pointers, never
 symlinks. The first model is available for shadow use; subsequent candidates
 replace `current` only after their mean, worst and permitted-exploration regret
@@ -223,7 +223,7 @@ Warm-start fit diagnostics are explicitly in-sample and never satisfy a live
 gate. Evaluation records never train a model, grant exploration budget or count
 toward shadow observation.
 
-By default, live selection requires every multi-backend operation to have at least 14 days
+By default, live selection requires every multi-backend problem to have at least 14 days
 of real shadow history or 200 real shadow decisions, plus measured superiority
 over both non-oracle baselines and worst regret at most 1.5. Comparisons require
 at least five distinct held-out snapshots and two training comparison snapshots.
@@ -249,7 +249,7 @@ Nightly publication continues to require held-out nonregression.
 When live, only feasible candidates participate in Thompson sampling. Exploration
 must satisfy the 1.5× p50 cap and the completed graph-size range. A head with fewer
 than five runs may instead use its measured benchmark range. Unknown ranges
-cannot authorize exploration. Per-operation daily reservations use a locked
+cannot authorize exploration. Per-problem daily reservations use a locked
 ledger against completed log entries; lost reservations conservatively consume
 budget. Fallback attempts share one decision identity. Defaults and controls:
 
@@ -294,7 +294,7 @@ a canonical graph or relationship CSV. Upload settings also accept feature
 vector and hypergraph JSON with an explicit input kind. Choose **CPU only**,
 **GPU only**, or **Automatic**, then either describe a question or browse a task
 family and select an exact calculation. The available choices come from the
-current evidence-checked operation cards. The task picker works with the
+current evidence-checked problem cards. The task picker works with the
 question planner disabled.
 
 Expert mode shows the input scope, dependency sources, parameters, method
@@ -329,9 +329,9 @@ integer range through plans, tables, graph selection and exported results.
 
 `POST /api/sessions/{session_id}/analytics/plan` makes one routing call, then,
 for a new calculation, builds a typed workflow. Routing sees a compact listing
-of every operation, grouped by task family, and returns one intent:
+of every problem, grouped by task family, and returns one intent:
 
-- `calculate`: the exact operations to plan. The plan stage then sees their
+- `calculate`: the exact problems to plan. The plan stage then sees their
   full cards.
 - `view`: a display change of the saved result (show a group or clique, change
   the layout, highlight named entities, open another output, search its rows or
@@ -347,20 +347,20 @@ Their schemas list only that result's outputs, group labels ("Clique 3",
 "Group 7", as on the page), available layouts, matched entities and fact IDs.
 The server writes the chat reply for a view from the checked action, not from
 the model. Each stage uses a constrained JSON schema. A rejected workflow may
-receive one contract-based repair while retaining the selected operations and
+receive one contract-based repair while retaining the selected problems and
 device policy. Unresolved ambiguity returns a question rather than a guessed
 execution. Planning alone does not save or run a workflow; the selected
 execution mode governs the next API request.
 
 The request contains `message`, uploaded `inputs`, `device`, optionally
-`family_id` (a hint; routing may choose operations from other families), and
+`family_id` (a hint; routing may choose problems from other families), and
 optionally `previous_workflow_id` for a follow-up. A previous
 workflow must belong to the current session. Context includes its reviewed plan
 and bounded input metadata/samples; samples are identified as excerpts.
 
 The planner uses the configured base model through the OpenAI-compatible
 `GRAPHMINE_LLM_BASE_URL`, with `GRAPHMINE_LLM_ENABLED=true`. Its schema differs
-from the previous native-operation routing adapter. Authored-decision and HTTP
+from the previous native-problem routing adapter. Authored-decision and HTTP
 transport tests verify the constraints and application wiring. They are not
 evidence of a model's routing accuracy. Held-out evaluation against the deployed
 model and full natural-language conversation evaluation remain open.
@@ -372,9 +372,9 @@ repository. Set `GRAPHMINE_ANALYTICS_PYTHON` to use another installed analytics
 environment. The ASGI process does not import CUDA or the analytics package.
 No Node.js process is involved in workflow execution.
 
-`GET /api/analytics/capabilities` exposes the registered family/operation cards,
+`GET /api/analytics/capabilities` exposes the registered family/problem cards,
 executable parameters, possible output ports, quality claims and current test
-evidence. An output port may depend on the selected operation variant; its
+evidence. An output port may depend on the selected problem variant; its
 availability and completeness are checked again before consumption.
 
 The worker rechecks the evidence on validation and execution. It reads the
@@ -390,7 +390,7 @@ with `tools/audit_python_analytics.py --write` in the tested analytics environme
 after running the complete CPU and GPU suites. Regenerating the inventory alone
 does not make stale reports valid. These checks establish the recorded test
 coverage, not correctness for every possible input or support for every formal
-problem variant. Native and research-only implementations have separate evidence.
+topic variant. Native and research-only implementations have separate evidence.
 
 ## Modes and review
 
@@ -429,13 +429,13 @@ After uploading a canonical graph with the existing file API, create a workflow:
     "steps": [
       {
         "id": "core",
-        "operation": "k-core",
+        "problem": "k-core",
         "input": {"input": "main"},
         "parameters": {"requested_k": 2}
       },
       {
         "id": "subgraph",
-        "operation": "induced-subgraph",
+        "problem": "induced-subgraph",
         "input": {"input": "main"},
         "bindings": {
           "vertices_or_seeds": {"step": "core", "port": "vertices"}
@@ -443,7 +443,7 @@ After uploading a canonical graph with the existing file API, create a workflow:
       },
       {
         "id": "rank",
-        "operation": "pagerank",
+        "problem": "pagerank",
         "input": {"step": "subgraph", "port": "graph"}
       }
     ]
@@ -577,7 +577,7 @@ and worker transport. Ownership, account storage, and hardware memory admission
 still apply. Existing analytics job timeout,
 result byte and pending-job limits also apply. Each step retains its declared
 candidate, output and cooperative time budgets. Exceeding a budget produces a
-failure or explicitly incomplete output, according to the operation contract.
+failure or explicitly incomplete output, according to the problem contract.
 
 The SQLite ledger and revision artifacts live under the agent data root's
 `analytics/` directory. An interrupted service marks unfinished execution
@@ -598,7 +598,7 @@ are trusted local artifacts, not client-submitted results or signed certificates
   incompleteness, cache invalidation and evidence rejection. An additional 106
   checks compare capped clique/triangle lists with independent combinations
   across atlas graphs through five vertices. Capped listings now propagate
-  `complete: false` to the operation and workflow, while count-only operations
+  `complete: false` to the problem and workflow, while count-only problems
   retain complete counts with incomplete materialized-list ports.
 - A further 2,525 checks cover exact diffusion, force-law energy and iteration
   equations, and spectral quadratic-form ratios. Random-threshold diffusion
@@ -620,7 +620,7 @@ are trusted local artifacts, not client-submitted results or signed certificates
   device assignment and numerical result. These are serial device checks, not
   evidence of concurrent two-GPU scheduling. Routing tests replay authored
   decisions, including ambiguity, rerouting, bounded repair, follow-up scope
-  and attempts to escape the allowed operation/parameter schema.
+  and attempts to escape the allowed problem/parameter schema.
 - Ten browser checks passed on both working-tree and staged application
   sources. They use actual Firefox, API and library computations with Node
   absent from the server PATH. They cover approval/editing, dependent plans,

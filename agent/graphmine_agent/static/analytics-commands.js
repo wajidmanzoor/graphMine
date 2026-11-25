@@ -1,6 +1,6 @@
 /* Local commands, annotations and downloads for the conversation workspace. */
 "use strict";
-window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls, mergeHistory, operations, onOperation, onTemplates, quality}) => {
+window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSession, renderConversation, updateControls, mergeHistory, problems, onProblem, onTemplates, quality}) => {
   const $ = id => document.getElementById(id);
   const input = $("question"), menu = $("command-menu"), list = $("command-options");
   const catalog = [
@@ -12,7 +12,7 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
     {name: "export", usage: "", description: "Download this conversation and its evidence"},
     {name: "status", usage: "", description: "Show the model and app version"},
     {name: "templates", usage: "", description: "Open workflow templates", action: () => onTemplates()},
-    {name: "calculate", usage: "operation", description: "Choose an advanced calculation", action: () => onOperation("")},
+    {name: "calculate", usage: "problem", description: "Choose an advanced calculation", action: () => onProblem("")},
   ];
   let matches = [], active = 0, feedbackTarget = null;
   const isCommand = message => /^[\/\\]/.test(message.trimStart());
@@ -57,7 +57,7 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
     const accepted = /^(\S+)\s/.exec(match[1]);
     if (accepted && catalog.some(command => !command.action && command.name === accepted[1].toLowerCase())) { close(); return; }
     const query = match[1].toLowerCase().replace(/^calculate\s+/, "").trim();
-    const calculations = operations().map(operation => ({name: operation.id, usage: quality(operation), description: operation.title, action: () => onOperation(operation.id), calculation: true}));
+    const calculations = problems().map(problem => ({name: problem.id, usage: quality(problem), description: problem.title, action: () => onProblem(problem.id), calculation: true}));
     matches = [...catalog, ...calculations].filter(command => `${command.name} ${command.description}`.toLowerCase().includes(query));
     if (!matches.length) { close(); return; }
     active = 0; list.replaceChildren();
@@ -99,7 +99,7 @@ window.GraphMineCommands = ({state, api, W, node, notice, runAction, ensureSessi
     await ensureSession(); close();
     const requested = message.trim().replace(/^[\/\\]/, "").trim();
     if (requested === "templates") { input.value = ""; await onTemplates(); return; }
-    if (requested === "calculate" || operations().some(operation => operation.id === requested.replace(/^calculate\s+/, ""))) { input.value = ""; onOperation(requested === "calculate" ? "" : requested.replace(/^calculate\s+/, "")); return; }
+    if (requested === "calculate" || problems().some(problem => problem.id === requested.replace(/^calculate\s+/, ""))) { input.value = ""; onProblem(requested === "calculate" ? "" : requested.replace(/^calculate\s+/, "")); return; }
     const id = state.session.id;
     const response = await api(`/api/sessions/${id}/chat`, {method: "POST", body: W.stringify({message})});
     if (input.value.trim() === message) input.value = "";

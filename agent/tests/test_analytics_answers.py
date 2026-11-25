@@ -19,7 +19,7 @@ SAVED = {
         "groups": {
             "status": "completed",
             "result": {
-                "operation": "maximal-cliques",
+                "problem": "maximal-cliques",
                 "quality": "exact",
                 "complete": True,
                 "ports": {
@@ -37,7 +37,7 @@ SAVED = {
         "rank": {
             "status": "completed",
             "result": {
-                "operation": "pagerank",
+                "problem": "pagerank",
                 "quality": "numerical",
                 "complete": False,
                 "ports": {
@@ -81,7 +81,7 @@ TEAM = {
         "groups": {
             "status": "completed",
             "result": {
-                "operation": "community-detection",
+                "problem": "community-detection",
                 "quality": "heuristic",
                 "complete": True,
                 "ports": {
@@ -107,7 +107,7 @@ TEAM = {
         "bridges": {
             "status": "completed",
             "result": {
-                "operation": "betweenness-centrality",
+                "problem": "betweenness-centrality",
                 "quality": "numerical",
                 "complete": True,
                 "ports": {
@@ -149,7 +149,7 @@ def test_many_groups_report_their_largest_sizes_separately():
     saved = {
         "order": ["cliques"],
         "steps": {"cliques": {"status": "completed", "result": {
-            "operation": "maximal-cliques", "complete": True, "ports": {
+            "problem": "maximal-cliques", "complete": True, "ports": {
                 "cliques": {"type": "vertex_groups", "value": [
                     {"group": index, "vertices": list(range(size))}
                     for index, size in enumerate([6, 5, 4, 3, 3, 2, 1])
@@ -234,7 +234,7 @@ async def test_completed_workflow_publishes_an_answer(
 
     async def capabilities():
         return {
-            "operations": [{"id": key, "title": value} for key, value in TITLES.items()]
+            "problems": [{"id": key, "title": value} for key, value in TITLES.items()]
         }
 
     def respond(request):
@@ -293,7 +293,7 @@ async def test_answer_activity_records_the_actual_model_call_without_training_ca
     service = AnalyticsService(replace(settings, llm_enabled=True, llm_base_url="http://model.test/v1"),
                                database, graph_store, EventBus(database))
     async def capabilities():
-        return {"operations": [{"id": key, "title": value} for key, value in TITLES.items()]}
+        return {"problems": [{"id": key, "title": value} for key, value in TITLES.items()]}
     monkeypatch.setattr(service, "capabilities", capabilities)
     monkeypatch.setattr(service, "result", lambda _id, **_kwargs: SAVED)
     raw = "Raw model text\n  preserved exactly."
@@ -324,11 +324,11 @@ def test_biclique_sentences_name_only_verified_saved_sides():
     from graphmine_agent.analytics_answers import bipartite_input_context
     from graphmine_agent.answer_grounding import Evidence, fact_sources
     saved = {"steps": {"answer": {"status": "completed", "result": {
-        "operation": "maximal-bicliques", "complete": True, "quality": "exact",
+        "problem": "maximal-bicliques", "complete": True, "quality": "exact",
         "parameters": {"left_partition": [1], "right_partition": ["1"]},
         "ports": {"bicliques": {"type": "bipartite_groups", "value": [{"left": [1], "right": ["1"]}]}},
     }}}}
-    plan = {"steps": [{"id": "answer", "operation": "maximal-bicliques", "input": {"input": "main"}}]}
+    plan = {"steps": [{"id": "answer", "problem": "maximal-bicliques", "input": {"input": "main"}}]}
     inputs = {"main": {"data": {"vertices": [{"id": 1, "type": "Business"}, {"id": "1", "type": "User"}]}}}
     context = bipartite_input_context(saved, plan, inputs)
     facts = build_facts(saved, {"maximal-bicliques": "Find bicliques"}, {}, context)

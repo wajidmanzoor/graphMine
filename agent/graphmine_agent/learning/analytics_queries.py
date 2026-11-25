@@ -58,10 +58,10 @@ def build_suite():
     }
     cases = []
 
-    def step(name, operation, parameters=None, *, source=None, bindings=None):
+    def step(name, problem, parameters=None, *, source=None, bindings=None):
         return {
             "id": name,
-            "operation": operation,
+            "problem": problem,
             "input": source or {"input": "main"},
             "parameters": parameters or {},
             "bindings": bindings or {},
@@ -385,17 +385,17 @@ def build_suite():
 
 def grade(expected, actual, result, checks, defaults=None):
     want, got = expected["steps"], actual["steps"]
-    operation_match = Counter(s["operation"] for s in want) == Counter(
-        s["operation"] for s in got
+    problem_match = Counter(s["problem"] for s in want) == Counter(
+        s["problem"] for s in got
     )
-    # This bundle deliberately uses each operation at most once in each plan.
-    # Duplicate/unexpected model steps fail the operation stage, not get merged.
+    # This bundle deliberately uses each problem at most once in each plan.
+    # Duplicate/unexpected model steps fail the problem stage, not get merged.
     mapping = {}
-    if operation_match and all(
-        n == 1 for n in Counter(s["operation"] for s in want).values()
+    if problem_match and all(
+        n == 1 for n in Counter(s["problem"] for s in want).values()
     ):
-        by_operation = {s["operation"]: s["id"] for s in got}
-        mapping = {s["id"]: by_operation[s["operation"]] for s in want}
+        by_problem = {s["problem"]: s["id"] for s in got}
+        mapping = {s["id"]: by_problem[s["problem"]] for s in want}
     inverse = {value: key for key, value in mapping.items()}
 
     def reference(value):
@@ -408,7 +408,7 @@ def grade(expected, actual, result, checks, defaults=None):
     defaults = defaults or {}
 
     def effective_parameters(step):
-        return {**defaults.get(step["operation"], {}), **step["parameters"]}
+        return {**defaults.get(step["problem"], {}), **step["parameters"]}
 
     for target in want:
         source = next((s for s in got if s["id"] == mapping.get(target["id"])), None)
@@ -444,13 +444,13 @@ def grade(expected, actual, result, checks, defaults=None):
         )
     execution = result.get("status") == "completed" and result.get("complete") is True
     return {
-        "operations": operation_match,
+        "problems": problem_match,
         "parameters": parameters,
         "wiring": wiring,
         "execution": execution,
         "result_checks": observed,
         "passed": bool(
-            operation_match
+            problem_match
             and parameters
             and wiring
             and execution
@@ -537,7 +537,7 @@ async def evaluate(
                                 for key, value in card["parameters"].items()
                                 if "default" in value
                             }
-                            for card in caps["operations"]
+                            for card in caps["problems"]
                         },
                     )
                 )

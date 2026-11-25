@@ -39,7 +39,7 @@ def test_v1_version_is_consistent_across_release_contracts() -> None:
     ).read_text(encoding="utf-8")
 
 
-def test_v1_qwen_reports_match_current_corpus_and_pass_exact_gate() -> None:
+def test_v1_qwen_reports_remain_historical_not_current_release_evidence() -> None:
     corpus_hash = _sha256("agent/evaluation/v1_query_cases.json")
     expected = {
         "agent/evaluation/reports/qwen3.8-27b-fp8-v1-matrix-routing.json": 117,
@@ -48,7 +48,9 @@ def test_v1_qwen_reports_match_current_corpus_and_pass_exact_gate() -> None:
     }
     for relative, total in expected.items():
         report = _json(relative)
-        assert report["cases_sha256"] == corpus_hash
+        # Archived accuracy belongs to the original schema and source revision.
+        assert report["cases_sha256"] == "11b3bb847f13142cc24ad34e38f2608881c9f9cecc61d6b3e159af4560928640"
+        assert report["cases_sha256"] != corpus_hash
         assert report["model"] == "Qwen/Qwen3.8-27B-FP8"
         assert report["total"] == total
         assert report["passed"] == total

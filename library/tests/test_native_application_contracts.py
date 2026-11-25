@@ -25,29 +25,29 @@ def stable(result):
     }
 
 
-@pytest.mark.parametrize("operation", [
+@pytest.mark.parametrize("problem", [
     "maximal-bicliques", "maximal-biclique-counting", "community-detection",
 ])
 @pytest.mark.parametrize("explicit_unlimited", [False, True])
 def test_calculations_exceed_old_candidate_cap_without_a_default_work_limit(
-    native, operation, explicit_unlimited,
+    native, problem, explicit_unlimited,
 ):
-    if operation == "community-detection":
+    if problem == "community-detection":
         graph = canonical(800, [(0, vertex) for vertex in range(1, 800)])
     else:
         # Isolates inflate the old clique-completion search, but this input has
         # exactly one nonempty maximal biclique: the single cross-partition edge.
         graph = canonical(200, [(0, 100)], sides=["left"] * 100 + ["right"] * 100)
     with pytest.raises(BINDING.NativeError, match="candidate budget exceeded"):
-        native.run(operation, graph, device="cpu", budget={"max_candidates": 2_000_000})
+        native.run(problem, graph, device="cpu", budget={"max_candidates": 2_000_000})
     options = {"budget": {"max_candidates": None}} if explicit_unlimited else {}
-    result = native.run(operation, graph, device="cpu", **options)
+    result = native.run(problem, graph, device="cpu", **options)
     assert result["budget"]["max_candidates"] is None
     assert result["complete"] is True
-    if operation == "maximal-bicliques":
+    if problem == "maximal-bicliques":
         assert result["result"]["bicliques"] == [{"left_vertices": [0], "right_vertices": [100]}]
         assert result["result"]["total_count"] == 1
-    elif operation == "maximal-biclique-counting":
+    elif problem == "maximal-biclique-counting":
         assert result["ports"]["count"]["value"] == 1
     else:
         rows = result["result"]["community_by_vertex"]
@@ -79,10 +79,10 @@ sys.meta_path.insert(0, NoAlgorithms())
 from graphmine import Graph, list_algorithms, list_families, run
 from graphmine.workflows import execute_workflow
 from graphmine.dispatch import native_library
-assert list_algorithms() == native_library().catalog()['operations']
+assert list_algorithms() == native_library().catalog()['problems']
 assert list_families() == native_library().catalog()['families']
 graph = Graph.from_edges([(0, '0'), ('0', 'é'), ('é', 0)])
-plan = {'version':1, 'device':'cpu', 'steps':[{'id':'count','operation':'triangle-counting','input':{'input':'g'}}]}
+plan = {'version':1, 'device':'cpu', 'steps':[{'id':'count','problem':'triangle-counting','input':{'input':'g'}}]}
 result = execute_workflow(plan, {'g':{'kind':'graph','data':graph.to_canonical()}})
 assert result['status'] == 'completed', result
 assert result['steps']['count']['result']['ports']['count']['value'] == 1

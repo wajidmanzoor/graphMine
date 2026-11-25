@@ -18,8 +18,8 @@ ATLAS = [
 ]
 
 
-def execute(operation, graph, **parameters):
-    result = run(operation, graph, device="cpu", parameters=parameters)
+def execute(problem, graph, **parameters):
+    result = run(problem, graph, device="cpu", parameters=parameters)
     assert result["backend"]["device"] == "cpu"
     return result
 
@@ -602,7 +602,7 @@ def test_anomaly_parallel_events_loops_external_reference_and_constant_columns()
 
 
 @pytest.mark.parametrize(
-    "operation,parameters",
+    "problem,parameters",
     [
         ("group-steiner-tree", {"groups": []}),
         ("group-steiner-tree", {"groups": [[]]}),
@@ -652,10 +652,10 @@ def test_anomaly_parallel_events_loops_external_reference_and_constant_columns()
     ],
 )
 def test_new_data_profiles_reject_invalid_or_unimplemented_parameters(
-    operation, parameters
+    problem, parameters
 ):
     with pytest.raises(GraphMineError):
-        execute(operation, Graph.from_edges([(0, 1, 1)]), **parameters)
+        execute(problem, Graph.from_edges([(0, 1, 1)]), **parameters)
 
 
 @pytest.mark.parametrize("scale", [1, 1e-3, 1e-6, 1e-9, 1e-12, 1e-15, 1e-200])

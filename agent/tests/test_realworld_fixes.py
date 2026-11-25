@@ -55,16 +55,16 @@ def source(kind="protein"):
     }
 
 
-def make_plan(intent=None, operation="maximal-cliques"):
+def make_plan(intent=None, problem="maximal-cliques"):
     return ExecutionPlan(
         session_id="s",
         graph_id="g",
-        operation_id=operation,
-        problem_id="maximal_clique_enumeration"
-        if operation == "maximal-cliques"
+        problem_id=problem,
+        topic_id="maximal_clique_enumeration"
+        if problem == "maximal-cliques"
         else "k_core_decomposition",
         parameters={"minimum_clique_size": 3}
-        if operation == "maximal-cliques"
+        if problem == "maximal-cliques"
         else {"requested_k": 2},
         application_intent=intent,
     )
@@ -148,7 +148,7 @@ def test_readable_memberships_color_defaults_and_followups_are_source_bound():
 def test_core_group_can_be_selected_in_network_and_combined_views_have_valid_actions():
     answer = build_answer(
         source("participant"),
-        make_plan(operation="k-core"),
+        make_plan(problem="k-core"),
         {
             "output": {
                 "core_number_by_vertex": [
@@ -273,8 +273,8 @@ def test_scope_review_corrects_empty_filter_refusal_without_bypassing_weight_saf
             if kw["schema"] is RouteDecision:
                 reviewed = "scope_review" in kw["user_payload"]
                 return RouteDecision(
-                    problem_id="maximal_clique_enumeration",
-                    operation_id="maximal-cliques" if reviewed else None,
+                    topic_id="maximal_clique_enumeration",
+                    problem_id="maximal-cliques" if reviewed else None,
                     supported=reviewed,
                     confidence=0.9,
                     explanation="Check scope",

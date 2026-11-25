@@ -171,7 +171,7 @@ async def test_oversized_job_fails_explicitly_and_next_independent_job_completes
         import sys
         from pathlib import Path
         if sys.argv[1] == "list":
-            print(json.dumps({"library_version": "1.0.0", "operation_count": 1, "validated_backend_count": 1, "compiled_backend_count": 1, "operations": [{"id": "maximal-cliques", "backends": [{"id": "rdmce", "compiled": True, "validated": True}]}]}))
+            print(json.dumps({"library_version": "1.0.0", "problem_count": 1, "validated_backend_count": 1, "compiled_backend_count": 1, "problems": [{"id": "maximal-cliques", "backends": [{"id": "rdmce", "compiled": True, "validated": True}]}]}))
         elif sys.argv[1] == "run":
             output = Path(sys.argv[sys.argv.index("--output") + 1])
             payload = {"ok": True, "provenance": {"backend": "rdmce", "test_double": True}, "warnings": [], "output": {"cliques": [[0,1,2]], "returned_count": 1, "complete": True}}

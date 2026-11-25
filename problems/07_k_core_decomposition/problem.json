@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "k_core_decomposition",
+  "topic_id": "k_core_decomposition",
   "name": "k-Core Decomposition",
   "category": "dense",
   "problem_statement": "Assign every vertex its largest k for which it belongs to the maximal induced subgraph whose vertices all have internal degree at least k.",

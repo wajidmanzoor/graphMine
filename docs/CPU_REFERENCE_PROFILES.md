@@ -8,9 +8,9 @@ native adaptation remains tracked in `VERIFIED_ANALYTICS_IMPLEMENTATION.md`.
 
 ## Objectives and implementations
 
-| Operation | Implemented objective and method | Limits and result interpretation |
+| Problem | Implemented objective and method | Limits and result interpretation |
 |---|---|---|
-| `densest-subgraph` | Maximize induced k-clique count divided by selected vertex count. Weighted k=2 uses induced weight instead. Maximum-weight closure reduces the unconstrained problem to NetworkX minimum cut with exact integer capacities. | No fixed maximum clique order. Higher-order weighted density is undefined and rejected. `minimum_vertices > 1` uses separate HiGHS models by result cardinality and returns a numerical optimality certificate. |
+| `densest-subgraph` | Maximize induced k-clique count divided by selected vertex count. Weighted k=2 uses induced weight instead. Maximum-weight closure reduces the unconstrained topic to NetworkX minimum cut with exact integer capacities. | No fixed maximum clique order. Higher-order weighted density is undefined and rejected. `minimum_vertices > 1` uses separate HiGHS models by result cardinality and returns a numerical optimality certificate. |
 | `densest-k-subgraph` | Select exactly k vertices maximizing induced edge count or nonnegative edge weight using binary vertex/edge variables in SciPy/HiGHS. | k must be between 1 and the vertex count. This is an NP-hard optimization, so the work/time budget can prevent completion. |
 | `quasi-cliques` | Enumerate all vertex sets meeting `ceil(gamma * (size-1))` internal degree. HiGHS enumerates fixed-size feasible sets with exclusion constraints. | The threshold uses the decimal representation of gamma, avoiding binary multiplication/ceiling artifacts. Maximality is within the declared size bounds and tests all larger qualifying sets, not only one-vertex extensions. |
 | `maximal-bicliques` | Complete each declared bipartition internally, enumerate NetworkX maximal cliques, then retain the pairs with both sides nonempty. | Partitions must be disjoint and cover all vertices, including isolates. A result limit caps listing and changes the membership port's completeness. |
@@ -30,7 +30,7 @@ retains the original ID of the edge with the best applicable objective value.
 
 ### Numerical, construction and topology profiles
 
-| Operation | Implemented objective and method | Limits and result interpretation |
+| Problem | Implemented objective and method | Limits and result interpretation |
 |---|---|---|
 | `laplacian-eigenpairs` | SciPy `eigh` for selected smallest/largest combinatorial or symmetric-normalized eigenpairs, including isolates. Recompute every residual and orthogonality error. | `num_eigenpairs` may equal the vertex count. The direct solver has no iteration-limit parameter; `max_iterations` is rejected rather than ignored. Dense workspace is charged to the work budget. |
 | `graph-signal-denoising` | SciPy linear solve for quadratic smoothing; CVXPY/CLARABEL for total variation and graph trend filtering. | Objective is half squared observation error plus the declared penalty. `tolerance` bounds objective suboptimality, not coordinate error. The result reports an L2 solution-error bound separately. Signal values may be scalars or equal-width vectors. |
@@ -58,7 +58,7 @@ All these are floating-point certificates with their arithmetic disclosed.
 
 ### Sampling, temporal and local analysis profiles
 
-| Operation | Implemented objective and method | Limits and result interpretation |
+| Problem | Implemented objective and method | Limits and result interpretation |
 |---|---|---|
 | `random-walks` | NumPy PCG64 draws uniform, weighted or second-order node2vec transitions. | Uniform walks collapse parallel edges; weighted walks sum them. Self-loops remain. Directed walks follow outgoing edges; the declared directed node2vec extension uses the previous-to-candidate arc for the distance-one bias. A zero outgoing weight sum ends the walk. Nondefault p/q are rejected for other models. |
 | `neighborhood-sampling` | NumPy draws outgoing edge instances independently per distinct frontier vertex, hop and seed batch. | Preserves edge IDs and parallel instances. Typed overrides need one fanout per hop; unspecified types use the global fanout. `-1` returns all eligible edges, including zero-weight edges. Positive weighted fanouts sample only positive weights. Optional time cutoffs require valid UTC timestamps. |
@@ -90,7 +90,7 @@ produces a null z-score.
 
 ### Comparison, connection and record-analysis profiles
 
-| Operation | Implemented objective and method | Limits and result interpretation |
+| Problem | Implemented objective and method | Limits and result interpretation |
 |---|---|---|
 | `group-steiner-tree` | SciPy/HiGHS selects vertices, edges and a root, enforces group coverage and tree edge count, then separates valid connectivity cuts until the selected graph is connected. | Returns a validated tree and a representative from every group, or explicit infeasibility. Overlapping groups may share representatives. Keeps the cheapest original parallel edge ID and removes loops. Requires nonnegative weights. Completed solver optimality is numerical, not a formal rational certificate. |
 | `network-alignment` | SciPy/HiGHS linearizes injective vertex assignment and conserved-edge terms. Every vertex in the smaller graph must be mapped. | Supports global one-to-one alignment; local many-to-one and `top_k` are not accepted. Prior rows preserve both graphs' typed IDs. Weighted conservation sums parallel weights and takes the minimum normalized weight of the conserved edge pair; unweighted conservation counts edges. Weights are nonnegative. |
@@ -167,7 +167,7 @@ deterministic ties ordered by typed entity ID (integers before strings).
 
 ### Diffusion, drawing and spectral sparsification
 
-| Operation | Implemented objective and method | Limits and result interpretation |
+| Problem | Implemented objective and method | Limits and result interpretation |
 |---|---|---|
 | `influence-maximization` | Enumerate seed sets and exact rational live-edge probabilities; NetworkX reachability supplies activation counts. Supports independent cascade, random-threshold LT, and progressive activation for supplied fixed LT thresholds. | Exponential CPU reference method, limited by candidate/time budgets rather than a fixed k cap. Requires `1 <= seed_set_size <= vertex_count`. Returns the exact rational expectation and optimum; sampling-method and statistical-tuning parameters are not accepted. |
 | `force-directed-layout` | NetworkX Fruchterman–Reingold force iterations, explicit distance regularization, recomputed potential and force residual. | Supports 2D/3D and fixed nonnegative iteration counts. `iterations=null` and ForceAtlas2 are not integrated in this profile. Zero iterations preserve supplied initial coordinates. A requested converged result must pass the force-residual criterion; no drawing optimality is claimed. |
@@ -236,7 +236,7 @@ exact result.
 Candidate, output and elapsed-time budgets bound work. HiGHS also receives the
 remaining solver time. General synchronous library calls still require the
 planned subprocess worker for hard cancellation and memory limits. There is
-no claim that NP-hard or enumerative operations will finish on arbitrary large
+no claim that NP-hard or enumerative problems will finish on arbitrary large
 graphs. Budget exhaustion raises a resource error and never produces a result
 marked exhaustive or optimal.
 
@@ -376,7 +376,7 @@ The `rational_scalar` distance port retains numerator, denominator and a
 possibly rounded display value. It cannot bind implicitly to a floating-point
 or integer workflow parameter.
 
-The ordered edit script includes per-operation rational costs and stable
+The ordered edit script includes per-problem rational costs and stable
 vertex/edge handles. Original and target external IDs remain record data until
 final serialization; swapping IDs cannot collide with a still-live object.
 Incident edges are deleted before a vertex is deleted, and all endpoints exist
@@ -420,7 +420,7 @@ three-vertex digraphs, weighted fixtures, mixed IDs, large integers, loops,
 parallel edges, infeasible constraints, truncated listings and resource failure.
 
 This is evidence for the tested profiles. It does not establish full parameter
-coverage, scale suitability or completion of the entire 70-problem collection.
+coverage, scale suitability or completion of the entire 70-topic collection.
 The authoritative inventory is generated by
 `tools/audit_python_analytics.py --write` in the analytics environment.
 

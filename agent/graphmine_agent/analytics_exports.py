@@ -259,7 +259,7 @@ def report_bundle(service, workflow_id, *, expected_revision=None, default_image
     if step is not None and step not in dict(completed):
         raise AnalyticsError("The report step has no completed result", "invalid_view")
     main_step, main_result = (step, dict(completed)[step]) if step is not None else completed[-1]
-    preferred = profile(main_result.get("operation")).get("preferred_ports", [])
+    preferred = profile(main_result.get("problem")).get("preferred_ports", [])
     main_port = port or next((name for name in preferred if name in main_result["ports"]), next(iter(main_result["ports"])))
     if main_port not in main_result["ports"]:
         raise AnalyticsError("The report output is unavailable", "invalid_view")
@@ -270,7 +270,7 @@ def report_bundle(service, workflow_id, *, expected_revision=None, default_image
     focused, note, selected, selected_edges = focus_graph(main_graph, main_result, main_port, index)
     graph = focused or {"vertices": [], "edges": []}
     view = {"workflow_id": workflow_id, "revision": record["revision"], "step": main_step, "port": main_port,
-            "profile": profile(main_result.get("operation")), "index": index, "context": False,
+            "profile": profile(main_result.get("problem")), "index": index, "context": False,
             "complete": selected_port.get("complete", True), "graph_available": focused is not None,
             "vertices": graph["vertices"][:2000], "edges": graph["edges"][:5000], "graph": graph.get("graph", {}),
             "vertex_count": len(graph["vertices"]), "edge_count": len(graph["edges"]),

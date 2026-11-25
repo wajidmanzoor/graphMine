@@ -28,11 +28,11 @@ def _slow_binary(path: Path, seconds: int = 30) -> Path:
 
             if len(sys.argv) > 1 and sys.argv[1] == "list":
                 print(json.dumps({{
-                    "operation_count": 13,
+                    "problem_count": 13,
                     "library_version": "1.0.0",
                     "validated_backend_count": 26,
                     "compiled_backend_count": 1,
-                    "operations": [{{
+                    "problems": [{{
                         "id": "maximal-cliques",
                         "backends": [{{"id": "rdmce", "compiled": True, "validated": True}}],
                     }}],
@@ -75,8 +75,8 @@ def _create_structured_job(
         json={
             "session_id": session["id"],
             "graph_id": graph["id"],
-            "problem_id": "maximal_clique_enumeration",
-            "operation_id": "maximal-cliques",
+            "topic_id": "maximal_clique_enumeration",
+            "problem_id": "maximal-cliques",
             "backend_id": "rdmce",
         },
     )

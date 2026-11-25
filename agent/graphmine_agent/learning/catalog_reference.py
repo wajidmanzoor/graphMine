@@ -1,7 +1,7 @@
 """Bounded CPU references for current-catalog synthetic development cases.
 
 These compute from input records, independently of native outputs and answer
-rendering. Approximate and heuristic operations retain their actual guarantees.
+rendering. Approximate and heuristic problems retain their actual guarantees.
 Never call these exhaustive routines on unbounded user uploads.
 """
 
@@ -14,7 +14,7 @@ from fractions import Fraction
 
 from .oracles import adjacency, all_cliques, expected_answer, key
 
-LEGACY_OPERATIONS = {
+LEGACY_PROBLEMS = {
     "maximal-cliques",
     "maximum-clique",
     "k-cliques",
@@ -44,10 +44,10 @@ def selected_graph(graph, filters):
                     value = value[part]
             except (KeyError, TypeError):
                 continue
-            other, operation = condition["value"], condition["operator"]
-            if operation in {"eq", "ne"}:
-                match = (key(value) == key(other)) == (operation == "eq")
-            elif operation == "in":
+            other, problem = condition["value"], condition["operator"]
+            if problem in {"eq", "ne"}:
+                match = (key(value) == key(other)) == (problem == "eq")
+            elif problem == "in":
                 if not isinstance(other, list):
                     raise ValueError("Membership filter requires a list")
                 match = key(value) in {key(item) for item in other}
@@ -66,7 +66,7 @@ def selected_graph(graph, filters):
                     isinstance(value, str) and isinstance(other, str)
                 ):
                     raise ValueError("Incomparable filter operands")
-                match = comparisons[operation](value, other)
+                match = comparisons[problem](value, other)
             if match:
                 kept.append(row)
         selected[condition["target"]] = kept
@@ -147,7 +147,7 @@ def reference_for_case(case):
     if task["expected_status"] != "ready":
         return {"kind": "non_executable", "expected_status": task["expected_status"]}
     graph = copy.deepcopy(selected_graph(case["graph"], task["intent"]["filters"]))
-    scalable = task["operation_id"] in {
+    scalable = task["problem_id"] in {
         "community-detection",
         "k-core",
         "connected-components",
@@ -156,13 +156,13 @@ def reference_for_case(case):
     vertex_limit, edge_limit = (256, 4096) if scalable else (8, 16)
     if len(graph["vertices"]) > vertex_limit or len(graph["edges"]) > edge_limit:
         raise ValueError(
-            f"References for this operation are limited to {vertex_limit} vertices "
+            f"References for this problem are limited to {vertex_limit} vertices "
             f"and {edge_limit} edges"
         )
     ids, neighbors = adjacency(graph, max_vertices=vertex_limit)
     index = {key(value): position for position, value in enumerate(ids)}
-    operation, parameters = task["operation_id"], task["parameters"]
-    if operation in {
+    problem, parameters = task["problem_id"], task["parameters"]
+    if problem in {
         "max-flow-min-cut",
         "linear-assignment",
         "group-steiner-tree",
@@ -178,20 +178,20 @@ def reference_for_case(case):
                     value = value[part]
                 edge["weight"] = value
     legacy = {
-        "operation_id": operation,
+        "problem_id": problem,
         "parameters": parameters,
         "filters": [],
         "behavior": "execute",
     }
-    if operation in LEGACY_OPERATIONS:
+    if problem in LEGACY_PROBLEMS:
         expected = expected_answer(graph, legacy)
         return {
             "kind": "partition_and_score_consistency"
-            if operation == "community-detection"
+            if problem == "community-detection"
             else "exact_enumeration",
             "expected": expected,
         }
-    if operation == "quasi-cliques":
+    if problem == "quasi-cliques":
         ratio = Fraction(str(parameters["minimum_degree_ratio"]))
         groups = [
             [ids[v] for v in group]
@@ -210,14 +210,14 @@ def reference_for_case(case):
             if not any(set(map(key, group)) < set(map(key, other)) for other in groups)
         ]
         expected = {"groups": groups, "count": len(groups)}
-    elif operation == "triangle-counting":
+    elif problem == "triangle-counting":
         groups = [
             [ids[v] for v in group]
             for group in all_cliques(neighbors)
             if len(group) == 3
         ]
         expected = {"groups": groups, "count": len(groups)}
-    elif operation == "dynamic-triangle-counting":
+    elif problem == "dynamic-triangle-counting":
 
         def triangles(value):
             vertex_ids, adjacent = adjacency(value)
@@ -272,8 +272,8 @@ def reference_for_case(case):
             "deleted": decode(initial - after_deletions),
             "inserted": decode(final - after_deletions),
         }
-    elif operation in {"graph-motifs", "subgraph-isomorphism"}:
-        name = "motifs" if operation == "graph-motifs" else "query_graph"
+    elif problem in {"graph-motifs", "subgraph-isomorphism"}:
+        name = "motifs" if problem == "graph-motifs" else "query_graph"
         patterns = []
         for item in case["attachments"][name]:
             pattern = item["content"]
@@ -284,7 +284,7 @@ def reference_for_case(case):
                 ignore_labels=parameters.get("ignore_vertex_labels", True),
             )
             if (
-                operation == "graph-motifs"
+                problem == "graph-motifs"
                 and parameters["occurrence_identity"] != "all-embeddings"
             ):
                 classes = {}
@@ -313,9 +313,9 @@ def reference_for_case(case):
                 }
             )
         expected = {"patterns": patterns}
-    elif operation in {"connected-components", "transitive-closure"}:
+    elif problem in {"connected-components", "transitive-closure"}:
         if (
-            operation == "connected-components"
+            problem == "connected-components"
             and parameters["connectivity_mode"] == "weakly_connected"
         ):
             neighbors = [set(row) for row in neighbors]
@@ -323,7 +323,7 @@ def reference_for_case(case):
                 for other in row:
                     neighbors[other].add(vertex)
         reach = closure(neighbors)
-        if operation == "transitive-closure":
+        if problem == "transitive-closure":
             expected = {
                 "pairs": [
                     [ids[a], ids[b]] for a in range(len(ids)) for b in sorted(reach[a])
@@ -337,7 +337,7 @@ def reference_for_case(case):
             expected = {
                 "groups": [[ids[v] for v in group] for group in sorted(components)]
             }
-    elif operation == "max-flow-min-cut":
+    elif problem == "max-flow-min-cut":
         source, sink = index[key(parameters["source"])], index[key(parameters["sink"])]
         cuts = []
         for group in subsets(range(len(ids))):
@@ -351,7 +351,7 @@ def reference_for_case(case):
                     )
                 )
         expected = {"max_flow_value": min(cuts), "min_cut_value": min(cuts)}
-    elif operation == "linear-assignment":
+    elif problem == "linear-assignment":
         left = [v["id"] for v in graph["vertices"] if v["attributes"]["side"] == "left"]
         right = [
             v["id"] for v in graph["vertices"] if v["attributes"]["side"] == "right"
@@ -372,7 +372,7 @@ def reference_for_case(case):
             "matching_size": len(left),
             "optimal_edge_sets": [edges for cost, edges in choices if cost == optimum],
         }
-    elif operation == "butterfly-counting":
+    elif problem == "butterfly-counting":
         left = [
             i
             for i, v in enumerate(graph["vertices"])
@@ -386,17 +386,17 @@ def reference_for_case(case):
                 for b_pair in itertools.combinations(right, 2)
             )
         }
-    elif operation == "maximal-biclique-counting":
+    elif problem == "maximal-biclique-counting":
         expected = expected_answer(
             graph,
             {
                 **legacy,
-                "operation_id": "maximal-bicliques",
+                "problem_id": "maximal-bicliques",
                 "parameters": {"minimum_left_size": 1, "minimum_right_size": 1},
             },
         )
         expected["count"] = len(expected["bicliques"])
-    elif operation == "k-truss":
+    elif problem == "k-truss":
         pairs = {
             tuple(sorted((index[key(e["source"])], index[key(e["target"])]))): e["id"]
             for e in graph["edges"]
@@ -428,7 +428,7 @@ def reference_for_case(case):
             ],
             "maximum": max(numbers.values(), default=0),
         }
-    elif operation == "densest-subgraph":
+    elif problem == "densest-subgraph":
         order = parameters.get("clique_order", 2)
         cliques = [] if order > len(ids) else [group for group in itertools.combinations(range(len(ids)), order)
                    if all(b in neighbors[a] for a, b in itertools.combinations(group, 2))]
@@ -447,7 +447,7 @@ def reference_for_case(case):
                 if density == optimum
             ],
         }
-    elif operation == "personalized-pagerank":
+    elif problem == "personalized-pagerank":
         scores = pagerank(
             neighbors,
             index[key(parameters["seed_vertex"])],
@@ -463,7 +463,7 @@ def reference_for_case(case):
             },
             "acceptance": "Measure error; do not treat epsilon as a certified per-run error bound or require exact stochastic scores.",
         }
-    elif operation == "group-steiner-tree":
+    elif problem == "group-steiner-tree":
         groups = [{key(v) for v in group} for group in parameters["groups"]]
         choices = []
         for value in ids:
@@ -507,7 +507,7 @@ def reference_for_case(case):
                 if cost == optimum
             ],
         }
-    elif operation == "influence-maximization":
+    elif problem == "influence-maximization":
         if any(edge["weight"] not in (0, 1) for edge in graph["edges"]):
             raise ValueError(
                 "This influence reference requires deterministic 0/1 probabilities"
@@ -533,5 +533,5 @@ def reference_for_case(case):
             },
         }
     else:
-        raise ValueError(f"No independent reference for {operation}")
+        raise ValueError(f"No independent reference for {problem}")
     return {"kind": "exact_enumeration", "expected": expected}

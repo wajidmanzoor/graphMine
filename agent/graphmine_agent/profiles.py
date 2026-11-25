@@ -9,7 +9,7 @@ from typing import Any
 from .graph_context import field_value, identity
 from .models import ExecutionPlan
 
-EXPANSION_OPERATIONS = frozenset(
+EXPANSION_PROBLEMS = frozenset(
     {
         "connected-components",
         "max-flow-min-cut",
@@ -24,7 +24,7 @@ EXPANSION_OPERATIONS = frozenset(
         "influence-maximization",
     }
 )
-DIRECTION_PRESERVING_OPERATIONS = frozenset(
+DIRECTION_PRESERVING_PROBLEMS = frozenset(
     {
         "temporal-motif-mining",
         "connected-components",
@@ -42,7 +42,7 @@ class ProfileInputError(ValueError):
         super().__init__(message)
 
 
-def prepare_operation_graph(
+def prepare_problem_graph(
     graph: dict[str, Any], plan: ExecutionPlan
 ) -> dict[str, Any]:
     """Return a copy with explicitly selected capacities/costs in native weight.
@@ -50,8 +50,8 @@ def prepare_operation_graph(
     Never infer capacities, round values, infer bipartite sides, drop edges to
     fit a profile, or mutate the uploaded graph. Native checks remain authoritative.
     """
-    operation = plan.operation_id
-    if operation not in EXPANSION_OPERATIONS:
+    problem = plan.problem_id
+    if problem not in EXPANSION_PROBLEMS:
         return graph
     vertices, edges = graph["vertices"], graph["edges"]
     directed = graph["graph"]["directed"]
@@ -60,7 +60,7 @@ def prepare_operation_graph(
             "This profile accepts at most 1,000,000 entities and 10,000,000 relationships."
         )
     if (
-        operation
+        problem
         in {
             "max-flow-min-cut",
             "transitive-closure",
@@ -73,7 +73,7 @@ def prepare_operation_graph(
             "This calculation requires directed relationships; an undirected input cannot be interpreted as directed automatically."
         )
     if (
-        operation
+        problem
         in {
             "linear-assignment",
             "butterfly-counting",
@@ -85,15 +85,15 @@ def prepare_operation_graph(
         and directed
     ):
         raise ProfileInputError("This profile requires an undirected graph.")
-    if operation == "densest-subgraph" and not vertices:
+    if problem == "densest-subgraph" and not vertices:
         raise ProfileInputError(
             "Densest subgraph requires at least one selected entity."
         )
-    if operation in {"personalized-pagerank", "group-steiner-tree"}:
+    if problem in {"personalized-pagerank", "group-steiner-tree"}:
         ids = {identity(row["id"]) for row in vertices}
         requested = (
             [plan.parameters["seed_vertex"]]
-            if operation == "personalized-pagerank" and "seed_vertex" in plan.parameters
+            if problem == "personalized-pagerank" and "seed_vertex" in plan.parameters
             else [v for group in plan.parameters.get("groups", []) for v in group]
         )
         if any(identity(v) not in ids for v in requested):
@@ -101,17 +101,17 @@ def prepare_operation_graph(
                 "A selected seed or group member is absent after filtering. Choose entities in this scope.",
                 "needs_information",
             )
-    if operation == "influence-maximization" and plan.parameters.get(
+    if problem == "influence-maximization" and plan.parameters.get(
         "seed_set_size", 1
     ) > len(vertices):
         raise ProfileInputError(
             "The seed budget cannot exceed the number of selected entities."
         )
-    if operation == "transitive-closure" and len(vertices) > 1024:
+    if problem == "transitive-closure" and len(vertices) > 1024:
         raise ProfileInputError(
             "Full reachability currently supports at most 1,024 entities; a reusable index is not available."
         )
-    if operation == "max-flow-min-cut":
+    if problem == "max-flow-min-cut":
         ids = {identity(row["id"]) for row in vertices}
         for name in ("source", "sink"):
             if name in plan.parameters and identity(plan.parameters[name]) not in ids:
@@ -121,7 +121,7 @@ def prepare_operation_graph(
                 )
 
     prepared = graph
-    weighted = operation in {
+    weighted = problem in {
         "max-flow-min-cut",
         "linear-assignment",
         "group-steiner-tree",
@@ -137,14 +137,14 @@ def prepare_operation_graph(
             "linear-assignment": "assignment cost",
             "group-steiner-tree": "tree edge cost",
             "influence-maximization": "activation probability",
-        }[operation]
+        }[problem]
         maximum = {
             "max-flow-min-cut": 1_000_000_000,
             "linear-assignment": 999,
             "group-steiner-tree": 2**53 - 1,
             "influence-maximization": 1,
-        }[operation]
-        integer_required = operation != "influence-maximization"
+        }[problem]
+        integer_required = problem != "influence-maximization"
         prepared = copy.deepcopy(graph)
         for edge in prepared["edges"]:
             try:
@@ -170,19 +170,19 @@ def prepare_operation_graph(
                     f"This profile requires {'integer ' if integer_required else ''}{label} values from 0 to {maximum}; values cannot be rounded or rescaled automatically."
                 )
             edge["weight"] = int(value) if integer_required else value
-    unweighted_profile = operation in {
+    unweighted_profile = problem in {
         "k-truss",
         "densest-subgraph",
         "maximal-biclique-counting",
         "personalized-pagerank",
-    } or (operation == "butterfly-counting" and plan.backend_id == "gamma-butterfly")
+    } or (problem == "butterfly-counting" and plan.backend_id == "gamma-butterfly")
     if unweighted_profile and any(
         edge.get("weight") is not None and edge["weight"] != 1 for edge in edges
     ):
         raise ProfileInputError(
             "This profile accepts unweighted relationships or explicit unit weights only."
         )
-    if operation == "max-flow-min-cut":
+    if problem == "max-flow-min-cut":
         total = sum(
             1 if plan.parameters.get("unit_capacity") else edge["weight"]
             for edge in prepared["edges"]
@@ -192,7 +192,7 @@ def prepare_operation_graph(
             raise ProfileInputError(
                 "Total edge capacity must not exceed 1,000,000,000 in this profile."
             )
-    if operation in {
+    if problem in {
         "linear-assignment",
         "butterfly-counting",
         "maximal-biclique-counting",
@@ -214,7 +214,7 @@ def prepare_operation_graph(
                     "Every relationship must join opposite groups; loops and same-side relationships are not supported."
                 )
             pairs.add((source, target) if sides[source] == "left" else (target, source))
-        if operation == "linear-assignment":
+        if problem == "linear-assignment":
             left = sum(side == "left" for side in sides.values())
             right = len(sides) - left
             if left != right or left > 64:

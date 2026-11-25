@@ -38,12 +38,12 @@ def build_cases(curriculum: Path):
     records = {row["id"]: row for row in source["graphs"]}
     examples = [row for row in manifest["examples"] if row["split"] == "validation"]
 
-    def pick(domain, operation, behavior="execute"):
+    def pick(domain, problem, behavior="execute"):
         return next(
             row
             for row in examples
             if row["domain"] == domain
-            and row["task"]["operation_id"] == operation
+            and row["task"]["problem_id"] == problem
             and row["task"]["behavior"] == behavior
             and not row["task"]["filters"]
         )

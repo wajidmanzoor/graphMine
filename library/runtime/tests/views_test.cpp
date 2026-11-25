@@ -347,8 +347,8 @@ void weight_tests() {
   auto wide = graph(); edge(wide,0,1,9007199254740993LL);
   rejects([&] { view(wide); }, "default f64 parser changed its existing precision validation");
   auto validation = json::parse(graphmine::runtime::request(json::serialize(json::object{
-      {"command","validate"},{"operation","k-core"},{"graph",wide}})));
-  check(validation.as_object().contains("error"), "existing operation admitted a wider integer implicitly");
+      {"command","validate"},{"problem","k-core"},{"graph",wide}})));
+  check(validation.as_object().contains("error"), "existing problem admitted a wider integer implicitly");
   for (json::value number : {json::value(0.5), json::value(0x1p63), json::value(-0x1p64), json::value(UINT64_MAX)}) {
     auto input = graph(); edge(input,0,1,number);
     rejects([&] { view(input,spec); }, "invalid int64_exact accepted");

@@ -31,7 +31,7 @@ JSONL is authoritative. A per-file flock serializes writers on the same host;
 O_APPEND plus fsync makes a successfully acknowledged write durable.
 
 Identity: run_id, workflow_id, step_id, created_at (UTC ISO 8601).
-Operation: operation, problem_id, family, parameters (typed scalars, catalog
+Problem: problem, topic_id, family, parameters (typed scalars, catalog
 enums, collection counts; identifiers and free text are redacted).
 Selection: requested_device, requested_backend, candidates (id, compiled,
 admitted, feasible, infeasible_reason), chosen_backend, reason, policy_version,
@@ -69,7 +69,7 @@ calculations. Actual output_size is never used as an input.
 execution_started=false and failure_stage=preflight identify requests rejected
 before native execution; they are not completed training observations.
 Memory coefficients are nonnegative a+b*n+c*m+d*output_estimate, scoped by
-operation, implementation, hardware model, input kind/flags and safe parameters.
+problem, implementation, hardware model, input kind/flags and safe parameters.
 At least 20 completed non-evaluation rows and 5 distinct snapshots are required.
 The held-out split groups whole snapshots. Fits include a 25% margin, must not
 underpredict any held-out peak, and apply only within the training size range.
@@ -84,7 +84,7 @@ benchmark_attempt_key (also repetition), repetition (zero-based),
 attempt_wall_seconds (including worker startup), worker_diagnostic_bytes.
 Benchmark rows use source=benchmark and is_evaluation=false for real warm starts.
 Test collections are marked is_evaluation=true and never enter training.
-Initial bootstrap collection is capped at 1-3 terminal rows per operation across
+Initial bootstrap collection is capped at 1-3 terminal rows per problem across
 benchmark IDs for the same implementation. Full grids require explicit --full.
 Interrupted attempts are recovered from durable aggregate journals; an active
 worker is never restarted. Canonical anonymous graphs and query/generator
@@ -239,7 +239,7 @@ class RunLog:
 
     def submit(self, row):
         # Snapshot/serialization is done outside the filesystem writer. Bad
-        # measurements must not raise into the operation's result path.
+        # measurements must not raise into the problem's result path.
         try:
             frozen = json.loads(_json(row))
             with self.lock:
@@ -305,7 +305,7 @@ class RunLog:
             self._warn("log_shutdown_timeout")
 
 
-def read_rows(data_dir, *, since=None, operation=None, include_benchmarks=True):
+def read_rows(data_dir, *, since=None, problem=None, include_benchmarks=True):
     root = Path(data_dir)
     paths = sorted((root / "runs").glob("*/*/*/runs-*.jsonl"))
     if include_benchmarks:
@@ -321,7 +321,7 @@ def read_rows(data_dir, *, since=None, operation=None, include_benchmarks=True):
                     if not isinstance(row, dict) or row.get("schema_version") not in (1, 2, 3, SCHEMA_VERSION):
                         raise ValueError("Unknown run schema")
                     created = datetime.fromisoformat(row["created_at"].replace("Z", "+00:00"))
-                    if (not after or created >= after) and (not operation or row["operation"] == operation):
+                    if (not after or created >= after) and (not problem or row["problem"] == problem):
                         yield row
                 except (ValueError, KeyError, TypeError):
                     LOG.warning("backend telemetry: ignored malformed or unsupported row in %s", path.name)

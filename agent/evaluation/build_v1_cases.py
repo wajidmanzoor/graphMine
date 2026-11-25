@@ -17,10 +17,10 @@ DOMAINS = [
 ]
 
 
-OPERATIONS = [
+PROBLEMS = [
     {
-        "problem_id": "maximal_clique_enumeration",
-        "operation_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
         "queries": [
             "Enumerate every inclusion-maximal fully connected group of {entities} in this {network}.",
             "List all complete {entities} groups that cannot be extended with another mutually connected member.",
@@ -28,8 +28,8 @@ OPERATIONS = [
         ],
     },
     {
-        "problem_id": "maximum_clique",
-        "operation_id": "maximum-clique",
+        "topic_id": "maximum_clique",
+        "problem_id": "maximum-clique",
         "queries": [
             "Find one largest fully connected set of {entities} in the {network}.",
             "What is the maximum clique in this {network}? I need the globally largest complete group.",
@@ -37,8 +37,8 @@ OPERATIONS = [
         ],
     },
     {
-        "problem_id": "k_clique_counting_enumeration",
-        "operation_id": "k-cliques",
+        "topic_id": "k_clique_counting_enumeration",
+        "problem_id": "k-cliques",
         "queries": [
             "Count all fully connected groups of exactly four {entities} in the {network}.",
             "How many 4-cliques does this {network} contain?",
@@ -47,8 +47,8 @@ OPERATIONS = [
         "parameters": {"k": 4},
     },
     {
-        "problem_id": "quasi_clique_mining",
-        "operation_id": "quasi-cliques",
+        "topic_id": "quasi_clique_mining",
+        "problem_id": "quasi-cliques",
         "queries": [
             "Find near-complete groups of at least five {entities} where each member reaches 80 percent of the others.",
             "Mine quasi-cliques in the {network} with minimum size 5 and degree ratio 0.8.",
@@ -57,8 +57,8 @@ OPERATIONS = [
         "parameters": {"minimum_size": 5, "minimum_degree_ratio": 0.8},
     },
     {
-        "problem_id": "k_core_decomposition",
-        "operation_id": "k-core",
+        "topic_id": "k_core_decomposition",
+        "problem_id": "k-core",
         "queries": [
             "Compute all core numbers and show the {entities} in the 5-core of this {network}.",
             "Run k-core decomposition and return the members that survive at k equals 5.",
@@ -68,8 +68,8 @@ OPERATIONS = [
         "optional_outputs": ["requested_core_vertices"],
     },
     {
-        "problem_id": "maximal_biclique_enumeration",
-        "operation_id": "maximal-bicliques",
+        "topic_id": "maximal_biclique_enumeration",
+        "problem_id": "maximal-bicliques",
         "queries": [
             "Using the attached left partition, enumerate maximal bicliques with at least two left and three right vertices.",
             "Find all maximal complete bipartite groups in the {network}; require 2 left-side and 3 right-side members.",
@@ -79,8 +79,8 @@ OPERATIONS = [
         "auxiliary_roles": ["left_partition"],
     },
     {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "triangle-counting",
         "queries": [
             "Count all triangles among {entities} and include each vertex's triangle participation.",
             "Measure closed triples in this {network}, including per-vertex counts.",
@@ -89,8 +89,8 @@ OPERATIONS = [
         "optional_outputs": ["per_vertex_count"],
     },
     {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "dynamic-triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "dynamic-triangle-counting",
         "queries": [
             "Apply the attached edge updates and report inserted, deleted, and net triangle counts.",
             "Update this {network} from my insertion/deletion file and compute the triangle-count change.",
@@ -99,8 +99,8 @@ OPERATIONS = [
         "auxiliary_roles": ["updates"],
     },
     {
-        "problem_id": "graph_motif_counting",
-        "operation_id": "graph-motifs",
+        "topic_id": "graph_motif_counting",
+        "problem_id": "graph-motifs",
         "queries": [
             "Count induced occurrences of the attached motif and include per-vertex participation.",
             "Run a structural motif census: count induced occurrences of my uploaded motif and aggregate participation for each {entities} member.",
@@ -111,8 +111,8 @@ OPERATIONS = [
         "auxiliary_roles": ["motif"],
     },
     {
-        "problem_id": "subgraph_isomorphism",
-        "operation_id": "subgraph-isomorphism",
+        "topic_id": "subgraph_isomorphism",
+        "problem_id": "subgraph-isomorphism",
         "queries": [
             "Count label-respecting embeddings of the attached query graph and include the embeddings.",
             "Match my uploaded query pattern against this {network} without ignoring labels, and list every embedding.",
@@ -122,8 +122,8 @@ OPERATIONS = [
         "auxiliary_roles": ["query_graph"],
     },
     {
-        "problem_id": "temporal_motif_mining",
-        "operation_id": "temporal-motif-mining",
+        "topic_id": "temporal_motif_mining",
+        "problem_id": "temporal-motif-mining",
         "queries": [
             "Count time-ordered feed-forward triangle events that finish within 3600 seconds; return the count only, not instance details.",
             "Count temporal A-to-B, B-to-C, A-to-C motif occurrences in a one-hour window; do not list instances.",
@@ -132,8 +132,8 @@ OPERATIONS = [
         "parameters": {"max_time_span": 3600},
     },
     {
-        "problem_id": "community_detection",
-        "operation_id": "community-detection",
+        "topic_id": "community_detection",
+        "problem_id": "community-detection",
         "queries": [
             "Partition the undirected {network} into modularity communities and return their members.",
             "Detect disjoint communities among the {entities} using modularity optimization and return every community's member vertices.",
@@ -142,8 +142,8 @@ OPERATIONS = [
         "optional_outputs": ["communities"],
     },
     {
-        "problem_id": "centrality_influential_node_mining",
-        "operation_id": "betweenness-centrality",
+        "topic_id": "centrality_influential_node_mining",
+        "problem_id": "betweenness-centrality",
         "queries": [
             "Rank {entities} by betweenness centrality in this {network}.",
             "Which {entities} lie on the most shortest paths? Return the betweenness ranking.",
@@ -172,37 +172,37 @@ UNSUPPORTED = [
 def build() -> dict:
     cases: list[dict] = []
     for domain_index, (domain_id, network, entities) in enumerate(DOMAINS):
-        for operation in OPERATIONS:
-            query = operation["queries"][domain_index % len(operation["queries"])]
+        for problem in PROBLEMS:
+            query = problem["queries"][domain_index % len(problem["queries"])]
             expected = {
-                "problem_id": operation["problem_id"],
-                "operation_id": operation["operation_id"],
+                "topic_id": problem["topic_id"],
+                "problem_id": problem["problem_id"],
                 "supported": True,
             }
             for key in ("parameters", "optional_outputs", "auxiliary_roles"):
-                if key in operation:
-                    expected[key] = operation[key]
+                if key in problem:
+                    expected[key] = problem[key]
             cases.append(
                 {
-                    "id": f"v1-{domain_id}-{operation['operation_id']}",
+                    "id": f"v1-{domain_id}-{problem['problem_id']}",
                     "split": "v1_matrix_evaluation",
                     "domain_id": domain_id,
                     "user_query": query.format(network=network, entities=entities),
                     "expected": expected,
                 }
             )
-    for index, (problem_id, query) in enumerate(UNSUPPORTED):
+    for index, (topic_id, query) in enumerate(UNSUPPORTED):
         for variant in range(2):
             domain_id, network, _ = DOMAINS[(index * 2 + variant) % len(DOMAINS)]
             cases.append(
                 {
-                    "id": f"v1-unsupported-{problem_id}-{variant + 1}",
+                    "id": f"v1-unsupported-{topic_id}-{variant + 1}",
                     "split": "v1_routing_safety_evaluation",
                     "domain_id": domain_id,
                     "user_query": f"For this {network}, {query[0].lower() + query[1:]}",
                     "expected": {
-                        "problem_id": problem_id,
-                        "operation_id": None,
+                        "topic_id": topic_id,
+                        "problem_id": None,
                         "supported": False,
                     },
                 }
@@ -221,8 +221,8 @@ def build() -> dict:
                 "domain_id": domain_id,
                 "user_query": query,
                 "expected": {
+                    "topic_id": None,
                     "problem_id": None,
-                    "operation_id": None,
                     "supported": False,
                 },
             }
@@ -230,7 +230,7 @@ def build() -> dict:
     return {
         "schema_version": "1.0.0",
         "purpose": (
-            "Generated v1 domain/operation coverage and routing-safety matrix. "
+            "Generated v1 domain/problem coverage and routing-safety matrix. "
             "This is an evaluation artifact, never a fine-tuning dataset."
         ),
         "cases": cases,

@@ -3,9 +3,9 @@
   "routing_contract_version": "repaired-37-v2",
   "integration_report": "validation/repaired_library/REPORT.md",
   "public_api_evidence": "validation/repaired_library/results/native-summary.json",
-  "operations": {
+  "problems": {
     "k-truss": {
-      "problem_id": "k_truss_decomposition",
+      "topic_id": "k_truss_decomposition",
       "backend_id": "acctd",
       "profile": "Exact full k-truss decomposition of unweighted undirected input; loops removed and parallel edges collapse to the smallest typed external edge ID.",
       "cpp": {
@@ -15,7 +15,7 @@
       }
     },
     "densest-subgraph": {
-      "problem_id": "densest_subgraph",
+      "topic_id": "densest_subgraph",
       "backend_id": "cds",
       "profile": "Exact unweighted k-clique density C_k(S)/|S| on a nonempty undirected graph; clique_order defaults to 2 (edge density). Returns clique_count and checks the witness for the requested order. No fixed cardinality, minimum-size constraint or weighted objective. Order above vertex count gives zero density.",
       "cpp": {
@@ -25,7 +25,7 @@
       }
     },
     "maximal-biclique-counting": {
-      "problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "backend_id": "mbe-gpu",
       "profile": "Exact count of nonempty maximal bicliques on one GPU; every vertex declares attributes.side=left|right. Count only: no vertex-set enumeration, size filters, bitmap variant, or multi-GPU mode.",
       "cpp": {
@@ -35,7 +35,7 @@
       }
     },
     "personalized-pagerank": {
-      "problem_id": "personalized_pagerank_rwr",
+      "topic_id": "personalized_pagerank_rwr",
       "backend_id": "kpar",
       "profile": "Approximate top-k outgoing PPR on a directed unweighted multigraph, one seed, explicitly requested restart probability 0.2, dangling mass returned to that seed. Epsilon controls sampling; error_bound=null and error_bound_certified=false. No exact/converged guarantee, weighted walks, multiple seeds, reverse edges, or seed exclusion.",
       "cpp": {
@@ -45,7 +45,7 @@
       }
     },
     "group-steiner-tree": {
-      "problem_id": "group_steiner_tree",
+      "topic_id": "group_steiner_tree",
       "backend_id": "gpu4gst",
       "profile": "Exact undirected group Steiner tree with checked edge/vertex certificate; 1..16 nonempty groups, nonnegative integer weights <=2^53-1, tree cost bound below 2^58. Parallel edges use the cheapest edge, with typed edge-ID tie break. Required terminals can be singleton groups. No hop or diameter constraint.",
       "cpp": {
@@ -55,7 +55,7 @@
       }
     },
     "influence-maximization": {
-      "problem_id": "influence_maximization",
+      "topic_id": "influence_maximization",
       "backend_id": "superfuser",
       "profile": "Approximate independent-cascade seed selection on a directed graph with explicit edge probabilities in weight. Independent holdout spread; guarantee_met=false. No certified approximation ratio/failure probability, linear threshold model, or physical multi-GPU execution.",
       "cpp": {
@@ -67,9 +67,9 @@
   },
   "backends": [
     {
-      "problem_id": "k_truss_decomposition",
+      "topic_id": "k_truss_decomposition",
       "backend_id": "acctd",
-      "operation_id": "k-truss",
+      "problem_id": "k-truss",
       "repair_directory": "acctd",
       "validation": {
         "workload_id": "repaired_acctd",
@@ -86,9 +86,9 @@
       }
     },
     {
-      "problem_id": "densest_subgraph",
+      "topic_id": "densest_subgraph",
       "backend_id": "cds",
-      "operation_id": "densest-subgraph",
+      "problem_id": "densest-subgraph",
       "repair_directory": "cds",
       "validation": {
         "workload_id": "repaired_cds",
@@ -105,9 +105,9 @@
       }
     },
     {
-      "problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "backend_id": "mbe-gpu",
-      "operation_id": "maximal-biclique-counting",
+      "problem_id": "maximal-biclique-counting",
       "repair_directory": "mbe_gpu",
       "validation": {
         "workload_id": "repaired_mbe-gpu",
@@ -124,9 +124,9 @@
       }
     },
     {
-      "problem_id": "personalized_pagerank_rwr",
+      "topic_id": "personalized_pagerank_rwr",
       "backend_id": "kpar",
-      "operation_id": "personalized-pagerank",
+      "problem_id": "personalized-pagerank",
       "repair_directory": "kpar",
       "validation": {
         "workload_id": "repaired_kpar",
@@ -143,9 +143,9 @@
       }
     },
     {
-      "problem_id": "group_steiner_tree",
+      "topic_id": "group_steiner_tree",
       "backend_id": "gpu4gst",
-      "operation_id": "group-steiner-tree",
+      "problem_id": "group-steiner-tree",
       "repair_directory": "gpu4gst",
       "validation": {
         "workload_id": "repaired_gpu4gst",
@@ -162,9 +162,9 @@
       }
     },
     {
-      "problem_id": "influence_maximization",
+      "topic_id": "influence_maximization",
       "backend_id": "superfuser",
-      "operation_id": "influence-maximization",
+      "problem_id": "influence-maximization",
       "repair_directory": "superfuser",
       "validation": {
         "workload_id": "repaired_superfuser",
@@ -181,9 +181,9 @@
       }
     },
     {
-      "problem_id": "butterfly_counting_bipartite",
+      "topic_id": "butterfly_counting_bipartite",
       "backend_id": "gamma-butterfly",
-      "operation_id": "butterfly-counting",
+      "problem_id": "butterfly-counting",
       "repair_directory": "gamma_butterfly",
       "validation": {
         "workload_id": "repaired_gamma-butterfly",
@@ -200,9 +200,9 @@
       }
     },
     {
-      "problem_id": "maximum_clique",
+      "topic_id": "maximum_clique",
       "backend_id": "cuda-ms",
-      "operation_id": "maximum-clique",
+      "problem_id": "maximum-clique",
       "repair_directory": "cuda_ms",
       "validation": {
         "workload_id": "repaired_cuda-ms",
@@ -219,9 +219,9 @@
       }
     },
     {
-      "problem_id": "maximum_clique",
+      "topic_id": "maximum_clique",
       "backend_id": "maximum-clique-on-gpu",
-      "operation_id": "maximum-clique",
+      "problem_id": "maximum-clique",
       "repair_directory": "maximum_clique_on_gpu",
       "validation": {
         "workload_id": "repaired_maximum-clique-on-gpu",

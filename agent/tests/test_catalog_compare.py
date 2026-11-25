@@ -31,7 +31,7 @@ def captured(settings, catalog, tmp_path, monkeypatch):
         case["id"]
         for case in build_suite(catalog)["cases"]
         if case["tags"] == ["supported"]
-        and case["task"]["operation_id"] in {"k-cliques", "connected-components"}
+        and case["task"]["problem_id"] in {"k-cliques", "connected-components"}
     ]
     return capture_fixture(settings, catalog, tmp_path, monkeypatch, case_ids=selected)
 
@@ -155,7 +155,7 @@ def test_paired_comparison_regrades_reorders_and_reports_regression(
 ):
     report, _ = captured
     before = tmp_path / "capture.json"
-    row = next(row for row in report["captures"] if row["operation_id"] == "k-cliques")
+    row = next(row for row in report["captures"] if row["problem_id"] == "k-cliques")
     row["outcome"]["result"]["payload"]["output"]["count"] = 999
     rehash(row)
     report["captures"].reverse()
@@ -182,7 +182,7 @@ def test_paired_comparison_regrades_reorders_and_reports_regression(
     assert result["dimensions"]["workflow_contract_passed"]["regressed"] == 1
     assert result["changed_outcomes"][0]["case_id"] == row["case_id"]
     assert "routing_model" in result["changed_bindings"]["profile"]
-    assert result["after"]["summary"]["by_operation"]["k-cliques"]["passed"] == 0
+    assert result["after"]["summary"]["by_problem"]["k-cliques"]["passed"] == 0
     assert result["after"]["latency"]["count"] == 2
     assert result["training_eligible"] is False
 
@@ -219,7 +219,7 @@ def test_comparison_keeps_pagerank_error_separate_from_contract_passes(
     selected = [
         case["id"]
         for case in build_suite(catalog)["cases"]
-        if case["task"]["operation_id"] == "personalized-pagerank"
+        if case["task"]["problem_id"] == "personalized-pagerank"
     ]
     report, _ = capture_fixture(
         settings, catalog, tmp_path, monkeypatch, case_ids=selected

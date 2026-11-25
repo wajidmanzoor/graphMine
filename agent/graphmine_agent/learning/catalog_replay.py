@@ -212,13 +212,13 @@ def grade_capture(catalog, case, capture):
     if routes:
         route = routes[0]
         errors = []
-        if route.get("problem_id") != task["problem_id"]:
-            errors.append("Wrong initial problem identity")
+        if route.get("topic_id") != task["topic_id"]:
+            errors.append("Wrong initial topic identity")
         if task["expected_status"] == "ready" and (
-            route.get("operation_id") != task["operation_id"]
+            route.get("problem_id") != task["problem_id"]
             or not route.get("supported")
         ):
-            errors.append("Wrong initial executable operation")
+            errors.append("Wrong initial executable problem")
         errors.extend(_intent_issues(task["intent"], route.get("intent") or {}))
         check("initial_routing", errors)
     else:
@@ -234,10 +234,10 @@ def grade_capture(catalog, case, capture):
             ["A non-ready response carried a plan"] if response.get("plan") else []
         )
         final_route = routes[-1] if routes else {}
-        if final_route.get("problem_id") != task["problem_id"] or (
-            final_route.get("operation_id") not in {None, task["operation_id"]}
+        if final_route.get("topic_id") != task["topic_id"] or (
+            final_route.get("problem_id") not in {None, task["problem_id"]}
         ):
-            plan_errors.append("The refusal or clarification concerns another problem")
+            plan_errors.append("The refusal or clarification concerns another topic")
         plan_errors.extend(
             _intent_issues(task["intent"], final_route.get("intent") or {})
         )
@@ -248,8 +248,8 @@ def grade_capture(catalog, case, capture):
     )
     plan_errors = []
     if (
-        plan_data.get("operation_id") != task["operation_id"]
-        or plan_data.get("problem_id") != task["problem_id"]
+        plan_data.get("problem_id") != task["problem_id"]
+        or plan_data.get("topic_id") != task["topic_id"]
     ):
         plan_errors.append("The final plan chooses a different computation")
     if plan_data.get("graph_id") != graph_file.get("id") or plan_data.get(
@@ -279,9 +279,9 @@ def grade_capture(catalog, case, capture):
         execution_errors.append("Result/job binding is broken")
     if (
         result.get("session_id") != capture.get("session_id")
-        or result.get("operation_id") != task["operation_id"]
+        or result.get("problem_id") != task["problem_id"]
     ):
-        execution_errors.append("Result belongs to another session or operation")
+        execution_errors.append("Result belongs to another session or problem")
     if len(jobs) == 1 and response.get("job_id") != jobs[0].get("id"):
         execution_errors.append("The reply points to a different job")
     check("execution", execution_errors)
@@ -394,7 +394,7 @@ def summarize_report(report):
         ),
         "missing_trials": expected - len(rows),
         "dimensions": {},
-        "by_operation": {},
+        "by_problem": {},
     }
     for name in DIMENSIONS:
         values = [
@@ -404,8 +404,8 @@ def summarize_report(report):
         ]
         summary["dimensions"][name] = {"passed": sum(values), "graded": len(values)}
     for row in rows:
-        group = summary["by_operation"].setdefault(
-            row["operation_id"] or row["problem_id"], {"passed": 0, "captured": 0}
+        group = summary["by_problem"].setdefault(
+            row["problem_id"] or row["topic_id"], {"passed": 0, "captured": 0}
         )
         group["captured"] += 1
         group["passed"] += int(row["grade"]["workflow_contract_passed"])
@@ -557,8 +557,8 @@ async def _capture_suite(
                     "case_id": case["id"],
                     "case_sha256": case["sha256"],
                     "trial": trial,
-                    "operation_id": case["task"]["operation_id"],
                     "problem_id": case["task"]["problem_id"],
+                    "topic_id": case["task"]["topic_id"],
                     "session_id": terminal.session_id,
                     "inputs": inputs,
                     "outcome": outcome,

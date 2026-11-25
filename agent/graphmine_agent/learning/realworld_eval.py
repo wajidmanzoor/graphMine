@@ -469,7 +469,7 @@ async def audit_realworld(
                 identity = digest(
                     [
                         case["graph_id"],
-                        task["operation_id"],
+                        task["problem_id"],
                         task["parameters"],
                         task["filters"],
                     ]
@@ -496,8 +496,8 @@ async def audit_realworld(
                     plan = ExecutionPlan(
                         session_id=session.id,
                         graph_id=file.id,
+                        topic_id=task["topic_id"],
                         problem_id=task["problem_id"],
-                        operation_id=task["operation_id"],
                         parameters=task["parameters"],
                         optional_outputs=task["optional_outputs"],
                         application_intent=task["intent"],

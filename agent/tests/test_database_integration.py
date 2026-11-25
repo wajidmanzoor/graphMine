@@ -73,7 +73,7 @@ def query_chat(
     return data, opened.json()
 
 
-def analyze(client, opened, operation, parameters=None):
+def analyze(client, opened, problem, parameters=None):
     created = client.post(
         f"/api/sessions/{opened['session']['id']}/workflows",
         json={
@@ -85,7 +85,7 @@ def analyze(client, opened, operation, parameters=None):
                 "steps": [
                     {
                         "id": "analyze",
-                        "operation": operation,
+                        "problem": problem,
                         "input": {"input": "main"},
                         "parameters": parameters or {},
                     }

@@ -4,7 +4,7 @@ This opening report preserves the original baseline. The implementation replay
 and remaining issues are documented in the final section below.
 
 The tested algorithms usually returned the expected small-graph results. The
-larger problems are between the user's question and the runnable plan, and
+larger topics are between the user's question and the runnable plan, and
 between the computed result and the explanation/visualization. A successful
 job is not enough to call the application usable by a domain expert.
 
@@ -60,10 +60,10 @@ Evidence:
 | Collaboration: count and list fully collaborating trios | Counted all five expected trios | Incorrectly claimed the two groups were disconnected; Divya–Eli is an explicit bridge |
 | Collaboration follow-up: show the largest group | Correctly inferred Ava/Ben/Chen/Divya from the existing complete trio result | Reuse is valid here; the promised view still references the old trios and unsupported filters |
 | Collaboration: divide coworkers into circles | Returned the expected four-person and three-person circles | Useful partition; overstated “meaningful” modularity and suggested unavailable controls |
-| Transport: fastest directed, weighted delivery route | Declined because the operation is unavailable | Appropriate refusal; no nearby algorithm was substituted |
+| Transport: fastest directed, weighted delivery route | Declined because the problem is unavailable | Appropriate refusal; no nearby algorithm was substituted |
 | Security: ordered A→B, B→C, A→C within 60 seconds | Returned one correct instance, mail/app/db, events 1/2/3 | Correct match; explanation miscounted unused edges and confused native runtime with user latency |
 | Security: ordered A→B→C→D through four hosts | Planner described it as unsupported, but a triangle job still ran and returned 1 | Critical semantic gating failure; the graph actually has two requested chains |
-| Fraud: “Which accounts should I investigate first?” | Asked for a formal graph problem/criteria | Safely avoided guessing, but clarification still requires algorithm vocabulary |
+| Fraud: “Which accounts should I investigate first?” | Asked for a formal graph topic/criteria | Safely avoided guessing, but clarification still requires algorithm vocabulary |
 | Follow-up: rank coworkers by shortest-route mediation | Said a different computation was needed, then told the user to request `betweenness-centrality` | Did not carry out an already clear application request; the keyword-based follow-up gate prevented execution |
 
 The baseline's mechanical contract checks passed **11/13** questions. That is
@@ -196,14 +196,14 @@ reproducing the tested profile.
 
 Development replays were intentionally preserved, including failed attempts:
 
-- First domain-first replay: 13/16 checks. It exposed an unknown-problem refusal
+- First domain-first replay: 13/16 checks. It exposed an unknown-topic refusal
   normalization bug and missing attribute context in follow-up classification.
 - Subsequent focused replays exposed whitespace-only model continuations,
   multi-part requests mislabeled as ambiguity, invented auxiliary input keys,
   and unavailable backend choices. Their failed turns and feedback remain under
   `.graphmine-domain-evaluation/live*`; compact reports are alongside those stores.
 - The final implementation uses one bounded malformed-output repair attempt,
-  operation-specific parameter/output/file schemas, server-owned backend
+  problem-specific parameter/output/file schemas, server-owned backend
   selection, and semantic checks independent of a prose rationale.
 
 ### Browser and regression verification
@@ -269,7 +269,7 @@ restart, and the model server remained running. The final restart also loaded
 the backend correctness exclusions described below.
 
 The seeded corpus generates 24 attributed graphs and 114 domain-language
-questions across six domains and seven operations. Training, validation and
+questions across six domains and seven problems. Training, validation and
 test use distinct topology families with isomorphism checks, not random splits
 of paraphrases of the same graph. Full artifacts are local under
 `.graphmine-learning/`; the compact, hash-linked evidence is
@@ -302,7 +302,7 @@ planning profile. Its median turn took 20.75 seconds (range 8.75–26.00). Three
 questions requesting monetary-cost shortest routes—workplace, accounts, and
 devices—were safely stopped, but used `planning_status: needs_information`
 instead of the expected `unsupported`. Their prose correctly states that the
-native operation cannot use costs and that cost data is absent. The strict
+native problem cannot use costs and that cost data is absent. The strict
 status checks remain failed, with saved feedback; these are not unsafe
 computations or evidence of incorrect numerical answers. The protein version
 used the expected status. Clarifications for vague priorities and unsupported

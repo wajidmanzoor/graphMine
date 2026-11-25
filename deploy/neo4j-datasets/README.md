@@ -75,9 +75,9 @@ host; the matching bundled 5.26.32 build passed the startup checks. Each dataset
 `SOURCE.md` records the failure, replacement and checksum. Only the private
 `.database-workspace/demo.env` stores the generated plaintext passwords.
 
-The loader requires tmux, acquires an exclusive operation lock, rechecks input
+The loader requires tmux, acquires an exclusive problem lock, rechecks input
 hashes and emptiness, and executes each unchanged published statement. It treats
-APOC's failed batches, failed operations, error messages, failed parameters and
+APOC's failed batches, failed problems, error messages, failed parameters and
 termination flags as failures. A failed load stops only its dedicated instance
 to prevent queued APOC worker batches from continuing after the outer failure. Per-statement receipts and `status.json` stay
 under the instance directory on the data disk. A finished load remains in the

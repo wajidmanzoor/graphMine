@@ -313,9 +313,9 @@ def _websocket_credentials(
     return supplied, accepted_protocol
 
 
-def _compiled_backends(runtime: Runtime, operation_id: str) -> set[str] | None:
+def _compiled_backends(runtime: Runtime, problem_id: str) -> set[str] | None:
     runtime.runner.require_ready()
-    return runtime.runner.compiled_backends_for(operation_id)
+    return runtime.runner.compiled_backends_for(problem_id)
 
 
 async def _ingest_upload(store: GraphStore, **kwargs):
@@ -509,7 +509,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             # The default workspace's engine; "status" above keeps describing
             # the classic runner, which the classic page waits for.
             "analytics_status": "ready"
-            if analytics["native"]["admitted_operations"] > 0 and llm_available
+            if analytics["native"]["admitted_problems"] > 0 and llm_available
             else "degraded",
             "analytics": analytics,
         }
@@ -538,24 +538,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def domains(request: Request) -> list[DomainProfile]:
         return list(_runtime(request).catalog.domains.values())
 
-    @router.get("/operations")
-    async def operations(request: Request) -> list[dict[str, Any]]:
+    @router.get("/problems")
+    async def problems(request: Request) -> list[dict[str, Any]]:
         runtime = _runtime(request)
         return [
             {
-                "id": operation_id,
-                "problem_id": runtime.catalog.instructions[operation_id]["problem_id"],
-                "name": runtime.catalog.problem(
-                    runtime.catalog.instructions[operation_id]["problem_id"]
+                "id": problem_id,
+                "topic_id": runtime.catalog.instructions[problem_id]["topic_id"],
+                "name": runtime.catalog.topic(
+                    runtime.catalog.instructions[problem_id]["topic_id"]
                 )["spec"]["name"],
-                "backends": runtime.catalog.manifest_operations[operation_id][
+                "backends": runtime.catalog.manifest_problems[problem_id][
                     "backends"
                 ],
-                "default_backend": runtime.catalog.instructions[operation_id][
+                "default_backend": runtime.catalog.instructions[problem_id][
                     "default_backend"
                 ],
             }
-            for operation_id in sorted(runtime.catalog.instructions)
+            for problem_id in sorted(runtime.catalog.instructions)
         ]
 
     @router.get("/capabilities")
@@ -776,7 +776,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         runtime.database.get_session(body.session_id)
         normalized = runtime.validator.validate(
             body,
-            compiled_backends=_compiled_backends(runtime, body.operation_id),
+            compiled_backends=_compiled_backends(runtime, body.problem_id),
             for_execution=True,
         )
         if runtime.database.get_file(normalized.graph_id).role != FileRole.graph:

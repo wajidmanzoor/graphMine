@@ -101,9 +101,9 @@ def test_foreign_conversations_and_files_are_rejected(workspace):
         with pytest.raises(RecordNotFound):
             service.save(alice.id, SaveExploration(expected_revision=1, state=state(workspace)))
     with identity_scope(Principal("bob", "bob", accounts)):
-        for operation in (lambda: Exploration(workspace.runtime).get(alice.id), lambda: Exploration(workspace.runtime).save(alice.id, SaveExploration(expected_revision=1, state={}))):
+        for problem in (lambda: Exploration(workspace.runtime).get(alice.id), lambda: Exploration(workspace.runtime).save(alice.id, SaveExploration(expected_revision=1, state={}))):
             with pytest.raises(RecordNotFound):
-                operation()
+                problem()
     other = workspace.client.post("/api/sessions", json={"domain_id": "general"}).json()
     response = workspace.client.put(f"/api/sessions/{other['id']}/exploration", json={"expected_revision": 0, "state": state(workspace)})
     assert response.status_code == 404
@@ -128,7 +128,7 @@ def test_account_usage_and_conversation_deletion_include_view_state(workspace):
 
 def test_missing_files_and_changed_result_revisions_are_pruned_without_executing(workspace, monkeypatch):
     record = {"id": "saved", "session_id": workspace.session["id"], "revision": 1,
-              "validation": {"order": ["step"], "plan": {"steps": [{"id": "step", "operation": "k-core", "input": {"input": "main"}}]}},
+              "validation": {"order": ["step"], "plan": {"steps": [{"id": "step", "problem": "k-core", "input": {"input": "main"}}]}},
               "input_files": {"main": {"file_id": workspace.file["id"]}}}
     monkeypatch.setattr(workspace.runtime.analytics, "get", lambda _: deepcopy(record))
     document = state(workspace)

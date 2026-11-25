@@ -21,7 +21,7 @@ def add_parser(commands):
     for name in ("export", "report", "fit-memory"):
         command = actions.add_parser(name)
         command.add_argument("--since", help="ISO 8601 UTC date or timestamp")
-        command.add_argument("--operation")
+        command.add_argument("--problem")
         command.add_argument("--data-dir", type=Path)
     return runs
 
@@ -42,14 +42,14 @@ def report(rows):
     groups = defaultdict(list)
     for run_id, row in records.items():
         if run_id not in superseded:
-            groups[row["operation"], row.get("chosen_backend")].append(row)
+            groups[row["problem"], row.get("chosen_backend")].append(row)
     summaries = []
-    for (operation, backend), group in sorted(groups.items(), key=lambda item: str(item[0])):
+    for (problem, backend), group in sorted(groups.items(), key=lambda item: str(item[0])):
         completed = [r for r in group if r["outcome"] == "completed"]
         durations = [r["runtime_seconds"] for r in completed if r.get("runtime_seconds") is not None]
         errors = [r["prediction_error"] for r in completed if r.get("prediction_error") is not None]
         regrets = [r["regret"] for r in completed if r.get("regret") is not None]
-        summaries.append(dict(operation=operation, backend=backend, run_count=len(group),
+        summaries.append(dict(problem=problem, backend=backend, run_count=len(group),
                               completed_count=len(completed),
                               evaluation_count=sum(bool(r.get("is_evaluation")) for r in group),
                               timeout_count=sum(r["outcome"] == "timeout" for r in group),
@@ -69,7 +69,7 @@ def run_command(arguments, settings=None):
     model = settings.backend_model_dir if settings else Path(os.getenv("GRAPHMINE_BACKEND_MODEL_DIR", str(DEFAULT_MODEL_DIR)))
     root = settings.repository_root if settings else Path(__file__).resolve().parents[3]
     prepare_directories(data, model, root)
-    rows = read_rows(data, since=arguments.since, operation=arguments.operation)
+    rows = read_rows(data, since=arguments.since, problem=arguments.problem)
     if arguments.backend_runs_command == "export":
         for row in rows:
             print(json.dumps(row, ensure_ascii=False, allow_nan=False))
@@ -79,8 +79,8 @@ def run_command(arguments, settings=None):
 
         # Always rebuild from the complete authoritative history, so a changed
         # implementation or a correction cannot retain a stale active fit.
-        if arguments.since or arguments.operation:
-            raise ValueError("fit-memory requires the complete run history; omit --since and --operation")
+        if arguments.since or arguments.problem:
+            raise ValueError("fit-memory requires the complete run history; omit --since and --problem")
         models, skipped = rebuild(data)
         print(json.dumps(dict(backends=len(models), skipped_rows=skipped,
             validated_profiles=sum(p["validated"] for m in models.values() for p in m["profiles"].values()),
@@ -97,7 +97,7 @@ def run_command(arguments, settings=None):
         summary["backend_selection"] = comparison_report(list(read_rows(data)), cards, model, implementation,
             dict(exploration_budget=settings.backend_exploration_budget,
                  max_explore_ratio=settings.backend_max_explore_ratio,
-                 exploration_enabled=settings.backend_exploration_enabled), arguments.operation,
+                 exploration_enabled=settings.backend_exploration_enabled), arguments.problem,
             benchmark_compatibility(settings.native_repository_root / "catalog/native_execution_evidence.json", implementation))
         summary["backend_selection"]["history_scope"] = "Complete authoritative history; --since filters run summaries only"
     except (ImportError, OSError, ValueError, KeyError, TypeError, RuntimeError) as error:
@@ -125,7 +125,7 @@ def main(argv=None):
     for name in ("export", "report", "fit-memory"):
         command = actions.add_parser(name)
         command.add_argument("--since")
-        command.add_argument("--operation")
+        command.add_argument("--problem")
         command.add_argument("--data-dir", type=Path)
     return run_command(parser.parse_args(argv))
 

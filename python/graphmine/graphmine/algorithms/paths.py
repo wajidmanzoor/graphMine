@@ -13,7 +13,7 @@ from ..registry import register
 
 @register(
     id="widest-paths",
-    problem_id="widest_paths",
+    topic_id="widest_paths",
     title="Find the greatest bottleneck capacity from a source",
     description="Threshold reachability using NetworkX BFS computes the max-min path objective with exact comparisons and witness predecessors. Zero capacity remains reachable.",
     parameters={"source_vertex": P("vertex_id", required=True)},
@@ -66,7 +66,7 @@ def widest(graph, args, work, backend="networkx"):
 
 @register(
     id="top-k-critical-paths",
-    problem_id="top_k_critical_paths_dag",
+    topic_id="top_k_critical_paths_dag",
     title="Find the k highest-cost paths through a DAG",
     description="Edge-identity expansion plus exact rational Johnson reweighting allows NetworkX's shortest-simple-path iterator to rank longest DAG paths, including negative weights and parallel arcs.",
     parameters={

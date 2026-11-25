@@ -42,7 +42,7 @@ struct ViewSpec {
   struct Partitions {
     std::vector<ExternalId> left_partition, right_partition;
   };
-  // Resolved operation parameters are part of the canonical spec/cache key.
+  // Resolved problem parameters are part of the canonical spec/cache key.
   std::optional<Partitions> parameters;
 
   static ViewSpec from_json(std::string_view);

@@ -20,7 +20,7 @@ from .presentation import (
     method_explanation,
     result_status,
 )
-from .profiles import DIRECTION_PRESERVING_OPERATIONS
+from .profiles import DIRECTION_PRESERVING_PROBLEMS
 
 
 def build_answer(
@@ -53,7 +53,7 @@ def build_answer(
         incident[identity(edge["source"])].add(index)
         incident[identity(edge["target"])].add(index)
     output = payload.get("output", {})
-    operation = plan.operation_id
+    problem = plan.problem_id
     facts: list[dict[str, Any]] = []
     limitations: list[str] = []
     groups: list[dict[str, Any]] = []
@@ -132,7 +132,7 @@ def build_answer(
             }
         )
 
-    if operation == "k-truss":
+    if problem == "k-truss":
         values = output["truss_number_by_edge"]
         metrics.update(
             maximum_truss_number=output["maximum_truss_number"],
@@ -158,7 +158,7 @@ def build_answer(
         limitations.append(
             "Self-loops are removed and parallel undirected relationships are collapsed before decomposition."
         )
-    elif operation == "densest-subgraph":
+    elif problem == "densest-subgraph":
         order = output.get("clique_order", 2)
         count = output.get("clique_count", output["induced_edge_value"])
         density_kind = "edge" if order == 2 else f"{order}-clique"
@@ -178,7 +178,7 @@ def build_answer(
         limitations.append(
             f"Density is the number of {density_kind} occurrences divided by the number of vertices; this profile uses unweighted edges and no fixed group size."
         )
-    elif operation == "maximal-biclique-counting":
+    elif problem == "maximal-biclique-counting":
         metrics.update(total_count=output["total_count"], complete=output["complete"])
         fact(
             f"Counted {output['total_count']} nonempty maximal bicliques across the two declared groups.",
@@ -186,9 +186,9 @@ def build_answer(
             "output.total_count",
         )
         limitations.append(
-            "This operation returns a count only; the individual bicliques and their members were not materialized."
+            "This problem returns a count only; the individual bicliques and their members were not materialized."
         )
-    elif operation == "personalized-pagerank":
+    elif problem == "personalized-pagerank":
         rows = [
             node(item["vertex"], score=item["score"], rank=item["rank"])
             for item in output["ranked_vertices"]
@@ -209,7 +209,7 @@ def build_answer(
         limitations.append(
             "Scores use outgoing unweighted links and one seed. The sampling tolerance is not a certified per-run error bound; only the requested top ranks are returned."
         )
-    elif operation == "group-steiner-tree":
+    elif problem == "group-steiner-tree":
         metrics.update(feasible=output["feasible"], optimal=output["optimal"])
         answer_edge_ids = {identity(value) for value in output["tree_edges"]}
         if output["feasible"]:
@@ -229,7 +229,7 @@ def build_answer(
         limitations.append(
             "This profile minimizes nonnegative integer edge costs without a hop limit, for at most 16 groups."
         )
-    elif operation == "influence-maximization":
+    elif problem == "influence-maximization":
         rows = [
             node(value, rank=index + 1)
             for index, value in enumerate(output["seed_set"])
@@ -249,7 +249,7 @@ def build_answer(
         limitations.append(
             "Spread is estimated using independent holdout samples. This result has no certified approximation ratio or confidence interval."
         )
-    elif operation == "connected-components":
+    elif problem == "connected-components":
         membership = defaultdict(list)
         for item in output["component_assignment"]:
             membership[item["component"]].append(item["vertex"])
@@ -270,7 +270,7 @@ def build_answer(
             metrics,
             "output.component_assignment",
         )
-    elif operation == "max-flow-min-cut":
+    elif problem == "max-flow-min-cut":
         metrics.update(
             max_flow_value=output["max_flow_value"],
             min_cut_value=output["min_cut_value"],
@@ -301,7 +301,7 @@ def build_answer(
         limitations.append(
             "Capacities constrain each directed relationship; vertex capacities and fractional capacities are not supported."
         )
-    elif operation == "linear-assignment":
+    elif problem == "linear-assignment":
         from .graph_context import field_value
 
         metrics.update(
@@ -334,7 +334,7 @@ def build_answer(
         limitations.append(
             "The result is a minimum-cost perfect assignment on the supplied complete square bipartite graph."
         )
-    elif operation == "transitive-closure":
+    elif problem == "transitive-closure":
         metrics.update(
             reachable_pair_count=output["reachable_pair_count"],
             complete=output["complete"],
@@ -347,7 +347,7 @@ def build_answer(
         limitations.append(
             "Full directed reachability is materialized in the result; no reusable reachability index was built."
         )
-    elif operation == "butterfly-counting":
+    elif problem == "butterfly-counting":
         metrics.update(
             butterfly_count=output["butterfly_count"], complete=output["complete"]
         )
@@ -359,7 +359,7 @@ def build_answer(
         limitations.append(
             "This is a global count; individual participation counts and core decomposition were not computed."
         )
-    elif operation == "graph-motifs":
+    elif problem == "graph-motifs":
         motifs = output.get("motifs", [])
         fact(
             f"Counted matches for {len(motifs)} supplied patterns.",
@@ -403,7 +403,7 @@ def build_answer(
                 limitations.append(
                     f"Pattern {name} has no complete instance list; displayed memberships cannot establish every participant or absence."
                 )
-    elif operation == "community-detection":
+    elif problem == "community-detection":
         membership: dict[Any, list[Any]] = defaultdict(list)
         for item in output.get("assignment_by_vertex", []):
             membership[item["community"]].append(item["vertex"])
@@ -442,15 +442,15 @@ def build_answer(
                 {"count": len(crossing), "examples": named},
                 "original_graph.edges + output.assignment_by_vertex",
             )
-    elif operation in {"betweenness-centrality", "k-core"}:
+    elif problem in {"betweenness-centrality", "k-core"}:
         key, measure = (
             ("score_by_vertex", "score")
-            if operation == "betweenness-centrality"
+            if problem == "betweenness-centrality"
             else ("core_number_by_vertex", "core_number")
         )
         values = output.get(key, [])
         threshold = (
-            plan.parameters.get("requested_k") if operation == "k-core" else None
+            plan.parameters.get("requested_k") if problem == "k-core" else None
         )
         if threshold is not None:
             values = [row for row in values if row[measure] >= threshold]
@@ -470,7 +470,7 @@ def build_answer(
         ]
         selected.update(row["key"] for row in rows)
         metrics["returned_entities"] = len(rows)
-        if operation == "k-core":
+        if problem == "k-core":
             fact(
                 f"{len(rows)} {noun} remain"
                 + (
@@ -497,7 +497,7 @@ def build_answer(
             )
         else:
             fact(f"No {noun} matched the requested analysis.", 0, f"output.{key}")
-    elif operation == "temporal-motif-mining":
+    elif problem == "temporal-motif-mining":
         metrics["matching_sequences"] = output.get("count", 0)
         fact(
             f"Found {metrics['matching_sequences']} matching ordered event sequences within the requested time window.",
@@ -548,7 +548,7 @@ def build_answer(
             "maximal-bicliques": "bicliques",
             "triangle-counting": "triangles",
             "subgraph-isomorphism": "embeddings",
-        }.get(operation)
+        }.get(problem)
         for index, item in enumerate(
             output.get(group_field, []) if group_field else []
         ):
@@ -568,7 +568,7 @@ def build_answer(
         for key, value in output.items():
             if isinstance(value, (int, float, bool, str)):
                 metrics[key] = value
-        if operation == "maximum-clique":
+        if problem == "maximum-clique":
             size = output.get(
                 "clique_number",
                 output.get("maximum_size", max((g["size"] for g in groups), default=0)),
@@ -582,7 +582,7 @@ def build_answer(
                 limitations.append(
                     "A returned group is not a proof of the global maximum unless the solver reports optimality."
                 )
-        elif operation == "triangle-counting":
+        elif problem == "triangle-counting":
             fact(
                 f"Found {output.get('global_triangle_count', 0)} three-entity groups where every pair is connected.",
                 output.get("global_triangle_count", 0),
@@ -640,7 +640,7 @@ def build_answer(
             f"{group['label']}: {names}. {group['size']} {noun}."
             + (
                 f" {group['internal_connections']} connections within the group and {group['external_connections']} to others."
-                if operation == "community-detection"
+                if problem == "community-detection"
                 else ""
             ),
             {
@@ -697,7 +697,7 @@ def build_answer(
             row["groups"] = memberships[row["key"]]
             if row["groups"]:
                 row["community"] = row["groups"][0]
-    for row in rows[:10] if operation == "betweenness-centrality" else []:
+    for row in rows[:10] if problem == "betweenness-centrality" else []:
         fact(
             f"{row['label']}: shortest-route mediation score {row['score']:g}.",
             {"id": row["id"], "score": row["score"]},
@@ -752,7 +752,7 @@ def build_answer(
     view_ids = {row["key"] for row in view_nodes}
     event_ids = (
         {identity(row["id"]) for row in events}
-        if operation == "temporal-motif-mining"
+        if problem == "temporal-motif-mining"
         else None
     )
     answer_edges = [
@@ -781,7 +781,7 @@ def build_answer(
             "changed_instances_complete",
         )
     )
-    if not complete and operation != "personalized-pagerank":
+    if not complete and problem != "personalized-pagerank":
         limitations.append(
             "Returned instances are incomplete; membership and attribute summaries describe only the materialized matches."
         )
@@ -792,7 +792,7 @@ def build_answer(
     if (
         graph["graph"]["directed"]
         and plan.allow_directed_projection
-        and operation not in DIRECTION_PRESERVING_OPERATIONS
+        and problem not in DIRECTION_PRESERVING_PROBLEMS
     ):
         fact(
             "As requested, relationship directions were ignored for this computation. Arrows in the network retain the directions from the original data.",
@@ -800,7 +800,7 @@ def build_answer(
             "plan.allow_directed_projection",
             "scope",
         )
-    if operation in {
+    if problem in {
         "max-flow-min-cut",
         "linear-assignment",
         "group-steiner-tree",
@@ -826,10 +826,10 @@ def build_answer(
         "question": plan.application_intent.objective
         if plan.application_intent
         else "",
-        "operation_id": operation,
+        "problem_id": problem,
         "entity_noun": noun,
-        "method_explanation": method_explanation(operation, plan.parameters),
-        "result_status": result_status(operation, output),
+        "method_explanation": method_explanation(problem, plan.parameters),
+        "result_status": result_status(problem, output),
         "facts": facts,
         "metrics": metrics,
         "groups": groups,
@@ -841,7 +841,7 @@ def build_answer(
         "network": {
             "nodes": view_nodes,
             "edges": view_edges,
-            "layout": "bipartite" if operation == "maximal-bicliques" else "groups",
+            "layout": "bipartite" if problem == "maximal-bicliques" else "groups",
             "groups": [
                 {key: g[key] for key in ("id", "label", "size")} for g in groups
             ],

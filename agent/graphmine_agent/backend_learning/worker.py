@@ -53,7 +53,7 @@ def output_size(result):
     return max(sizes) if sizes else None
 
 
-def _decision(operation, candidates, features, parameters, hardware, context, backend, requested, implementation):
+def _decision(problem, candidates, features, parameters, hardware, context, backend, requested, implementation):
     from . import models, policy
     from .storage import DEFAULT_MODEL_DIR
 
@@ -64,14 +64,14 @@ def _decision(operation, candidates, features, parameters, hardware, context, ba
     if mode != "legacy":
         try:
             model_dir = context.get("backend_model_dir", str(DEFAULT_MODEL_DIR))
-            model, metadata = models.load(model_dir, operation, implementation)
+            model, metadata = models.load(model_dir, problem, implementation)
             version = metadata["model_version"]
             if mode == "bandit":
                 try:
                     # An explicit deployment setting can waive the rollout wait.
                     # Loading above still verifies the model and implementation;
                     # native admission, feasibility and policy limits stay in force.
-                    allowed = context.get("backend_require_rollout_evidence", True) is False or models.live_permitted(model_dir, operation, metadata, implementation,
+                    allowed = context.get("backend_require_rollout_evidence", True) is False or models.live_permitted(model_dir, problem, metadata, implementation,
                         context.get("admission_fingerprint"), configuration=dict(
                             exploration_budget=context.get("backend_exploration_budget", 0.10),
                             max_explore_ratio=context.get("backend_max_explore_ratio", 1.5),
@@ -86,7 +86,7 @@ def _decision(operation, candidates, features, parameters, hardware, context, ba
         if context.get("is_evaluation") or os.environ.get("PYTEST_CURRENT_TEST") or os.environ.get("GRAPHMINE_IS_EVALUATION") == "true":
             return {"allowed": False, "reason": "evaluation_does_not_reserve_live_budget"}
         return policy.reserve_exploration(os.environ.get("GRAPHMINE_BACKEND_DATA_DIR", str(DEFAULT_DATA_DIR)),
-            operation, context["decision_id"], scope, context.get("backend_exploration_budget", 0.10))
+            problem, context["decision_id"], scope, context.get("backend_exploration_budget", 0.10))
 
     try:
         decision = policy.decide(candidates, observation, model=model, model_version=version,
@@ -113,8 +113,8 @@ def _decision(operation, candidates, features, parameters, hardware, context, ba
         return decision
 
 
-def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kwargs):
-    """One start/finish pair around exactly one real native operation call."""
+def _run_attempt(run, problem, graph, *, context, step_id, emit, started, **kwargs):
+    """One start/finish pair around exactly one real native problem call."""
     from graphmine.dispatch import native_request, native_library
     from graphmine.contracts import Budget
     from graphmine.exceptions import GraphMineError, ResourceLimit
@@ -129,7 +129,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
             print("backend telemetry: event_delivery_failed", file=sys.stderr)
 
     data = graph.to_canonical() if hasattr(graph, "to_canonical") else graph
-    definition = algorithm(operation)
+    definition = algorithm(problem)
     budget_object = kwargs.get("budget") or Budget()
     budget_object = replace(budget_object, timeout_seconds=minimum_limit(
         budget_object.timeout_seconds, context.get("job_timeout_seconds")))
@@ -169,7 +169,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
             raise GraphMineError("The requested backend requires a verified lease on physical GPU 1")
         if not gpu_allowed or backend == "cpp":
             execution_device = "cpu" if execution_device == "auto" else execution_device
-        query = dict(command="backend_capabilities", operation=operation, graph=data,
+        query = dict(command="backend_capabilities", problem=problem, graph=data,
                      parameters=kwargs.get("parameters") or {}, device=execution_device,
                      backend=backend, gpu_device=kwargs.get("gpu_device", 0), budget=budget)
         if kwargs.get("allowed_backends") is not None:
@@ -179,7 +179,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
         # uses a fresh snapshot after them, immediately before choosing a backend.
         hardware = hardware_snapshot(leased_gpu_uuid=context.get("leased_gpu_uuid"))
         hardware["backend_memory_safety"] = context.get("backend_memory_safety", 0.8)
-        caps["candidates"] = filter_candidates(operation, caps["candidates"], features, parameters, hardware,
+        caps["candidates"] = filter_candidates(problem, caps["candidates"], features, parameters, hardware,
             output_estimate=output_estimate, implementation=caps["implementation_sha256"], data_dir=data_dir)
         for candidate in caps["candidates"]:
             if candidate["id"] in context.get("attempted_backends", []):
@@ -193,7 +193,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
         # backend is unchanged and cannot silently fall back to another one.
         kwargs["allowed_backends"] = [c["id"] for c in caps["candidates"] if c["feasible"]]
         kwargs["device"] = execution_device
-        decision = _decision(operation, caps["candidates"], features, parameters, hardware, context,
+        decision = _decision(problem, caps["candidates"], features, parameters, hardware, context,
                              backend, requested, caps["implementation_sha256"])
         kwargs["backend"] = decision["native_backend"]
     except Exception as exc:
@@ -202,7 +202,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
             warnings.append("native_preflight_failed")
     try:
         if not caps:
-            card = next(c for c in native_library().catalog()["operations"] if c["id"] == operation)
+            card = next(c for c in native_library().catalog()["problems"] if c["id"] == problem)
             admitted = kwargs.get("allowed_backends")
             caps = dict(candidates=[dict(id=c["id"], device=c["device"], compiled=c["compiled"],
                         admitted=admitted is None or c["id"] in admitted,
@@ -210,7 +210,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
                         legacy_backend=None)
         row = dict(schema_version=SCHEMA_VERSION, run_id=str(uuid4()),
                    workflow_id=context.get("workflow_id"), step_id=step_id, created_at=utc_now(),
-                   operation=operation, problem_id=definition.problem_id, family=definition.family,
+                   problem=problem, topic_id=definition.topic_id, family=definition.family,
                    parameters=parameters,
                    requested_device=requested, requested_backend=backend, candidates=caps["candidates"],
                    chosen_backend=decision.get("chosen_backend", caps.get("legacy_backend")),
@@ -270,7 +270,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
         if row is not None:
             row["timeout_seconds"] = remaining
             event({"event": "native_started", "record": dict(row)})
-        result = run(operation, graph, **kwargs)
+        result = run(problem, graph, **kwargs)
         return result
     except BaseException as exc:
         error = exc
@@ -305,7 +305,7 @@ def _run_attempt(run, operation, graph, *, context, step_id, emit, started, **kw
                 event({"event": "telemetry_warning", "code": "telemetry_finalize_failed"})
 
 
-def run_observed(run, operation, graph, *, context, step_id, emit, **kwargs):
+def run_observed(run, problem, graph, *, context, step_id, emit, **kwargs):
     from graphmine.contracts import Budget
 
     started = time.monotonic()
@@ -322,7 +322,7 @@ def run_observed(run, operation, graph, *, context, step_id, emit, **kwargs):
         emit(value)
 
     try:
-        return _run_attempt(run, operation, graph, context=context, step_id=step_id, emit=event,
+        return _run_attempt(run, problem, graph, context=context, step_id=step_id, emit=event,
                             started=started, **kwargs)
     except Exception as error:
         if last is None or not last.get("fallback_eligible"):
@@ -336,7 +336,7 @@ def run_observed(run, operation, graph, *, context, step_id, emit, **kwargs):
         kwargs["budget"] = replace(budget, timeout_seconds=remaining)
         # Exactly one retry. Its failure propagates; it cannot enter this block
         # again, and native preflight excludes the first backend explicitly.
-        return _run_attempt(run, operation, graph, context=context, step_id=step_id, emit=event,
+        return _run_attempt(run, problem, graph, context=context, step_id=step_id, emit=event,
                             started=time.monotonic(), **kwargs)
 
 
@@ -370,7 +370,7 @@ def install():
             if emit:
                 emit(value)
 
-        def observed(operation, graph, **run_kwargs):
+        def observed(problem, graph, **run_kwargs):
             from graphmine.exceptions import GraphMineError
             from .attempt import run as isolated_run
 
@@ -379,7 +379,7 @@ def install():
                 return isolated_run(*args, response_limit=context.get("max_result_bytes"), **options)
 
             try:
-                return run_observed(invoke, operation, graph, context={
+                return run_observed(invoke, problem, graph, context={
                     **context, "requested_device": step.get("device", plan.get("device", "auto"))},
                     step_id=current, emit=event, **run_kwargs)
             except (TimeoutError, MemoryError) as error:

@@ -138,7 +138,7 @@ def replay(
     vertex_fields=("label", "type"),
     edge_fields=("type",),
 ):
-    """Apply each operation, checking live endpoints, cost rules and final data."""
+    """Apply each problem, checking live endpoints, cost rules and final data."""
     costs = {**COSTS, **{k: Fraction(str(v)) for k, v in (costs or {}).items()}}
     result = result["result"]
     source, target = result["normalized_source"], result["normalized_target"]
@@ -160,7 +160,7 @@ def replay(
         )
     total = Fraction()
     for step in result["edit_path"]:
-        kind = step["operation"]
+        kind = step["problem"]
         if kind == "edge_deletion":
             assert step["edge_handle"] in edges
             del edges[step["edge_handle"]]
@@ -207,7 +207,7 @@ def replay(
                 expected = costs[kind]
             edges[key] = deepcopy(after)
         else:
-            raise AssertionError(f"Unknown edit operation: {kind}")
+            raise AssertionError(f"Unknown edit problem: {kind}")
         cost = Fraction(step["cost_numerator"], step["cost_denominator"])
         assert cost == expected
         total += cost
@@ -311,9 +311,9 @@ def common_witness(
             assert (first in ae) == (second in be) == (first in ce)
 
 
-def call(operation, a, b, **parameters):
+def call(problem, a, b, **parameters):
     result = run(
-        operation, a, device="cpu", parameters={"other_graph": b, **parameters}
+        problem, a, device="cpu", parameters={"other_graph": b, **parameters}
     )
     assert (
         result["complete"]
@@ -437,13 +437,13 @@ def test_rational_cost_port_does_not_implicitly_round_a_downstream_parameter():
         "steps": [
             {
                 "id": "edit",
-                "operation": "graph-edit-distance",
+                "problem": "graph-edit-distance",
                 "input": {"input": "a"},
                 "bindings": {"other_graph": {"input": "b"}},
             },
             {
                 "id": "cliques",
-                "operation": "k-cliques",
+                "problem": "k-cliques",
                 "input": {"input": "a"},
                 "bindings": {"k": {"step": "edit", "port": "distance"}},
             },
@@ -550,29 +550,29 @@ def test_normalization_parameter_rejection_and_budgets():
             {"id": "duplicate", "source": 1, "target": 0, "type": "x"},
         ]
     )
-    for operation in ("graph-edit-distance", "maximum-common-subgraph"):
+    for problem in ("graph-edit-distance", "maximum-common-subgraph"):
         with pytest.raises(GraphMineError, match="Parallel"):
-            call(operation, source, a)
-        result = call(operation, source, a, parallel_edges="collapse")
-        if operation == "graph-edit-distance":
+            call(problem, source, a)
+        result = call(problem, source, a, parallel_edges="collapse")
+        if problem == "graph-edit-distance":
             assert replay(result) == 0
         else:
             assert result["result"]["task_result"]["vertex_count"] == 2
         with pytest.raises(GraphMineError, match="self-loops"):
-            call(operation, source, a, parallel_edges="collapse", self_loops="reject")
+            call(problem, source, a, parallel_edges="collapse", self_loops="reject")
         conflict = deepcopy(source)
         conflict["edges"][-1]["type"] = "different"
         with pytest.raises(GraphMineError, match="different selected"):
-            call(operation, conflict, a, parallel_edges="collapse")
+            call(problem, conflict, a, parallel_edges="collapse")
         call(
-            operation,
+            problem,
             conflict,
             a,
             parallel_edges="collapse",
             label_match_policy="ignore_labels",
         )
         with pytest.raises(GraphMineError, match="same direction"):
-            call(operation, a, graph(2, [(0, 1)], directed=True))
+            call(problem, a, graph(2, [(0, 1)], directed=True))
         for invalid in (
             {"vertex_label_fields": ["weight"]},
             {"vertex_label_fields": ["label", "label"]},
@@ -583,11 +583,11 @@ def test_normalization_parameter_rejection_and_budgets():
             {"label_match_policy": "custom_predicate"},
         ):
             with pytest.raises(GraphMineError):
-                call(operation, a, a, **invalid)
+                call(problem, a, a, **invalid)
         for budget in (Budget(max_candidates=1), Budget(max_output_items=1)):
             with pytest.raises(ResourceLimit):
                 run(
-                    operation,
+                    problem,
                     a,
                     parameters={"other_graph": a},
                     device="cpu",
@@ -632,13 +632,13 @@ def test_common_graph_is_a_real_downstream_input():
         "steps": [
             {
                 "id": "compare",
-                "operation": "maximum-common-subgraph",
+                "problem": "maximum-common-subgraph",
                 "input": {"input": "a"},
                 "bindings": {"other_graph": {"input": "b"}},
             },
             {
                 "id": "degree",
-                "operation": "degree-centrality",
+                "problem": "degree-centrality",
                 "input": {"step": "compare", "port": "graph"},
             },
         ],
@@ -668,7 +668,7 @@ def test_common_graph_keeps_both_parent_namespaces(changed_parent):
         "steps": [
             {
                 "id": name,
-                "operation": "maximum-common-subgraph",
+                "problem": "maximum-common-subgraph",
                 "input": {"input": source},
                 "bindings": {"other_graph": {"input": target}},
             }
@@ -677,12 +677,12 @@ def test_common_graph_keeps_both_parent_namespaces(changed_parent):
         + [
             {
                 "id": "degree",
-                "operation": "degree-centrality",
+                "problem": "degree-centrality",
                 "input": {"step": "first", "port": "graph"},
             },
             {
                 "id": "distance",
-                "operation": "single-source-shortest-paths",
+                "problem": "single-source-shortest-paths",
                 "input": {"step": "second", "port": "graph"},
                 "bindings": {
                     "source": {

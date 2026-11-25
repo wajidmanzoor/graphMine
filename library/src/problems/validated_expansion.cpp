@@ -179,7 +179,7 @@ GraphMotifOptions motif_options(const ButterflyOptions& options) {
   GraphMotifOptions result;result.backend=GraphMotifBackend::graphminer;result.induced=true;result.execution=options.execution;return result;
 }
 BackendInfo info(const std::string& backend,std::vector<std::string> capabilities,bool compiled=GRAPHMINE_HAS_EXPANSION_WORKERS) {
-  auto p=provenance(backend);return {p.backend,p.backend_version,p.problem,p.source_commit,compiled,true,std::move(capabilities)};
+  auto p=provenance(backend);return {p.backend,p.backend_version,p.topic,p.source_commit,compiled,true,std::move(capabilities)};
 }
 } // namespace
 

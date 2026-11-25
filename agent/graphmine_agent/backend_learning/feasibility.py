@@ -7,7 +7,7 @@ import math
 from .memory import predict_memory
 
 
-def feasible(operation, backend, features, parameters, hardware):
+def feasible(problem, backend, features, parameters, hardware):
     """Return (ok, reason) for a candidate enriched by native preflight.
 
     Backend-specific input support and declared limits come from the native API.
@@ -50,17 +50,17 @@ def feasible(operation, backend, features, parameters, hardware):
     return True, None
 
 
-def filter_candidates(operation, candidates, features, parameters, hardware, *, output_estimate,
+def filter_candidates(problem, candidates, features, parameters, hardware, *, output_estimate,
                       implementation, data_dir):
     result = []
     for native in candidates:
         candidate = dict(native, native_feasible=native.get("feasible"),
                          native_infeasible_reason=native.get("infeasible_reason"))
-        predicted, version, reason = predict_memory(operation, candidate, features, parameters, hardware,
+        predicted, version, reason = predict_memory(problem, candidate, features, parameters, hardware,
             output_estimate=output_estimate, implementation=implementation, data_dir=data_dir)
         candidate.update(predicted_peak_memory_bytes=predicted, memory_model_version=version,
                          memory_prediction_reason=reason)
-        ok, reason = feasible(operation, candidate, features, parameters, hardware)
+        ok, reason = feasible(problem, candidate, features, parameters, hardware)
         candidate.update(feasible=ok, infeasible_reason=reason)
         result.append(candidate)
     return result

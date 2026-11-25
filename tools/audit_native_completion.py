@@ -11,7 +11,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from validate_families import registry_operations
+from validate_families import registry_problems
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -49,40 +49,40 @@ def main():
             )
         )
         assert not caps["verification_issues"], caps["verification_issues"]
-        assert {card["id"] for card in caps["operations"]} == set(registry_operations(ROOT))
-        assert all(card["execution"]["cpu"] for card in caps["operations"])
+        assert {card["id"] for card in caps["problems"]} == set(registry_problems(ROOT))
+        assert all(card["execution"]["cpu"] for card in caps["problems"])
         builds[name] = {
             "native_library": str(library.resolve()),
             "binary_sha256": sha(library),
             "implementation_sha256": caps["implementation_sha256"],
-            "cpu_verified_operations": len(caps["operations"]),
-            "gpu_verified_operations": sum(
-                card["execution"]["gpu"] for card in caps["operations"]
+            "cpu_verified_problems": len(caps["problems"]),
+            "gpu_verified_problems": sum(
+                card["execution"]["gpu"] for card in caps["problems"]
             ),
-            "operations": caps["operations"],
+            "problems": caps["problems"],
             "verification_issues": caps["verification_issues"],
         }
-    cpu, gpu = builds["cpu"]["operations"], builds["gpu"]["operations"]
-    assert {(c["id"], c["problem_id"], c["family"]) for c in cpu} == {
-        (c["id"], c["problem_id"], c["family"]) for c in gpu
+    cpu, gpu = builds["cpu"]["problems"], builds["gpu"]["problems"]
+    assert {(c["id"], c["topic_id"], c["family"]) for c in cpu} == {
+        (c["id"], c["topic_id"], c["family"]) for c in gpu
     }
     formal = {
-        json.loads(path.read_text())["problem_id"]: path
+        json.loads(path.read_text())["topic_id"]: path
         for path in (ROOT / "problems").glob("[0-9][0-9]_*/problem.json")
     }
-    represented = {card["problem_id"] for card in cpu} - {"graph_record_queries"}
+    represented = {card["topic_id"] for card in cpu} - {"graph_record_queries"}
     assert len(formal) == 70 and set(formal) == represented
     inventory = []
-    for problem, path in sorted(formal.items()):
-        cards = [card for card in gpu if card["problem_id"] == problem]
+    for topic, path in sorted(formal.items()):
+        cards = [card for card in gpu if card["topic_id"] == topic]
         inventory.append(
             {
-                "problem_id": problem,
+                "topic_id": topic,
                 "contract": str(path.relative_to(ROOT)),
                 "contract_sha256": sha(path),
                 "family": cards[0]["family"],
-                "native_cpu_operations": [card["id"] for card in cards],
-                "native_gpu_operations": [
+                "native_cpu_problems": [card["id"] for card in cards],
+                "native_gpu_problems": [
                     card["id"] for card in cards if card["execution"]["gpu"]
                 ],
             }
@@ -92,9 +92,9 @@ def main():
         "scope": "All formal contracts have documented native executable profiles; finite native oracle evidence does not prove every input or every literature variant. The application uses the separately hashed execution gate.",
         "native_formal_problem_count": len(represented),
         "formal_problem_count": len(formal),
-        "native_operation_count": len(cpu),
-        "native_gpu_operation_count": builds["gpu"]["gpu_verified_operations"],
-        "cpu_runtime_operations": [card["id"] for card in cpu],
+        "native_problem_count": len(cpu),
+        "native_gpu_problem_count": builds["gpu"]["gpu_verified_problems"],
+        "cpu_runtime_problems": [card["id"] for card in cpu],
         "standalone_core_requires_python": False,
         "application_uses_native_runtime": True,
         "application_algorithm_worker_uses_native_runtime": True,
@@ -115,8 +115,8 @@ def main():
                 key: report[key]
                 for key in (
                     "native_formal_problem_count",
-                    "native_operation_count",
-                    "native_gpu_operation_count",
+                    "native_problem_count",
+                    "native_gpu_problem_count",
                 )
             }
         )

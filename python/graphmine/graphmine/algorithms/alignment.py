@@ -18,7 +18,7 @@ def id_order(value):
 
 @register(
     id="network-alignment",
-    problem_id="network_alignment",
+    topic_id="network_alignment",
     title="Align two graphs while conserving topology and supplied similarities",
     description="SciPy/HiGHS linearized quadratic assignment for a global one-to-one mapping covering every vertex of the smaller graph. Maximizes topology_weight times conserved-edge value plus supplied pair similarities. Weighted conservation uses the minimum of the two normalized nonnegative edge weights; unweighted conservation counts edges.",
     library="scipy",

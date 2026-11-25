@@ -94,9 +94,9 @@ def initial_row(job, graph, card, gpu_uuid):
     candidates = [dict(id=c["id"], device=c["device"], compiled=c["compiled"], admitted=c.get("verified", False),
                        feasible=False, infeasible_reason="preflight_not_completed") for c in card["backends"]]
     row = dict(schema_version=SCHEMA_VERSION, run_id=job["run_id"], workflow_id=job["benchmark_id"],
-               step_id=job["benchmark_attempt_key"], created_at=utc_now(), operation=job["operation"],
-               problem_id=card["problem_id"], family=card["family"],
-               parameters=safe_parameters(job["parameters"], algorithm(job["operation"]).parameters),
+               step_id=job["benchmark_attempt_key"], created_at=utc_now(), problem=job["problem"],
+               topic_id=card["topic_id"], family=card["family"],
+               parameters=safe_parameters(job["parameters"], algorithm(job["problem"]).parameters),
                requested_device="cpu" if backend == "cpp" else "gpu", requested_backend=backend,
                candidates=candidates, chosen_backend=backend, reason="forced", policy_version="feasibility-v1",
                model_version=None, predictions={}, hardware=hardware,
@@ -142,7 +142,7 @@ def child(request_path):
         if implementation_hash() != job["implementation_sha256"]:
             raise ValueError("Native implementation changed during benchmark")
         caps = evidence.capabilities(Path(job["repository_root"]))
-        card = next(c for c in caps["operations"] if c["id"] == job["operation"])
+        card = next(c for c in caps["problems"] if c["id"] == job["problem"])
         allowed = [b["id"] for b in card["backends"] if b.get("verified") and b["compiled"]
                    and (b["device"] == "cpu" or job["gpu_uuid"] in b.get("verified_devices", []))]
         if job["backend"] not in allowed:
@@ -155,7 +155,7 @@ def child(request_path):
         if remaining is not None and remaining <= 0:
             raise TimeoutError("Benchmark startup exceeded its deadline")
         budget = Budget(**{**job["budget"], "timeout_seconds": minimum_limit(remaining, job["budget"]["timeout_seconds"])})
-        run_observed(run, job["operation"], graph, context=dict(source="benchmark", workflow_id=job["benchmark_id"],
+        run_observed(run, job["problem"], graph, context=dict(source="benchmark", workflow_id=job["benchmark_id"],
                      is_evaluation=job["is_evaluation"], leased_gpu_uuid=job["gpu_uuid"],
                      backend_memory_safety=job["memory_safety"], job_timeout_seconds=remaining),
                      step_id=job["benchmark_attempt_key"], emit=emit, parameters=job["parameters"],
@@ -373,15 +373,15 @@ def bootstrap_totals(data_dir, implementation, is_evaluation):
         if row["run_id"] not in identities:
             prior.append(row)
             identities.add(row["run_id"])
-    return Counter(r["operation"] for r in prior if r.get("source") == "benchmark"
+    return Counter(r["problem"] for r in prior if r.get("source") == "benchmark"
         and r.get("implementation_sha256") == implementation and r.get("is_evaluation") is is_evaluation)
 
 
 def summarize(rows, cards):
     measurements = defaultdict(lambda: defaultdict(list))
-    by_operation = defaultdict(Counter)
+    by_problem = defaultdict(Counter)
     for row in rows:
-        by_operation[row["operation"]][row["outcome"]] += 1
+        by_problem[row["problem"]][row["outcome"]] += 1
         measurements[row["comparison_id"]][row["requested_backend"]].append(row)
     comparisons, wins = [], Counter()
     by_id = {c["id"]: c for c in cards}
@@ -399,16 +399,16 @@ def summarize(rows, cards):
         best = min(medians.values()) if medians else None
         fastest = sorted(b for b, value in medians.items() if value == best)
         for backend in fastest:
-            wins[first["operation"], backend] += 1
-        admitted = {b["id"] for b in by_id[first["operation"]]["backends"] if b.get("verified")}
-        comparisons.append(dict(comparison_id=comparison, operation=first["operation"], graph_id=first["graph_id"],
+            wins[first["problem"], backend] += 1
+        admitted = {b["id"] for b in by_id[first["problem"]]["backends"] if b.get("verified")}
+        comparisons.append(dict(comparison_id=comparison, problem=first["problem"], graph_id=first["graph_id"],
                                  backends=backends, fastest_observed_backends=fastest,
                                  admitted_backend_count=len(admitted), complete_backend_coverage=admitted <= medians.keys()))
     return dict(schema_version=1, created_at=utc_now(), rows=len(rows),
                 evaluation_rows=sum(r["is_evaluation"] for r in rows),
-                per_operation={op: dict(counts) for op, counts in sorted(by_operation.items())},
+                per_problem={op: dict(counts) for op, counts in sorted(by_problem.items())},
                 comparisons=comparisons,
-                wins=[dict(operation=op, backend=b, wins=n) for (op, b), n in sorted(wins.items())],
+                wins=[dict(problem=op, backend=b, wins=n) for (op, b), n in sorted(wins.items())],
                 scope="Fastest observed backend for an identical graph, parameters, budget and implementation; incomplete coverage is explicit")
 
 
@@ -416,7 +416,7 @@ def summary_table(directory, summary):
     """A derived, readable table; authoritative observations remain JSONL."""
     path = Path(directory) / "summary.csv"
     temporary = path.with_name(path.name + "." + uuid4().hex)
-    fields = ("operation", "graph_id", "backend", "attempts", "completed", "median_seconds",
+    fields = ("problem", "graph_id", "backend", "attempts", "completed", "median_seconds",
               "minimum_seconds", "maximum_seconds", "spread_seconds", "fastest_observed",
               "complete_backend_coverage", "comparison_id")
     try:
@@ -426,7 +426,7 @@ def summary_table(directory, summary):
             for comparison in summary["comparisons"]:
                 for backend in comparison["backends"]:
                     writer.writerow({**backend, **{k: comparison[k] for k in
-                        ("operation", "graph_id", "complete_backend_coverage", "comparison_id")},
+                        ("problem", "graph_id", "complete_backend_coverage", "comparison_id")},
                         "fastest_observed": backend["backend"] in comparison["fastest_observed_backends"]})
             handle.flush()
             os.fsync(handle.fileno())
@@ -448,8 +448,8 @@ async def collect(arguments):
     library = (arguments.native_library or settings.native_runtime_library or ROOT / "library/build/runtime/libgraphmine_runtime.so").resolve()
     os.environ.update(GRAPHMINE_NATIVE_LIBRARY=str(library), CUDA_VISIBLE_DEVICES="")
     config = load_config(arguments.config)
-    if arguments.examples_per_operation is not None:
-        config["bootstrap_examples_per_operation"] = arguments.examples_per_operation
+    if arguments.examples_per_problem is not None:
+        config["bootstrap_examples_per_problem"] = arguments.examples_per_problem
     is_evaluation = bool(arguments.is_evaluation or os.environ.get("PYTEST_CURRENT_TEST")
                          or os.environ.get("GRAPHMINE_IS_EVALUATION") == "true")
     mode = "full" if arguments.full else "bootstrap"
@@ -460,14 +460,14 @@ async def collect(arguments):
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     install(evidence, directory / "evidence-hashes.json")
     caps, implementation = evidence.capabilities(ROOT), implementation_hash()
-    cards = [c for c in caps["operations"] if sum(b.get("verified", False) for b in c["backends"]) > 1]
-    if arguments.operations:
-        missing = set(arguments.operations) - {c["id"] for c in cards}
+    cards = [c for c in caps["problems"] if sum(b.get("verified", False) for b in c["backends"]) > 1]
+    if arguments.problems:
+        missing = set(arguments.problems) - {c["id"] for c in cards}
         if missing:
-            raise ValueError("Requested operations have no admitted backend comparison: " + ", ".join(sorted(missing)))
-        cards = [c for c in cards if c["id"] in arguments.operations]
+            raise ValueError("Requested problems have no admitted backend comparison: " + ", ".join(sorted(missing)))
+        cards = [c for c in cards if c["id"] in arguments.problems]
     if not cards:
-        raise ValueError("No admitted multi-backend operations")
+        raise ValueError("No admitted multi-backend problems")
     gpu = next((g for g in hardware_snapshot()["gpus"] if g["index"] == 1), None)
     if gpu is None:
         raise ValueError("Physical GPU 1 is unavailable")
@@ -479,7 +479,7 @@ async def collect(arguments):
     manifest = dict(schema_version=1, mode=mode, is_evaluation=is_evaluation, config=config,
                     implementation_sha256=implementation, native_library_sha256=hashlib.sha256(library.read_bytes()).hexdigest(),
                     benchmark_code_sha256=frozen_code, gpu_index=1, gpu_uuid=gpu["uuid"],
-                    operations=[dict(operation=c["id"], backends=[b["id"] for b in c["backends"] if b.get("verified")]) for c in cards])
+                    problems=[dict(problem=c["id"], backends=[b["id"] for b in c["backends"] if b.get("verified")]) for c in cards])
     selection = select_graphs(config, cards, full=arguments.full)
     with exclusive(directory / "collection.lock"), exclusive(Path(data_dir) / "locks" / ("bootstrap.lock" if not arguments.full else identifier + ".lock")):
         config_path = directory / "config.json"
@@ -494,32 +494,32 @@ async def collect(arguments):
             seen = {r["benchmark_attempt_key"] for r in rows}
             totals = bootstrap_totals(data_dir, implementation, is_evaluation)
             for card in sorted(cards, key=lambda c: c["id"]):
-                operation = card["id"]
+                problem = card["id"]
                 admitted = [b["id"] for b in card["backends"] if b.get("verified")]
                 # CPU first, then native declaration order; repeat only after
                 # every backend has had an opportunity within the initial cap.
                 backends = ["cpp", *(b for b in admitted if b != "cpp")]
                 if "cpp" not in admitted:
                     raise ValueError("The benchmark requires admitted cpp evidence")
-                if not arguments.full and "bootstrap_backends" in config["operations"][operation]:
-                    backends = config["operations"][operation]["bootstrap_backends"]
+                if not arguments.full and "bootstrap_backends" in config["problems"][problem]:
+                    backends = config["problems"][problem]["bootstrap_backends"]
                     if (not isinstance(backends, list) or not backends or backends[0] != "cpp"
                             or len(set(backends)) != len(backends) or not set(backends) <= set(admitted)):
                         raise ValueError("Bootstrap backend subsets must start with cpp and contain unique admitted backends")
-                limit = None if arguments.full else config["bootstrap_examples_per_operation"]
-                for spec in selection[operation]:
-                    if limit is not None and totals[operation] >= limit:
+                limit = None if arguments.full else config["bootstrap_examples_per_problem"]
+                for spec in selection[problem]:
+                    if limit is not None and totals[problem] >= limit:
                         break
                     graph_path, graph_meta = prepare_graph(directory, spec, settings)
                     graph = json.loads(graph_path.read_text())
-                    for options in parameter_grid(config["operations"][operation]):
-                        parameters = bind_parameters(operation, graph, options)
+                    for options in parameter_grid(config["problems"][problem]):
+                        parameters = bind_parameters(problem, graph, options)
                         budget = {k: config[k] for k in ("timeout_seconds", "max_candidates", "max_output_items")}
                         for repetition in range(config["repeats"]):
                             for backend in backends:
-                                if limit is not None and totals[operation] >= limit:
+                                if limit is not None and totals[problem] >= limit:
                                     break
-                                comparison, pair, key = attempt_keys(implementation, operation, backend,
+                                comparison, pair, key = attempt_keys(implementation, problem, backend,
                                     graph_meta["snapshot_fingerprint"], parameters, budget, repetition)
                                 if key in seen:
                                     continue
@@ -533,7 +533,7 @@ async def collect(arguments):
                                             if lock is None:
                                                 await asyncio.sleep(1)
                                     job = dict(run_id=str(uuid4()), benchmark_id=identifier, benchmark_mode=mode,
-                                        operation=operation, backend=backend, parameters=parameters, budget=budget,
+                                        problem=problem, backend=backend, parameters=parameters, budget=budget,
                                         graph_path=str(graph_path), graph_id=spec["id"], graph_fingerprint=graph_meta["snapshot_fingerprint"],
                                         comparison_id=comparison, benchmark_pair_id=pair, benchmark_attempt_key=key,
                                         repetition=repetition, is_evaluation=is_evaluation, data_dir=str(data_dir),
@@ -548,20 +548,20 @@ async def collect(arguments):
                                 await publish(logger, row, directory)
                                 rows.append(row)
                                 seen.add(key)
-                                totals[operation] += 1
-                                print(f"{operation} {backend} {row['outcome']} {row['runtime_seconds']:.4f}s", flush=True)
-                                atomic_json(directory / "status.json", dict(status="running", rows=len(rows), per_operation=dict(totals)))
+                                totals[problem] += 1
+                                print(f"{problem} {backend} {row['outcome']} {row['runtime_seconds']:.4f}s", flush=True)
+                                atomic_json(directory / "status.json", dict(status="running", rows=len(rows), per_problem=dict(totals)))
                                 if row.get("benchmark_cancelled"):
                                     raise asyncio.CancelledError()
             summary = summarize(rows, cards)
             summary.update(benchmark_id=identifier, mode=mode, implementation_sha256=implementation,
                            configured_graph_count=len(expand_graphs(config)),
                            prepared_graph_count=len(list((directory / "graphs").glob("*.metadata.json"))),
-                           initial_examples_per_operation=None if arguments.full else config["bootstrap_examples_per_operation"],
-                           global_bootstrap_counts=dict(totals), eligible_operations=len(cards))
+                           initial_examples_per_problem=None if arguments.full else config["bootstrap_examples_per_problem"],
+                           global_bootstrap_counts=dict(totals), eligible_problems=len(cards))
             atomic_json(directory / "summary.json", summary)
             summary_table(directory, summary)
-            atomic_json(directory / "status.json", dict(status="completed", rows=len(rows), per_operation=dict(totals)))
+            atomic_json(directory / "status.json", dict(status="completed", rows=len(rows), per_problem=dict(totals)))
             print(json.dumps({k: summary[k] for k in ("benchmark_id", "mode", "rows", "evaluation_rows", "prepared_graph_count")}))
             return 0
         finally:
@@ -580,8 +580,8 @@ def main(argv=None):
     parser.add_argument("--registry", type=Path)
     parser.add_argument("--instances", type=Path)
     parser.add_argument("--password-file", type=Path)
-    parser.add_argument("--operations", nargs="+")
-    parser.add_argument("--examples-per-operation", type=int, choices=(1, 2, 3))
+    parser.add_argument("--problems", nargs="+")
+    parser.add_argument("--examples-per-problem", type=int, choices=(1, 2, 3))
     parser.add_argument("--full", action="store_true", help="explicitly run the complete grid instead of the small bootstrap")
     parser.add_argument("--is-evaluation", action="store_true", help="exclude this collection from all model training")
     args = parser.parse_args(argv)

@@ -69,9 +69,9 @@ class CaptureModel:
         task = self.case["task"]
         if schema is RouteDecision:
             result = RouteDecision(
+                topic_id=task["topic_id"],
                 problem_id=task["problem_id"],
-                operation_id=task["operation_id"],
-                supported=task["operation_id"] is not None,
+                supported=task["problem_id"] is not None,
                 confidence=1,
                 explanation="Reference contract used to capture the production input; not a training target.",
                 intent=task["intent"],
@@ -229,48 +229,48 @@ def check_target(settings, root, job, target):
     if isinstance(target, RouteDecision):
         if (
             expected["expected_status"] == "needs_information"
-            and expected["problem_id"] is None
+            and expected["topic_id"] is None
         ):
             if not (target.ambiguity or target.missing_information):
                 raise ValueError(
                     "An ambiguous objective must ask a concrete clarification before execution"
                 )
-            if target.problem_id is not None:
-                catalog.problem(target.problem_id)
+            if target.topic_id is not None:
+                catalog.topic(target.topic_id)
             if (
-                target.operation_id is not None
-                and catalog.operation(target.operation_id).problem_id
-                != target.problem_id
+                target.problem_id is not None
+                and catalog.problem(target.problem_id).topic_id
+                != target.topic_id
             ):
-                raise ValueError("Clarification references an inconsistent operation")
+                raise ValueError("Clarification references an inconsistent problem")
             return
         issues = []
         equivalent_triangles = (
             expected["expected_status"] == "ready"
-            and expected["operation_id"] == "k-cliques"
+            and expected["problem_id"] == "k-cliques"
             and expected["parameters"].get("k") == 3
             and set(expected["optional_outputs"]) <= {"cliques"}
-            and target.operation_id == "triangle-counting"
-            and target.problem_id == catalog.operation("triangle-counting").problem_id
+            and target.problem_id == "triangle-counting"
+            and target.topic_id == catalog.problem("triangle-counting").topic_id
         )
         # A 3-clique is exactly a triangle, including triples inside larger
         # cliques. Both native contracts count and list these unordered triples.
         # This equivalence does not extend to k != 3 or maximal cliques.
         if not equivalent_triangles and (
-            target.problem_id != expected["problem_id"]
+            target.topic_id != expected["topic_id"]
             or (
-                target.operation_id != expected["operation_id"]
+                target.problem_id != expected["problem_id"]
                 and not (
                     expected["expected_status"] == "unsupported"
-                    and target.operation_id is None
+                    and target.problem_id is None
                 )
             )
         ):
             issues.append(
-                "Formal operation differs from the reference contract (possible equivalent operation requires separate review)"
+                "Formal problem differs from the reference contract (possible equivalent problem requires separate review)"
             )
         actual_intent = target.intent.model_dump(mode="json")
-        if expected["operation_id"] != "temporal-motif-mining":
+        if expected["problem_id"] != "temporal-motif-mining":
             # These annotations affect only the temporal profile. A static
             # triangle description must not count as a changed computation.
             for name in ("pattern_vertex_count", "pattern_edges"):
@@ -290,7 +290,7 @@ def check_target(settings, root, job, target):
         if (
             expected["expected_status"] == "needs_information"
             and not (target.ambiguity or target.missing_information)
-            and expected["operation_id"] != "max-flow-min-cut"
+            and expected["problem_id"] != "max-flow-min-cut"
         ):
             issues.append("Required clarification absent")
         if issues:
@@ -300,7 +300,7 @@ def check_target(settings, root, job, target):
             raise ValueError("Planning status differs from the reference")
         if target.plan:
             actual = target.plan
-            contract = catalog.operation(expected["operation_id"]).instruction
+            contract = catalog.problem(expected["problem_id"]).instruction
             required_outputs = set(expected["optional_outputs"])
             question = expected["question"].casefold()
             # The reference execution deliberately collects extra diagnostics
@@ -339,10 +339,10 @@ def check_target(settings, root, job, target):
                         size = expected["parameters"].get("k", 3)
                         bound = (
                             math.comb(vertices, size)
-                            if expected["operation_id"]
+                            if expected["problem_id"]
                             in {"k-cliques", "triangle-counting"}
                             else 2**vertices
-                            if expected["operation_id"]
+                            if expected["problem_id"]
                             in {"maximal-cliques", "maximum-clique", "quasi-cliques"}
                             else None
                         )

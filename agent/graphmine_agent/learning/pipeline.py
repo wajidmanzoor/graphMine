@@ -115,7 +115,7 @@ async def audit_native(
                 "id": example["id"],
                 "split": example["split"],
                 "example_sha256": digest(example),
-                "operation_id": task["operation_id"],
+                "problem_id": task["problem_id"],
                 "behavior": task["behavior"],
                 "issues": [],
             }
@@ -126,8 +126,8 @@ async def audit_native(
                     probe = ExecutionPlan(
                         session_id="synthetic",
                         graph_id="synthetic",
+                        topic_id=task["topic_id"],
                         problem_id=task["problem_id"],
-                        operation_id=task["operation_id"],
                         parameters=task["parameters"],
                         application_intent=task["intent"],
                     )
@@ -160,7 +160,7 @@ async def audit_native(
                         media_type="application/json",
                     )
                     auxiliary = {}
-                    if task["operation_id"] == "maximal-bicliques":
+                    if task["problem_id"] == "maximal-bicliques":
                         partition = [
                             row["id"]
                             for row in graph["vertices"]
@@ -177,8 +177,8 @@ async def audit_native(
                     plan = ExecutionPlan(
                         session_id=session.id,
                         graph_id=uploaded.id,
+                        topic_id=task["topic_id"],
                         problem_id=task["problem_id"],
-                        operation_id=task["operation_id"],
                         parameters=task["parameters"],
                         optional_outputs=task["optional_outputs"],
                         auxiliary_inputs=auxiliary,
@@ -259,9 +259,9 @@ def check_agent_outcome(graph: dict, task: dict, outcome: dict) -> list[str]:
         return issues
     if (
         job.get("status") != "completed"
-        or result.get("operation_id") != task["operation_id"]
+        or result.get("problem_id") != task["problem_id"]
     ):
-        issues.append(f"No completed {task['operation_id']} result")
+        issues.append(f"No completed {task['problem_id']} result")
         return issues
     plan = job["plan"]
     for name, value in task["parameters"].items():

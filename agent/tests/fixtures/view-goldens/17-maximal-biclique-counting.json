@@ -654,7 +654,7 @@
     ]
   },
   "result": {
-    "operation": "maximal-biclique-counting",
+    "problem": "maximal-biclique-counting",
     "parameters": {},
     "ports": {
       "count": {
@@ -805,7 +805,7 @@
           "step": "analysis",
           "port": "count",
           "input_fingerprint": "509bc751db7e3f286e598d8b40b8be9cbf5f9dd21d4110e0b1c9502402eebce4",
-          "result_fingerprint": "73adeb33bdff46c33b635646610d8b2f28d276b1014b657dbccbf0f1590bc981",
+          "result_fingerprint": "5876baad4a79ac5208696b0b8d061833eaf78188223065f343ede29b21334756",
           "recorded_rules_version": "2026-11-18.3"
         },
         "notes": [],
@@ -818,7 +818,7 @@
       },
       "facts": {
         "version": "1.0.0",
-        "operation": "maximal-biclique-counting",
+        "problem": "maximal-biclique-counting",
         "port_type": "scalar",
         "field_roles": {
           "value": {

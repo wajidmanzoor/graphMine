@@ -71,7 +71,7 @@
       "step": 1,
       "severity": "P2",
       "category": "grounding_and_followup_capabilities",
-      "finding": "The two groups are correct, but the analyst describes modularity 0.355 as meaningful without a comparison or null model, and suggests seed/resolution changes although the exposed community-detection operation has no parameters for those controls.",
+      "finding": "The two groups are correct, but the analyst describes modularity 0.355 as meaningful without a comparison or null model, and suggests seed/resolution changes although the exposed community-detection problem has no parameters for those controls.",
       "expected_behavior": "Describe the observed partition and heuristic limits without claiming statistical significance. Suggest only controls actually available through the current application.",
       "basis": "Observed summary and program_instructions.json community-detection contract."
     },
@@ -98,7 +98,7 @@
       "step": 1,
       "severity": "P1",
       "category": "domain_clarification",
-      "finding": "The system safely avoided execution but said the user had not specified a formal graph problem, offering centrality/community/anomaly terminology rather than an application-level question.",
+      "finding": "The system safely avoided execution but said the user had not specified a formal graph topic, offering centrality/community/anomaly terminology rather than an application-level question.",
       "expected_behavior": "Ask what investigation signal matters, such as unusually coordinated payment groups, accounts connecting otherwise separate groups, or a time-specific behavior. The user should not need to choose an algorithm.",
       "basis": "Observed routing clarification."
     }

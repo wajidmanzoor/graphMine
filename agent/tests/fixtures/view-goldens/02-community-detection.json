@@ -594,7 +594,7 @@
     ]
   },
   "result": {
-    "operation": "community-detection",
+    "problem": "community-detection",
     "parameters": {},
     "ports": {
       "partition": {
@@ -938,7 +938,7 @@
           "step": "analysis",
           "port": "partition",
           "input_fingerprint": "4bfa527f7698db12edd3ec1da97256dab92228c0e3cd9cdd25dd9bcca05f6695",
-          "result_fingerprint": "1d7cc1b43387bd4935f9ad8bbeaa08073bdcda6727a0268d62672271db5a1242",
+          "result_fingerprint": "51d5ed7c297a368a00efc6d70c6dd686022545601b3629183a6b8c2f5d97f529",
           "recorded_rules_version": "2026-11-18.3"
         },
         "notes": [],
@@ -962,7 +962,7 @@
       },
       "facts": {
         "version": "1.0.0",
-        "operation": "community-detection",
+        "problem": "community-detection",
         "port_type": "vertex_partition",
         "field_roles": {
           "vertex": {
@@ -1269,7 +1269,7 @@
           "step": "analysis",
           "port": "groups",
           "input_fingerprint": "4bfa527f7698db12edd3ec1da97256dab92228c0e3cd9cdd25dd9bcca05f6695",
-          "result_fingerprint": "1d7cc1b43387bd4935f9ad8bbeaa08073bdcda6727a0268d62672271db5a1242",
+          "result_fingerprint": "51d5ed7c297a368a00efc6d70c6dd686022545601b3629183a6b8c2f5d97f529",
           "recorded_rules_version": "2026-11-18.3"
         },
         "notes": [],
@@ -1287,7 +1287,7 @@
       },
       "facts": {
         "version": "1.0.0",
-        "operation": "community-detection",
+        "problem": "community-detection",
         "port_type": "vertex_groups",
         "field_roles": {
           "group": {

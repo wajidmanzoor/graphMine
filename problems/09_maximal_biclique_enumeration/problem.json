@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "maximal_biclique_enumeration",
+  "topic_id": "maximal_biclique_enumeration",
   "name": "Maximal Biclique Enumeration",
   "category": "dense",
   "problem_statement": "Given a bipartite graph, enumerate complete bipartite subgraphs that cannot be extended by adding a vertex to either side.",

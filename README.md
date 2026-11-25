@@ -4,9 +4,9 @@ GraphMine provides a standalone C++/CUDA graph library, a thin Python binding,
 and an analysis workspace with Normal and Expert modes. The native
 catalog defines the algorithms, parameters, results and available backends.
 
-- **70** formal graph-problem contracts with native CPU profiles
-- **80** native operations, including seven record-query utilities
-- **23** operations with evidence-admitted GPU profiles
+- **70** formal graph-topic contracts with native CPU profiles
+- **80** native problems, including seven record-query utilities
+- **23** problems with evidence-admitted GPU profiles
 - Canonical JSON graph input and structured JSON results
 
 ## Live app and demo
@@ -216,7 +216,7 @@ Set `GRAPHMINE_LLM_GPU_UUID` to your device's UUID from `nvidia-smi -L`, and
 configure the model before running those scripts.
 
 GPU graph calculations require a CUDA-enabled native build and validation
-evidence for the GPU and supported operation profiles. Follow the
+evidence for the GPU and supported problem profiles. Follow the
 [native build guide](docs/NATIVE_CORE_MIGRATION.md) before changing
 `GRAPHMINE_NATIVE_LIBRARY`, `GRAPHMINE_NATIVE_BINARY` and
 `GRAPHMINE_GRAPH_GPU_UUID`. The [deployment guide](docs-internal/ENVIRONMENTS.md)
@@ -228,7 +228,7 @@ Start with the [native library guide](docs/NATIVE_CORE_MIGRATION.md),
 [profile definitions](docs/NATIVE_COMPLETION_PROFILES.md), and
 [analysis workspace guide](docs/ANALYTICS_WORKSPACE.md). Exact source, binary,
 dependency and profile evidence controls what the application can execute.
-GPU coverage applies to declared parameter profiles, not every CPU operation.
+GPU coverage applies to declared parameter profiles, not every CPU problem.
 The [acceptance report](docs-internal/NATIVE_ANALYTICS_ACCEPTANCE.md) records completed
 checks, measured model accuracy and remaining limits.
 
@@ -244,7 +244,7 @@ for the shared branches, isolated app environments, and deployment commands.
 The [repaired algorithm guide](library/docs/repaired_algorithms.md) documents the nine repaired integrations, their exact profiles, installation, and agent JSON contracts.
 
 The [2026-10-04 expansion](docs-internal/ALGORITHM_EXPANSION.md) explains the five new
-executable profiles, all 17 new problem definitions, and routing without mandatory
+executable profiles, all 17 new topic definitions, and routing without mandatory
 retraining. The original V1 release scope and scores remain in
 [`docs-internal/V1.md`](docs-internal/V1.md).
 
@@ -260,9 +260,9 @@ retraining. The original V1 release scope and scores remain in
 - [`catalog/native_runtime_coverage.json`](catalog/native_runtime_coverage.json)
   maps every formal contract to verified native profiles.
 - [`graphmine_catalog.json`](graphmine_catalog.json) retains the original V1
-  problem-first catalog for the legacy API.
+  topic-first catalog for the legacy API.
 - [`graphmine_manifest.json`](graphmine_manifest.json) is the compact runtime
-  operation/CLI contract.
+  problem/CLI contract.
 - [`validation/gpu_correctness/results/results.json`](validation/gpu_correctness/results/results.json)
   records the validation classifications and checks used by the catalog.
 - [`validation/algorithm_repairs/`](validation/algorithm_repairs/) records
@@ -291,7 +291,7 @@ library/build/graphmine run triangle-counting \
 ```
 
 Compilation happens once. Later queries reuse the same executable and select
-the operation and backend at runtime. See the [library guide](library/README.md)
+the problem and backend at runtime. See the [library guide](library/README.md)
 for component-level C++ usage, optional dependencies, and tests.
 
 ## Original V1 LAN system
@@ -299,7 +299,7 @@ for component-level C++ usage, optional dependencies, and tests.
 The original [agent service](agent/) adds a domain-first conversational layer
 without moving correctness decisions into the language model. One local Qwen
 instance produces schema-constrained plans and result interpretations; a
-deterministic orchestrator validates every request against the problem catalog
+deterministic orchestrator validates every request against the topic catalog
 and invokes the precompiled CLI on a separate GPU. The bundled browser UI
 supports file uploads, streamed job progress, follow-up questions, and
 analyst-selected interactive visualizations. Its source is
@@ -326,25 +326,25 @@ with the account you created. See the account guide for migration of existing
 conversations and API/smoke-test credentials. Deployment scripts are available
 in [`deploy/`](deploy/).
 
-## Problem-first catalog
+## Topic-first catalog
 
 The global catalog embeds every local `problems/*/problem.json` object exactly,
-including its problem statement, graph requirements, inputs and defaults,
+including its topic statement, graph requirements, inputs and defaults,
 required and optional outputs, solution semantics, validation rules, edge
-cases, and evaluation metrics. Each problem record then states whether a
-validated GraphMine operation exists.
+cases, and evaluation metrics. Each topic record then states whether a
+validated GraphMine problem exists.
 
-For supported problems, the catalog connects that formal contract to:
+For supported topics, the catalog connects that formal contract to:
 
-- one or more runnable operations;
+- one or more runnable problems;
 - typed C++ headers, option types, classes, and CMake components;
 - exact CLI commands and optional-output flags;
 - selectable backend capabilities and source provenance;
 - the passing validation workload, checks, and notes.
 
-For the other 15 problem definitions, the catalog explicitly returns
-`no_validated_backend`; a query planner must not substitute a nearby problem.
-Regenerate the catalog after changing a problem or library contract with:
+For the other 15 topic definitions, the catalog explicitly returns
+`no_validated_backend`; a query planner must not substitute a nearby topic.
+Regenerate the catalog after changing a topic or library contract with:
 
 ```bash
 node tools/build_catalog.mjs
@@ -352,7 +352,7 @@ node tools/build_catalog.mjs
 
 ## Documentation
 
-Read the [public documentation](https://wajidmanzoor.github.io/graphMine/) for the app guide, formal problem families, runnable operations, research references, and native library APIs. The site retains the original GraphMine design.
+Read the [public documentation](https://wajidmanzoor.github.io/graphMine/) for the app guide, formal topic families, runnable problems, research references, and native library APIs. The site retains the original GraphMine design.
 
 Reader-facing source lives in [`docs-src/`](docs-src/), with the homepage and shared original-design templates in [`overrides/`](overrides/). MkDocs builds the site through GitHub Actions. Internal working records are kept separately in [`docs-internal/`](docs-internal/).
 

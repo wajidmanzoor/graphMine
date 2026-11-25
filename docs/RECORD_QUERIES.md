@@ -1,12 +1,12 @@
 # Record queries and dependent analysis
 
 The review's lookup layer is available in the **Look up & summarize records**
-family. Its seven operations use the public library, workflow validator, API,
+family. Its seven problems use the public library, workflow validator, API,
 and browser modes. These are CPU utilities over canonical graph records;
 GPU-only requests are rejected. They do not expand the count of formal graph
-mining problems with implementations.
+mining topics with implementations.
 
-| Operation | Meaning | Workflow outputs |
+| Problem | Meaning | Workflow outputs |
 | --- | --- | --- |
 | `node-lookup` | Select original vertices by typed IDs and field predicates | Record table, vertex set, match count |
 | `edge-filter` | Filter original relationships and their source/target records | Record table, edge IDs, endpoint set, match count |
@@ -20,7 +20,7 @@ The planner receives the actual parameter and nested predicate schemas. Direct
 API callers and Expert plans use the same validator. Literal predicates and
 fields are checked against uploaded records before a workflow is queued.
 Derived inputs are checked again when their actual records become available.
-Unknown fields and incompatible operations remain errors. No SQL, Cypher,
+Unknown fields and incompatible problems remain errors. No SQL, Cypher,
 Python expression, or regular-expression execution is exposed.
 An empty record scope cannot establish which domain attribute fields exist;
 well-formed attribute predicates yield empty results there, and empty numeric
@@ -100,7 +100,7 @@ Supply an uploaded canonical graph as the `main` input to this plan:
   "steps": [
     {
       "id": "transfers",
-      "operation": "edge-filter",
+      "problem": "edge-filter",
       "input": {"input": "main"},
       "parameters": {
         "edge_filters": [
@@ -110,14 +110,14 @@ Supply an uploaded canonical graph as the `main` input to this plan:
     },
     {
       "id": "network",
-      "operation": "query-subgraph",
+      "problem": "query-subgraph",
       "input": {"input": "main"},
       "parameters": {"mode": "edges"},
       "bindings": {"edge_ids": {"step": "transfers", "port": "edges"}}
     },
     {
       "id": "senders",
-      "operation": "graph-aggregate",
+      "problem": "graph-aggregate",
       "input": {"step": "network", "port": "graph"},
       "parameters": {
         "scope": "edges",
@@ -159,7 +159,7 @@ are neither a held-out benchmark nor training approval.
 ```
 
 The runner creates an isolated temporary application data store, executes real
-validated workers, and grades operation choice, full normalized parameters,
+validated workers, and grades problem choice, full normalized parameters,
 dependency wiring, execution, port completeness and expected values separately.
 It accepts arbitrary step names while preserving the wiring. Reference mode
 does not invoke a model and explicitly reports that it measures no model

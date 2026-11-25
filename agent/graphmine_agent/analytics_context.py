@@ -77,7 +77,7 @@ def summarize_result(saved, budget=RESULT_BUDGET):
             steps.append(
                 {
                     "step": step_id,
-                    "operation": result.get("operation"),
+                    "problem": result.get("problem"),
                     "status": step.get("status"),
                     "complete": result.get("complete"),
                     "quality": result.get("quality"),
@@ -90,7 +90,7 @@ def summarize_result(saved, budget=RESULT_BUDGET):
         if len(json.dumps(steps, default=str)) <= budget:
             return steps
     return [
-        {key: step[key] for key in ("step", "operation", "status", "complete")}
+        {key: step[key] for key in ("step", "problem", "status", "complete")}
         for step in steps
     ]
 

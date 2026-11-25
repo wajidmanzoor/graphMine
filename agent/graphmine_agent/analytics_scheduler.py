@@ -96,7 +96,7 @@ def execution_admission(plan, cards):
         requested_backend = step.get("backend", "auto")
         if policy == "cpu" or requested_backend == "cpp":
             continue
-        card = by_id[step["operation"]]
+        card = by_id[step["problem"]]
         devices = {
             uuid
             for backend in card["backends"]

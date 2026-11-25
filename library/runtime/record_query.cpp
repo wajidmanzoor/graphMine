@@ -1,9 +1,9 @@
 #include "record_query.hpp"
 
 namespace graphmine::runtime {
-void validate_query_parameters(const std::string& operation, const Graph& graph,
+void validate_query_parameters(const std::string& problem, const Graph& graph,
                                const json::object& args, Work& work) {
-  if (operation_card(operation).at("problem_id") != "graph_record_queries") return;
+  if (problem_card(problem).at("topic_id") != "graph_record_queries") return;
   using namespace family_util;
   const record_query::Index index(graph, work);
   index.selected(args, "vertices", false);
@@ -17,7 +17,7 @@ void validate_query_parameters(const std::string& operation, const Graph& graph,
   const auto direction = choice(args, "direction", "out", {"out", "in", "both"});
   const auto hops = natural(args, "hops", 1);
   if (args.contains("max_hops")) natural(args, "max_hops", 3);
-  if (operation == "query-subgraph") {
+  if (problem == "query-subgraph") {
     const auto mode = choice(args, "mode", "vertices", {"vertices", "edges", "neighborhood"});
     const bool vertices = args.contains("vertices") && !args.at("vertices").is_null();
     const bool entity = args.contains("entity") && !args.at("entity").is_null();
@@ -27,7 +27,7 @@ void validate_query_parameters(const std::string& operation, const Graph& graph,
     require(mode != "neighborhood" || (entity && !vertices),
             "Neighborhood mode needs entity and cannot accept vertices");
   }
-  if (operation == "graph-aggregate") {
+  if (problem == "graph-aggregate") {
     const bool edges = choice(args, "scope", "edges", {"vertices", "edges"}) == "edges";
     const auto metric = choice(args, "metric", "count", {"count", "sum", "avg", "min", "max"});
     const auto& records = edges ? index.edges : index.vertices;

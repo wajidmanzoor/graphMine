@@ -9,7 +9,7 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from .backends.cugraph import OPERATIONS
+from .backends.cugraph import PROBLEMS
 from .exceptions import GraphMineError
 from .reference import implementation_hash
 from .registry import reference_algorithms as algorithms
@@ -131,7 +131,7 @@ def capabilities(repository_root):
         if r["status"] == "passed" and r["device"] == "gpu"
     }
     gpu = {"0/2", "1/2"} <= gpu_shards
-    recorded = {card["id"]: card for card in inventory.get("operations", [])}
+    recorded = {card["id"]: card for card in inventory.get("problems", [])}
     cards = algorithms()
     for card in cards:
         profile = hashlib.sha256(json.dumps(card, sort_keys=True).encode()).hexdigest()
@@ -139,7 +139,7 @@ def capabilities(repository_root):
         card["profile_sha256"] = profile
         card["execution"] = {
             "cpu": bool(cpu and matches),
-            "gpu": bool(gpu and matches and card["id"] in OPERATIONS),
+            "gpu": bool(gpu and matches and card["id"] in PROBLEMS),
         }
         card["evidence_state"] = (
             "verified_profile" if card["execution"]["cpu"] else "verification_required"
@@ -148,18 +148,18 @@ def capabilities(repository_root):
         "schema_version": "2.0.0",
         "implementation_sha256": implementation_hash(),
         "families": families(),
-        "operations": cards,
+        "problems": cards,
         "reports": reports,
         "scope": inventory.get("scope", "Local tested profiles only"),
     }
 
 
 def require_workflow_evidence(checked, caps):
-    cards = {card["id"]: card for card in caps["operations"]}
+    cards = {card["id"]: card for card in caps["problems"]}
     for step in checked["plan"]["steps"]:
-        card = cards[step["operation"]]
+        card = cards[step["problem"]]
         device = "gpu" if step["device"] == "gpu" else "cpu"
         if not card["execution"][device]:
             raise GraphMineError(
-                f"Current {device} correctness evidence is missing or stale for {step['operation']}"
+                f"Current {device} correctness evidence is missing or stale for {step['problem']}"
             )

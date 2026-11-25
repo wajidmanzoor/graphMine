@@ -1,4 +1,4 @@
-"""Record operational outcomes without retaining request/response content."""
+"""Record problemal outcomes without retaining request/response content."""
 
 import json
 import time

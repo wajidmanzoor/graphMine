@@ -77,9 +77,9 @@ CPU runner, native pytest metadata and `tools/build_native_execution_evidence.py
 The new catalog entry has ten evidence reports. Its header, implementation and
 tests are included in the source hashes.
 
-All **82 `cpp` operation profiles are admitted** for this isolated CPU build.
+All **82 `cpp` problem profiles are admitted** for this isolated CPU build.
 Its GPU backends are uncompiled/unadmitted. No GPU execution or GPU migration
-claim is made. Each operation/backend's compiled, verified and evidence state is
+claim is made. Each problem/backend's compiled, verified and evidence state is
 recorded in [`admission.json`](../../validation/graph_views/step1/admission.json).
 
 The gate reports zero verification issues. Existing deployed binaries retain

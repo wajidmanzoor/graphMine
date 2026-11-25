@@ -69,7 +69,7 @@ FILTERS = array(
     )
 )
 SCHEMAS = {}
-for operation in (
+for problem in (
     "node-lookup",
     "edge-filter",
     "neighbors",
@@ -78,7 +78,7 @@ for operation in (
     "graph-aggregate",
     "query-subgraph",
 ):
-    SCHEMAS[operation] = {
+    SCHEMAS[problem] = {
         name: FILTERS
         for name in (
             "filters",
@@ -88,9 +88,9 @@ for operation in (
             "target_filters",
         )
     }
-    SCHEMAS[operation].update(vertices=array(ID), edge_ids=array(ID))
+    SCHEMAS[problem].update(vertices=array(ID), edge_ids=array(ID))
 
-for operation, entity in (("node-learning", "vertex"), ("graph-learning", "graph")):
+for problem, entity in (("node-learning", "vertex"), ("graph-learning", "graph")):
     label = array(
         obj(
             {entity: ID, "value": {"type": ["integer", "string", "number"]}},
@@ -125,7 +125,7 @@ for operation, entity in (("node-learning", "vertex"), ("graph-learning", "graph
             feature_key=TEXT,
             readout=choice("sum", "mean"),
         )
-    SCHEMAS[operation] = {
+    SCHEMAS[problem] = {
         "task": choice("classification", "regression"),
         "split": split,
         "training_labels" if entity == "vertex" else "graph_labels": obj(
@@ -134,7 +134,7 @@ for operation, entity in (("node-learning", "vertex"), ("graph-learning", "graph
         "model_definition": obj(model, ("architecture",)),
     }
     if entity == "vertex":
-        SCHEMAS[operation]["vertex_features"] = obj(
+        SCHEMAS[problem]["vertex_features"] = obj(
             {
                 "rows": array(
                     obj({"vertex": ID, "value": array(NUMBER, 1)}, ("vertex", "value")),

@@ -16,7 +16,7 @@ def measured_cases(rows, card, implementation):
     admitted = [b["id"] for b in card["backends"] if b.get("verified")]
     for row in rows:
         if (row.get("source") == "benchmark" and row.get("is_evaluation") is False
-                and row.get("operation") == card["id"] and row.get("implementation_sha256") == implementation
+                and row.get("problem") == card["id"] and row.get("implementation_sha256") == implementation
                 and row.get("comparison_id")):
             groups[row["comparison_id"]].append(row)
     cases = []
@@ -65,9 +65,9 @@ def measured_cases(rows, card, implementation):
     return cases, dict(skipped)
 
 
-def shadow_progress(rows, operation, implementation, *, now=None):
+def shadow_progress(rows, problem, implementation, *, now=None):
     now = now or datetime.now(timezone.utc)
-    observed = [r for r in rows if r.get("operation") == operation and r.get("source") == "application"
+    observed = [r for r in rows if r.get("problem") == problem and r.get("source") == "application"
                 and r.get("is_evaluation") is False and r.get("implementation_sha256") == implementation
                 and r.get("selection_mode") == "shadow" and r.get("model_version")
                 and r.get("shadow_choice") and r.get("execution_started")]
@@ -147,7 +147,7 @@ def compare(model, rows, card, *, seed=1729, exploration_budget=0.1, max_explore
         and metrics["exploration_mean_seconds_upper_bound"] < metrics["mean_seconds"]["fastest_average"]
         and max(metrics["worst_regret"], metrics["exploration_worst_regret"]) <= 1.5)
     progress = shadow_progress(rows, card["id"], model["implementation_sha256"], now=now)
-    return dict(schema_version=1, operation=card["id"], implementation_sha256=model["implementation_sha256"],
+    return dict(schema_version=1, problem=card["id"], implementation_sha256=model["implementation_sha256"],
         method="Fixed-seed constrained Thompson choices on permanent held-out snapshots; conservative exploration envelope",
         failure_cost="A failed attempt costs max(timeout_seconds, runtime_seconds); medians include failures, worst regret includes every measured repetition",
         held_out_graphs=held_out_count, held_out_comparisons=len(validation), training_comparisons=len(training),

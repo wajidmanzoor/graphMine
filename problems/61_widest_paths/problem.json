@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "widest_paths",
+  "topic_id": "widest_paths",
   "name": "Single-Source Widest Paths",
   "category": "paths",
   "problem_statement": "For each vertex v, maximize the minimum edge capacity along a directed path from a designated source to v.",

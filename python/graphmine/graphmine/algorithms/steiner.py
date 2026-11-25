@@ -15,9 +15,9 @@ from ._milp import BinaryModel
 
 @register(
     id="group-steiner-tree",
-    problem_id="group_steiner_tree",
+    topic_id="group_steiner_tree",
     title="Connect at least one representative of every required group",
-    description="SciPy/HiGHS binary tree model with separated connectivity cuts. Covers every group and required vertex, removes self-loops, and retains the cheapest original parallel edge. Requires a completed numerical optimum; no terminal-only approximation is substituted for the group problem.",
+    description="SciPy/HiGHS binary tree model with separated connectivity cuts. Covers every group and required vertex, removes self-loops, and retains the cheapest original parallel edge. Requires a completed numerical optimum; no terminal-only approximation is substituted for the group topic.",
     library="scipy",
     quality="numerical_optimum",
     parameters={

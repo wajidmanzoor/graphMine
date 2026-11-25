@@ -434,7 +434,7 @@ as transport/client infrastructure and update notifications. Conversation histor
 uses the generated API client. Remaining feature modules can be migrated in
 small increments; the entire legacy UI is not yet statically typed.
 
-### Reproducible local operation
+### Reproducible local problem
 
 Use Python 3.12 and the tested dependency constraints:
 

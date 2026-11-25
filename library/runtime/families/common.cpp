@@ -55,8 +55,8 @@ WeightedGraph weighted_graph(const Graph& graph, bool weighted, bool nonnegative
     const std::string message = error.what();
     if (message == "Graph view: f64 sum overflows")
       throw Failure("invalid_input", "Aggregated edge weight overflowed");
-    if (message == "Graph view: This operation requires nonnegative edge weights")
-      throw Failure("invalid_input", "This operation requires nonnegative edge weights");
+    if (message == "Graph view: This problem requires nonnegative edge weights")
+      throw Failure("invalid_input", "This problem requires nonnegative edge weights");
     throw;
   }
   const auto& csr = std::get<CsrView>(view->view);
@@ -70,24 +70,24 @@ WeightedGraph weighted_graph(const Graph& graph, bool weighted, bool nonnegative
   return result;
 }
 
-std::string gpu_support_reason(const std::string& operation, const Graph& graph,
+std::string gpu_support_reason(const std::string& problem, const Graph& graph,
                                const json::object& args) {
-  if (operation == "induced-subgraph" && args.contains("mode") && args.at("mode") == "induced")
+  if (problem == "induced-subgraph" && args.contains("mode") && args.at("mode") == "induced")
     return "Explicit induced selection uses native CPU; GPU supports ego discovery";
-  if (operation == "betweenness-centrality" && args.contains("weight_mode") &&
+  if (problem == "betweenness-centrality" && args.contains("weight_mode") &&
       args.at("weight_mode") == "edge_weight")
     return "Native GPU betweenness profiles support unweighted paths; positive weighted paths use "
            "exact C++ CPU code";
-  if (operation == "link-prediction" && args.contains("scoring_measure") &&
+  if (problem == "link-prediction" && args.contains("scoring_measure") &&
       args.at("scoring_measure") != "jaccard")
     return "The native libcugraph link-prediction profile supports Jaccard; the other measures use "
            "C++ CPU code";
-  if (operation == "personalized-pagerank" && args.contains("dangling_policy") &&
+  if (problem == "personalized-pagerank" && args.contains("dangling_policy") &&
       args.at("dangling_policy") == "redistribute_uniformly")
     return "The native libcugraph personalized PageRank profile does not expose custom dangling "
            "weights";
-  if (operation == "single-source-shortest-paths" || operation == "many-source-shortest-paths") {
-    const bool weighted = operation == "single-source-shortest-paths" ||
+  if (problem == "single-source-shortest-paths" || problem == "many-source-shortest-paths") {
+    const bool weighted = problem == "single-source-shortest-paths" ||
                           !args.contains("weight_mode") || args.at("weight_mode") == "edge_weight";
     if (!weighted) return {};
     bool integral = true;
@@ -108,12 +108,12 @@ std::string gpu_support_reason(const std::string& operation, const Graph& graph,
   }
   return {};
 }
-std::string backend_support_reason(const std::string& operation, const std::string& backend,
+std::string backend_support_reason(const std::string& problem, const std::string& backend,
                                    const Graph& graph, const json::object& args, Work& work) {
   if (backend == "cpp") return {};
-  if (original_extension_backend(operation, backend))
-    return original_extension_support(operation, backend, graph, args, work);
-  if (operation == "random-walks") {
+  if (original_extension_backend(problem, backend))
+    return original_extension_support(problem, backend, graph, args, work);
+  if (problem == "random-walks") {
     const auto model = args.contains("walk_model") ? args.at("walk_model") : json::value("uniform");
     if (model == "node2vec")
       return "Node2vec uses exact native CPU: the linked cuGraph bias operator does not implement "
@@ -144,7 +144,7 @@ std::string backend_support_reason(const std::string& operation, const std::stri
       }
     }
   }
-  if (operation == "max-flow-min-cut") {
+  if (problem == "max-flow-min-cut") {
     if (graph.vertex_count() > 1000000 || graph.edge_count() > 10000000)
       return "ECL flow supports at most 1M vertices and 10M input edges";
     if (args.contains("vertex_capacities") && !args.at("vertex_capacities").is_null() &&
@@ -167,7 +167,7 @@ std::string backend_support_reason(const std::string& operation, const std::stri
                "use native CPU";
     }
   }
-  if (operation == "bipartite-matching") {
+  if (problem == "bipartite-matching") {
     if ((args.contains("objective") && !args.at("objective").is_string()) ||
         (args.contains("perfect_matching_required") &&
          !args.at("perfect_matching_required").is_bool()))
@@ -206,10 +206,10 @@ std::string backend_support_reason(const std::string& operation, const std::stri
     if (pairs.size() != count * count)
       return "Hungarian CUDA requires a complete bipartite graph; sparse matching uses native CPU";
   }
-  if (operation == "betweenness-centrality" && backend == "turbo-bc" && graph.directed())
+  if (problem == "betweenness-centrality" && backend == "turbo-bc" && graph.directed())
     return "The original TurboBC profile supports undirected graphs; use libcugraph or C++ for "
            "directed betweenness";
-  if (operation == "betweenness-centrality" && graph.vertex_count() > 32) {
+  if (problem == "betweenness-centrality" && graph.vertex_count() > 32) {
     // Both linked GPU profiles use signed int32 shortest-path counters, even
     // though their returned scores are floating point. A simple shortest path
     // is determined by its interior vertex subset, so n<=32 is safe outright.
@@ -245,7 +245,7 @@ std::string backend_support_reason(const std::string& operation, const std::stri
     }
   }
   std::uint64_t k = 0;
-  if (operation == "k-cliques") {
+  if (problem == "k-cliques") {
     if (!args.contains("k") ||
         !(args.at("k").is_uint64() || (args.at("k").is_int64() && args.at("k").as_int64() >= 0)))
       return {};
@@ -256,7 +256,7 @@ std::string backend_support_reason(const std::string& operation, const std::stri
       return "The " + backend + " count kernel supports 3 <= k <= " + std::to_string(maximum) +
              "; native CPU has no upper k bound";
   }
-  if (graph.directed() || (operation != "maximal-cliques" && operation != "k-cliques")) return {};
+  if (graph.directed() || (problem != "maximal-cliques" && problem != "k-cliques")) return {};
   // Every nonempty clique has one first vertex in this ordering. Counting
   // all possible forward subsets bounds both fixed-size and maximal counts.
   work.tick(graph.vertex_count() + graph.canonical().edges.size());
@@ -268,7 +268,7 @@ std::string backend_support_reason(const std::string& operation, const std::stri
     for (auto i = simple.csr.offsets[v]; i < simple.csr.offsets[v + 1]; ++i)
       degree += simple.csr.neighbors[i] > v;
     Integer choices = 1;
-    if (operation == "maximal-cliques") {
+    if (problem == "maximal-cliques") {
       if (degree >= 64)
         return "Cannot certify that the original maximal-clique count fits uint64; use native CPU";
       choices <<= degree;

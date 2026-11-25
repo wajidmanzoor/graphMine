@@ -102,8 +102,8 @@ def run_live_smoke_test(
         response = chat.json()
         _require(response.get("plan") is not None, "planner returned no plan")
         _require(
-            response["plan"]["operation_id"] == "maximal-cliques",
-            f"planner chose {response['plan']['operation_id']!r}",
+            response["plan"]["problem_id"] == "maximal-cliques",
+            f"planner chose {response['plan']['problem_id']!r}",
         )
         job_id = response.get("job_id")
         _require(bool(job_id), "chat did not queue a GPU job")
@@ -153,7 +153,7 @@ def run_live_smoke_test(
             "status": "passed",
             "base_url": base_url,
             "model": health["llm"]["model"],
-            "operation_id": result["operation_id"],
+            "problem_id": result["problem_id"],
             "backend": result["payload"].get("provenance", {}).get("backend"),
             "job_id": job_id,
             "result_id": result["id"],

@@ -73,10 +73,10 @@ def pointer(root, name):
     return value
 
 
-def load(model_dir, operation, implementation=None, *, version=None):
-    if not NAME.fullmatch(operation):
-        raise ValueError("Invalid operation model name")
-    root = Path(model_dir) / operation
+def load(model_dir, problem, implementation=None, *, version=None):
+    if not NAME.fullmatch(problem):
+        raise ValueError("Invalid problem model name")
+    root = Path(model_dir) / problem
     version = version or pointer(root, "current")
     if not VERSION.fullmatch(version):
         raise ValueError("Invalid runtime model version")
@@ -96,8 +96,8 @@ def load(model_dir, operation, implementation=None, *, version=None):
     else:
         raw = paths[0].read_bytes()
         model, metadata = json.loads(raw), json.loads(paths[1].read_text())
-        if (model["schema_version"] != linear.MODEL_SCHEMA or model["operation"] != operation
-                or metadata["operation"] != operation or model["model_version"] != version
+        if (model["schema_version"] != linear.MODEL_SCHEMA or model["problem"] != problem
+                or metadata["problem"] != problem or model["model_version"] != version
                 or metadata["model_version"] != version
                 or metadata["model_sha256"] != hashlib.sha256(raw).hexdigest()
                 or model["implementation_sha256"] != metadata["implementation_sha256"]):
@@ -125,11 +125,11 @@ def admissible_rows(rows, cards, implementation, compatibility=None):
             # Derived fit context only. Immutable JSONL and its actual observed
             # implementation remain untouched; model metadata retains the proof.
             row = dict(row, implementation_sha256=implementation, observed_implementation_sha256=original)
-        if row.get("operation") not in by_id:
+        if row.get("problem") not in by_id:
             continue
         try:
             backend = row.get("chosen_backend") or row.get("requested_backend")
-            if backend not in by_id[row["operation"]]:
+            if backend not in by_id[row["problem"]]:
                 raise ValueError("Unadmitted observation")
             candidate = next(c for c in row["candidates"] if c["id"] == backend)
             if not candidate.get("compiled") or not candidate.get("admitted"):
@@ -158,13 +158,13 @@ def nonregression(new, previous):
                for key in ("mean_regret", "worst_regret", "exploration_worst_regret"))
 
 
-def refresh_release(model_dir, operations, implementation, admission_fingerprint):
+def refresh_release(model_dir, problems, implementation, admission_fingerprint):
     versions, ready, reasons = {}, True, {}
     configuration = None
-    for operation in operations:
+    for problem in problems:
         try:
-            model, metadata = load(model_dir, operation, implementation)
-            versions[operation] = model["model_version"]
+            model, metadata = load(model_dir, problem, implementation)
+            versions[problem] = model["model_version"]
             valid = (metadata["admission_fingerprint"] == admission_fingerprint
                      and metadata["comparison"]["live_ready"] is True)
             checked_settings = policy_settings(metadata["comparison"]["configuration"])
@@ -172,20 +172,20 @@ def refresh_release(model_dir, operations, implementation, admission_fingerprint
                 configuration = checked_settings
             valid &= configuration == checked_settings
             if not valid:
-                reasons[operation] = "shadow_or_held_out_gate_not_met"
+                reasons[problem] = "shadow_or_held_out_gate_not_met"
             ready &= valid
         except (OSError, ValueError, KeyError, TypeError):
             ready = False
-            reasons[operation] = "model_unavailable"
+            reasons[problem] = "model_unavailable"
     release = dict(schema_version=1, created_at=utc_now(), implementation_sha256=implementation,
-                   admission_fingerprint=admission_fingerprint, operations=sorted(operations),
+                   admission_fingerprint=admission_fingerprint, problems=sorted(problems),
                    versions=versions, configuration=configuration,
-                   ready=bool(operations) and ready, reasons=reasons)
+                   ready=bool(problems) and ready, reasons=reasons)
     atomic_json(Path(model_dir) / "release.json", release)
     return release
 
 
-def live_permitted(model_dir, operation, metadata, implementation, admission_fingerprint, *, configuration=None):
+def live_permitted(model_dir, problem, metadata, implementation, admission_fingerprint, *, configuration=None):
     path = Path(model_dir) / "release.json"
     if path.is_symlink() or path.stat().st_size > 256 * 1024:
         return False
@@ -195,28 +195,28 @@ def live_permitted(model_dir, operation, metadata, implementation, admission_fin
             or not covered_settings(configuration, release["configuration"])
             or not covered_settings(configuration, policy_settings(metadata["comparison"]["configuration"]))):
         return False
-    operations, versions = release.get("operations", []), release.get("versions", {})
-    if (not operations or operation not in operations or set(operations) != set(versions)
+    problems, versions = release.get("problems", []), release.get("versions", {})
+    if (not problems or problem not in problems or set(problems) != set(versions)
             or any(not NAME.fullmatch(name) or pointer(Path(model_dir) / name, "current") != versions[name]
-                   for name in operations)):
+                   for name in problems)):
         return False
     return (release.get("schema_version") == 1 and release.get("ready") is True
             and release.get("implementation_sha256") == implementation
             and release.get("admission_fingerprint") == admission_fingerprint
-            and release.get("versions", {}).get(operation) == metadata["model_version"]
+            and release.get("versions", {}).get(problem) == metadata["model_version"]
             and metadata["comparison"]["live_ready"] is True)
 
 
-def train(rows, cards, *, model_dir, implementation, admission_fingerprint, options=None, operation=None, compatibility=None):
+def train(rows, cards, *, model_dir, implementation, admission_fingerprint, options=None, problem=None, compatibility=None):
     cards = [c for c in cards if sum(b.get("verified", False) for b in c["backends"]) > 1]
     if not cards:
-        raise ValueError("No multi-backend operations have current correctness evidence")
+        raise ValueError("No multi-backend problems have current correctness evidence")
     accepted, skipped = admissible_rows(rows, cards, implementation, compatibility)
     summaries = []
     options = options or {}
     with publication_lock(model_dir):
         for card in sorted(cards, key=lambda c: c["id"]):
-            if operation is not None and card["id"] != operation:
+            if problem is not None and card["id"] != problem:
                 continue
             name = card["id"]
             model = linear.fit(name, accepted, [b["id"] for b in card["backends"] if b.get("verified")],
@@ -247,8 +247,8 @@ def train(rows, cards, *, model_dir, implementation, admission_fingerprint, opti
             # The first current model is for shadow use only until every rollout
             # gate passes. Later candidates never replace it without a measured
             # held-out comparison against that exact previous version.
-            selected_rows = [r for r in accepted if r["operation"] == name]
-            metadata = dict(schema_version=1, operation=name, model_version=version, created_at=utc_now(),
+            selected_rows = [r for r in accepted if r["problem"] == name]
+            metadata = dict(schema_version=1, problem=name, model_version=version, created_at=utc_now(),
                 implementation_sha256=implementation, admission_fingerprint=admission_fingerprint,
                 model_sha256=hashlib.sha256((directory / "model.json").read_bytes()).hexdigest(),
                 training_data_sha256=model["training_data_sha256"], training_rows=model["training_rows"],
@@ -266,26 +266,26 @@ def train(rows, cards, *, model_dir, implementation, admission_fingerprint, opti
                 if previous:
                     atomic_text(root / "previous", previous)
                 atomic_text(root / "current", version)
-            summaries.append(dict(operation=name, model_version=version, training_rows=model["training_rows"],
+            summaries.append(dict(problem=name, model_version=version, training_rows=model["training_rows"],
                                   published=publish, publication_reason=reason, live_ready=comparison["live_ready"]))
         release = refresh_release(model_dir, [c["id"] for c in cards], implementation, admission_fingerprint)
     return dict(schema_version=1, created_at=utc_now(), models=summaries, skipped_rows=skipped, release=release)
 
 
-def rollback(model_dir, operation):
-    if not NAME.fullmatch(operation):
-        raise ValueError("Invalid operation model name")
+def rollback(model_dir, problem):
+    if not NAME.fullmatch(problem):
+        raise ValueError("Invalid problem model name")
     with publication_lock(model_dir):
-        root = Path(model_dir) / operation
+        root = Path(model_dir) / problem
         current, previous = pointer(root, "current"), pointer(root, "previous")
-        model, metadata = load(model_dir, operation, version=previous)
+        model, metadata = load(model_dir, problem, version=previous)
         atomic_text(root / "previous", current)
         atomic_text(root / "current", previous)
         release_path = Path(model_dir) / "release.json"
         ready = False
         if release_path.exists():
             release = json.loads(release_path.read_text())
-            ready = refresh_release(model_dir, release["operations"], release["implementation_sha256"],
+            ready = refresh_release(model_dir, release["problems"], release["implementation_sha256"],
                                     release["admission_fingerprint"])["ready"]
-    return dict(operation=operation, current=model["model_version"], previous=current,
-                operation_gate_passed=metadata["comparison"]["live_ready"], live_ready=ready)
+    return dict(problem=problem, current=model["model_version"], previous=current,
+                problem_gate_passed=metadata["comparison"]["live_ready"], live_ready=ready)

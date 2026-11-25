@@ -130,12 +130,12 @@ def saved_group(runtime, session, graph):
                 "steps": [
                     {
                         "id": "shrink",
-                        "operation": "graph-transformation",
+                        "problem": "graph-transformation",
                         "input": {"input": "main"},
                     },
                     {
                         "id": "groups",
-                        "operation": "maximal-cliques",
+                        "problem": "maximal-cliques",
                         "input": {"step": "shrink", "port": "graph"},
                     },
                 ]

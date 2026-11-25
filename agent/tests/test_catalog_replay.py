@@ -38,8 +38,8 @@ def fixture_client(cases):
                 if kwargs["schema"] is RouteDecision:
                     supported = task["expected_status"] != "unsupported"
                     return RouteDecision(
-                        problem_id=task["problem_id"],
-                        operation_id=task["operation_id"] if supported else None,
+                        topic_id=task["topic_id"],
+                        problem_id=task["problem_id"] if supported else None,
                         supported=supported,
                         confidence=1,
                         explanation="Authored CPU workflow fixture.",
@@ -59,7 +59,7 @@ def fixture_client(cases):
                 case = next(
                     item
                     for item in cases
-                    if item["task"]["operation_id"] == plan.operation_id
+                    if item["task"]["problem_id"] == plan.problem_id
                     and item["task"]["parameters"].items() <= plan.parameters.items()
                     and item["task"]["intent"]["filters"]
                     == [
@@ -89,12 +89,12 @@ def fixture_client(cases):
                     "statistics": {},
                     "warnings": [],
                     "provenance": {"backend": "cpu-fixture", "test_double": True},
-                }, ["cpu-fixture", plan.operation_id]
+                }, ["cpu-fixture", plan.problem_id]
 
             runtime.agent.model.generate = generate
             runtime.runner.execute = execute
             runtime.runner.compiled_backends_for = lambda op: set(
-                runtime.catalog.operation(op).allowed_backends
+                runtime.catalog.problem(op).allowed_backends
             )
             yield http, history
 
@@ -171,7 +171,7 @@ def test_capture_detects_input_plan_and_prose_changes(
     case = next(
         case
         for case in build_suite(catalog)["cases"]
-        if case["task"]["operation_id"] == "k-cliques"
+        if case["task"]["problem_id"] == "k-cliques"
     )
     report, _ = capture_fixture(
         settings, catalog, tmp_path, monkeypatch, case_ids=[case["id"]]
@@ -212,7 +212,7 @@ def test_nonready_case_checks_jobs_even_when_reply_omits_them(
     )
     row = report["captures"][0]
     unrelated = copy.deepcopy(row)
-    unrelated["routes"][-1]["problem_id"] = "unrelated-problem"
+    unrelated["routes"][-1]["topic_id"] = "unrelated-topic"
     grade = replay.grade_capture(catalog, case, unrelated)
     assert grade["dimensions"]["status"] is True
     assert grade["workflow_contract_passed"] is False

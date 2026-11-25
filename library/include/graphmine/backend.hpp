@@ -10,7 +10,7 @@ namespace graphmine {
 struct BackendInfo {
   std::string id;
   std::string display_name;
-  std::string problem;
+  std::string topic;  // Documentation heading; the callable contract supplies its problem ID.
   std::string source_commit;
   bool compiled = false;
   bool validated = false;

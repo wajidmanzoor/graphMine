@@ -50,7 +50,7 @@ def tools():
             "GET",
             "/api/analytics/capabilities",
             None,
-            "List the native operations currently admitted by verification evidence.",
+            "List the native problems currently admitted by verification evidence.",
         ),
         (
             "create_workspace",
@@ -71,7 +71,7 @@ def tools():
             "POST",
             "/api/sessions/{session_id}/analytics/plan",
             PlanningRequest,
-            "Route a question to operations, a display change of a saved result, or an answer from its facts, and validate a proposed workflow. Does not execute it.",
+            "Route a question to problems, a display change of a saved result, or an answer from its facts, and validate a proposed workflow. Does not execute it.",
         ),
         (
             "create_workflow",

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "connected_components",
+  "topic_id": "connected_components",
   "name": "Connected Components (Weakly and Strongly Connected)",
   "category": "connectivity",
   "problem_statement": "Partition all vertices into maximal groups such that every pair of vertices within a group is connected according to a declared connectivity definition: weak (undirected) connectivity, or strong (directed, mutual-reachability) connectivity.",

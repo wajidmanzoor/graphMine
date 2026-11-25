@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "general_graph_weighted_matching",
+  "topic_id": "general_graph_weighted_matching",
   "name": "General-Graph Weighted Matching",
   "category": "selection",
   "problem_statement": "Find a matching of high total nonnegative edge weight in an undirected graph without a bipartiteness assumption.",

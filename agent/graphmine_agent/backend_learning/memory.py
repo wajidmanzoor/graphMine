@@ -1,4 +1,4 @@
-"""Small nonnegative memory fits, scoped to operation, implementation and hardware.
+"""Small nonnegative memory fits, scoped to problem, implementation and hardware.
 
 These estimates supplement the unchanged workflow admission reservation. A fit
 needs 20 completed, non-evaluation observations and held-out graph validation.
@@ -43,14 +43,14 @@ def coordinates(features, output_estimate):
     return values
 
 
-def profile_key(operation, backend, features, parameters, hardware, implementation):
+def profile_key(problem, backend, features, parameters, hardware, implementation):
     device = backend.get("device")
     gpu = next((g for g in hardware.get("gpus", [])
                 if g.get("index") == hardware.get("leased_gpu_index")), {})
     model = hardware.get("cpu_model") if device == "cpu" else gpu.get("model")
     if not model or not re.fullmatch(r"[0-9a-f]{64}", implementation or ""):
         raise ValueError("Memory fit requires hardware and implementation provenance")
-    return _digest(dict(operation=operation, backend=backend["id"], device=device,
+    return _digest(dict(problem=problem, backend=backend["id"], device=device,
                         hardware_model=model, implementation=implementation,
                         input_kind=features.get("input_kind"), directed=features.get("directed"),
                         weighted=features.get("weighted"), parameters=parameters))
@@ -144,7 +144,7 @@ def fit_models(rows):
                 raise ValueError("Unadmitted backend")
             features, hardware = row["graph_features"], row["hardware"]
             x = coordinates(features, row["output_estimate"])
-            key = profile_key(row["operation"], backend, features, row["parameters"], hardware,
+            key = profile_key(row["problem"], backend, features, row["parameters"], hardware,
                               row["implementation_sha256"])
             snapshot = features["snapshot_fingerprint"]
             if not re.fullmatch(r"[0-9a-f]{64}", snapshot):
@@ -238,7 +238,7 @@ def note_oom(data_dir, row):
             atomic_json(path, saved)
 
 
-def predict_memory(operation, backend, features, parameters, hardware, *, output_estimate,
+def predict_memory(problem, backend, features, parameters, hardware, *, output_estimate,
                    implementation, data_dir):
     fallback = estimate_memory({"steps": [{"budget": {"max_output_items": output_estimate}}]},
                                features["input_bytes"])
@@ -252,7 +252,7 @@ def predict_memory(operation, backend, features, parameters, hardware, *, output
         model = json.loads(path.read_text())
         if model["schema_version"] != MODEL_SCHEMA or model["backend"] != backend["id"]:
             raise ValueError("Wrong memory model")
-        key = profile_key(operation, backend, features, parameters, hardware, implementation)
+        key = profile_key(problem, backend, features, parameters, hardware, implementation)
         profile = model["profiles"].get(key)
         if profile is None:
             return value, version, "unseen_memory_context"

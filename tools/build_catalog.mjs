@@ -22,6 +22,8 @@ const expansionScreening = readJson(expansion.screening_source);
 const validationResults = readJson(
   "validation/gpu_correctness/results/results.json",
 );
+// Historical evidence is immutable; its research heading key predates topics.
+for (const row of validationResults.workloads) row.topic ??= row.problem;
 const graphSchema = readJson("problems/graph_input.schema.json");
 
 const problemDirectories = fs
@@ -245,35 +247,35 @@ const validationImplementation = {
   "turbo-bc": "TurboBC",
 };
 
-const registryOperations = new Map(
-  backendRegistry.operations.map((operation) => [operation.id, operation]),
+const registryProblems = new Map(
+  backendRegistry.problems.map((problem) => [problem.id, problem]),
 );
 const problemsById = new Map(
-  problemSources.map((entry) => [entry.spec.problem_id, entry]),
+  problemSources.map((entry) => [entry.spec.topic_id, entry]),
 );
 const artifactsByProblemAndPaper = new Map(
   artifactSources.artifacts.map((artifact) => [
-    `${artifact.problem_id}:${artifact.paper_id}`,
+    `${artifact.topic_id}:${artifact.paper_id}`,
     artifact,
   ]),
 );
 
 const workloadsByProblem = new Map();
 for (const workload of validationResults.workloads) {
-  const entries = workloadsByProblem.get(workload.problem) || [];
+  const entries = workloadsByProblem.get(workload.topic) || [];
   entries.push(workload);
-  workloadsByProblem.set(workload.problem, entries);
+  workloadsByProblem.set(workload.topic, entries);
 }
 
 function validationForBackend(problemId, backendId) {
-  const repaired = repairs.backends.find((entry) => entry.problem_id === problemId && entry.backend_id === backendId);
+  const repaired = repairs.backends.find((entry) => entry.topic_id === problemId && entry.backend_id === backendId);
   if (repaired) {
     const evidence = readJson(repairs.public_api_evidence);
     assert(evidence.status === "passed" && evidence.failures === 0, "Repaired profiles require a passing native integration report");
     return repaired.validation;
   }
-  const profile = Object.values(expansion.operations).find(
-    (entry) => entry.problem_id === problemId && entry.backend_id === backendId,
+  const profile = Object.values(expansion.problems).find(
+    (entry) => entry.topic_id === problemId && entry.backend_id === backendId,
   );
   if (profile) {
     assert(expansionScreening.artifacts.some((entry) =>
@@ -285,7 +287,7 @@ function validationForBackend(problemId, backendId) {
   assert(implementation, `No validation implementation mapping for ${backendId}`);
   const workload = validationResults.workloads.find(
     (entry) =>
-      entry.problem === problemId &&
+      entry.topic === problemId &&
       entry.implementation === implementation &&
       entry.status === "pass",
   );
@@ -296,35 +298,35 @@ function validationForBackend(problemId, backendId) {
   return workload;
 }
 
-const operations = runtimeManifest.operations.map((operation) => {
-  const registryOperation = registryOperations.get(operation.id);
-  assert(registryOperation, `Missing backend registry entry for ${operation.id}`);
-  const problem = problemsById.get(operation.research_problem_id)?.spec;
-  assert(problem, `Missing problem specification for ${operation.research_problem_id}`);
+const problems = runtimeManifest.problems.map((problem) => {
+  const registryProblem = registryProblems.get(problem.id);
+  assert(registryProblem, `Missing backend registry entry for ${problem.id}`);
+  const topic = problemsById.get(problem.topic_id)?.spec;
+  assert(topic, `Missing topic specification for ${problem.topic_id}`);
   const problemPosition = problemSources.findIndex(
-    (entry) => entry.spec.problem_id === operation.research_problem_id,
+    (entry) => entry.spec.topic_id === problem.topic_id,
   );
   assert.notEqual(problemPosition, -1);
-  const cpp = cppContracts[operation.id] || expansion.operations[operation.id]?.cpp || repairs.operations[operation.id]?.cpp;
-  assert(cpp, `Missing C++ contract for ${operation.id}`);
+  const cpp = cppContracts[problem.id] || expansion.problems[problem.id]?.cpp || repairs.problems[problem.id]?.cpp;
+  assert(cpp, `Missing C++ contract for ${problem.id}`);
 
-  const backendDetails = operation.backends.map((backendId) => {
-    const registryBackend = registryOperation.backends.find(
+  const backendDetails = problem.backends.map((backendId) => {
+    const registryBackend = registryProblem.backends.find(
       (backend) => backend.id === backendId,
     );
     assert(
       registryBackend,
-      `Missing backend registry entry for ${operation.id}/${backendId}`,
+      `Missing backend registry entry for ${problem.id}/${backendId}`,
     );
     const validation = validationForBackend(
-      operation.research_problem_id,
+      problem.topic_id,
       backendId,
     );
     const sources = (validation.paper_artifacts || []).map((paperId) => {
       const source = artifactsByProblemAndPaper.get(
-        `${operation.research_problem_id}:${paperId}`,
+        `${problem.topic_id}:${paperId}`,
       );
-      assert(source, `Missing artifact source for ${operation.id}/${paperId}`);
+      assert(source, `Missing artifact source for ${problem.id}/${paperId}`);
       return source;
     });
     return {
@@ -341,12 +343,12 @@ const operations = runtimeManifest.operations.map((operation) => {
   });
 
   return {
-    ...operation,
-    problem_contract_ref: `#/problems/${problemPosition}`,
-    problem_inputs: problem.problem_inputs.map((input) => input.name),
+    ...problem,
+    topic_reference: `#/problems/${problemPosition}`,
+    problem_inputs: topic.problem_inputs.map((input) => input.name),
     cpp: {
       ...cpp,
-      cmake_component: operation.cmake_component,
+      cmake_component: problem.cmake_component,
       lifecycle: [
         "construct options",
         "construct algorithm object",
@@ -355,40 +357,40 @@ const operations = runtimeManifest.operations.map((operation) => {
       ],
     },
     cli: {
-      command_example: operation.command,
-      required_auxiliary_inputs: operation.required_auxiliary_inputs || [],
-      parameters: operation.parameters || [],
-      optional_output_flags: operation.optional_output_flags || {},
+      command_example: problem.command,
+      required_auxiliary_inputs: problem.required_auxiliary_inputs || [],
+      parameters: problem.parameters || [],
+      optional_output_flags: problem.optional_output_flags || {},
     },
     backend_details: backendDetails,
   };
 });
 
-const operationsByProblem = new Map();
-for (const operation of operations) {
-  const entries = operationsByProblem.get(operation.research_problem_id) || [];
-  entries.push(operation);
-  operationsByProblem.set(operation.research_problem_id, entries);
+const problemsByProblem = new Map();
+for (const problem of problems) {
+  const entries = problemsByProblem.get(problem.topic_id) || [];
+  entries.push(problem);
+  problemsByProblem.set(problem.topic_id, entries);
 }
 
-const problems = problemSources.map(({ source, spec, collection, collectionSource }) => {
-  const problemOperations = operationsByProblem.get(spec.problem_id) || [];
-  const validationWorkloads = workloadsByProblem.get(spec.problem_id) || [];
-  const validatedBackendCount = problemOperations.reduce(
-    (count, operation) => count + operation.backends.length,
+const topics = problemSources.map(({ source, spec, collection, collectionSource }) => {
+  const problemProblems = problemsByProblem.get(spec.topic_id) || [];
+  const validationWorkloads = workloadsByProblem.get(spec.topic_id) || [];
+  const validatedBackendCount = problemProblems.reduce(
+    (count, problem) => count + problem.backends.length,
     0,
   );
-  const available = problemOperations.length > 0;
+  const available = problemProblems.length > 0;
   const screening = expansionScreening.artifacts.filter(
     (entry) => entry.problem_dir === path.basename(path.dirname(source)),
   );
-  const profiles = problemOperations.filter((operation) => expansion.operations[operation.id] || repairs.operations[operation.id])
-    .map((operation) => ({ operation_id: operation.id, supported_profile: operation.validated_profile }));
+  const profiles = problemProblems.filter((problem) => expansion.problems[problem.id] || repairs.problems[problem.id])
+    .map((problem) => ({ problem_id: problem.id, supported_profile: problem.validated_profile }));
 
   return {
     source,
-    intent_signals: intentSignals[spec.problem_id] || expansion.intent_signals[spec.problem_id] ||
-      spec.intent_signals || [spec.name.toLowerCase(), spec.problem_id.replaceAll("_", " ")],
+    intent_signals: intentSignals[spec.topic_id] || expansion.intent_signals[spec.topic_id] ||
+      spec.intent_signals || [spec.name.toLowerCase(), spec.topic_id.replaceAll("_", " ")],
     ...(collection ? {
       research_collection: {
         source: collectionSource,
@@ -402,7 +404,7 @@ const problems = problemSources.map(({ source, spec, collection, collectionSourc
     library_support: {
       available,
       status: available ? "validated" : "no_validated_backend",
-      operation_ids: problemOperations.map((operation) => operation.id),
+      problem_ids: problemProblems.map((problem) => problem.id),
       validated_backend_count: validatedBackendCount,
       ...(profiles.length ? { validation_scope: "bounded_profiles_only", profiles } : {}),
       reason: available
@@ -410,51 +412,51 @@ const problems = problemSources.map(({ source, spec, collection, collectionSourc
           ? "Only the listed profiles are executable; broader research modes remain unsupported."
           : "At least one implementation passed the GPU correctness validation and is exposed by GraphMine.")
         : (collection?.entries
-          ? `${collection.entries} research/implementation records are cataloged, including ${collection.eligible_local_code_and_paper_pairs} eligible local source-and-paper pairs. No implementation is exposed as a validated GraphMine backend for this problem.` +
+          ? `${collection.entries} research/implementation records are cataloged, including ${collection.eligible_local_code_and_paper_pairs} eligible local source-and-paper pairs. No implementation is exposed as a validated GraphMine backend for this topic.` +
             (screening.length ? ` Prior implementation screening: ${screening.map((entry) => `${entry.paper_id}: ${entry.note}`).join(" ")}` : "")
           : screening.length
           ? screening.map((entry) => `${entry.paper_id}: ${entry.note}`).join(" ")
-          : (expansion.intent_signals[spec.problem_id]
+          : (expansion.intent_signals[spec.topic_id]
             ? "No local paper/code artifact is cataloged for this definition, so there is no implementation to validate or execute."
-            : "No implementation for this problem passed the validation gate, so GraphMine does not expose an operation for it.")),
+            : "No implementation for this topic passed the validation gate, so GraphMine does not expose an problem for it.")),
     },
     validation_workloads: validationWorkloads,
-    ...(expansion.intent_signals[spec.problem_id] ? { expansion_screening: screening } : {}),
+    ...(expansion.intent_signals[spec.topic_id] ? { expansion_screening: screening } : {}),
     spec,
   };
 });
 
-const supportedProblems = problems.filter(
-  (problem) => problem.library_support.available,
+const supportedProblems = topics.filter(
+  (topic) => topic.library_support.available,
 );
-const validatedBackendCount = operations.reduce(
-  (count, operation) => count + operation.backends.length,
+const validatedBackendCount = problems.reduce(
+  (count, problem) => count + problem.backends.length,
   0,
 );
 const passingWorkloadCount = validationResults.workloads.filter(
   (workload) => workload.status === "pass",
 ).length;
 
-const problemIndex = Object.fromEntries(
-  problems.map((problem, index) => [
-    problem.spec.problem_id,
+const topicIndex = Object.fromEntries(
+  topics.map((topic, index) => [
+    topic.spec.topic_id,
     {
-      name: problem.spec.name,
-      category: problem.spec.category,
-      library_status: problem.library_support.status,
-      operation_ids: problem.library_support.operation_ids,
+      name: topic.spec.name,
+      category: topic.spec.category,
+      library_status: topic.library_support.status,
+      problem_ids: topic.library_support.problem_ids,
       problem_ref: `#/problems/${index}`,
     },
   ]),
 );
 
-const operationIndex = Object.fromEntries(
-  operations.map((operation, index) => [
-    operation.id,
+const problemIndex = Object.fromEntries(
+  problems.map((problem, index) => [
+    problem.id,
     {
-      research_problem_id: operation.research_problem_id,
-      backends: operation.backends,
-      operation_ref: `#/operations/${index}`,
+      topic_id: problem.topic_id,
+      backends: problem.backends,
+      problem_ref: `#/problems/${index}`,
     },
   ]),
 );
@@ -464,7 +466,7 @@ const catalog = {
   catalog_id: "graphmine_problem_first_catalog_v2",
   library_version: runtimeManifest.library_version,
   purpose:
-    "Problem-first context for mapping a user request to a formal graph problem, a validated GraphMine operation, a backend, parameters, and optional outputs.",
+    "Topic-first context for mapping a user request to a formal graph topic, a validated GraphMine problem, a backend, parameters, and optional outputs.",
   source_of_truth: {
     problem_contracts:
       "Each problems/*/problem.json object is embedded exactly and remains authoritative for semantics, inputs, outputs, validation rules, and edge cases.",
@@ -479,47 +481,47 @@ const catalog = {
     regeneration_command: "node tools/build_catalog.mjs",
   },
   scope: {
-    catalog_problem_count: problems.length,
-    library_supported_problem_count: supportedProblems.length,
-    library_unsupported_problem_count: problems.length - supportedProblems.length,
-    runnable_operation_count: operations.length,
+    catalog_topic_count: topics.length,
+    library_supported_topic_count: supportedProblems.length,
+    library_unsupported_topic_count: topics.length - supportedProblems.length,
+    runnable_problem_count: problems.length,
     validated_backend_count: validatedBackendCount,
     passing_validation_workload_count: passingWorkloadCount,
-    validated_expansion_profile_count: Object.keys(expansion.operations).length,
+    validated_expansion_profile_count: Object.keys(expansion.problems).length,
     validated_repaired_backend_count: repairs.backends.length,
-    operation_count_note:
-      "Triangle counting and dynamic triangle counting share one research problem but are separate runnable operations.",
+    problem_count_note:
+      "Triangle counting and dynamic triangle counting share one research topic but are separate runnable problems.",
   },
   routing: {
     contract_version: repairs.routing_contract_version,
-    model_policy: "Supply this catalog to the base router. The frozen legacy routing adapter was evaluated on the earlier 20-problem contract; do not silently extend its evaluation claims.",
+    model_policy: "Supply this catalog to the base router. The frozen legacy routing adapter was evaluated on the earlier 20-topic contract; do not silently extend its evaluation claims.",
     workflow: [
       {
         step: 1,
         action: "identify_problem",
         instruction:
-          "Compare the user request with problem_statement, intent_signals, graph_input, problem_inputs, solution_semantics, and edge_cases. Select exactly one problem_id or report ambiguity.",
-        output: "selected_problem_id",
+          "Compare the user request with problem_statement, intent_signals, graph_input, problem_inputs, solution_semantics, and edge_cases. Select exactly one topic_id or report ambiguity.",
+        output: "selected_topic_id",
       },
       {
         step: 2,
         action: "check_library_support",
         instruction:
-          "Inspect library_support. If status is no_validated_backend, report that faithfully and do not substitute a nearby problem.",
+          "Inspect library_support. If status is no_validated_backend, report that faithfully and do not substitute a nearby topic.",
         output: "library_support_status",
       },
       {
         step: 3,
-        action: "select_operation",
+        action: "select_problem",
         instruction:
-          "Choose among library_support.operation_ids. Respect each operation's validated_profile and backend_constraints; these can be narrower than the general problem contract.",
-        output: "selected_operation_id",
+          "Choose among library_support.problem_ids. Respect each problem's validated_profile and backend_constraints; these can be narrower than the general topic contract.",
+        output: "selected_problem_id",
       },
       {
         step: 4,
         action: "resolve_inputs_and_parameters",
         instruction:
-          "Use spec.graph_input and spec.problem_inputs for semantic requirements, then use operation.cli for their concrete command-line encoding. Ask for any required graph or auxiliary input that is missing.",
+          "Use spec.graph_input and spec.problem_inputs for semantic requirements, then use problem.cli for their concrete command-line encoding. Ask for any required graph or auxiliary input that is missing.",
         output: "resolved_parameters_and_missing_inputs",
       },
       {
@@ -533,16 +535,16 @@ const catalog = {
         step: 6,
         action: "select_outputs",
         instruction:
-          "Always return required_outputs. Enable optional fields only through operation.cli.optional_output_flags when the user requests them or they are necessary for the task.",
+          "Always return required_outputs. Enable optional fields only through problem.cli.optional_output_flags when the user requests them or they are necessary for the task.",
         output: "requested_optional_output_flags",
       },
     ],
     hard_rules: [
-      "Do not route an unsupported problem to a superficially similar supported operation.",
-      "Do not claim support outside an operation's validated_profile or backend_constraints.",
+      "Do not route an unsupported topic to a superficially similar supported problem.",
+      "Do not claim support outside an problem's validated_profile or backend_constraints.",
       "Do not invent parameter values for required inputs; request them from the user.",
       "Use canonical external vertex and edge IDs at the public boundary.",
-      "Prefer the generic run/supports/result lifecycle; use problem-specific fields only where the contract requires them.",
+      "Prefer the generic run/supports/result lifecycle; use topic-specific fields only where the contract requires them.",
     ],
     disambiguation: [
       {
@@ -573,16 +575,16 @@ const catalog = {
     ],
     selection_output_contract: {
       required_fields: [
-        "selected_problem_id",
+        "selected_topic_id",
         "library_support_status",
-        "selected_operation_id",
+        "selected_problem_id",
         "selected_backend_id",
         "resolved_parameters",
         "requested_optional_output_flags",
         "missing_inputs",
       ],
       nullable_when_unsupported: [
-        "selected_operation_id",
+        "selected_problem_id",
         "selected_backend_id",
       ],
     },
@@ -602,39 +604,39 @@ const catalog = {
     classification_policy: validationResults.classification_policy,
     summary: validationResults.summary,
     expansion_source: expansion.screening_source,
-    expansion_profiles: expansion.operations,
+    expansion_profiles: expansion.problems,
     repaired_profiles: repairs.backends,
   },
+  topic_index: topicIndex,
   problem_index: problemIndex,
-  operation_index: operationIndex,
+  topics,
   problems,
-  operations,
   artifacts: artifactSources.artifacts,
 };
 
-assert(problems.length > 0 && operations.length > 0, "Catalog must not be empty");
-assert.equal(supportedProblems.length, runtimeManifest.scope.research_problem_count);
-assert.equal(operations.length, runtimeManifest.scope.runnable_operation_count);
-assert.equal(operations.length, backendRegistry.operation_count);
+assert(topics.length > 0 && problems.length > 0, "Catalog must not be empty");
+assert.equal(supportedProblems.length, runtimeManifest.scope.topic_count);
+assert.equal(problems.length, runtimeManifest.scope.runnable_problem_count);
+assert.equal(problems.length, backendRegistry.problem_count);
 assert.equal(validatedBackendCount, runtimeManifest.scope.validated_backend_count);
 assert.equal(validatedBackendCount, backendRegistry.validated_backend_count);
-assert.deepEqual(new Set(registryOperations.keys()), new Set(operations.map((operation) => operation.id)));
+assert.deepEqual(new Set(registryProblems.keys()), new Set(problems.map((problem) => problem.id)));
+assert.equal(
+  Object.keys(topicIndex).length,
+  topics.length,
+  "Topic IDs must be unique",
+);
 assert.equal(
   Object.keys(problemIndex).length,
   problems.length,
   "Problem IDs must be unique",
 );
-assert.equal(
-  Object.keys(operationIndex).length,
-  operations.length,
-  "Operation IDs must be unique",
-);
 
 for (const { source, spec } of problemSources) {
-  const embedded = problems.find(
-    (problem) => problem.spec.problem_id === spec.problem_id,
+  const embedded = topics.find(
+    (topic) => topic.spec.topic_id === spec.topic_id,
   );
-  assert(embedded, `Missing embedded problem ${spec.problem_id}`);
+  assert(embedded, `Missing embedded topic ${spec.topic_id}`);
   assert.deepEqual(embedded.spec, readJson(source));
 }
 
@@ -647,6 +649,6 @@ for (const output of [
 }
 
 console.log(
-  `Wrote ${problems.length} problems, ${operations.length} operations, ` +
+  `Wrote ${topics.length} topics, ${problems.length} problems, ` +
     `${validatedBackendCount} backend choices to graphmine_catalog.json`,
 );

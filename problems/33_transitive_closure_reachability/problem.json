@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "transitive_closure_reachability",
+  "topic_id": "transitive_closure_reachability",
   "name": "Transitive Closure and Reachability Indexing",
   "category": "paths",
   "problem_statement": "Given a directed graph, determine for queried vertex pairs whether the target is reachable from the source via a directed path, and optionally materialize or index full reachability to answer many such queries efficiently.",

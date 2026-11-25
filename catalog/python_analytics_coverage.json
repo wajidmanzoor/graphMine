@@ -1,11 +1,11 @@
 {
   "schema_version": "1.0.0",
   "problem_count": 70,
-  "cpu_operation_count": 73,
-  "cpu_problem_operation_count": 66,
-  "workflow_utility_operation_count": 7,
+  "cpu_problem_count": 73,
+  "cpu_problem_problem_count": 66,
+  "workflow_utility_problem_count": 7,
   "problems_with_cpu_profile": 63,
-  "cugraph_operation_count": 13,
+  "cugraph_problem_count": 13,
   "reports": [
     {
       "id": "cpu-native-ingestion",
@@ -498,228 +498,228 @@
     }
   ],
   "scope": "Executable profiles and the specific independent oracle fixtures recorded in each report. Native backends and outer-folder diagnostics are separate; no universal correctness or full parameter coverage claim.",
-  "problems": [
+  "topics": [
     {
-      "problem_id": "maximal_clique_enumeration",
+      "topic_id": "maximal_clique_enumeration",
       "name": "Maximal Clique Enumeration",
       "contract": "problems/01_maximal_clique_enumeration/problem.json",
       "contract_sha256": "3ebee667be936468335f5436d8bfd78f497db294e3bbb1dfcbb3ff6f9974d4af",
-      "cpu_operations": [
+      "cpu_problems": [
         "maximal-cliques"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "maximum_clique",
+      "topic_id": "maximum_clique",
       "name": "Maximum Clique",
       "contract": "problems/02_maximum_clique/problem.json",
       "contract_sha256": "e0085444b11338985cd849cffc34599a26cdffc8ef3fad0901331ba231b4f30e",
-      "cpu_operations": [
+      "cpu_problems": [
         "maximum-clique"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "k_clique_counting_enumeration",
+      "topic_id": "k_clique_counting_enumeration",
       "name": "k-Clique Counting and Enumeration",
       "contract": "problems/03_k_clique_counting_enumeration/problem.json",
       "contract_sha256": "2bbbbe37cec7d104da78b1a4d1ca84af3ea52bbce18ac6e77e36abf76a37bb71",
-      "cpu_operations": [
+      "cpu_problems": [
         "k-cliques"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "quasi_clique_mining",
+      "topic_id": "quasi_clique_mining",
       "name": "Quasi-Clique Mining",
       "contract": "problems/04_quasi_clique_mining/problem.json",
       "contract_sha256": "9ca8782127bdd3a3ecf811394ef2641c1997d28e2df85a02cb254f76939226ee",
-      "cpu_operations": [
+      "cpu_problems": [
         "quasi-cliques"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "densest_subgraph",
+      "topic_id": "densest_subgraph",
       "name": "Densest Subgraph",
       "contract": "problems/05_densest_subgraph/problem.json",
       "contract_sha256": "0a48c9251c4f9214e56893149b469a200c19f56bed180a150331479f87360676",
-      "cpu_operations": [
+      "cpu_problems": [
         "densest-subgraph"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "densest_k_subgraph",
+      "topic_id": "densest_k_subgraph",
       "name": "Densest k-Subgraph",
       "contract": "problems/06_densest_k_subgraph/problem.json",
       "contract_sha256": "5eed67660115f4109f04e1d9bf318589c332f9dd15fccff3d3562cde3a4efdce",
-      "cpu_operations": [
+      "cpu_problems": [
         "densest-k-subgraph"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "k_core_decomposition",
+      "topic_id": "k_core_decomposition",
       "name": "k-Core Decomposition",
       "contract": "problems/07_k_core_decomposition/problem.json",
       "contract_sha256": "089c2894630b8f6489beeddf9f6c6684dd56336abd228692fa2480f4c90cc8ff",
-      "cpu_operations": [
+      "cpu_problems": [
         "k-core"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "k-core"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "k_truss_decomposition",
+      "topic_id": "k_truss_decomposition",
       "name": "k-Truss Decomposition",
       "contract": "problems/08_k_truss_decomposition/problem.json",
       "contract_sha256": "14480316042b31743e26027f2a97a23e25a466bdc425b30ece7a8d2e89547823",
-      "cpu_operations": [
+      "cpu_problems": [
         "k-truss"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "k-truss"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "name": "Maximal Biclique Enumeration",
       "contract": "problems/09_maximal_biclique_enumeration/problem.json",
       "contract_sha256": "6ef6f712c975fef57cf4887f91f015c7e917b476e303fa0609c0650e4ffcd8b7",
-      "cpu_operations": [
+      "cpu_problems": [
         "maximal-bicliques"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "name": "Triangle Counting and Listing",
       "contract": "problems/10_triangle_counting_listing/problem.json",
       "contract_sha256": "caf8734e535e11868dec46ad50f8b696d99edfec3996c9f4e155ff53bb3950a5",
-      "cpu_operations": [
+      "cpu_problems": [
         "triangle-counting"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "triangle-counting"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graph_motif_counting",
+      "topic_id": "graph_motif_counting",
       "name": "Graph Motif Counting",
       "contract": "problems/11_graph_motif_counting/problem.json",
       "contract_sha256": "e94cea64a0ed43c0bb224ecee07458be18bfb54ee81b6ae1bd9a45119de2ea4f",
-      "cpu_operations": [
+      "cpu_problems": [
         "motif-counting"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graphlet_counting",
+      "topic_id": "graphlet_counting",
       "name": "Graphlet Counting",
       "contract": "problems/12_graphlet_counting/problem.json",
       "contract_sha256": "54a78255d00fc4e953694a644b597b4ba5e2bfc8a76537dc38009a4e2952dbcb",
-      "cpu_operations": [
+      "cpu_problems": [
         "graphlet-counting"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "subgraph_isomorphism",
+      "topic_id": "subgraph_isomorphism",
       "name": "Subgraph Isomorphism and Pattern Matching",
       "contract": "problems/13_subgraph_isomorphism/problem.json",
       "contract_sha256": "41d4974c2ca63d089cd15973501e57bb5da98fd931c759ccb0036163a91601da",
-      "cpu_operations": [
+      "cpu_problems": [
         "subgraph-isomorphism"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "frequent_subgraph_mining",
+      "topic_id": "frequent_subgraph_mining",
       "name": "Frequent Subgraph Mining",
       "contract": "problems/14_frequent_subgraph_mining/problem.json",
       "contract_sha256": "f305514df1fe8b740198a1a2b2a205d8d1cd1a30133326d895b4e71174dd8158",
-      "cpu_operations": [
+      "cpu_problems": [
         "frequent-subgraphs"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "temporal_motif_mining",
+      "topic_id": "temporal_motif_mining",
       "name": "Temporal Motif Mining",
       "contract": "problems/15_temporal_motif_mining/problem.json",
       "contract_sha256": "250cb6a3c2e8931f359f57b498192aaf1eb6a4b2bdd3c85ab796b0d60fddaea9",
-      "cpu_operations": [
+      "cpu_problems": [
         "temporal-motifs"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "community_detection",
+      "topic_id": "community_detection",
       "name": "Disjoint Community Detection",
       "contract": "problems/16_community_detection/problem.json",
       "contract_sha256": "d9f62f682566ccc12a4c595dbafce8510dc5d787387e61744f04fc843d4ec458",
-      "cpu_operations": [
+      "cpu_problems": [
         "community-detection"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "overlapping_community_detection",
+      "topic_id": "overlapping_community_detection",
       "name": "Overlapping Community Detection by k-Clique Percolation",
       "contract": "problems/17_overlapping_community_detection/problem.json",
       "contract_sha256": "3a74ae933e5d31c1bc9e38347553ebba0d143c00e5a50d28f9f650548bcdc308",
-      "cpu_operations": [
+      "cpu_problems": [
         "overlapping-communities"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "name": "Centrality and Influential-Node Mining",
       "contract": "problems/18_centrality_influential_node_mining/problem.json",
       "contract_sha256": "b15f121e40db91a7f4ef181fa0b36be10850ae40f166d7a6fd53137bafc904fd",
-      "cpu_operations": [
+      "cpu_problems": [
         "betweenness-centrality",
         "degree-centrality",
         "pagerank"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "betweenness-centrality",
         "pagerank"
       ],
@@ -727,637 +727,637 @@
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "link_prediction",
+      "topic_id": "link_prediction",
       "name": "Link Prediction",
       "contract": "problems/19_link_prediction/problem.json",
       "contract_sha256": "81e514fc57958898a51821c16cf2a18e2b386a34a5093b8bdf8a5c209f12ef44",
-      "cpu_operations": [
+      "cpu_problems": [
         "link-prediction"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "link-prediction"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graph_anomaly_detection",
+      "topic_id": "graph_anomaly_detection",
       "name": "Graph Anomaly Detection",
       "contract": "problems/20_graph_anomaly_detection/problem.json",
       "contract_sha256": "60116fe9ae7bfabdcf91ed4f6325f6cb70522aa177c9233147ce4010e66370c1",
-      "cpu_operations": [
+      "cpu_problems": [
         "graph-anomalies"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "personalized_pagerank_rwr",
+      "topic_id": "personalized_pagerank_rwr",
       "name": "Personalized PageRank and Random Walk with Restart",
       "contract": "problems/21_personalized_pagerank_rwr/problem.json",
       "contract_sha256": "aca4f1841a08873c834f7984c4cc099da4a4357319bd9fc5c8470ba204000f38",
-      "cpu_operations": [
+      "cpu_problems": [
         "personalized-pagerank"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "personalized-pagerank"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "max_flow_min_cut",
+      "topic_id": "max_flow_min_cut",
       "name": "Maximum Flow and Minimum s-t Cut",
       "contract": "problems/22_max_flow_min_cut/problem.json",
       "contract_sha256": "b080f44838d6eb8bf9cb67401e8c72571f17c98cb0131d980d279acbcde4a39e",
-      "cpu_operations": [
+      "cpu_problems": [
         "max-flow-min-cut"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "butterfly_counting_bipartite",
+      "topic_id": "butterfly_counting_bipartite",
       "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
       "contract": "problems/23_butterfly_counting_bipartite/problem.json",
       "contract_sha256": "a0e567ed22f633d79662a32bec71957f941fa5101383ad583cc8cba734b73b85",
-      "cpu_operations": [
+      "cpu_problems": [
         "butterfly-counting"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graph_edit_distance_mcs",
+      "topic_id": "graph_edit_distance_mcs",
       "name": "Graph Edit Distance and Maximum Common Subgraph",
       "contract": "problems/24_graph_edit_distance_mcs/problem.json",
       "contract_sha256": "f0cbfb9cbd1292105e05fc72975762e8f02ed46741678690038d7fe012765166",
-      "cpu_operations": [
+      "cpu_problems": [
         "graph-edit-distance",
         "maximum-common-subgraph"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "network_alignment",
+      "topic_id": "network_alignment",
       "name": "Pairwise Network Alignment",
       "contract": "problems/25_network_alignment/problem.json",
       "contract_sha256": "72014b533429af78608f98cd8bbf067bbfec68c4c855ff4ae8e92228034d27f4",
-      "cpu_operations": [
+      "cpu_problems": [
         "network-alignment"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "topic_id": "hop_constrained_cycle_path_enumeration",
       "name": "Hop-Constrained Simple Path and Cycle Enumeration",
       "contract": "problems/26_hop_constrained_cycle_path_enumeration/problem.json",
       "contract_sha256": "0bc4f7c569edb5f7db7d4a2578a2656ba9f3ed756494a91d32d6f86a0cb6ed9f",
-      "cpu_operations": [
+      "cpu_problems": [
         "bounded-paths-cycles"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "group_steiner_tree",
+      "topic_id": "group_steiner_tree",
       "name": "Group Steiner Tree",
       "contract": "problems/27_group_steiner_tree/problem.json",
       "contract_sha256": "2d1edc70889c685dec30dbbe6aa76d80ff5d1b58c720dd5701efd94e8904d156",
-      "cpu_operations": [
+      "cpu_problems": [
         "group-steiner-tree"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "influence_maximization",
+      "topic_id": "influence_maximization",
       "name": "Influence Maximization under Diffusion Models",
       "contract": "problems/28_influence_maximization/problem.json",
       "contract_sha256": "15b84f3e7a98c8762c1f2c1af16ed12b8783c4a8238af5b3af552588ff1d8afa",
-      "cpu_operations": [
+      "cpu_problems": [
         "influence-maximization"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "simrank_vertex_similarity",
+      "topic_id": "simrank_vertex_similarity",
       "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
       "contract": "problems/29_simrank_vertex_similarity/problem.json",
       "contract_sha256": "974ec9c670fc712b4fd52c5f3ea1ca17e02d2a145ce2d17784048ccf7bccb019",
-      "cpu_operations": [
+      "cpu_problems": [
         "simrank"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "balanced_graph_partitioning",
+      "topic_id": "balanced_graph_partitioning",
       "name": "Balanced k-Way Graph Partitioning",
       "contract": "problems/30_balanced_graph_partitioning/problem.json",
       "contract_sha256": "5205430707d5ab8553b4bc3aeff2054b5fdedcb3eabf1d236fd40b79ecaedf60",
-      "cpu_operations": [
+      "cpu_problems": [
         "balanced-partitioning"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "bipartite_matching_assignment",
+      "topic_id": "bipartite_matching_assignment",
       "name": "Bipartite Matching and Linear Assignment",
       "contract": "problems/31_bipartite_matching_assignment/problem.json",
       "contract_sha256": "acee1da2572f93e766e3f3d288c4239110c763e7a6def8741bc13622a625e126",
-      "cpu_operations": [
+      "cpu_problems": [
         "bipartite-matching"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "signed_network_structural_balance",
+      "topic_id": "signed_network_structural_balance",
       "name": "Signed Network Structural Balance and Frustration Minimization",
       "contract": "problems/32_signed_network_structural_balance/problem.json",
       "contract_sha256": "d03f61921b2becc1d0e43c6f401eb3dc03eb512d4667b04bb71e540ae1498634",
-      "cpu_operations": [
+      "cpu_problems": [
         "signed-balance"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "transitive_closure_reachability",
+      "topic_id": "transitive_closure_reachability",
       "name": "Transitive Closure and Reachability Indexing",
       "contract": "problems/33_transitive_closure_reachability/problem.json",
       "contract_sha256": "22762db844c6b890854fffd5e78e621537077ab862ddfe765095b353f282dd32",
-      "cpu_operations": [
+      "cpu_problems": [
         "transitive-closure"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "entity_resolution_blocking",
+      "topic_id": "entity_resolution_blocking",
       "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
       "contract": "problems/34_entity_resolution_blocking/problem.json",
       "contract_sha256": "1c37153350c47318646d9567889b73260a168b186bf8632210c1dbe1a66df310",
-      "cpu_operations": [
+      "cpu_problems": [
         "entity-resolution"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "name": "Connected Components (Weakly and Strongly Connected)",
       "contract": "problems/35_connected_components/problem.json",
       "contract_sha256": "03b2bec0f72733b31c0c10a36ede7e1f30301fd92b81154acccfe2838a3c14e7",
-      "cpu_operations": [
+      "cpu_problems": [
         "connected-components"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "connected-components"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graph_layout_force_directed",
+      "topic_id": "graph_layout_force_directed",
       "name": "Force-Directed Graph Layout",
       "contract": "problems/36_graph_layout_force_directed/problem.json",
       "contract_sha256": "6d518dc26d0dafcb90469103e4de01511d8202f6e3c3472d90fb6ce228ab54a9",
-      "cpu_operations": [
+      "cpu_problems": [
         "force-directed-layout"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "null_model_significance_testing",
+      "topic_id": "null_model_significance_testing",
       "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
       "contract": "problems/37_null_model_significance_testing/problem.json",
       "contract_sha256": "d6692034a4d17d607d9daafe5125c886b36b1adfc0f44d0aac41fc75bd760715",
-      "cpu_operations": [
+      "cpu_problems": [
         "null-model-significance"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "breadth_first_search",
+      "topic_id": "breadth_first_search",
       "name": "Breadth-First Search and Unweighted Shortest Paths",
       "contract": "problems/38_breadth_first_search/problem.json",
       "contract_sha256": "357466ad5741d58e2e38da5c5abf9d7b2b9fafcb6db1e22f46b4d5ef8a7ce638",
-      "cpu_operations": [
+      "cpu_problems": [
         "breadth-first-search"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "breadth-first-search"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "single_source_shortest_paths",
+      "topic_id": "single_source_shortest_paths",
       "name": "Weighted Single-Source Shortest Paths",
       "contract": "problems/39_single_source_shortest_paths/problem.json",
       "contract_sha256": "ac419b6e6c86c81c3a4d9a8ffcf5c6a2a4adfc3d2b2d17d9d6b30bf41b02b9b7",
-      "cpu_operations": [
+      "cpu_problems": [
         "single-source-shortest-paths"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "single-source-shortest-paths"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "many_source_shortest_paths",
+      "topic_id": "many_source_shortest_paths",
       "name": "Many-Source and All-Pairs Shortest Distances",
       "contract": "problems/40_many_source_shortest_paths/problem.json",
       "contract_sha256": "f472c462228d62e1cec635ef5efa007ec0c9b81631b6b4a9af472532016efc6d",
-      "cpu_operations": [
+      "cpu_problems": [
         "many-source-shortest-paths"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "many-source-shortest-paths"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "spanning_tree_forest",
+      "topic_id": "spanning_tree_forest",
       "name": "Minimum and Maximum Spanning Trees and Forests",
       "contract": "problems/41_spanning_tree_forest/problem.json",
       "contract_sha256": "9eb4c97c6eca427a200c9b2494802cd0564899cbf3385f18ba29fabf1620f858",
-      "cpu_operations": [
+      "cpu_problems": [
         "spanning-tree-forest"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "spanning-tree-forest"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "maximal_independent_set",
+      "topic_id": "maximal_independent_set",
       "name": "Maximal Independent Set",
       "contract": "problems/42_maximal_independent_set/problem.json",
       "contract_sha256": "e9069b5efa72d682bef31ac94129b7537554874f6e538c0053ffadbe1395acb5",
-      "cpu_operations": [
+      "cpu_problems": [
         "maximal-independent-set"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "vertex_coloring",
+      "topic_id": "vertex_coloring",
       "name": "Vertex Coloring",
       "contract": "problems/43_vertex_coloring/problem.json",
       "contract_sha256": "55e191a7dfef94ce32fd6dad35ff3f51a97ebd0f5d22976ff688f5652bc967e7",
-      "cpu_operations": [
+      "cpu_problems": [
         "vertex-coloring"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "general_graph_weighted_matching",
+      "topic_id": "general_graph_weighted_matching",
       "name": "General-Graph Weighted Matching",
       "contract": "problems/44_general_graph_weighted_matching/problem.json",
       "contract_sha256": "d5dc193ecc3f3388b4753c6d8df13adad2ee1a03ece49b153f49d95ab826e087",
-      "cpu_operations": [
+      "cpu_problems": [
         "weighted-matching"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "topological_sort",
+      "topic_id": "topological_sort",
       "name": "Topological Sorting and DAG Levels",
       "contract": "problems/45_topological_sort/problem.json",
       "contract_sha256": "48ee79ddaeb5af92fc412d86cfabed90d5ee83c7825f63c97c607f90e0177337",
-      "cpu_operations": [
+      "cpu_problems": [
         "topological-sort"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "random_walk_generation",
+      "topic_id": "random_walk_generation",
       "name": "Graph Random-Walk Generation",
       "contract": "problems/46_random_walk_generation/problem.json",
       "contract_sha256": "7d5e77c7b425951e487ba9481bb7fa61e15a0f0fd74a74c2b55e45995ceb63ba",
-      "cpu_operations": [
+      "cpu_problems": [
         "random-walks"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "neighborhood_sampling",
+      "topic_id": "neighborhood_sampling",
       "name": "Neighborhood Sampling",
       "contract": "problems/47_neighborhood_sampling/problem.json",
       "contract_sha256": "f93340faef9aae4a828974801c00cd95506666af7f550bbc5e4853dccab4d1d9",
-      "cpu_operations": [
+      "cpu_problems": [
         "neighborhood-sampling"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "induced_subgraph_ego_extraction",
+      "topic_id": "induced_subgraph_ego_extraction",
       "name": "Induced Subgraph and Ego-Network Extraction",
       "contract": "problems/48_induced_subgraph_ego_extraction/problem.json",
       "contract_sha256": "218e504472185b1759cc36372cf4511925d5e7dd474839dd649a767a3aefe4e7",
-      "cpu_operations": [
+      "cpu_problems": [
         "induced-subgraph"
       ],
-      "cugraph_operations": [
+      "cugraph_problems": [
         "induced-subgraph"
       ],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "seeded_local_community_detection",
+      "topic_id": "seeded_local_community_detection",
       "name": "Seeded Local Community Detection",
       "contract": "problems/49_seeded_local_community_detection/problem.json",
       "contract_sha256": "ef5c39accc4d94ccb6b3a329a4caf9fa2124bebcced218f35ed05cdcb7f8a814",
-      "cpu_operations": [
+      "cpu_problems": [
         "seeded-local-community"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "node_embedding",
+      "topic_id": "node_embedding",
       "name": "Node Embedding",
       "contract": "problems/50_node_embedding/problem.json",
       "contract_sha256": "f0d2ad56f0f3a1a91cebaa19cdef65f566836a2d916b49bd0caf4e7e28766db0",
-      "cpu_operations": [],
-      "cugraph_operations": [],
+      "cpu_problems": [],
+      "cugraph_problems": [],
       "status": "integration_required",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "knowledge_graph_embedding",
+      "topic_id": "knowledge_graph_embedding",
       "name": "Knowledge-Graph Embedding",
       "contract": "problems/51_knowledge_graph_embedding/problem.json",
       "contract_sha256": "5e4a7ef7202e45e8222856b139cc48566987589b1cc71dec18f97f03835f953a",
-      "cpu_operations": [],
-      "cugraph_operations": [],
+      "cpu_problems": [],
+      "cugraph_problems": [],
       "status": "integration_required",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "node_classification_regression",
+      "topic_id": "node_classification_regression",
       "name": "Node Classification and Regression",
       "contract": "problems/52_node_classification_regression/problem.json",
       "contract_sha256": "e7f9135284d56aed0e75925ec1742c3edfe2096ac0b846727463cd71f04996ee",
-      "cpu_operations": [],
-      "cugraph_operations": [],
+      "cpu_problems": [],
+      "cugraph_problems": [],
       "status": "integration_required",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graph_classification_regression",
+      "topic_id": "graph_classification_regression",
       "name": "Graph Classification and Regression",
       "contract": "problems/53_graph_classification_regression/problem.json",
       "contract_sha256": "ac39310866e7aec6134a73ab7ecadadb203921cb62a74e045fb8ed3e706b5ded",
-      "cpu_operations": [],
-      "cugraph_operations": [],
+      "cpu_problems": [],
+      "cugraph_problems": [],
       "status": "integration_required",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "hypergraph_partitioning",
+      "topic_id": "hypergraph_partitioning",
       "name": "Balanced Hypergraph Partitioning",
       "contract": "problems/54_hypergraph_partitioning/problem.json",
       "contract_sha256": "35ab8eadcf14fc8dbe2f2b775763f233cdb2e2c6f8a4a6f556bc1e8f5aedfee9",
-      "cpu_operations": [
+      "cpu_problems": [
         "hypergraph-partitioning"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "spectral_graph_sparsification",
+      "topic_id": "spectral_graph_sparsification",
       "name": "Spectral Graph Sparsification",
       "contract": "problems/55_spectral_graph_sparsification/problem.json",
       "contract_sha256": "9385ca9f0b7eb720737f4129741cc8311061433d836f3a126cdeb0ba8923470c",
-      "cpu_operations": [
+      "cpu_problems": [
         "spectral-sparsification"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "biconnected_components",
+      "topic_id": "biconnected_components",
       "name": "Biconnected Components, Articulation Points and Bridges",
       "contract": "problems/56_biconnected_components/problem.json",
       "contract_sha256": "ad542dfcccd078938dc2a9c342cceeb505c73b9d0dc515b82a144aad5d851dcb",
-      "cpu_operations": [
+      "cpu_problems": [
         "biconnected-components"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "temporal_fastest_paths",
+      "topic_id": "temporal_fastest_paths",
       "name": "Temporal Fastest and Earliest-Arrival Paths",
       "contract": "problems/57_temporal_fastest_paths/problem.json",
       "contract_sha256": "dba5b70da2ac02d11a9d2ced94df7798e4abba1ab759d23bc51762b51dbfba90",
-      "cpu_operations": [
+      "cpu_problems": [
         "temporal-paths"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "top_k_critical_paths_dag",
+      "topic_id": "top_k_critical_paths_dag",
       "name": "Top-k Critical Paths in DAGs",
       "contract": "problems/58_top_k_critical_paths_dag/problem.json",
       "contract_sha256": "974202d714e7cbb919d0419122b3b77b781d940fa1034307ab5139ed0547ff61",
-      "cpu_operations": [
+      "cpu_problems": [
         "top-k-critical-paths"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graph_signal_denoising",
+      "topic_id": "graph_signal_denoising",
       "name": "Graph Signal Denoising and Trend Filtering",
       "contract": "problems/59_graph_signal_denoising/problem.json",
       "contract_sha256": "3f20bf25630c3fa179038043022970dd9104a561220d024d0d710d605b27f06e",
-      "cpu_operations": [
+      "cpu_problems": [
         "graph-signal-denoising"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graph_based_geolocation",
+      "topic_id": "graph_based_geolocation",
       "name": "Graph-Based Geolocation",
       "contract": "problems/60_graph_based_geolocation/problem.json",
       "contract_sha256": "6ac971e1c00a0a46a7142584bf726107bc0be9c5263e21012e8f3bff632b21d3",
-      "cpu_operations": [],
-      "cugraph_operations": [],
+      "cpu_problems": [],
+      "cugraph_problems": [],
       "status": "integration_required",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "widest_paths",
+      "topic_id": "widest_paths",
       "name": "Single-Source Widest Paths",
       "contract": "problems/61_widest_paths/problem.json",
       "contract_sha256": "916cd0ce1125db7112247c9c740b29fe6cd3f77f75b1049a9504aa91752bf579",
-      "cpu_operations": [
+      "cpu_problems": [
         "widest-paths"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graph_coarsening",
+      "topic_id": "graph_coarsening",
       "name": "Graph Coarsening and Quotient Construction",
       "contract": "problems/62_graph_coarsening/problem.json",
       "contract_sha256": "f2ebd919f6a9d0371f9ed5fcbf5ab4386734a7d35128746997b18d67bfe53ae2",
-      "cpu_operations": [
+      "cpu_problems": [
         "graph-coarsening"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graph_laplacian_eigenpairs",
+      "topic_id": "graph_laplacian_eigenpairs",
       "name": "Graph Laplacian Eigenpairs",
       "contract": "problems/63_graph_laplacian_eigenpairs/problem.json",
       "contract_sha256": "55c4ae86e005c90f6417ec20cfa87a8d856d41b480ddec2ff5ec76bce4c49bbe",
-      "cpu_operations": [
+      "cpu_problems": [
         "laplacian-eigenpairs"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "knn_graph_construction",
+      "topic_id": "knn_graph_construction",
       "name": "k-Nearest-Neighbor Graph Construction",
       "contract": "problems/64_knn_graph_construction/problem.json",
       "contract_sha256": "2e4739eb370e8d966ac7879151323514a6d442984dec33c22809aa780aa20604",
-      "cpu_operations": [
+      "cpu_problems": [
         "knn-graph"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "hypergraph_node_learning",
+      "topic_id": "hypergraph_node_learning",
       "name": "Hypergraph Node Classification and Regression",
       "contract": "problems/65_hypergraph_node_learning/problem.json",
       "contract_sha256": "20ff44bd82d5147a1b1ccc20acc4b93b50600882188054b7a591d191a69d49b0",
-      "cpu_operations": [],
-      "cugraph_operations": [],
+      "cpu_problems": [],
+      "cugraph_problems": [],
       "status": "integration_required",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "maximum_independent_set",
+      "topic_id": "maximum_independent_set",
       "name": "Maximum Independent Set",
       "contract": "problems/66_maximum_independent_set/problem.json",
       "contract_sha256": "b168fbc2c3cf870108c697c687174f8d523463d8a28c36104d86bfe96fe42f71",
-      "cpu_operations": [
+      "cpu_problems": [
         "maximum-independent-set"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "persistent_homology",
+      "topic_id": "persistent_homology",
       "name": "Flag-Complex Persistent Homology",
       "contract": "problems/67_persistent_homology/problem.json",
       "contract_sha256": "ba70d00019e9eda32713141f4d232725755b9b08e8d25d53aa55ede8165eb479",
-      "cpu_operations": [
+      "cpu_problems": [
         "persistent-homology"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "single_graph_frequent_subgraph_mining",
+      "topic_id": "single_graph_frequent_subgraph_mining",
       "name": "Frequent Subgraphs in One Labeled Graph",
       "contract": "problems/68_single_graph_frequent_subgraph_mining/problem.json",
       "contract_sha256": "194b08b459bcaed1180c06df96d936194283429d98c65e7dd3fceb611dd4cd77",
-      "cpu_operations": [
+      "cpu_problems": [
         "single-graph-frequent-subgraphs"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "minimum_vertex_cover",
+      "topic_id": "minimum_vertex_cover",
       "name": "Minimum Vertex Cover",
       "contract": "problems/69_minimum_vertex_cover/problem.json",
       "contract_sha256": "a96cff77be7badf4a6b58a5e3fb4f4110f28ca78942d6940bb4b5d9110645cb0",
-      "cpu_operations": [
+      "cpu_problems": [
         "minimum-vertex-cover"
       ],
-      "cugraph_operations": [],
+      "cugraph_problems": [],
       "status": "has_executable_profile",
       "full_formal_parameter_coverage_claimed": false
     },
     {
-      "problem_id": "graph_condensation",
+      "topic_id": "graph_condensation",
       "name": "Learned Graph Condensation",
       "contract": "problems/70_graph_condensation/problem.json",
       "contract_sha256": "9dc2e32cd4aaac4c4b2a8c670d85e7dd6067535fbadcd2e4bfbd555de61abdcc",
-      "cpu_operations": [],
-      "cugraph_operations": [],
+      "cpu_problems": [],
+      "cugraph_problems": [],
       "status": "integration_required",
       "full_formal_parameter_coverage_claimed": false
     }
   ],
-  "operations": [
+  "problems": [
     {
       "id": "balanced-partitioning",
-      "problem_id": "balanced_graph_partitioning",
+      "topic_id": "balanced_graph_partitioning",
       "family": "communities",
       "title": "Split a graph into balanced groups with few crossing edges",
       "description": "Minimize crossing edge cost under both lower and upper balance limits and nonempty parts. Normalized cut is the sum of each part's boundary cost divided by its declared balance size.",
@@ -1447,7 +1447,7 @@
     },
     {
       "id": "community-detection",
-      "problem_id": "community_detection",
+      "topic_id": "community_detection",
       "family": "communities",
       "title": "Divide a network into communities",
       "description": "Louvain for heuristic modularity; checked binary partition optimization for exact modularity or CPM. CPM is internal edge weight minus resolution times the number of within-community vertex pairs.",
@@ -1522,7 +1522,7 @@
     },
     {
       "id": "hypergraph-partitioning",
-      "problem_id": "hypergraph_partitioning",
+      "topic_id": "hypergraph_partitioning",
       "family": "communities",
       "title": "Partition a hypergraph while preserving whole-group connections",
       "description": "Binary assignment and hyperedge-part incidence optimize cut-net or connectivity-minus-one cost without a graph projection. Every part is nonempty and respects the upper weight bound.",
@@ -1568,7 +1568,7 @@
     },
     {
       "id": "overlapping-communities",
-      "problem_id": "overlapping_community_detection",
+      "topic_id": "overlapping_community_detection",
       "family": "communities",
       "title": "Find overlapping tightly connected groups",
       "description": "Exact k-clique percolation communities. Membership may overlap.",
@@ -1610,7 +1610,7 @@
     },
     {
       "id": "seeded-local-community",
-      "problem_id": "seeded_local_community_detection",
+      "topic_id": "seeded_local_community_detection",
       "family": "communities",
       "title": "Find a community around required seed vertices",
       "description": "NetworkX personalized PageRank followed by a weighted-degree-normalized sweep. All seeds are required; the lowest defined conductance among feasible sweep prefixes is selected. This is a heuristic, with recomputed cut and volume, and makes no global optimality claim. Parallel weights sum; self-loops are rejected.",
@@ -1663,7 +1663,7 @@
     },
     {
       "id": "signed-balance",
-      "problem_id": "signed_network_structural_balance",
+      "topic_id": "signed_network_structural_balance",
       "family": "communities",
       "title": "Check signed-network balance or minimize frustrated connections",
       "description": "Structural balance is an exact parity test, independent of edge costs. Frustration minimization uses binary XOR constraints and recomputes the weighted violations.",
@@ -1715,7 +1715,7 @@
     },
     {
       "id": "biconnected-components",
-      "problem_id": "biconnected_components",
+      "topic_id": "biconnected_components",
       "family": "connectivity",
       "title": "Find fragile connections and cut vertices",
       "description": "Exact biconnected vertex blocks, bridges and articulation points of an undirected graph.",
@@ -1742,7 +1742,7 @@
     },
     {
       "id": "connected-components",
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "family": "connectivity",
       "title": "Find connected groups",
       "description": "Exact weakly or strongly connected components, including isolated vertices.",
@@ -1773,10 +1773,10 @@
     },
     {
       "id": "group-steiner-tree",
-      "problem_id": "group_steiner_tree",
+      "topic_id": "group_steiner_tree",
       "family": "connectivity",
       "title": "Connect at least one representative of every required group",
-      "description": "SciPy/HiGHS binary tree model with separated connectivity cuts. Covers every group and required vertex, removes self-loops, and retains the cheapest original parallel edge. Requires a completed numerical optimum; no terminal-only approximation is substituted for the group problem.",
+      "description": "SciPy/HiGHS binary tree model with separated connectivity cuts. Covers every group and required vertex, removes self-loops, and retains the cheapest original parallel edge. Requires a completed numerical optimum; no terminal-only approximation is substituted for the group topic.",
       "parameters": {
         "groups": {
           "kind": "array",
@@ -1823,7 +1823,7 @@
     },
     {
       "id": "max-flow-min-cut",
-      "problem_id": "max_flow_min_cut",
+      "topic_id": "max_flow_min_cut",
       "family": "connectivity",
       "title": "Find capacity and bottlenecks between two places",
       "description": "Maximum flow with a minimum-cut certificate; parallel capacities are summed.",
@@ -1877,7 +1877,7 @@
     },
     {
       "id": "spanning-tree-forest",
-      "problem_id": "spanning_tree_forest",
+      "topic_id": "spanning_tree_forest",
       "family": "connectivity",
       "title": "Connect the network with minimum or maximum total weight",
       "description": "An exact minimum or maximum spanning forest, retaining isolated vertices.",
@@ -1919,7 +1919,7 @@
     },
     {
       "id": "densest-k-subgraph",
-      "problem_id": "densest_k_subgraph",
+      "topic_id": "densest_k_subgraph",
       "family": "dense",
       "title": "Find exactly k vertices with the greatest internal edge value",
       "description": "Binary vertex/edge optimization with an exact cardinality constraint; solver optimality and the recomputed objective are checked.",
@@ -1970,7 +1970,7 @@
     },
     {
       "id": "densest-subgraph",
-      "problem_id": "densest_subgraph",
+      "topic_id": "densest_subgraph",
       "family": "dense",
       "title": "Find the region with the most edges or cliques per vertex",
       "description": "Maximize induced k-clique count / vertex count. k is clique order, not result size. Weighted density is defined only for k=2.",
@@ -2030,7 +2030,7 @@
     },
     {
       "id": "k-cliques",
-      "problem_id": "k_clique_counting_enumeration",
+      "topic_id": "k_clique_counting_enumeration",
       "family": "dense",
       "title": "Count or list complete groups of a chosen size",
       "description": "Exact k-clique counting/enumeration with k>=2 and no implementation-imposed upper k bound.",
@@ -2080,7 +2080,7 @@
     },
     {
       "id": "k-core",
-      "problem_id": "k_core_decomposition",
+      "topic_id": "k_core_decomposition",
       "family": "dense",
       "title": "Find the well-connected core",
       "description": "Exact core numbers and an optional induced k-core.",
@@ -2112,7 +2112,7 @@
     },
     {
       "id": "k-truss",
-      "problem_id": "k_truss_decomposition",
+      "topic_id": "k_truss_decomposition",
       "family": "dense",
       "title": "Find connections supported by triangles",
       "description": "Exact edge truss numbers and an optional k-truss edge set.",
@@ -2140,7 +2140,7 @@
     },
     {
       "id": "maximal-bicliques",
-      "problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "family": "dense",
       "title": "Find maximal completely connected groups across two sides",
       "description": "A clique reduction followed by NetworkX maximal-clique enumeration; both biclique sides must be nonempty.",
@@ -2196,7 +2196,7 @@
     },
     {
       "id": "maximal-cliques",
-      "problem_id": "maximal_clique_enumeration",
+      "topic_id": "maximal_clique_enumeration",
       "family": "dense",
       "title": "Find complete groups that cannot be extended",
       "description": "Enumerate maximal cliques; these are not necessarily maximum-size cliques.",
@@ -2232,7 +2232,7 @@
     },
     {
       "id": "maximum-clique",
-      "problem_id": "maximum_clique",
+      "topic_id": "maximum_clique",
       "family": "dense",
       "title": "Find the largest fully connected group",
       "description": "Exact maximum clique, with optional enumeration of every tied optimum.",
@@ -2263,7 +2263,7 @@
     },
     {
       "id": "quasi-cliques",
-      "problem_id": "quasi_clique_mining",
+      "topic_id": "quasi_clique_mining",
       "family": "dense",
       "title": "Find groups meeting a minimum internal-degree fraction",
       "description": "Enumerate all gamma quasi-cliques via binary feasibility models; maximality is checked against all qualifying larger sets within the size bounds.",
@@ -2313,7 +2313,7 @@
     },
     {
       "id": "betweenness-centrality",
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "family": "importance",
       "title": "Find bridges between people or places",
       "description": "All-source betweenness centrality; optional weights are positive path lengths.",
@@ -2351,7 +2351,7 @@
     },
     {
       "id": "degree-centrality",
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "family": "importance",
       "title": "Rank the number of connections",
       "description": "Degree centrality or raw degree with explicit direction.",
@@ -2390,7 +2390,7 @@
     },
     {
       "id": "influence-maximization",
-      "problem_id": "influence_maximization",
+      "topic_id": "influence_maximization",
       "family": "importance",
       "title": "Choose starting points that maximize expected diffusion",
       "description": "Exact rational enumeration of seed sets and live-edge states using NetworkX reachability. Supports independent cascade and uniform-random linear threshold; supplied fixed thresholds use progressive activation. Parallel IC probabilities combine as 1-product(1-p); LT weights sum. Exponential reference method with explicit work budgets, no sampling or unsupported statistical promises.",
@@ -2440,7 +2440,7 @@
     },
     {
       "id": "pagerank",
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "family": "importance",
       "title": "Rank overall influence",
       "description": "Converged global PageRank with a checked fixed-point residual.",
@@ -2496,7 +2496,7 @@
     },
     {
       "id": "personalized-pagerank",
-      "problem_id": "personalized_pagerank_rwr",
+      "topic_id": "personalized_pagerank_rwr",
       "family": "importance",
       "title": "Rank connections around selected starting points",
       "description": "Converged personalized PageRank with explicit direction, dangling-node behavior and residual checks.",
@@ -2597,7 +2597,7 @@
     },
     {
       "id": "butterfly-counting",
-      "problem_id": "butterfly_counting_bipartite",
+      "topic_id": "butterfly_counting_bipartite",
       "family": "motifs",
       "title": "Count four-way connections between two sides",
       "description": "Exact 2-by-2 biclique counts and participation. Core mode declares whether thresholds apply to ordinary degree or butterfly participation.",
@@ -2680,7 +2680,7 @@
     },
     {
       "id": "graphlet-counting",
-      "problem_id": "graphlet_counting",
+      "topic_id": "graphlet_counting",
       "family": "motifs",
       "title": "Count connected induced graph shapes and vertex roles",
       "description": "Classify induced subgraphs against NetworkX's complete graph atlas through seven vertices, with optional exact automorphism-orbit participation.",
@@ -2734,7 +2734,7 @@
     },
     {
       "id": "motif-counting",
-      "problem_id": "graph_motif_counting",
+      "topic_id": "graph_motif_counting",
       "family": "motifs",
       "title": "Count occurrences of supplied graph motifs",
       "description": "VF2 embeddings with explicit automorphism identity. Non-induced occurrences sharing a vertex set can still be different motif instances.",
@@ -2797,7 +2797,7 @@
     },
     {
       "id": "temporal-motifs",
-      "problem_id": "temporal_motif_mining",
+      "topic_id": "temporal_motif_mining",
       "family": "motifs",
       "title": "Count ordered temporal edge patterns",
       "description": "NetworkX VF2 structural matching followed by injective event assignment, exact UTC time comparisons, order constraints and optional temporal inducedness. Distinct tuples in motif-edge order identify occurrences.",
@@ -2861,7 +2861,7 @@
     },
     {
       "id": "triangle-counting",
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "family": "motifs",
       "title": "Count three-way connections",
       "description": "Exact triangle count and optional per-vertex, per-edge and instance outputs.",
@@ -2914,7 +2914,7 @@
     },
     {
       "id": "bounded-paths-cycles",
-      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "topic_id": "hop_constrained_cycle_path_enumeration",
       "family": "paths",
       "title": "Enumerate bounded simple paths or cycles",
       "description": "NetworkX simple edge paths and bounded simple cycles, with explicit parallel-edge normalization and optional chronological filtering. A result limit retains the shortest results while still counting all qualifying results.",
@@ -3003,7 +3003,7 @@
     },
     {
       "id": "breadth-first-search",
-      "problem_id": "breadth_first_search",
+      "topic_id": "breadth_first_search",
       "family": "paths",
       "title": "Connections within a number of steps",
       "description": "Exact unweighted distances from independent sources or the nearest supplied source.",
@@ -3059,7 +3059,7 @@
     },
     {
       "id": "many-source-shortest-paths",
-      "problem_id": "many_source_shortest_paths",
+      "topic_id": "many_source_shortest_paths",
       "family": "paths",
       "title": "Shortest routes between selected places",
       "description": "Exact pairwise distances; absent routes are returned as null.",
@@ -3104,7 +3104,7 @@
     },
     {
       "id": "single-source-shortest-paths",
-      "problem_id": "single_source_shortest_paths",
+      "topic_id": "single_source_shortest_paths",
       "family": "paths",
       "title": "Shortest routes from one starting point",
       "description": "Exact shortest distances and predecessors with nonnegative edge lengths.",
@@ -3145,7 +3145,7 @@
     },
     {
       "id": "temporal-paths",
-      "problem_id": "temporal_fastest_paths",
+      "topic_id": "temporal_fastest_paths",
       "family": "paths",
       "title": "Find earliest arrivals or fastest journeys through timed events",
       "description": "NetworkX shortest paths on an exact-rational time-expanded graph. Waiting is allowed; fastest duration excludes waiting before the first departure. Parallel events remain distinct candidates.",
@@ -3202,7 +3202,7 @@
     },
     {
       "id": "top-k-critical-paths",
-      "problem_id": "top_k_critical_paths_dag",
+      "topic_id": "top_k_critical_paths_dag",
       "family": "paths",
       "title": "Find the k highest-cost paths through a DAG",
       "description": "Edge-identity expansion plus exact rational Johnson reweighting allows NetworkX's shortest-simple-path iterator to rank longest DAG paths, including negative weights and parallel arcs.",
@@ -3243,7 +3243,7 @@
     },
     {
       "id": "topological-sort",
-      "problem_id": "topological_sort",
+      "topic_id": "topological_sort",
       "family": "paths",
       "title": "Order tasks by their dependencies",
       "description": "A topological vertex order for a directed acyclic graph; cycles are rejected.",
@@ -3262,7 +3262,7 @@
     },
     {
       "id": "transitive-closure",
-      "problem_id": "transitive_closure_reachability",
+      "topic_id": "transitive_closure_reachability",
       "family": "paths",
       "title": "Find which places can reach each other",
       "description": "Exact reachability with a zero-length path allowed from each vertex to itself.",
@@ -3308,7 +3308,7 @@
     },
     {
       "id": "widest-paths",
-      "problem_id": "widest_paths",
+      "topic_id": "widest_paths",
       "family": "paths",
       "title": "Find the greatest bottleneck capacity from a source",
       "description": "Threshold reachability using NetworkX BFS computes the max-min path objective with exact comparisons and witness predecessors. Zero capacity remains reachable.",
@@ -3334,7 +3334,7 @@
     },
     {
       "id": "frequent-subgraphs",
-      "problem_id": "frequent_subgraph_mining",
+      "topic_id": "frequent_subgraph_mining",
       "family": "patterns",
       "title": "Frequent patterns across graphs",
       "description": "Exhaustive simple directed/undirected transaction mining. Support counts graphs, not occurrences. Includes disconnected patterns and isolated vertices within the declared edge/vertex bounds. Types are categorical; weights/times are ignored. Nonempty patterns by default; minimum_vertices=0 includes the empty pattern. BLISS canonicalization; exponential enumeration uses explicit work/output budgets.",
@@ -3449,7 +3449,7 @@
     },
     {
       "id": "single-graph-frequent-subgraphs",
-      "problem_id": "single_graph_frequent_subgraph_mining",
+      "topic_id": "single_graph_frequent_subgraph_mining",
       "family": "patterns",
       "title": "Frequent labeled patterns within one graph",
       "description": "Exact connected labeled patterns, including single-vertex patterns, in an undirected graph. Minimum-image support is the smallest distinct host image-set size across pattern vertices over all VF2 embeddings. BLISS deduplicates patterns. Every vertex needs the selected string label/type. Edge labels, weights and times are ignored. Count mode does not provide a pattern collection. Exponential work is budgeted.",
@@ -3541,7 +3541,7 @@
     },
     {
       "id": "subgraph-isomorphism",
-      "problem_id": "subgraph_isomorphism",
+      "topic_id": "subgraph_isomorphism",
       "family": "patterns",
       "title": "Find every match for a supplied graph pattern",
       "description": "NetworkX VF2 induced or non-induced matching. Preserves direction, loops and distinct parallel edges; declarative predicates constrain vertex and edge attributes.",
@@ -3598,7 +3598,7 @@
     },
     {
       "id": "entity-resolution",
-      "problem_id": "entity_resolution_blocking",
+      "topic_id": "entity_resolution_blocking",
       "family": "preparation",
       "title": "Generate candidate record pairs and resolve entities using declared rules",
       "description": "RapidFuzz Levenshtein and declared equality/token/numeric predicates generate complete candidate pairs. NetworkX components provide transitive resolution; SciPy/HiGHS can minimize unit candidate-pair disagreements instead. Noncandidate pairs are neutral; clusters never cross candidate-graph components. Input graph edges are unused hints, not match decisions.",
@@ -3670,7 +3670,7 @@
     },
     {
       "id": "force-directed-layout",
-      "problem_id": "graph_layout_force_directed",
+      "topic_id": "graph_layout_force_directed",
       "family": "preparation",
       "title": "Compute a force-directed drawing of the network",
       "description": "NetworkX Fruchterman-Reingold force iterations in 2D or 3D, with its explicit 0.01 distance regularization and no final rescaling. Recomputes the matching potential and maximum force. Convergence means a small force residual, not optimality of the drawing. Directed edges project to undirected; loops are removed; parallel weights sum (unweighted duplicates collapse).",
@@ -3774,7 +3774,7 @@
     },
     {
       "id": "graph-coarsening",
-      "problem_id": "graph_coarsening",
+      "topic_id": "graph_coarsening",
       "family": "preparation",
       "title": "Group vertices and build their weighted quotient graph",
       "description": "Use a supplied partition or NetworkX maximal matching, then aggregate all fine-edge weights and numeric vertex feature vectors by the declared rule.",
@@ -3837,7 +3837,7 @@
     },
     {
       "id": "induced-subgraph",
-      "problem_id": "induced_subgraph_ego_extraction",
+      "topic_id": "induced_subgraph_ego_extraction",
       "family": "preparation",
       "title": "Explore a selected group or neighborhood",
       "description": "An induced graph on explicit vertices or a bounded-hop neighborhood, with original IDs and attributes.",
@@ -3898,7 +3898,7 @@
     },
     {
       "id": "knn-graph",
-      "problem_id": "knn_graph_construction",
+      "topic_id": "knn_graph_construction",
       "family": "preparation",
       "title": "Build a graph from nearby feature vectors",
       "description": "Exact all-pairs SciPy distance search with explicit self-exclusion, metric and symmetrization. Equal-distance ties follow original vector order.",
@@ -3966,7 +3966,7 @@
     },
     {
       "id": "neighborhood-sampling",
-      "problem_id": "neighborhood_sampling",
+      "topic_id": "neighborhood_sampling",
       "family": "preparation",
       "title": "Sample neighborhoods while retaining original edge identities",
       "description": "Sample outgoing edge instances per distinct frontier vertex, hop and seed batch. Parallel edges and self-loops retain their identity. Typed fanouts and UTC timestamp cutoffs are explicit.",
@@ -4044,7 +4044,7 @@
     },
     {
       "id": "random-walks",
-      "problem_id": "random_walk_generation",
+      "topic_id": "random_walk_generation",
       "family": "preparation",
       "title": "Sample graph walks with an explicit transition model",
       "description": "NumPy random sampling over outgoing adjacency. Uniform walks collapse parallel edges; weighted and node2vec walks sum weights. Self-loops are retained. Zero total outgoing weight terminates a walk.",
@@ -4116,7 +4116,7 @@
     },
     {
       "id": "spectral-sparsification",
-      "problem_id": "spectral_graph_sparsification",
+      "topic_id": "spectral_graph_sparsification",
       "family": "preparation",
       "title": "Reduce edges while measuring Laplacian distortion",
       "description": "Static effective-resistance sampling with replacement and importance reweighting, using SciPy grounded Laplacian solves. Measures all generalized eigenvalues, not only sampled vectors. An explicit epsilon must pass that numerical check. An edge budget alone permits disclosed distortion. Requires undirected, explicitly weighted simple input; loops and parallel edges are rejected; zero-weight edges can be dropped.",
@@ -4173,7 +4173,7 @@
     },
     {
       "id": "common-neighbors",
-      "problem_id": "graph_record_queries",
+      "topic_id": "graph_record_queries",
       "family": "records",
       "title": "Find shared neighbors",
       "description": "Intersect the direct neighbor sets of two typed entities in the requested direction. Self-loops retain their adjacency meaning.",
@@ -4297,7 +4297,7 @@
     },
     {
       "id": "edge-filter",
-      "problem_id": "graph_record_queries",
+      "topic_id": "graph_record_queries",
       "family": "records",
       "title": "Filter relationships",
       "description": "Select original relationship records without collapsing parallel edges or loops. Endpoint predicates use the stored source/target even on undirected inputs.",
@@ -4536,7 +4536,7 @@
     },
     {
       "id": "graph-aggregate",
-      "problem_id": "graph_record_queries",
+      "topic_id": "graph_record_queries",
       "family": "records",
       "title": "Summarize recorded values",
       "description": "Count records or sum/average/min/max an explicit numeric field, grouped by a field or vertex. Decimal arithmetic is exact in exact_value; value may be rounded. Missing numeric fields are errors. Per-vertex edge groups include isolates and count loops once.",
@@ -4699,7 +4699,7 @@
     },
     {
       "id": "neighbors",
-      "problem_id": "graph_record_queries",
+      "topic_id": "graph_record_queries",
       "family": "records",
       "title": "Find nearby entities",
       "description": "Find vertices reachable within hops over filtered relationships, with exact hop distances. Parallel edges do not duplicate vertices; include_seed controls the starting vertex.",
@@ -4832,7 +4832,7 @@
     },
     {
       "id": "node-lookup",
-      "problem_id": "graph_record_queries",
+      "topic_id": "graph_record_queries",
       "family": "records",
       "title": "Look up entities",
       "description": "Select original vertex records by typed IDs and AND predicates; no fuzzy name matching. An explicit empty IDs array selects nothing.",
@@ -4939,7 +4939,7 @@
     },
     {
       "id": "query-paths",
-      "problem_id": "graph_record_queries",
+      "topic_id": "graph_record_queries",
       "family": "records",
       "title": "Find connections between two entities",
       "description": "Enumerate all hop-shortest or all vertex-simple paths within max_hops, preserving edge IDs and parallel-edge alternatives. This is unweighted hop length, not minimum weight.",
@@ -5086,7 +5086,7 @@
     },
     {
       "id": "query-subgraph",
-      "problem_id": "graph_record_queries",
+      "topic_id": "graph_record_queries",
       "family": "records",
       "title": "Extract records as a graph",
       "description": "Extract a vertex-induced, edge-induced, or filtered-neighborhood graph. Preserve original records, direction, weights, loops and parallel edges. Edge mode retains only endpoints; vertices mode can retain isolates.",
@@ -5295,7 +5295,7 @@
     },
     {
       "id": "bipartite-matching",
-      "problem_id": "bipartite_matching_assignment",
+      "topic_id": "bipartite_matching_assignment",
       "family": "selection",
       "title": "Match items on two sides by count, value, or cost",
       "description": "NetworkX maximum-weight matching with explicit cardinality and coverage semantics. Minimum-cost without required coverage may legitimately choose an empty matching.",
@@ -5355,7 +5355,7 @@
     },
     {
       "id": "maximal-independent-set",
-      "problem_id": "maximal_independent_set",
+      "topic_id": "maximal_independent_set",
       "family": "selection",
       "title": "Select a non-conflicting group that cannot be extended",
       "description": "A maximal independent set; no maximum-cardinality guarantee is made.",
@@ -5382,7 +5382,7 @@
     },
     {
       "id": "maximum-independent-set",
-      "problem_id": "maximum_independent_set",
+      "topic_id": "maximum_independent_set",
       "family": "selection",
       "title": "Find the largest non-conflicting group",
       "description": "Exact maximum independent set via maximum clique enumeration of the complement.",
@@ -5412,7 +5412,7 @@
     },
     {
       "id": "minimum-vertex-cover",
-      "problem_id": "minimum_vertex_cover",
+      "topic_id": "minimum_vertex_cover",
       "family": "selection",
       "title": "Cover every connection with as few vertices as possible",
       "description": "Exact minimum vertex cover through the complement of a maximum independent set.",
@@ -5451,7 +5451,7 @@
     },
     {
       "id": "vertex-coloring",
-      "problem_id": "vertex_coloring",
+      "topic_id": "vertex_coloring",
       "family": "selection",
       "title": "Assign non-conflicting groups",
       "description": "A valid greedy coloring at distance one or two; the number of colors is not claimed minimal.",
@@ -5489,7 +5489,7 @@
     },
     {
       "id": "weighted-matching",
-      "problem_id": "general_graph_weighted_matching",
+      "topic_id": "general_graph_weighted_matching",
       "family": "selection",
       "title": "Find the highest-value non-conflicting pairs",
       "description": "Exact maximum-weight matching on an undirected graph, without a maximum-cardinality constraint.",
@@ -5519,7 +5519,7 @@
     },
     {
       "id": "graph-edit-distance",
-      "problem_id": "graph_edit_distance_mcs",
+      "topic_id": "graph_edit_distance_mcs",
       "family": "similarity",
       "title": "Minimum graph edit cost",
       "description": "Exact reference edit distance between simple directed/undirected graphs using NetworkX rational shortest paths over partial correspondences. Exact vertex-label replacement costs insertion+deletion; equal selected labels cost zero. Edge relabeling competes with deletion+insertion. Weights/times/unselected attributes are ignored. Returns an ordered edit script on normalized graphs with stable handles and original IDs. Exponential work is budgeted; no timed-out or approximate result is advertised as optimal.",
@@ -5614,7 +5614,7 @@
     },
     {
       "id": "link-prediction",
-      "problem_id": "link_prediction",
+      "topic_id": "link_prediction",
       "family": "similarity",
       "title": "Score possible connections",
       "description": "Exact local similarity scores for explicit pairs or all currently absent undirected edges.",
@@ -5673,7 +5673,7 @@
     },
     {
       "id": "maximum-common-subgraph",
-      "problem_id": "graph_edit_distance_mcs",
+      "topic_id": "graph_edit_distance_mcs",
       "family": "similarity",
       "title": "Largest common subgraph by vertex count",
       "description": "Exact maximum vertex count, with a checked graph and injective correspondence. Induced matching uses NetworkX VF2 on successively smaller subsets. Non-induced matching permits disconnected/edgeless results and uses maximum label-compatible matching; it does not maximize the number of edges. Preserves direction and selected categorical labels; ignores weights/times. Exponential induced search is budgeted.",
@@ -5769,7 +5769,7 @@
     },
     {
       "id": "network-alignment",
-      "problem_id": "network_alignment",
+      "topic_id": "network_alignment",
       "family": "similarity",
       "title": "Align two graphs while conserving topology and supplied similarities",
       "description": "SciPy/HiGHS linearized quadratic assignment for a global one-to-one mapping covering every vertex of the smaller graph. Maximizes topology_weight times conserved-edge value plus supplied pair similarities. Weighted conservation uses the minimum of the two normalized nonnegative edge weights; unweighted conservation counts edges.",
@@ -5844,7 +5844,7 @@
     },
     {
       "id": "simrank",
-      "problem_id": "simrank_vertex_similarity",
+      "topic_id": "simrank_vertex_similarity",
       "family": "similarity",
       "title": "Compare vertices by the similarity of their neighbors",
       "description": "SciPy solves the SimRank fixed-point equations with a separately recomputed residual and contraction error bound. Direction and output-pair scope are explicit.",
@@ -5944,7 +5944,7 @@
     },
     {
       "id": "graph-signal-denoising",
-      "problem_id": "graph_signal_denoising",
+      "topic_id": "graph_signal_denoising",
       "family": "spectral",
       "title": "Smooth noisy measurements over a graph",
       "description": "Minimize one-half squared observation error plus a declared Laplacian, total-variation or graph-trend penalty. Numerical accuracy is checked with stationarity or a feasible dual bound.",
@@ -6013,7 +6013,7 @@
     },
     {
       "id": "laplacian-eigenpairs",
-      "problem_id": "graph_laplacian_eigenpairs",
+      "topic_id": "graph_laplacian_eigenpairs",
       "family": "spectral",
       "title": "Compute graph Laplacian eigenvalues and eigenvectors",
       "description": "SciPy symmetric eigensolver with explicit residual and orthogonality checks. The direct solver has no max_iterations parameter.",
@@ -6072,7 +6072,7 @@
     },
     {
       "id": "persistent-homology",
-      "problem_id": "persistent_homology",
+      "topic_id": "persistent_homology",
       "family": "spectral",
       "title": "Track components, loops and higher-dimensional holes across edge thresholds",
       "description": "GUDHI flag-complex persistence over a declared prime field. Includes essential H0 intervals and enough cofaces to compute deaths in every requested homology dimension.",
@@ -6119,7 +6119,7 @@
     },
     {
       "id": "graph-anomalies",
-      "problem_id": "graph_anomaly_detection",
+      "topic_id": "graph_anomaly_detection",
       "family": "statistics",
       "title": "Rank graph entities against an explicit normality reference",
       "description": "NetworkX structural features and SciPy population statistics with declared standardized L1/L2/max scores. Supports vertices, original edge instances and explicitly supplied induced subgraphs. Reference populations are selected independently from candidates; no learned ground-truth anomaly claim is made.",
@@ -6191,7 +6191,7 @@
     },
     {
       "id": "null-model-significance",
-      "problem_id": "null_model_significance_testing",
+      "topic_id": "null_model_significance_testing",
       "family": "statistics",
       "title": "Compare a declared statistic with a random graph ensemble",
       "description": "NetworkX uniform G(n,m), or configuration-model rejection sampling conditioned on a simple graph with the exact per-vertex degree sequence. Dense fixed-degree inputs are sampled through their complement. Statistical estimates retain their samples and declared tail convention.",

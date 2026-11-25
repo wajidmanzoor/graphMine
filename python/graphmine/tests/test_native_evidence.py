@@ -31,7 +31,7 @@ def gate(tmp_path, monkeypatch):
         "family": "synthetic",
     }
     catalog = {
-        "operations": [card],
+        "problems": [card],
         "families": [{"id": "synthetic"}],
         "implementation_sha256": implementation,
     }
@@ -101,11 +101,11 @@ def gate(tmp_path, monkeypatch):
 
 def test_synthetic_native_gate_requires_every_artifact(gate):
     root, _, _, _ = gate
-    card = capabilities(root)["operations"][0]
+    card = capabilities(root)["problems"][0]
     assert card["execution"] == {"cpu": True, "gpu": False}
     assert card["verified_backends"] == ["cpp"]
     (root / "synthetic-report.xml").write_text("changed")
-    assert not capabilities(root)["operations"][0]["execution"]["cpu"]
+    assert not capabilities(root)["problems"][0]["execution"]["cpu"]
 
 
 def test_admission_reuses_source_hashes_only_within_one_request(gate, monkeypatch):
@@ -118,10 +118,10 @@ def test_admission_reuses_source_hashes_only_within_one_request(gate, monkeypatc
         return sha(path)
 
     monkeypatch.setattr("graphmine.evidence.sha", counted)
-    assert capabilities(root)["operations"][0]["execution"]["cpu"]
+    assert capabilities(root)["problems"][0]["execution"]["cpu"]
     assert observed.count(source) == 1  # Shared by the build and its oracle report.
     source.write_text("// changed since the last request\n")
-    assert not capabilities(root)["operations"][0]["execution"]["cpu"]
+    assert not capabilities(root)["problems"][0]["execution"]["cpu"]
 
 
 def test_hash_reuse_detects_edits_and_replacement(tmp_path):
@@ -159,8 +159,8 @@ def test_cached_repository_path_rejects_redirection_outside_root(tmp_path):
 )
 @pytest.mark.parametrize("device", ["auto", "cpu", "gpu"])
 def test_workflow_evidence_allows_auto_on_either_verified_device(cpu, gpu, device):
-    checked = {"plan": {"steps": [{"operation": "synthetic", "device": device}]}}
-    caps = {"operations": [{"id": "synthetic", "execution": {"cpu": cpu, "gpu": gpu}}]}
+    checked = {"plan": {"steps": [{"problem": "synthetic", "device": device}]}}
+    caps = {"problems": [{"id": "synthetic", "execution": {"cpu": cpu, "gpu": gpu}}]}
     if (cpu or gpu) if device == "auto" else {"cpu": cpu, "gpu": gpu}[device]:
         require_workflow_evidence(checked, caps)
     else:
@@ -204,7 +204,7 @@ def test_native_gate_rejects_stale_or_incomplete_evidence(gate, mutation):
         build["profiles"]["synthetic-profile"]["profile_sha256"] = "stale"
     elif mutation == "known_failure":
         inventory["known_failures"] = [
-            {"operation": "synthetic-profile", "backend": "cpp"}
+            {"problem": "synthetic-profile", "backend": "cpp"}
         ]
     elif mutation == "missing_metadata_hash":
         row["artifacts"].pop(row["metadata"])
@@ -235,4 +235,4 @@ def test_native_gate_rejects_stale_or_incomplete_evidence(gate, mutation):
     else:
         row["report"] = "../outside.xml"
     save()
-    assert not capabilities(root)["operations"][0]["execution"]["cpu"]
+    assert not capabilities(root)["problems"][0]["execution"]["cpu"]

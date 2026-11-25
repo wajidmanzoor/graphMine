@@ -145,10 +145,10 @@ json::object inspect_input(const std::string& kind, const json::value& value, Wo
 }
 
 json::object validate_request(const json::object& request) {
-  fields(request, {"command", "operation", "graph", "parameters", "device", "partial_parameters"},
-         {"command", "operation"});
-  const auto operation = string(request.at("operation"), "operation");
-  const auto& card = operation_card(operation);
+  fields(request, {"command", "problem", "graph", "parameters", "device", "partial_parameters"},
+         {"command", "problem"});
+  const auto problem = string(request.at("problem"), "problem");
+  const auto& card = problem_card(problem);
   const auto parameters = request.contains("parameters")
                               ? object(request.at("parameters"), "parameters")
                               : json::object{};
@@ -156,7 +156,7 @@ json::object validate_request(const json::object& request) {
   const auto policy = request.contains("device") ? string(request.at("device"), "device") : "auto";
   require(policy == "auto" || policy == "cpu" || policy == "gpu",
           "device must be cpu, gpu or auto");
-  json::object result{{"operation", operation},
+  json::object result{{"problem", problem},
                       {"parameters", parameters},
                       {"input_kind", card.at("input_kind")},
                       {"validation_scope",
@@ -168,7 +168,7 @@ json::object validate_request(const json::object& request) {
       const auto& backend = entry.as_object();
       compiled |= backend.at("device") == "gpu" && backend.at("compiled").as_bool();
     }
-    if (!compiled) throw Failure("backend_unavailable", "No compiled GPU profile for " + operation);
+    if (!compiled) throw Failure("backend_unavailable", "No compiled GPU profile for " + problem);
   }
   if (request.contains("graph")) {
     Work work;
@@ -177,11 +177,11 @@ json::object validate_request(const json::object& request) {
     result["input_fingerprint"] = inspected.at("input_fingerprint");
     if (kind == "graph") {
       const auto graph = cached_graph(request.at("graph"), work);
-      const auto resolved = operation == "maximal-bicliques" &&
+      const auto resolved = problem == "maximal-bicliques" &&
                                     !boolean(request, "partial_parameters", false)
                                 ? resolve_biclique_parameters(*graph, parameters) : parameters;
       if (policy == "gpu") {
-        const auto reason = gpu_support_reason(operation, *graph, resolved);
+        const auto reason = gpu_support_reason(problem, *graph, resolved);
         if (!reason.empty()) throw Failure("unsupported_input", reason);
         if (!boolean(request, "partial_parameters", false)) {
           bool supported = false;
@@ -189,7 +189,7 @@ json::object validate_request(const json::object& request) {
           for (const auto& entry : card.at("backends").as_array()) {
             const auto& backend = entry.as_object();
             if (backend.at("device") != "gpu" || !backend.at("compiled").as_bool()) continue;
-            const auto why = backend_support_reason(operation, string(backend.at("id"), "backend"),
+            const auto why = backend_support_reason(problem, string(backend.at("id"), "backend"),
                                                      *graph, resolved, work);
             if (why.empty()) { supported = true; break; }
             rejection = why;
@@ -198,7 +198,7 @@ json::object validate_request(const json::object& request) {
         }
       }
       if (!boolean(request, "partial_parameters", false))
-        validate_query_parameters(operation, *graph, resolved, work);
+        validate_query_parameters(problem, *graph, resolved, work);
     }
   }
   return result;

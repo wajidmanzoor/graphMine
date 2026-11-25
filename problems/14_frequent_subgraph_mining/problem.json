@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "frequent_subgraph_mining",
+  "topic_id": "frequent_subgraph_mining",
   "name": "Frequent Subgraph Mining",
   "category": "patterns",
   "problem_statement": "Given a collection of graphs, discover unique subgraph patterns appearing in at least a specified fraction of the collection.",

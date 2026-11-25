@@ -28,7 +28,7 @@ def handle(request, emit):
     caps = capabilities(root)
     if command == "run":
         visible = os.environ.get("CUDA_VISIBLE_DEVICES", "")
-        for card in caps["operations"]:
+        for card in caps["problems"]:
             allowed_gpu = {
                 backend["id"]
                 for backend in card["backends"]
@@ -50,7 +50,7 @@ def handle(request, emit):
     require_workflow_evidence(checked, caps)
     # Auto must not use GPU code lacking current GPU oracle evidence.
     gpu_verified = {
-        card["id"] for card in caps["operations"] if card["execution"]["gpu"]
+        card["id"] for card in caps["problems"] if card["execution"]["gpu"]
     }
     if command == "validate":
         return checked
@@ -63,9 +63,9 @@ def handle(request, emit):
         request["inputs"],
         emit=emit,
         resume=request.get("resume"),
-        verified_gpu_operations=gpu_verified,
+        verified_gpu_problems=gpu_verified,
         verified_backends={
-            card["id"]: card["verified_backends"] for card in caps["operations"]
+            card["id"]: card["verified_backends"] for card in caps["problems"]
         },
     )
 

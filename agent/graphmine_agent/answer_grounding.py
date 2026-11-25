@@ -131,7 +131,7 @@ class Evidence:
 
 def fact_sources(facts, *, workflow_id, revision):
     return [{'id': fact['id'], 'kind': 'fact', 'ref': f"workflow:{workflow_id}:revision:{revision}:step:{fact.get('step', 'answer')}:{fact['id']}",
-             'title': fact.get('operation_title', 'Result fact'), 'text': fact.get('text', fact['statement'])} for fact in facts]
+             'title': fact.get('problem_title', 'Result fact'), 'text': fact.get('text', fact['statement'])} for fact in facts]
 
 
 def answer_schema(evidence, *, data_answer=False):

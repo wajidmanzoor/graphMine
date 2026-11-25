@@ -23,8 +23,8 @@ window.GraphMineOutputs = {
       const button = node("button", {id, class: "quiet", type: "button"}, title);
       button.onclick = () => runAction(action); document.querySelector("#result-download-menu .view-menu").insertBefore(button, $(id === "export-csv" ? "view-export-visible" : "download-result"));
     }
-    const limits = node("details", {id: "operation-limits", hidden: true}); $("operation-quality").after(limits);
-    this.operationLimits = (selected, configuration) => {
+    const limits = node("details", {id: "problem-limits", hidden: true}); $("problem-quality").after(limits);
+    this.problemLimits = (selected, configuration) => {
       limits.replaceChildren(); limits.hidden = !selected; if (!selected) return;
       limits.append(node("summary", {}, "Supported data and resource limits"), node("p", {}, selected.description || "Input requirements are checked during plan validation."));
       limits.append(node("p", {}, `Input: ${selected.input_kind.replaceAll("_", " ")}. Available compute: ${[selected.execution.cpu && "CPU", selected.execution.gpu && "GPU"].filter(Boolean).join(" and ") || "unavailable"}.`));

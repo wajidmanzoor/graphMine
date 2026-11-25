@@ -147,7 +147,7 @@
         <div id="messages" class="chat-messages" role="log" aria-label="Conversation" aria-live="polite"></div>
       <section id="expert-panel" class="panel" hidden aria-labelledby="expert-heading">
         <div class="section-heading"><div><p class="eyebrow">Explicit plan</p><h2 id="expert-heading">Workflow editor</h2></div><button id="load-editor" class="quiet">Load current plan</button></div>
-        <p class="muted">Use registered operations and the saved inputs in Data. Validation checks parameters, dependencies and output types.</p>
+        <p class="muted">Use registered problems and the saved inputs in Data. Validation checks parameters, dependencies and output types.</p>
         <label class="visually-hidden" for="plan-editor">Structured workflow JSON</label><textarea id="plan-editor" rows="16" spellcheck="false" class="code-editor"></textarea><div class="form-actions"><button id="save-editor" class="primary">Validate and save plan</button></div>
       </section>
       <section id="workflow-panel" class="panel" hidden aria-labelledby="workflow-heading">
@@ -191,7 +191,7 @@
     <p class="muted">Saved locally for review. Feedback does not call the model or train it automatically.</p>
     <button id="save-conversation-feedback" type="submit" class="primary">Save feedback</button>
   </form></dialog>
-<dialog id="operation-dialog" aria-labelledby="operation-dialog-heading"><div class="section-heading"><h2 id="operation-dialog-heading">Advanced calculation</h2><button class="quiet" type="button" data-close="operation-dialog">Close</button></div><form id="operation-form"><label>Calculation<select id="operation-select"><option value="">Choose a calculation</option></select></label><p id="operation-description" class="muted"></p><p id="operation-quality" class="muted"></p><div id="operation-parameters" class="parameter-grid"></div><button id="use-operation" type="submit" class="secondary full-width">Build analysis</button></form></dialog>
+<dialog id="problem-dialog" aria-labelledby="problem-dialog-heading"><div class="section-heading"><h2 id="problem-dialog-heading">Advanced calculation</h2><button class="quiet" type="button" data-close="problem-dialog">Close</button></div><form id="problem-form"><label>Calculation<select id="problem-select"><option value="">Choose a calculation</option></select></label><p id="problem-description" class="muted"></p><p id="problem-quality" class="muted"></p><div id="problem-parameters" class="parameter-grid"></div><button id="use-problem" type="submit" class="secondary full-width">Build analysis</button></form></dialog>
   <dialog id="narrow-dialog" aria-labelledby="narrow-heading"><form id="narrow-form">
     <div class="section-heading"><h2 id="narrow-heading">Use a smaller input</h2><button type="button" class="quiet" data-close="narrow-dialog">Close</button></div>
     <p>Choose a smaller graph for this analysis. The revised plan will wait for your review before it runs.</p>

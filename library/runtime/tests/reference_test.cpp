@@ -53,9 +53,9 @@ json::object fixture(int n, bool directed, unsigned code, bool weighted = false,
           {"vertices", nodes},
           {"edges", edges}};
 }
-json::object request(const char* operation, const json::object& graph,
+json::object request(const char* problem, const json::object& graph,
                      json::object parameters = {}) {
-  return {{"command", "run"},         {"operation", operation}, {"graph", graph},
+  return {{"command", "run"},         {"problem", problem}, {"graph", graph},
           {"parameters", parameters}, {"device", device},       {"gpu_device", ordinal}};
 }
 json::object invoke(const json::object& input, const std::string& error = "") {
@@ -71,7 +71,7 @@ json::object invoke(const json::object& input, const std::string& error = "") {
     return output;
   }
   check(!output.contains("error"),
-        "Native operation failed: " + json::serialize(input) + " => " + json::serialize(output));
+        "Native problem failed: " + json::serialize(input) + " => " + json::serialize(output));
   if (input.at("device") != "auto")
     check(output.at("backend").as_object().at("device") == input.at("device"), "Wrong device");
   return output;

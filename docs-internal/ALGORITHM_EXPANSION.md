@@ -1,26 +1,26 @@
 # Algorithm and agent catalog expansion — 2026-10-04
 
 **Historical expansion record.** The subsequent [repair integration](../library/docs/repaired_algorithms.md)
-then exposed 24 operations, 22 supported problems and 38 backend choices. Both
+then exposed 24 problems, 22 supported topics and 38 backend choices. Both
 repaired maximum-clique backends have passed the application re-audit. The counts
 and quarantine statements below describe the earlier 2026-10-04 expansion.
 
-The agent now recognizes **all 37 problem definitions**. It exposes **18
-operations covering 17 problems**; the other **20 problems** remain
+The agent now recognizes **all 37 topic definitions**. It exposes **18
+problems covering 17 topics**; the other **20 topics** remain
 recognized but unavailable. The runtime registers 31 backend choices. Existing
 agent exclusions for CUDA-MS and Maximum-Clique-on-GPU are preserved.
 
 ## Why five runnable additions?
 
-The new research collection contains **17 problem definitions**, with **37 paper
-records and 19 local code snapshots** across those definitions. A problem
+The new research collection contains **17 topic definitions**, with **37 paper
+records and 19 local code snapshots** across those definitions. A topic
 definition or paper is not itself a runnable, correct implementation.
 
 The artifact screening recorded five validated profiles, four correctness
 failures, four partial passes, four build blockers, two artifacts that do not
 implement the requested contract, and 18 paper records without local code.
 The null-model significance definition has no paper/code artifact to screen.
-These counts describe artifacts; several artifacts belong to the same problem.
+These counts describe artifacts; several artifacts belong to the same topic.
 
 Only the five bounded profiles below cleared the public-library correctness
 gate. Partial passes establish only the checks actually performed. For example,
@@ -31,7 +31,7 @@ retains failures, dependency blockers, raw results and promotion evidence.
 
 ## Executable profiles
 
-| Agent operation | Backend | Supported meaning and limits |
+| Agent problem | Backend | Supported meaning and limits |
 |---|---|---|
 | `connected-components` | ECL-SCC | Exact weak or strong connectivity; choose `connectivity_mode` explicitly. Directed or undirected input; canonical component labels and sizes. |
 | `max-flow-min-cut` | ECL-MaxFlow | Directed flow between two different existing vertices; nonnegative integer edge capacities; total non-loop capacity at most 1 billion. Returns a certified flow/cut. No vertex capacities or fractional capacities. |
@@ -53,17 +53,17 @@ and [THIRD_PARTY.md](../THIRD_PARTY.md).
 
 ## Routing, planning and results
 
-`graphmine_catalog.json` embeds every formal problem specification exactly.
+`graphmine_catalog.json` embeds every formal topic specification exactly.
 Its `library_support` records distinguish availability from the narrower
 executable profiles and retain the screening reason for an unavailable family.
-The router receives those profiles together with all 37 problem identities.
+The router receives those profiles together with all 37 topic identities.
 The broader research specification does not authorize unsupported modes.
 
 `agent/program_instructions.json` is the executable parameter allowlist.
 Connectivity mode and flow endpoints are required semantic inputs. Integer and
 string IDs remain distinct: the string ID `"0"` is not the integer ID `0`.
 Missing required inputs produce clarification; invalid profiles cannot execute.
-New operations use the existing selector's single-backend fallback. No new
+New problems use the existing selector's single-backend fallback. No new
 performance ranking is claimed.
 
 For flow or assignment, an explicitly selected `weight_attribute` such as
@@ -73,11 +73,11 @@ For flow or assignment, an explicitly selected `weight_attribute` such as
 If no field is selected, the native `weight` field is used. Missing, negative,
 fractional or out-of-range values are not guessed, rounded or rescaled.
 `unit_capacity=true` is allowed only for an explicitly requested all-ones flow;
-it cannot replace a request to use supplied capacities. Other operations still
+it cannot replace a request to use supplied capacities. Other problems still
 do not gain weighted centrality, path lengths or weighted community detection.
 
 Directed flow, directed closure and strong connectivity preserve edge direction.
-Weak connectivity deliberately ignores direction. The expansion operations do
+Weak connectivity deliberately ignores direction. The expansion problems do
 not accept the generic directed-to-undirected projection flag.
 
 The agent never exposes `worker_directory` or arbitrary executable paths to a
@@ -92,11 +92,11 @@ native results and original records; profile limitations remain visible.
 ## Does this require LLM training?
 
 **No training is inherently required to add a library tool.** The base model is
-given the updated problem catalog, profile restrictions and parameter schema at
+given the updated topic catalog, profile restrictions and parameter schema at
 inference time. Native algorithms, validation, execution and result checks are
 implemented in code.
 
-The existing routing adapter was evaluated with an older 20-problem prompt.
+The existing routing adapter was evaluated with an older 20-topic prompt.
 Its frozen prompt, schema and weight binding are preserved. An expanded catalog
 marked `expanded-37-v1` is deliberately routed through the base model, even if a
 legacy adapter URL is configured. This is an explicit contract choice, not an
@@ -135,7 +135,7 @@ still need their documented dependencies. Workers default to the validated Ada
 SM89 architecture; other architectures require their own build and validation.
 
 The separate [66-case expansion holdout](../agent/evaluation/expansion_query_cases.json)
-covers each new operation in all nine domains, all 12 unavailable new families,
+covers each new problem in all nine domains, all 12 unavailable new families,
 and nine unsupported variants. It is evaluation-only. Historical v1 datasets,
 training files and reports are unchanged; their original scope is recorded in
 [legacy_catalog_scope.json](../agent/evaluation/legacy_catalog_scope.json).
@@ -148,12 +148,12 @@ GRAPHMINE_LLM_ENABLED=true .venv/bin/graphmine-agent evaluate-routing \
   --output agent/evaluation/reports/expansion-routing.json
 ```
 
-Offline mode supports exact problem/operation names with explicit API parameters;
+Offline mode supports exact topic/problem names with explicit API parameters;
 it does not certify natural-language routing quality.
 
-## Status of all 17 added problem definitions
+## Status of all 17 added topic definitions
 
-| Problem | Agent availability | Artifact screening |
+| Topic | Agent availability | Artifact screening |
 |---|---|---|
 | [Personalized PageRank and Random Walk with Restart](../problems/21_personalized_pagerank_rwr/problem.json) | Recognized; unavailable | `2020_kpar`: correctness fail |
 | [Maximum Flow and Minimum s-t Cut](../problems/22_max_flow_min_cut/problem.json) | `max-flow-min-cut` | `2025_ecl_maxflow`: validated profile; `2025_generalized_maxflow_gpu`: no local code; `2025_wbpr`: partial pass |

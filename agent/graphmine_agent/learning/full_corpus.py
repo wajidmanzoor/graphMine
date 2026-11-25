@@ -219,7 +219,7 @@ def build(settings, root, pilot):
                     large_public(root, source, seed, size),
                 ]
                 for graph, lineage in graphs:
-                    for operation, question, parameters, outputs in (
+                    for problem, question, parameters, outputs in (
                         (
                             "community-detection",
                             "Help me understand the groups in this relationship dataset. Group the records by their connection patterns, show who belongs to each group and how many connections cross between groups. Treat the groups as exploratory.",
@@ -240,7 +240,7 @@ def build(settings, root, pilot):
                         ),
                     ):
                         row = {
-                            "id": f"full-large-{split}-{size}-{sample}-{lineage.replace(':', '-')}-{operation}",
+                            "id": f"full-large-{split}-{size}-{sample}-{lineage.replace(':', '-')}-{problem}",
                             "domain_id": "general",
                             "split": split,
                             "lineage": lineage,
@@ -249,8 +249,8 @@ def build(settings, root, pilot):
                             "attachments": {},
                             "task": {
                                 "question": question,
-                                "problem_id": catalog.operation(operation).problem_id,
-                                "operation_id": operation,
+                                "topic_id": catalog.problem(problem).topic_id,
+                                "problem_id": problem,
                                 "parameters": parameters,
                                 "optional_outputs": outputs,
                                 "intent": ApplicationIntent(
@@ -274,13 +274,13 @@ def build(settings, root, pilot):
         "catalog_sha256": contract_digest(catalog),
         "source_registry": REGISTRY,
         "cases": cases,
-        "scope": "Larger local supervised cycle. Public source lineages are split-disjoint. Tiny exhaustive checks cover combinatorial operations; polynomial references extend selected operations to 256 vertices. Question/graph variants are correlated, not independent human requests. Fresh Facebook descendants are reserved for test only. No human labels or production-quality claim.",
+        "scope": "Larger local supervised cycle. Public source lineages are split-disjoint. Tiny exhaustive checks cover combinatorial problems; polynomial references extend selected problems to 256 vertices. Question/graph variants are correlated, not independent human requests. Fresh Facebook descendants are reserved for test only. No human labels or production-quality claim.",
     }
     HistoryStore.write(root / "corpus.json", corpus)
     summary = {
         "cases": len(cases),
         "by_split": dict(Counter(c["split"] for c in cases)),
-        "by_operation": dict(Counter(c["task"]["operation_id"] for c in cases)),
+        "by_problem": dict(Counter(c["task"]["problem_id"] for c in cases)),
         "by_vertex_count": dict(Counter(len(c["graph"]["vertices"]) for c in cases)),
         "distinct_graph_contents": len({digest(c["graph"]) for c in cases}),
         "corpus_sha256": HistoryStore.digest(root / "corpus.json"),

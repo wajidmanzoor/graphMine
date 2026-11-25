@@ -1,10 +1,10 @@
 # Native completion profiles
 
-The shared C++ runtime now implements 80 operations covering all 70 formal
-problem contracts and seven record-query utilities. These are explicit mathematical
+The shared C++ runtime now implements 80 problems covering all 70 formal
+topic contracts and seven record-query utilities. These are explicit mathematical
 profiles, not claims that every method or architecture in the literature is
-implemented. All operations have native CPU support; 23 have an admitted GPU
-profile. GPU-only requests for other operations fail explicitly.
+implemented. All problems have native CPU support; 23 have an admitted GPU
+profile. GPU-only requests for other problems fail explicitly.
 
 The authoritative parameter schemas, descriptions, output ports and quality
 claims come from `graphmine-native catalog`. The Python package and application
@@ -13,7 +13,7 @@ read that same catalog. The executable evidence gate is
 the complete per-contract mapping is
 [`catalog/native_runtime_coverage.json`](../catalog/native_runtime_coverage.json).
 
-## Profiles added after the 26-problem checkpoint
+## Profiles added after the 26-topic checkpoint
 
 ### `node-lookup`
 

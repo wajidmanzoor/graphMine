@@ -13,7 +13,7 @@ from ._numeric import float64, laplacian, require_positive_tolerance
 
 @register(
     id="laplacian-eigenpairs",
-    problem_id="graph_laplacian_eigenpairs",
+    topic_id="graph_laplacian_eigenpairs",
     title="Compute graph Laplacian eigenvalues and eigenvectors",
     description="SciPy symmetric eigensolver with explicit residual and orthogonality checks. The direct solver has no max_iterations parameter.",
     parameters={
@@ -72,7 +72,7 @@ def eigenpairs(graph, args, work, backend="networkx"):
 
 @register(
     id="graph-signal-denoising",
-    problem_id="graph_signal_denoising",
+    topic_id="graph_signal_denoising",
     title="Smooth noisy measurements over a graph",
     description="Minimize one-half squared observation error plus a declared Laplacian, total-variation or graph-trend penalty. Numerical accuracy is checked with stationarity or a feasible dual bound.",
     parameters={
@@ -173,14 +173,14 @@ def denoising(graph, args, work, backend="networkx"):
                 difference @ variable <= auxiliary,
                 -(difference @ variable) <= auxiliary,
             ]
-            problem = cp.Problem(
+            topic = cp.Topic(
                 cp.Minimize(
                     0.5 * cp.sum_squares(variable - y) + strength * cp.sum(auxiliary)
                 ),
                 constraints,
             )
             try:
-                problem.solve(
+                topic.solve(
                     solver="CLARABEL",
                     max_iter=args["max_iterations"],
                     tol_gap_abs=min(1e-9, tolerance * 0.01),
@@ -189,8 +189,8 @@ def denoising(graph, args, work, backend="networkx"):
                 )
             except cp.error.SolverError as exc:
                 raise GraphMineError("Denoising solver did not complete") from exc
-            if problem.status != cp.OPTIMAL or variable.value is None:
-                raise GraphMineError(f"Denoising did not converge: {problem.status}")
+            if topic.status != cp.OPTIMAL or variable.value is None:
+                raise GraphMineError(f"Denoising did not converge: {topic.status}")
             x = np.asarray(variable.value)
             dual = np.clip(
                 constraints[0].dual_value - constraints[1].dual_value,
@@ -219,7 +219,7 @@ def denoising(graph, args, work, backend="networkx"):
                 "difference_operator": "diag(weight) B"
                 if args["regularizer"] == "total_variation"
                 else "B_weighted L^(order/2) for even order; L^((order+1)/2) for odd order",
-                "iterations": problem.solver_stats.num_iters,
+                "iterations": topic.solver_stats.num_iters,
             }
     estimated = [
         {

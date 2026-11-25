@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "graphlet_counting",
+  "topic_id": "graphlet_counting",
   "name": "Graphlet Counting",
   "category": "motifs",
   "problem_statement": "Classify and count small connected induced subgraphs by their unlabeled isomorphism class, optionally including per-vertex orbit participation.",

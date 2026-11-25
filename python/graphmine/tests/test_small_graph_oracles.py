@@ -26,7 +26,7 @@ if os.environ.get("GRAPHMINE_CASE_SHARD"):
 else:
     CASES = ALL_CASES
 
-OPERATIONS = [
+PROBLEMS = [
     "connected-components",
     "triangle-counting",
     "k-core",
@@ -42,7 +42,7 @@ OPERATIONS = [
     "spanning-tree-forest",
 ]
 if DEVICE == "cpu":
-    OPERATIONS += [
+    PROBLEMS += [
         "k-cliques",
         "maximal-cliques",
         "maximum-clique",
@@ -126,9 +126,9 @@ def component_sets(n, adjacent, removed=frozenset(), removed_edge=None):
     return result
 
 
-@pytest.mark.parametrize("operation", OPERATIONS)
+@pytest.mark.parametrize("problem", PROBLEMS)
 @pytest.mark.parametrize("case", CASES, ids=lambda case: f"atlas-{case[0]}")
-def test_against_independent_small_graph_oracle(operation, case):
+def test_against_independent_small_graph_oracle(problem, case):
     _, n, edges = case
     graph = Graph.from_edges(edges, vertices=list(range(n)))
     adjacent = adjacency(n, edges)
@@ -143,22 +143,22 @@ def test_against_independent_small_graph_oracle(operation, case):
         "induced-subgraph": {"mode": "ego", "vertices_or_seeds": [0], "radius": 2},
         "max-flow-min-cut": {"source": 0, "sink": n - 1},
         "overlapping-communities": {"k": 3},
-    }.get(operation, {})
-    if operation == "max-flow-min-cut" and n == 1:
+    }.get(problem, {})
+    if problem == "max-flow-min-cut" and n == 1:
         from graphmine.exceptions import GraphMineError
 
         with pytest.raises(GraphMineError):
-            run(operation, graph, parameters=arguments, device=DEVICE)
+            run(problem, graph, parameters=arguments, device=DEVICE)
         return
-    envelope = run(operation, graph, parameters=arguments, device=DEVICE)
+    envelope = run(problem, graph, parameters=arguments, device=DEVICE)
     assert envelope["backend"]["device"] == DEVICE
     assert envelope["complete"]
     result = envelope["result"]
-    if operation == "connected-components":
+    if problem == "connected-components":
         assert {
             frozenset(row["vertices"]) for row in result["groups"]
         } == component_sets(n, adjacent)
-    elif operation in {
+    elif problem in {
         "triangle-counting",
         "k-cliques",
         "maximal-cliques",
@@ -169,18 +169,18 @@ def test_against_independent_small_graph_oracle(operation, case):
             for s in subsets(n)
             if s and all(v in adjacent[u] for u, v in combinations(s, 2))
         ]
-        if operation in {"triangle-counting", "k-cliques"}:
+        if problem in {"triangle-counting", "k-cliques"}:
             expected = {s for s in cliques if len(s) == 3}
             assert result["count"] == len(expected)
-            if operation == "k-cliques":
+            if problem == "k-cliques":
                 assert {frozenset(g["vertices"]) for g in result["groups"]} == expected
-        elif operation == "maximal-cliques":
+        elif problem == "maximal-cliques":
             assert {frozenset(g["vertices"]) for g in result["groups"]} == {
                 s for s in cliques if not any(s < t for t in cliques)
             }
         else:
             assert result["maximum_size"] == max(map(len, cliques))
-    elif operation == "k-core":
+    elif problem == "k-core":
         expected = [0] * n
         for s in subsets(n):
             if s:
@@ -188,7 +188,7 @@ def test_against_independent_small_graph_oracle(operation, case):
                 for v in s:
                     expected[v] = max(expected[v], degree)
         assert [row["core_number"] for row in result["vertices"]] == expected
-    elif operation == "k-truss":
+    elif problem == "k-truss":
         expected = {frozenset(e): 2 for e in edges}
         for k in range(3, n + 1):
             active = set(expected)
@@ -212,7 +212,7 @@ def test_against_independent_small_graph_oracle(operation, case):
             frozenset((e["source"], e["target"])): e["truss_number"]
             for e in result["edges"]
         } == expected
-    elif operation in {
+    elif problem in {
         "breadth-first-search",
         "single-source-shortest-paths",
         "many-source-shortest-paths",
@@ -220,11 +220,11 @@ def test_against_independent_small_graph_oracle(operation, case):
         "induced-subgraph",
     }:
         matrix = distances(n, edges)
-        if operation == "transitive-closure":
+        if problem == "transitive-closure":
             assert result["count"] == sum(
                 math.isfinite(d) for row in matrix for d in row
             )
-        elif operation == "induced-subgraph":
+        elif problem == "induced-subgraph":
             selected = {v for v in range(n) if matrix[0][v] <= 2}
             assert {v["id"] for v in result["graph"]["vertices"]} == selected
             assert {
@@ -235,7 +235,7 @@ def test_against_independent_small_graph_oracle(operation, case):
                 target = row.get("vertex", row.get("target"))
                 expected = (
                     min(matrix[0][target], matrix[n - 1][target])
-                    if operation == "breadth-first-search"
+                    if problem == "breadth-first-search"
                     else matrix[row.get("source", 0)][target]
                 )
                 assert row["distance"] == (
@@ -244,14 +244,14 @@ def test_against_independent_small_graph_oracle(operation, case):
                 predecessor = row.get("predecessor")
                 if predecessor is not None:
                     assert predecessor in adjacent[target]
-    elif operation in {"pagerank", "personalized-pagerank"}:
+    elif problem in {"pagerank", "personalized-pagerank"}:
         expected = page_rank(
-            n, adjacent, 0 if operation == "personalized-pagerank" else None
+            n, adjacent, 0 if problem == "personalized-pagerank" else None
         )
         np.testing.assert_allclose(
             [row["score"] for row in result["vertices"]], expected, atol=1e-8, rtol=1e-8
         )
-    elif operation == "betweenness-centrality":
+    elif problem == "betweenness-centrality":
         expected = [0.0] * n
         for u, v in combinations(range(n), 2):
             paths = all_simple_paths(adjacent, u, v)
@@ -264,7 +264,7 @@ def test_against_independent_small_graph_oracle(operation, case):
         np.testing.assert_allclose(
             [row["score"] for row in result["vertices"]], expected, atol=1e-7, rtol=1e-6
         )
-    elif operation == "link-prediction":
+    elif problem == "link-prediction":
         expected = {
             (u, v): len(adjacent[u] & adjacent[v]) / len(adjacent[u] | adjacent[v])
             if adjacent[u] | adjacent[v]
@@ -277,7 +277,7 @@ def test_against_independent_small_graph_oracle(operation, case):
             assert row["score"] == pytest.approx(
                 expected[row["source"], row["target"]], abs=1e-7
             )
-    elif operation in {
+    elif problem in {
         "maximum-independent-set",
         "minimum-vertex-cover",
         "maximal-independent-set",
@@ -288,29 +288,29 @@ def test_against_independent_small_graph_oracle(operation, case):
             if not any(v in adjacent[u] for u, v in combinations(s, 2))
         ]
         chosen = frozenset(result["vertices"])
-        if operation == "minimum-vertex-cover":
+        if problem == "minimum-vertex-cover":
             assert len(chosen) == n - max(map(len, independent))
             assert all(chosen & set(e) for e in edges)
         else:
             assert chosen in independent
-            if operation == "maximum-independent-set":
+            if problem == "maximum-independent-set":
                 assert len(chosen) == max(map(len, independent))
             else:
                 assert not any(chosen < s for s in independent)
-    elif operation == "vertex-coloring":
+    elif problem == "vertex-coloring":
         colors = {r["vertex"]: r["color"] for r in result["vertices"]}
         assert set(colors) == set(range(n))
         assert all(colors[u] != colors[v] for u, v in edges)
-    elif operation == "degree-centrality":
+    elif problem == "degree-centrality":
         assert [r["score"] for r in result["vertices"]] == [
             len(adjacent[v]) / max(1, n - 1) for v in range(n)
         ]
-    elif operation == "spanning-tree-forest":
+    elif problem == "spanning-tree-forest":
         assert len(result["edges"]) == n - len(component_sets(n, adjacent))
         tree = adjacency(n, [(e["source"], e["target"]) for e in result["edges"]])
         assert component_sets(n, tree) == component_sets(n, adjacent)
         assert all(e["target"] in adjacent[e["source"]] for e in result["edges"])
-    elif operation == "weighted-matching":
+    elif problem == "weighted-matching":
         # Unit-weight optimum by exhaustive edge-subset enumeration.
         optimum = 0
         for size in range(n // 2 + 1):
@@ -324,14 +324,14 @@ def test_against_independent_small_graph_oracle(operation, case):
             len({v for e in result["edges"] for v in (e["source"], e["target"])})
             == len(result["edges"]) * 2
         )
-    elif operation == "max-flow-min-cut":
+    elif problem == "max-flow-min-cut":
         cuts = [
             sum((u in s) != (v in s) for u, v in edges)
             for s in subsets(n)
             if 0 in s and n - 1 not in s
         ]
         assert result["flow_value"] == result["cut_capacity"] == min(cuts)
-    elif operation == "biconnected-components":
+    elif problem == "biconnected-components":
         count = len(component_sets(n, adjacent))
         expected_points = {
             v for v in range(n) if len(component_sets(n, adjacent, removed={v})) > count
@@ -345,7 +345,7 @@ def test_against_independent_small_graph_oracle(operation, case):
         assert {
             frozenset((e["source"], e["target"])) for e in result["bridges"]
         } == expected_bridges
-    elif operation == "overlapping-communities":
+    elif problem == "overlapping-communities":
         triangles = {
             s
             for s in subsets(n)

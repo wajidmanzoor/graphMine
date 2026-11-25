@@ -19,12 +19,12 @@ namespace {
 
 std::mutex turbobc_mutex;
 
-Status cuda_status(cudaError_t code, const char* operation) {
+Status cuda_status(cudaError_t code, const char* problem) {
   if (code == cudaSuccess) {
     return Status::success();
   }
   return {StatusCode::execution_failed,
-          std::string(operation) + ": " + cudaGetErrorString(code)};
+          std::string(problem) + ": " + cudaGetErrorString(code)};
 }
 
 }  // namespace

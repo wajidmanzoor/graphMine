@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "node_classification_regression",
+  "topic_id": "node_classification_regression",
   "name": "Node Classification and Regression",
   "category": "learning",
   "problem_statement": "Train or apply a graph model to predict categorical labels or numerical targets for specified vertices.",

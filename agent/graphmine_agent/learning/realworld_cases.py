@@ -5,7 +5,7 @@ from __future__ import annotations
 import copy
 
 from ..models import ApplicationIntent
-from .corpus import PROBLEMS
+from .corpus import TOPICS
 from .meaning import expected_meaning
 from .oracles import expected_answer
 
@@ -47,7 +47,7 @@ def make_task(
     graph: dict,
     vocabulary: dict,
     query: str,
-    operation: str | None,
+    problem: str | None,
     *,
     parameters: dict | None = None,
     filters: list | None = None,
@@ -67,8 +67,8 @@ def make_task(
     ).model_dump(mode="json")
     task = {
         "query": query,
-        "operation_id": operation,
-        "problem_id": PROBLEMS.get(operation),
+        "problem_id": problem,
+        "topic_id": TOPICS.get(problem),
         "parameters": parameters or {},
         "filters": filters or [],
         "optional_outputs": {
@@ -76,7 +76,7 @@ def make_task(
             "k-core": ["requested_core_vertices"],
             "betweenness-centrality": ["ranking"],
             "community-detection": ["communities"],
-        }.get(operation, []),
+        }.get(problem, []),
         "behavior": behavior,
         "reason": reason,
         "intent": intent,
@@ -95,8 +95,8 @@ def build_cases(records: list[dict]) -> list[dict]:
         noun, relation, scope = words["entities"], words["relation"], words["scope"]
         suffix = " " + words["attribute_request"]
 
-        def task(query, operation, graph=graph, words=words, **kwargs):
-            return make_task(graph, words, query, operation, **kwargs)
+        def task(query, problem, graph=graph, words=words, **kwargs):
+            return make_task(graph, words, query, problem, **kwargs)
 
         def case(category, steps, record=record, source=source, words=words):
             identifier = record["id"] + "-" + category

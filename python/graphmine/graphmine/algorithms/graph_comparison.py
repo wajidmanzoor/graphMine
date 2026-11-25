@@ -346,13 +346,13 @@ def _edit_script(a, b, mapping, costs, work):
     Delete incident edges before deleting vertices; create all required vertices
     before inserting edges. Reidentification and ignored labels have zero cost.
     """
-    operations, retained, covered = [], [], set()
+    problems, retained, covered = [], [], set()
 
     def emit(kind, cost, **fields):
-        work.output(len(operations) + 1)
-        operations.append(
+        work.output(len(problems) + 1)
+        problems.append(
             {
-                "operation": kind,
+                "problem": kind,
                 **fields,
                 "cost": number(cost),
                 "cost_numerator": cost.numerator,
@@ -402,7 +402,7 @@ def _edit_script(a, b, mapping, costs, work):
 
     def target_record(data):
         row = deepcopy(data["record"])
-        # The source/target fields of an operation refer to stable handles.
+        # The source/target fields of an problem refer to stable handles.
         row["source"], row["target"] = (
             target_ids[row["source"]],
             target_ids[row["target"]],
@@ -424,12 +424,12 @@ def _edit_script(a, b, mapping, costs, work):
                 edge_handle=len(a.graph["edge_rows"]) + second["handle"],
                 edge_record=target_record(second),
             )
-    return operations
+    return problems
 
 
 @register(
     id="graph-edit-distance",
-    problem_id="graph_edit_distance_mcs",
+    topic_id="graph_edit_distance_mcs",
     title="Minimum graph edit cost",
     description="Exact reference edit distance between simple directed/undirected graphs using NetworkX rational shortest paths over partial correspondences. Exact vertex-label replacement costs insertion+deletion; equal selected labels cost zero. Edge relabeling competes with deletion+insertion. Weights/times/unselected attributes are ignored. Returns an ordered edit script on normalized graphs with stable handles and original IDs. Exponential work is budgeted; no timed-out or approximate result is advertised as optimal.",
     parameters={
@@ -537,7 +537,7 @@ def graph_edit_distance(graph, args, work, backend):
 
 @register(
     id="maximum-common-subgraph",
-    problem_id="graph_edit_distance_mcs",
+    topic_id="graph_edit_distance_mcs",
     title="Largest common subgraph by vertex count",
     description="Exact maximum vertex count, with a checked graph and injective correspondence. Induced matching uses NetworkX VF2 on successively smaller subsets. Non-induced matching permits disconnected/edgeless results and uses maximum label-compatible matching; it does not maximize the number of edges. Preserves direction and selected categorical labels; ignores weights/times. Exponential induced search is budgeted.",
     parameters={**_PARAMETERS, "induced": P("boolean", True)},

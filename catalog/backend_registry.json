@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0.0",
-  "operation_count": 24,
+  "problem_count": 24,
   "validated_backend_count": 38,
-  "operations": [
+  "problems": [
     {
       "id": "maximal-cliques",
       "research_problem": "maximal_clique_enumeration",
@@ -11,7 +11,7 @@
         {
           "id": "mce-gpu",
           "display_name": "mce-gpu",
-          "problem": "maximal_clique_enumeration",
+          "topic": "maximal_clique_enumeration",
           "source_commit": "44ef6e034e39660c77c31eee475455a16af470e1",
           "validated": true,
           "capabilities": [
@@ -22,7 +22,7 @@
         {
           "id": "g2-aimd",
           "display_name": "G2-AIMD",
-          "problem": "maximal_clique_enumeration",
+          "topic": "maximal_clique_enumeration",
           "source_commit": "751595c0511acadd662d4f999ebf04ff6cc3483a",
           "validated": true,
           "capabilities": [
@@ -32,7 +32,7 @@
         {
           "id": "rdmce",
           "display_name": "RDMCE",
-          "problem": "maximal_clique_enumeration",
+          "topic": "maximal_clique_enumeration",
           "source_commit": "59452dcfbcdc8dabf41abef277ef3e240248ee0c",
           "validated": true,
           "capabilities": [
@@ -51,7 +51,7 @@
         {
           "id": "cuda-ms",
           "display_name": "CUDA-MS",
-          "problem": "maximum_clique",
+          "topic": "maximum_clique",
           "source_commit": "a0b6b00a1f67",
           "validated": true,
           "capabilities": [
@@ -63,7 +63,7 @@
         {
           "id": "gpu-maximum-clique",
           "display_name": "GPUMaximumClique",
-          "problem": "maximum_clique",
+          "topic": "maximum_clique",
           "source_commit": "2365400c7b4a",
           "validated": true,
           "capabilities": [
@@ -74,7 +74,7 @@
         {
           "id": "maximum-clique-on-gpu",
           "display_name": "Maximum-Clique-on-GPU",
-          "problem": "maximum_clique",
+          "topic": "maximum_clique",
           "source_commit": "62708c588219",
           "validated": true,
           "capabilities": [
@@ -92,7 +92,7 @@
         {
           "id": "kcgpu",
           "display_name": "KCGPU",
-          "problem": "k_clique_counting_enumeration",
+          "topic": "k_clique_counting_enumeration",
           "source_commit": "314ac6d41fbe6582c2a258c2094c67ec1aa47116",
           "validated": true,
           "capabilities": [
@@ -104,7 +104,7 @@
         {
           "id": "graphset",
           "display_name": "GraphSet",
-          "problem": "k_clique_counting_enumeration",
+          "topic": "k_clique_counting_enumeration",
           "source_commit": "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8",
           "validated": true,
           "capabilities": [
@@ -116,7 +116,7 @@
         {
           "id": "gamma",
           "display_name": "GAMMA",
-          "problem": "k_clique_counting_enumeration",
+          "topic": "k_clique_counting_enumeration",
           "source_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
           "validated": true,
           "capabilities": [
@@ -135,7 +135,7 @@
         {
           "id": "cuqc",
           "display_name": "cuQC",
-          "problem": "quasi_clique_mining",
+          "topic": "quasi_clique_mining",
           "source_commit": "e3785db225f2730898c2b316a4fcc06516b16c06",
           "validated": true,
           "capabilities": [
@@ -154,7 +154,7 @@
         {
           "id": "kcore-gpu",
           "display_name": "KCoreGPU",
-          "problem": "k_core_decomposition",
+          "topic": "k_core_decomposition",
           "source_commit": "0a2d37634024",
           "validated": true,
           "capabilities": [
@@ -172,7 +172,7 @@
         {
           "id": "cumbe",
           "display_name": "cuMBE",
-          "problem": "maximal_biclique_enumeration",
+          "topic": "maximal_biclique_enumeration",
           "source_commit": "2fff8005b2f74e5683d915f9cd817409f6499bcf",
           "validated": true,
           "capabilities": [
@@ -191,7 +191,7 @@
         {
           "id": "tot",
           "display_name": "ToT",
-          "problem": "triangle_counting_listing",
+          "topic": "triangle_counting_listing",
           "source_commit": "5f9cde83a528",
           "validated": true,
           "capabilities": [
@@ -203,7 +203,7 @@
         {
           "id": "wetric",
           "display_name": "WeTriC",
-          "problem": "triangle_counting_listing",
+          "topic": "triangle_counting_listing",
           "source_commit": "f0c80447dc42",
           "validated": true,
           "capabilities": [
@@ -221,7 +221,7 @@
         {
           "id": "edtc",
           "display_name": "EDTC",
-          "problem": "triangle_counting_listing",
+          "topic": "triangle_counting_listing",
           "source_commit": "7da15bf9aded",
           "validated": true,
           "capabilities": [
@@ -240,7 +240,7 @@
         {
           "id": "graphminer",
           "display_name": "GraphMiner/G2Miner",
-          "problem": "graph_motif_counting",
+          "topic": "graph_motif_counting",
           "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
           "validated": true,
           "capabilities": [
@@ -253,7 +253,7 @@
         {
           "id": "graphset",
           "display_name": "GraphSet",
-          "problem": "graph_motif_counting",
+          "topic": "graph_motif_counting",
           "source_commit": "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8",
           "validated": true,
           "capabilities": [
@@ -266,7 +266,7 @@
         {
           "id": "dumato",
           "display_name": "DuMato",
-          "problem": "graph_motif_counting",
+          "topic": "graph_motif_counting",
           "source_commit": "79c255ee2467e436d49e3ee974b4d7149551c641",
           "validated": true,
           "capabilities": [
@@ -286,7 +286,7 @@
         {
           "id": "gmatch",
           "display_name": "gMatch",
-          "problem": "subgraph_isomorphism",
+          "topic": "subgraph_isomorphism",
           "source_commit": "4628e73dbcb564dba367b3f042595e71f98c9046",
           "validated": true,
           "capabilities": [
@@ -306,7 +306,7 @@
         {
           "id": "everest",
           "display_name": "Everest",
-          "problem": "temporal_motif_mining",
+          "topic": "temporal_motif_mining",
           "source_commit": "ef530d",
           "validated": true,
           "capabilities": [
@@ -320,7 +320,7 @@
         {
           "id": "mayura",
           "display_name": "Mayura",
-          "problem": "temporal_motif_mining",
+          "topic": "temporal_motif_mining",
           "source_commit": "8e4276",
           "validated": true,
           "capabilities": [
@@ -341,7 +341,7 @@
         {
           "id": "gleiden",
           "display_name": "gLeiden",
-          "problem": "community_detection",
+          "topic": "community_detection",
           "source_commit": "6aacd7f8e91d",
           "validated": true,
           "capabilities": [
@@ -354,7 +354,7 @@
         {
           "id": "parallel-louvain",
           "display_name": "Parallel Louvain",
-          "problem": "community_detection",
+          "topic": "community_detection",
           "source_commit": "29c69d27ba38",
           "validated": true,
           "capabilities": [
@@ -367,7 +367,7 @@
         {
           "id": "parallel-leiden",
           "display_name": "Parallel Leiden",
-          "problem": "community_detection",
+          "topic": "community_detection",
           "source_commit": "29c69d27ba38",
           "validated": true,
           "capabilities": [
@@ -380,7 +380,7 @@
         {
           "id": "parallel-leiden-plus",
           "display_name": "Parallel Leiden+",
-          "problem": "community_detection",
+          "topic": "community_detection",
           "source_commit": "29c69d27ba38",
           "validated": true,
           "capabilities": [
@@ -400,7 +400,7 @@
         {
           "id": "turbo-bc",
           "display_name": "TurboBC",
-          "problem": "centrality_influential_node_mining",
+          "topic": "centrality_influential_node_mining",
           "source_commit": "6e885a207902",
           "validated": true,
           "capabilities": [
@@ -420,7 +420,7 @@
         {
           "id": "ecl-scc",
           "display_name": "ECL-SCC 1.0",
-          "problem": "connected_components",
+          "topic": "connected_components",
           "source_commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99",
           "validated": true,
           "capabilities": [
@@ -438,7 +438,7 @@
         {
           "id": "ecl-maxflow",
           "display_name": "ECL-MaxFlow",
-          "problem": "max_flow_min_cut",
+          "topic": "max_flow_min_cut",
           "source_commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70",
           "validated": true,
           "capabilities": [
@@ -457,7 +457,7 @@
         {
           "id": "hungarian-cuda",
           "display_name": "HungarianCUDA",
-          "problem": "bipartite_matching_assignment",
+          "topic": "bipartite_matching_assignment",
           "source_commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941",
           "validated": true,
           "capabilities": [
@@ -475,7 +475,7 @@
         {
           "id": "gdlog",
           "display_name": "GDlog",
-          "problem": "transitive_closure_reachability",
+          "topic": "transitive_closure_reachability",
           "source_commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226",
           "validated": true,
           "capabilities": [
@@ -493,7 +493,7 @@
         {
           "id": "graphminer",
           "display_name": "GraphMiner/G2Miner",
-          "problem": "butterfly_counting_bipartite",
+          "topic": "butterfly_counting_bipartite",
           "source_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd",
           "validated": true,
           "capabilities": [
@@ -504,7 +504,7 @@
         {
           "id": "gamma-butterfly",
           "display_name": "gamma-butterfly",
-          "problem": "butterfly_counting_bipartite",
+          "topic": "butterfly_counting_bipartite",
           "source_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c",
           "validated": true,
           "capabilities": [
@@ -522,7 +522,7 @@
         {
           "id": "acctd",
           "display_name": "acctd",
-          "problem": "k_truss_decomposition",
+          "topic": "k_truss_decomposition",
           "source_commit": "a8faa445ccb45c18383087db488eff9d1836d8d1",
           "validated": true,
           "capabilities": [
@@ -540,7 +540,7 @@
         {
           "id": "cds",
           "display_name": "cds",
-          "problem": "densest_subgraph",
+          "topic": "densest_subgraph",
           "source_commit": "3e704f98cf873336e2cf789570774039c8d6f092",
           "validated": true,
           "capabilities": [
@@ -558,7 +558,7 @@
         {
           "id": "mbe-gpu",
           "display_name": "mbe-gpu",
-          "problem": "maximal_biclique_enumeration",
+          "topic": "maximal_biclique_enumeration",
           "source_commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942",
           "validated": true,
           "capabilities": [
@@ -576,7 +576,7 @@
         {
           "id": "kpar",
           "display_name": "kpar",
-          "problem": "personalized_pagerank_rwr",
+          "topic": "personalized_pagerank_rwr",
           "source_commit": "v1.0:791987a738faf84d0fcab882b2f74cbb2efd4451ac9888b80e0d120ea6421916",
           "validated": true,
           "capabilities": [
@@ -594,7 +594,7 @@
         {
           "id": "gpu4gst",
           "display_name": "gpu4gst",
-          "problem": "group_steiner_tree",
+          "topic": "group_steiner_tree",
           "source_commit": "716a19c240c480cb2d23435bbaca55163a48e174",
           "validated": true,
           "capabilities": [
@@ -612,7 +612,7 @@
         {
           "id": "superfuser",
           "display_name": "superfuser",
-          "problem": "influence_maximization",
+          "topic": "influence_maximization",
           "source_commit": "1506d275671a456e41bbc7bcb294876615353b2d",
           "validated": true,
           "capabilities": [

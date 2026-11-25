@@ -77,20 +77,20 @@ def plan():
         "steps": [
             {
                 "id": "core",
-                "operation": "k-core",
+                "problem": "k-core",
                 "input": {"input": "main"},
                 "parameters": {"requested_k": 2},
             },
             {
                 "id": "sub",
-                "operation": "induced-subgraph",
+                "problem": "induced-subgraph",
                 "parameters": {"mode": "induced"},
                 "input": {"input": "main"},
                 "bindings": {"vertices_or_seeds": {"step": "core", "port": "vertices"}},
             },
             {
                 "id": "rank",
-                "operation": "pagerank",
+                "problem": "pagerank",
                 "input": {"step": "sub", "port": "graph"},
             },
         ],
@@ -286,7 +286,7 @@ def test_live_graph_collection_patterns_and_derived_graph(settings, triangle_gra
                 "steps": [
                     {
                         "id": "mine",
-                        "operation": "frequent-subgraphs",
+                        "problem": "frequent-subgraphs",
                         "input": {"input": "database"},
                         "parameters": {
                             "minimum_support_fraction": 1,
@@ -299,7 +299,7 @@ def test_live_graph_collection_patterns_and_derived_graph(settings, triangle_gra
                     },
                     {
                         "id": "degree",
-                        "operation": "degree-centrality",
+                        "problem": "degree-centrality",
                         "input": {
                             "step": "mine",
                             "port": "patterns",
@@ -379,7 +379,7 @@ def test_live_graph_pair_fraction_witness_and_common_graph(settings, triangle_gr
                 "steps": [
                     {
                         "id": "edits",
-                        "operation": "graph-edit-distance",
+                        "problem": "graph-edit-distance",
                         "input": {"input": "a"},
                         "bindings": {"other_graph": {"input": "b"}},
                         "parameters": {
@@ -391,13 +391,13 @@ def test_live_graph_pair_fraction_witness_and_common_graph(settings, triangle_gr
                     },
                     {
                         "id": "common",
-                        "operation": "maximum-common-subgraph",
+                        "problem": "maximum-common-subgraph",
                         "input": {"input": "a"},
                         "bindings": {"other_graph": {"input": "b"}},
                     },
                     {
                         "id": "degree",
-                        "operation": "degree-centrality",
+                        "problem": "degree-centrality",
                         "input": {"step": "common", "port": "graph"},
                     },
                 ],
@@ -421,7 +421,7 @@ def test_live_graph_pair_fraction_witness_and_common_graph(settings, triangle_gr
             "denominator": str(10**200),
         }
         path = results["edits"]["result"]["result"]["edit_path"]
-        assert any(row["operation"] == "vertex_insertion" for row in path)
+        assert any(row["problem"] == "vertex_insertion" for row in path)
         page = client.get(
             f"/api/workflows/{record['id']}/steps/edits/ports/edits?offset=0&limit=1",
             headers=AUTH,
@@ -435,7 +435,7 @@ def test_live_graph_pair_fraction_witness_and_common_graph(settings, triangle_gr
             request["plan"]["steps"][0],
             {
                 "id": "unsafe_rounding",
-                "operation": "k-cliques",
+                "problem": "k-cliques",
                 "input": {"input": "a"},
                 "bindings": {"k": {"step": "edits", "port": "distance"}},
             },
@@ -501,8 +501,8 @@ def test_live_capabilities_authorization_and_input_scope(settings, triangle_grap
     with TestClient(create_app(settings)) as client:
         assert client.get("/api/analytics/capabilities").status_code == 401
         caps = client.get("/api/analytics/capabilities", headers=AUTH).json()
-        assert caps["operations"] and all(
-            card["execution"]["cpu"] for card in caps["operations"]
+        assert caps["problems"] and all(
+            card["execution"]["cpu"] for card in caps["problems"]
         ), caps.get("reports")
         session, graph = upload(client, triangle_graph)
         other, _ = upload(client, triangle_graph)
@@ -537,7 +537,7 @@ def test_live_record_query_to_filtered_graph_to_count(settings, triangle_graph, 
         request["plan"]["steps"] = [
             {
                 "id": "lookup",
-                "operation": "edge-filter",
+                "problem": "edge-filter",
                 "input": {"input": "main"},
                 "parameters": {
                     "edge_filters": [{"field": "id", "op": "in", "value": ["01", "12"]}]
@@ -545,14 +545,14 @@ def test_live_record_query_to_filtered_graph_to_count(settings, triangle_graph, 
             },
             {
                 "id": "sub",
-                "operation": "query-subgraph",
+                "problem": "query-subgraph",
                 "input": {"input": "main"},
                 "parameters": {"mode": "edges"},
                 "bindings": {"edge_ids": {"step": "lookup", "port": "edges"}},
             },
             {
                 "id": "count",
-                "operation": "triangle-counting",
+                "problem": "triangle-counting",
                 "input": {"step": "sub", "port": "graph"},
             },
         ]
@@ -588,7 +588,7 @@ def test_query_input_rejected_before_any_worker_is_queued(settings, triangle_gra
         request["plan"]["steps"] = [
             {
                 "id": "query",
-                "operation": "edge-filter",
+                "problem": "edge-filter",
                 "input": {"input": "main"},
                 "parameters": {
                     "edge_filters": [
@@ -615,7 +615,7 @@ async def test_plan_preview_flags_large_exact_searches_and_slow_past_runs(
 
     async def capabilities():
         return {
-            "operations": [
+            "problems": [
                 {
                     "id": "maximal-cliques",
                     "title": "Maximal cliques",
@@ -633,8 +633,8 @@ async def test_plan_preview_flags_large_exact_searches_and_slow_past_runs(
 
     monkeypatch.setattr(service, "capabilities", capabilities)
 
-    def record(workflow_id, operation, **extra):
-        steps = [{"id": "core", "operation": operation, "device": "cpu"}]
+    def record(workflow_id, problem, **extra):
+        steps = [{"id": "core", "problem": problem, "device": "cpu"}]
         return {
             "id": workflow_id,
             "session_id": "s",
@@ -675,27 +675,27 @@ async def test_plan_preview_flags_large_exact_searches_and_slow_past_runs(
     assert "took about 5 minutes" in preview["reasons"][0]
 
 
-@pytest.mark.parametrize("operation, available, expected", [
+@pytest.mark.parametrize("problem, available, expected", [
     ("maximal-cliques", True, True),
     ("k-core", True, False),
     ("persistent-homology", True, True),
     ("laplacian-eigenpairs", True, False),
     ("maximal-cliques", False, False),
 ])
-async def test_preview_warning_stays_specific_to_operations_after_family_merges(
-    settings, database, graph_store, monkeypatch, operation, available, expected
+async def test_preview_warning_stays_specific_to_problems_after_family_merges(
+    settings, database, graph_store, monkeypatch, problem, available, expected
 ):
     service = _service(settings, database, graph_store)
     from graphmine_agent._families import FAMILIES as families
-    family = next(row["id"] for row in families if operation in row["operations"])
+    family = next(row["id"] for row in families if problem in row["problems"])
 
     async def capabilities():
-        return {"operations": [{"id": operation, "family": family}] if available else []}
+        return {"problems": [{"id": problem, "family": family}] if available else []}
 
     monkeypatch.setattr(service, "capabilities", capabilities)
     record = {
         "id": "preview", "session_id": "s", "revision": 1,
-        "validation": {"plan": {"steps": [{"id": "answer", "operation": operation, "device": "cpu"}]}},
+        "validation": {"plan": {"steps": [{"id": "answer", "problem": problem, "device": "cpu"}]}},
     }
     inputs = {"main": {"kind": "graph", "data": {
         "vertices": [{"id": 0}, {"id": 1}],
@@ -799,7 +799,7 @@ async def test_health_and_metrics_describe_the_engine_people_use(
     async def capabilities(refresh=False):
         return {
             "implementation_sha256": "a" * 64,
-            "operations": [
+            "problems": [
                 {"id": "a", "execution": {"cpu": True, "gpu": False}},
                 {"id": "b", "execution": {"cpu": False, "gpu": False}},
             ]
@@ -833,8 +833,8 @@ async def test_health_and_metrics_describe_the_engine_people_use(
     health = await service.health()
     assert health["native"] == {
         "status": "ok",
-        "admitted_operations": 1,
-        "operations": 2,
+        "admitted_problems": 1,
+        "problems": 2,
         "implementation_sha256": "a" * 64,
     }
     assert health["workflows"]["queued"] == 1
@@ -887,7 +887,7 @@ async def test_capabilities_share_one_verification_until_evidence_changes(
     async def call(request, **_):
         calls.append(request["command"])
         await release.wait()
-        return {"operations": []}
+        return {"problems": []}
 
     async def probe():
         return []
@@ -900,8 +900,8 @@ async def test_capabilities_share_one_verification_until_evidence_changes(
     release.set()
     first, *_ = await asyncio.gather(*viewers[1:])
     assert calls == ["capabilities"]
-    first["operations"].append("caller-owned copy")
-    assert (await service.capabilities())["operations"] == []
+    first["problems"].append("caller-owned copy")
+    assert (await service.capabilities())["problems"] == []
     assert calls == ["capabilities"]
     await service.capabilities(refresh=True)
     assert len(calls) == 2
@@ -933,7 +933,7 @@ def test_live_failed_step_recovery_reuses_only_valid_steps(settings, triangle_gr
         request["plan"]["steps"].append(
             {
                 "id": "independent",
-                "operation": "triangle-counting",
+                "problem": "triangle-counting",
                 "input": {"input": "main"},
             }
         )

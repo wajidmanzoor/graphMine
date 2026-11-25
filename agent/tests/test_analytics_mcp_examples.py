@@ -37,7 +37,7 @@ def workflow(file, **extra):
             "steps": [
                 {
                     "id": "answer",
-                    "operation": "triangle-counting",
+                    "problem": "triangle-counting",
                     "input": {"input": "main"},
                     "parameters": {},
                 }
@@ -155,14 +155,14 @@ async def test_mcp_uses_the_same_native_review_and_authentication_boundary(
                 return reply["result"]
 
             caps = await call("capabilities", {})
-            operations = {
-                card["id"] for card in caps["structuredContent"]["operations"]
+            problems = {
+                card["id"] for card in caps["structuredContent"]["problems"]
             }
             assert {
                 "community-detection",
                 "dynamic-triangle-counting",
                 "maximal-biclique-counting",
-            } <= operations
+            } <= problems
             assert not caps["isError"]
             created = await call(
                 "create_workflow", {"session_id": session, **workflow(file)}
@@ -198,7 +198,7 @@ async def test_mcp_uses_the_same_native_review_and_authentication_boundary(
                 "isError"
             ]
             bad = workflow(file)
-            bad["plan"]["steps"][0]["operation"] = "execute-shell"
+            bad["plan"]["steps"][0]["problem"] = "execute-shell"
             assert (await call("create_workflow", {"session_id": session, **bad}))[
                 "isError"
             ]

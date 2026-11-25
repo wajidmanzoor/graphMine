@@ -9,7 +9,7 @@ import pytest
 from graphmine_agent.learning.catalog_grade import grade_output
 from graphmine_agent.learning.catalog_suite import build_suite
 
-OPERATIONS = (
+PROBLEMS = (
     "maximal-cliques",
     "maximum-clique",
     "k-cliques",
@@ -40,14 +40,14 @@ OPERATIONS = (
 @pytest.fixture
 def cases(catalog):
     return {
-        case["task"]["operation_id"]: case
+        case["task"]["problem_id"]: case
         for case in build_suite(catalog)["cases"]
         if case["tags"] == ["supported"]
     }
 
 
 def authored_output(case):
-    op = case["task"]["operation_id"]
+    op = case["task"]["problem_id"]
     ids = [vertex["id"] for vertex in case["graph"]["vertices"]]
     vertices = lambda indexes: [ids[index] for index in indexes]
     tri_indexes = [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3), (4, 5, 6)]
@@ -290,13 +290,13 @@ def authored_output(case):
     raise AssertionError(op)
 
 
-@pytest.mark.parametrize("operation", OPERATIONS)
-def test_hand_computed_outputs_pass_the_correct_scope(catalog, cases, operation):
-    case = cases[operation]
+@pytest.mark.parametrize("problem", PROBLEMS)
+def test_hand_computed_outputs_pass_the_correct_scope(catalog, cases, problem):
+    case = cases[problem]
     checked = grade_output(catalog, case, authored_output(case))
     assert checked["checks_passed"], checked
     assert checked["numerical_accuracy_certified"] == (
-        operation
+        problem
         not in {
             "community-detection",
             "personalized-pagerank",
@@ -305,11 +305,11 @@ def test_hand_computed_outputs_pass_the_correct_scope(catalog, cases, operation)
     )
 
 
-@pytest.mark.parametrize("operation", OPERATIONS)
+@pytest.mark.parametrize("problem", PROBLEMS)
 def test_wrong_values_or_identities_fail_even_when_success_flags_are_kept(
-    catalog, cases, operation
+    catalog, cases, problem
 ):
-    case = cases[operation]
+    case = cases[problem]
     output = copy.deepcopy(authored_output(case))
     scalar_fields = {
         "maximum-clique": "maximum_size",
@@ -328,28 +328,28 @@ def test_wrong_values_or_identities_fail_even_when_success_flags_are_kept(
         "densest-subgraph": "density",
         "influence-maximization": "expected_spread",
     }
-    if operation in scalar_fields:
-        output[scalar_fields[operation]] += 1
-    elif operation == "betweenness-centrality":
+    if problem in scalar_fields:
+        output[scalar_fields[problem]] += 1
+    elif problem == "betweenness-centrality":
         output["score_by_vertex"][0]["score"] = False
-    elif operation == "connected-components":
+    elif problem == "connected-components":
         output["component_assignment"][-1]["component"] = 0
-    elif operation == "max-flow-min-cut":
+    elif problem == "max-flow-min-cut":
         output["flow_assignment"][0]["flow"] = 5
-    elif operation == "transitive-closure":
+    elif problem == "transitive-closure":
         output["transitive_closure_edges"][-1] = output["transitive_closure_edges"][0]
-    elif operation == "k-truss":
+    elif problem == "k-truss":
         output["truss_number_by_edge"][6]["truss_number"] = 4
-    elif operation == "group-steiner-tree":
+    elif problem == "group-steiner-tree":
         output["tree_edges"] = ["link-2"]
-    elif operation == "personalized-pagerank":
+    elif problem == "personalized-pagerank":
         output["error_bound_certified"] = True
-    elif operation == "graph-motifs":
+    elif problem == "graph-motifs":
         output["motifs"][0]["instances"][0][0]["data_vertex"] = "not-in-graph"
-    elif operation == "subgraph-isomorphism":
+    elif problem == "subgraph-isomorphism":
         output["embeddings"][0] = output["embeddings"][1]
     else:
-        raise AssertionError(operation)
+        raise AssertionError(problem)
     checked = grade_output(catalog, case, output)
     assert (
         checked["issues"]

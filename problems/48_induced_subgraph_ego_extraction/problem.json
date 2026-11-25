@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "induced_subgraph_ego_extraction",
+  "topic_id": "induced_subgraph_ego_extraction",
   "name": "Induced Subgraph and Ego-Network Extraction",
   "category": "preparation",
   "problem_statement": "Extract the graph induced by an explicit vertex set or by vertices within a hop radius of declared seeds.",

@@ -71,9 +71,9 @@
       "randomized graph ensemble z scores"
     ]
   },
-  "operations": {
+  "problems": {
     "connected-components": {
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "backend_id": "ecl-scc",
       "paper_id": "2023_eclscc",
       "profile": "weak or strong exact connectivity",
@@ -97,7 +97,7 @@
       }
     },
     "max-flow-min-cut": {
-      "problem_id": "max_flow_min_cut",
+      "topic_id": "max_flow_min_cut",
       "backend_id": "ecl-maxflow",
       "paper_id": "2025_ecl_maxflow",
       "profile": "directed, integer edge capacities, total capacity <= 1e9; no vertex capacities",
@@ -121,7 +121,7 @@
       }
     },
     "linear-assignment": {
-      "problem_id": "bipartite_matching_assignment",
+      "topic_id": "bipartite_matching_assignment",
       "backend_id": "hungarian-cuda",
       "paper_id": "2019_hungariangpu",
       "profile": "complete square minimum-cost perfect assignment; <=64 per side; costs integer 0..999; declared sides",
@@ -145,7 +145,7 @@
       }
     },
     "transitive-closure": {
-      "problem_id": "transitive_closure_reachability",
+      "topic_id": "transitive_closure_reachability",
       "backend_id": "gdlog",
       "paper_id": "2024_gdlog",
       "profile": "directed full reflexive materialized closure; <=1024 vertices; build_index=false",
@@ -169,7 +169,7 @@
       }
     },
     "butterfly-counting": {
-      "problem_id": "butterfly_counting_bipartite",
+      "topic_id": "butterfly_counting_bipartite",
       "backend_id": "graphminer",
       "paper_id": "2022_g2miner_reuse",
       "profile": "exact global count only; declared bipartite sides",
@@ -182,7 +182,7 @@
         "workload_id": "expansion_butterfly-counting",
         "implementation": "graphminer",
         "status": "validated_profile",
-        "note": "12/12 global counts using the existing native square kernel. New public facade enforces declared bipartite sides. Other problem modes remain unsupported.",
+        "note": "12/12 global counts using the existing native square kernel. New public facade enforces declared bipartite sides. Other topic modes remain unsupported.",
         "checks": {
           "public_api_suite": "validation/gpu_correctness_expansion/results/library_expansion.json",
           "profile_source": "validation/gpu_correctness_expansion/VALIDATION_REPORT.md"

@@ -87,7 +87,7 @@ def recovery_cases(corpus, selected_cases=None):
         or any(
             case != by_id.get(case["id"])
             or case["split"] not in {"train", "validation"}
-            or case["task"]["operation_id"] != "k-cliques"
+            or case["task"]["problem_id"] != "k-cliques"
             or case["task"]["expected_status"] != "ready"
             for case in cases
         )

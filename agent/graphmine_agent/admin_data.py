@@ -203,14 +203,14 @@ def _preview(db, runtime, kind, days, identifiers=None):
                 continue
             paths = result_paths(runtime, row["id"])
             if paths:
-                items.append({"id": row["id"], "kind": "workflow", "name": ", ".join(s["operation"] for s in row.get("validation", {}).get("plan", {}).get("steps", [])) or "Saved analysis", "owner": owners.get(row["session_id"]),
+                items.append({"id": row["id"], "kind": "workflow", "name": ", ".join(s["problem"] for s in row.get("validation", {}).get("plan", {}).get("steps", [])) or "Saved analysis", "owner": owners.get(row["session_id"]),
                               "size_bytes": sum(p.stat().st_size for p in paths), "revision": row["revision"], "last_used": observed})
         for row in db.execute("SELECT r.id,r.job_id,r.session_id,r.created_at,length(CAST(r.payload AS BLOB)),r.payload FROM results r JOIN jobs j ON j.id=r.job_id WHERE j.status NOT IN ('queued','running','interpreting')"):
             observed = accesses.get(("result", row[0]), max(timestamp(row[3]) or 0, since))
             if observed >= cutoff or row[0] in protected or row[1] in protected or row[2] in busy_sessions:
                 continue
             paths = legacy_result_paths(runtime, row[0], row[2])
-            items.append({"id": row[0], "kind": "result", "name": json.loads(row[5])["operation_id"], "owner": owners.get(row[2]),
+            items.append({"id": row[0], "kind": "result", "name": json.loads(row[5])["problem_id"], "owner": owners.get(row[2]),
                           "size_bytes": row[4] + sum(p.stat().st_size for p in paths), "last_used": observed,
                           "sha256": hashlib.sha256(row[5].encode()).hexdigest()})
         reason = "Historical opens were not recorded. Results without an observed open are retained for the full period after access tracking began. Saved views and project references protect results."
@@ -380,7 +380,7 @@ def backup_action(runtime, action, *, name=None, confirm=False, confirm_name=Non
             with runtime.database._connect() as db:
                 db.execute("UPDATE admin_backup_checks SET status='failed' WHERE name=?", (target.name,))
                 runtime.accounts._audit(db, "backup." + action + "_failed", target.name, before={"status": "started"}, after={"status": "failed"})
-            raise AccountError("The backup operation failed its filesystem or integrity checks. Review the server log before retrying.", "backup_failed", 409) from None
+            raise AccountError("The backup problem failed its filesystem or integrity checks. Review the server log before retrying.", "backup_failed", 409) from None
         with runtime.database._connect() as db:
             runtime.accounts._audit(db, "backup." + action + "_completed", target.name, before={"status": "started"}, after=result)
         return result

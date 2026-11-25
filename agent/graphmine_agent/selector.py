@@ -73,47 +73,47 @@ class BackendSelector:
                 raise BackendPolicyError("policy root must be an object")
             if value.get("schema_version") != "1.0.0":
                 raise BackendPolicyError("unsupported backend policy schema")
-            operations = value.get("operations")
-            if not isinstance(operations, dict):
-                raise BackendPolicyError("policy operations must be an object")
-            for operation_id, policy in operations.items():
-                if not isinstance(operation_id, str) or not operation_id:
-                    raise BackendPolicyError("policy operation IDs must be strings")
-                operation = self.catalog.operation(operation_id)
+            problems = value.get("problems")
+            if not isinstance(problems, dict):
+                raise BackendPolicyError("policy problems must be an object")
+            for problem_id, policy in problems.items():
+                if not isinstance(problem_id, str) or not problem_id:
+                    raise BackendPolicyError("policy problem IDs must be strings")
+                problem = self.catalog.problem(problem_id)
                 if not isinstance(policy, dict):
                     raise BackendPolicyError(
-                        f"policy for {operation_id} must be an object"
+                        f"policy for {problem_id} must be an object"
                     )
                 global_ranked = policy.get("global_ranked_backends", [])
                 if not isinstance(global_ranked, list) or not all(
                     isinstance(item, str) and item for item in global_ranked
                 ):
                     raise BackendPolicyError(
-                        f"global ranking for {operation_id} must be backend IDs"
+                        f"global ranking for {problem_id} must be backend IDs"
                     )
                 buckets = policy.get("buckets", {})
                 if not isinstance(buckets, dict):
                     raise BackendPolicyError(
-                        f"buckets for {operation_id} must be an object"
+                        f"buckets for {problem_id} must be an object"
                     )
                 candidates: list[Any] = list(global_ranked)
                 for bucket in buckets.values():
                     if not isinstance(bucket, dict):
                         raise BackendPolicyError(
-                            f"bucket for {operation_id} must be an object"
+                            f"bucket for {problem_id} must be an object"
                         )
                     ranked = bucket.get("ranked_backends", [])
                     if not isinstance(ranked, list) or not all(
                         isinstance(item, str) and item for item in ranked
                     ):
                         raise BackendPolicyError(
-                            f"bucket ranking for {operation_id} must be backend IDs"
+                            f"bucket ranking for {problem_id} must be backend IDs"
                         )
                     candidates.extend(ranked)
-                unknown = set(candidates) - set(operation.backends)
+                unknown = set(candidates) - set(problem.backends)
                 if unknown:
                     raise BackendPolicyError(
-                        f"policy for {operation_id} has unknown backends: "
+                        f"policy for {problem_id} has unknown backends: "
                         f"{sorted(unknown)}"
                     )
             self.policy = value
@@ -129,23 +129,23 @@ class BackendSelector:
 
     def ranked_backends(
         self,
-        operation_id: str,
+        problem_id: str,
         metadata: GraphMetadata | dict[str, Any] | None,
     ) -> list[str]:
-        operation_policy = (
-            (self.policy or {}).get("operations", {}).get(operation_id, {})
+        problem_policy = (
+            (self.policy or {}).get("problems", {}).get(problem_id, {})
         )
         bucket = feature_bucket(metadata)
         ranked = list(
-            operation_policy.get("buckets", {})
+            problem_policy.get("buckets", {})
             .get(bucket, {})
             .get("ranked_backends", [])
         )
-        ranked.extend(operation_policy.get("global_ranked_backends", []))
-        operation = self.catalog.operation(operation_id)
-        ranked.append(operation.default_backend)
-        ranked.extend(operation.backends)
-        excluded = CORRECTNESS_EXCLUSIONS.get(operation_id, {})
+        ranked.extend(problem_policy.get("global_ranked_backends", []))
+        problem = self.catalog.problem(problem_id)
+        ranked.append(problem.default_backend)
+        ranked.extend(problem.backends)
+        excluded = CORRECTNESS_EXCLUSIONS.get(problem_id, {})
         return [
             item
             for item in dict.fromkeys(str(item) for item in ranked)
@@ -158,12 +158,12 @@ class BackendSelector:
         metadata: GraphMetadata | dict[str, Any] | None,
         compiled_backends: set[str],
     ) -> ExecutionPlan:
-        excluded = CORRECTNESS_EXCLUSIONS.get(plan.operation_id, {})
+        excluded = CORRECTNESS_EXCLUSIONS.get(plan.problem_id, {})
         if plan.backend_id in excluded:
             raise PlanValidationError([excluded[plan.backend_id]])
         if plan.backend_id != "auto" or (self.policy is None and not excluded):
             return plan
-        for backend in self.ranked_backends(plan.operation_id, metadata):
+        for backend in self.ranked_backends(plan.problem_id, metadata):
             if backend not in compiled_backends:
                 continue
             candidate = plan.model_copy(update={"backend_id": backend})

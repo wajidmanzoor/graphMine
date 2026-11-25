@@ -29,7 +29,7 @@ DOMAINS = [
         "have a direct network connection",
     ),
 ]
-PROBLEMS = {
+TOPICS = {
     "maximal-cliques": "maximal_clique_enumeration",
     "maximum-clique": "maximum_clique",
     "k-cliques": "k_clique_counting_enumeration",
@@ -186,7 +186,7 @@ def _tasks(graph: dict, vocabulary: dict, seed: int) -> list[dict]:
     tasks = []
 
     def add(
-        operation,
+        problem,
         query,
         parameters=None,
         outputs=None,
@@ -196,8 +196,8 @@ def _tasks(graph: dict, vocabulary: dict, seed: int) -> list[dict]:
         **intent,
     ):
         task = {
-            "operation_id": operation,
-            "problem_id": PROBLEMS.get(operation),
+            "problem_id": problem,
+            "topic_id": TOPICS.get(problem),
             "query": query,
             "parameters": parameters or {},
             "optional_outputs": outputs or [],
@@ -366,8 +366,8 @@ def gold_route(task: dict) -> RouteDecision:
     ambiguous = task["behavior"] == "clarify"
     unsupported = task["behavior"] == "unsupported"
     return RouteDecision(
-        problem_id=None if ambiguous else task["problem_id"],
-        operation_id=None if ambiguous or unsupported else task["operation_id"],
+        topic_id=None if ambiguous else task["topic_id"],
+        problem_id=None if ambiguous or unsupported else task["problem_id"],
         supported=not (ambiguous or unsupported),
         confidence=1,
         explanation=(

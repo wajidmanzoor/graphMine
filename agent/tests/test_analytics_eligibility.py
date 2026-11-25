@@ -71,7 +71,7 @@ def test_direction_and_weight_hints_score_but_do_not_remove_valid_options():
     assert score_hints(candidate, profile, {"weighted": True})["score"] < 0
 
 
-def test_unit_mode_and_complete_numeric_field_keep_weighted_operation_available():
+def test_unit_mode_and_complete_numeric_field_keep_weighted_problem_available():
     assert eligible(card(weights="required", unit_weight_mode=True), graph_profile())[0]
     weighted = graph_profile(edges=[{"source": 0, "target": 1, "attributes": {"stars": 4.5}}])
     assert eligible(card(weights="required"), weighted)[0]
@@ -114,10 +114,10 @@ def test_non_graph_input_sizes_are_profiled(kind, data, key, count):
 
 
 def test_every_declared_requirement_has_the_machine_contract():
-    path = Path(__file__).resolve().parents[2] / "catalog/operation_requirements.json"
-    operations = json.loads(path.read_text())["operations"]
-    assert len(operations) == 82
-    for requirement in operations.values():
+    path = Path(__file__).resolve().parents[2] / "catalog/problem_requirements.json"
+    problems = json.loads(path.read_text())["problems"]
+    assert len(problems) == 82
+    for requirement in problems.values():
         assert set(requirement) == {"input_kind", "direction", "weights", "unit_weight_mode", "needs"}
         assert requirement["direction"] in {"directed", "undirected", "either"}
         assert requirement["weights"] in {"required", "optional", "ignored"}

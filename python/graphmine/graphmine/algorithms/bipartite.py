@@ -41,7 +41,7 @@ def _partitions(graph, left=None, right=None):
 
 def _graph(graph, left, *, loop_policy="reject", objective=None):
     if graph.directed:
-        raise GraphMineError("A bipartite operation requires an undirected graph")
+        raise GraphMineError("A bipartite problem requires an undirected graph")
     g = nx.Graph(backend="networkx")
     g.add_nodes_from(range(graph.vertex_count))
     for edge in graph.to_canonical()["edges"]:
@@ -67,7 +67,7 @@ def _graph(graph, left, *, loop_policy="reject", objective=None):
 
 @register(
     id="maximal-bicliques",
-    problem_id="maximal_biclique_enumeration",
+    topic_id="maximal_biclique_enumeration",
     title="Find maximal completely connected groups across two sides",
     description="A clique reduction followed by NetworkX maximal-clique enumeration; both biclique sides must be nonempty.",
     parameters={
@@ -129,7 +129,7 @@ def _butterflies(g, left, work):
 
 @register(
     id="butterfly-counting",
-    problem_id="butterfly_counting_bipartite",
+    topic_id="butterfly_counting_bipartite",
     title="Count four-way connections between two sides",
     description="Exact 2-by-2 biclique counts and participation. Core mode declares whether thresholds apply to ordinary degree or butterfly participation.",
     parameters={
@@ -252,7 +252,7 @@ def butterflies(graph, args, work, backend="networkx"):
 
 @register(
     id="bipartite-matching",
-    problem_id="bipartite_matching_assignment",
+    topic_id="bipartite_matching_assignment",
     title="Match items on two sides by count, value, or cost",
     description="NetworkX maximum-weight matching with explicit cardinality and coverage semantics. Minimum-cost without required coverage may legitimately choose an empty matching.",
     parameters={

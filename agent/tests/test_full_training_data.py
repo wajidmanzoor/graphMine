@@ -16,7 +16,7 @@ def test_recovery_selection_accepts_new_corpus_ids_but_rejects_test_or_changed_c
         {
             "id": "full-" + split,
             "split": split,
-            "task": {"operation_id": "k-cliques", "expected_status": "ready"},
+            "task": {"problem_id": "k-cliques", "expected_status": "ready"},
         }
         for split in ("train", "validation", "test")
     ]
@@ -38,7 +38,7 @@ def test_larger_core_and_components_have_known_answers_and_keep_exhaustive_guard
         "graph": graph,
         "attachments": {},
         "task": {
-            "operation_id": "k-core",
+            "problem_id": "k-core",
             "expected_status": "ready",
             "parameters": {"requested_k": 2},
             "intent": ApplicationIntent().model_dump(mode="json"),
@@ -46,13 +46,13 @@ def test_larger_core_and_components_have_known_answers_and_keep_exhaustive_guard
     }
     assert reference_for_case(case)["expected"]["vertices"] == list(range(100))
     case["task"].update(
-        operation_id="connected-components",
+        problem_id="connected-components",
         parameters={"connectivity_mode": "weakly_connected"},
     )
     assert sorted(map(len, reference_for_case(case)["expected"]["groups"])) == [
         1
     ] * 11 + [100]
-    case["task"].update(operation_id="k-cliques", parameters={"k": 3})
+    case["task"].update(problem_id="k-cliques", parameters={"k": 3})
     with pytest.raises(ValueError, match="limited to 8"):
         reference_for_case(case)
 
@@ -94,7 +94,7 @@ def teacher_fixture(root):
             "conversation": [],
             "reference_contract": {
                 "expected_status": "needs_information",
-                "problem_id": None,
+                "topic_id": None,
             },
         }
         job["sha256"] = digest(job)

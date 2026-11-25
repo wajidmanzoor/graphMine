@@ -36,7 +36,7 @@ def probabilities(values):
 
 @register(
     id="random-walks",
-    problem_id="random_walk_generation",
+    topic_id="random_walk_generation",
     title="Sample graph walks with an explicit transition model",
     description="NumPy random sampling over outgoing adjacency. Uniform walks collapse parallel edges; weighted and node2vec walks sum weights. Self-loops are retained. Zero total outgoing weight terminates a walk.",
     parameters={
@@ -131,7 +131,7 @@ def _fanout(value):
 
 @register(
     id="neighborhood-sampling",
-    problem_id="neighborhood_sampling",
+    topic_id="neighborhood_sampling",
     title="Sample neighborhoods while retaining original edge identities",
     description="Sample outgoing edge instances per distinct frontier vertex, hop and seed batch. Parallel edges and self-loops retain their identity. Typed fanouts and UTC timestamp cutoffs are explicit.",
     parameters={

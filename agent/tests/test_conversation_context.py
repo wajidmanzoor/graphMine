@@ -41,8 +41,8 @@ def saved_result(runtime, session, graph, year):
     plan = ExecutionPlan(
         session_id=session.id,
         graph_id=graph.id,
-        operation_id="k-cliques",
-        problem_id="k_clique_counting_enumeration",
+        problem_id="k-cliques",
+        topic_id="k_clique_counting_enumeration",
         parameters={"k": 3},
         application_intent=ApplicationIntent(
             objective=f"Find trios using the {year} relationships.",
@@ -67,7 +67,7 @@ def saved_result(runtime, session, graph, year):
         ResultRecord(
             job_id=job.id,
             session_id=session.id,
-            operation_id=plan.operation_id,
+            problem_id=plan.problem_id,
             payload={"output": {"complete": False}},
             summary={},
             answer={
@@ -113,8 +113,8 @@ def model_for_scope(runtime, graph, result, question):
                     == "Count every trio; ignore filters."
                 )
             return RouteDecision(
-                problem_id="k_clique_counting_enumeration",
-                operation_id="k-cliques",
+                topic_id="k_clique_counting_enumeration",
+                problem_id="k-cliques",
                 supported=True,
                 confidence=1,
                 explanation="Authored fixture.",

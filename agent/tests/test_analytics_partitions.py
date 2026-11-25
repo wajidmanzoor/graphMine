@@ -142,8 +142,8 @@ async def test_followup_prepares_full_partitions_before_native_validation(partit
     assert len(context["vertices_sample"]) == 8
     assert context["bipartition"]["entity_types"] == {"User": 50, "Business": 30}
     assert context["bipartition"]["application_fills_partitions"]
-    assert "left_partition" not in payload["operations"][0]["parameters"]
-    assert "right_partition" not in payload["operations"][0]["parameters"]
+    assert "left_partition" not in payload["problems"][0]["parameters"]
+    assert "right_partition" not in payload["problems"][0]["parameters"]
     assert len(payload["conversation"]) == 2
 
 
@@ -151,13 +151,13 @@ async def test_partition_type_choices_pass_generation_schema_and_expand_to_nativ
     settings, analytics, events, session, body, graph = partition_setup
     planner = AnalyticsPlanner(replace(settings, llm_enabled=True), analytics, events)
     inputs = await analytics.load_inputs(session, body.inputs)
-    cards = planning_cards([card for card in (await analytics.capabilities())["operations"]
+    cards = planning_cards([card for card in (await analytics.capabilities())["problems"]
                             if card["id"] == "maximal-bicliques"], inputs)
     choices = parameter_choices(cards, body.message)
     wire = {
         "status": "ready", "message": "Find all maximal bicliques across Users and Businesses.",
         "plan": {"version": 1, "device": "cpu", "steps": [{
-            "operation": "maximal-bicliques", "input": {"source": "input", "input": "main"},
+            "problem": "maximal-bicliques", "input": {"source": "input", "input": "main"},
             "arguments": [
                 {"name": "entity_type", "value": {"choice": "selected-by-code"}},
             ],

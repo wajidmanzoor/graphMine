@@ -136,7 +136,7 @@ async def test_cpu_never_probes_cuda_and_auto_can_use_cpu(settings):
 def test_workflow_admission_uses_verified_backends_and_explicit_devices():
     cards = [
         {
-            "id": operation,
+            "id": problem,
             "execution": {"cpu": cpu, "gpu": bool(devices)},
             "backends": [
                 {"device": "gpu", "verified": True, "verified_devices": devices},
@@ -147,7 +147,7 @@ def test_workflow_admission_uses_verified_backends_and_explicit_devices():
                 },
             ],
         }
-        for operation, devices, cpu in (
+        for problem, devices, cpu in (
             ("count", ["GPU-A", "GPU-B"], True),
             ("rank", ["GPU-B"], True),
             ("lookup", [], True),
@@ -158,7 +158,7 @@ def test_workflow_admission_uses_verified_backends_and_explicit_devices():
     def plan(*steps):
         return {
             "device": "auto",
-            "steps": [{"operation": op, "device": device} for op, device in steps],
+            "steps": [{"problem": op, "device": device} for op, device in steps],
         }
 
     assert execution_admission(plan(("count", "auto")), cards) == (

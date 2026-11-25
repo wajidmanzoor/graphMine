@@ -10,7 +10,7 @@ def summary(view, saved, record, question=None):
     collection = facts.get("collection") or {}
     kind = view["profile"]["kind"]
     count_only = view["view_spec"]["view"] == "metric"
-    operation = saved.get("operation", "Analysis")
+    problem = saved.get("problem", "Analysis")
     sides = view.get("bipartite_names", [])
     step = view["step"]
     sentence = result_sentence(saved, sides)
@@ -26,7 +26,7 @@ def summary(view, saved, record, question=None):
     covered = collection.get("covered_vertices")
     if count_only:
         port = saved["ports"][view["port"]]
-        add("Count" if "count" in operation else view["profile"]["title"], port["value"], f"out of {total} vertices" if total is not None else None)
+        add("Count" if "count" in problem else view["profile"]["title"], port["value"], f"out of {total} vertices" if total is not None else None)
     elif kind == "bipartite":
         add("Count", collection.get("count", facts["items"]))
         pair = collection.get("largest_sides")
@@ -42,7 +42,7 @@ def summary(view, saved, record, question=None):
         add("Coverage", f"{covered} / {total}" if covered is not None else None)
     elif kind == "subgraph":
         raw = saved.get("result", {})
-        if operation == "densest-subgraph" and raw.get("clique_order") == 2 and not saved.get("parameters", {}).get("weight_mode"):
+        if problem == "densest-subgraph" and raw.get("clique_order") == 2 and not saved.get("parameters", {}).get("weight_mode"):
             density = raw.get("density")
             base = source.get("edges", 0) / total if total else 0
             add("Density", f"{density:.4g} vs {base:.4g}" if isinstance(density, (int, float)) else None, "Connections per vertex: result vs input")
@@ -56,7 +56,7 @@ def summary(view, saved, record, question=None):
         if view["graph_available"]:
             add("Vertices", view["vertex_count"])
             add("Connections", view["edge_count"])
-    return {"title": question or record.get("question") or operation.replace("-", " ").capitalize(),
+    return {"title": question or record.get("question") or problem.replace("-", " ").capitalize(),
             "sentence": sentence, "metrics": cards, "count_only": count_only,
             "quality": saved.get("quality"), "device": saved.get("backend", {}).get("device"),
             "validated": bool(record.get("validation", {}).get("workflow_hash"))}

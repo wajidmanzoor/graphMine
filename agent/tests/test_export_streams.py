@@ -215,7 +215,7 @@ def test_offline_report_stream_preserves_exact_data_and_escapes_script_text():
     from graphmine_agent.reporting import iter_report
 
     value = {'rows': [{'vertex': 9007199254740993, 'label': '</script><script>window.injected=true</script>\u2028🐱'}]}
-    result = ResultRecord(job_id='job', session_id='session', operation_id='test', payload=value, summary={}, answer={})
+    result = ResultRecord(job_id='job', session_id='session', problem_id='test', payload=value, summary={}, answer={})
     chunks = list(iter_report(result)); html = ''.join(chunks)
     data = re.search(r'<script id="graphmine-report" type="application/json">(.*?)</script>', html, re.S).group(1)
     assert json.loads(data) == result.model_dump(mode='json')
@@ -228,7 +228,7 @@ def test_offline_report_large_rows_do_not_require_a_second_result_copy():
     from graphmine_agent.models import ResultRecord
     from graphmine_agent.reporting import iter_report
 
-    result = ResultRecord(job_id='job', session_id='session', operation_id='test',
+    result = ResultRecord(job_id='job', session_id='session', problem_id='test',
                           payload={'rows': [{'vertex': i, 'text': 'x' * 256} for i in range(20000)]}, summary={})
     tracemalloc.start()
     try:

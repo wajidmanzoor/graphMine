@@ -51,7 +51,7 @@ def overview(runtime):
     error_counts = Counter(r["details"].get("code", r["outcome"]) for r in errors)
     per_day = Counter(datetime.fromtimestamp(r["ts"], timezone.utc).date().isoformat() for r in rows if r["type"] == "question")
     workflows = runtime.analytics._all()
-    operations = Counter(step["operation"] for w in workflows for step in w.get("validation", {}).get("plan", {}).get("steps", []) if w.get("status") == "completed")
+    problems = Counter(step["problem"] for w in workflows for step in w.get("validation", {}).get("plan", {}).get("steps", []) if w.get("status") == "completed")
     return {"now": now, "timezone": "UTC", "recording_since": float(recorded[0]) if recorded else None,
             "active_now": active, "accounts": count, "questions_today": len(questions),
             "questions_yesterday": sum(r["type"] == "question" and today.timestamp() - 86400 <= r["ts"] < today.timestamp() for r in rows),
@@ -64,6 +64,6 @@ def overview(runtime):
             "token_pool": runtime.settings.server_daily_tokens, "queues": queues(runtime),
             "recent": admin_events.query(runtime.database, limit=4)["items"],
             "questions_per_day": [{"day": (today - timedelta(days=13-i)).date().isoformat(), "questions": per_day[(today - timedelta(days=13-i)).date().isoformat()]} for i in range(14)],
-            "operations": [{"operation": k, "count": v} for k, v in operations.most_common()],
+            "problems": [{"problem": k, "count": v} for k, v in problems.most_common()],
             "saved_analyses": sum(w.get("status") == "completed" for w in workflows),
             "conversations": conversations, "failed_analyses": sum(w.get("status") == "failed" for w in workflows)}

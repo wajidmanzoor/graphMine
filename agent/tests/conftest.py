@@ -30,11 +30,11 @@ def fake_binary(tmp_path: Path) -> Path:
 
             if len(sys.argv) > 1 and sys.argv[1] == "list":
                 print(json.dumps({
-                    "operation_count": 13,
+                    "problem_count": 13,
                     "library_version": "1.0.0",
                     "validated_backend_count": 26,
                     "compiled_backend_count": 1,
-                    "operations": [{
+                    "problems": [{
                         "id": "maximal-cliques",
                         "backends": [{"id": "rdmce", "compiled": True, "validated": True}],
                     }],

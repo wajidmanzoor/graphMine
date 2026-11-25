@@ -51,7 +51,7 @@ async def evaluate_routing(
                     mode=LLMMode.planner,
                     schema=RouteDecision,
                     user_payload={
-                        "task": "Identify exactly one formal graph problem and runnable operation, or report ambiguity/unsupported intent.",
+                        "task": "Identify exactly one formal graph topic and runnable problem, or report ambiguity/unsupported intent.",
                         "message": case["user_query"],
                         "graph_metadata": {
                             "directed": None,
@@ -65,8 +65,8 @@ async def evaluate_routing(
                 )
                 decision = normalize_route(catalog, raw_decision)
                 passed = (
-                    decision.problem_id == expected["problem_id"]
-                    and decision.operation_id == expected["operation_id"]
+                    decision.topic_id == expected["topic_id"]
+                    and decision.problem_id == expected["problem_id"]
                     and decision.supported == expected["supported"]
                 )
                 observed = decision.model_dump(mode="json")
@@ -81,7 +81,7 @@ async def evaluate_routing(
                 "passed": passed,
                 "expected": {
                     key: expected[key]
-                    for key in ("problem_id", "operation_id", "supported")
+                    for key in ("topic_id", "problem_id", "supported")
                 },
                 "observed": observed,
                 "raw_observed": (
@@ -143,8 +143,8 @@ def run_evaluation(
     )
 
 
-def _synthetic_graph_metadata(operation_id: str) -> dict[str, Any]:
-    temporal = operation_id == "temporal-motif-mining"
+def _synthetic_graph_metadata(problem_id: str) -> dict[str, Any]:
+    temporal = problem_id == "temporal-motif-mining"
     return {
         "graph_id": "file_graph",
         "name": "evaluation-graph",
@@ -171,7 +171,7 @@ async def evaluate_planning(
     concurrency: int = 2,
     case_ids: set[str] | None = None,
 ) -> dict[str, Any]:
-    """Evaluate operation-specific plans without spending a second call on routing."""
+    """Evaluate problem-specific plans without spending a second call on routing."""
 
     catalog = Catalog(settings)
     validator = PlanValidator(catalog)
@@ -189,8 +189,8 @@ async def evaluate_planning(
     async def evaluate_case(case: dict[str, Any]) -> dict[str, Any]:
         async with semaphore:
             expected = case["expected"]
-            operation = catalog.operation(expected["operation_id"])
-            metadata = _synthetic_graph_metadata(operation.id)
+            problem = catalog.problem(expected["problem_id"])
+            metadata = _synthetic_graph_metadata(problem.id)
             available_files: list[dict[str, Any]] = [
                 {
                     "id": "file_graph",
@@ -222,11 +222,11 @@ async def evaluate_planning(
                 "graph_id": "file_graph",
                 "domain": catalog.domain(case["domain_id"]).model_dump(mode="json"),
                 "graph_metadata": metadata,
-                "selected_operation": {
-                    "problem_id": expected["problem_id"],
-                    "operation_id": operation.id,
+                "selected_problem": {
+                    "topic_id": expected["topic_id"],
+                    "problem_id": problem.id,
                 },
-                "operation_context": catalog.operation_context(operation.id),
+                "problem_context": catalog.problem_context(problem.id),
                 "available_files": available_files,
                 "requested_backend": None,
                 "supplied_parameters": {},
@@ -246,13 +246,13 @@ async def evaluate_planning(
                     update={
                         "session_id": "session_evaluation",
                         "graph_id": "file_graph",
-                        "problem_id": expected["problem_id"],
-                        "operation_id": operation.id,
+                        "topic_id": expected["topic_id"],
+                        "problem_id": problem.id,
                         "allow_directed_projection": False,
                     }
                 )
                 candidate = bind_unique_required_auxiliary_inputs(
-                    candidate, operation, available_files
+                    candidate, problem, available_files
                 )
                 normalized = validator.validate(candidate, for_execution=False)
                 expected_parameters = expected.get("parameters", {})
@@ -264,7 +264,7 @@ async def evaluate_planning(
                     name: value
                     for name, value in normalized.parameters.items()
                     if name not in expected_parameters
-                    and operation.instruction["parameters"][name].get("default")
+                    and problem.instruction["parameters"][name].get("default")
                     != value
                 }
                 outputs_match = set(normalized.optional_outputs) == set(
@@ -272,7 +272,7 @@ async def evaluate_planning(
                 )
                 selected_roles = {
                     specification["role"]
-                    for name, specification in operation.instruction[
+                    for name, specification in problem.instruction[
                         "auxiliary_inputs"
                     ].items()
                     if normalized.auxiliary_inputs.get(name)
@@ -296,7 +296,7 @@ async def evaluate_planning(
                     "auxiliary_roles": auxiliary_match and selected_files_exist,
                     "no_missing_inputs": not normalized.missing_inputs,
                     "backend_allowed": normalized.backend_id
-                    in operation.allowed_backends,
+                    in problem.allowed_backends,
                 }
                 passed = all(checks.values())
                 observed = normalized.model_dump(mode="json")
@@ -312,8 +312,8 @@ async def evaluate_planning(
                 "domain_id": case["domain_id"],
                 "passed": passed,
                 "expected": {
+                    "topic_id": expected["topic_id"],
                     "problem_id": expected["problem_id"],
-                    "operation_id": expected["operation_id"],
                     "parameters": expected.get("parameters", {}),
                     "optional_outputs": expected.get("optional_outputs", []),
                     "auxiliary_roles": expected.get("auxiliary_roles", []),

@@ -23,7 +23,7 @@ ForceLayoutInput force_layout_input(const Graph& graph, bool weighted, std::size
     // A symmetric matrix has identical row-major and column-major value bytes.
     result.weights.values = std::get<std::vector<double>>(std::get<DenseView>(input->view).values);
   } catch (const Failure& error) {
-    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+    if (std::string(error.what()) == "This problem requires nonnegative edge weights")
       throw Failure("invalid_input", "Layout weights must be nonnegative");
     if (std::string(error.what()) == "Aggregated edge weight overflowed")
       throw Failure("invalid_input", "Numerical result exceeded finite float64 range");

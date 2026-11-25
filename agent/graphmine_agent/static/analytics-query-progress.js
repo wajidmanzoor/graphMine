@@ -53,7 +53,7 @@ window.GraphMineQueryProgress = ({api, W, node, container}) => {
     renderSynchronization(job.kind === "sync" ? job.synchronization : null);
     active = job; monitor.hidden = section.hidden = false;
     const stage = job.progress || {};
-    status.textContent = job.status === "cancelling" ? "Cancellation requested. Waiting for the current database operation to return and roll back."
+    status.textContent = job.status === "cancelling" ? "Cancellation requested. Waiting for the current database problem to return and roll back."
       : ["failed", "interrupted", "cancelled"].includes(job.status) ? errorFrom(job).message
       : `${job.kind === "sync" ? "Graph refresh" : "Query"}: ${stages[stage.stage] || job.status}${stage.completed != null ? ` · ${stage.completed.toLocaleString()}${stage.total != null ? ` / ${stage.total.toLocaleString()}` : ""}` : ""}`;
     if (stage.total > 0 && stage.completed != null) { progress.max = stage.total; progress.value = stage.completed; }

@@ -39,11 +39,11 @@ def main():
     api = wrapper.NativeLibrary(library)
     rows = []
     for device in (0, 1):
-        for operation, backend in (
+        for problem, backend in (
             ("max-flow-min-cut", "ecl-maxflow"),
             ("bipartite-matching", "hungarian-cuda"),
         ):
-            matching = operation == "bipartite-matching"
+            matching = problem == "bipartite-matching"
             vertices = [
                 {"id": v, "attributes": {"side": "left" if i < 2 else "right"}}
                 for i, v in enumerate([0, "0", 9007199254740993, "r"])
@@ -82,7 +82,7 @@ def main():
             )
             request = {
                 "command": "run",
-                "operation": operation,
+                "problem": problem,
                 "graph": graph,
                 "parameters": parameters,
                 "backend": backend,
@@ -123,7 +123,7 @@ def main():
                 and "python" not in executions[1].lower()
             )
             response = api.run(
-                operation,
+                problem,
                 graph,
                 parameters=parameters,
                 device="gpu",
@@ -142,7 +142,7 @@ def main():
             )
             rows.append(
                 {
-                    "operation": operation,
+                    "problem": problem,
                     "backend": backend,
                     "device": device,
                     "result": direct,

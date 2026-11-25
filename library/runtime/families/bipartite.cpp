@@ -14,7 +14,7 @@ const ViewProfile butterfly_profile{"butterfly-counting:cpp:sides", {"butterfly-
 const ViewProfile count_profile{"maximal-biclique-counting:cpp:sides", {"maximal-biclique-counting"},
   R"({"kind":"bipartite","bipartite_sides":"attribute:side","self_loops":"drop","parallel_edges":"collapse:first","weights":"none"})"};
 std::vector<bool> partition(const Graph& graph, const json::object& args, bool explicit_sides) {
-  require(!graph.directed(), "Bipartite operations require undirected input");
+  require(!graph.directed(), "Bipartite problems require undirected input");
   std::vector<bool> left(graph.vertex_count(), false), seen(graph.vertex_count(), false);
   if (explicit_sides) {
     for (const auto key : {"left_partition", "right_partition"}) {

@@ -1,6 +1,6 @@
 """Thin bindings to the standalone C++/CUDA core; no Python graph algorithms.
 
-The native library owns operation contracts, family membership, validation,
+The native library owns problem contracts, family membership, validation,
 backend selection and result computation. This module only transports JSON
 through its versioned C ABI. The public ``graphmine`` API uses this same core.
 """
@@ -76,7 +76,7 @@ class NativeLibrary:
                 self.path = str(Path(os.fsdecode(information.filename)).resolve())
         self._library.graphmine_runtime_abi_version.restype = ctypes.c_int
         self._library.graphmine_runtime_abi_version.argtypes = []
-        if self._library.graphmine_runtime_abi_version() != 1:
+        if self._library.graphmine_runtime_abi_version() != 2:
             raise NativeError("abi_mismatch", "Unsupported native runtime ABI")
         self._library.graphmine_runtime_request.argtypes = [
             ctypes.c_char_p,
@@ -111,7 +111,7 @@ class NativeLibrary:
 
     def validate(
         self,
-        operation,
+        problem,
         graph=None,
         *,
         parameters=None,
@@ -120,7 +120,7 @@ class NativeLibrary:
     ):
         request = {
             "command": "validate",
-            "operation": operation,
+            "problem": problem,
             "parameters": {} if parameters is None else parameters,
             "device": device,
             "partial_parameters": partial_parameters,
@@ -190,7 +190,7 @@ class NativeLibrary:
             self._require_family(family)
         return [
             deepcopy(card)
-            for card in self._catalog["operations"]
+            for card in self._catalog["problems"]
             if family is None or card["family"] == family
         ]
 
@@ -210,7 +210,7 @@ class NativeLibrary:
 
     def run(
         self,
-        operation,
+        problem,
         graph,
         *,
         parameters=None,
@@ -224,7 +224,7 @@ class NativeLibrary:
             graph = graph.to_canonical()
         request = {
             "command": "run",
-            "operation": operation,
+            "problem": problem,
             "graph": graph,
             "parameters": {} if parameters is None else parameters,
             "device": device,
@@ -248,12 +248,12 @@ class Family:
         return self._library.list_algorithms(family=self.id)
 
     def __getattr__(self, name):
-        operation = name.replace("_", "-")
-        if operation not in {card["id"] for card in self.list_algorithms()}:
+        problem = name.replace("_", "-")
+        if problem not in {card["id"] for card in self.list_algorithms()}:
             raise AttributeError(name)
 
         def execute(graph, *, parameters=None, **options):
-            return self._library.run(operation, graph, parameters=parameters, **options)
+            return self._library.run(problem, graph, parameters=parameters, **options)
 
         execute.__name__ = name
         return execute

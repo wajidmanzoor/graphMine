@@ -77,7 +77,7 @@ def samples(count=40):
         output = 1 + (i * 11) % 17
         peak = 1024 + 30 * shape["n"] + 50 * shape["m"] + 2 * output
         rows.append(dict(schema_version=2, run_id=f"fixture-{i}", created_at=storage.utc_now(),
-            operation="test", chosen_backend="cpp", candidates=[candidate()], hardware=hardware(),
+            problem="test", chosen_backend="cpp", candidates=[candidate()], hardware=hardware(),
             graph_features=shape, parameters={"mode": "count"}, output_estimate=output,
             peak_memory={"process_rss_bytes": peak}, implementation_sha256=IMPLEMENTATION,
             is_evaluation=False, source="benchmark", outcome="completed", censored=False))
@@ -214,7 +214,7 @@ def test_native_capabilities_expose_limits_without_running_cuda():
                        "allows_self_loops": False, "allows_parallel_edges": False},
              "vertices": [{"id": 0}, {"id": 1}],
              "edges": [{"id": "edge", "source": 0, "target": 1, "weight": 1}]}
-    caps = native_request(dict(command="backend_capabilities", operation="max-flow-min-cut", graph=graph,
+    caps = native_request(dict(command="backend_capabilities", problem="max-flow-min-cut", graph=graph,
                                parameters={"source": 0, "sink": 1}, device="cpu", allowed_backends=["cpp"]))
     by_id = {c["id"]: c for c in caps["candidates"]}
     assert by_id["cpp"]["feasible"] and by_id["cpp"]["limits"]["n"] > 2 ** 31

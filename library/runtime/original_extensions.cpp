@@ -245,32 +245,32 @@ std::vector<TriangleUpdate> updates(const json::object& args) {
 #endif
 } // namespace
 
-bool original_extension_backend(const std::string& operation, const std::string& backend) {
-  const auto found = registrations.find(operation);
+bool original_extension_backend(const std::string& problem, const std::string& backend) {
+  const auto found = registrations.find(problem);
   return found != registrations.end() && std::find(found->second.begin(), found->second.end(), backend) != found->second.end();
 }
-json::array original_extension_backends(const std::string& operation) {
-  const auto found = registrations.find(operation);
+json::array original_extension_backends(const std::string& problem) {
+  const auto found = registrations.find(problem);
   if (found == registrations.end()) return {};
   std::map<std::string, bool> compiled;
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_EXTENSIONS
   auto add = [&](const auto& entries) { for (const auto& entry : entries) compiled[entry.id] = entry.compiled; };
-  if (operation == "community-detection") add(CommunityDetection::backends());
-  else if (operation == "quasi-cliques") add(QuasiCliques::backends());
-  else if (operation == "maximal-bicliques") add(MaximalBicliques::backends());
-  else if (operation == "maximal-biclique-counting") add(MaximalBicliqueCounting::backends());
-  else if (operation == "dynamic-triangle-counting") add(DynamicTriangleCounting::backends());
-  else if (operation == "motif-counting") add(GraphMotifs::backends());
-  else if (operation == "subgraph-isomorphism") add(SubgraphIsomorphism::backends());
-  else if (operation == "temporal-motifs") add(TemporalMotifMining::backends());
-  else if (operation == "connected-components") add(ConnectedComponents::backends());
-  else if (operation == "transitive-closure") add(TransitiveClosure::backends());
-  else if (operation == "butterfly-counting") add(ButterflyCounting::backends());
-  else if (operation == "k-truss") add(KTruss::backends());
-  else if (operation == "densest-subgraph") add(DensestSubgraph::backends());
-  else if (operation == "personalized-pagerank") add(PersonalizedPageRank::backends());
-  else if (operation == "group-steiner-tree") add(GroupSteinerTree::backends());
-  else if (operation == "influence-maximization") add(InfluenceMaximization::backends());
+  if (problem == "community-detection") add(CommunityDetection::backends());
+  else if (problem == "quasi-cliques") add(QuasiCliques::backends());
+  else if (problem == "maximal-bicliques") add(MaximalBicliques::backends());
+  else if (problem == "maximal-biclique-counting") add(MaximalBicliqueCounting::backends());
+  else if (problem == "dynamic-triangle-counting") add(DynamicTriangleCounting::backends());
+  else if (problem == "motif-counting") add(GraphMotifs::backends());
+  else if (problem == "subgraph-isomorphism") add(SubgraphIsomorphism::backends());
+  else if (problem == "temporal-motifs") add(TemporalMotifMining::backends());
+  else if (problem == "connected-components") add(ConnectedComponents::backends());
+  else if (problem == "transitive-closure") add(TransitiveClosure::backends());
+  else if (problem == "butterfly-counting") add(ButterflyCounting::backends());
+  else if (problem == "k-truss") add(KTruss::backends());
+  else if (problem == "densest-subgraph") add(DensestSubgraph::backends());
+  else if (problem == "personalized-pagerank") add(PersonalizedPageRank::backends());
+  else if (problem == "group-steiner-tree") add(GroupSteinerTree::backends());
+  else if (problem == "influence-maximization") add(InfluenceMaximization::backends());
 #endif
   json::array result;
   for (const auto& id : found->second)
@@ -279,39 +279,39 @@ json::array original_extension_backends(const std::string& operation) {
   return result;
 }
 
-std::string original_extension_support(const std::string& operation, const std::string& backend,
+std::string original_extension_support(const std::string& problem, const std::string& backend,
                                        const Graph& graph, const json::object& args, Work& work) {
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_EXTENSIONS
   const auto report = [](SupportReport value) { return value.supported ? std::string{} : value.reason; };
   const auto simple = normalized(graph, true, true, work);
-  if (operation == "community-detection") {
+  if (problem == "community-detection") {
     if (text_arg(args, "quality_function", "modularity") != "modularity" ||
         text_arg(args, "solution_quality", "heuristic") != "heuristic" ||
         text_arg(args, "weight_mode", "unweighted") != "unweighted" || natural(args, "seed", 0) != 0)
       return "Original community GPUs support unweighted heuristic modularity and seed=0; exact, CPM, weighted or custom-seed requests use CPU";
     return report(CommunityDetection(community_options(args, backend, 0)).supports(simple));
   }
-  if (operation == "quasi-cliques") {
+  if (problem == "quasi-cliques") {
     if (!boolean(args, "maximal_only", true) || nonempty(args, "maximum_size")) return "cuQC supports maximal quasi-cliques without a maximum_size bound";
     return report(QuasiCliques(quasi_options(args, 0)).supports(simple));
   }
-  if (operation == "maximal-bicliques") {
+  if (problem == "maximal-bicliques") {
     if (nonempty(args, "result_limit")) return "cuMBE runtime verification requires an uncapped biclique collection";
     return report(MaximalBicliques(biclique_options(args, 0)).supports(simple));
   }
-  if (operation == "maximal-biclique-counting") return report(MaximalBicliqueCounting(isolated<MaximalBicliqueCountingOptions>(0, work)).supports(simple));
-  if (operation == "dynamic-triangle-counting") {
+  if (problem == "maximal-biclique-counting") return report(MaximalBicliqueCounting(isolated<MaximalBicliqueCountingOptions>(0, work)).supports(simple));
+  if (problem == "dynamic-triangle-counting") {
     DynamicTriangleOptions options;
     return report(DynamicTriangleCounting(options).supports(simple, updates(args)));
   }
-  if (operation == "motif-counting") return report(GraphMotifs(motif_options(args, backend, 0)).supports(simple, motif_graphs(args)));
-  if (operation == "subgraph-isomorphism") {
+  if (problem == "motif-counting") return report(GraphMotifs(motif_options(args, backend, 0)).supports(simple, motif_graphs(args)));
+  if (problem == "subgraph-isomorphism") {
     const auto query = parse_graph(args.at("query_graph"));
     if (boolean(args, "induced", false) || nonempty(args, "vertex_predicates") || nonempty(args, "edge_predicates") || nonempty(args, "result_limit") || !is_simple(graph) || !is_simple(query))
       return "gMatch runtime profile requires simple non-induced graphs, no predicates and an uncapped result";
     return report(SubgraphIsomorphism(match_options(0)).supports(graph, query));
   }
-  if (operation == "temporal-motifs") {
+  if (problem == "temporal-motifs") {
     const auto reason = temporal_profile(args);
     if (!reason.empty()) return reason;
     const auto span = number(args.at("maximum_duration_seconds"), "maximum_duration_seconds");
@@ -319,18 +319,18 @@ std::string original_extension_support(const std::string& operation, const std::
       return "Original temporal kernels require an integral duration in [0, INT32_MAX]";
     return report(TemporalMotifMining(temporal_options(args, backend, 0)).supports(graph));
   }
-  if (operation == "connected-components") {
+  if (problem == "connected-components") {
     auto options = isolated<ConnectedComponentsOptions>(0, work);
     options.connectivity_mode = text_arg(args, "connectivity_mode", "weakly_connected") == "strongly_connected" ? ConnectivityMode::strongly_connected : ConnectivityMode::weakly_connected;
     return report(ConnectedComponents(options).supports(simple));
   }
-  if (operation == "transitive-closure") return report(TransitiveClosure(isolated<ReachabilityOptions>(0, work)).supports(simple));
-  if (operation == "butterfly-counting") {
+  if (problem == "transitive-closure") return report(TransitiveClosure(isolated<ReachabilityOptions>(0, work)).supports(simple));
+  if (problem == "butterfly-counting") {
     auto options = isolated<ButterflyOptions>(0, work); options.backend = backend;
     return report(ButterflyCounting(options).supports(simple));
   }
-  if (operation == "k-truss") return report(KTruss(isolated<KTrussOptions>(0, work)).supports(simple));
-  if (operation == "densest-subgraph") {
+  if (problem == "k-truss") return report(KTruss(isolated<KTrussOptions>(0, work)).supports(simple));
+  if (problem == "densest-subgraph") {
     if (text_arg(args, "weight_mode", "unweighted") != "unweighted" || natural(args, "minimum_vertices", 1) != 1)
       return "CDS supports unweighted clique density with minimum_vertices=1";
     auto options = isolated<DensestSubgraphOptions>(0, work);
@@ -338,8 +338,8 @@ std::string original_extension_support(const std::string& operation, const std::
     options.clique_order = k;
     return report(DensestSubgraph(options).supports(simple));
   }
-  if (operation == "group-steiner-tree") return report(GroupSteinerTree(steiner_options(args, 0, work)).supports(graph));
-  if (operation == "personalized-pagerank") {
+  if (problem == "group-steiner-tree") return report(GroupSteinerTree(steiner_options(args, 0, work)).supports(graph));
+  if (problem == "personalized-pagerank") {
     if (text_arg(args, "solution_quality", "numerical") != "approximate" || args.at("seed_vertices").as_array().size() != 1 ||
         !args.contains("restart_probability") || number(args.at("restart_probability"), "restart_probability") != .2 ||
         text_arg(args, "direction_mode", "outgoing") != "outgoing" || text_arg(args, "weight_mode", "unweighted") != "unweighted" ||
@@ -350,7 +350,7 @@ std::string original_extension_support(const std::string& operation, const std::
     if (natural(args, "random_seed", 42) > INT32_MAX) return "kPAR random_seed must fit signed int32";
     return report(PersonalizedPageRank(ppr_options(graph, args, 0, work)).supports(normalized(graph, false, true, work)));
   }
-  if (operation == "influence-maximization") {
+  if (problem == "influence-maximization") {
     if (text_arg(args, "solution_quality", "exact") != "heuristic" || text_arg(args, "diffusion_model", "independent_cascade") != "independent_cascade" || nonempty(args, "vertex_thresholds"))
       return "SuperFuser requires solution_quality=heuristic and independent_cascade; it does not certify a global optimum";
     return report(InfluenceMaximization(influence_options(args, 0, work)).supports(graph));
@@ -380,13 +380,13 @@ std::vector<std::size_t> original_communities(const Graph& graph, const json::ob
 #endif
 }
 
-json::object original_extension_run(const std::string& operation, const Graph& graph,
+json::object original_extension_run(const std::string& problem, const Graph& graph,
                                     const json::object& args, const std::string& backend, int device, Work& work) {
-  if (operation == "community-detection") return community_detection(graph, args, backend, device, work);
-  if (operation == "dynamic-triangle-counting") return dynamic_triangles(graph, args, backend, device, work);
-  if (operation == "maximal-biclique-counting") return maximal_biclique_count(graph, args, backend, device, work);
+  if (problem == "community-detection") return community_detection(graph, args, backend, device, work);
+  if (problem == "dynamic-triangle-counting") return dynamic_triangles(graph, args, backend, device, work);
+  if (problem == "maximal-biclique-counting") return maximal_biclique_count(graph, args, backend, device, work);
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_EXTENSIONS
-  if (operation == "personalized-pagerank") {
+  if (problem == "personalized-pagerank") {
     auto lock = admission(work);
     const auto result = checked(PersonalizedPageRank(ppr_options(graph, args, device, work)).run(normalized(graph, false, true, work)), work);
     work.output(2 * graph.vertex_count());
@@ -403,7 +403,7 @@ json::object original_extension_run(const std::string& operation, const Graph& g
     return output(resolved, {{"scores", scores}, {"ranking", ranking}, {"approximate", true},
                              {"error_bound_certified", false}, {"restart_probability", .2}}, {{"scores", port}}, true, "approximate");
   }
-  if (operation == "influence-maximization") {
+  if (problem == "influence-maximization") {
     auto lock = admission(work);
     const auto result = checked(InfluenceMaximization(influence_options(args, device, work)).run(graph), work);
     work.output(result.seed_set.size());
@@ -415,11 +415,11 @@ json::object original_extension_run(const std::string& operation, const Graph& g
   }
   // Existing runtime materialization preserves its richer output contract. The
   // GPU's count/objective/partition is independently checked before publication.
-  auto result = operation_handler(operation)(graph, args, "cpp", device, work);
+  auto result = problem_handler(problem)(graph, args, "cpp", device, work);
   const auto& data = result.at("result").as_object();
   auto lock = admission(work);
   const auto input = normalized(graph, true, true, work);
-  if (operation == "quasi-cliques") {
+  if (problem == "quasi-cliques") {
     const auto value = checked(QuasiCliques(quasi_options(args, device)).run(input), work);
     std::set<std::set<ExternalId>> expected, actual;
     for (const auto& row : data.at("quasi_cliques").as_array()) {
@@ -429,7 +429,7 @@ json::object original_extension_run(const std::string& operation, const Graph& g
     }
     for (const auto& group : value.quasi_cliques) actual.emplace(group.begin(), group.end());
     certify(value.complete && expected == actual, "cuQC disagrees with exact runtime quasi-cliques");
-  } else if (operation == "maximal-bicliques") {
+  } else if (problem == "maximal-bicliques") {
     const auto value = checked(MaximalBicliques(biclique_options(args, device)).run(input), work);
     using Biclique = std::pair<std::set<ExternalId>, std::set<ExternalId>>;
     std::set<Biclique> expected, actual;
@@ -441,17 +441,17 @@ json::object original_extension_run(const std::string& operation, const Graph& g
     }
     for (const auto& row : value.bicliques) actual.emplace(std::set<ExternalId>(row.left.begin(), row.left.end()), std::set<ExternalId>(row.right.begin(), row.right.end()));
     certify(value.complete && expected == actual, "cuMBE disagrees with exact runtime bicliques");
-  } else if (operation == "motif-counting") {
+  } else if (problem == "motif-counting") {
     const auto value = checked(GraphMotifs(motif_options(args, backend, device)).run(input, motif_graphs(args)), work);
     for (const auto& row : value.motifs)
       certify(exact_number(data.at("count_by_motif").as_object().at(row.motif_id), "motif count") == Exact(row.count), "GPU motif count disagrees with runtime occurrences");
-  } else if (operation == "subgraph-isomorphism") {
+  } else if (problem == "subgraph-isomorphism") {
     const auto value = checked(SubgraphIsomorphism(match_options(device)).run(graph, parse_graph(args.at("query_graph"))), work);
     certify(value.count == uint(data.at("returned_count"), "match count"), "gMatch disagrees with runtime embeddings");
-  } else if (operation == "temporal-motifs") {
+  } else if (problem == "temporal-motifs") {
     const auto value = checked(TemporalMotifMining(temporal_options(args, backend, device)).run(graph), work);
     certify(value.count == uint(data.at("occurrence_count"), "temporal count"), "GPU temporal count disagrees with runtime events");
-  } else if (operation == "connected-components") {
+  } else if (problem == "connected-components") {
     auto options = isolated<ConnectedComponentsOptions>(device, work);
     options.connectivity_mode = text_arg(args, "connectivity_mode", "weakly_connected") == "strongly_connected" ? ConnectivityMode::strongly_connected : ConnectivityMode::weakly_connected;
     const auto value = checked(ConnectedComponents(options).run(input), work);
@@ -465,7 +465,7 @@ json::object original_extension_run(const std::string& operation, const Graph& g
       expected.insert(ids);
     }
     certify(actual == expected, "ECL-SCC disagrees with runtime components");
-  } else if (operation == "transitive-closure") {
+  } else if (problem == "transitive-closure") {
     const auto value = checked(TransitiveClosure(isolated<ReachabilityOptions>(device, work)).run(input), work);
     std::set<Pair> pairs;
     for (const auto& pair : value.reachable_pairs) pairs.emplace(pair.source, pair.target);
@@ -476,11 +476,11 @@ json::object original_extension_run(const std::string& operation, const Graph& g
       const bool present = pairs.count({external_id(pair.at("source")), external_id(pair.at("target"))});
       certify(present == (full || pair.at("reachable").as_bool()), "GDlog disagrees with reachability");
     }
-  } else if (operation == "butterfly-counting") {
+  } else if (problem == "butterfly-counting") {
     auto options = isolated<ButterflyOptions>(device, work); options.backend = backend;
     const auto value = checked(ButterflyCounting(options).run(input), work);
     certify(value.butterfly_count == uint(data.at("butterfly_count"), "butterfly count"), "GPU butterfly count disagrees with runtime participation");
-  } else if (operation == "k-truss") {
+  } else if (problem == "k-truss") {
     const auto value = checked(KTruss(isolated<KTrussOptions>(device, work)).run(input), work);
     std::map<ExternalId, Pair> endpoints;
     for (const auto& edge : input.canonical().edges) endpoints[edge.id] = std::minmax(edge.source, edge.target);
@@ -490,14 +490,14 @@ json::object original_extension_run(const std::string& operation, const Graph& g
       const auto& row = raw.as_object();
       certify(actual.at(std::minmax(external_id(row.at("source")), external_id(row.at("target")))) == uint(row.at("truss_number"), "truss number"), "AccTD disagrees with runtime truss numbers");
     }
-  } else if (operation == "densest-subgraph") {
+  } else if (problem == "densest-subgraph") {
     auto options = isolated<DensestSubgraphOptions>(device, work); options.clique_order = natural(args, "clique_order", 2);
     const auto value = checked(DensestSubgraph(options).run(input), work);
     certify(value.optimal && !value.vertices.empty() && Exact(value.clique_count) / value.vertices.size() == exact_result_field(data, "density"), "CDS disagrees with exact runtime density");
-  } else if (operation == "group-steiner-tree") {
+  } else if (problem == "group-steiner-tree") {
     const auto value = checked(GroupSteinerTree(steiner_options(args, device, work)).run(graph), work);
     certify(value.feasible == data.at("feasible").as_bool() && (!value.feasible || Exact(value.tree_weight) == exact_result_field(data, "tree_weight")), "GPU4GST disagrees with exact runtime optimum");
-  } else throw Failure("unsupported_operation", "Missing original GPU adapter dispatch");
+  } else throw Failure("unsupported_problem", "Missing original GPU adapter dispatch");
   if (!result.contains("diagnostics")) result["diagnostics"] = json::object{};
   result.at("diagnostics").as_object()["execution"] = "original GPU result with bounded CPU verification/materialization";
   result.at("diagnostics").as_object()["original_gpu_backend"] = backend;

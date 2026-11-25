@@ -153,7 +153,7 @@ def prepare(data_root, output, base_url=""):
                 + f"/#workspace/{session}/results/{identifier}",
                 "checks_to_review": [
                     "The saved question and earlier context match the intended task.",
-                    "The plan uses the right inputs, operations, parameters and quality.",
+                    "The plan uses the right inputs, problems, parameters and quality.",
                     "The computed result is appropriate for the question.",
                     "This is a real example, not a development or evaluation probe.",
                 ],

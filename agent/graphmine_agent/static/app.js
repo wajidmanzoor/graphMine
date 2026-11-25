@@ -301,7 +301,7 @@
 
   function addMessage(role, content, plan = null, metadata = {}) {
     const article = document.createElement("article"); article.className = `message ${role}`;
-    const planHtml = plan ? `<details class="plan-card"><summary>Analysis details</summary><p>${escape(plan.application_intent?.objective || "Validated computation")}</p><div class="plan-grid"><span>Operation</span><b>${escape(plan.operation_id)}</b><span>Backend</span><b>${escape(plan.backend_id)}</b>${Object.keys(plan.parameters || {}).length ? `<span>Parameters</span><b>${escape(JSON.stringify(plan.parameters))}</b>` : ""}</div></details>` : "";
+    const planHtml = plan ? `<details class="plan-card"><summary>Analysis details</summary><p>${escape(plan.application_intent?.objective || "Validated computation")}</p><div class="plan-grid"><span>Problem</span><b>${escape(plan.problem_id)}</b><span>Backend</span><b>${escape(plan.backend_id)}</b>${Object.keys(plan.parameters || {}).length ? `<span>Parameters</span><b>${escape(JSON.stringify(plan.parameters))}</b>` : ""}</div></details>` : "";
     article.innerHTML = `<div class="avatar">${role === "user" ? "Y" : "G"}</div><div class="bubble"><p>${escape(content).replaceAll("\n", "<br>")}</p>${planHtml}</div>`;
     if (metadata.command || metadata.kind?.startsWith("feedback_command")) article.classList.add("local-command");
     const actions = document.createElement("div"); actions.className = "message-actions";

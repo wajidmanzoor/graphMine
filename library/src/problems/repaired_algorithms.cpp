@@ -28,7 +28,7 @@ bool compiled(const std::string& backend) {
   try {return access(worker_path(backend,{}).c_str(),X_OK)==0;} catch (...) {return false;}
 }
 BackendInfo info(const std::string& name,std::vector<std::string> capabilities) {
-  auto p=origin(name);return {name,name,p.problem,p.source_commit,compiled(name),true,std::move(capabilities)};
+  auto p=origin(name);return {name,name,p.topic,p.source_commit,compiled(name),true,std::move(capabilities)};
 }
 void common(const Graph& graph,const IsolatedBackendOptions& options,const std::string& backend) {
   require(options.execution.device_ids.size()==1 && options.execution.device_ids[0]>=0,"exactly one nonnegative CUDA device id is supported");

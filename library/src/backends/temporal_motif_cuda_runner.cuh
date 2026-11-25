@@ -31,9 +31,9 @@ struct RawMotifEdgeInfo {
   bool newNode = false;
 };
 
-inline void check(cudaError_t code, const std::string& operation) {
+inline void check(cudaError_t code, const std::string& problem) {
   if (code != cudaSuccess) {
-    throw std::runtime_error(operation + ": " + cudaGetErrorString(code));
+    throw std::runtime_error(problem + ": " + cudaGetErrorString(code));
   }
 }
 

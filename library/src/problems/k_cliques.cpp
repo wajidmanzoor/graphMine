@@ -95,7 +95,7 @@ KCliqueMaterialization materialize_k_cliques(const CsrGraph& graph,
 
 Provenance kclique_provenance(KCliqueBackend backend) {
   Provenance provenance;
-  provenance.problem = "k_clique_counting_enumeration";
+  provenance.topic = "k_clique_counting_enumeration";
   provenance.backend = to_string(backend);
   switch (backend) {
     case KCliqueBackend::kcgpu:

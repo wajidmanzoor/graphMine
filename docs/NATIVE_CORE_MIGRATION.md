@@ -7,30 +7,30 @@ through a versioned C ABI. Native applications and the command-line executable
 run without Python.
 
 The shared taxonomy uses `catalog/family.json` for family descriptions and
-`catalog/problems.json` for the problems and operation IDs within each family.
-It assigns all 70 formal problems and the record-query utility problem to
-14 families. [The generated family reference](https://wajidmanzoor.github.io/graphMine/problem/taxonomy/) lists every problem
+`catalog/problems.json` for the topics and problem IDs within each family.
+It assigns all 70 formal topics and the record-query utility topic to
+14 families. [The generated family reference](https://wajidmanzoor.github.io/graphMine/topic/taxonomy/) lists every topic
 and its description. The native build validates and embeds these files; the
 Python wrapper obtains its catalog from that binary. `catalog/algo.json` is
-generated from existing native implementation profiles, keyed by problem and
-then `operation/backend` to distinguish repeated backend IDs. It does not
+generated from existing native implementation profiles, keyed by topic and
+then `problem/backend` to distinguish repeated backend IDs. It does not
 select implementations or establish verification.
 All formal contracts now have an executable native profile. Compilation and
 evidence admission remain separate states.
 
 ## Current migration boundary
 
-The shared runtime has **82 operations covering all 70 formal problems**,
-including seven record-query utilities. Every operation has a C++ CPU profile;
-36 operations expose 59 GPU operation/backend combinations in the complete
+The shared runtime has **82 problems covering all 70 formal topics**,
+including seven record-query utilities. Every problem has a C++ CPU profile;
+36 problems expose 59 GPU problem/backend combinations in the complete
 build. These include all 38 original backend choices, cuGraph integrations and
 the maximum-clique reductions. Each combination requires matching execution
 evidence before the agent admits it. The
-[completion profiles](NATIVE_COMPLETION_PROFILES.md) describe the 52 operations
-added after the 26-problem checkpoint. GPU dispatch calls native libraries or
+[completion profiles](NATIVE_COMPLETION_PROFILES.md) describe the 52 problems
+added after the 26-topic checkpoint. GPU dispatch calls native libraries or
 isolated native CUDA workers:
 
-| Operation | GPU implementation |
+| Problem | GPU implementation |
 | --- | --- |
 | Breadth-first search | libcugraph |
 | Single-source shortest paths | libcugraph, bounded float64 costs |
@@ -295,7 +295,7 @@ backends, extend exact numeric types, connect the application's validated
 algorithm worker to this core, and replace the reference evidence inventory with a
 source/binary/dependency-aware native gate. Complete the remaining review
 requirements in `VERIFIED_ANALYTICS_IMPLEMENTATION.md`, including the seven
-previously missing formal problems, table projections, routing/evaluation,
+previously missing formal topics, table projections, routing/evaluation,
 recovery, MCP, reviewed examples, scheduling and representation caching.
 
 ## Earlier native reference validation
@@ -348,7 +348,7 @@ each oracle process.
 embedded in each build, current source contents and the binding test snapshot.
 It records binary and resolved dependency hashes in
 `catalog/native_runtime_coverage.json`. This is migration evidence for the 26
-integrated problems and their listed profiles; it does not establish coverage of pending profiles or
+integrated topics and their listed profiles; it does not establish coverage of pending profiles or
 replace the application's evidence gate.
 
 ## Native selection and sampling contracts
@@ -385,7 +385,7 @@ instances and nested properties. Empty optional attribute maps are omitted.
 Incoming, outgoing and undirected discovery affect ego membership; the returned
 graph retains the original direction and records. Each graph port has its own
 fingerprint plus the original input fingerprint, so it can feed another native
-operation without losing lineage. Explicit induced selection uses CPU; GPU ego
+problem without losing lineage. Explicit induced selection uses CPU; GPU ego
 discovery uses native libcugraph BFS followed by native record materialization.
 
 Independent checks cover all undirected graphs through five vertices for
@@ -454,7 +454,7 @@ python tools/validate_native_mining_depth.py --gpu-build build/original-with-rap
 Standalone C and C++ examples execute core decomposition and maximum
 clique. Their verification removes
 Python from PATH and hides CUDA. The native Python binding obtains the same
-operations and family assignments from the shared catalog; the application algorithm worker
+problems and family assignments from the shared catalog; the application algorithm worker
 and the broader reference API still require migration.
 
 The completed mining checkpoint contains **83,624 passing native requests**:
@@ -473,7 +473,7 @@ bridges, articulation vertices and isolated vertices. Its iterative Tarjan
 traversal handles deep graphs without recursive stack growth. Truss
 decomposition returns every edge's largest k under the k-2 triangle-support
 convention, the maximum truss number (zero when empty), and an optional selected
-k-truss. Both operations require undirected input, discard loops, collapse
+k-truss. Both problems require undirected input, discard loops, collapse
 parallel edges and ignore weights. Each normalized edge uses its first original
 ID and retains all collapsed source edge IDs. These outputs and their family
 assignments are identical through C++, the CLI and Python.
@@ -531,8 +531,8 @@ python tools/validate_native_centrality_sanitizers.py \
   --output validation/native_structure/centrality-sanitizers
 ```
 
-The remaining 52 formal problems, unfinished variants within migrated
-problems, and the application algorithm worker still require native migration.
+The remaining 52 formal topics, unfinished variants within migrated
+topics, and the application algorithm worker still require native migration.
 This checkpoint does not close the review-integration goal.
 
 ## Native matching and flow profiles
@@ -616,7 +616,7 @@ python tools/validate_native_optimization_install.py \
   --output validation/native_optimization/installed-optimization.json
 ```
 
-Native coverage for the remaining 49 formal problems, unfinished variants of
-migrated problems, the application algorithm worker and the outstanding review
+Native coverage for the remaining 49 formal topics, unfinished variants of
+migrated topics, the application algorithm worker and the outstanding review
 requirements remain open. Tabular ingestion uses native cuDF, and browser
 visualizations use Cytoscape.

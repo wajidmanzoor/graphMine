@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "maximum_clique",
+  "topic_id": "maximum_clique",
   "name": "Maximum Clique",
   "category": "dense",
   "problem_statement": "Given an undirected graph, find a clique with the largest possible number of vertices.",

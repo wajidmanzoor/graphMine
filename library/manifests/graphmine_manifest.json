@@ -3,11 +3,11 @@
   "manifest_id": "graphmine_validated_library_v1",
   "library_version": "1.0.0",
   "scope": {
-    "research_problem_count": 22,
-    "runnable_operation_count": 24,
+    "topic_count": 22,
+    "runnable_problem_count": 24,
     "validated_backend_count": 38,
     "selection_rule": "Validated baseline and expansion profiles plus the nine repaired integrations in validation/repaired_library. Only each explicit executable profile is supported.",
-    "operation_count_note": "Triangle and dynamic-triangle operations share a family; maximal-biclique enumeration and count-only operations also share a family."
+    "problem_count_note": "Triangle and dynamic-triangle problems share a family; maximal-biclique enumeration and count-only problems also share a family."
   },
   "build_once_run_many": {
     "recommended": true,
@@ -18,7 +18,7 @@
       "cmake --build library/build --parallel --target graphmine_cli"
     ],
     "inspect_runtime": "library/build/graphmine list --pretty",
-    "execution_model": "Compile and link the validated implementations once. Each later query invokes the same binary with an operation, backend, canonical graph JSON, parameters, and optional-output flags.",
+    "execution_model": "Compile and link the validated implementations once. Each later query invokes the same binary with an problem, backend, canonical graph JSON, parameters, and optional-output flags.",
     "why": [
       "No C++ or CUDA compilation occurs per user query.",
       "The command boundary is stable JSON input and JSON output.",
@@ -68,7 +68,7 @@
     "example": "../examples/data/triangle.json"
   },
   "common_cli": {
-    "syntax": "graphmine run OPERATION --graph GRAPH.json [OPTIONS]",
+    "syntax": "graphmine run PROBLEM --graph GRAPH.json [OPTIONS]",
     "options": [
       {
         "flag": "--backend NAME",
@@ -83,7 +83,7 @@
       {
         "flag": "--allow-directed-projection",
         "default": false,
-        "description": "Explicitly permit an undirected projection for an undirected operation."
+        "description": "Explicitly permit an undirected projection for an undirected problem."
       },
       {
         "flag": "--no-statistics",
@@ -166,10 +166,10 @@
     "query_graph": "A second canonical_edge_list_v1 JSON graph passed with --query-graph.",
     "motif_graph": "Each --motif value is a canonical_edge_list_v1 JSON graph; its graph.id becomes motif_id."
   },
-  "operations": [
+  "problems": [
     {
       "id": "maximal-cliques",
-      "research_problem_id": "maximal_clique_enumeration",
+      "topic_id": "maximal_clique_enumeration",
       "cpp_class": "graphmine::MaximalCliques",
       "cmake_component": "GraphMine::maximal_cliques",
       "backends": [
@@ -193,7 +193,7 @@
     },
     {
       "id": "maximum-clique",
-      "research_problem_id": "maximum_clique",
+      "topic_id": "maximum_clique",
       "cpp_class": "graphmine::MaximumClique",
       "cmake_component": "GraphMine::maximum_clique",
       "backends": [
@@ -218,7 +218,7 @@
     },
     {
       "id": "k-cliques",
-      "research_problem_id": "k_clique_counting_enumeration",
+      "topic_id": "k_clique_counting_enumeration",
       "cpp_class": "graphmine::KCliques",
       "cmake_component": "GraphMine::k_cliques",
       "backends": [
@@ -243,7 +243,7 @@
     },
     {
       "id": "quasi-cliques",
-      "research_problem_id": "quasi_clique_mining",
+      "topic_id": "quasi_clique_mining",
       "cpp_class": "graphmine::QuasiCliques",
       "cmake_component": "GraphMine::quasi_cliques",
       "backends": [
@@ -264,11 +264,11 @@
         "returned_count",
         "complete"
       ],
-      "validated_profile": "Maximal gamma quasi-cliques supported by cuQC; the general problem spec's maximum_size and maximal_only choices are not exposed."
+      "validated_profile": "Maximal gamma quasi-cliques supported by cuQC; the general topic spec's maximum_size and maximal_only choices are not exposed."
     },
     {
       "id": "k-core",
-      "research_problem_id": "k_core_decomposition",
+      "topic_id": "k_core_decomposition",
       "cpp_class": "graphmine::KCore",
       "cmake_component": "GraphMine::k_core",
       "backends": [
@@ -290,7 +290,7 @@
     },
     {
       "id": "maximal-bicliques",
-      "research_problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "cpp_class": "graphmine::MaximalBicliques",
       "cmake_component": "GraphMine::maximal_bicliques",
       "backends": [
@@ -317,7 +317,7 @@
     },
     {
       "id": "triangle-counting",
-      "research_problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "cpp_class": "graphmine::TriangleCounting",
       "cmake_component": "GraphMine::triangle_counting",
       "backends": [
@@ -342,7 +342,7 @@
     },
     {
       "id": "dynamic-triangle-counting",
-      "research_problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "cpp_class": "graphmine::DynamicTriangleCounting",
       "cmake_component": "GraphMine::dynamic_triangle_counting",
       "backends": [
@@ -374,7 +374,7 @@
     },
     {
       "id": "graph-motifs",
-      "research_problem_id": "graph_motif_counting",
+      "topic_id": "graph_motif_counting",
       "cpp_class": "graphmine::GraphMotifs",
       "cmake_component": "GraphMine::graph_motifs",
       "backends": [
@@ -408,7 +408,7 @@
     },
     {
       "id": "subgraph-isomorphism",
-      "research_problem_id": "subgraph_isomorphism",
+      "topic_id": "subgraph_isomorphism",
       "cpp_class": "graphmine::SubgraphIsomorphism",
       "cmake_component": "GraphMine::subgraph_isomorphism",
       "backends": [
@@ -434,7 +434,7 @@
     },
     {
       "id": "temporal-motif-mining",
-      "research_problem_id": "temporal_motif_mining",
+      "topic_id": "temporal_motif_mining",
       "cpp_class": "graphmine::TemporalMotifMining",
       "cmake_component": "GraphMine::temporal_motif_mining",
       "backends": [
@@ -457,7 +457,7 @@
     },
     {
       "id": "community-detection",
-      "research_problem_id": "community_detection",
+      "topic_id": "community_detection",
       "cpp_class": "graphmine::CommunityDetection",
       "cmake_component": "GraphMine::community_detection",
       "backends": [
@@ -483,7 +483,7 @@
     },
     {
       "id": "betweenness-centrality",
-      "research_problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "cpp_class": "graphmine::BetweennessCentrality",
       "cmake_component": "GraphMine::betweenness_centrality",
       "backends": [
@@ -503,7 +503,7 @@
     },
     {
       "id": "connected-components",
-      "research_problem_id": "connected_components",
+      "topic_id": "connected_components",
       "cpp_class": "graphmine::ConnectedComponents",
       "cpp_header": "graphmine/problems/validated_expansion.hpp",
       "cmake_component": "GraphMine::validated_expansion",
@@ -527,7 +527,7 @@
     },
     {
       "id": "max-flow-min-cut",
-      "research_problem_id": "max_flow_min_cut",
+      "topic_id": "max_flow_min_cut",
       "cpp_class": "graphmine::MaxFlowMinCut",
       "cpp_header": "graphmine/problems/validated_expansion.hpp",
       "cmake_component": "GraphMine::validated_expansion",
@@ -554,7 +554,7 @@
     },
     {
       "id": "linear-assignment",
-      "research_problem_id": "bipartite_matching_assignment",
+      "topic_id": "bipartite_matching_assignment",
       "cpp_class": "graphmine::LinearAssignment",
       "cpp_header": "graphmine/problems/validated_expansion.hpp",
       "cmake_component": "GraphMine::validated_expansion",
@@ -578,7 +578,7 @@
     },
     {
       "id": "transitive-closure",
-      "research_problem_id": "transitive_closure_reachability",
+      "topic_id": "transitive_closure_reachability",
       "cpp_class": "graphmine::TransitiveClosure",
       "cpp_header": "graphmine/problems/validated_expansion.hpp",
       "cmake_component": "GraphMine::validated_expansion",
@@ -602,7 +602,7 @@
     },
     {
       "id": "butterfly-counting",
-      "research_problem_id": "butterfly_counting_bipartite",
+      "topic_id": "butterfly_counting_bipartite",
       "cpp_class": "graphmine::ButterflyCounting",
       "cpp_header": "graphmine/problems/validated_expansion.hpp",
       "cmake_component": "GraphMine::validated_expansion",
@@ -625,7 +625,7 @@
     },
     {
       "id": "k-truss",
-      "research_problem_id": "k_truss_decomposition",
+      "topic_id": "k_truss_decomposition",
       "cpp_class": "graphmine::KTruss",
       "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
       "cmake_component": "GraphMine::repaired_algorithms",
@@ -647,7 +647,7 @@
     },
     {
       "id": "densest-subgraph",
-      "research_problem_id": "densest_subgraph",
+      "topic_id": "densest_subgraph",
       "cpp_class": "graphmine::DensestSubgraph",
       "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
       "cmake_component": "GraphMine::repaired_algorithms",
@@ -674,7 +674,7 @@
     },
     {
       "id": "maximal-biclique-counting",
-      "research_problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "cpp_class": "graphmine::MaximalBicliqueCounting",
       "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
       "cmake_component": "GraphMine::repaired_algorithms",
@@ -696,7 +696,7 @@
     },
     {
       "id": "personalized-pagerank",
-      "research_problem_id": "personalized_pagerank_rwr",
+      "topic_id": "personalized_pagerank_rwr",
       "cpp_class": "graphmine::PersonalizedPageRank",
       "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
       "cmake_component": "GraphMine::repaired_algorithms",
@@ -729,7 +729,7 @@
     },
     {
       "id": "group-steiner-tree",
-      "research_problem_id": "group_steiner_tree",
+      "topic_id": "group_steiner_tree",
       "cpp_class": "graphmine::GroupSteinerTree",
       "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
       "cmake_component": "GraphMine::repaired_algorithms",
@@ -755,7 +755,7 @@
     },
     {
       "id": "influence-maximization",
-      "research_problem_id": "influence_maximization",
+      "topic_id": "influence_maximization",
       "cpp_class": "graphmine::InfluenceMaximization",
       "cpp_header": "graphmine/problems/repaired_algorithms.hpp",
       "cmake_component": "GraphMine::repaired_algorithms",
@@ -785,12 +785,12 @@
       "validation_report": "validation/repaired_library/REPORT.md"
     }
   ],
-  "included_problem_specs": [
+  "included_topic_specs": [
     {
       "source": "problems/01_maximal_clique_enumeration/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "maximal_clique_enumeration",
+        "topic_id": "maximal_clique_enumeration",
         "name": "Maximal Clique Enumeration",
         "category": "dense",
         "problem_statement": "Given an undirected graph, enumerate every vertex set that forms a clique and is not a proper subset of another clique.",
@@ -888,7 +888,7 @@
       "source": "problems/02_maximum_clique/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "maximum_clique",
+        "topic_id": "maximum_clique",
         "name": "Maximum Clique",
         "category": "dense",
         "problem_statement": "Given an undirected graph, find a clique with the largest possible number of vertices.",
@@ -985,7 +985,7 @@
       "source": "problems/03_k_clique_counting_enumeration/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "k_clique_counting_enumeration",
+        "topic_id": "k_clique_counting_enumeration",
         "name": "k-Clique Counting and Enumeration",
         "category": "dense",
         "problem_statement": "Given an undirected graph and integer k, count or enumerate every complete vertex set containing exactly k vertices.",
@@ -1093,7 +1093,7 @@
       "source": "problems/04_quasi_clique_mining/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "quasi_clique_mining",
+        "topic_id": "quasi_clique_mining",
         "name": "Quasi-Clique Mining",
         "category": "dense",
         "problem_statement": "Find vertex subsets whose induced subgraphs satisfy a minimum internal-degree fraction, allowing dense groups that are not complete cliques.",
@@ -1199,7 +1199,7 @@
       "source": "problems/05_densest_subgraph/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "densest_subgraph",
+        "topic_id": "densest_subgraph",
         "name": "Densest Subgraph",
         "category": "dense",
         "problem_statement": "Find a nonempty vertex subset maximizing its induced k-clique count divided by the number of selected vertices. Clique order k=2 gives ordinary edge density; the k=2 weighted variant uses total induced edge weight. Clique order does not constrain result cardinality.",
@@ -1339,7 +1339,7 @@
       "source": "problems/07_k_core_decomposition/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "k_core_decomposition",
+        "topic_id": "k_core_decomposition",
         "name": "k-Core Decomposition",
         "category": "dense",
         "problem_statement": "Assign every vertex its largest k for which it belongs to the maximal induced subgraph whose vertices all have internal degree at least k.",
@@ -1434,7 +1434,7 @@
       "source": "problems/08_k_truss_decomposition/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "k_truss_decomposition",
+        "topic_id": "k_truss_decomposition",
         "name": "k-Truss Decomposition",
         "category": "dense",
         "problem_statement": "Assign every edge the largest k for which it belongs to a maximal subgraph where each edge participates in at least k-2 triangles within that subgraph.",
@@ -1529,7 +1529,7 @@
       "source": "problems/09_maximal_biclique_enumeration/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "maximal_biclique_enumeration",
+        "topic_id": "maximal_biclique_enumeration",
         "name": "Maximal Biclique Enumeration",
         "category": "dense",
         "problem_statement": "Given a bipartite graph, enumerate complete bipartite subgraphs that cannot be extended by adding a vertex to either side.",
@@ -1647,7 +1647,7 @@
       "source": "problems/10_triangle_counting_listing/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "triangle_counting_listing",
+        "topic_id": "triangle_counting_listing",
         "name": "Triangle Counting and Listing",
         "category": "motifs",
         "problem_statement": "Count all unordered triples of vertices connected by all three possible edges and optionally list the triples or their per-vertex and per-edge participation counts.",
@@ -1764,7 +1764,7 @@
       "source": "problems/11_graph_motif_counting/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "graph_motif_counting",
+        "topic_id": "graph_motif_counting",
         "name": "Graph Motif Counting",
         "category": "motifs",
         "problem_statement": "Count occurrences of one or more supplied small structural patterns in a directed or undirected graph.",
@@ -1886,7 +1886,7 @@
       "source": "problems/13_subgraph_isomorphism/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "subgraph_isomorphism",
+        "topic_id": "subgraph_isomorphism",
         "name": "Subgraph Isomorphism and Pattern Matching",
         "category": "patterns",
         "problem_statement": "Find injective mappings from the vertices of a query graph to a data graph that preserve required edges, direction, and requested attribute predicates.",
@@ -2005,7 +2005,7 @@
       "source": "problems/15_temporal_motif_mining/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "temporal_motif_mining",
+        "topic_id": "temporal_motif_mining",
         "name": "Temporal Motif Mining",
         "category": "motifs",
         "problem_statement": "Count occurrences of a small ordered edge pattern whose matched events occur in the required order within a bounded time window.",
@@ -2131,7 +2131,7 @@
       "source": "problems/16_community_detection/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "community_detection",
+        "topic_id": "community_detection",
         "name": "Disjoint Community Detection",
         "category": "communities",
         "problem_statement": "Partition all graph vertices into nonoverlapping communities that maximize a declared within-community quality function.",
@@ -2265,7 +2265,7 @@
       "source": "problems/18_centrality_influential_node_mining/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "centrality_influential_node_mining",
+        "topic_id": "centrality_influential_node_mining",
         "name": "Centrality and Influential-Node Mining",
         "category": "importance",
         "problem_statement": "Compute a declared centrality score for graph vertices and rank the most structurally influential vertices under that definition.",
@@ -2420,7 +2420,7 @@
       "source": "problems/21_personalized_pagerank_rwr/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "personalized_pagerank_rwr",
+        "topic_id": "personalized_pagerank_rwr",
         "name": "Personalized PageRank and Random Walk with Restart",
         "category": "importance",
         "problem_statement": "Given one or more seed vertices, compute each vertex's steady-state visitation probability under a random walk that restarts to the seed distribution with fixed probability, and rank vertices by that score relative to the seeds.",
@@ -2601,7 +2601,7 @@
       "source": "problems/22_max_flow_min_cut/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "max_flow_min_cut",
+        "topic_id": "max_flow_min_cut",
         "name": "Maximum Flow and Minimum s-t Cut",
         "category": "connectivity",
         "problem_statement": "Given a capacitated graph and distinct source and sink vertices, compute a maximum feasible flow and a minimum-capacity separating cut. With optional vertex capacities, the cut can contain both original edges and capacity-limited vertices.",
@@ -2764,7 +2764,7 @@
       "source": "problems/23_butterfly_counting_bipartite/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "butterfly_counting_bipartite",
+        "topic_id": "butterfly_counting_bipartite",
         "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
         "category": "motifs",
         "problem_statement": "Given a bipartite graph, count butterflies (complete 2x2 bicliques) globally and per vertex/edge, and optionally compute maximal vertex sets satisfying separate left/right thresholds. core_measure explicitly distinguishes conventional degree-based (alpha,beta)-cores from the butterfly-participation variant.",
@@ -2910,7 +2910,7 @@
       "source": "problems/27_group_steiner_tree/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "group_steiner_tree",
+        "topic_id": "group_steiner_tree",
         "name": "Group Steiner Tree",
         "category": "connectivity",
         "problem_statement": "Given an edge-weighted graph and a collection of potentially overlapping vertex groups, find a minimum-weight connected subtree that includes at least one vertex from every group.",
@@ -3031,7 +3031,7 @@
       "source": "problems/28_influence_maximization/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "influence_maximization",
+        "topic_id": "influence_maximization",
         "name": "Influence Maximization under Diffusion Models",
         "category": "importance",
         "problem_statement": "Given a directed graph with edge-level influence probabilities and a declared stochastic diffusion model, select a seed set of a given size that maximizes the expected number of vertices eventually activated.",
@@ -3177,7 +3177,7 @@
       "source": "problems/31_bipartite_matching_assignment/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "bipartite_matching_assignment",
+        "topic_id": "bipartite_matching_assignment",
         "name": "Bipartite Matching and Linear Assignment",
         "category": "selection",
         "problem_statement": "Given a bipartite graph, find a matching (a set of edges with no shared endpoints) that is optimal under a declared objective: maximum cardinality, maximum total weight, or minimum total cost.",
@@ -3322,7 +3322,7 @@
       "source": "problems/33_transitive_closure_reachability/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "transitive_closure_reachability",
+        "topic_id": "transitive_closure_reachability",
         "name": "Transitive Closure and Reachability Indexing",
         "category": "paths",
         "problem_statement": "Given a directed graph, determine for queried vertex pairs whether the target is reachable from the source via a directed path, and optionally materialize or index full reachability to answer many such queries efficiently.",
@@ -3445,7 +3445,7 @@
       "source": "problems/35_connected_components/problem.json",
       "spec": {
         "schema_version": "1.0.0",
-        "problem_id": "connected_components",
+        "topic_id": "connected_components",
         "name": "Connected Components (Weakly and Strongly Connected)",
         "category": "connectivity",
         "problem_statement": "Partition all vertices into maximal groups such that every pair of vertices within a group is connected according to a declared connectivity definition: weak (undirected) connectivity, or strong (directed, mutual-reachability) connectivity.",

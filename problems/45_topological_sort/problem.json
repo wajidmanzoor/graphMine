@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "topological_sort",
+  "topic_id": "topological_sort",
   "name": "Topological Sorting and DAG Levels",
   "category": "paths",
   "problem_statement": "Determine whether a directed graph is acyclic and return a valid topological vertex order and optional dependency levels.",

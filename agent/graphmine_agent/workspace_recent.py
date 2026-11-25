@@ -32,8 +32,8 @@ def recent_work(runtime, section, *, offset=0, limit=4):
             "json_extract(w.document,'$.status') AS status,"
             "json_extract(w.document,'$.revision') AS revision,"
             "coalesce(json_extract(w.document,'$.updated_at'),json_extract(w.document,'$.created_at')) AS updated_at,"
-            "(SELECT json_group_array(json_extract(value,'$.operation')) "
-            "FROM json_each(w.document,'$.validation.plan.steps')) AS operations "
+            "(SELECT json_group_array(json_extract(value,'$.problem')) "
+            "FROM json_each(w.document,'$.validation.plan.steps')) AS problems "
             "FROM analysis.workflows w JOIN sessions s ON s.id=w.session_id "
             "WHERE s.owner_id IS ? AND coalesce(json_extract(s.payload,'$.archived'),0)=0 "
             "ORDER BY CASE WHEN json_extract(w.document,'$.status') IN ('running','queued','awaiting_review') "
@@ -43,7 +43,7 @@ def recent_work(runtime, section, *, offset=0, limit=4):
     items = [dict(row) for row in rows[:limit]]
     if section == "analyses":
         for item in items:
-            item["operations"] = json.loads(item["operations"])
+            item["problems"] = json.loads(item["problems"])
     return {"items": items, "has_more": len(rows) > limit, "offset": offset, "limit": limit}
 
 

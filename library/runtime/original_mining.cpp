@@ -49,46 +49,46 @@ CsrGraph csr(const MiningGraph& adj, Work& work) {
 #endif
 }  // namespace
 
-json::array original_mining_backends(const std::string& operation) {
+json::array original_mining_backends(const std::string& problem) {
   json::array output;
   auto add = [&](const char* id, bool compiled, const char* execution) {
     output.push_back(json::object{
         {"id", id}, {"device", "gpu"}, {"compiled", compiled}, {"execution", execution}});
   };
 #ifdef GRAPHMINE_NATIVE_ORIGINAL_MINING
-  if (operation == "maximal-cliques") {
+  if (problem == "maximal-cliques") {
     add("rdmce", detail::rdmce_backend_compiled(),
         "original GPU count plus bounded native materialization");
     add("mce-gpu", detail::mce_gpu_backend_compiled(),
         "original GPU count plus bounded native materialization");
     add("g2-aimd", detail::g2_aimd_backend_compiled(),
         "original GPU count plus bounded native materialization");
-  } else if (operation == "maximum-clique") {
+  } else if (problem == "maximum-clique") {
     add("cuda-ms", detail::cuda_ms_backend_compiled(),
         "original GPU witness plus native optimality proof");
     add("gpu-maximum-clique", detail::gpu_maximum_clique_backend_compiled(),
         "original GPU witness plus native optimality proof");
     add("maximum-clique-on-gpu", detail::maximum_clique_on_gpu_backend_compiled(),
         "original GPU witness plus native optimality proof");
-  } else if (operation == "k-cliques") {
+  } else if (problem == "k-cliques") {
     add("graphset", detail::graphset_kclique_backend_compiled(),
         "original GPU count plus optional bounded native materialization");
     add("gamma", detail::gamma_kclique_backend_compiled(),
         "repaired original GPU count plus optional bounded native materialization");
     add("kcgpu", detail::kcgpu_backend_compiled(),
         "repaired original GPU count plus optional bounded native materialization");
-  } else if (operation == "k-core")
+  } else if (problem == "k-core")
     add("kcore-gpu", detail::kcore_gpu_backend_compiled(), "original GPU peeling kernels");
-  else if (operation == "betweenness-centrality")
+  else if (problem == "betweenness-centrality")
     add("turbo-bc", detail::turbobc_backend_compiled(),
         "original all-source GPU Brandes kernels, float32 accumulation");
 #else
   const auto identifiers =
-      operation == "maximal-cliques" ? std::vector<const char*>{"rdmce", "mce-gpu", "g2-aimd"}
-      : operation == "maximum-clique"
+      problem == "maximal-cliques" ? std::vector<const char*>{"rdmce", "mce-gpu", "g2-aimd"}
+      : problem == "maximum-clique"
           ? std::vector<const char*>{"cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu"}
-      : operation == "k-cliques" ? std::vector<const char*>{"graphset", "gamma", "kcgpu"}
-      : operation == "betweenness-centrality" ? std::vector<const char*>{"turbo-bc"}
+      : problem == "k-cliques" ? std::vector<const char*>{"graphset", "gamma", "kcgpu"}
+      : problem == "betweenness-centrality" ? std::vector<const char*>{"turbo-bc"}
                                               : std::vector<const char*>{"kcore-gpu"};
   for (const auto id : identifiers) add(id, false, "not linked in this standalone build");
 #endif

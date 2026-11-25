@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "bootstrap_examples_per_operation": 3,
+  "bootstrap_examples_per_problem": 3,
   "repeats": 3,
   "timeout_seconds": null,
   "max_candidates": null,
@@ -34,7 +34,7 @@
     "erdos_renyi-1000-2", "power_law-1000-6", "planted_dense-1000-6",
     "neo4j-yelp-1000", "neo4j-movielens-32m-1000", "neo4j-movielens-genome-1000", "neo4j-ldbc-snb-1000"
   ],
-  "operations": {
+  "problems": {
     "temporal-motifs": {"graph_tag": "temporal", "parameters": {"maximum_duration_seconds": 32}},
     "subgraph-isomorphism": {"graph_tag": "small"},
     "motif-counting": {"graph_tag": "small", "parameters": {"list_instances": false}, "parameter_grid": {"induced": [true, false]}, "bootstrap_backends": ["cpp", "graphminer", "dumato"]},

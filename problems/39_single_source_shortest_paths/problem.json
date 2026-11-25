@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "single_source_shortest_paths",
+  "topic_id": "single_source_shortest_paths",
   "name": "Weighted Single-Source Shortest Paths",
   "category": "paths",
   "problem_statement": "Compute minimum path-weight sums from one source to every vertex in a graph with nonnegative edge weights.",

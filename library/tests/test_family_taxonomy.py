@@ -21,10 +21,10 @@ def taxonomy():
 
 
 def errors(document):
-    return VALIDATOR["validate_taxonomy"](document, VALIDATOR["registry_operations"](ROOT))
+    return VALIDATOR["validate_taxonomy"](document, VALIDATOR["registry_problems"](ROOT))
 
 
-def test_every_registry_operation_belongs_to_exactly_one_valid_family(taxonomy):
+def test_every_registry_problem_belongs_to_exactly_one_valid_family(taxonomy):
     assert errors(taxonomy) == []
 
 def test_generated_family_metadata_and_problem_categories_match_the_authoritative_source():
@@ -34,39 +34,32 @@ def test_generated_family_metadata_and_problem_categories_match_the_authoritativ
     )
 
 
-def test_every_problem_category_matches_its_registered_operations(taxonomy):
+def test_every_problem_category_matches_its_registered_problems(taxonomy):
     families = {
-        operation: family["id"]
+        problem: family["id"]
         for family in taxonomy["families"]
-        for operation in family["operations"]
+        for problem in family["problems"]
     }
     cards = VALIDATOR["registry_cards"](ROOT)
     specifications = [
         json.loads(path.read_text()) for path in (ROOT / "problems").glob("*/problem.json")
     ]
-    assert len(specifications) == len({spec["problem_id"] for spec in specifications}) == 70
+    assert len(specifications) == len({spec["topic_id"] for spec in specifications}) == 70
     for specification in specifications:
         assigned = {
-            families[operation]
-            for operation, problem in cards
-            if problem == specification["problem_id"]
+            families[problem]
+            for problem, topic in cards
+            if topic == specification["topic_id"]
         }
-        assert assigned == {specification["category"]}, specification["problem_id"]
+        assert assigned == {specification["category"]}, specification["topic_id"]
 
 
-def test_generator_rejects_a_problem_with_operations_in_different_families(taxonomy, monkeypatch):
+def test_topic_hints_do_not_impose_an_executable_group(taxonomy, monkeypatch):
     monkeypatch.syspath_prepend(str(ROOT / "tools"))
     generator = runpy.run_path(str(ROOT / "tools/generate_families.py"))
-    cards = VALIDATOR["registry_cards"](ROOT)
-    counts = Counter(problem for _operation, problem in cards)
-    operation = next(operation for operation, problem in cards if counts[problem] > 1)
-    origin = next(family for family in taxonomy["families"] if operation in family["operations"])
-    destination = next(family for family in taxonomy["families"]
-                       if family is not origin and len(family["operations"]) < 10)
-    origin["operations"].remove(operation)
-    destination["operations"].append(operation)
-    with pytest.raises(ValueError, match="operations in different families"):
-        generator["problem_family_ids"](taxonomy)
+    membership = generator["problem_family_ids"](taxonomy)
+    assert set(membership) == set(VALIDATOR["registry_problems"](ROOT))
+    assert membership["triangle-counting"] == "motifs"
 
 
 def test_category_sync_preserves_embedded_parameters_and_names(tmp_path, taxonomy, monkeypatch):
@@ -76,7 +69,7 @@ def test_category_sync_preserves_embedded_parameters_and_names(tmp_path, taxonom
     monkeypatch.setattr(sync_problem_contracts, "ROOT", tmp_path)
     previous, selected = [family["id"] for family in taxonomy["families"][:2]]
     embedded = {
-        "problem_id": "example", "name": "Existing name", "category": previous,
+        "topic_id": "example", "name": "Existing name", "category": previous,
         "problem_inputs": [{"name": "scale", "default": 1}],
     }
     specification = {
@@ -87,17 +80,17 @@ def test_category_sync_preserves_embedded_parameters_and_names(tmp_path, taxonom
     source.parent.mkdir(parents=True)
     source.write_text(json.dumps(specification))
     copies = [
-        ("graphmine_catalog.json", "problems"),
-        ("library/manifests/graphmine_catalog.json", "problems"),
-        ("graphmine_manifest.json", "included_problem_specs"),
-        ("library/manifests/graphmine_manifest.json", "included_problem_specs"),
+        ("graphmine_catalog.json", "topics"),
+        ("library/manifests/graphmine_catalog.json", "topics"),
+        ("graphmine_manifest.json", "included_topic_specs"),
+        ("library/manifests/graphmine_manifest.json", "included_topic_specs"),
     ]
     for relative, collection in copies:
         path = tmp_path / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps({
             collection: [{"source": "problems/example/problem.json", "spec": embedded}],
-            "problem_index": {"example": {"name": embedded["name"], "category": previous}},
+            "topic_index": {"example": {"name": embedded["name"], "category": previous}},
         }))
     assert len(sync_problem_contracts.synchronize(write=True, category_only=True)) == 4
     for relative, collection in copies:
@@ -105,7 +98,7 @@ def test_category_sync_preserves_embedded_parameters_and_names(tmp_path, taxonom
         actual = document[collection][0]["spec"]
         assert actual == {**embedded, "category": selected}
         assert type(actual["problem_inputs"][0]["default"]) is int
-        assert document["problem_index"]["example"] == {"name": embedded["name"], "category": selected}
+        assert document["topic_index"]["example"] == {"name": embedded["name"], "category": selected}
     assert sync_problem_contracts.synchronize(category_only=True) == []
 
 
@@ -113,22 +106,22 @@ def test_category_sync_preserves_embedded_parameters_and_names(tmp_path, taxonom
 def test_duplicate_membership_is_rejected(taxonomy, same_family):
     first, second = taxonomy["families"][:2]
     destination = first if same_family else second
-    destination["operations"].append(first["operations"][0])
-    assert any("Operations assigned more than once" in error for error in errors(taxonomy))
+    destination["problems"].append(first["problems"][0])
+    assert any("Problems assigned more than once" in error for error in errors(taxonomy))
 
 
-def test_missing_and_unknown_operation_ids_are_rejected(taxonomy):
-    members = taxonomy["families"][0]["operations"]
+def test_missing_and_unknown_problem_ids_are_rejected(taxonomy):
+    members = taxonomy["families"][0]["problems"]
     members[0] += "-unregistered"
     failures = errors(taxonomy)
-    assert any("Missing registry operations" in error for error in failures)
-    assert any("Unknown operation IDs" in error for error in failures)
+    assert any("Missing registry problems" in error for error in failures)
+    assert any("Unknown problem IDs" in error for error in failures)
 
 
 @pytest.mark.parametrize("size", [1, 11])
 def test_family_size_bounds_are_enforced(taxonomy, size):
     family = taxonomy["families"][0]
-    family["operations"] = (family["operations"] * 2)[:size]
+    family["problems"] = (family["problems"] * 2)[:size]
     assert any("between 2 and 10" in error for error in errors(taxonomy))
 
 
@@ -151,13 +144,13 @@ def test_aliases_are_not_allowed(taxonomy, root_alias):
 
 @pytest.mark.parametrize("kind", [
     "call", "keyword", "comparison", "routing", "json", "native-card",
-    "python-card", "problem-category", "markdown", "html", "html-attribute", "label-map", "link",
+    "python-card", "topic-category", "markdown", "html", "html-attribute", "label-map", "link",
     "family-set", "family-membership", "family-get",
 ])
 def test_reference_scan_rejects_unknown_families(tmp_path, taxonomy, kind):
     unknown = "obsolete_" + "family"
-    operation = taxonomy["families"][0]["operations"][0]
-    problem = VALIDATOR["registry_cards"](ROOT)[-1][1]
+    problem = taxonomy["families"][0]["problems"][0]
+    topic = VALIDATOR["registry_cards"](ROOT)[-1][1]
     examples = {
         "call": (".py", f"library.family({unknown!r})"),
         "keyword": (".py", f"request(family_id={unknown!r})"),
@@ -167,10 +160,10 @@ def test_reference_scan_rejects_unknown_families(tmp_path, taxonomy, kind):
         "family-membership": (".py", f"if card.get('family') in {{{unknown!r}}}: pass"),
         "family-get": (".py", f"if card.get('family') == {unknown!r}: pass"),
         "json": (".json", json.dumps({"families": [{"id": unknown}]})),
-        "native-card": (".json", json.dumps({"id": operation, "family": unknown})),
-        "python-card": (".py", f"card = {dict(id=operation, family=unknown)!r}"),
-        "problem-category": (".json", json.dumps({"problem_id": problem, "graph_input": {}, "category": unknown})),
-        "markdown": (".md", f"| Operation | Family |\n| --- | --- |\n| example | {unknown} |\n"),
+        "native-card": (".json", json.dumps({"id": problem, "family": unknown})),
+        "python-card": (".py", f"card = {dict(id=problem, family=unknown)!r}"),
+        "topic-category": (".json", json.dumps({"topic_id": topic, "graph_input": {}, "category": unknown})),
+        "markdown": (".md", f"| Problem | Family |\n| --- | --- |\n| example | {unknown} |\n"),
         "html": (".html", f'<span>"family"</span>: <span>"{unknown}"</span>'),
         "html-attribute": (".html", f'<button data-family="{unknown}">Choose</button>'),
         "label-map": (".js", "const title = (family) => ({" + unknown + ": 'Title'})[family.id];"),
@@ -196,14 +189,14 @@ def test_reference_scan_allows_current_ids_and_ordinary_algorithm_terms(tmp_path
 
 
 def test_reference_scan_allows_dataset_families_and_stage_names(tmp_path, taxonomy):
-    operation = taxonomy["families"][0]["operations"][0]
+    problem = taxonomy["families"][0]["problems"][0]
     (tmp_path / "data.json").write_text(json.dumps({
-        "examples": [{"id": "example-1", "operation_id": operation, "family": "random"}],
+        "examples": [{"id": "example-1", "problem_id": problem, "family": "random"}],
         "families": ["source:example", "synthetic:example"],
     }))
     (tmp_path / "caller.py").write_text(
-        "stages = ['family', 'operation', 'plan']\n"
-        "fields = ['behavior', 'family', 'operation_id']\n"
+        "stages = ['family', 'problem', 'plan']\n"
+        "fields = ['behavior', 'family', 'problem_id']\n"
         "def generate(family):\n"
         "    if family in {'random', 'cycle'}: return family\n"
     )

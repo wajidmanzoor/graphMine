@@ -16,7 +16,7 @@ from test_analytics_planning import ReplayPlanner, proposal, route, setup  # noq
 
 def reply(body, response, text=None, index=None):
     pending = response["pending_question"]
-    updates = {"intent": None, "operations": [], "parameters": {}, "option_id": None, "option_turn_id": None,
+    updates = {"intent": None, "problems": [], "parameters": {}, "option_id": None, "option_turn_id": None,
                "message": text or pending["choices"][index or 0]["label"], "clarification_id": pending["id"],
                "inputs": {key: InputReference.model_validate(ref) for key, ref in response.get("inputs", pending["inputs"]).items()}}
     if index is not None:
@@ -37,7 +37,7 @@ async def test_required_value_resume_after_new_planner_and_invalid_reply_stays_s
     planner = ReplayPlanner(settings, service, events, responses=[route("k-cliques")])
     asked = await planner.plan(session, body)
     assert asked["pending_question"]["parameter"] == "k"
-    fresh = ReplayPlanner(settings, service, events, responses=[], candidate_operation="k-cliques")
+    fresh = ReplayPlanner(settings, service, events, responses=[], candidate_problem="k-cliques")
     invalid = await fresh.plan(session, reply(body, asked, "1"))
     assert invalid["pending_question"]["id"] == asked["pending_question"]["id"]
     assert invalid["pending_question"]["answer_error"]
@@ -70,7 +70,7 @@ async def test_ambiguous_lookup_waits_for_specific_entity_and_keeps_typed_id(nor
     attach(service, session, body, graph)
     body.message = "Show Ann's record."
     planner = SelectLane(settings, service, events, select=lambda payload: {"intent": "lookup", "message": "Look up Ann.",
-        "lookup_id": next(row['id'] for row in payload['lookup_choices'] if row['operation'] == 'node-lookup')})
+        "lookup_id": next(row['id'] for row in payload['lookup_choices'] if row['problem'] == 'node-lookup')})
     asked = await planner.plan(session, body)
     assert asked["pending_question"]["kind"] == "entity" and len(asked["choices"]) == 2
     ready = await planner.plan(session, reply(body, asked, index=1))
@@ -94,7 +94,7 @@ async def test_input_selection_uses_answer_not_main_alias(normal):
 async def test_expert_uses_defaults_and_waits_for_review_before_execution(normal):
     settings, service, events, session, body = normal
     body.mode, body.message = "expert", "Find the densest subgraph."
-    body.intent, body.operations = "calculate", ["densest-subgraph"]
+    body.intent, body.problems = "calculate", ["densest-subgraph"]
     planner = ReplayPlanner(settings, service, events, responses=[])
     ready = await planner.plan(session, body)
     assert ready["status"] == "ready"
@@ -108,7 +108,7 @@ async def test_expert_uses_defaults_and_waits_for_review_before_execution(normal
 async def test_modes_keep_native_quality_default_without_optional_questions(normal, mode):
     settings, service, events, session, body = normal
     body.mode = mode
-    body.intent, body.operations = "calculate", ["densest-subgraph"]
+    body.intent, body.problems = "calculate", ["densest-subgraph"]
     planner = ReplayPlanner(settings, service, events, responses=[])
     ready = await planner.plan(session, body)
     assert ready["status"] == "ready"
@@ -131,7 +131,7 @@ async def test_user_supplied_partitions_create_copy_preserve_source_and_validate
     graph = {"graph": {"id": "one-type", "directed": False, "allows_self_loops": False, "allows_parallel_edges": False},
              "vertices": [{"id": i} for i in range(4)], "edges": [{"id": f"{u}-{v}", "source": u, "target": v} for u in range(2) for v in range(2, 4)]}
     original = attach(service, session, body, graph)
-    body.intent, body.operations = "calculate", ["maximal-bicliques"]
+    body.intent, body.problems = "calculate", ["maximal-bicliques"]
     planner = ReplayPlanner(settings, service, events, responses=[])
     asked = await planner.plan(session, body)
     ready = await planner.plan(session, reply(body, asked, '{"left_partition":[0,1],"right_partition":[2,3]}'))
@@ -167,29 +167,29 @@ async def test_pending_reply_cannot_change_scope_or_inject_choice(normal, change
 
 async def test_objective_choice_cancels_or_resumes_without_routing(normal):
     settings, service, events, session, body = normal
-    planner = ReplayPlanner(settings, service, events, candidate_operation="maximum-clique", responses=[{"intent": "needs_information", "message": "Which groups?",
+    planner = ReplayPlanner(settings, service, events, candidate_problem="maximum-clique", responses=[{"intent": "needs_information", "message": "Which groups?",
         "choices": ["Use Find the largest fully connected group."]}])
     asked = await planner.plan(session, body)
     offered = await planner.plan(session, reply(body, asked, index=0))
-    assert offered["options"][0]["operations"] == ["maximum-clique"] and len(planner.calls) == 1
+    assert offered["options"][0]["problems"] == ["maximum-clique"] and len(planner.calls) == 1
     fresh = ReplayPlanner(settings, service, events, responses=[route("breadth-first-search")])
     asked = await fresh.plan(session, body)
     cancelled = await fresh.plan(session, reply(body, asked, "Cancel.").model_copy(update={"clarification_cancel": True}))
     assert cancelled["status"] == "answered" and cancelled["plan"] is None
 
 
-async def test_ambiguous_objective_with_suggested_operation_still_waits_for_answer(normal):
+async def test_ambiguous_objective_with_suggested_problem_still_waits_for_answer(normal):
     settings, service, events, session, body = normal
     body.message = "Who is important in this network?"
-    planner = ReplayPlanner(settings, service, events, candidate_operation="pagerank", responses=[{
-        "intent": "needs_information", "operation": "degree-centrality",
+    planner = ReplayPlanner(settings, service, events, candidate_problem="pagerank", responses=[{
+        "intent": "needs_information", "problem": "degree-centrality",
         "message": "What kind of importance matters?"}])
     asked = await planner.plan(session, body)
     assert asked["status"] == "needs_information"
     assert asked["pending_question"]["kind"] == "objective"
     assert not planner.candidate_calls and not service.list(session)
     offered = await planner.plan(session, reply(body, asked, "pagerank"))
-    assert offered["options"][0]["operations"] == ["pagerank"]
+    assert offered["options"][0]["problems"] == ["pagerank"]
     assert len(planner.calls) == 1  # Continue the saved objective without re-routing.
 
 
@@ -210,7 +210,7 @@ async def test_scoped_shortest_paths_ask_both_endpoints_instead_of_using_all_ver
     assert choice["parameters"]["origins"] == [0]
     assert choice["parameters"]["destinations"] == [1]
     assert len(planner.calls) == 1 and not service.list(session)
-    picked = body.model_copy(update={"intent": "calculate", "operations": choice["operations"],
+    picked = body.model_copy(update={"intent": "calculate", "problems": choice["problems"],
         "parameters": choice["parameters"], "option_id": choice["id"], "option_turn_id": offered["turn_id"]})
     ready = await planner.plan(session, picked)
     assert ready["status"] == "ready" and ready["validation"]
@@ -246,7 +246,7 @@ async def test_paths_to_all_vertices_still_require_unspecified_origins(normal):
 
 async def test_native_parameter_failure_maps_to_one_specific_gap(normal):
     settings, service, events, session, body = normal
-    body.intent, body.operations, body.parameters = "calculate", ["k-cliques"], {"k": 1}
+    body.intent, body.problems, body.parameters = "calculate", ["k-cliques"], {"k": 1}
     planner = ReplayPlanner(settings, service, events, responses=[])
     asked = await planner.plan(session, body)
     assert asked["pending_question"]["parameter"] == "k"
@@ -260,7 +260,7 @@ async def test_gap_priority_required_then_entity_then_input_then_native_defaults
     inputs = await service.load_inputs(session, body.inputs)
     inputs["other"] = deepcopy(inputs["main"])
     caps = await service.capabilities()
-    card = next(row for row in caps["operations"] if row["id"] == "max-flow-min-cut")
+    card = next(row for row in caps["problems"] if row["id"] == "max-flow-min-cut")
     entities = [{"id": 0, "input": key, "matched": "Ann"} for key in inputs]
     values = {}
     assert detect_gap(card, inputs, values, None, entities)["parameter"] == "source"
@@ -270,10 +270,10 @@ async def test_gap_priority_required_then_entity_then_input_then_native_defaults
     assert detect_gap(card, inputs, values, "main", []) is None
 
 
-async def test_added_query_input_resumes_same_operation_without_routing(normal):
+async def test_added_query_input_resumes_same_problem_without_routing(normal):
     settings, service, events, session, body = normal
     body.message = "Run subgraph-isomorphism."
-    planner = ReplayPlanner(settings, service, events, candidate_operation="subgraph-isomorphism", responses=[{"intent": "needs_information", "operation": "subgraph-isomorphism", "message": "Which query graph?"}])
+    planner = ReplayPlanner(settings, service, events, candidate_problem="subgraph-isomorphism", responses=[{"intent": "needs_information", "problem": "subgraph-isomorphism", "message": "Which query graph?"}])
     asked = await planner.plan(session, body)
     query = {"graph": {"id": "pattern", "directed": False, "allows_self_loops": False, "allows_parallel_edges": False}, "vertices": [{"id": "q"}], "edges": []}
     new_body = body.model_copy(update={"inputs": dict(body.inputs)})
@@ -283,7 +283,7 @@ async def test_added_query_input_resumes_same_operation_without_routing(normal):
     offered = await planner.plan(session, answered)
     assert offered["status"] == "options"
     option = offered["options"][0]
-    ready = await planner.plan(session, body.model_copy(update={"message": "Use this option.", "intent": "calculate", "operations": option["operations"],
+    ready = await planner.plan(session, body.model_copy(update={"message": "Use this option.", "intent": "calculate", "problems": option["problems"],
         "parameters": option["parameters"], "option_id": option["id"], "option_turn_id": offered["turn_id"],
         "inputs": {key: InputReference.model_validate(value) for key, value in offered["inputs"].items()}}))
     assert ready["status"] == "ready"
@@ -293,7 +293,7 @@ async def test_added_query_input_resumes_same_operation_without_routing(normal):
 
 async def test_later_step_gap_preserves_entire_selected_plan(normal):
     settings, service, events, session, body = normal
-    body.intent, body.operations = "calculate", ["triangle-counting", "k-cliques"]
+    body.intent, body.problems = "calculate", ["triangle-counting", "k-cliques"]
     planned = proposal()
     later = proposal("k-cliques")["plan"]["steps"][0]
     later["id"] = "groups"
@@ -303,14 +303,14 @@ async def test_later_step_gap_preserves_entire_selected_plan(normal):
     assert asked["pending_question"]["parameter"] == "k"
     ready = await planner.plan(session, reply(body, asked, "3"))
     assert ready["status"] == "ready" and ready["validation"]
-    assert [row['operation'] for row in ready['plan']['steps']] == body.operations
+    assert [row['problem'] for row in ready['plan']['steps']] == body.problems
     assert ready['plan']['steps'][1]['parameters']['k'] == 3
     assert [row[0] for row in planner.calls] == ["plan"]
 
 
 async def test_failed_reply_can_retry_the_same_pending_question(normal, monkeypatch):
     settings, service, events, session, body = normal
-    body.intent, body.operations = "calculate", ["k-cliques"]
+    body.intent, body.problems = "calculate", ["k-cliques"]
     planner = ReplayPlanner(settings, service, events, responses=[])
     asked = await planner.plan(session, body)
     validate = service.validate
@@ -326,15 +326,15 @@ async def test_failed_reply_can_retry_the_same_pending_question(normal, monkeypa
 
 async def test_open_objective_can_select_named_contract_outside_suggestions(normal):
     settings, service, events, session, body = normal
-    planner = ReplayPlanner(settings, service, events, candidate_operation="pagerank", responses=[{"intent": "needs_information", "message": "Which result do you want?"}])
+    planner = ReplayPlanner(settings, service, events, candidate_problem="pagerank", responses=[{"intent": "needs_information", "message": "Which result do you want?"}])
     asked = await planner.plan(session, body)
     assert len(asked["pending_question"]["choices"]) > len(asked["choices"])
     offered = await planner.plan(session, reply(body, asked, "Use pagerank please."))
-    assert offered["options"][0]["operations"] == ["pagerank"] and len(planner.calls) == 1
+    assert offered["options"][0]["problems"] == ["pagerank"] and len(planner.calls) == 1
 
 
 @pytest.mark.parametrize("legacy_plan", [False, True])
-async def test_entity_choice_is_kept_when_continuing_multiple_operations(normal, legacy_plan):
+async def test_entity_choice_is_kept_when_continuing_multiple_problems(normal, legacy_plan):
     settings, service, events, session, body = normal
     graph = {"graph": {"id": "names", "directed": False, "allows_self_loops": False, "allows_parallel_edges": False},
              "vertices": [{"id": 0, "label": "Ann"}, {"id": 1, "label": "Ann"}], "edges": []}
@@ -342,7 +342,7 @@ async def test_entity_choice_is_kept_when_continuing_multiple_operations(normal,
     body.message = "Count triangles and show Ann's record."
     body.mode = "expert" if legacy_plan else "normal"
     if not legacy_plan:
-        body.intent, body.operations = "calculate", ["triangle-counting", "node-lookup"]
+        body.intent, body.problems = "calculate", ["triangle-counting", "node-lookup"]
     plan = proposal("triangle-counting", {"mode": "count"})
     record = proposal("node-lookup", {"vertices": [0 if legacy_plan else 1]})["plan"]["steps"][0]
     record["id"] = "record"

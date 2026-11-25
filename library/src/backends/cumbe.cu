@@ -24,9 +24,9 @@ namespace {
 
 std::mutex cumbe_mutex;
 
-void check_cuda(cudaError_t code, const char* operation) {
+void check_cuda(cudaError_t code, const char* problem) {
   if (code != cudaSuccess) {
-    throw std::runtime_error(std::string(operation) + ": " +
+    throw std::runtime_error(std::string(problem) + ": " +
                              cudaGetErrorString(code));
   }
 }

@@ -8,15 +8,15 @@
       "question": "What kind of importance matters here?",
       "interpretations": [
         {
-          "operation": "degree-centrality",
+          "problem": "degree-centrality",
           "label": "The most direct connections"
         },
         {
-          "operation": "pagerank",
+          "problem": "pagerank",
           "label": "Connections from other influential vertices"
         },
         {
-          "operation": "betweenness-centrality",
+          "problem": "betweenness-centrality",
           "label": "Bridges on shortest paths"
         }
       ],
@@ -29,15 +29,15 @@
       "question": "Do you want tightly connected subgraphs satisfying a structural rule, or communities that group the network's vertices?",
       "interpretations": [
         {
-          "operation": "maximal-cliques",
+          "problem": "maximal-cliques",
           "label": "Everyone is connected to everyone else"
         },
         {
-          "operation": "k-core",
+          "problem": "k-core",
           "label": "Everyone has enough neighbors within the group"
         },
         {
-          "operation": "community-detection",
+          "problem": "community-detection",
           "label": "More connections within groups than between them"
         }
       ],
@@ -51,11 +51,11 @@
       "question": "Which kind of similarity are you looking for?",
       "interpretations": [
         {
-          "operation": "simrank",
+          "problem": "simrank",
           "label": "Vertices with similar network neighborhoods"
         },
         {
-          "operation": "link-prediction",
+          "problem": "link-prediction",
           "label": "Pairs likely to have a missing connection"
         }
       ],

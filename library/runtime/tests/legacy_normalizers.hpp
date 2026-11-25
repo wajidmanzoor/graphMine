@@ -324,7 +324,7 @@ inline WeightedGraph weighted(const Graph& graph, bool weighted, bool nonnegativ
   for (const auto& edge : graph.canonical().edges) {
     work.tick();
     const double weight = weighted ? edge.weight.value_or(1) : 1;
-    require(!nonnegative || weight >= 0, "This operation requires nonnegative edge weights");
+    require(!nonnegative || weight >= 0, "This problem requires nonnegative edge weights");
     auto u = graph.dense_index(edge.source), v = graph.dense_index(edge.target);
     if (u == v) continue;
     if (direction == "incoming" && directed) std::swap(u, v);
@@ -750,7 +750,7 @@ inline json::object selected_graph(const Graph& graph, const std::vector<bool>& 
   properties(metadata,data.graph.attributes,data.graph.attributes_present);
   return {{"graph",metadata},{"vertices",vertices},{"edges",edges}};
 }
-// Frozen bounded-path input construction, with its directed-operation guard.
+// Frozen bounded-path input construction, with its directed-problem guard.
 struct EnumerationInput {
   std::vector<std::vector<std::size_t>> adjacency;
   std::vector<Exact> times;
@@ -902,7 +902,7 @@ inline FrequentInput frequent_input(const Graph& graph, const std::string& vf, c
 
 // Frozen bipartite common front and backend arrays before V3 migration.
 std::vector<bool> bipartite_partition(const Graph& graph, const json::object& args, bool explicit_sides) {
-  require(!graph.directed(), "Bipartite operations require undirected input");
+  require(!graph.directed(), "Bipartite problems require undirected input");
   std::vector<bool> left(graph.vertex_count(), false), seen(graph.vertex_count(), false);
   if (explicit_sides) {
     for (const auto key : {"left_partition", "right_partition"}) {

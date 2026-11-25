@@ -2,14 +2,14 @@
 
 These authored registries generate the repository-root [catalog](../graphmine_catalog.json):
 
-- `backend_registry.json`: operation/backend IDs, usage, provenance and capabilities.
+- `backend_registry.json`: problem/backend IDs, usage, provenance and capabilities.
 - `artifact_sources.json`: paper, upstream commit, license metadata and external-source status.
 - `repaired_profiles.json`: nine repaired profiles, six new APIs and linked validation evidence.
 
-`tools/build_catalog.mjs` combines them with all 37 authoritative problem definitions,
+`tools/build_catalog.mjs` combines them with all 37 authoritative topic definitions,
 the canonical graph schema, runtime manifest, original validation classifications,
 expansion profiles and repair evidence. Current totals are **22 supported families,
-24 operations and 38 backend choices**; all 37 problem specifications remain intact.
+24 problems and 38 backend choices**; all 37 topic specifications remain intact.
 Historical failures remain linked to the old binaries. Availability applies only
 to the explicitly described executable profile.
 

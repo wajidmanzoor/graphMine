@@ -18,9 +18,9 @@ def initialize(db):
         CREATE INDEX IF NOT EXISTS workflow_summary_manual ON workflow_summaries(session_id,created_at DESC,id DESC) WHERE turn_id IS NULL;
     """)
     projection = "id,session_id,coalesce(json_extract(document,'$.created_at'),''),nullif(json_extract(document,'$.planning_turn_id'),''),json_remove(document,'$.input_provenance','$.validation.inputs')"
-    for operation in ("INSERT", "UPDATE"):
+    for problem in ("INSERT", "UPDATE"):
         db.executescript(f"""
-            CREATE TRIGGER IF NOT EXISTS workflow_summary_{operation.lower()} AFTER {operation} ON workflows BEGIN
+            CREATE TRIGGER IF NOT EXISTS workflow_summary_{problem.lower()} AFTER {problem} ON workflows BEGIN
               DELETE FROM workflow_summaries WHERE id=new.id;
               INSERT INTO workflow_summaries SELECT {projection} FROM workflows WHERE id=new.id;
             END;

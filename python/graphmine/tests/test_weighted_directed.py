@@ -6,7 +6,7 @@ from itertools import combinations
 import numpy as np
 import pytest
 from graphmine.reference import Graph, run
-from graphmine.exceptions import GraphMineError, UnsupportedOperation
+from graphmine.exceptions import GraphMineError, UnsupportedProblem
 
 DEVICE = os.environ.get("GRAPHMINE_TEST_DEVICE", "cpu")
 
@@ -165,7 +165,7 @@ def test_precision_limit_preserves_exact_cpu_integer_distances():
         "single-source-shortest-paths", graph, parameters={"source": 0}, device="cpu"
     )
     assert cpu["result"]["distances"][1]["distance"] == 2**53 + 1
-    with pytest.raises(UnsupportedOperation, match="float64"):
+    with pytest.raises(UnsupportedProblem, match="float64"):
         run(
             "single-source-shortest-paths",
             graph,

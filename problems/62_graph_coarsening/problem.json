@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "graph_coarsening",
+  "topic_id": "graph_coarsening",
   "name": "Graph Coarsening and Quotient Construction",
   "category": "preparation",
   "problem_statement": "Map every vertex to a nonempty coarse cluster and construct the weighted quotient graph with declared edge and feature aggregation.",

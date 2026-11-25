@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "maximal_independent_set",
+  "topic_id": "maximal_independent_set",
   "name": "Maximal Independent Set",
   "category": "selection",
   "problem_statement": "Find one independent vertex set that cannot be enlarged by adding any remaining vertex.",

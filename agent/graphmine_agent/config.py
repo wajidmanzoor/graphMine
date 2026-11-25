@@ -26,7 +26,7 @@ def _budget(name: str, default: int | None) -> int | None:
     return None if value.strip().lower() in {"", "none"} else int(value)
 
 
-# Planner reasoning budgets (vLLM thinking_token_budget). Choosing operations
+# Planner reasoning budgets (vLLM thinking_token_budget). Choosing problems
 # from the catalog needs far less deliberation than writing a typed plan.
 ROUTE_THINKING_TOKEN_BUDGET = 384
 PLAN_THINKING_TOKEN_BUDGET = None
@@ -195,7 +195,7 @@ class Settings:
         return self.llm_route_model if self.routing_adapter_active else self.llm_model
 
     def __post_init__(self) -> None:
-        if self.llm_thinking_stages is not None and set(self.llm_thinking_stages) - {"family", "problem", "route", "clarify", "analyst", "plan", "candidates"}:
+        if self.llm_thinking_stages is not None and set(self.llm_thinking_stages) - {"family", "topic", "route", "clarify", "analyst", "plan", "candidates"}:
             raise ValueError("Unknown GRAPHMINE_LLM_THINKING_STAGES value")
         if self.llm_sleep_level != 1:
             raise ValueError("GRAPHMINE_LLM_SLEEP_LEVEL supports only level 1")

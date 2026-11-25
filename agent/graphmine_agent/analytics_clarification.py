@@ -89,7 +89,7 @@ def endpoint_scope(card, question):
     """Null means all vertices for this contract, not unknown endpoints.
 
     An explicitly scoped path request must supply its endpoints. Unqualified
-    operation requests and explicit all-pairs requests retain native defaults.
+    problem requests and explicit all-pairs requests retain native defaults.
     """
     if card["id"] != "many-source-shortest-paths":
         return ()
@@ -156,8 +156,8 @@ def checked_value(spec, value):
     return value
 
 
-def explicit_operation(question, cards):
-    """Recognize an explicitly named contract, including removed operations.
+def explicit_problem(question, cards):
+    """Recognize an explicitly named contract, including removed problems.
 
     This only repairs a routing *gap/refusal*. It never overrides reply/view or
     interprets vague vocabulary (the draft vague_terms catalog is not active).
@@ -198,7 +198,7 @@ class Clarifications:
         """Keep a selected DAG intact when a later step needs an answer."""
         by_id = {card["id"]: card for card in cards}
         for step in plan["steps"]:
-            card, alias = by_id[step["operation"]], step["input"].get("input")
+            card, alias = by_id[step["problem"]], step["input"].get("input")
             # Output-dependent facts remain the native validator's job. A
             # binding is already a value, not a missing parameter.
             if alias not in inputs:
@@ -215,11 +215,11 @@ class Clarifications:
                         [{"action": "undirected", "label": CONVERT_CHOICE if card["id"] == "maximal-bicliques" else "Use an undirected copy for this analysis."},
                          {"action": "cancel", "label": KEEP_CHOICE if card["id"] == "maximal-bicliques" else "Keep the directed graph and stop this calculation."}], key="direction")
             if missing:
-                # Distinct steps may use the same operation with distinct
+                # Distinct steps may use the same problem with distinct
                 # arguments. One round per gap means one per *step* here.
                 missing["key"] = step["id"] + ":" + missing["key"]
                 saved = {**(context or {}), "question": (context or {}).get("question", body.message),
-                         "operations": list(dict.fromkeys(row["operation"] for row in plan["steps"])),
+                         "problems": list(dict.fromkeys(row["problem"] for row in plan["steps"])),
                          "parameters": step["parameters"], "bindings": step["bindings"], "alias": alias,
                          "selected": True, "entities": entities, "plan": plan, "step_id": step["id"]}
                 return await self._ask_gap(body, saved, missing)
@@ -266,7 +266,7 @@ class Clarifications:
                 "required": ["message"], "additionalProperties": False})
             message = wording["message"]
         pending = {"id": str(uuid4()), "gap": "clarification", **missing, "message": message,
-                   "context": context, "question": context["question"], "operations": context["operations"],
+                   "context": context, "question": context["question"], "problems": context["problems"],
                    "inputs": {key: ref.model_dump() for key, ref in body.inputs.items()}, "device": body.device,
                    "mode": body.mode}
         return self._pending_response(pending)
@@ -290,7 +290,7 @@ class Clarifications:
             return exact[0]
         if pending["kind"] == "objective":
             wording = normalized(text).replace("-", " ")
-            named = [row for row in choices if re.search(r"(?<!\w)" + re.escape(row["operation"].replace("-", " ")) + r"(?!\w)", wording)]
+            named = [row for row in choices if re.search(r"(?<!\w)" + re.escape(row["problem"].replace("-", " ")) + r"(?!\w)", wording)]
             if len(named) == 1:
                 return named[0]
         spec, parameter = pending.get("spec"), pending.get("parameter")
@@ -439,7 +439,7 @@ class Clarifications:
                 if len(available) != 1:
                     raise ValueError("Select one new snapshot in Data, then choose this option again.")
                 key, ref = available[0]
-                wanted = "graph" if pending.get("parameter") in GRAPH_ARGUMENTS else next(card for card in cards if card["id"] == context["operations"][0])["input_kind"]
+                wanted = "graph" if pending.get("parameter") in GRAPH_ARGUMENTS else next(card for card in cards if card["id"] == context["problems"][0])["input_kind"]
                 if inputs[key]["kind"] != wanted:
                     raise ValueError(f"Select a {wanted.replace('_', ' ')} input.")
                 key = "added_input"
@@ -454,16 +454,16 @@ class Clarifications:
                 alias = choice["alias"]
             elif action == "binding":
                 context.setdefault("bindings", {})[pending["parameter"]] = {"input": choice["alias"]}
-            elif action == "operation":
-                context["operations"] = [choice["operation"]]
+            elif action == "problem":
+                context["problems"] = [choice["problem"]]
             elif action in {"parameter", "vertex"}:
                 value = choice["value"]
                 if pending["kind"] == "entity":
                     candidates = {(row["input"], identity(row["id"])) for row in context.get("entities", [])
                                   if normalized(row["matched"]) == pending["matched"]}
                     by_id = {card["id"]: card for card in cards}
-                    def replace_entity(parameters, operation, input_alias):
-                        for name, spec in by_id[operation]["parameters"].items():
+                    def replace_entity(parameters, problem, input_alias):
+                        for name, spec in by_id[problem]["parameters"].items():
                             if name not in parameters:
                                 continue
                             if spec["kind"] == "vertex_id" and (input_alias, identity(parameters[name])) in candidates:
@@ -473,16 +473,16 @@ class Clarifications:
                                 parameters[name] = list({identity(item): item for item in rewritten}.values())
                     if context.get("plan"):
                         for step in context["plan"]["steps"]:
-                            replace_entity(step["parameters"], step["operation"], step["input"].get("input"))
-                        operation = next(step["operation"] for step in context["plan"]["steps"] if step["id"] == context["step_id"])
+                            replace_entity(step["parameters"], step["problem"], step["input"].get("input"))
+                        problem = next(step["problem"] for step in context["plan"]["steps"] if step["id"] == context["step_id"])
                     else:
-                        operation = context["operations"][0]
-                    replace_entity(values, operation, alias)
+                        problem = context["problems"][0]
+                    replace_entity(values, problem, alias)
                     context["entities"] = [row for row in context.get("entities", []) if normalized(row["matched"]) != pending["matched"]]
                     context["entities"].append({"input": choice["alias"], "id": value, "matched": pending["matched"]})
                     alias = choice["alias"]
                     if context.get("lane") == "lookup":
-                        name = "vertices" if context["operations"] == ["node-lookup"] else "entity"
+                        name = "vertices" if context["problems"] == ["node-lookup"] else "entity"
                         values[name] = [value] if name == "vertices" else value
                 else:
                     if action == "vertex" and pending["spec"]["kind"] == "array":
@@ -504,15 +504,15 @@ class Clarifications:
             if context.get("plan"):
                 result = await self._continue_plan(session_id, effective, loaded, cards, context)
             else:
-                result = await self._operation_lane(session_id, effective, loaded, cards, context["operations"], values,
+                result = await self._problem_lane(session_id, effective, loaded, cards, context["problems"], values,
                     selected=context["selected"], alias=alias, entities=context.get("entities", []), clarification=context)
             if result is None:
-                # Selected DAGs keep their operation set; the constrained plan
+                # Selected DAGs keep their problem set; the constrained plan
                 # stage is allowed, but routing is not repeated.
-                selected_values = deepcopy(context.get("operation_parameters", values))
-                if context.get("operation_parameters"):
-                    selected_values[context["operations"][0]] = values
-                effective = effective.model_copy(update={"intent": "calculate", "operations": context["operations"], "parameters": selected_values})
+                selected_values = deepcopy(context.get("problem_parameters", values))
+                if context.get("problem_parameters"):
+                    selected_values[context["problems"][0]] = values
+                effective = effective.model_copy(update={"intent": "calculate", "problems": context["problems"], "parameters": selected_values})
                 result = await self._plan(session_id, effective, continuation=context)
             return {**result, "inputs": {key: ref.model_dump() for key, ref in saved_refs.items()}}
         except (ValueError, jsonschema.ValidationError) as error:

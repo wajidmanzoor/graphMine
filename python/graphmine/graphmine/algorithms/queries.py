@@ -299,7 +299,7 @@ def validate_query_input(graph, args):
 def _register(id, title, description, parameters):
     return register(
         id=id,
-        problem_id="graph_record_queries",
+        topic_id="graph_record_queries",
         title=title,
         description=description,
         parameters=parameters,

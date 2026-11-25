@@ -1,4 +1,4 @@
-"""Typed inputs for operations whose mathematical data is not an ordinary graph."""
+"""Typed inputs for problems whose mathematical data is not an ordinary graph."""
 
 from __future__ import annotations
 
@@ -219,5 +219,5 @@ def load_input(data, kind):
     if isinstance(data, expected):
         return data
     if isinstance(data, (Graph, GraphCollection, FeatureVectors, Hypergraph)):
-        raise GraphMineError(f"This operation requires {kind} input")
+        raise GraphMineError(f"This problem requires {kind} input")
     return expected(data)

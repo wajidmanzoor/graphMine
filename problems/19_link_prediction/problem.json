@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "link_prediction",
+  "topic_id": "link_prediction",
   "name": "Link Prediction",
   "category": "similarity",
   "problem_statement": "Score and rank currently unconnected vertex pairs according to a declared structural link-prediction measure.",

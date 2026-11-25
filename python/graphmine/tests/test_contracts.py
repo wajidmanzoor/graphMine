@@ -5,7 +5,7 @@ import sys
 
 import pytest
 from graphmine.reference import Budget, Graph, list_algorithms, run
-from graphmine.exceptions import GraphMineError, ResourceLimit, UnsupportedOperation
+from graphmine.exceptions import GraphMineError, ResourceLimit, UnsupportedProblem
 
 
 def test_public_catalog_stays_callable_after_loading_families():
@@ -143,7 +143,7 @@ def test_device_conflicts_and_unsupported_gpu_parameters_fail():
     graph = Graph.from_edges([(0, 1)])
     with pytest.raises(GraphMineError, match="conflicts"):
         run("pagerank", graph, device="cpu", backend="cugraph")
-    with pytest.raises(UnsupportedOperation, match="unweighted"):
+    with pytest.raises(UnsupportedProblem, match="unweighted"):
         run(
             "betweenness-centrality",
             graph,

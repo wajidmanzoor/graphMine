@@ -51,7 +51,7 @@ deploy/manage-accounts.sh --data-root /var/lib/graphmine create alice
 ```
 
 Run as the service's OS user, which must be able to write the data directory.
-Account operations can run while the API is running. Keep the data directory
+Account problems can run while the API is running. Keep the data directory
 persistent and private to that OS user; SQLite stores password hashes, login
 sessions and quota counters there. Existing database backups therefore also
 contain account data. Deleting or replacing the database loses the accounts
@@ -134,7 +134,7 @@ deleted with that conversation. Database query/synchronization
 jobs have a separate bounded queue: eight pending jobs per owner and
 `GRAPHMINE_MAX_PENDING_JOBS` across that queue. Each pending database job reserves
 768 KiB of metadata storage, released fully when the queue record is removed on
-completion; finished jobs are not retained as history. These database operations use the
+completion; finished jobs are not retained as history. These database problems use the
 source's read/write budgets, independently of the graph-calculation job quota. It
 does not cap history archives, model weights or all disk use. **Settings → Usage**
 shows the storage breakdown. Deleting a conversation or an uploaded file frees its space. The existing model server must

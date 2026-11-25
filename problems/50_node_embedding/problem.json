@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "node_embedding",
+  "topic_id": "node_embedding",
   "name": "Node Embedding",
   "category": "learning",
   "problem_statement": "Learn a vector for every vertex under a declared graph representation-learning objective.",

@@ -73,8 +73,8 @@ struct Fixture {
     throw std::runtime_error("Lost typed vertex identity");
   }
 };
-json::object request(const char* operation, const Fixture& f, json::object args = {}) {
-  return {{"command", "run"},    {"operation", operation},
+json::object request(const char* problem, const Fixture& f, json::object args = {}) {
+  return {{"command", "run"},    {"problem", problem},
           {"graph", f.graph},    {"parameters", args},
           {"backend", backend},  {"device", backend == "cpp" ? "cpu" : "gpu"},
           {"gpu_device", device}};
@@ -215,10 +215,10 @@ void degree(const Fixture& f) {
 }
 void contracts() {
   const Fixture f(5, false, 0x3ff);
-  const auto operations =
+  const auto problems =
       backend == "cpp" ? std::vector<const char*>{"degree-centrality", "betweenness-centrality"}
                        : std::vector<const char*>{"betweenness-centrality"};
-  for (const auto op : operations) {
+  for (const auto op : problems) {
     invoke(request(op, f, {{"normalized", 1}}), "invalid_input");
     invoke(request(op, f, {{"unknown", true}}), "invalid_input");
     for (const auto key : {"max_candidates", "max_output_items"}) {

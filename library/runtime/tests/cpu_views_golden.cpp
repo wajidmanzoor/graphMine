@@ -1148,7 +1148,7 @@ bool influence_input(const gm::Graph& graph, bool cascade, std::uint64_t budget 
   }
   return !expected;
 }
-bool structure_input(const gm::Graph& graph, const std::string& operation, std::uint64_t budget = UINT64_MAX) {
+bool structure_input(const gm::Graph& graph, const std::string& problem, std::uint64_t budget = UINT64_MAX) {
   auto old_work = unlimited(); old_work.max_candidates = budget;
   std::optional<gm::legacy_test::StructureInput> expected;
   std::string old_failure;
@@ -1159,8 +1159,8 @@ bool structure_input(const gm::Graph& graph, const std::string& operation, std::
     auto work = unlimited(); work.max_candidates = budget;
     std::optional<rt::StructureInput> actual;
     std::string new_failure;
-    try { actual = rt::structure_input(graph,rt::cpu_view_profile(operation+":cpp:topology"),
-        rt::cpu_view_profile(operation+":cpp:records"),work); }
+    try { actual = rt::structure_input(graph,rt::cpu_view_profile(problem+":cpp:topology"),
+        rt::cpu_view_profile(problem+":cpp:records"),work); }
     catch (const std::exception& e) { new_failure = e.what(); }
     if (old_failure != new_failure) throw std::runtime_error("Structure input rejection differs");
     if (!expected) continue;
@@ -1306,7 +1306,7 @@ bool exact_edges(const gm::Graph& graph, const ExactCase& test, std::uint64_t bu
 }
 void declared_request(const char* id, const rt::json::value& graph, const rt::json::object& parameters) {
   const auto& profile = rt::cpu_view_profile(id);
-  const rt::json::object request{{"command","run"},{"operation",profile.operations.front()},
+  const rt::json::object request{{"command","run"},{"problem",profile.problems.front()},
     {"device","cpu"},{"graph",graph},{"parameters",parameters}};
   const auto response = rt::strict_json(rt::request(rt::json::serialize(request))).as_object();
   if (response.contains("error")) throw std::runtime_error(rt::json::serialize(response));
@@ -1835,14 +1835,14 @@ void contracts() {
     edge_set_input(graph,"null-model-significance:cpp:default",budget);
   declared_request("null-model-significance:cpp:default",undirected,
     {{"statistic_definition",{{"name","triangles"}}},{"sample_count",3},{"random_seed",42}});
-  for (const auto* operation : {"biconnected-components","k-truss"}) {
-    structure_input(graph,operation);
-    structure_input(rt::parse_graph(undirected),operation);
-    for (std::uint64_t budget=0; budget<16; ++budget) structure_input(graph,operation,budget);
+  for (const auto* problem : {"biconnected-components","k-truss"}) {
+    structure_input(graph,problem);
+    structure_input(rt::parse_graph(undirected),problem);
+    for (std::uint64_t budget=0; budget<16; ++budget) structure_input(graph,problem,budget);
     for (const auto* suffix : {":cpp:topology",":cpp:records"}) {
-      const auto profile = std::string(operation)+suffix;
+      const auto profile = std::string(problem)+suffix;
       declared_request(profile.c_str(),undirected,{});
-      if (std::string(operation) == "k-truss")
+      if (std::string(problem) == "k-truss")
         declared_request(profile.c_str(),undirected,{{"requested_k",3}});
     }
   }
@@ -1862,13 +1862,13 @@ void contracts() {
   for (const auto* profile : record_profiles) {
     record_index(graph,profile);
     record_index(rt::parse_graph(undirected),profile);
-    const auto& operation = rt::cpu_view_profile(profile).operations.front();
+    const auto& problem = rt::cpu_view_profile(profile).problems.front();
     rt::json::object parameters;
-    if (operation == "neighbors") parameters["entity"] = 0;
-    if (operation == "common-neighbors" || operation == "query-paths") {
+    if (problem == "neighbors") parameters["entity"] = 0;
+    if (problem == "common-neighbors" || problem == "query-paths") {
       parameters["source"] = 0; parameters["target"] = 2;
     }
-    if (operation == "query-subgraph") parameters["vertices"] = rt::json::array{0,1};
+    if (problem == "query-subgraph") parameters["vertices"] = rt::json::array{0,1};
     declared_request(profile,raw,parameters);
     declared_request(profile,undirected,parameters);
   }
@@ -1925,7 +1925,7 @@ void contracts() {
   for (const auto& test : density_exact_cases)
     for (std::uint64_t budget=0; budget<7; ++budget) exact_edges(graph,test,budget);
   for (const auto* mode : {"independent", "nearest_source"}) {
-    const rt::json::object request{{"command","run"},{"operation","breadth-first-search"},
+    const rt::json::object request{{"command","run"},{"problem","breadth-first-search"},
       {"device","cpu"},{"graph",raw},{"parameters",{{"sources",{0,1}},{"source_mode",mode}}}};
     const auto response = rt::strict_json(rt::request(rt::json::serialize(request))).as_object();
     if (response.contains("error")) throw std::runtime_error(rt::json::serialize(response));
@@ -2057,12 +2057,12 @@ void contracts() {
   for (const auto& test : centrality_cases) {
     weighted_path(graph,test);
     const auto& profile = rt::cpu_view_profile(test.profile);
-    const auto& operation = profile.operations.front();
+    const auto& problem = profile.problems.front();
     rt::json::object parameters;
-    if (operation == "degree-centrality") {
+    if (problem == "degree-centrality") {
       parameters["direction_mode"] = profile.id.substr(profile.id.rfind(':')+1);
     } else parameters["weight_mode"] = test.weighted ? "edge_weight" : "unweighted";
-    if (operation == "personalized-pagerank") {
+    if (problem == "personalized-pagerank") {
       parameters["seed_vertices"] = rt::json::array{0};
       parameters["direction_mode"] = test.direction;
       for (const auto* policy : {"redistribute_to_seeds","redistribute_uniformly","self_loop"}) {
@@ -2183,8 +2183,8 @@ void contracts() {
   for (const auto& test : partition_exact_cases) {
     exact_edges(graph,test);
     exact_edges(rt::parse_graph(density_input),test);
-    const auto& operation = rt::cpu_view_profile(test.profile).operations.front();
-    if (operation == "community-detection") {
+    const auto& problem = rt::cpu_view_profile(test.profile).problems.front();
+    if (problem == "community-detection") {
       for (const auto* objective : {"modularity","constant_potts_model"})
         for (const auto* quality : {"exact","heuristic"})
           declared_request(test.profile,density_input,{{"weight_mode",test.weighted ? "edge_weight" : "unweighted"},
@@ -2206,24 +2206,24 @@ void contracts() {
   density_input.as_object().at("edges").as_array()[0].as_object()["weight"] = 1e308;
   density_input.as_object().at("edges").as_array()[1].as_object()["weight"] = 1e308;
   for (const auto& test : density_exact_cases) exact_edges(rt::parse_graph(density_input),test);
-  std::vector<WeightedCase> operation_cases(std::begin(weighted_cases),std::end(weighted_cases));
-  operation_cases.insert(operation_cases.end(),std::begin(connectivity_cases),std::end(connectivity_cases));
-  operation_cases.push_back({"topological-sort:cpp:default","collapse",false,false});
-  for (const auto& test : operation_cases) {
+  std::vector<WeightedCase> problem_cases(std::begin(weighted_cases),std::end(weighted_cases));
+  problem_cases.insert(problem_cases.end(),std::begin(connectivity_cases),std::end(connectivity_cases));
+  problem_cases.push_back({"topological-sort:cpp:default","collapse",false,false});
+  for (const auto& test : problem_cases) {
     const auto& profile = rt::cpu_view_profile(test.profile);
     auto input = positive;
     rt::json::object parameters;
-    const auto& operation = profile.operations.front();
-    if (operation == "single-source-shortest-paths") parameters["source"] = 0;
-    if (operation == "many-source-shortest-paths") parameters["weight_mode"] = test.unit ? "unweighted" : "edge_weight";
-    if (operation == "spanning-tree-forest") {
+    const auto& problem = profile.problems.front();
+    if (problem == "single-source-shortest-paths") parameters["source"] = 0;
+    if (problem == "many-source-shortest-paths") parameters["weight_mode"] = test.unit ? "unweighted" : "edge_weight";
+    if (problem == "spanning-tree-forest") {
       input.as_object().at("graph").as_object()["directed"] = false;
       parameters["objective"] = std::string(test.aggregation) == "max" ? "maximum" : "minimum";
     }
-    if (operation == "connected-components")
+    if (problem == "connected-components")
       parameters["connectivity_mode"] = profile.id.find(":strong") != std::string::npos ? "strongly_connected" : "weakly_connected";
-    if (operation == "topological-sort") input.as_object().at("edges").as_array().pop_back();
-    const rt::json::object request{{"command","run"},{"operation",operation},{"device","cpu"},
+    if (problem == "topological-sort") input.as_object().at("edges").as_array().pop_back();
+    const rt::json::object request{{"command","run"},{"problem",problem},{"device","cpu"},
                                     {"graph",input},{"parameters",parameters}};
     const auto response = rt::strict_json(rt::request(rt::json::serialize(request))).as_object();
     if (response.contains("error")) throw std::runtime_error(rt::json::serialize(response));
@@ -2364,7 +2364,7 @@ int main(int argc, char** argv) {
           for (bool edit : {false,true}) for (bool ignore : {false,true}) for (const auto* parallel : {"reject","collapse"}) {
             const bool rejected=comparison_input(graph,edit,ignore,"drop",parallel);
             std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
-              {"operation",edit ? "graph-edit-distance" : "maximum-common-subgraph"},
+              {"problem",edit ? "graph-edit-distance" : "maximum-common-subgraph"},
               {"ignore_labels",ignore},{"parallel_edges",parallel},{"equal",true},{"rejected",rejected}}) << '\n';
           }
         }
@@ -2519,10 +2519,10 @@ int main(int argc, char** argv) {
             {"profile",cascade ? "influence-maximization:cpp:independent_cascade" : "influence-maximization:cpp:linear_threshold"},
             {"equal",true},{"rejected",rejected}}) << '\n';
         }
-        if (structure) for (const auto* operation : {"biconnected-components","k-truss"}) {
-          const bool rejected = structure_input(graph,operation);
+        if (structure) for (const auto* problem : {"biconnected-components","k-truss"}) {
+          const bool rejected = structure_input(graph,problem);
           std::cout << rt::json::serialize(rt::json::object{{"dataset",input.at("dataset")},
-            {"profile",std::string(operation)+":cpp:topology+records"},{"equal",true},{"rejected",rejected}}) << '\n';
+            {"profile",std::string(problem)+":cpp:topology+records"},{"equal",true},{"rejected",rejected}}) << '\n';
         }
         if (subgraph_matching) {
           const auto* profile = "subgraph-isomorphism:cpp:bundles";

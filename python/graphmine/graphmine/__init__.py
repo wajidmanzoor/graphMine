@@ -4,6 +4,7 @@ from .contracts import Budget
 from .dispatch import run
 from .native_inputs import FeatureVectors, Graph, GraphCollection, Hypergraph
 from .registry import algorithms as list_algorithms
+from .registry import algorithms as list_problems
 from .registry import families as list_families
 
 __version__ = "2.0.0.dev0"
@@ -13,6 +14,7 @@ __all__ = [
     "Graph",
     "GraphCollection",
     "Hypergraph",
+    "list_problems",
     "list_algorithms",
     "list_families",
     "run",

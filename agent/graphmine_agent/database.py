@@ -88,7 +88,7 @@ class Database:
                     f"{stored}; this version supports {SCHEMA_VERSION}). Run the newer "
                     "version, or give this one its own GRAPHMINE_AGENT_DATA_ROOT."
                 )
-            # Schema 12 separates private conversation payloads from operational metadata.
+            # Schema 12 separates private conversation payloads from problemal metadata.
             if any(row[1] == "session_id" for row in connection.execute("PRAGMA table_info(events)")):
                 connection.execute("ALTER TABLE events RENAME TO conversation_events")
                 # Renaming preserves indexes and trigger SQL. Recreate the old named
@@ -902,7 +902,7 @@ class Database:
         return len(jobs)
 
     def statistics(self) -> dict[str, Any]:
-        """Return bounded operational counters without exposing stored payloads."""
+        """Return bounded problemal counters without exposing stored payloads."""
 
         tables = (
             "sessions",

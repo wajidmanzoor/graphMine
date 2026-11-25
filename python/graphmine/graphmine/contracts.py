@@ -131,7 +131,7 @@ class AlgorithmOutput:
 @dataclass(frozen=True)
 class Algorithm:
     id: str
-    problem_id: str
+    topic_id: str
     family: str
     title: str
     description: str
@@ -163,7 +163,8 @@ class Algorithm:
 
         return {
             "id": self.id,
-            "problem_id": self.problem_id,
+            "problem_id": self.id,
+            "topic_id": self.topic_id,
             "family": self.family,
             "title": self.title,
             "description": self.description,

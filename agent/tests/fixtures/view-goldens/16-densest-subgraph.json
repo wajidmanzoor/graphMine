@@ -594,7 +594,7 @@
     ]
   },
   "result": {
-    "operation": "densest-subgraph",
+    "problem": "densest-subgraph",
     "parameters": {},
     "ports": {
       "vertices": {
@@ -798,7 +798,7 @@
           "step": "analysis",
           "port": "vertices",
           "input_fingerprint": "4bfa527f7698db12edd3ec1da97256dab92228c0e3cd9cdd25dd9bcca05f6695",
-          "result_fingerprint": "982c91037df7f0a9cbf84a5506c7d738b0c2bed00772d1ce9a7d902683325b62",
+          "result_fingerprint": "9de1e23ee311b5893fdc316cbd62a266b24c46f5e3ede8197144feb2c7f12a00",
           "recorded_rules_version": "2026-11-18.3"
         },
         "notes": [
@@ -815,7 +815,7 @@
       },
       "facts": {
         "version": "1.0.0",
-        "operation": "densest-subgraph",
+        "problem": "densest-subgraph",
         "port_type": "vertex_set",
         "field_roles": {
           "value[]": {

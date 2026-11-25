@@ -113,22 +113,22 @@ def betweenness(neighbors: list[set[int]]) -> list[float]:
 
 def expected_answer(graph: dict, task: dict) -> dict:
     graph = selected_graph(graph, task.get("filters", []))
-    operation = task.get("operation_id")
+    problem = task.get("problem_id")
     ids, neighbors = adjacency(
         graph,
         max_vertices=256
-        if operation in {"k-core", "community-detection"}
+        if problem in {"k-core", "community-detection"}
         else MAX_VERTICES,
     )
     parameters = task.get("parameters", {})
     if task["behavior"] != "execute":
         return {"behavior": task["behavior"], "reason": task["reason"]}
-    if operation in {"maximal-cliques", "maximum-clique", "k-cliques"}:
+    if problem in {"maximal-cliques", "maximum-clique", "k-cliques"}:
         groups = all_cliques(neighbors)
-        if operation == "maximum-clique":
+        if problem == "maximum-clique":
             size = max(map(len, groups), default=0)
             groups = [group for group in groups if len(group) == size]
-        elif operation == "maximal-cliques":
+        elif problem == "maximal-cliques":
             groups = [
                 group
                 for group in groups
@@ -142,24 +142,24 @@ def expected_answer(graph: dict, task: dict) -> dict:
             "size": max(map(len, groups), default=0),
             "count": len(groups),
         }
-    if operation == "k-core":
+    if problem == "k-core":
         return {
             "vertices": [
                 ids[index]
                 for index in core_vertices(neighbors, parameters["requested_k"])
             ]
         }
-    if operation == "betweenness-centrality":
+    if problem == "betweenness-centrality":
         return {
             "scores": [
                 {"vertex": identifier, "score": score}
                 for identifier, score in zip(ids, betweenness(neighbors), strict=True)
             ]
         }
-    if operation == "community-detection":
+    if problem == "community-detection":
         # An arbitrary optimal partition is not a gold label for a heuristic.
         return {"check": "partition_coverage_and_modularity", "vertex_ids": ids}
-    if operation == "maximal-bicliques":
+    if problem == "maximal-bicliques":
         left = [
             index
             for index, row in enumerate(graph["vertices"])
@@ -190,7 +190,7 @@ def expected_answer(graph: dict, task: dict) -> dict:
                 )
             ]
         }
-    if operation == "temporal-motif-mining":
+    if problem == "temporal-motif-mining":
         if len(graph["edges"]) > MAX_EVENTS:
             raise ValueError("Temporal reference oracle event limit exceeded")
         instances = []
@@ -210,13 +210,13 @@ def expected_answer(graph: dict, task: dict) -> dict:
             ):
                 instances.append([a["id"], b["id"], c["id"]])
         return {"event_ids": instances, "count": len(instances)}
-    raise ValueError(f"No independent reference for {operation}")
+    raise ValueError(f"No independent reference for {problem}")
 
 
 def verify_output(graph: dict, task: dict, output: dict) -> list[str]:
     """Validate native results, including membership, not just aggregate counts."""
     expected = expected_answer(graph, task)
-    operation = task["operation_id"]
+    problem = task["problem_id"]
     groups = lambda values: Counter(
         tuple(sorted(key(v) for v in group)) for group in values
     )
@@ -226,19 +226,19 @@ def verify_output(graph: dict, task: dict, output: dict) -> list[str]:
             raise ValueError(message)
 
     try:
-        if operation in {"maximal-cliques", "k-cliques"}:
-            if operation == "maximal-cliques" or "cliques" in output:
+        if problem in {"maximal-cliques", "k-cliques"}:
+            if problem == "maximal-cliques" or "cliques" in output:
                 require(
                     groups(output["cliques"]) == groups(expected["groups"]),
                     "Returned groups differ from exhaustive oracle",
                 )
                 require(output.get("complete") is True, "Incomplete materialization")
             require(
-                output.get("count" if operation == "k-cliques" else "returned_count")
+                output.get("count" if problem == "k-cliques" else "returned_count")
                 == expected["count"],
                 "Group count differs from exhaustive oracle",
             )
-        elif operation == "maximum-clique":
+        elif problem == "maximum-clique":
             require(
                 output["maximum_size"] == expected["size"]
                 and output["optimal"] is True,
@@ -249,13 +249,13 @@ def verify_output(graph: dict, task: dict, output: dict) -> list[str]:
                 actual and not actual - groups(expected["groups"]),
                 "Returned group is not an exact maximum",
             )
-        elif operation == "k-core":
+        elif problem == "k-core":
             require(
                 Counter(map(key, output["requested_core_vertices"]))
                 == Counter(map(key, expected["vertices"])),
                 "Wrong surviving entities",
             )
-        elif operation == "betweenness-centrality":
+        elif problem == "betweenness-centrality":
             actual = {
                 key(row["vertex"]): row["score"] for row in output["score_by_vertex"]
             }
@@ -275,7 +275,7 @@ def verify_output(graph: dict, task: dict, output: dict) -> list[str]:
                     ),
                     "Wrong shortest-route score",
                 )
-        elif operation == "maximal-bicliques":
+        elif problem == "maximal-bicliques":
             pairs = lambda values: Counter(
                 (
                     tuple(sorted(map(key, row["left"]))),
@@ -292,7 +292,7 @@ def verify_output(graph: dict, task: dict, output: dict) -> list[str]:
                 output.get("returned_count") == len(expected["bicliques"]),
                 "Wrong bundle count",
             )
-        elif operation == "temporal-motif-mining":
+        elif problem == "temporal-motif-mining":
             require(
                 output["count"] == expected["count"]
                 and output["instances_complete"] is True,
@@ -306,7 +306,7 @@ def verify_output(graph: dict, task: dict, output: dict) -> list[str]:
                 == Counter(tuple(map(key, row)) for row in expected["event_ids"]),
                 "Wrong event identities/order",
             )
-        elif operation == "community-detection":
+        elif problem == "community-detection":
             selected = selected_graph(graph, task.get("filters", []))
             ids, neighbors = adjacency(selected, max_vertices=256)
             assignments = output["assignment_by_vertex"]
@@ -337,7 +337,7 @@ def verify_output(graph: dict, task: dict, output: dict) -> list[str]:
                 "Modularity does not match the returned partition",
             )
         else:
-            raise ValueError(f"No result checker for {operation}")
+            raise ValueError(f"No result checker for {problem}")
     except (KeyError, TypeError, ValueError) as error:
         return [str(error)]
     return []

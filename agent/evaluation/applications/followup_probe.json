@@ -4,7 +4,7 @@
   "query": "Which coworkers sit on the most shortest collaboration routes between other coworkers? Rank all their names by that measure.",
   "expected": {
     "behavior": "execute",
-    "operations": ["betweenness-centrality"],
+    "problems": ["betweenness-centrality"],
     "checks": [
       {"path": "output.ranking.0.vertex", "kind": "equals", "value": "Divya"},
       {"path": "output.ranking.0.score", "kind": "equals", "value": 18},

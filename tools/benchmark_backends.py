@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run reproducible backend benchmarks; default warm start is at most 3 rows/operation."""
+"""Run reproducible backend benchmarks; default warm start is at most 3 rows/problem."""
 
 from pathlib import Path
 import sys

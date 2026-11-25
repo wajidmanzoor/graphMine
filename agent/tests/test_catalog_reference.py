@@ -12,11 +12,11 @@ def cases(catalog):
     return {case["id"]: case for case in build_suite(catalog)["cases"]}
 
 
-def expected(cases, operation, tag="supported"):
-    return reference_for_case(cases[f"{operation}--{tag}"])["expected"]
+def expected(cases, problem, tag="supported"):
+    return reference_for_case(cases[f"{problem}--{tag}"])["expected"]
 
 
-def test_every_current_operation_has_a_bounded_reference(cases):
+def test_every_current_problem_has_a_bounded_reference(cases):
     before = copy.deepcopy(cases)
     checked = [reference_for_case(case) for case in cases.values()]
     assert len(checked) == len(cases)

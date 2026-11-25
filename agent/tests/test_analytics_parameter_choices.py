@@ -18,7 +18,7 @@ def test_planner_must_select_code_values_and_cannot_write_vertex_ids():
     choices = parameter_choices([card], "Look up Ann", entities)
     schema = constrain_literals(generation_plan_schema(plan_schema([card], {"main": {}}, "cpu")), choices)
     proposal = {"status": "ready", "message": "Find Ann.", "plan": {"version": 1, "device": "cpu", "steps": [
-        {"operation": "node-lookup", "input": {"source": "input", "input": "main"},
+        {"problem": "node-lookup", "input": {"source": "input", "input": "main"},
          "arguments": [{"name": "vertices", "value": {"choice": choices[0]["id"]}}]}]}}
     jsonschema.validate(proposal, schema)
     decoded = decoded_plan(resolve_literals(proposal, choices))

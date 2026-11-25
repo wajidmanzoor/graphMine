@@ -116,13 +116,13 @@ def check_port(check, result):
 
 
 def check_results(checks, saved):
-    by_operation = defaultdict(list)
+    by_problem = defaultdict(list)
     for step in saved.get("steps", {}).values():
         result = step.get("result") or {}
         if step.get("status") == "completed":
-            by_operation[result.get("operation")].append(result)
-    return [{"operation": check["operation"], "port": check["port"],
-             "passed": any(check_port(check, result) for result in by_operation[check["operation"]])}
+            by_problem[result.get("problem")].append(result)
+    return [{"problem": check["problem"], "port": check["port"],
+             "passed": any(check_port(check, result) for result in by_problem[check["problem"]])}
             for check in checks]
 
 
@@ -146,7 +146,7 @@ class Measurements:
                "usage": body.get("usage"), "turn_id": turn_id}
         if stage == "route" and isinstance(output, dict):
             row["intent"] = output.get("intent")
-            row["operations"] = output.get("operations", [])
+            row["problems"] = output.get("problems", [])
         self.calls[session_id].append(row)
 
     def event(self, *args, **kwargs):
@@ -179,24 +179,24 @@ def observed_lane(response, calls):
     return routes[-1] if routes else "unclassified"
 
 
-def observed_operations(response, calls):
+def observed_problems(response, calls):
     plan = response.get("plan") or {}
     if plan.get("steps"):
-        return [step["operation"] for step in plan["steps"]]
+        return [step["problem"] for step in plan["steps"]]
     options = response.get("options") or []
     if options:
         first = options[0]
-        return first.get("operations") or ([first["operation"]] if first.get("operation") else [])
+        return first.get("problems") or ([first["problem"]] if first.get("problem") else [])
     routes = [row for row in calls if row["stage"] == "route"]
-    return routes[-1].get("operations", []) if routes else []
+    return routes[-1].get("problems", []) if routes else []
 
 
 def grade(case, response, calls, saved=None, error=None):
     expected = case["expected"]
     lane = observed_lane(response, calls)
-    operations = observed_operations(response, calls)
-    choices = expected.get("operations")
-    operation_match = choices is None or any(sorted(operations) == sorted(choice) for choice in choices)
+    problems = observed_problems(response, calls)
+    choices = expected.get("problems")
+    problem_match = choices is None or any(sorted(problems) == sorted(choice) for choice in choices)
     checks = check_results(case.get("checks", []), saved or {})
     completed = bool(saved and saved.get("status") == "completed" and saved.get("complete") is True)
     no_run = saved is None
@@ -205,9 +205,9 @@ def grade(case, response, calls, saved=None, error=None):
         behavior = completed and all(row["passed"] for row in checks)
     elif target == "options":
         options = response.get("options") or []
-        candidates = [digest({k: option.get(k) for k in ("operation", "operations", "parameters")})
+        candidates = [digest({k: option.get(k) for k in ("problem", "problems", "parameters")})
                       for option in options]
-        behavior = no_run and len(options) == 2 and len(set(candidates)) == 2 and not response.get("plan")
+        behavior = no_run and 1 <= len(options) <= 3 and len(set(candidates)) == len(options) and not response.get("plan")
     elif target == "view":
         view = response.get("view") or {}
         behavior = no_run and all(view.get(key) == value for key, value in expected["view"].items())
@@ -227,11 +227,11 @@ def grade(case, response, calls, saved=None, error=None):
                                  digest(fact.get("value")) == digest(expected["value"]) for fact in facts)
     else:
         behavior = no_run and status == target and not response.get("plan") and bool(response.get("message"))
-    return {"lane_chosen": lane, "operations": operations,
-            "lane_match": lane == target, "operation_match": operation_match,
+    return {"lane_chosen": lane, "problems": problems,
+            "lane_match": lane == target, "problem_match": problem_match,
             "behavior_match": bool(behavior), "execution_completed": completed,
             "result_checks": checks,
-            "success": not error and lane == target and operation_match and bool(behavior)}
+            "success": not error and lane == target and problem_match and bool(behavior)}
 
 
 def check_grounding(response, events, lane):
@@ -280,7 +280,7 @@ def summarize(rows):
 
 def one_step(spec):
     return {"version": 1, "device": "cpu", "steps": [{
-        "id": "answer", "operation": spec["operation"], "input": {"input": "main"},
+        "id": "answer", "problem": spec["problem"], "input": {"input": "main"},
         "parameters": spec.get("parameters", {}), "bindings": {}}]}
 
 
@@ -293,13 +293,13 @@ def verify_oracles(suite, graphs, native_path):
         if not spec:
             continue
         graph = graphs[case["fixture"]]
-        native.validate(spec["operation"], graph, parameters=spec.get("parameters", {}), device="cpu")
-        result = native.run(spec["operation"], graph, parameters=spec.get("parameters", {}), device="cpu")
+        native.validate(spec["problem"], graph, parameters=spec.get("parameters", {}), device="cpu")
+        result = native.run(spec["problem"], graph, parameters=spec.get("parameters", {}), device="cpu")
         checks = case.get("checks") or case.get("previous_checks") or []
         valid = [check_port(check, result) for check in checks]
         if not checks or not all(valid):
             raise ValueError(f"Frozen reference answer failed: {case['id']}: {valid}")
-        rows.append({"id": case["id"], "operation": spec["operation"], "checks": valid})
+        rows.append({"id": case["id"], "problem": spec["problem"], "checks": valid})
     return {"suite_sha256": digest(suite), "implementation_sha256": native.catalog()["implementation_sha256"],
             "passed": len(rows), "cases": rows}
 
@@ -395,7 +395,7 @@ async def evaluate(settings, suite, graphs, report, output):
 def source_files(suite_path):
     paths = [Path(__file__), suite_path, *sorted((ROOT / "agent/graphmine_agent").rglob("*.py")),
              *sorted((ROOT / "python/graphmine/graphmine").rglob("*.py")),
-             ROOT / "catalog/native_execution_evidence.json", ROOT / "catalog/operation_requirements.json",
+             ROOT / "catalog/native_execution_evidence.json", ROOT / "catalog/problem_requirements.json",
              ROOT / "catalog/agent_concepts.json", ROOT / "catalog/vague_terms.json"]
     calibration = ROOT / "catalog/option_calibration.json"
     if calibration.exists():
@@ -440,8 +440,8 @@ def main():
                         "plan_thinking_token_budget": settings.analytics_thinking_token_budget,
                         "max_completion_tokens": settings.llm_plan_max_tokens,
                         "direct_plans": settings.analytics_direct_plans, "temperature": 0, "seed": 0,
-                        "options": {"samples": 5, "temperature": .7, "logprobs": True,
-                                    "transport": "one parallel n=5 completion request"}}}
+                        "options": {"max_ranked_calculations": 3,
+                                    "transport": "ranking from the route call; no separate option-sampling request"}}}
     write_json(args.output, report)
     with tempfile.TemporaryDirectory(prefix="graphmine-lane-baseline-") as directory:
         isolated = replace(settings, data_root=Path(directory), history_directory=None,

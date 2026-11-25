@@ -8,8 +8,7 @@ from .analytics import AnalyticsError, InputReference
 from .analytics_bipartite import CONVERT_CHOICE, KEEP_CHOICE, complete_partitions, missing_sides
 from .analytics_eligibility import eligible, input_profile, numeric, requested_preferences
 from .analytics_lane_choices import explicit_parameters, one_step
-from .analytics_options import (candidate_menu, load_calibration, make_cards, rank_candidates,
-                                sampling_contract, validate_edits)
+from .analytics_options import candidate_menu, make_cards, validate_edits
 from .analytics_clarification import Clarifications, detect_gap, gap as clarification_gap, validator_gap
 from .graph_context import fields, identity, infer_bipartition
 from .models import FileRole
@@ -18,66 +17,68 @@ from .models import FileRole
 class AnalyticsLanes(Clarifications):
     def _picked_option(self, session_id, body):
         if body.intent != "calculate":
-            if body.operations or body.parameters or body.option_id or body.option_turn_id:
-                raise AnalyticsError("Operations and parameters require an explicit calculation choice.")
+            if body.problems or body.parameters or body.option_id or body.option_turn_id:
+                raise AnalyticsError("Problems and parameters require an explicit calculation choice.")
             return None
-        if not body.operations:
-            raise AnalyticsError("Choose at least one operation.")
+        if not body.problems:
+            raise AnalyticsError("Choose at least one problem.")
         if bool(body.option_id) != bool(body.option_turn_id):
             raise AnalyticsError("A saved choice needs its option and question IDs.")
         if not body.option_id:
-            return {"operations": body.operations, "parameters": body.parameters, "question": body.message}
+            return {"problems": body.problems, "parameters": body.parameters, "question": body.message}
         saved = next((event.payload for event in self.analytics.database.events(session_id, types=("workflow.chat",))
                       if event.payload.get("turn_id") == body.option_turn_id and event.payload.get("role") == "assistant"), None)
         refs = {key: ref.model_dump() for key, ref in body.inputs.items()}
         if not saved or saved.get("status") != "options" or saved.get("inputs") != refs:
             raise AnalyticsError("This choice no longer matches the question's inputs. Ask again using the current snapshot.")
         choice = next((row for row in saved.get("options", []) if row["id"] == body.option_id), None)
-        if not choice or choice["operations"] != body.operations:
-            raise AnalyticsError("The submitted operation does not match the saved choice.")
+        if not choice or choice["problems"] != body.problems:
+            raise AnalyticsError("The submitted problem does not match the saved choice.")
         try:
             validate_edits(choice, body.parameters)
         except ValueError as error:
             raise AnalyticsError(str(error)) from error
         context = saved.get("clarification_context")
-        if context and context["operations"] != choice["operations"]:
+        if context and context["problems"] != choice["problems"]:
             context = None
         return {**choice, "question": saved["question"], "parameters": deepcopy(body.parameters),
                 "clarification": context}
 
-    async def _offer_options(self, body, inputs, cards, operations, values, alias, entities, context):
+    async def _offer_options(self, body, inputs, cards, problems, values, alias, entities, context):
         profiles = self._profiles(inputs)
-        allowed = context.get("candidate_operations")
+        allowed = context.get("candidate_problems")
         candidates = cards if allowed is None else [card for card in cards if card["id"] in allowed]
-        menu = candidate_menu(candidates, profiles, body.message, entities, selected=operations,
-                              supplied=context.get("operation_parameters", values), alias=alias)
+        menu = candidate_menu(candidates, profiles, body.message, entities, selected=problems,
+                              supplied=context.get("problem_parameters", values), alias=alias)
         if not menu:
             return self._gap("No eligible calculation matches this input. What result would you like to find?")
-        # A clarification resumes its saved objective. Samples may select its
-        # parameter variants, but cannot replace the confirmed operation.
-        sampling_menu = menu
+        ranked = []
+        calculations = context.get("ranked_calculations") or [{"problems": problems, "reason": body.message}]
         if context.get("answered"):
-            sampling_menu = [row for row in menu if row.get("operations", [row["operation"]]) == operations]
-        for row in menu:
-            if row["operation"] == operations[0]:
-                row["missing"] = [name for name in row["missing"] if name not in context.get("bindings", {})]
-        schema, choices = sampling_contract(sampling_menu, cards)
-        samples = await self._generate("candidates", {"question": body.message, "choices": choices,
-            **({"confirmed_operations": operations} if context.get("answered") else {})}, schema)
-        calibration = load_calibration(self.settings, cards)
-        ranked = rank_candidates(menu, samples, calibration)
+            calculations = [{"problems": problems, "reason": body.message}]
+        for index, calculation in enumerate(calculations[:3]):
+            selected = calculation["problems"]
+            choices = candidate_menu(candidates, profiles, body.message, entities, selected=selected,
+                                     supplied=context.get("problem_parameters", values), alias=alias)
+            candidate = next((row for row in choices if row.get("problems", [row["problem"]]) == selected), None)
+            if candidate is None:
+                continue
+            candidate["missing"] = [name for name in candidate["missing"] if name not in context.get("bindings", {})]
+            ranked.append({**candidate, "score": 1.0 / (index + 1), "match": "Medium",
+                "interpretation": calculation["reason"],
+                "match_evidence": {"source": "route", "rank": index + 1, "votes": 1,
+                    "missing_parameters": candidate["missing"], "calibrated": False}})
         options = make_cards(ranked, cards, profiles, body.message)
-        evidence = {"samples": samples, "candidates": [{key: row[key] for key in ("id", "operation", "score", "match", "match_evidence")} for row in ranked],
-                    "calibrated": bool(calibration)}
+        evidence = {"source": "route", "candidates": [{key: row[key] for key in ("id", "problem", "match_evidence")} for row in ranked]}
         if not options:
             return {**self._gap("No supported calculation matches this question. What result would you like to find?"), "option_evidence": evidence}
         if all(option["match"] == "Low" for option in options):
-            choices = [{"action": "operation", "operation": card["id"], "label": f"Use {card['title']}."}
-                       for card in cards if any(row["operation"] == card["id"] for row in menu)]
+            choices = [{"action": "problem", "problem": card["id"], "label": f"Use {card['title']}."}
+                       for card in cards if any(row["problem"] == card["id"] for row in menu)]
             missing = clarification_gap("objective", "What result would answer your question? Please describe what you want to find or compare.", choices, key="objective")
             # Keep the finite allowed set for matching the free-text reply, but
             # show an open question when neither calculation has enough support.
-            response = await self._ask_gap(body, {**context, "operations": [], "parameters": {}}, missing, sentence=missing["message"])
+            response = await self._ask_gap(body, {**context, "problems": [], "parameters": {}}, missing, sentence=missing["message"])
             response["choices"] = []
             response["pending_question"]["open_question"] = True
             return {**response, "option_evidence": evidence}
@@ -98,9 +99,9 @@ class AnalyticsLanes(Clarifications):
         return {"status": "needs_information", "lane": "needs_information", "message": message,
                 "choices": list(choices), "plan": None, **extra}
 
-    def _prepare_question(self, body, operations, parameters, alias, kind, choices, question, selected):
+    def _prepare_question(self, body, problems, parameters, alias, kind, choices, question, selected):
         return self._gap(question, [choice["label"] for choice in choices], pending_question={
-            "gap": "lane_preparation", "kind": kind, "operations": operations,
+            "gap": "lane_preparation", "kind": kind, "problems": problems,
             "parameters": parameters, "alias": alias, "question": body.message,
             "choices": choices, "selected": selected, "device": body.device,
             "inputs": {key: ref.model_dump() for key, ref in body.inputs.items()},
@@ -164,34 +165,36 @@ class AnalyticsLanes(Clarifications):
         resumed = body.model_copy(update={"message": pending["question"],
             "inputs": {key: InputReference.model_validate(value) for key, value in refs.items()}})
         loaded = await self.analytics.load_inputs(session_id, resumed.inputs)
-        result = await self._operation_lane(session_id, resumed, loaded, cards,
-            pending["operations"], parameters, selected=pending["selected"], alias=alias)
+        result = await self._problem_lane(session_id, resumed, loaded, cards,
+            pending["problems"], parameters, selected=pending["selected"], alias=alias)
         if result is None:
             raise AnalyticsError("This preparation requires a new explicit calculation choice.")
         return {**result, "inputs": refs}
 
-    async def _operation_lane(self, session_id, body, inputs, cards, operations, parameters=None, *, selected=False, alias=None, entities=(), clarification=None, clarify_only=False, candidate_operations=None):
+    async def _problem_lane(self, session_id, body, inputs, cards, problems, parameters=None, *, selected=False, alias=None, entities=(), clarification=None, clarify_only=False, candidate_problems=None, ranked_calculations=None):
         by_id = {card["id"]: card for card in cards}
-        if not operations or len(operations) != len(set(operations)) or any(op not in by_id for op in operations):
-            raise AnalyticsError("Choose operations available on this server and device.")
-        primary = by_id[operations[0]]
+        if not problems or len(problems) != len(set(problems)) or any(op not in by_id for op in problems):
+            raise AnalyticsError("Choose problems available on this server and device.")
+        primary = by_id[problems[0]]
         candidates = [key for key, value in inputs.items() if value["kind"] == primary["input_kind"]]
         if alias is None:
             comparison = any(name in primary["parameters"] for name in ("query_graph", "other_graph"))
             alias = candidates[0] if len(candidates) == 1 else "main" if comparison and "main" in candidates else None
         supplied = parameters or {}
-        if len(operations) > 1 and isinstance(supplied.get(primary["id"]), dict):
+        if len(problems) > 1 and isinstance(supplied.get(primary["id"]), dict):
             supplied = supplied[primary["id"]]
         values = {} if selected else explicit_parameters(primary, body.message, entities, alias)
         values.update(supplied)
-        context = {"question": body.message, "operations": operations, "parameters": values,
+        context = {"question": body.message, "problems": problems, "parameters": values,
                    "alias": alias, "selected": selected, "entities": list(entities),
                    **(deepcopy(clarification) if clarification else {})}
         context.update(parameters=values, alias=alias, selected=selected)
-        if candidate_operations is not None:
-            context["candidate_operations"] = list(candidate_operations)
-        if len(operations) > 1 and any(isinstance((parameters or {}).get(op), dict) for op in operations):
-            context["operation_parameters"] = deepcopy(parameters)
+        if ranked_calculations is not None:
+            context["ranked_calculations"] = deepcopy(ranked_calculations)
+        if candidate_problems is not None:
+            context["candidate_problems"] = list(candidate_problems)
+        if len(problems) > 1 and any(isinstance((parameters or {}).get(op), dict) for op in problems):
+            context["problem_parameters"] = deepcopy(parameters)
         missing = detect_gap(primary, inputs, values, alias, entities,
                              context.get("answered", []), context.get("bindings"), question=body.message)
         if missing:
@@ -246,8 +249,8 @@ class AnalyticsLanes(Clarifications):
         if not selected:
             if clarify_only:
                 return None  # Preserve the router's unresolved objective; do not sample options.
-            return await self._offer_options(body, inputs, cards, operations, values, alias, entities, context)
-        if len(operations) != 1:
+            return await self._offer_options(body, inputs, cards, problems, values, alias, entities, context)
+        if len(problems) != 1:
             return None  # The selected multi-step objective uses constrained DAG planning.
         plan = one_step(primary["id"], alias, values, body.device)
         plan["steps"][0]["bindings"].update(context.get("bindings", {}))
@@ -275,5 +278,5 @@ class AnalyticsLanes(Clarifications):
 
     @staticmethod
     def _closest(primary, cards):
-        return [{"operation": card["id"], "title": card["title"], "quality": card["quality"]}
+        return [{"problem": card["id"], "title": card["title"], "quality": card["quality"]}
                 for card in cards if card["family"] == primary["family"] and card["id"] != primary["id"]][:2]

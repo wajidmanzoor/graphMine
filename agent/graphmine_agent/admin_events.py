@@ -1,4 +1,4 @@
-"""Secret-free operational events, distinct from private conversation history."""
+"""Secret-free problemal events, distinct from private conversation history."""
 
 from __future__ import annotations
 
@@ -52,7 +52,7 @@ def record(database, kind, summary, **kwargs):
 
 
 def conversation_event(db, event):
-    """Project only operational metadata from private, completed work."""
+    """Project only problemal metadata from private, completed work."""
     data = event.payload
     if data.get("evaluation_id"):
         return
@@ -87,7 +87,7 @@ def conversation_event(db, event):
                user_id=user_id, outcome=outcome, duration_ms=elapsed, details=details,
                ts=event.created_at.timestamp(), correlation=turn)
     elif event.type == "workflow.finished":
-        details.update({key: data.get(key) for key in ("workflow_id", "revision", "operation", "dataset", "operations", "datasets", "error_code")})
+        details.update({key: data.get(key) for key in ("workflow_id", "revision", "problem", "dataset", "problems", "datasets", "error_code")})
         insert(db, "calculation", "Calculation " + data.get("status", "finished"), user_id=user_id,
                outcome=data.get("status", "finished"), duration_ms=data.get("duration_ms"), details=details,
                ts=event.created_at.timestamp())
@@ -102,7 +102,7 @@ def conversation_event(db, event):
         job = json.loads(saved[0])
         plan = job["plan"]
         error = job.get("error") or {}
-        details.update(job_id=job["id"], operation=plan["operation_id"], dataset=plan["graph_id"], error_code=error.get("code"))
+        details.update(job_id=job["id"], problem=plan["problem_id"], dataset=plan["graph_id"], error_code=error.get("code"))
         elapsed = ((datetime.fromisoformat(job["finished_at"]) - datetime.fromisoformat(job["started_at"])).total_seconds() * 1000
                    if job.get("finished_at") and job.get("started_at") else None)
         insert(db, "calculation", "Calculation " + job["status"], user_id=user_id, outcome=job["status"], duration_ms=elapsed,

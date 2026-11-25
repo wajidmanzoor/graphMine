@@ -218,7 +218,7 @@ def _features(graph, target, population, ids, definitions, work):
 
 @register(
     id="graph-anomalies",
-    problem_id="graph_anomaly_detection",
+    topic_id="graph_anomaly_detection",
     title="Rank graph entities against an explicit normality reference",
     description="NetworkX structural features and SciPy population statistics with declared standardized L1/L2/max scores. Supports vertices, original edge instances and explicitly supplied induced subgraphs. Reference populations are selected independently from candidates; no learned ground-truth anomaly claim is made.",
     library="scipy",

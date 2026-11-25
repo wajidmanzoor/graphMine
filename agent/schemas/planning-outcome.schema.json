@@ -3,12 +3,12 @@
     "AnalysisTask": {
       "additionalProperties": false,
       "properties": {
-        "operation_id": {
-          "title": "Operation Id",
-          "type": "string"
-        },
         "problem_id": {
           "title": "Problem Id",
+          "type": "string"
+        },
+        "topic_id": {
+          "title": "Topic Id",
           "type": "string"
         },
         "question": {
@@ -20,8 +20,8 @@
       },
       "required": [
         "question",
-        "problem_id",
-        "operation_id"
+        "topic_id",
+        "problem_id"
       ],
       "title": "AnalysisTask",
       "type": "object"
@@ -333,7 +333,7 @@
         },
         "backend_id": {
           "default": "auto",
-          "description": "Exact backend ID from the selected operation, or auto.",
+          "description": "Exact backend ID from the selected problem, or auto.",
           "title": "Backend Id",
           "type": "string"
         },
@@ -353,8 +353,8 @@
           "title": "Missing Inputs",
           "type": "array"
         },
-        "operation_id": {
-          "title": "Operation Id",
+        "problem_id": {
+          "title": "Problem Id",
           "type": "string"
         },
         "optional_outputs": {
@@ -414,8 +414,8 @@
           "title": "Parameters",
           "type": "object"
         },
-        "problem_id": {
-          "title": "Problem Id",
+        "topic_id": {
+          "title": "Topic Id",
           "type": "string"
         },
         "rationale": {
@@ -438,8 +438,8 @@
       "required": [
         "session_id",
         "graph_id",
-        "problem_id",
-        "operation_id"
+        "topic_id",
+        "problem_id"
       ],
       "title": "ExecutionPlan",
       "type": "object"
@@ -493,19 +493,6 @@
           "title": "Missing Information",
           "type": "array"
         },
-        "operation_id": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Exact runnable operation for a supported problem; null for an unsupported, ambiguous, or unrecognized request.",
-          "title": "Operation Id"
-        },
         "problem_id": {
           "anyOf": [
             {
@@ -516,11 +503,24 @@
             }
           ],
           "default": null,
-          "description": "Exact formal problem ID when intent is recognized, including an unsupported problem; null only for ambiguous or unrecognized intent.",
+          "description": "Exact runnable problem for a supported topic; null for an unsupported, ambiguous, or unrecognized request.",
           "title": "Problem Id"
         },
+        "topic_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Exact formal topic ID when intent is recognized, including an unsupported topic; null only for ambiguous or unrecognized intent.",
+          "title": "Topic Id"
+        },
         "supported": {
-          "description": "True only when the selected problem has library_support.status equal to 'validated' and exposes the selected operation.",
+          "description": "True only when the selected topic has library_support.status equal to 'validated' and exposes the selected problem.",
           "title": "Supported",
           "type": "boolean"
         }

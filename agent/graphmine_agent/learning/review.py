@@ -67,7 +67,7 @@ def replay_contract_sha256() -> str:
 
 
 def blind_payload(graph: dict, question: str) -> dict:
-    # Deliberately excludes original question, task/operation, gold route, oracle
+    # Deliberately excludes original question, task/problem, gold route, oracle
     # answer, candidate source ID and the pass/fail criterion.
     context = semantic_context(graph)
     # A meaning reader needs the vocabulary/schema, not counts, statistics or

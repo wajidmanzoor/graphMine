@@ -245,12 +245,12 @@ def capabilities(repository_root):
         report["id"]: report for report in reports if report["status"] == "passed"
     }
     failures = {
-        (entry["operation"], entry["backend"])
+        (entry["problem"], entry["backend"])
         for entry in inventory.get("known_failures", [])
         if entry.get("implementation_sha256")
         in (None, catalog["implementation_sha256"])
     }
-    cards = catalog["operations"]
+    cards = catalog["problems"]
     for card in cards:
         profile = profiles.get(card["id"], {})
         digest = profile_hash(card)
@@ -295,7 +295,7 @@ def capabilities(repository_root):
         "implementation_sha256": catalog["implementation_sha256"],
         "environment": execution_environment(),
         "families": catalog["families"],
-        "operations": cards,
+        "problems": cards,
         "reports": reports,
         "verification_issues": reasons,
         "scope": "Native profiles whose source, binary, dependencies and independent reports match this process",
@@ -303,9 +303,9 @@ def capabilities(repository_root):
 
 
 def require_workflow_evidence(checked, caps):
-    cards = {card["id"]: card for card in caps["operations"]}
+    cards = {card["id"]: card for card in caps["problems"]}
     for step in checked["plan"]["steps"]:
-        card = cards[step["operation"]]
+        card = cards[step["problem"]]
         requested = step.get("backend", "auto")
         if requested != "auto" and requested not in card["verified_backends"]:
             raise GraphMineError(
@@ -319,5 +319,5 @@ def require_workflow_evidence(checked, caps):
         )
         if not available:
             raise GraphMineError(
-                f"Current native {device} correctness evidence is missing or stale for {step['operation']}"
+                f"Current native {device} correctness evidence is missing or stale for {step['problem']}"
             )

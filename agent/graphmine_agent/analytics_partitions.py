@@ -25,7 +25,7 @@ def resolve_partitions(plan, prepared):
     """Expand planner references without changing literals or graph scope."""
     resolved = deepcopy(plan)
     for step in resolved["steps"]:
-        if step["operation"] != "maximal-bicliques":
+        if step["problem"] != "maximal-bicliques":
             continue
         for name in ("left_partition", "right_partition"):
             value = step["parameters"].get(name)

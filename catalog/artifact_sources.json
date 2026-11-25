@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "artifacts": [
     {
-      "problem_id": "balanced_graph_partitioning",
+      "topic_id": "balanced_graph_partitioning",
       "paper_id": "2024_gkway",
       "year": 2024,
       "venue": "ACM/IEEE DAC 2024 (journal version: ACM TODAES 2025)",
@@ -17,7 +17,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "balanced_graph_partitioning",
+      "topic_id": "balanced_graph_partitioning",
       "paper_id": "2024_hyperg",
       "year": 2024,
       "venue": "ACM/IEEE ICCAD 2024",
@@ -32,7 +32,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "balanced_graph_partitioning",
+      "topic_id": "balanced_graph_partitioning",
       "paper_id": "2025_igkway",
       "year": 2025,
       "venue": "ACM/IEEE DAC 2025",
@@ -47,7 +47,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "biconnected_components",
+      "topic_id": "biconnected_components",
       "paper_id": "2026_fast_bcc_filter",
       "year": 2026,
       "venue": "IPDPS 2026",
@@ -62,7 +62,7 @@
       "collection_code_commit": "147db596535064ee6ea43efbcab315d5b224a1a6"
     },
     {
-      "problem_id": "biconnected_components",
+      "topic_id": "biconnected_components",
       "paper_id": "2026_pea_bcc",
       "year": 2026,
       "venue": "IPDPS 2026",
@@ -77,7 +77,7 @@
       "collection_code_commit": "147db596535064ee6ea43efbcab315d5b224a1a6"
     },
     {
-      "problem_id": "biconnected_components",
+      "topic_id": "biconnected_components",
       "paper_id": "2026_wk_bcc_2018",
       "year": 2026,
       "venue": "IPDPS 2026",
@@ -92,7 +92,7 @@
       "collection_code_commit": "147db596535064ee6ea43efbcab315d5b224a1a6"
     },
     {
-      "problem_id": "bipartite_matching_assignment",
+      "topic_id": "bipartite_matching_assignment",
       "paper_id": "2013_deveci_mcm_gpu",
       "year": 2013,
       "venue": "Euro-Par 2013",
@@ -107,7 +107,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "bipartite_matching_assignment",
+      "topic_id": "bipartite_matching_assignment",
       "paper_id": "2019_hungariangpu",
       "title": "Fast block distributed CUDA implementation of the Hungarian algorithm",
       "year": 2019,
@@ -123,7 +123,7 @@
       "collection_code_commit": "ef841797c7b5ad9b04527d2fafc7604229c8a941"
     },
     {
-      "problem_id": "bipartite_matching_assignment",
+      "topic_id": "bipartite_matching_assignment",
       "paper_id": "2026_cugraph_hungarian",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -138,7 +138,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "breadth_first_search",
+      "topic_id": "breadth_first_search",
       "paper_id": "2017_gardenia_direction_bfs",
       "year": 2017,
       "venue": "arXiv; ACM JETC 2018",
@@ -153,7 +153,7 @@
       "collection_code_commit": "5894df11cf47f8839945edadff43dc79e260216d"
     },
     {
-      "problem_id": "breadth_first_search",
+      "topic_id": "breadth_first_search",
       "paper_id": "2017_gunrock_bfs",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -168,7 +168,7 @@
       "collection_code_commit": "748f79e66cc26762cd3f99422b028e742a737bde"
     },
     {
-      "problem_id": "breadth_first_search",
+      "topic_id": "breadth_first_search",
       "paper_id": "2018_hornet_bfs",
       "year": 2018,
       "venue": "IEEE HPEC 2018",
@@ -183,7 +183,7 @@
       "collection_code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8"
     },
     {
-      "problem_id": "breadth_first_search",
+      "topic_id": "breadth_first_search",
       "paper_id": "2019_graphblast_bfs",
       "year": 2019,
       "venue": "arXiv; later published in ACM TOPC",
@@ -198,7 +198,7 @@
       "collection_code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165"
     },
     {
-      "problem_id": "breadth_first_search",
+      "topic_id": "breadth_first_search",
       "paper_id": "2026_cugraph_bfs",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -213,7 +213,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "butterfly_counting_bipartite",
+      "topic_id": "butterfly_counting_bipartite",
       "paper_id": "2022_g2miner_reuse",
       "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
       "year": 2022,
@@ -229,7 +229,7 @@
       "collection_code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
     },
     {
-      "problem_id": "butterfly_counting_bipartite",
+      "topic_id": "butterfly_counting_bipartite",
       "paper_id": "2022_gamma_reuse",
       "title": "A Graph Pattern Mining Framework for Large Graphs on GPU",
       "year": 2024,
@@ -246,7 +246,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "butterfly_counting_bipartite",
+      "topic_id": "butterfly_counting_bipartite",
       "paper_id": "2022_gbfc",
       "year": 2022,
       "venue": "PVLDB 15(11)",
@@ -261,7 +261,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "butterfly_counting_bipartite",
+      "topic_id": "butterfly_counting_bipartite",
       "paper_id": "2024_gbc_biclique",
       "year": 2024,
       "venue": "IEEE ICDE 2024",
@@ -276,7 +276,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "paper_id": "2017_gunrock_bc",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -291,7 +291,7 @@
       "collection_code_commit": "748f79e66cc26762cd3f99422b028e742a737bde"
     },
     {
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "paper_id": "2018_hornet_bc",
       "year": 2018,
       "venue": "IEEE HPEC 2018",
@@ -306,7 +306,7 @@
       "collection_code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8"
     },
     {
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "paper_id": "2018_hornet_katz",
       "year": 2018,
       "venue": "IEEE HPEC 2018",
@@ -321,7 +321,7 @@
       "collection_code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8"
     },
     {
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "paper_id": "2019_graphblast_pr",
       "year": 2019,
       "venue": "arXiv; later published in ACM TOPC",
@@ -336,7 +336,7 @@
       "collection_code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165"
     },
     {
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "paper_id": "2021_turbobc",
       "title": "TurboBC: A Memory Efficient and Scalable GPU Based Betweenness Centrality Algorithm in the Language of Linear Algebra",
       "year": 2021,
@@ -350,7 +350,7 @@
       "collection_code_commit": "6e885a207902cfdac4cc375085c5a6ff58977fea"
     },
     {
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "paper_id": "2026_cugraph_betweenness",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -365,7 +365,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "paper_id": "2026_cugraph_eigenvector",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -380,7 +380,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "paper_id": "2026_cugraph_katz",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -395,7 +395,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "community_detection",
+      "topic_id": "community_detection",
       "paper_id": "2026_cugraph_ecg",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -410,7 +410,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "community_detection",
+      "topic_id": "community_detection",
       "paper_id": "2026_cugraph_leiden",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -425,7 +425,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "community_detection",
+      "topic_id": "community_detection",
       "paper_id": "2026_cugraph_louvain",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -440,7 +440,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "community_detection",
+      "topic_id": "community_detection",
       "paper_id": "2026_gleiden",
       "title": "gLeiden: Accelerated Community Detection Algorithms Using Directed and Undirected Graphs on GPUs",
       "year": 2026,
@@ -454,7 +454,7 @@
       "collection_code_commit": "6aacd7f8e91dbf8994ef21640355172ad1a67771"
     },
     {
-      "problem_id": "community_detection",
+      "topic_id": "community_detection",
       "paper_id": "2026_multilevel_graph_clustering",
       "title": "GPU-Accelerated Multilevel Graph Clustering: A Parallel Perspective on Louvain and Leiden",
       "year": 2026,
@@ -468,7 +468,7 @@
       "collection_code_commit": "29c69d27ba38f16476dcd8a6cb4ee70c68d96c49"
     },
     {
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "paper_id": "2017_gunrock_cc",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -483,7 +483,7 @@
       "collection_code_commit": "386d04450b9ae11097e9789a648042d4d310f199"
     },
     {
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "paper_id": "2018_eclcc",
       "year": 2018,
       "venue": "ACM HPDC 2018",
@@ -498,7 +498,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "paper_id": "2018_hornet_cc",
       "year": 2018,
       "venue": "IEEE HPEC 2018",
@@ -513,7 +513,7 @@
       "collection_code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8"
     },
     {
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "paper_id": "2019_graphblast_cc",
       "year": 2019,
       "venue": "arXiv; later published in ACM TOPC",
@@ -528,7 +528,7 @@
       "collection_code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165"
     },
     {
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "paper_id": "2023_eclscc",
       "title": "A GPU Algorithm for Detecting Strongly Connected Components",
       "year": 2023,
@@ -544,7 +544,7 @@
       "collection_code_commit": "8e67732687d06f75cdd602f36e1fe54429ba4f99"
     },
     {
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "paper_id": "2026_cugraph_scc",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -559,7 +559,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "paper_id": "2026_cugraph_wcc",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -574,7 +574,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "densest_subgraph",
+      "topic_id": "densest_subgraph",
       "paper_id": "2026_bound_tightened_dsd",
       "title": "Bound-Tightened Densest Subgraph Discovery on GPU",
       "year": 2026,
@@ -591,7 +591,7 @@
       "collection_code_commit": "3e704f98cf873336e2cf789570774039c8d6f092"
     },
     {
-      "problem_id": "entity_resolution_blocking",
+      "topic_id": "entity_resolution_blocking",
       "paper_id": "2025_hyperblocker",
       "year": 2025,
       "venue": "PVLDB 18",
@@ -606,7 +606,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "general_graph_weighted_matching",
+      "topic_id": "general_graph_weighted_matching",
       "paper_id": "2012_dgl_greedy_matching",
       "year": 2012,
       "venue": "Facing the Multicore-Challenge II, LNCS 7174",
@@ -621,7 +621,7 @@
       "collection_code_commit": "3d16000b4170fa741ed9e9667f22ba84d3493026"
     },
     {
-      "problem_id": "general_graph_weighted_matching",
+      "topic_id": "general_graph_weighted_matching",
       "paper_id": "2012_torch_cluster_greedy_matching",
       "year": 2012,
       "venue": "Facing the Multicore-Challenge II, LNCS 7174",
@@ -636,7 +636,7 @@
       "collection_code_commit": "e9a855c284b45edcbf0282cf70ac09bee0ce4e49"
     },
     {
-      "problem_id": "general_graph_weighted_matching",
+      "topic_id": "general_graph_weighted_matching",
       "paper_id": "2015_gpu_suitor_kepler",
       "year": 2015,
       "venue": "HiPC 2015",
@@ -651,7 +651,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "general_graph_weighted_matching",
+      "topic_id": "general_graph_weighted_matching",
       "paper_id": "2018_bootcmatch_suitor",
       "year": 2018,
       "venue": null,
@@ -666,7 +666,7 @@
       "collection_code_commit": "e4636be918902feeb8dde63f3c5ee207ae3a5d94"
     },
     {
-      "problem_id": "general_graph_weighted_matching",
+      "topic_id": "general_graph_weighted_matching",
       "paper_id": "2024_locally_dominant_gpu",
       "year": 2024,
       "venue": "SC 2024",
@@ -681,7 +681,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "general_graph_weighted_matching",
+      "topic_id": "general_graph_weighted_matching",
       "paper_id": "2026_cugraph_weighted_matching",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -696,7 +696,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "graph_anomaly_detection",
+      "topic_id": "graph_anomaly_detection",
       "paper_id": "2024_pygod_anomalydae",
       "year": 2024,
       "venue": "Journal of Machine Learning Research 25(141)",
@@ -711,7 +711,7 @@
       "collection_code_commit": "c84dccafa9bf587cd03cfd3e89b9be7a8f3337e8"
     },
     {
-      "problem_id": "graph_anomaly_detection",
+      "topic_id": "graph_anomaly_detection",
       "paper_id": "2024_pygod_cola",
       "year": 2024,
       "venue": "Journal of Machine Learning Research 25(141)",
@@ -726,7 +726,7 @@
       "collection_code_commit": "c84dccafa9bf587cd03cfd3e89b9be7a8f3337e8"
     },
     {
-      "problem_id": "graph_anomaly_detection",
+      "topic_id": "graph_anomaly_detection",
       "paper_id": "2024_pygod_dominant",
       "year": 2024,
       "venue": "Journal of Machine Learning Research 25(141)",
@@ -741,7 +741,7 @@
       "collection_code_commit": "c84dccafa9bf587cd03cfd3e89b9be7a8f3337e8"
     },
     {
-      "problem_id": "graph_based_geolocation",
+      "topic_id": "graph_based_geolocation",
       "paper_id": "2017_gunrock_spatial_median",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -756,7 +756,7 @@
       "collection_code_commit": "748f79e66cc26762cd3f99422b028e742a737bde"
     },
     {
-      "problem_id": "graph_based_geolocation",
+      "topic_id": "graph_based_geolocation",
       "paper_id": "2026_gt_geo",
       "year": 2026,
       "venue": "Computer Networks",
@@ -771,7 +771,7 @@
       "collection_code_commit": "11afee62e645d74fb1dc5b9c2b23fd66175de8f7"
     },
     {
-      "problem_id": "graph_based_geolocation",
+      "topic_id": "graph_based_geolocation",
       "paper_id": "2026_hb_geo",
       "year": 2026,
       "venue": "Cybersecurity",
@@ -786,7 +786,7 @@
       "collection_code_commit": "3c2d65ce19199ed963e16d0617003a478b05fa23"
     },
     {
-      "problem_id": "graph_classification_regression",
+      "topic_id": "graph_classification_regression",
       "paper_id": "2018_pyg_diffpool",
       "year": 2018,
       "venue": "NeurIPS 2018",
@@ -801,7 +801,7 @@
       "collection_code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939"
     },
     {
-      "problem_id": "graph_classification_regression",
+      "topic_id": "graph_classification_regression",
       "paper_id": "2018_pyg_gin",
       "year": 2018,
       "venue": "ICLR 2019",
@@ -816,7 +816,7 @@
       "collection_code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939"
     },
     {
-      "problem_id": "graph_classification_regression",
+      "topic_id": "graph_classification_regression",
       "paper_id": "2019_pyg_sagpool",
       "year": 2019,
       "venue": "ICML 2019",
@@ -831,7 +831,7 @@
       "collection_code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939"
     },
     {
-      "problem_id": "graph_coarsening",
+      "topic_id": "graph_coarsening",
       "paper_id": "2019_pyg_average_pool",
       "year": 2019,
       "venue": "ICLR 2019 workshop",
@@ -846,7 +846,7 @@
       "collection_code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939"
     },
     {
-      "problem_id": "graph_coarsening",
+      "topic_id": "graph_coarsening",
       "paper_id": "2026_cugraph_quotient",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -861,7 +861,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "graph_coarsening",
+      "topic_id": "graph_coarsening",
       "paper_id": "2026_nvgraph_contraction",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -876,7 +876,7 @@
       "collection_code_commit": "1ea93b51387bd3ff149b6ac8fa91d64edd43d31c"
     },
     {
-      "problem_id": "graph_condensation",
+      "topic_id": "graph_condensation",
       "paper_id": "2022_graphslim_doscond",
       "year": 2022,
       "venue": "ACM KDD 2022",
@@ -891,7 +891,7 @@
       "collection_code_commit": "2a120ed49e501a39a7c94bdabfc4c33c8c032235"
     },
     {
-      "problem_id": "graph_condensation",
+      "topic_id": "graph_condensation",
       "paper_id": "2022_graphslim_gcdm",
       "year": 2022,
       "venue": "Research preprint",
@@ -906,7 +906,7 @@
       "collection_code_commit": "2a120ed49e501a39a7c94bdabfc4c33c8c032235"
     },
     {
-      "problem_id": "graph_condensation",
+      "topic_id": "graph_condensation",
       "paper_id": "2022_graphslim_gcond",
       "year": 2021,
       "venue": "ICLR 2022",
@@ -921,7 +921,7 @@
       "collection_code_commit": "2a120ed49e501a39a7c94bdabfc4c33c8c032235"
     },
     {
-      "problem_id": "graph_edit_distance_mcs",
+      "topic_id": "graph_edit_distance_mcs",
       "paper_id": "2016_gpu_mcs_drug_discovery",
       "year": 2016,
       "venue": "IEEE (Chicago)",
@@ -936,7 +936,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "graph_edit_distance_mcs",
+      "topic_id": "graph_edit_distance_mcs",
       "paper_id": "2026_fast_ged",
       "year": 2026,
       "venue": "ICCS 2026",
@@ -951,7 +951,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "graph_laplacian_eigenpairs",
+      "topic_id": "graph_laplacian_eigenpairs",
       "paper_id": "2017_cupy_dense_eigh",
       "year": 2017,
       "venue": "LearningSys workshop at NIPS 2017",
@@ -966,7 +966,7 @@
       "collection_code_commit": "379a2bedbca90d59a947d8bc26d02e7378ee1eb0"
     },
     {
-      "problem_id": "graph_laplacian_eigenpairs",
+      "topic_id": "graph_laplacian_eigenpairs",
       "paper_id": "2017_cupy_lanczos",
       "year": 2017,
       "venue": "LearningSys workshop at NIPS 2017",
@@ -981,7 +981,7 @@
       "collection_code_commit": "379a2bedbca90d59a947d8bc26d02e7378ee1eb0"
     },
     {
-      "problem_id": "graph_laplacian_eigenpairs",
+      "topic_id": "graph_laplacian_eigenpairs",
       "paper_id": "2017_cupy_lobpcg",
       "year": 2017,
       "venue": "LearningSys workshop at NIPS 2017",
@@ -996,7 +996,7 @@
       "collection_code_commit": "379a2bedbca90d59a947d8bc26d02e7378ee1eb0"
     },
     {
-      "problem_id": "graph_layout_force_directed",
+      "topic_id": "graph_layout_force_directed",
       "paper_id": "2017_gpugraphlayout",
       "year": 2017,
       "venue": "46th International Conference on Parallel Processing (ICPP 2017)",
@@ -1011,7 +1011,7 @@
       "collection_code_commit": "9da3af0b7ae72dbfb04b2a7b6eaf28f4d9c13344"
     },
     {
-      "problem_id": "graph_layout_force_directed",
+      "topic_id": "graph_layout_force_directed",
       "paper_id": "2026_cugraph_force_atlas2",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1026,7 +1026,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "graph_motif_counting",
+      "topic_id": "graph_motif_counting",
       "paper_id": "2022_g2miner",
       "title": "Efficient and Scalable Graph Pattern Mining on GPUs",
       "year": 2022,
@@ -1040,7 +1040,7 @@
       "collection_code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
     },
     {
-      "problem_id": "graph_motif_counting",
+      "topic_id": "graph_motif_counting",
       "paper_id": "2023_graphset",
       "title": "GraphSet: High Performance Graph Mining through Equivalent Set Transformations",
       "year": 2023,
@@ -1054,7 +1054,7 @@
       "collection_code_commit": "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8"
     },
     {
-      "problem_id": "graph_motif_counting",
+      "topic_id": "graph_motif_counting",
       "paper_id": "2024_dumato",
       "title": "DuMato: A Dynamic GPU System for Graph Pattern Mining",
       "year": 2024,
@@ -1068,7 +1068,7 @@
       "collection_code_commit": "79c255ee2467e436d49e3ee974b4d7149551c641"
     },
     {
-      "problem_id": "graph_signal_denoising",
+      "topic_id": "graph_signal_denoising",
       "paper_id": "2014_gtf_admm",
       "year": 2014,
       "venue": "AISTATS 2015",
@@ -1083,7 +1083,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "graph_signal_denoising",
+      "topic_id": "graph_signal_denoising",
       "paper_id": "2014_gtf_projected_newton",
       "year": 2014,
       "venue": "AISTATS 2015",
@@ -1098,7 +1098,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "graph_signal_denoising",
+      "topic_id": "graph_signal_denoising",
       "paper_id": "2014_gunrock_sparse_fused_lasso",
       "year": 2014,
       "venue": "AISTATS 2015",
@@ -1113,7 +1113,7 @@
       "collection_code_commit": "386d04450b9ae11097e9789a648042d4d310f199"
     },
     {
-      "problem_id": "graphlet_counting",
+      "topic_id": "graphlet_counting",
       "paper_id": "2022_g2miner_enumeration",
       "year": 2022,
       "venue": "USENIX OSDI 2022",
@@ -1128,7 +1128,7 @@
       "collection_code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
     },
     {
-      "problem_id": "graphlet_counting",
+      "topic_id": "graphlet_counting",
       "paper_id": "2022_g2miner_formula",
       "year": 2022,
       "venue": "USENIX OSDI 2022",
@@ -1143,7 +1143,7 @@
       "collection_code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
     },
     {
-      "problem_id": "graphlet_counting",
+      "topic_id": "graphlet_counting",
       "paper_id": "2022_pangolin",
       "year": 2019,
       "venue": "PVLDB 2020",
@@ -1158,7 +1158,7 @@
       "collection_code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
     },
     {
-      "problem_id": "group_steiner_tree",
+      "topic_id": "group_steiner_tree",
       "paper_id": "2021_gpusteiner_kmb",
       "year": 2021,
       "venue": "International Journal of Parallel Programming",
@@ -1173,7 +1173,7 @@
       "collection_code_commit": "61e2c94def74d84d4d79d59c7499218ab75d720e"
     },
     {
-      "problem_id": "group_steiner_tree",
+      "topic_id": "group_steiner_tree",
       "paper_id": "2022_gpu_vlsi_gst",
       "year": 2022,
       "venue": "Journal of Computational Science Education",
@@ -1188,7 +1188,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "group_steiner_tree",
+      "topic_id": "group_steiner_tree",
       "paper_id": "2025_gpu4gst",
       "title": "Fast Optimal Group Steiner Tree Search using GPUs",
       "year": 2025,
@@ -1205,7 +1205,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "topic_id": "hop_constrained_cycle_path_enumeration",
       "paper_id": "2014_gpu_chordless_cycles",
       "year": 2014,
       "venue": "arXiv preprint",
@@ -1220,7 +1220,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "topic_id": "hop_constrained_cycle_path_enumeration",
       "paper_id": "2022_gpu_elementary_circuits",
       "year": 2022,
       "venue": "The Journal of Supercomputing",
@@ -1235,7 +1235,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "hop_constrained_cycle_path_enumeration",
+      "topic_id": "hop_constrained_cycle_path_enumeration",
       "paper_id": "2026_cugraph_simple_cycles",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1250,7 +1250,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "hypergraph_node_learning",
+      "topic_id": "hypergraph_node_learning",
       "paper_id": "2020_dhg_hgnn",
       "year": 2018,
       "venue": "AAAI 2019",
@@ -1265,7 +1265,7 @@
       "collection_code_commit": "b4f80211c2173b890d2779539683a3a65c4648ac"
     },
     {
-      "problem_id": "hypergraph_node_learning",
+      "topic_id": "hypergraph_node_learning",
       "paper_id": "2020_dhg_hnhn",
       "year": 2020,
       "venue": "Research preprint",
@@ -1280,7 +1280,7 @@
       "collection_code_commit": "b4f80211c2173b890d2779539683a3a65c4648ac"
     },
     {
-      "problem_id": "hypergraph_node_learning",
+      "topic_id": "hypergraph_node_learning",
       "paper_id": "2020_dhg_hypergcn",
       "year": 2019,
       "venue": "NeurIPS 2019",
@@ -1295,7 +1295,7 @@
       "collection_code_commit": "b4f80211c2173b890d2779539683a3a65c4648ac"
     },
     {
-      "problem_id": "hypergraph_partitioning",
+      "topic_id": "hypergraph_partitioning",
       "paper_id": "2025_ghypart",
       "year": 2025,
       "venue": "ACM TACO",
@@ -1310,7 +1310,7 @@
       "collection_code_commit": "97b517195c16afe1a8c46d5e3fc418109ed6972a"
     },
     {
-      "problem_id": "hypergraph_partitioning",
+      "topic_id": "hypergraph_partitioning",
       "paper_id": "2026_axon_cuda",
       "year": 2026,
       "venue": null,
@@ -1325,7 +1325,7 @@
       "collection_code_commit": "48bf283f7a370f57bacd7e88677fb4e099bb7f8a"
     },
     {
-      "problem_id": "hypergraph_partitioning",
+      "topic_id": "hypergraph_partitioning",
       "paper_id": "2026_fastpartitioner",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1340,7 +1340,7 @@
       "collection_code_commit": "6697fcbe5bd957fbe1aa7f20bee725bdc1dc4dc7"
     },
     {
-      "problem_id": "hypergraph_partitioning",
+      "topic_id": "hypergraph_partitioning",
       "paper_id": "2026_hgnn_part",
       "year": 2026,
       "venue": "DATE 2026",
@@ -1355,7 +1355,7 @@
       "collection_code_commit": "0a70e44f3bccbb06c386edaf84927433c9441cb7"
     },
     {
-      "problem_id": "hypergraph_partitioning",
+      "topic_id": "hypergraph_partitioning",
       "paper_id": "2026_hyspecpro",
       "year": 2026,
       "venue": "Research preprint",
@@ -1370,7 +1370,7 @@
       "collection_code_commit": "1e9db172ce26a33be394369c94bedfba913ca41a"
     },
     {
-      "problem_id": "induced_subgraph_ego_extraction",
+      "topic_id": "induced_subgraph_ego_extraction",
       "paper_id": "2019_dgl_node_subgraph",
       "year": 2019,
       "venue": null,
@@ -1385,7 +1385,7 @@
       "collection_code_commit": "3d16000b4170fa741ed9e9667f22ba84d3493026"
     },
     {
-      "problem_id": "induced_subgraph_ego_extraction",
+      "topic_id": "induced_subgraph_ego_extraction",
       "paper_id": "2019_pyg_induced_subgraph",
       "year": 2019,
       "venue": "ICLR 2019 workshop",
@@ -1400,7 +1400,7 @@
       "collection_code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939"
     },
     {
-      "problem_id": "induced_subgraph_ego_extraction",
+      "topic_id": "induced_subgraph_ego_extraction",
       "paper_id": "2019_pyg_khop_subgraph",
       "year": 2019,
       "venue": "ICLR 2019 workshop",
@@ -1415,7 +1415,7 @@
       "collection_code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939"
     },
     {
-      "problem_id": "induced_subgraph_ego_extraction",
+      "topic_id": "induced_subgraph_ego_extraction",
       "paper_id": "2026_cugraph_egonet",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1430,7 +1430,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "induced_subgraph_ego_extraction",
+      "topic_id": "induced_subgraph_ego_extraction",
       "paper_id": "2026_cugraph_induced_subgraph",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1445,7 +1445,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "influence_maximization",
+      "topic_id": "influence_maximization",
       "paper_id": "2020_curipples",
       "year": 2020,
       "venue": "ACM ICS 2020",
@@ -1460,7 +1460,7 @@
       "collection_code_commit": "82b20dc261ea8d097ecd31c2d2ad07c218abc488"
     },
     {
-      "problem_id": "influence_maximization",
+      "topic_id": "influence_maximization",
       "paper_id": "2021_gim",
       "year": 2021,
       "venue": "IEEE Transactions on Parallel and Distributed Systems",
@@ -1475,7 +1475,7 @@
       "collection_code_commit": "d84b81a47606aa7912a8d1a96770568f92f5c98d"
     },
     {
-      "problem_id": "influence_maximization",
+      "topic_id": "influence_maximization",
       "paper_id": "2021_superfuser",
       "title": "Fast and Parallel Influence Maximization using Fused Sampling and Memory Access Regularization",
       "year": 2021,
@@ -1492,7 +1492,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "influence_maximization",
+      "topic_id": "influence_maximization",
       "paper_id": "2024_difuser",
       "year": 2024,
       "venue": "The Journal of Supercomputing",
@@ -1507,7 +1507,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "k_clique_counting_enumeration",
+      "topic_id": "k_clique_counting_enumeration",
       "paper_id": "2022_parallel_k_clique_counting",
       "title": "Parallel K-Clique Counting on GPUs",
       "year": 2022,
@@ -1521,7 +1521,7 @@
       "collection_code_commit": "314ac6d41fbe6582c2a258c2094c67ec1aa47116"
     },
     {
-      "problem_id": "k_clique_counting_enumeration",
+      "topic_id": "k_clique_counting_enumeration",
       "paper_id": "2023_graphset",
       "title": "GraphSet: High Performance Graph Mining through Equivalent Set Transformations",
       "year": 2023,
@@ -1535,7 +1535,7 @@
       "collection_code_commit": "3bc6e6b9e2e0f61ba799a9c25cab96a9da6b4dc8"
     },
     {
-      "problem_id": "k_clique_counting_enumeration",
+      "topic_id": "k_clique_counting_enumeration",
       "paper_id": "2024_gamma",
       "title": "A Graph Pattern Mining Framework for Large Graphs on GPU",
       "year": 2024,
@@ -1549,7 +1549,7 @@
       "collection_code_commit": "3e01be68ededb8dcc4fa44bdb069a945a822232c"
     },
     {
-      "problem_id": "k_core_decomposition",
+      "topic_id": "k_core_decomposition",
       "paper_id": "2017_gunrock_kcore",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -1564,7 +1564,7 @@
       "collection_code_commit": "748f79e66cc26762cd3f99422b028e742a737bde"
     },
     {
-      "problem_id": "k_core_decomposition",
+      "topic_id": "k_core_decomposition",
       "paper_id": "2018_hornet_kcore",
       "year": 2018,
       "venue": "IEEE HPEC 2018",
@@ -1579,7 +1579,7 @@
       "collection_code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8"
     },
     {
-      "problem_id": "k_core_decomposition",
+      "topic_id": "k_core_decomposition",
       "paper_id": "2023_accelerating_k_core_gpu",
       "title": "Accelerating k-Core Decomposition by a GPU",
       "year": 2023,
@@ -1593,7 +1593,7 @@
       "collection_code_commit": "0a2d37634024b4c841727da7c7279aa3c494c22b"
     },
     {
-      "problem_id": "k_core_decomposition",
+      "topic_id": "k_core_decomposition",
       "paper_id": "2026_cugraph_core_number",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1608,7 +1608,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "k_truss_decomposition",
+      "topic_id": "k_truss_decomposition",
       "paper_id": "2018_hornet_ktruss",
       "year": 2018,
       "venue": "IEEE HPEC 2018",
@@ -1623,7 +1623,7 @@
       "collection_code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8"
     },
     {
-      "problem_id": "k_truss_decomposition",
+      "topic_id": "k_truss_decomposition",
       "paper_id": "2020_accelerating_truss_heterogeneous",
       "title": "Accelerating Truss Decomposition on Heterogeneous Processors",
       "year": 2020,
@@ -1640,7 +1640,7 @@
       "collection_code_commit": "a8faa445ccb45c18383087db488eff9d1836d8d1"
     },
     {
-      "problem_id": "k_truss_decomposition",
+      "topic_id": "k_truss_decomposition",
       "paper_id": "2026_cugraph_k_truss",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1655,7 +1655,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "knn_graph_construction",
+      "topic_id": "knn_graph_construction",
       "paper_id": "2017_faiss_flat_knn",
       "year": 2017,
       "venue": "IEEE Transactions on Big Data, published 2019",
@@ -1670,7 +1670,7 @@
       "collection_code_commit": "07979b10e64d39a611196483f103b2d7b349b5f7"
     },
     {
-      "problem_id": "knn_graph_construction",
+      "topic_id": "knn_graph_construction",
       "paper_id": "2019_torch_cluster_knn",
       "year": 2019,
       "venue": "ICLR 2019 workshop",
@@ -1685,7 +1685,7 @@
       "collection_code_commit": "e9a855c284b45edcbf0282cf70ac09bee0ce4e49"
     },
     {
-      "problem_id": "knn_graph_construction",
+      "topic_id": "knn_graph_construction",
       "paper_id": "2021_cuvs_nn_descent",
       "year": 2021,
       "venue": "ACM CIKM 2021",
@@ -1700,7 +1700,7 @@
       "collection_code_commit": "24b0b17069ee1547354d15847d9c614dd4fb4a43"
     },
     {
-      "problem_id": "knowledge_graph_embedding",
+      "topic_id": "knowledge_graph_embedding",
       "paper_id": "2014_dgl_ke_distmult",
       "year": 2014,
       "venue": "ICLR 2015",
@@ -1715,7 +1715,7 @@
       "collection_code_commit": "e00bccfc4638db8b1f703ecedbf8db81faedb2bb"
     },
     {
-      "problem_id": "knowledge_graph_embedding",
+      "topic_id": "knowledge_graph_embedding",
       "paper_id": "2016_dgl_ke_complex",
       "year": 2016,
       "venue": "ICML 2016",
@@ -1730,7 +1730,7 @@
       "collection_code_commit": "e00bccfc4638db8b1f703ecedbf8db81faedb2bb"
     },
     {
-      "problem_id": "knowledge_graph_embedding",
+      "topic_id": "knowledge_graph_embedding",
       "paper_id": "2019_dgl_ke_rotate",
       "year": 2019,
       "venue": "ICLR 2019",
@@ -1745,7 +1745,7 @@
       "collection_code_commit": "e00bccfc4638db8b1f703ecedbf8db81faedb2bb"
     },
     {
-      "problem_id": "link_prediction",
+      "topic_id": "link_prediction",
       "paper_id": "2026_cugraph_cosine",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1760,7 +1760,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "link_prediction",
+      "topic_id": "link_prediction",
       "paper_id": "2026_cugraph_jaccard",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1775,7 +1775,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "link_prediction",
+      "topic_id": "link_prediction",
       "paper_id": "2026_cugraph_overlap",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1790,7 +1790,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "link_prediction",
+      "topic_id": "link_prediction",
       "paper_id": "2026_cugraph_sorensen",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -1805,7 +1805,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "many_source_shortest_paths",
+      "topic_id": "many_source_shortest_paths",
       "paper_id": "2010_blocked_cuda_floyd_warshall",
       "year": 2010,
       "venue": "Research preprint",
@@ -1820,7 +1820,7 @@
       "collection_code_commit": "c21f114eb4da7d4900a6017e293fdb0f43d94141"
     },
     {
-      "problem_id": "many_source_shortest_paths",
+      "topic_id": "many_source_shortest_paths",
       "paper_id": "2023_tensor_floyd_warshall",
       "year": 2023,
       "venue": null,
@@ -1835,7 +1835,7 @@
       "collection_code_commit": "92935ab3a16c59dccb948da8f198381881793e19"
     },
     {
-      "problem_id": "many_source_shortest_paths",
+      "topic_id": "many_source_shortest_paths",
       "paper_id": "2023_tensor_r_kleene",
       "year": 2023,
       "venue": null,
@@ -1850,7 +1850,7 @@
       "collection_code_commit": "92935ab3a16c59dccb948da8f198381881793e19"
     },
     {
-      "problem_id": "many_source_shortest_paths",
+      "topic_id": "many_source_shortest_paths",
       "paper_id": "2026_cugraph_od_distances",
       "year": null,
       "venue": null,
@@ -1865,7 +1865,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "max_flow_min_cut",
+      "topic_id": "max_flow_min_cut",
       "paper_id": "2025_ecl_maxflow",
       "title": "An Efficient Push-Relabel Implementation for Max-Flow Computations on GPUs",
       "year": 2025,
@@ -1881,7 +1881,7 @@
       "collection_code_commit": "2aa2b9f1054b7ace6e2dc78f405fc3e9cd719a70"
     },
     {
-      "problem_id": "max_flow_min_cut",
+      "topic_id": "max_flow_min_cut",
       "paper_id": "2025_generalized_maxflow_gpu",
       "year": 2025,
       "venue": "Computation (MDPI) 13(2):40",
@@ -1891,12 +1891,12 @@
       "license_file": null,
       "license_note": null,
       "research_collection_only": true,
-      "title": "Novel GPU-Based Method for the Generalized Maximum Flow Problem",
+      "title": "Novel GPU-Based Method for the Generalized Maximum Flow Topic",
       "collection_metadata": "problems/22_max_flow_min_cut/papers/2025_generalized_maxflow_gpu/metadata.json",
       "collection_code_commit": null
     },
     {
-      "problem_id": "max_flow_min_cut",
+      "topic_id": "max_flow_min_cut",
       "paper_id": "2025_wbpr",
       "year": 2025,
       "venue": "IEEE HPEC 2025",
@@ -1911,7 +1911,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "paper_id": "2023_efficient_mbe_gpus",
       "title": "Efficient Maximal Biclique Enumeration on GPUs",
       "year": 2023,
@@ -1928,7 +1928,7 @@
       "collection_code_commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942"
     },
     {
-      "problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "paper_id": "2024_cumbe",
       "title": "cuMBE: GPU-Accelerated Maximal Biclique Enumeration",
       "year": 2024,
@@ -1942,7 +1942,7 @@
       "collection_code_commit": "2fff8005b2f74e5683d915f9cd817409f6499bcf"
     },
     {
-      "problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "paper_id": "2025_advanced_mbe_gpu_bitmaps",
       "year": 2025,
       "venue": "IEEE Transactions on Computers",
@@ -1957,7 +1957,7 @@
       "collection_code_commit": "4ef91a0c8fd9f756d5bb086fd11ce3e4bfff9942"
     },
     {
-      "problem_id": "maximal_clique_enumeration",
+      "topic_id": "maximal_clique_enumeration",
       "paper_id": "2023_parallelizing_mce",
       "title": "Parallelizing Maximal Clique Enumeration on GPUs",
       "year": 2023,
@@ -1971,7 +1971,7 @@
       "collection_code_commit": "44ef6e034e39660c77c31eee475455a16af470e1"
     },
     {
-      "problem_id": "maximal_clique_enumeration",
+      "topic_id": "maximal_clique_enumeration",
       "paper_id": "2024_g2_aimd",
       "title": "G2-AIMD: A Memory-Efficient Subgraph-Centric Framework for Efficient Subgraph Finding on GPUs",
       "year": 2024,
@@ -1985,7 +1985,7 @@
       "collection_code_commit": "751595c0511acadd662d4f999ebf04ff6cc3483a"
     },
     {
-      "problem_id": "maximal_clique_enumeration",
+      "topic_id": "maximal_clique_enumeration",
       "paper_id": "2026_rdmce",
       "title": "Root-Down Exposure for Maximal Clique Enumeration on GPUs",
       "year": 2026,
@@ -1999,7 +1999,7 @@
       "collection_code_commit": "59452dcfbcdc8dabf41abef277ef3e240248ee0c"
     },
     {
-      "problem_id": "maximal_independent_set",
+      "topic_id": "maximal_independent_set",
       "paper_id": "2016_lonestargpu_mis",
       "year": 2016,
       "venue": null,
@@ -2014,7 +2014,7 @@
       "collection_code_commit": "b67f94206a8c47fd414446621f6633a31c49fd98"
     },
     {
-      "problem_id": "maximal_independent_set",
+      "topic_id": "maximal_independent_set",
       "paper_id": "2018_ecl_mis",
       "year": 2018,
       "venue": "ACM TOPC",
@@ -2029,7 +2029,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "maximal_independent_set",
+      "topic_id": "maximal_independent_set",
       "paper_id": "2019_graphblast_mis",
       "year": 2019,
       "venue": "arXiv; later published in ACM TOPC",
@@ -2044,7 +2044,7 @@
       "collection_code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165"
     },
     {
-      "problem_id": "maximal_independent_set",
+      "topic_id": "maximal_independent_set",
       "paper_id": "2025_mg_mis",
       "year": 2025,
       "venue": "ACM ICS 2025",
@@ -2059,7 +2059,7 @@
       "collection_code_commit": "db7fb2355ac68c3cf96dd2b672ead516c33bf50f"
     },
     {
-      "problem_id": "maximal_independent_set",
+      "topic_id": "maximal_independent_set",
       "paper_id": "2026_cugraph_mis",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -2074,7 +2074,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "maximum_clique",
+      "topic_id": "maximum_clique",
       "paper_id": "2019_maximum_clique_cuda",
       "title": "Implementation of a Maximum Clique Search Procedure on CUDA",
       "year": 2019,
@@ -2088,7 +2088,7 @@
       "collection_code_commit": "a0b6b00a1f67b6fe65380b2efcb242cf40889d83"
     },
     {
-      "problem_id": "maximum_clique",
+      "topic_id": "maximum_clique",
       "paper_id": "2023_maximum_clique_enumeration_gpu",
       "title": "Maximum Clique Enumeration on the GPU",
       "year": 2023,
@@ -2102,7 +2102,7 @@
       "collection_code_commit": "2365400c7b4a172afdbf60c6c559a49e0567caac"
     },
     {
-      "problem_id": "maximum_clique",
+      "topic_id": "maximum_clique",
       "paper_id": "2024_maximum_clique_many_core_gpu",
       "title": "Efficiently Computing Maximum Clique of Sparse Graphs with Many-Core Graphical Processing Units",
       "year": 2024,
@@ -2116,7 +2116,7 @@
       "collection_code_commit": "62708c588219cc4d176ef55bbce9e5a21ad8c6d2"
     },
     {
-      "problem_id": "maximum_independent_set",
+      "topic_id": "maximum_independent_set",
       "paper_id": "2023_difusco_mis",
       "year": 2023,
       "venue": "NeurIPS 2023",
@@ -2131,7 +2131,7 @@
       "collection_code_commit": "65eb3b7bde76097c0d3438ce743fa6769baf9ce5"
     },
     {
-      "problem_id": "maximum_independent_set",
+      "topic_id": "maximum_independent_set",
       "paper_id": "2023_dynamic_mis",
       "year": 2023,
       "venue": "NeurIPS 2023",
@@ -2146,7 +2146,7 @@
       "collection_code_commit": "32462fa7fb4bd5c459364a9efb6b749d9c06b53f"
     },
     {
-      "problem_id": "maximum_independent_set",
+      "topic_id": "maximum_independent_set",
       "paper_id": "2025_pcqo_reference",
       "year": 2025,
       "venue": "ICML 2025",
@@ -2156,12 +2156,12 @@
       "license_file": null,
       "license_note": "Inspect upstream license and dependency notices before redistribution.",
       "research_collection_only": true,
-      "title": "Differentiable Quadratic Optimization For the Maximum Independent Set Problem",
+      "title": "Differentiable Quadratic Optimization For the Maximum Independent Set Topic",
       "collection_metadata": "problems/66_maximum_independent_set/papers/2025_pcqo_reference/metadata.json",
       "collection_code_commit": null
     },
     {
-      "problem_id": "minimum_vertex_cover",
+      "topic_id": "minimum_vertex_cover",
       "paper_id": "2022_parallel_mvc_reference",
       "year": 2022,
       "venue": "Research preprint",
@@ -2176,7 +2176,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "minimum_vertex_cover",
+      "topic_id": "minimum_vertex_cover",
       "paper_id": "2023_dynamic_mvc",
       "year": 2023,
       "venue": "NeurIPS 2023",
@@ -2191,7 +2191,7 @@
       "collection_code_commit": "32462fa7fb4bd5c459364a9efb6b749d9c06b53f"
     },
     {
-      "problem_id": "minimum_vertex_cover",
+      "topic_id": "minimum_vertex_cover",
       "paper_id": "2026_component_aware_mvc",
       "year": 2025,
       "venue": "IEEE TPDS 37(2), 2026",
@@ -2206,7 +2206,7 @@
       "collection_code_commit": "9adba41659d320ca2fd0e01c6907916db1f4fdf5"
     },
     {
-      "problem_id": "neighborhood_sampling",
+      "topic_id": "neighborhood_sampling",
       "paper_id": "2020_csaw_neighbors",
       "year": 2020,
       "venue": "SC 2020",
@@ -2221,7 +2221,7 @@
       "collection_code_commit": "d91ff3ac896a90a3ea7b71e9251d5e79f67f8c6c"
     },
     {
-      "problem_id": "neighborhood_sampling",
+      "topic_id": "neighborhood_sampling",
       "paper_id": "2020_nextdoor_neighbors",
       "year": 2020,
       "venue": "arXiv; EuroSys 2021",
@@ -2236,7 +2236,7 @@
       "collection_code_commit": "dcbc46d60bb9623616a10f5e7518fe5214575226"
     },
     {
-      "problem_id": "neighborhood_sampling",
+      "topic_id": "neighborhood_sampling",
       "paper_id": "2021_skywalker_neighbors",
       "year": 2021,
       "venue": "PACT 2021",
@@ -2251,7 +2251,7 @@
       "collection_code_commit": "b12bb95d01c5feabb69699985b85a6ea3cbdc944"
     },
     {
-      "problem_id": "neighborhood_sampling",
+      "topic_id": "neighborhood_sampling",
       "paper_id": "2026_cugraph_neighbor_sampling",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -2266,7 +2266,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "network_alignment",
+      "topic_id": "network_alignment",
       "paper_id": "2015_hga_2n",
       "year": 2015,
       "venue": "IET Systems Biology",
@@ -2281,7 +2281,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "network_alignment",
+      "topic_id": "network_alignment",
       "paper_id": "2023_cualign",
       "year": 2023,
       "venue": "IA^3 2023 (SC23 workshop)",
@@ -2296,7 +2296,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "network_alignment",
+      "topic_id": "network_alignment",
       "paper_id": "2024_gpu_local_network_alignment",
       "year": 2024,
       "venue": "IEEE",
@@ -2311,7 +2311,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "network_alignment",
+      "topic_id": "network_alignment",
       "paper_id": "2024_pygmtools_ipfp",
       "year": 2024,
       "venue": "Journal of Machine Learning Research 25(33)",
@@ -2326,7 +2326,7 @@
       "collection_code_commit": "5b7b3f84a34528e455a6df6404822c306aa45dc1"
     },
     {
-      "problem_id": "network_alignment",
+      "topic_id": "network_alignment",
       "paper_id": "2024_pygmtools_rrwm",
       "year": 2024,
       "venue": "Journal of Machine Learning Research 25(33)",
@@ -2341,7 +2341,7 @@
       "collection_code_commit": "5b7b3f84a34528e455a6df6404822c306aa45dc1"
     },
     {
-      "problem_id": "network_alignment",
+      "topic_id": "network_alignment",
       "paper_id": "2024_pygmtools_sm",
       "year": 2024,
       "venue": "Journal of Machine Learning Research 25(33)",
@@ -2356,7 +2356,7 @@
       "collection_code_commit": "5b7b3f84a34528e455a6df6404822c306aa45dc1"
     },
     {
-      "problem_id": "node_classification_regression",
+      "topic_id": "node_classification_regression",
       "paper_id": "2016_pyg_gcn",
       "year": 2016,
       "venue": "ICLR 2017",
@@ -2371,7 +2371,7 @@
       "collection_code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939"
     },
     {
-      "problem_id": "node_classification_regression",
+      "topic_id": "node_classification_regression",
       "paper_id": "2017_pyg_gat",
       "year": 2017,
       "venue": "ICLR 2018",
@@ -2386,7 +2386,7 @@
       "collection_code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939"
     },
     {
-      "problem_id": "node_classification_regression",
+      "topic_id": "node_classification_regression",
       "paper_id": "2017_pyg_graphsage",
       "year": 2017,
       "venue": "NeurIPS 2017",
@@ -2401,7 +2401,7 @@
       "collection_code_commit": "79d33965a40b7fa83616a9f598a0f8619f25d939"
     },
     {
-      "problem_id": "node_embedding",
+      "topic_id": "node_embedding",
       "paper_id": "2014_graphvite_deepwalk",
       "year": 2014,
       "venue": "KDD 2014",
@@ -2416,7 +2416,7 @@
       "collection_code_commit": "5aad6dcc5e6318396a13d1c6a05f44a833b9c3bc"
     },
     {
-      "problem_id": "node_embedding",
+      "topic_id": "node_embedding",
       "paper_id": "2015_graphvite_line",
       "year": 2015,
       "venue": "WWW 2015",
@@ -2431,7 +2431,7 @@
       "collection_code_commit": "5aad6dcc5e6318396a13d1c6a05f44a833b9c3bc"
     },
     {
-      "problem_id": "node_embedding",
+      "topic_id": "node_embedding",
       "paper_id": "2016_graphvite_node2vec",
       "year": 2016,
       "venue": "KDD 2016",
@@ -2446,7 +2446,7 @@
       "collection_code_commit": "5aad6dcc5e6318396a13d1c6a05f44a833b9c3bc"
     },
     {
-      "problem_id": "persistent_homology",
+      "topic_id": "persistent_homology",
       "paper_id": "2020_ripserplusplus",
       "year": 2020,
       "venue": "arXiv, revised 2026",
@@ -2461,7 +2461,7 @@
       "collection_code_commit": "30243c0c752de26d7fdf6e41f08bf7b840ca4744"
     },
     {
-      "problem_id": "personalized_pagerank_rwr",
+      "topic_id": "personalized_pagerank_rwr",
       "paper_id": "2017_gunrock_ppr",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -2476,7 +2476,7 @@
       "collection_code_commit": "748f79e66cc26762cd3f99422b028e742a737bde"
     },
     {
-      "problem_id": "personalized_pagerank_rwr",
+      "topic_id": "personalized_pagerank_rwr",
       "paper_id": "2019_graphblast_seeded_diffusion",
       "year": 2019,
       "venue": "arXiv; later published in ACM TOPC",
@@ -2491,7 +2491,7 @@
       "collection_code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165"
     },
     {
-      "problem_id": "personalized_pagerank_rwr",
+      "topic_id": "personalized_pagerank_rwr",
       "paper_id": "2020_kpar",
       "title": "Realtime Top-k Personalized PageRank over Large Graphs on GPUs",
       "year": 2020,
@@ -2508,7 +2508,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "personalized_pagerank_rwr",
+      "topic_id": "personalized_pagerank_rwr",
       "paper_id": "2026_cugraph_personalized_pagerank",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -2523,7 +2523,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "quasi_clique_mining",
+      "topic_id": "quasi_clique_mining",
       "paper_id": "2025_cuqc",
       "title": "GPU-Accelerated Maximal Quasi-Clique Mining",
       "year": 2025,
@@ -2537,7 +2537,7 @@
       "collection_code_commit": "e3785db225f2730898c2b316a4fcc06516b16c06"
     },
     {
-      "problem_id": "random_walk_generation",
+      "topic_id": "random_walk_generation",
       "paper_id": "2020_csaw_walks",
       "year": 2020,
       "venue": "SC 2020",
@@ -2552,7 +2552,7 @@
       "collection_code_commit": "d91ff3ac896a90a3ea7b71e9251d5e79f67f8c6c"
     },
     {
-      "problem_id": "random_walk_generation",
+      "topic_id": "random_walk_generation",
       "paper_id": "2020_nextdoor_walks",
       "year": 2020,
       "venue": "arXiv; EuroSys 2021",
@@ -2567,7 +2567,7 @@
       "collection_code_commit": "dcbc46d60bb9623616a10f5e7518fe5214575226"
     },
     {
-      "problem_id": "random_walk_generation",
+      "topic_id": "random_walk_generation",
       "paper_id": "2021_skywalker_walks",
       "year": 2021,
       "venue": "PACT 2021",
@@ -2582,7 +2582,7 @@
       "collection_code_commit": "b12bb95d01c5feabb69699985b85a6ea3cbdc944"
     },
     {
-      "problem_id": "random_walk_generation",
+      "topic_id": "random_walk_generation",
       "paper_id": "2026_cugraph_random_walks",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -2597,7 +2597,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "seeded_local_community_detection",
+      "topic_id": "seeded_local_community_detection",
       "paper_id": "2017_gunrock_ppr",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -2612,7 +2612,7 @@
       "collection_code_commit": "748f79e66cc26762cd3f99422b028e742a737bde"
     },
     {
-      "problem_id": "seeded_local_community_detection",
+      "topic_id": "seeded_local_community_detection",
       "paper_id": "2017_gunrock_regularized_ppr",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -2627,7 +2627,7 @@
       "collection_code_commit": "386d04450b9ae11097e9789a648042d4d310f199"
     },
     {
-      "problem_id": "seeded_local_community_detection",
+      "topic_id": "seeded_local_community_detection",
       "paper_id": "2019_graphblast_lgc",
       "year": 2019,
       "venue": "arXiv; later published in ACM TOPC",
@@ -2642,7 +2642,7 @@
       "collection_code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165"
     },
     {
-      "problem_id": "signed_network_structural_balance",
+      "topic_id": "signed_network_structural_balance",
       "paper_id": "2021_graphbplus",
       "year": 2021,
       "venue": "ACM/IEEE SC 2021",
@@ -2657,7 +2657,7 @@
       "collection_code_commit": "85dc76604835484d9cbc0f12b243c9c290737e75"
     },
     {
-      "problem_id": "signed_network_structural_balance",
+      "topic_id": "signed_network_structural_balance",
       "paper_id": "2026_ecl_sgb",
       "year": 2026,
       "venue": "ACM GPGPU 2026 (18th Workshop on General Purpose Processing Using GPU)",
@@ -2672,7 +2672,7 @@
       "collection_code_commit": "230b2e8b7e82a39e7e627424a77ae724f7f8a92c"
     },
     {
-      "problem_id": "simrank_vertex_similarity",
+      "topic_id": "simrank_vertex_similarity",
       "paper_id": "2023_clipsim",
       "year": 2023,
       "venue": "ACM Transactions on Database Systems",
@@ -2687,7 +2687,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "single_graph_frequent_subgraph_mining",
+      "topic_id": "single_graph_frequent_subgraph_mining",
       "paper_id": "2022_graphminer_mni",
       "year": 2022,
       "venue": "USENIX OSDI 2022",
@@ -2702,7 +2702,7 @@
       "collection_code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
     },
     {
-      "problem_id": "single_graph_frequent_subgraph_mining",
+      "topic_id": "single_graph_frequent_subgraph_mining",
       "paper_id": "2022_pangolin_mni",
       "year": 2019,
       "venue": "PVLDB 2020",
@@ -2717,7 +2717,7 @@
       "collection_code_commit": "2a76e3f612e40e46a821d603ca11d10fcbc63ddd"
     },
     {
-      "problem_id": "single_source_shortest_paths",
+      "topic_id": "single_source_shortest_paths",
       "paper_id": "2017_gardenia_delta_stepping",
       "year": 2017,
       "venue": "arXiv; ACM JETC 2018",
@@ -2732,7 +2732,7 @@
       "collection_code_commit": "5894df11cf47f8839945edadff43dc79e260216d"
     },
     {
-      "problem_id": "single_source_shortest_paths",
+      "topic_id": "single_source_shortest_paths",
       "paper_id": "2017_gunrock_sssp",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -2747,7 +2747,7 @@
       "collection_code_commit": "748f79e66cc26762cd3f99422b028e742a737bde"
     },
     {
-      "problem_id": "single_source_shortest_paths",
+      "topic_id": "single_source_shortest_paths",
       "paper_id": "2018_hornet_sssp",
       "year": 2018,
       "venue": "IEEE HPEC 2018",
@@ -2762,7 +2762,7 @@
       "collection_code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8"
     },
     {
-      "problem_id": "single_source_shortest_paths",
+      "topic_id": "single_source_shortest_paths",
       "paper_id": "2019_graphblast_sssp",
       "year": 2019,
       "venue": "arXiv; later published in ACM TOPC",
@@ -2777,7 +2777,7 @@
       "collection_code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165"
     },
     {
-      "problem_id": "single_source_shortest_paths",
+      "topic_id": "single_source_shortest_paths",
       "paper_id": "2026_cugraph_sssp",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -2792,7 +2792,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "spanning_tree_forest",
+      "topic_id": "spanning_tree_forest",
       "paper_id": "2016_lonestargpu_mst",
       "year": 2016,
       "venue": null,
@@ -2807,7 +2807,7 @@
       "collection_code_commit": "b67f94206a8c47fd414446621f6633a31c49fd98"
     },
     {
-      "problem_id": "spanning_tree_forest",
+      "topic_id": "spanning_tree_forest",
       "paper_id": "2017_gardenia_mst",
       "year": 2017,
       "venue": "arXiv; ACM JETC 2018",
@@ -2822,7 +2822,7 @@
       "collection_code_commit": "5894df11cf47f8839945edadff43dc79e260216d"
     },
     {
-      "problem_id": "spanning_tree_forest",
+      "topic_id": "spanning_tree_forest",
       "paper_id": "2017_gunrock_boruvka",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -2837,7 +2837,7 @@
       "collection_code_commit": "748f79e66cc26762cd3f99422b028e742a737bde"
     },
     {
-      "problem_id": "spectral_graph_sparsification",
+      "topic_id": "spectral_graph_sparsification",
       "paper_id": "2024_ingrass_candidate",
       "year": 2024,
       "venue": null,
@@ -2852,7 +2852,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "spectral_graph_sparsification",
+      "topic_id": "spectral_graph_sparsification",
       "paper_id": "2025_dygrass_decremental",
       "year": 2025,
       "venue": "ICCAD 2025",
@@ -2867,7 +2867,7 @@
       "collection_code_commit": "3a69c8b45bf044fbf3b60b47cb5efa8c40576691"
     },
     {
-      "problem_id": "spectral_graph_sparsification",
+      "topic_id": "spectral_graph_sparsification",
       "paper_id": "2025_dygrass_incremental",
       "year": 2025,
       "venue": "ICCAD 2025",
@@ -2882,7 +2882,7 @@
       "collection_code_commit": "3a69c8b45bf044fbf3b60b47cb5efa8c40576691"
     },
     {
-      "problem_id": "subgraph_isomorphism",
+      "topic_id": "subgraph_isomorphism",
       "paper_id": "2026_gmatch",
       "title": "gMatch: A Fast GPU-Based Subgraph Matching System",
       "year": 2026,
@@ -2896,7 +2896,7 @@
       "collection_code_commit": "4628e73dbcb564dba367b3f042595e71f98c9046"
     },
     {
-      "problem_id": "temporal_fastest_paths",
+      "topic_id": "temporal_fastest_paths",
       "paper_id": "2019_temporal_eat",
       "year": 2019,
       "venue": "arXiv; HiPC 2020",
@@ -2906,12 +2906,12 @@
       "license_file": null,
       "license_note": null,
       "research_collection_only": true,
-      "title": "GPU Algorithm for Earliest Arrival Time Problem in Public Transport Networks",
+      "title": "GPU Algorithm for Earliest Arrival Time Topic in Public Transport Networks",
       "collection_metadata": "problems/57_temporal_fastest_paths/papers/2019_temporal_eat/metadata.json",
       "collection_code_commit": null
     },
     {
-      "problem_id": "temporal_fastest_paths",
+      "topic_id": "temporal_fastest_paths",
       "paper_id": "2024_temporal_fastest",
       "year": 2024,
       "venue": "ICPP 2024",
@@ -2921,12 +2921,12 @@
       "license_file": null,
       "license_note": null,
       "research_collection_only": true,
-      "title": "GPU Algorithms for Fastest Path Problem in Temporal Graphs",
+      "title": "GPU Algorithms for Fastest Path Topic in Temporal Graphs",
       "collection_metadata": "problems/57_temporal_fastest_paths/papers/2024_temporal_fastest/metadata.json",
       "collection_code_commit": null
     },
     {
-      "problem_id": "temporal_fastest_paths",
+      "topic_id": "temporal_fastest_paths",
       "paper_id": "2025_tempgraph",
       "year": 2025,
       "venue": "ASPLOS 2025",
@@ -2941,7 +2941,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "temporal_motif_mining",
+      "topic_id": "temporal_motif_mining",
       "paper_id": "2024_everest",
       "title": "Everest: GPU-Accelerated System for Mining Temporal Motifs",
       "year": 2024,
@@ -2955,7 +2955,7 @@
       "collection_code_commit": "ef530d36f23e0830d815392a5b6fa8237c29cec4"
     },
     {
-      "problem_id": "temporal_motif_mining",
+      "topic_id": "temporal_motif_mining",
       "paper_id": "2025_mayura",
       "title": "Mayura: Exploiting Similarities in Motifs for Temporal Co-Mining",
       "year": 2025,
@@ -2969,7 +2969,7 @@
       "collection_code_commit": "8e4276aace4c711dc4ee047e2cb360ae587b092d"
     },
     {
-      "problem_id": "top_k_critical_paths_dag",
+      "topic_id": "top_k_critical_paths_dag",
       "paper_id": "2021_gpba",
       "year": 2021,
       "venue": "DAC 2021",
@@ -2984,7 +2984,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "top_k_critical_paths_dag",
+      "topic_id": "top_k_critical_paths_dag",
       "paper_id": "2021_heterocppr",
       "year": 2021,
       "venue": "ICCAD 2021",
@@ -2999,7 +2999,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "top_k_critical_paths_dag",
+      "topic_id": "top_k_critical_paths_dag",
       "paper_id": "2026_gpathgen",
       "year": 2026,
       "venue": "ICS 2026",
@@ -3014,7 +3014,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "topological_sort",
+      "topic_id": "topological_sort",
       "paper_id": "2017_nvidia_parallel_dag_dfs",
       "year": 2017,
       "venue": "NVIDIA technical report; IA3 2017",
@@ -3029,7 +3029,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "topological_sort",
+      "topic_id": "topological_sort",
       "paper_id": "2026_cugraph_topological_levels",
       "year": null,
       "venue": null,
@@ -3044,7 +3044,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "topological_sort",
+      "topic_id": "topological_sort",
       "paper_id": "2026_topogpu_morse_sort",
       "year": 2026,
       "venue": "TPAMI 2026 accepted",
@@ -3059,7 +3059,7 @@
       "collection_code_commit": "0f39a80e874dda736e90432ef1b4879f728b89d3"
     },
     {
-      "problem_id": "transitive_closure_reachability",
+      "topic_id": "transitive_closure_reachability",
       "paper_id": "2021_atc",
       "year": 2021,
       "venue": "IEEE HiPC 2021",
@@ -3074,7 +3074,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "transitive_closure_reachability",
+      "topic_id": "transitive_closure_reachability",
       "paper_id": "2024_gdlog",
       "title": "Optimizing Datalog for the GPU",
       "year": 2024,
@@ -3090,7 +3090,7 @@
       "collection_code_commit": "65a6ee960ced8d04bc725ccdfa68f004f8479226"
     },
     {
-      "problem_id": "transitive_closure_reachability",
+      "topic_id": "transitive_closure_reachability",
       "paper_id": "2026_curpq",
       "year": 2026,
       "venue": "ACM SIGMOD 2026",
@@ -3105,7 +3105,7 @@
       "collection_code_commit": null
     },
     {
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "paper_id": "2017_gunrock_tc",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -3120,7 +3120,7 @@
       "collection_code_commit": "748f79e66cc26762cd3f99422b028e742a737bde"
     },
     {
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "paper_id": "2018_hornet_triangles",
       "year": 2018,
       "venue": "IEEE HPEC 2018",
@@ -3135,7 +3135,7 @@
       "collection_code_commit": "2441ccabd44a09dbf16f521dbd0bc856ab5001f8"
     },
     {
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "paper_id": "2019_graphblast_tc",
       "year": 2019,
       "venue": "arXiv; later published in ACM TOPC",
@@ -3150,7 +3150,7 @@
       "collection_code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165"
     },
     {
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "paper_id": "2025_tot_tensor_cores",
       "title": "Triangle Counting on Tensor Cores",
       "year": 2025,
@@ -3164,7 +3164,7 @@
       "collection_code_commit": "5f9cde83a528120e8551b69fdd74425358b476f1"
     },
     {
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "paper_id": "2025_wetric",
       "title": "Wedge-Parallel Triangle Counting for GPUs",
       "year": 2025,
@@ -3178,7 +3178,7 @@
       "collection_code_commit": "f0c80447dc428ead5f8a41f2f1d9c4c4cbc41c2e"
     },
     {
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "paper_id": "2026_cugraph_triangle_count",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -3193,7 +3193,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "paper_id": "2026_edtc",
       "title": "Exact Triangle Counting for Dynamic Graphs on GPU",
       "year": 2026,
@@ -3207,7 +3207,7 @@
       "collection_code_commit": "7da15bf9aded217c8bff9fdc4c7b52a6b1e25947"
     },
     {
-      "problem_id": "vertex_coloring",
+      "topic_id": "vertex_coloring",
       "paper_id": "2016_gardenia_coloring",
       "year": 2016,
       "venue": "arXiv; Concurrency and Computation 2017",
@@ -3222,7 +3222,7 @@
       "collection_code_commit": "5894df11cf47f8839945edadff43dc79e260216d"
     },
     {
-      "problem_id": "vertex_coloring",
+      "topic_id": "vertex_coloring",
       "paper_id": "2017_gunrock_coloring",
       "year": 2017,
       "venue": "ACM Transactions on Parallel Computing",
@@ -3237,7 +3237,7 @@
       "collection_code_commit": "748f79e66cc26762cd3f99422b028e742a737bde"
     },
     {
-      "problem_id": "vertex_coloring",
+      "topic_id": "vertex_coloring",
       "paper_id": "2019_graphblast_coloring",
       "year": 2019,
       "venue": "arXiv; later published in ACM TOPC",
@@ -3252,7 +3252,7 @@
       "collection_code_commit": "f56f9677276c574c6fe4f1cc104d51f13717e165"
     },
     {
-      "problem_id": "vertex_coloring",
+      "topic_id": "vertex_coloring",
       "paper_id": "2026_cugraph_coloring",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",
@@ -3267,7 +3267,7 @@
       "collection_code_commit": "5931900cf6be7063cf855ef230fa14d4216b61de"
     },
     {
-      "problem_id": "widest_paths",
+      "topic_id": "widest_paths",
       "paper_id": "2026_nvgraph_widest_path",
       "year": 2026,
       "venue": "Official upstream implementation and API documentation",

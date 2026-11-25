@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from .contracts import Algorithm
-from .exceptions import UnsupportedOperation
-from ._families import FAMILIES, OPERATION_FAMILY
+from .exceptions import UnsupportedProblem
+from ._families import FAMILIES, PROBLEM_FAMILY
 
 _algorithms: dict[str, Algorithm] = {}
 _loaded = False
@@ -11,7 +11,7 @@ _loaded = False
 def register(
     *,
     id,
-    problem_id,
+    topic_id,
     title,
     description,
     parameters=None,
@@ -26,8 +26,8 @@ def register(
             raise RuntimeError(f"Duplicate algorithm: {id}")
         _algorithms[id] = Algorithm(
             id,
-            problem_id,
-            OPERATION_FAMILY[id],
+            topic_id,
+            PROBLEM_FAMILY[id],
             title,
             description,
             parameters or {},
@@ -81,17 +81,17 @@ def _load():
         _loaded = True
 
 
-def reference_algorithm(operation: str) -> Algorithm:
+def reference_algorithm(problem: str) -> Algorithm:
     _load()
-    if operation not in _algorithms:
-        raise UnsupportedOperation(f"No executable integration for {operation!r}")
-    return _algorithms[operation]
+    if problem not in _algorithms:
+        raise UnsupportedProblem(f"No executable integration for {problem!r}")
+    return _algorithms[problem]
 
 
 def reference_algorithms(*, family: str | None = None) -> list[dict]:
     valid = [row["id"] for row in FAMILIES]
     if family is not None and family not in valid:
-        raise UnsupportedOperation(
+        raise UnsupportedProblem(
             f"Unknown reference family {family!r}. Valid families: {', '.join(valid)}"
         )
     _load()
@@ -105,7 +105,7 @@ def reference_algorithms(*, family: str | None = None) -> list[dict]:
 def reference_families() -> list[dict]:
     values = reference_algorithms()
     return [
-        {"id": row["id"], "operation_count": sum(a["family"] == row["id"] for a in values)}
+        {"id": row["id"], "problem_count": sum(a["family"] == row["id"] for a in values)}
         for row in FAMILIES
         if any(a["family"] == row["id"] for a in values)
     ]
@@ -120,7 +120,7 @@ class NativeAlgorithm:
         self._card = card
         for name in (
             "id",
-            "problem_id",
+            "topic_id",
             "family",
             "title",
             "description",
@@ -150,7 +150,7 @@ class NativeAlgorithm:
         from .dispatch import native_request
 
         return native_request(
-            {"command": "validate", "operation": self.id, "parameters": supplied}
+            {"command": "validate", "problem": self.id, "parameters": supplied}
         )["parameters"]
 
 
@@ -160,11 +160,11 @@ def algorithms(*, family=None):
     return native_library().list_algorithms(family=family)
 
 
-def algorithm(operation):
+def algorithm(problem):
     for card in algorithms():
-        if card["id"] == operation:
+        if card["id"] == problem:
             return NativeAlgorithm(card)
-    raise UnsupportedOperation(f"No native runtime integration for {operation!r}")
+    raise UnsupportedProblem(f"No native runtime integration for {problem!r}")
 
 
 def families():

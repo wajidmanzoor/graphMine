@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "temporal_fastest_paths",
+  "topic_id": "temporal_fastest_paths",
   "name": "Temporal Fastest and Earliest-Arrival Paths",
   "category": "paths",
   "problem_statement": "Find time-respecting journeys minimizing elapsed duration or arrival time in a directed temporal graph.",

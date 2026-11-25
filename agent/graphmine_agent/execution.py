@@ -16,7 +16,7 @@ from .graph_store import GraphStore, UploadError
 from .history import HistoryStore
 from .models import CapabilityReport, ExecutionPlan, FileRole
 from .planning import PlanValidator
-from .profiles import EXPANSION_OPERATIONS, ProfileInputError, prepare_operation_graph
+from .profiles import EXPANSION_PROBLEMS, ProfileInputError, prepare_problem_graph
 from .selector import CORRECTNESS_EXCLUSIONS, BackendSelector
 
 
@@ -54,13 +54,13 @@ class GraphMineRunner:
                 binary_path=str(binary),
                 library_version=None,
                 graph_gpu_uuid=self.settings.graph_gpu_uuid,
-                operation_count=len(self.catalog.instructions),
+                problem_count=len(self.catalog.instructions),
                 validated_backend_count=sum(
                     len(op["backends"])
-                    for op in self.catalog.manifest_operations.values()
+                    for op in self.catalog.manifest_problems.values()
                 ),
                 compiled_backend_count=0,
-                operations=[],
+                problems=[],
                 error="GraphMine binary is missing or not executable",
                 backend_policy_path=str(self.selector.path),
                 backend_policy_loaded=self.selector.loaded,
@@ -92,10 +92,10 @@ class GraphMineRunner:
                 binary_path=str(binary),
                 library_version=library_version,
                 graph_gpu_uuid=self.settings.graph_gpu_uuid,
-                operation_count=int(value["operation_count"]),
+                problem_count=int(value["problem_count"]),
                 validated_backend_count=int(value["validated_backend_count"]),
                 compiled_backend_count=int(value["compiled_backend_count"]),
-                operations=list(value["operations"]),
+                problems=list(value["problems"]),
                 error=(
                     None
                     if library_version == __version__
@@ -123,13 +123,13 @@ class GraphMineRunner:
                 binary_path=str(binary),
                 library_version=None,
                 graph_gpu_uuid=self.settings.graph_gpu_uuid,
-                operation_count=len(self.catalog.instructions),
+                problem_count=len(self.catalog.instructions),
                 validated_backend_count=sum(
                     len(op["backends"])
-                    for op in self.catalog.manifest_operations.values()
+                    for op in self.catalog.manifest_problems.values()
                 ),
                 compiled_backend_count=0,
-                operations=[],
+                problems=[],
                 error=str(error),
                 backend_policy_path=str(self.selector.path),
                 backend_policy_loaded=self.selector.loaded,
@@ -159,18 +159,18 @@ class GraphMineRunner:
     @property
     def compiled_backends(self) -> set[str]:
         result: set[str] = set()
-        for operation in self.capabilities.operations:
-            for backend in operation.get("backends", []):
+        for problem in self.capabilities.problems:
+            for backend in problem.get("backends", []):
                 if backend.get("compiled"):
                     result.add(str(backend["id"]))
         return result
 
-    def compiled_backends_for(self, operation_id: str) -> set[str]:
-        for operation in self.capabilities.operations:
-            if operation.get("id") == operation_id:
+    def compiled_backends_for(self, problem_id: str) -> set[str]:
+        for problem in self.capabilities.problems:
+            if problem.get("id") == problem_id:
                 return {
                     str(backend["id"])
-                    for backend in operation.get("backends", [])
+                    for backend in problem.get("backends", [])
                     if backend.get("compiled")
                 }
         return set()
@@ -186,7 +186,7 @@ class GraphMineRunner:
 
     def build_command(self, plan: ExecutionPlan, result_path: Path) -> list[str]:
         compiled = (
-            self.compiled_backends_for(plan.operation_id)
+            self.compiled_backends_for(plan.problem_id)
             if self.capabilities.binary_available
             else None
         )
@@ -198,9 +198,9 @@ class GraphMineRunner:
         plan = self.validator.validate(
             plan, compiled_backends=compiled, for_execution=True
         )
-        operation = self.catalog.operation(plan.operation_id)
+        problem = self.catalog.problem(plan.problem_id)
         graph_path = self.graph_store.execution_path(plan.graph_id, plan.session_id)
-        if plan.operation_id in EXPANSION_OPERATIONS or (
+        if plan.problem_id in EXPANSION_PROBLEMS or (
             plan.application_intent and plan.application_intent.filters
         ):
             from .graph_context import project_graph
@@ -210,7 +210,7 @@ class GraphMineRunner:
                 plan.application_intent.filters if plan.application_intent else [],
             )
             try:
-                projected = prepare_operation_graph(projected, plan)
+                projected = prepare_problem_graph(projected, plan)
             except ProfileInputError as error:
                 raise ExecutionError(error.status, str(error)) from error
             result_path.parent.mkdir(parents=True, exist_ok=True)
@@ -234,7 +234,7 @@ class GraphMineRunner:
                         "weight_attribute": plan.application_intent.weight_attribute
                         if plan.application_intent
                         else None,
-                        "operation_profile": operation.instruction.get(
+                        "problem_profile": problem.instruction.get(
                             "validated_profile"
                         ),
                         "vertices": len(projected["vertices"]),
@@ -249,7 +249,7 @@ class GraphMineRunner:
         command = [
             str(self.settings.graphmine_binary),
             "run",
-            plan.operation_id,
+            plan.problem_id,
             "--graph",
             str(graph_path),
             "--backend",
@@ -262,7 +262,7 @@ class GraphMineRunner:
         if not plan.collect_statistics:
             command.append("--no-statistics")
 
-        for name, specification in operation.instruction["parameters"].items():
+        for name, specification in problem.instruction["parameters"].items():
             if name not in plan.parameters:
                 continue
             value = plan.parameters[name]
@@ -275,12 +275,12 @@ class GraphMineRunner:
             else:
                 command.extend([flag, str(value)])
 
-        if plan.operation_id in EXPANSION_OPERATIONS:
+        if plan.problem_id in EXPANSION_PROBLEMS:
             command.extend(
                 ["--timeout-seconds", str(self.settings.job_timeout_seconds or 0)]
             )
 
-        for name, specification in operation.instruction["auxiliary_inputs"].items():
+        for name, specification in problem.instruction["auxiliary_inputs"].items():
             for file_id in plan.auxiliary_inputs.get(name, []):
                 file_record = self.graph_store.database.get_file(file_id)
                 if file_record.role.value != specification["role"]:
@@ -292,7 +292,7 @@ class GraphMineRunner:
 
         emitted_flags: set[str] = set()
         for output in plan.optional_outputs:
-            flag = operation.instruction["optional_outputs"][output]
+            flag = problem.instruction["optional_outputs"][output]
             if flag not in emitted_flags:
                 command.append(flag)
                 emitted_flags.add(flag)

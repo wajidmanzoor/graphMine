@@ -15,7 +15,7 @@ def test_query_bundle_is_explicitly_development_only():
     assert sum(case["slice"] == "dependent" for case in suite["cases"]) == 10
     for case in suite["cases"]:
         assert case["expected"]
-        assert len({step["operation"] for step in case["plan"]["steps"]}) == len(
+        assert len({step["problem"] for step in case["plan"]["steps"]}) == len(
             case["plan"]["steps"]
         )
 
@@ -38,7 +38,7 @@ def grading_fixture():
         "steps": [
             {
                 "id": "lookup",
-                "operation": "node-lookup",
+                "problem": "node-lookup",
                 "parameters": {"vertices": [0]},
                 "device": "cpu",
                 "input": {"input": "main"},
@@ -46,7 +46,7 @@ def grading_fixture():
             },
             {
                 "id": "sub",
-                "operation": "query-subgraph",
+                "problem": "query-subgraph",
                 "parameters": {},
                 "device": "cpu",
                 "input": {"input": "main"},
@@ -77,7 +77,7 @@ def test_grader_accepts_step_renaming_but_preserves_wiring():
     assert grade(expected, actual, result, checks)["passed"]
     actual["steps"][1]["bindings"]["vertices"]["port"] = "rows"
     graded = grade(expected, actual, result, checks)
-    assert graded["operations"] and graded["parameters"] and not graded["wiring"]
+    assert graded["problems"] and graded["parameters"] and not graded["wiring"]
     assert not graded["passed"]
 
 
@@ -93,7 +93,7 @@ def test_grader_accepts_declared_defaults_but_not_changed_semantics():
 
 @pytest.mark.parametrize(
     "mutation",
-    ["wrong_type", "truncated", "failed", "wrong_parameters", "extra_operation"],
+    ["wrong_type", "truncated", "failed", "wrong_parameters", "extra_problem"],
 )
 def test_grader_rejects_false_success(mutation):
     expected, result, checks = grading_fixture()

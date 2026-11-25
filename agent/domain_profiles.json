@@ -17,7 +17,7 @@
         "Which dense groups or recurring patterns occur?",
         "How is the graph partitioned?"
       ],
-      "relevant_problem_ids": [
+      "relevant_topic_ids": [
         "maximal_clique_enumeration",
         "maximum_clique",
         "k_clique_counting_enumeration",
@@ -81,7 +81,7 @@
         "Find repeated temporal transfer patterns.",
         "Highlight suspicious account-merchant bicliques."
       ],
-      "relevant_problem_ids": [
+      "relevant_topic_ids": [
         "maximal_clique_enumeration",
         "maximum_clique",
         "quasi_clique_mining",
@@ -124,7 +124,7 @@
         "Match a known pathway pattern.",
         "Rank genes by structural influence."
       ],
-      "relevant_problem_ids": [
+      "relevant_topic_ids": [
         "maximal_clique_enumeration",
         "maximum_clique",
         "k_core_decomposition",
@@ -164,7 +164,7 @@
         "Find temporally ordered event patterns.",
         "Detect unusually dense communication groups."
       ],
-      "relevant_problem_ids": [
+      "relevant_topic_ids": [
         "k_core_decomposition",
         "triangle_counting_listing",
         "graph_motif_counting",
@@ -202,7 +202,7 @@
         "Measure triangle closure.",
         "Find recurring interaction motifs."
       ],
-      "relevant_problem_ids": [
+      "relevant_topic_ids": [
         "maximal_clique_enumeration",
         "maximum_clique",
         "k_clique_counting_enumeration",
@@ -247,7 +247,7 @@
         "Identify structurally influential products.",
         "Predict likely future links."
       ],
-      "relevant_problem_ids": [
+      "relevant_topic_ids": [
         "maximal_biclique_enumeration",
         "triangle_counting_listing",
         "graph_motif_counting",
@@ -284,7 +284,7 @@
         "Identify central entities.",
         "Find missing or anomalous relations."
       ],
-      "relevant_problem_ids": [
+      "relevant_topic_ids": [
         "graph_motif_counting",
         "graphlet_counting",
         "subgraph_isomorphism",
@@ -317,10 +317,10 @@
       "common_questions": [
         "Identify core infrastructure and critical vertices.",
         "Find resilient dense regions.",
-        "Partition the network into operational communities.",
+        "Partition the network into problemal communities.",
         "Detect structural anomalies."
       ],
-      "relevant_problem_ids": [
+      "relevant_topic_ids": [
         "densest_subgraph",
         "k_core_decomposition",
         "k_truss_decomposition",
@@ -360,7 +360,7 @@
         "Find recurring temporal movement patterns.",
         "Detect abnormal movement structures."
       ],
-      "relevant_problem_ids": [
+      "relevant_topic_ids": [
         "graph_motif_counting",
         "temporal_motif_mining",
         "community_detection",

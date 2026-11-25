@@ -17,7 +17,7 @@ from graphmine_agent.execution import GraphMineRunner
 from graphmine_agent.llm import constrain_plan_schema
 from graphmine_agent.models import ExecutionPlan, FileRole, PlanDraft
 from graphmine_agent.planning import PlanValidationError, PlanValidator
-from graphmine_agent.profiles import ProfileInputError, prepare_operation_graph
+from graphmine_agent.profiles import ProfileInputError, prepare_problem_graph
 from graphmine_agent.selector import BackendSelector
 from jsonschema import Draft202012Validator
 
@@ -95,12 +95,12 @@ def fixtures():
 
 
 def make_plan(catalog, backend, **updates):
-    operation, _, parameters, _, _ = fixtures()[backend]
+    problem, _, parameters, _, _ = fixtures()[backend]
     return ExecutionPlan(
         session_id="s",
         graph_id="g",
-        operation_id=operation,
-        problem_id=catalog.operation(operation).problem_id,
+        problem_id=problem,
+        topic_id=catalog.problem(problem).topic_id,
         backend_id=backend,
         parameters=copy.deepcopy(parameters),
         **updates,
@@ -118,7 +118,7 @@ def test_repaired_profiles_are_explicit_validated_contracts(catalog, settings, b
     )
     assert normalized.backend_id == backend
     original = copy.deepcopy(fixtures()[backend][1])
-    assert prepare_operation_graph(original, normalized) == original
+    assert prepare_problem_graph(original, normalized) == original
     selector = BackendSelector(
         settings.backend_policy_path, catalog, PlanValidator(catalog)
     )
@@ -135,7 +135,7 @@ def test_group_schema_and_server_reject_invalid_ids(catalog, groups):
         PlanValidator(catalog).validate(plan, for_execution=True)
     schema = PlanDraft.model_json_schema()
     constrain_plan_schema(
-        schema, {"operation_context": catalog.operation_context("group-steiner-tree")}
+        schema, {"problem_context": catalog.problem_context("group-steiner-tree")}
     )
     spec = schema["$defs"]["PlanConfiguration"]["properties"]["parameters"]
     Draft202012Validator.check_schema(spec)
@@ -179,7 +179,7 @@ def test_filtered_out_typed_seed_or_group_member_requires_information(catalog, b
     data = copy.deepcopy(fixtures()[backend][1])
     data["vertices"] = [v for v in data["vertices"] if v["id"] != "0"]
     with pytest.raises(ProfileInputError, match="absent after filtering") as error:
-        prepare_operation_graph(data, make_plan(catalog, backend))
+        prepare_problem_graph(data, make_plan(catalog, backend))
     assert error.value.status == "needs_information"
 
 
@@ -191,7 +191,7 @@ def test_invalid_weights_are_rejected_without_rounding(catalog, backend, invalid
     data = copy.deepcopy(fixtures()[backend][1])
     data["edges"][0]["weight"] = invalid
     with pytest.raises(ProfileInputError):
-        prepare_operation_graph(data, make_plan(catalog, backend))
+        prepare_problem_graph(data, make_plan(catalog, backend))
 
 
 def test_nested_groups_and_weight_attribute_survive_command_encoding(
@@ -256,7 +256,7 @@ def test_infeasible_tree_answer_does_not_claim_zero_cost_solution(catalog):
 def test_agent_api_runs_repaired_backend_and_builds_grounded_answer(
     settings, catalog, backend
 ):
-    operation, data, parameters, metric, expected = fixtures()[backend]
+    problem, data, parameters, metric, expected = fixtures()[backend]
     configured = replace(
         settings,
         graphmine_binary=Path(os.environ["GRAPHMINE_REPAIRED_TEST_BINARY"]),
@@ -278,7 +278,7 @@ def test_agent_api_runs_repaired_backend_and_builds_grounded_answer(
             f"/api/sessions/{session}/plan",
             headers=AUTH,
             json={
-                "message": operation,
+                "message": problem,
                 "graph_id": upload.json()["id"],
                 "parameters": parameters,
             },
@@ -337,4 +337,4 @@ def test_unweighted_profiles_reject_nonunit_weights(catalog, backend):
     data = copy.deepcopy(fixtures()[backend][1])
     data["edges"][0]["weight"] = 0.75
     with pytest.raises(ProfileInputError, match="unit weights"):
-        prepare_operation_graph(data, make_plan(catalog, backend))
+        prepare_problem_graph(data, make_plan(catalog, backend))

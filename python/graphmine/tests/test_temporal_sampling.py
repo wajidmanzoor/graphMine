@@ -21,8 +21,8 @@ ATLAS = [
 DIRECTED = list(permutations(range(3), 2))
 
 
-def execute(operation, graph, **parameters):
-    result = run(operation, graph, device="cpu", parameters=parameters)
+def execute(problem, graph, **parameters):
+    result = run(problem, graph, device="cpu", parameters=parameters)
     assert result["backend"]["device"] == "cpu"
     return result
 
@@ -426,7 +426,7 @@ def test_sampling_empirical_frequencies_parallel_edges_and_zero_weights():
     for edge, weight in zip(raw["edges"], [1, 2, 1, 0], strict=True):
         edge["weight"] = weight
     g = Graph(raw)
-    for operation, params in [
+    for problem, params in [
         (
             "random-walks",
             {"start_vertices": [0] * 6000, "length": 1, "walk_model": "weighted"},
@@ -441,10 +441,10 @@ def test_sampling_empirical_frequencies_parallel_edges_and_zero_weights():
             },
         ),
     ]:
-        result = execute(operation, g, random_seed=18, **params)["result"]
+        result = execute(problem, g, random_seed=18, **params)["result"]
         samples = (
             [path[-1] for path in result["walks"]]
-            if operation == "random-walks"
+            if problem == "random-walks"
             else [row["target"] for row in result["sampled_edges"]]
         )
         counts = Counter(samples)
@@ -629,7 +629,7 @@ def test_seeded_community_conductance_and_independent_diffusion_sweep(case):
 
 
 @pytest.mark.parametrize(
-    "operation,params",
+    "problem,params",
     [
         ("random-walks", {"start_vertices": [0], "length": 3, "p": 2}),
         (
@@ -658,14 +658,14 @@ def test_seeded_community_conductance_and_independent_diffusion_sweep(case):
         ("seeded-local-community", {"seeds": [], "solution_quality": "exact"}),
     ],
 )
-def test_new_profile_rejects_invalid_or_inapplicable_parameters(operation, params):
+def test_new_profile_rejects_invalid_or_inapplicable_parameters(problem, params):
     with pytest.raises(GraphMineError):
-        execute(operation, Graph.from_edges([(0, 1)], directed=True), **params)
+        execute(problem, Graph.from_edges([(0, 1)], directed=True), **params)
 
 
 def test_sampling_output_budgets_apply_before_large_allocation():
     g = Graph.from_edges([(0, 1)])
-    for operation, params in [
+    for problem, params in [
         ("random-walks", {"start_vertices": [0], "length": 10**12}),
         (
             "neighborhood-sampling",
@@ -674,7 +674,7 @@ def test_sampling_output_budgets_apply_before_large_allocation():
     ]:
         with pytest.raises(ResourceLimit):
             run(
-                operation,
+                problem,
                 g,
                 device="cpu",
                 parameters=params,

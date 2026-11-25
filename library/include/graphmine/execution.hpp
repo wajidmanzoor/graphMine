@@ -24,7 +24,7 @@ struct ExecutionStatistics {
 };
 
 struct Provenance {
-  std::string problem;
+  std::string topic;  // Documentation heading; the callable contract supplies its problem ID.
   std::string backend;
   std::string backend_version;
   std::string source_commit;

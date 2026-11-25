@@ -384,7 +384,7 @@ def test_result_enrichment_uses_server_selection_and_revision(workspace):
                 "steps": [
                     {
                         "id": "mine",
-                        "operation": "densest-subgraph",
+                        "problem": "densest-subgraph",
                         "input": {"input": "main"},
                     }
                 ]
@@ -401,7 +401,7 @@ def test_result_enrichment_uses_server_selection_and_revision(workspace):
         service._directory(record) / "step-mine.json",
         {
             "result": {
-                "operation": "densest-subgraph",
+                "problem": "densest-subgraph",
                 "ports": {
                     "vertices": {
                         "type": "vertex_set",

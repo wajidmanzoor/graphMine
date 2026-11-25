@@ -39,7 +39,7 @@ def spec(**changes):
 
 def row(**changes):
     return dict(dict(schema_version=storage.SCHEMA_VERSION, run_id=uuid4().hex, created_at=storage.utc_now(),
-        operation="triangle-counting", requested_backend="cpp", chosen_backend="cpp", graph_id="fixture",
+        problem="triangle-counting", requested_backend="cpp", chosen_backend="cpp", graph_id="fixture",
         benchmark_attempt_key=uuid4().hex, comparison_id="comparison", source="benchmark", is_evaluation=True,
         implementation_sha256=IMPLEMENTATION, outcome="completed", runtime_seconds=0.1,
         timeout_seconds=10, censored=False, peak_memory={"gpu_bytes": None, "process_rss_bytes": None},
@@ -85,16 +85,16 @@ def test_default_graph_grid_and_small_initial_selection():
     config = profiles.load_config(ROOT / "benchmarks/backend_selection.json")
     expanded = profiles.expand_graphs(config)
     assert len(expanded) == 60 and sum(s["source"] == "neo4j" for s in expanded) == 16
-    assert config["bootstrap_examples_per_operation"] == config["repeats"] == 3
+    assert config["bootstrap_examples_per_problem"] == config["repeats"] == 3
     assert config["timeout_seconds"] is None
     assert config["max_output_items"] is None
     assert config["max_candidates"] is None
-    cards = [dict(id=op) for op in config["operations"]]
+    cards = [dict(id=op) for op in config["problems"]]
     selected = profiles.select_graphs(config, cards)
     assert len(selected) == 36 and all(len(choices) == 1 for choices in selected.values())
     assert {s[0]["dataset"] for s in selected.values() if s[0]["source"] == "neo4j"} == {
         "yelp", "movielens-32m", "movielens-genome", "ldbc-snb"}
-    assert len(profiles.parameter_grid(config["operations"]["k-cliques"])) == 3
+    assert len(profiles.parameter_grid(config["problems"]["k-cliques"])) == 3
 
 
 def test_saved_graph_resume_checks_source_configuration_and_exact_content(data_dir, monkeypatch):
@@ -270,7 +270,7 @@ def test_bootstrap_quota_includes_unfinished_claims_and_excludes_other_contexts(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("backend_count", [2, 5])
-async def test_collection_caps_per_operation_across_graphs_and_ids_and_full_is_explicit(data_dir, monkeypatch, backend_count):
+async def test_collection_caps_per_problem_across_graphs_and_ids_and_full_is_explicit(data_dir, monkeypatch, backend_count):
     import graphmine.dispatch
     from graphmine import evidence
     from graphmine_agent import evidence_cache
@@ -280,11 +280,11 @@ async def test_collection_caps_per_operation_across_graphs_and_ids_and_full_is_e
     for name in ("GRAPHMINE_NATIVE_LIBRARY", "CUDA_VISIBLE_DEVICES"):
         monkeypatch.setenv(name, os.environ.get(name, ""))
     ids = ["cpp", *[f"test-gpu-{i}" for i in range(backend_count - 1)]]
-    card = dict(id="breadth-first-search", problem_id="test", family="traversal", backends=[
+    card = dict(id="breadth-first-search", topic_id="test", family="traversal", backends=[
         dict(id=b, device="cpu" if b == "cpp" else "gpu", compiled=True, verified=True,
              verified_devices=["GPU-test"]) for b in ids])
     monkeypatch.setattr(evidence_cache, "install", lambda *a: None)
-    monkeypatch.setattr(evidence, "capabilities", lambda *a: {"operations": [card]})
+    monkeypatch.setattr(evidence, "capabilities", lambda *a: {"problems": [card]})
     monkeypatch.setattr(graphmine.dispatch, "implementation_hash", lambda: IMPLEMENTATION)
     monkeypatch.setattr(bench, "hardware_snapshot", lambda **k: {"gpus": [{"index": 1, "uuid": "GPU-test"}], "warnings": []})
     definitions = [spec(id="first"), spec(id="second", seed=200)]
@@ -297,10 +297,10 @@ async def test_collection_caps_per_operation_across_graphs_and_ids_and_full_is_e
     args = SimpleNamespace(registry=None, instances=None, password_file=None, data_dir=data_dir,
         model_dir=storage.DEFAULT_MODEL_DIR, native_library=Path(os.environ.get("GRAPHMINE_NATIVE_LIBRARY")
             or ROOT / "library/build/runtime/libgraphmine_runtime.so"),
-        config=ROOT / "benchmarks/backend_selection.json", examples_per_operation=None, is_evaluation=True,
-        full=False, benchmark_id="initial", operations=None, python=None)
+        config=ROOT / "benchmarks/backend_selection.json", examples_per_problem=None, is_evaluation=True,
+        full=False, benchmark_id="initial", problems=None, python=None)
     assert await bench.collect(args) == 0 and len(executions) == 3
-    assert (data_dir / "benchmarks/initial/summary.csv").read_text().startswith("operation,graph_id,backend,")
+    assert (data_dir / "benchmarks/initial/summary.csv").read_text().startswith("problem,graph_id,backend,")
     assert [j["backend"] for j in executions] == (ids[:3] if backend_count > 2 else ["cpp", ids[1], "cpp"])
     assert all(j["graph_id"] == "first" for j in executions)
     assert await bench.collect(args) == 0 and len(executions) == 3
@@ -323,4 +323,4 @@ def test_summary_uses_identical_completed_comparisons_and_reports_missing_covera
     assert comparison["fastest_observed_backends"] == ["gpu"] and not comparison["complete_backend_coverage"]
     assert comparison["backends"][0]["median_seconds"] == 3
     assert comparison["backends"][0]["spread_seconds"] == 4
-    assert summary["per_operation"]["triangle-counting"] == {"completed": 4, "timeout": 1, "oom": 1}
+    assert summary["per_problem"]["triangle-counting"] == {"completed": 4, "timeout": 1, "oom": 1}

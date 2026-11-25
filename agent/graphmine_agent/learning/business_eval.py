@@ -49,7 +49,7 @@ def cases_for(
             "family": example["family"],
             "domain": example["domain"],
             "behavior": task["behavior"],
-            "operation_id": task["operation_id"],
+            "problem_id": task["problem_id"],
             "source_sha256": digest(example),
             "source_graph_id": example["graph_id"],
             "source_graph_sha256": digest(graphs[example["graph_id"]]),

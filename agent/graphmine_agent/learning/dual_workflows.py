@@ -33,7 +33,7 @@ from .catalog_grade import grade_output
 from .catalog_replay import FALLBACK_NOTICE, encoded, run_profile, source_bindings
 from .dual_teacher import check_target
 
-OPERATIONS = (
+PROBLEMS = (
     "maximal-cliques",
     "k-cliques",
     "betweenness-centrality",
@@ -47,17 +47,17 @@ OPERATIONS = (
 FOLLOWUP = "Using only this result, make a custom comparison view with coordinated panels for group size and membership. Explain the main pattern and limitations."
 
 
-def freeze(root, destination, split, *, operations=OPERATIONS):
+def freeze(root, destination, split, *, problems=PROBLEMS):
     if destination.exists() or split not in {"validation", "test"}:
         raise ValueError("Choose a new held-out workflow manifest")
     cases = json.loads((root / "corpus.json").read_text())["cases"]
     eligible = [case for case in cases if case["split"] == split]
     selected = []
-    for operation in operations:
+    for problem in problems:
         options = [
             case
             for case in eligible
-            if case["task"]["operation_id"] == operation
+            if case["task"]["problem_id"] == problem
             and case["task"]["expected_status"] == "ready"
         ]
         options.sort(
@@ -73,14 +73,14 @@ def freeze(root, destination, split, *, operations=OPERATIONS):
             "case_id": case["id"],
             "case_sha256": case["sha256"],
             "clarification_first": False,
-            "chart_followup": case["task"]["operation_id"] == "maximal-cliques",
+            "chart_followup": case["task"]["problem_id"] == "maximal-cliques",
         }
         for case in selected
     ]
     clarified = next(
         case
         for case in selected
-        if case["task"]["operation_id"] == "betweenness-centrality"
+        if case["task"]["problem_id"] == "betweenness-centrality"
     )
     rows.append(
         {
@@ -92,7 +92,7 @@ def freeze(root, destination, split, *, operations=OPERATIONS):
         }
     )
     recovery = next(
-        case for case in selected if case["task"]["operation_id"] == "k-cliques"
+        case for case in selected if case["task"]["problem_id"] == "k-cliques"
     )
     rows.append(
         {
@@ -112,7 +112,7 @@ def freeze(root, destination, split, *, operations=OPERATIONS):
         "created_at": utc_now().isoformat(),
         "clarification_question": "Which records matter most in this dataset?",
         "chart_followup_question": FOLLOWUP,
-        "selection": f"{len(operations)} operation families, preferring the held-out public source when available; all non-ready cases; one complete clarification, one custom-chart follow-up, and one explicitly injected invalid first draft to exercise bounded model recovery. Fixed before model execution.",
+        "selection": f"{len(problems)} problem families, preferring the held-out public source when available; all non-ready cases; one complete clarification, one custom-chart follow-up, and one explicitly injected invalid first draft to exercise bounded model recovery. Fixed before model execution.",
     }
     HistoryStore.write(destination, report)
     return {"workflows": len(rows), "split": split}
@@ -272,10 +272,10 @@ def grade(settings, root, case, capture):
     # Only the narrowly checked 3-clique/triangle equivalence can change this
     # objective. Score the resulting native contract with its matching oracle.
     actual_case = copy.deepcopy(case)
-    if dimensions["routing"] and plan.operation_id != task["operation_id"]:
+    if dimensions["routing"] and plan.problem_id != task["problem_id"]:
         actual_case["task"].update(
-            operation_id=plan.operation_id,
             problem_id=plan.problem_id,
+            topic_id=plan.topic_id,
             parameters={},
             optional_outputs=["triangles"]
             if "cliques" in task["optional_outputs"]

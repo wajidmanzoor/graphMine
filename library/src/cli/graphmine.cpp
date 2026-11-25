@@ -413,7 +413,7 @@ std::string status_code_name(graphmine::StatusCode code) {
 }
 
 json::object provenance_json(const graphmine::Provenance& provenance) {
-  return {{"problem", provenance.problem},
+  return {{"topic", provenance.topic},
           {"backend", provenance.backend},
           {"backend_version", provenance.backend_version},
           {"source_commit", provenance.source_commit},
@@ -1431,9 +1431,9 @@ json::object run_community_detection(Arguments& arguments,
 
 void expansion_backend(const CommonOptions& common, const std::string& expected) {
   if (common.backend != "auto" && common.backend != expected)
-    throw UsageError("this operation supports only backend " + expected);
+    throw UsageError("this problem supports only backend " + expected);
   if (common.allow_directed_projection)
-    throw UsageError("this operation does not accept --allow-directed-projection");
+    throw UsageError("this problem does not accept --allow-directed-projection");
 }
 
 template<class Options>
@@ -1450,9 +1450,9 @@ ExternalId argument_id(const std::string& text) {
   return parse_external_id(value,"vertex id argument");
 }
 
-json::object run_expansion(const std::string& operation, Arguments& arguments, const CommonOptions& common) {
+json::object run_expansion(const std::string& problem, Arguments& arguments, const CommonOptions& common) {
   auto graph=read_graph(common.graph_path);
-  if(operation=="connected-components") {
+  if(problem=="connected-components") {
     expansion_backend(common,"ecl-scc");graphmine::ConnectedComponentsOptions options;isolated_options(options,arguments,common);
     auto mode=arguments.required("connectivity-mode");
     if(mode=="weakly_connected") options.connectivity_mode=graphmine::ConnectivityMode::weakly_connected;
@@ -1464,7 +1464,7 @@ json::object run_expansion(const std::string& operation, Arguments& arguments, c
       return json::object{{"component_assignment",std::move(assignments)},{"component_count",out.component_count},{"component_sizes",std::move(sizes)}};
     });
   }
-  if(operation=="max-flow-min-cut") {
+  if(problem=="max-flow-min-cut") {
     expansion_backend(common,"ecl-maxflow");graphmine::MaxFlowOptions options;isolated_options(options,arguments,common);
     options.source=argument_id(arguments.required("source"));options.sink=argument_id(arguments.required("sink"));options.unit_capacity=arguments.flag("unit-capacity");arguments.finish();
     auto result=graphmine::MaxFlowMinCut(options).run(graph);
@@ -1473,12 +1473,12 @@ json::object run_expansion(const std::string& operation, Arguments& arguments, c
       return json::object{{"max_flow_value",out.max_flow_value},{"min_cut_value",out.min_cut_value},{"min_cut_edges",ids_json(out.min_cut_edges)},{"flow_assignment",std::move(flows)},{"source_side_vertices",ids_json(out.source_side_vertices)},{"optimal",out.optimal}};
     });
   }
-  if(operation=="linear-assignment") {
+  if(problem=="linear-assignment") {
     expansion_backend(common,"hungarian-cuda");graphmine::LinearAssignmentOptions options;isolated_options(options,arguments,common);arguments.finish();
     auto result=graphmine::LinearAssignment(options).run(graph);
     return result_json(result,common.execution.collect_statistics,[](const graphmine::LinearAssignmentOutput& out){return json::object{{"matching_edges",ids_json(out.matching_edges)},{"matching_size",out.matching_size},{"objective_value",out.objective_value},{"feasible",out.feasible},{"optimal",out.optimal}};});
   }
-  if(operation=="transitive-closure") {
+  if(problem=="transitive-closure") {
     expansion_backend(common,"gdlog");graphmine::ReachabilityOptions options;isolated_options(options,arguments,common);arguments.finish();auto result=graphmine::TransitiveClosure(options).run(graph);
     return result_json(result,common.execution.collect_statistics,[](const graphmine::ReachabilityOutput& out){json::array pairs;for(const auto& pair:out.reachable_pairs)pairs.push_back(json::object{{"source",id_json(pair.source)},{"target",id_json(pair.target)}});return json::object{{"transitive_closure_edges",std::move(pairs)},{"reachable_pair_count",out.reachable_pair_count},{"reachability_results",json::array{}},{"complete",out.complete}};});
   }
@@ -1489,9 +1489,9 @@ json::object run_expansion(const std::string& operation, Arguments& arguments, c
   return result_json(result,common.execution.collect_statistics,[](const graphmine::ButterflyOutput& out){return json::object{{"butterfly_count",out.butterfly_count},{"complete",out.complete}};});
 }
 
-json::object run_repaired(const std::string& operation, Arguments& arguments, const CommonOptions& common) {
+json::object run_repaired(const std::string& problem, Arguments& arguments, const CommonOptions& common) {
   auto graph=read_graph(common.graph_path);
-  if(operation=="k-truss") {
+  if(problem=="k-truss") {
     expansion_backend(common,"acctd");graphmine::KTrussOptions options;isolated_options(options,arguments,common);arguments.finish();
     auto result=graphmine::KTruss(options).run(graph);
     return result_json(result,common.execution.collect_statistics,[](const graphmine::KTrussOutput& out){
@@ -1499,19 +1499,19 @@ json::object run_repaired(const std::string& operation, Arguments& arguments, co
       return json::object{{"truss_number_by_edge",std::move(edges)},{"maximum_truss_number",out.maximum_truss_number}};
     });
   }
-  if(operation=="densest-subgraph") {
+  if(problem=="densest-subgraph") {
     expansion_backend(common,"cds");graphmine::DensestSubgraphOptions options;isolated_options(options,arguments,common);
     if(auto value=arguments.optional("clique-order"))options.clique_order=parse_integer<std::uint32_t>(*value,"clique-order",2);
     arguments.finish();
     auto result=graphmine::DensestSubgraph(options).run(graph);
     return result_json(result,common.execution.collect_statistics,[](const graphmine::DensestSubgraphOutput& out){return json::object{{"vertices",ids_json(out.vertices)},{"density",out.density},{"induced_edge_value",out.induced_edge_value},{"clique_order",out.clique_order},{"clique_count",out.clique_count},{"optimal",out.optimal}};});
   }
-  if(operation=="maximal-biclique-counting") {
+  if(problem=="maximal-biclique-counting") {
     expansion_backend(common,"mbe-gpu");graphmine::MaximalBicliqueCountingOptions options;isolated_options(options,arguments,common);arguments.finish();
     auto result=graphmine::MaximalBicliqueCounting(options).run(graph);
     return result_json(result,common.execution.collect_statistics,[](const graphmine::MaximalBicliqueCountingOutput& out){return json::object{{"total_count",out.total_count},{"complete",out.complete}};});
   }
-  if(operation=="personalized-pagerank") {
+  if(problem=="personalized-pagerank") {
     expansion_backend(common,"kpar");graphmine::PersonalizedPageRankOptions options;isolated_options(options,arguments,common);
     options.seed_vertex=argument_id(arguments.required("seed-vertex"));options.top_k=parse_integer<std::uint32_t>(arguments.required("top-k"),"top-k",1);
     if(parse_double(arguments.required("restart-probability"),"restart-probability")!=0.2)throw UsageError("kPAR requires explicit restart-probability 0.2");
@@ -1521,7 +1521,7 @@ json::object run_repaired(const std::string& operation, Arguments& arguments, co
     arguments.finish();auto result=graphmine::PersonalizedPageRank(options).run(graph);
     return result_json(result,common.execution.collect_statistics,[](const graphmine::PersonalizedPageRankOutput& out){json::array ranking;for(const auto& v:out.ranked_vertices)ranking.push_back(json::object{{"vertex",id_json(v.vertex)},{"score",v.score},{"rank",v.rank}});return json::object{{"ranked_vertices",std::move(ranking)},{"restart_probability_used",out.restart_probability_used},{"complete",out.complete},{"approximate",out.approximate},{"epsilon_used",out.epsilon_used},{"error_bound",nullptr},{"error_bound_certified",out.error_bound_certified}};});
   }
-  if(operation=="group-steiner-tree") {
+  if(problem=="group-steiner-tree") {
     expansion_backend(common,"gpu4gst");graphmine::GroupSteinerTreeOptions options;isolated_options(options,arguments,common);
     boost::system::error_code error;auto groups=json::parse(arguments.required("groups"),error);if(error)throw UsageError("groups must be a JSON array of vertex-ID arrays");
     for(const auto& group:require_array(groups,"groups")){std::vector<ExternalId> members;for(const auto& id:require_array(group,"group"))members.push_back(parse_external_id(id,"group vertex"));options.groups.push_back(std::move(members));}
@@ -1540,15 +1540,15 @@ json::object run_repaired(const std::string& operation, Arguments& arguments, co
 
 using BackendProvider = std::function<std::vector<graphmine::BackendInfo>()>;
 
-struct OperationDescriptor {
+struct ProblemDescriptor {
   std::string id;
-  std::string research_problem;
+  std::string topic_id;
   std::string usage;
   BackendProvider backends;
 };
 
-const std::vector<OperationDescriptor>& operations() {
-  static const std::vector<OperationDescriptor> values = {
+const std::vector<ProblemDescriptor>& problems() {
+  static const std::vector<ProblemDescriptor> values = {
       {"k-truss","k_truss_decomposition","graphmine run k-truss --graph GRAPH.json [--backend acctd]",graphmine::KTruss::backends},
       {"densest-subgraph","densest_subgraph","graphmine run densest-subgraph --graph GRAPH.json [--backend cds] [--clique-order K]",graphmine::DensestSubgraph::backends},
       {"maximal-biclique-counting","maximal_biclique_enumeration","graphmine run maximal-biclique-counting --graph GRAPH.json [--backend mbe-gpu] (count only; attributes.side = left|right)",graphmine::MaximalBicliqueCounting::backends},
@@ -1641,33 +1641,33 @@ json::object backend_json(const graphmine::BackendInfo& backend) {
   }
   return {{"id", backend.id},
           {"display_name", backend.display_name},
-          {"problem", backend.problem},
+          {"topic", backend.topic},
           {"source_commit", backend.source_commit},
           {"compiled", backend.compiled},
           {"validated", backend.validated},
           {"capabilities", std::move(capabilities)}};
 }
 
-json::object operation_json(const OperationDescriptor& operation) {
+json::object problem_json(const ProblemDescriptor& problem) {
   json::array backends;
-  for (const auto& backend : operation.backends()) {
+  for (const auto& backend : problem.backends()) {
     backends.push_back(backend_json(backend));
   }
-  return {{"id", operation.id},
-          {"research_problem", operation.research_problem},
-          {"usage", operation.usage},
+  return {{"id", problem.id},
+          {"topic_id", problem.topic_id},
+          {"usage", problem.usage},
           {"backends", std::move(backends)}};
 }
 
-const OperationDescriptor& find_operation(std::string name) {
+const ProblemDescriptor& find_problem(std::string name) {
   name = normalized_name(std::move(name));
-  const auto& values = operations();
+  const auto& values = problems();
   const auto found = std::find_if(
       values.begin(), values.end(),
-      [&](const auto& operation) { return operation.id == name; });
+      [&](const auto& problem) { return problem.id == name; });
   if (found == values.end()) {
-    throw UsageError("unknown operation '" + name +
-                     "'; run 'graphmine list' to see valid operations");
+    throw UsageError("unknown problem '" + name +
+                     "'; run 'graphmine list' to see valid problems");
   }
   return *found;
 }
@@ -1676,8 +1676,8 @@ json::object list_json() {
   json::array values;
   std::uint64_t backend_count = 0;
   std::uint64_t compiled_count = 0;
-  for (const auto& operation : operations()) {
-    auto item = operation_json(operation);
+  for (const auto& problem : problems()) {
+    auto item = problem_json(problem);
     const auto& backends = item.at("backends").as_array();
     backend_count += backends.size();
     for (const auto& backend : backends) {
@@ -1687,10 +1687,10 @@ json::object list_json() {
   }
   return {{"schema_version", "1.0.0"},
           {"library_version", GRAPHMINE_VERSION},
-          {"operation_count", values.size()},
+          {"problem_count", values.size()},
           {"validated_backend_count", backend_count},
           {"compiled_backend_count", compiled_count},
-          {"operations", std::move(values)}};
+          {"problems", std::move(values)}};
 }
 
 json::object validate_graph_json(const graphmine::Graph& graph) {
@@ -1706,48 +1706,48 @@ json::object validate_graph_json(const graphmine::Graph& graph) {
                         {"edge_count", graph.edge_count()}}}};
 }
 
-json::object run_operation(const std::string& operation, Arguments& arguments,
+json::object run_problem(const std::string& problem, Arguments& arguments,
                            const CommonOptions& common) {
-  if(operation=="k-truss" || operation=="densest-subgraph" || operation=="maximal-biclique-counting" || operation=="personalized-pagerank" || operation=="group-steiner-tree" || operation=="influence-maximization")
-    return run_repaired(operation,arguments,common);
-  if(operation=="connected-components" || operation=="max-flow-min-cut" || operation=="linear-assignment" || operation=="transitive-closure" || operation=="butterfly-counting")
-    return run_expansion(operation,arguments,common);
-  if (operation == "maximal-cliques") {
+  if(problem=="k-truss" || problem=="densest-subgraph" || problem=="maximal-biclique-counting" || problem=="personalized-pagerank" || problem=="group-steiner-tree" || problem=="influence-maximization")
+    return run_repaired(problem,arguments,common);
+  if(problem=="connected-components" || problem=="max-flow-min-cut" || problem=="linear-assignment" || problem=="transitive-closure" || problem=="butterfly-counting")
+    return run_expansion(problem,arguments,common);
+  if (problem == "maximal-cliques") {
     return run_maximal_cliques(arguments, common);
   }
-  if (operation == "maximum-clique") {
+  if (problem == "maximum-clique") {
     return run_maximum_clique(arguments, common);
   }
-  if (operation == "k-core") return run_k_core(arguments, common);
-  if (operation == "triangle-counting") {
+  if (problem == "k-core") return run_k_core(arguments, common);
+  if (problem == "triangle-counting") {
     return run_triangle_counting(arguments, common);
   }
-  if (operation == "dynamic-triangle-counting") {
+  if (problem == "dynamic-triangle-counting") {
     return run_dynamic_triangle_counting(arguments, common);
   }
-  if (operation == "k-cliques") return run_k_cliques(arguments, common);
-  if (operation == "betweenness-centrality") {
+  if (problem == "k-cliques") return run_k_cliques(arguments, common);
+  if (problem == "betweenness-centrality") {
     return run_centrality(arguments, common);
   }
-  if (operation == "maximal-bicliques") {
+  if (problem == "maximal-bicliques") {
     return run_maximal_bicliques(arguments, common);
   }
-  if (operation == "quasi-cliques") {
+  if (problem == "quasi-cliques") {
     return run_quasi_cliques(arguments, common);
   }
-  if (operation == "subgraph-isomorphism") {
+  if (problem == "subgraph-isomorphism") {
     return run_subgraph_isomorphism(arguments, common);
   }
-  if (operation == "graph-motifs") {
+  if (problem == "graph-motifs") {
     return run_graph_motifs(arguments, common);
   }
-  if (operation == "temporal-motif-mining") {
+  if (problem == "temporal-motif-mining") {
     return run_temporal_motifs(arguments, common);
   }
-  if (operation == "community-detection") {
+  if (problem == "community-detection") {
     return run_community_detection(arguments, common);
   }
-  throw UsageError("internal dispatcher error for operation: " + operation);
+  throw UsageError("internal dispatcher error for problem: " + problem);
 }
 
 void print_help() {
@@ -1756,9 +1756,9 @@ void print_help() {
       << "Usage:\n"
       << "  graphmine --version\n"
       << "  graphmine list [--output FILE] [--pretty]\n"
-      << "  graphmine describe OPERATION [--output FILE] [--pretty]\n"
+      << "  graphmine describe PROBLEM [--output FILE] [--pretty]\n"
       << "  graphmine validate --graph GRAPH.json [--output FILE] [--pretty]\n"
-      << "  graphmine run OPERATION --graph GRAPH.json [OPTIONS]\n\n"
+      << "  graphmine run PROBLEM --graph GRAPH.json [OPTIONS]\n\n"
       << "Common run options:\n"
       << "  --backend NAME                 Validated implementation (default: auto)\n"
       << "  --device ID[,ID...]           CUDA device ids (default: 0)\n"
@@ -1766,8 +1766,8 @@ void print_help() {
       << "  --no-statistics               Omit execution statistics from JSON\n"
       << "  --output FILE                 Write JSON to FILE instead of stdout\n"
       << "  --pretty                      Pretty-print JSON\n\n"
-      << "Run 'graphmine list --pretty' for operations/backends and\n"
-      << "'graphmine describe OPERATION --pretty' for exact operation usage.\n";
+      << "Run 'graphmine list --pretty' for problems/backends and\n"
+      << "'graphmine describe PROBLEM --pretty' for exact problem usage.\n";
 }
 
 bool json_succeeded(const json::object& result) {
@@ -1814,14 +1814,14 @@ int main(int argc, char** argv) {
     }
     if (command == "describe") {
       if (argc < 3 || std::string_view(argv[2]).rfind("--", 0) == 0) {
-        throw UsageError("describe requires an operation name");
+        throw UsageError("describe requires an problem name");
       }
-      const auto& operation = find_operation(argv[2]);
+      const auto& problem = find_problem(argv[2]);
       Arguments arguments(argc, argv, 3);
       const auto output = arguments.optional("output");
       const auto pretty = arguments.flag("pretty");
       arguments.finish();
-      emit_json(operation_json(operation), output, pretty);
+      emit_json(problem_json(problem), output, pretty);
       return 0;
     }
     if (command == "validate") {
@@ -1835,12 +1835,12 @@ int main(int argc, char** argv) {
     }
     if (command == "run") {
       if (argc < 3 || std::string_view(argv[2]).rfind("--", 0) == 0) {
-        throw UsageError("run requires an operation name");
+        throw UsageError("run requires an problem name");
       }
-      const auto operation = find_operation(argv[2]).id;
+      const auto problem = find_problem(argv[2]).id;
       Arguments arguments(argc, argv, 3);
       const auto common = parse_common(arguments);
-      auto result = run_operation(operation, arguments, common);
+      auto result = run_problem(problem, arguments, common);
       const auto succeeded = json_succeeded(result);
       emit_json(result, common.output_path, common.pretty);
       return succeeded ? 0 : 3;

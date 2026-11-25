@@ -56,8 +56,8 @@ def description_answer(fact_ids, facts):
             "citations": [{"id": fact["id"], "kind": "fact", "ref": f"input:{fact['input']}:{fact['property']}"} for fact in selected]}
 
 
-def one_step(operation, alias, parameters, device):
-    return {"version": 1, "device": device, "steps": [{"id": "answer", "operation": operation,
+def one_step(problem, alias, parameters, device):
+    return {"version": 1, "device": device, "steps": [{"id": "answer", "problem": problem,
             "input": {"input": alias}, "parameters": deepcopy(parameters), "bindings": {}}]}
 
 
@@ -66,13 +66,13 @@ def lookup_choices(inputs, cards, entities, question, device):
     available = {card["id"] for card in cards}
     choices, seen = [], set()
 
-    def add(operation, alias, parameters, description):
-        key = (operation, alias, json.dumps(parameters, sort_keys=True))
-        if operation not in available or key in seen:
+    def add(problem, alias, parameters, description):
+        key = (problem, alias, json.dumps(parameters, sort_keys=True))
+        if problem not in available or key in seen:
             return
         seen.add(key)
-        choices.append({"id": f"lookup_{len(choices)}", "operation": operation,
-                        "description": description, "plan": one_step(operation, alias, parameters, device)})
+        choices.append({"id": f"lookup_{len(choices)}", "problem": problem,
+                        "description": description, "plan": one_step(problem, alias, parameters, device)})
 
     for alias, descriptor in inputs.items():
         if descriptor["kind"] != "graph":
@@ -118,7 +118,7 @@ def lookup_choices(inputs, cards, entities, question, device):
 
 def reply_sources(cards, repository_root):
     """Native contracts and local documentation, retrieved for this turn."""
-    sources = [{"id": f"contract.{card['id']}", "kind": "contract", "ref": f"operation:{card['id']}",
+    sources = [{"id": f"contract.{card['id']}", "kind": "contract", "ref": f"problem:{card['id']}",
                 "title": card["title"], "text": card["description"]} for card in cards]
     document = json.loads((repository_root / "catalog/agent_concepts.json").read_text())
     sources.extend({"id": f"doc.{row['id']}", "kind": "doc", "ref": f"catalog/agent_concepts.json#{row['id']}",
@@ -146,8 +146,8 @@ def explicit_parameters(card, question, entities=(), alias=None):
                 value = float(match[1])
                 if spec["kind"] == "number" or value.is_integer():
                     parameters[name] = int(value) if spec["kind"] == "integer" else value
-    for operation, noun, parameter in (("k-core", "core", "requested_k"), ("k-truss", "truss", "requested_k"), ("k-cliques", "clique", "k")):
-        if card["id"] == operation:
+    for problem, noun, parameter in (("k-core", "core", "requested_k"), ("k-truss", "truss", "requested_k"), ("k-cliques", "clique", "k")):
+        if card["id"] == problem:
             match = re.search(r"\b(\d+)[ -]" + noun, text)
             if match:
                 parameters[parameter] = int(match[1])
@@ -175,7 +175,7 @@ def explicit_parameters(card, question, entities=(), alias=None):
 
 
 # Related computations have different mathematical objectives. These are
-# alternatives to explicit operation choices, not interpretations of vague words.
+# alternatives to explicit problem choices, not interpretations of vague words.
 ALTERNATIVES = {
     "maximal-cliques": ("maximum-clique", {}), "maximum-clique": ("maximal-cliques", {}),
     "maximal-bicliques": ("butterfly-counting", {}), "butterfly-counting": ("maximal-bicliques", {}),

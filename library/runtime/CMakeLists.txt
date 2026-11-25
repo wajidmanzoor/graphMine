@@ -106,6 +106,7 @@ list(APPEND GRAPHMINE_RUNTIME_HASH_INPUTS
      "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt"
      "${CMAKE_CURRENT_SOURCE_DIR}/../../catalog/family.json"
      "${CMAKE_CURRENT_SOURCE_DIR}/../../catalog/problems.json"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../../catalog/topics.json"
      "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/family_catalog.py"
      "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/generate_families.py"
      "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/validate_families.py"

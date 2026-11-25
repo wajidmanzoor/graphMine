@@ -3,13 +3,13 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from .catalog import Catalog, OperationContract
+from .catalog import Catalog, ProblemContract
 from .models import ApplicationIntent, ExecutionPlan, RouteDecision
-from .profiles import DIRECTION_PRESERVING_OPERATIONS, EXPANSION_OPERATIONS
+from .profiles import DIRECTION_PRESERVING_PROBLEMS, EXPANSION_PROBLEMS
 
 APPLICATION_PREPROCESSING = {
     "attribute_filters": {
-        "stage": "before the native operation",
+        "stage": "before the native problem",
         "targets": ["vertices", "edges"],
         "operators": ["eq", "ne", "gt", "gte", "lt", "lte", "in"],
         "fields": "Any field listed in graph_context; original attributes are retained.",
@@ -110,7 +110,7 @@ class PlanValidationError(ValueError):
 
 def application_capability_errors(
     intent: ApplicationIntent | None,
-    operation_id: str | None,
+    problem_id: str | None,
     *,
     require_complete_pattern: bool = False,
 ) -> list[str]:
@@ -125,7 +125,7 @@ def application_capability_errors(
     weighted = (
         intent.requires_edge_weights or intent.weight_attribute or intent.weight_usage
     )
-    if weighted and operation_id not in {
+    if weighted and problem_id not in {
         "max-flow-min-cut",
         "linear-assignment",
         "group-steiner-tree",
@@ -138,7 +138,7 @@ def application_capability_errors(
         )
     if (
         weighted
-        and operation_id == "influence-maximization"
+        and problem_id == "influence-maximization"
         and intent.weight_usage in {"path_length", "strength"}
     ):
         errors.append(
@@ -146,7 +146,7 @@ def application_capability_errors(
         )
     if (
         weighted
-        and operation_id == "group-steiner-tree"
+        and problem_id == "group-steiner-tree"
         and intent.weight_usage == "strength"
     ):
         errors.append(
@@ -154,22 +154,22 @@ def application_capability_errors(
         )
     if (
         weighted
-        and operation_id in {"max-flow-min-cut", "linear-assignment"}
+        and problem_id in {"max-flow-min-cut", "linear-assignment"}
         and intent.weight_usage in {"path_length", "strength"}
     ):
         errors.append(
-            "This operation accepts capacities or assignment costs, not weighted path lengths or relationship strengths."
+            "This problem accepts capacities or assignment costs, not weighted path lengths or relationship strengths."
         )
     if (
         intent.requires_direction
-        and operation_id
-        and operation_id not in DIRECTION_PRESERVING_OPERATIONS
+        and problem_id
+        and problem_id not in DIRECTION_PRESERVING_PROBLEMS
     ):
         errors.append(
             "This calculation cannot preserve which way each relationship points. "
             "I have not treated directed connections as two-way."
         )
-    if operation_id == "temporal-motif-mining":
+    if problem_id == "temporal-motif-mining":
         edges = intent.pattern_edges
         ids = list(dict.fromkeys(value for edge in edges for value in edge))
         normalized = [[ids.index(value) for value in edge] for edge in edges]
@@ -193,26 +193,25 @@ def application_capability_errors(
 
 def route_blocker(catalog: Catalog, decision: RouteDecision) -> tuple[str, str] | None:
     """Capability limitations outrank input requests that cannot resolve them."""
-    operation_id = decision.operation_id
-    unavailable = False
-    if decision.problem_id:
-        support = catalog.problem(decision.problem_id)["library_support"]
-        unavailable = support["status"] != "validated"
-        if operation_id is None and len(support.get("operation_ids", [])) == 1:
-            operation_id = support["operation_ids"][0]
-    errors = application_capability_errors(decision.intent, operation_id)
+    problem_id = decision.problem_id
+    if not problem_id and decision.topic_id:
+        # Documentation can explain an unavailable topic, but cannot select or
+        # authorize a runnable contract on the caller's behalf.
+        support = catalog.topic(decision.topic_id)["library_support"]
+        if support["status"] != "validated":
+            return "unsupported", ("This analysis is not available in the current system. "
+                "Providing more inputs would not enable it. " + support["reason"])
+        # A unique documentation backlink can explain a rejected request's
+        # limitation. It never fills decision.problem_id or permits execution.
+        documented = support.get("problem_ids", [])
+        if len(documented) == 1:
+            problem_id = documented[0]
+    errors = application_capability_errors(decision.intent, problem_id)
     if errors:
         return "unsupported", " ".join(errors)
-    if unavailable:
-        return (
-            "unsupported",
-            "This analysis is not available in the current system. Providing more inputs would not enable it. "
-            + support["reason"],
-        )
     if (
         not decision.supported
         or not decision.problem_id
-        or not decision.operation_id
         or decision.ambiguity
         or decision.missing_information
     ):
@@ -237,35 +236,16 @@ def normalize_route(catalog: Catalog, decision: RouteDecision) -> RouteDecision:
     """Validate model-selected identity and derive support from the catalog."""
 
     if not decision.problem_id:
-        return decision.model_copy(update={"supported": False, "operation_id": None})
+        return decision.model_copy(update={"supported": False})
     try:
         problem = catalog.problem(decision.problem_id)
     except Exception as error:
         if not decision.supported:
-            return decision.model_copy(
-                update={"problem_id": None, "operation_id": None}
-            )
+            return decision.model_copy(update={"problem_id": None})
         raise PlanValidationError([str(error)]) from error
-    # Catalog availability is necessary, not sufficient. Never turn a model's
-    # explicit refusal into permission to execute a superficially similar task.
-    expected_support = (
-        decision.supported and problem["library_support"]["status"] == "validated"
-    )
-    if decision.operation_id:
-        try:
-            operation = catalog.operation(decision.operation_id)
-        except Exception as error:
-            raise PlanValidationError([str(error)]) from error
-        if operation.problem_id != decision.problem_id:
-            raise PlanValidationError(
-                ["route operation does not belong to selected problem"]
-            )
-    return decision.model_copy(
-        update={
-            "supported": expected_support,
-            "operation_id": decision.operation_id if expected_support else None,
-        }
-    )
+    # Documentation is derived from the runnable contract, never an execution gate.
+    return decision.model_copy(update={"topic_id": problem.topic_id,
+        "problem_id": decision.problem_id if decision.supported else None})
 
 
 def _value_matches(value: Any, specification: dict[str, Any]) -> bool:
@@ -321,32 +301,21 @@ class PlanValidator:
         errors.extend(
             application_capability_errors(
                 plan.application_intent,
-                plan.operation_id,
+                plan.problem_id,
                 require_complete_pattern=True,
             )
         )
         try:
-            operation = self.catalog.operation(plan.operation_id)
+            problem = self.catalog.problem(plan.problem_id)
         except Exception as error:
             raise PlanValidationError([str(error)]) from error
 
-        if plan.problem_id != operation.problem_id:
-            errors.append(
-                f"operation {operation.id} belongs to {operation.problem_id}, "
-                f"not {plan.problem_id}"
-            )
-        support = self.catalog.problem(plan.problem_id)["library_support"]
-        if support["status"] != "validated":
-            errors.append(f"problem {plan.problem_id} has no validated backend")
-        if operation.id not in support["operation_ids"]:
-            errors.append(
-                f"operation {operation.id} is not registered for {plan.problem_id}"
-            )
+        plan = plan.model_copy(update={"topic_id": problem.topic_id})
 
-        if plan.backend_id not in operation.allowed_backends:
+        if plan.backend_id not in problem.allowed_backends:
             errors.append(
-                f"backend {plan.backend_id!r} is not allowed for {operation.id}; "
-                f"choose one of {', '.join(operation.allowed_backends)}"
+                f"backend {plan.backend_id!r} is not allowed for {problem.id}; "
+                f"choose one of {', '.join(problem.allowed_backends)}"
             )
         explicit_backend = plan.backend_id != "auto"
         effective_backend = plan.backend_id if explicit_backend else None
@@ -355,18 +324,18 @@ class PlanValidator:
                 errors.append(
                     f"backend {effective_backend} is not compiled on this server"
                 )
-            elif not explicit_backend and not set(operation.backends).intersection(
+            elif not explicit_backend and not set(problem.backends).intersection(
                 compiled_backends
             ):
                 errors.append(
-                    f"no compiled backend is available for operation {operation.id}"
+                    f"no compiled backend is available for problem {problem.id}"
                 )
 
-        parameter_specs = operation.instruction["parameters"]
+        parameter_specs = problem.instruction["parameters"]
         unknown_parameters = set(plan.parameters) - set(parameter_specs)
         if unknown_parameters:
             errors.append(
-                f"unknown parameters for {operation.id}: {sorted(unknown_parameters)}"
+                f"unknown parameters for {problem.id}: {sorted(unknown_parameters)}"
             )
 
         normalized_parameters = dict(plan.parameters)
@@ -421,13 +390,13 @@ class PlanValidator:
             if name in plan.parameters and backend and plan.backend_id != backend:
                 errors.append(f"parameter {name} is only valid for backend {backend}")
 
-        output_specs = operation.instruction["optional_outputs"]
+        output_specs = problem.instruction["optional_outputs"]
         unknown_outputs = set(plan.optional_outputs) - set(output_specs)
         if unknown_outputs:
             errors.append(
-                f"unknown optional outputs for {operation.id}: {sorted(unknown_outputs)}"
+                f"unknown optional outputs for {problem.id}: {sorted(unknown_outputs)}"
             )
-        for output_name, constraint in operation.instruction.get(
+        for output_name, constraint in problem.instruction.get(
             "output_constraints", {}
         ).items():
             if output_name in plan.optional_outputs:
@@ -440,11 +409,11 @@ class PlanValidator:
                         f"output {output_name} requires parameter {required_parameter}"
                     )
 
-        auxiliary_specs = operation.instruction["auxiliary_inputs"]
+        auxiliary_specs = problem.instruction["auxiliary_inputs"]
         unknown_auxiliary = set(plan.auxiliary_inputs) - set(auxiliary_specs)
         if unknown_auxiliary:
             errors.append(
-                f"unknown auxiliary inputs for {operation.id}: {sorted(unknown_auxiliary)}"
+                f"unknown auxiliary inputs for {problem.id}: {sorted(unknown_auxiliary)}"
             )
         for name, specification in auxiliary_specs.items():
             values = plan.auxiliary_inputs.get(name, [])
@@ -459,7 +428,7 @@ class PlanValidator:
 
         # Auto must have a compatible compiled candidate. Native dispatch owns
         # the final choice, including motif semantics, clique order and resolution.
-        constraints = operation.instruction.get("backend_constraints", {})
+        constraints = problem.instruction.get("backend_constraints", {})
         def constraint_errors(backend: str) -> list[str]:
             limits = constraints.get(backend, {})
             failures = []
@@ -476,12 +445,12 @@ class PlanValidator:
             return failures
 
         if not explicit_backend:
-            candidates = [b for b in operation.backends if compiled_backends is None or b in compiled_backends]
+            candidates = [b for b in problem.backends if compiled_backends is None or b in compiled_backends]
             if candidates and all(constraint_errors(b) for b in candidates):
                 errors.append("No available backend accepts these parameters: " + "; ".join(
                     message for b in candidates for message in constraint_errors(b)))
         constraint = (
-            operation.instruction.get("backend_constraints", {}).get(
+            problem.instruction.get("backend_constraints", {}).get(
                 effective_backend, {}
             )
             if explicit_backend
@@ -505,15 +474,15 @@ class PlanValidator:
                 )
 
         if (
-            operation.instruction.get("validated_profile")
-            and operation.id in EXPANSION_OPERATIONS
+            problem.instruction.get("validated_profile")
+            and problem.id in EXPANSION_PROBLEMS
         ):
             if plan.allow_directed_projection:
                 errors.append(
                     "This profile does not accept directed projection; use the graph's declared direction."
                 )
             if (
-                operation.id == "connected-components"
+                problem.id == "connected-components"
                 and plan.application_intent
                 and plan.application_intent.requires_direction
                 and normalized_parameters.get("connectivity_mode") == "weakly_connected"
@@ -521,7 +490,7 @@ class PlanValidator:
                 errors.append(
                     "Weak connectivity ignores direction; a request requiring directed connectivity cannot use that mode."
                 )
-            if operation.id == "max-flow-min-cut":
+            if problem.id == "max-flow-min-cut":
                 if (
                     "source" in normalized_parameters
                     and "sink" in normalized_parameters
@@ -555,17 +524,17 @@ class PlanValidator:
             }
         )
 
-    def performance_parameters(self, operation: OperationContract) -> set[str]:
+    def performance_parameters(self, problem: ProblemContract) -> set[str]:
         return {
             name
-            for name, spec in operation.instruction["parameters"].items()
+            for name, spec in problem.instruction["parameters"].items()
             if spec.get("performance_only")
         }
 
 
 def bind_unique_required_auxiliary_inputs(
     plan: ExecutionPlan,
-    operation: OperationContract,
+    problem: ProblemContract,
     available_files: list[dict[str, Any]],
     *,
     protected_names: set[str] | None = None,
@@ -578,7 +547,7 @@ def bind_unique_required_auxiliary_inputs(
 
     protected = protected_names or set()
     auxiliary = {name: list(values) for name, values in plan.auxiliary_inputs.items()}
-    for name, specification in operation.instruction["auxiliary_inputs"].items():
+    for name, specification in problem.instruction["auxiliary_inputs"].items():
         if (
             not specification.get("required")
             or name in protected

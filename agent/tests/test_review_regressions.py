@@ -20,7 +20,7 @@ from graphmine_agent.web_assets import WebAssets
 
 def test_count_only_answer_never_claims_zero_groups_or_offers_empty_group():
     saved = {"steps": {"count": {"status": "completed", "result": {
-        "operation": "triangle-counting", "quality": "exact", "complete": True,
+        "problem": "triangle-counting", "quality": "exact", "complete": True,
         "ports": {"count": {"type": "scalar", "value": 1, "complete": True},
                   "groups": {"type": "vertex_groups", "value": [], "complete": False}},
     }}}}

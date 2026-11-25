@@ -286,7 +286,7 @@ MatchingEdges general_matching_edges(const Graph& graph, Work& work) {
   try {
     input = consume_view(graph,general_matching,work,ViewBudget::record_edges);
   } catch (const Failure& error) {
-    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+    if (std::string(error.what()) == "This problem requires nonnegative edge weights")
       throw Failure("invalid_input","General weighted matching requires nonnegative weights");
     throw;
   } catch (const std::invalid_argument& error) {

@@ -10,13 +10,13 @@
   ],
   "selected_facts": {
     "catalog_scope": {
-      "catalog_problem_count": 20,
-      "library_supported_problem_count": 12,
-      "library_unsupported_problem_count": 8,
-      "runnable_operation_count": 13,
+      "catalog_topic_count": 20,
+      "library_supported_topic_count": 12,
+      "library_unsupported_topic_count": 8,
+      "runnable_problem_count": 13,
       "validated_backend_count": 26,
       "passing_validation_workload_count": 24,
-      "operation_count_note": "Triangle counting and dynamic triangle counting share one research problem but are separate runnable operations."
+      "problem_count_note": "Triangle counting and dynamic triangle counting share one research topic but are separate runnable problems."
     },
     "business_data_rows": {
       "train": 180,

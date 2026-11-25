@@ -605,9 +605,9 @@ def test_native_condensation_gradient_objective_and_utility(native):
 
 def test_native_all_formal_contracts_have_profiles(native):
     catalog = native.catalog()
-    formal = [p for p in catalog["problems"] if p["id"] != "graph_record_queries"]
+    formal = [p for p in catalog["topics"] if p["id"] != "graph_record_queries"]
     assert len(formal) == 70
-    assert all(problem["operations"] for problem in formal)
+    assert all(topic["problems"] for topic in formal)
     assert {p["id"] for p in formal} <= {
-        op["problem_id"] for op in catalog["operations"]
+        op["topic_id"] for op in catalog["problems"]
     }

@@ -60,11 +60,11 @@ or an explicit positive limit. Pagination and display summaries do not truncate
 the saved calculation result.
 Graph-valued ports carry the derived graph's content hash and the source graph's
 hash separately; vertex selections retain the source graph's ID namespace.
-Operations on feature vectors or hypergraphs report `input_kind` and
+Problems on feature vectors or hypergraphs report `input_kind` and
 `input_fingerprint`. They do not label those inputs as ordinary graphs.
 
 `GraphCollection`, `FeatureVectors` and `Hypergraph` are public input classes alongside `Graph`.
-Each operation card declares its `input_kind`; supplying a different kind
+Each problem card declares its `input_kind`; supplying a different kind
 raises a validation error. For example:
 
 ```python
@@ -84,7 +84,7 @@ neighbors = run("knn-graph", vectors, parameters={"k": 1}, device="cpu")
 ```
 
 CPU provenance identifies the primary library (`networkx`, `numpy`, `scipy`,
-`cvxpy`, `gudhi`, `rapidfuzz` or `igraph`) and records dependency versions. Some operations
+`cvxpy`, `gudhi`, `rapidfuzz` or `igraph`) and records dependency versions. Some problems
 use several libraries; per-result diagnostics identify the method actually used.
 
 For transaction-based mining, each graph keeps its own vertex namespace and
@@ -111,7 +111,7 @@ patterns = run(
 ```
 
 This counts transactions containing each pattern. The separate
-`single-graph-frequent-subgraphs` operation takes one undirected labeled graph
+`single-graph-frequent-subgraphs` problem takes one undirected labeled graph
 and computes minimum-image support over all embeddings. Both use igraph BLISS
 canonical forms; MNI embeddings use NetworkX VF2. Pattern size has no fixed
 five/six-edge ceiling, although exhaustive enumeration can exhaust work budgets.
@@ -161,7 +161,7 @@ force-model and dynamic-update parameters are rejected during planning.
 
 In particular, `densest-subgraph.clique_order` changes the density numerator;
 `densest-k-subgraph.k` fixes the size of the selected vertex set. These are
-different problems. Graphlet classification uses the complete NetworkX atlas
+different topics. Graphlet classification uses the complete NetworkX atlas
 through seven vertices. Larger clique orders remain available to density and
 clique enumeration, subject to work and output budgets.
 
@@ -196,7 +196,7 @@ vertices. Independent subset enumeration, Floyd–Warshall, cut enumeration,
 path enumeration, and linear systems supply expected results. Additional tests
 cover weighted/directed graphs, large and mixed IDs, empty outputs, exactness
 limits, and forbidden device dispatch. These are correctness fixtures, not
-performance benchmarks or a proof that every problem/parameter is covered.
+performance benchmarks or a proof that every topic/parameter is covered.
 The expanded suite also enumerates all 512 bipartite 3-by-3 graphs and all 729
 four-vertex signed graphs, and checks pattern embeddings against permutations
 and optimization objectives against subsets and set partitions. Reports record

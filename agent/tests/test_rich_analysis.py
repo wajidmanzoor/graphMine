@@ -59,8 +59,8 @@ def answer():
         ExecutionPlan(
             session_id="fixture",
             graph_id="fixture",
-            operation_id="maximal-cliques",
-            problem_id="maximal_clique_enumeration",
+            problem_id="maximal-cliques",
+            topic_id="maximal_clique_enumeration",
             application_intent=ApplicationIntent(
                 objective="Compare the groups and their membership overlap."
             ),
@@ -204,14 +204,14 @@ def test_rejects_unsupported_numbers_and_missing_fact_references(answer):
         validate_narrative(draft, answer, [], set())
 
 
-def test_additional_analysis_requires_available_operation(answer):
+def test_additional_analysis_requires_available_problem(answer):
     draft = narrative(answer)
     draft.charts = []
     draft.analysis_request = (
         "Compare the connection-core thresholds of the returned people."
     )
-    draft.analysis_operation_ids = ["k-core"]
-    with pytest.raises(ValueError, match="supported operations"):
+    draft.analysis_problem_ids = ["k-core"]
+    with pytest.raises(ValueError, match="supported problems"):
         validate_narrative(draft, answer, [], {"maximal-cliques"})
     validate_narrative(draft, answer, [], {"k-core"})
     result = apply_narrative(answer_interpretation(answer, []), draft, answer)

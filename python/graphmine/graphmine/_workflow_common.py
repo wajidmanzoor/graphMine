@@ -94,7 +94,7 @@ def _reference_kind(reference, inputs, steps, port_types):
         or reference["step"] not in steps
     ):
         raise GraphMineError("Unknown workflow step reference")
-    ports = port_types(steps[reference["step"]]["operation"])
+    ports = port_types(steps[reference["step"]]["problem"])
     if not isinstance(reference["port"], str) or reference["port"] not in ports:
         raise GraphMineError("Unknown output port in workflow reference")
     kind = ports[reference["port"]]

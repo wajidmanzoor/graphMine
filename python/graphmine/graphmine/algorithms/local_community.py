@@ -14,7 +14,7 @@ from .centrality import _pagerank
 
 @register(
     id="seeded-local-community",
-    problem_id="seeded_local_community_detection",
+    topic_id="seeded_local_community_detection",
     title="Find a community around required seed vertices",
     description="NetworkX personalized PageRank followed by a weighted-degree-normalized sweep. All seeds are required; the lowest defined conductance among feasible sweep prefixes is selected. This is a heuristic, with recomputed cut and volume, and makes no global optimality claim. Parallel weights sum; self-loops are rejected.",
     parameters={

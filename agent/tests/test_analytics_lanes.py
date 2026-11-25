@@ -71,7 +71,7 @@ async def test_lookup_uses_code_owned_ids_and_no_planner_call(normal):
     body.message = "Show the record for vertex 0."
     planner = SelectLane(settings, service, events, select=lambda payload: {
         "intent": "lookup", "message": "Look up the record.",
-        "lookup_id": next(row["id"] for row in payload["lookup_choices"] if row["operation"] == "node-lookup")})
+        "lookup_id": next(row["id"] for row in payload["lookup_choices"] if row["problem"] == "node-lookup")})
     answer = await planner.plan(session, body)
     assert answer["lane"] == "lookup" and answer["status"] == "ready"
     assert answer["plan"]["steps"][0]["parameters"] == {"vertices": [0]}
@@ -86,10 +86,10 @@ async def test_normal_calculation_waits_for_a_saved_choice_then_validates_and_ru
     offered = await planner.plan(session, body)
     assert offered["status"] == "options" and offered["plan"] is None
     assert len(offered["options"]) == 1 and service.list(session) == []
-    assert offered["options"][0]["operations"] == ["triangle-counting"]
+    assert offered["options"][0]["problems"] == ["triangle-counting"]
     choice = offered["options"][0]
     picked = body.model_copy(update={"message": "Use the first option.", "intent": "calculate",
-        "operations": choice["operations"], "parameters": choice["parameters"],
+        "problems": choice["problems"], "parameters": choice["parameters"],
         "option_id": choice["id"], "option_turn_id": offered["turn_id"]})
     ready = await planner.plan(session, picked)
     assert ready["status"] == "ready" and ready["lane"] == "calculate"
@@ -102,16 +102,16 @@ async def test_normal_calculation_waits_for_a_saved_choice_then_validates_and_ru
     assert service.result(record["id"])["steps"]["answer"]["result"]["ports"]["count"]["value"] == 1
 
 
-@pytest.mark.parametrize("tamper", ["operation", "parameters", "inputs"])
+@pytest.mark.parametrize("tamper", ["problem", "parameters", "inputs"])
 async def test_choice_rejects_tampering_or_changed_inputs(normal, tamper):
     settings, service, events, session, body = normal
     planner = ReplayPlanner(settings, service, events, responses=[route("triangle-counting")])
     offered = await planner.plan(session, body)
     option = offered["options"][0]
-    picked = body.model_copy(update={"intent": "calculate", "operations": option["operations"],
+    picked = body.model_copy(update={"intent": "calculate", "problems": option["problems"],
         "parameters": option["parameters"], "option_id": option["id"], "option_turn_id": offered["turn_id"]})
-    if tamper == "operation":
-        picked.operations = ["maximum-clique"]
+    if tamper == "problem":
+        picked.problems = ["maximum-clique"]
     elif tamper == "parameters":
         picked.parameters = {"invented_parameter": "enumerate"}
     else:
@@ -125,10 +125,10 @@ async def test_direct_shortcut_still_waits_for_one_supported_option(normal):
     settings, service, events, session, body = normal
     settings = replace(settings, analytics_direct_plans=True)
     body.message = "Count triangles"
-    planner = ReplayPlanner(settings, service, events, responses=[], candidate_operation="triangle-counting")
+    planner = ReplayPlanner(settings, service, events, responses=[], candidate_problem="triangle-counting")
     offered = await planner.plan(session, body)
     assert offered["status"] == "options" and len(offered["options"]) == 1
-    assert planner.calls == [] and len(planner.candidate_calls) == 1 and service.list(session) == []
+    assert planner.calls == [] and len(planner.candidate_calls) == 0 and service.list(session) == []
 
 
 async def test_density_offers_one_exact_choice_and_old_approximate_choice_still_executes(normal):
@@ -140,10 +140,9 @@ async def test_density_offers_one_exact_choice_and_old_approximate_choice_still_
     choice = offered["options"][0]
     assert choice["quality"] == "exact" and choice["parameters"]["solution_quality"] == "exact"
     assert service.list(session) == []
-    _, prompt, _ = planner.candidate_calls[0]
-    assert all(c["settings"]["solution_quality"] == "exact" for op in prompt["choices"] for c in op["choices"])
+    assert planner.candidate_calls == []
     caps = await service.capabilities()
-    contract = next(c for c in caps["operations"] if c["id"] == "densest-subgraph")
+    contract = next(c for c in caps["problems"] if c["id"] == "densest-subgraph")
     assert contract["quality_guarantees"]["by_request"]["approximate"] == "exact"
 
     old = deepcopy(choice)
@@ -154,12 +153,12 @@ async def test_density_offers_one_exact_choice_and_old_approximate_choice_still_
     await events.publish(session, "workflow.chat", {"turn_id": old_turn, "role": "assistant",
         "status": "options", "message": "Choose the calculation.", "question": body.message, "options": [old],
         "inputs": {key: value.model_dump() for key, value in body.inputs.items()}})
-    picked = body.model_copy(update={"intent": "calculate", "operations": old["operations"],
+    picked = body.model_copy(update={"intent": "calculate", "problems": old["problems"],
         "parameters": old["parameters"], "option_id": old["id"], "option_turn_id": old_turn})
     ready = await planner.plan(session, picked)
     assert ready["status"] == "ready"
     assert ready["plan"]["steps"][0]["parameters"]["solution_quality"] == "approximate"
-    assert len(planner.candidate_calls) == 1
+    assert len(planner.candidate_calls) == 0
     record = await service.create(session, WorkflowRequest(mode="normal", plan=ready["plan"],
         inputs=picked.inputs, planning_turn_id=ready["turn_id"]))
     await asyncio.gather(*list(service.tasks.values()))
@@ -175,28 +174,21 @@ async def test_user_parameter_edit_is_validated_without_resampling(normal):
     offered = await planner.plan(session, body)
     option = offered["options"][0]
     assert option["parameters"]["requested_k"] == 3
-    picked = body.model_copy(update={"intent": "calculate", "operations": option["operations"],
+    picked = body.model_copy(update={"intent": "calculate", "problems": option["problems"],
         "parameters": {**option["parameters"], "requested_k": 2}, "option_id": option["id"], "option_turn_id": offered["turn_id"]})
     checked = await planner.plan(session, picked)
     assert checked["validation"] and checked["plan"]["steps"][0]["parameters"]["requested_k"] == 2
-    assert len(planner.calls) == 1 and len(planner.candidate_calls) == 1
+    assert len(planner.calls) == 1 and len(planner.candidate_calls) == 0
 
 
-async def test_two_low_matches_ask_an_open_question_and_save_allowed_choices(normal):
+async def test_ambiguous_route_asks_before_offering_cards(normal):
     settings, service, events, session, body = normal
-    class Disagreeing(ReplayPlanner):
-        async def _generate(self, stage, payload, schema, catalog=None):
-            if stage == "candidates":
-                return [{"decision": {"operation": row["operation"], "parameter_choice": row["choices"][0]["id"],
-                                      "interpretation": "A possible result."}, "operation_logprob": None}
-                        for row in payload["choices"][:5]]
-            return await super()._generate(stage, payload, schema, catalog)
-    planner = Disagreeing(settings, service, events, responses=[route("triangle-counting")])
+    body.message = "Which vertices are most important?"
+    planner = ReplayPlanner(settings, service, events, responses=[{
+        "intent": "needs_information", "message": "Many contacts, bridges, or global influence?", "choices": []}])
     response = await planner.plan(session, body)
-    assert response["status"] == "needs_information" and response["choices"] == []
-    assert response["pending_question"]["open_question"]
-    assert response["pending_question"]["choices"]
-    assert all(row["match"] == "Low" for row in response["option_evidence"]["candidates"])
+    assert response["status"] == "needs_information"
+    assert not response.get("options") and not planner.candidate_calls
     assert service.list(session) == []
 
 
@@ -215,12 +207,12 @@ async def test_confirmed_weight_promotion_uses_a_copy_and_preserves_original(nor
              "edges": [{"id": 0, "source": 0, "target": 1, "attributes": {"stars": 4}}]}
     file = service.graph_store.ingest(session_id=session, role=FileRole.graph, filename="ratings.json", content=json.dumps(graph).encode())
     body.inputs = {"main": InputReference(file_id=file.id)}
-    body.intent, body.operations, body.parameters = "calculate", ["max-flow-min-cut"], {"source": 0, "sink": 1}
+    body.intent, body.problems, body.parameters = "calculate", ["max-flow-min-cut"], {"source": 0, "sink": 1}
     planner = ReplayPlanner(settings, service, events, responses=[])
     prompt = await planner.plan(session, body)
     assert prompt["status"] == "needs_information"
     assert "Use stars as the weight." in prompt["choices"]
-    reply = body.model_copy(update={"intent": None, "operations": [], "parameters": {}, "message": "Use stars as the weight."})
+    reply = body.model_copy(update={"intent": None, "problems": [], "parameters": {}, "message": "Use stars as the weight."})
     ready = await planner.plan(session, reply)
     assert ready["status"] == "ready"
     prepared_alias = ready["plan"]["steps"][0]["input"]["input"]
@@ -239,12 +231,12 @@ async def test_timestamp_promotion_requires_confirmation_and_validates_copy(norm
              "edges": [{"id": 0, "source": 0, "target": 1, "attributes": {"timestamp": 10, "duration": 1}}]}
     file = service.graph_store.ingest(session_id=session, role=FileRole.graph, filename="events.json", content=json.dumps(graph).encode())
     body.inputs = {"main": InputReference(file_id=file.id)}
-    body.intent, body.operations, body.parameters = "calculate", ["temporal-paths"], {"source": 0, "ready_time": 0}
+    body.intent, body.problems, body.parameters = "calculate", ["temporal-paths"], {"source": 0, "ready_time": 0}
     planner = ReplayPlanner(settings, service, events, responses=[])
     prompt = await planner.plan(session, body)
     assert prompt["choices"] == ["Use attributes.timestamp as event timestamps."]
     assert not service.list(session)
-    reply = body.model_copy(update={"intent": None, "operations": [], "parameters": {}, "message": prompt["choices"][0]})
+    reply = body.model_copy(update={"intent": None, "problems": [], "parameters": {}, "message": prompt["choices"][0]})
     ready = await planner.plan(session, reply)
     assert ready["status"] == "ready"
     alias = ready["plan"]["steps"][0]["input"]["input"]
@@ -252,12 +244,12 @@ async def test_timestamp_promotion_requires_confirmation_and_validates_copy(norm
     assert "timestamp" not in service.graph_store.read_graph(file.id, session)["edges"][0]
 
 
-async def test_removed_operations_reach_router_with_reasons(normal):
+async def test_removed_problems_reach_router_with_reasons(normal):
     settings, service, events, session, body = normal
     planner = SelectLane(settings, service, events, select=lambda _: {
         "intent": "needs_information", "message": "Which query graph should I use?", "choices": []})
     await planner.plan(session, body)
-    removed = {row["operation"]: row["reason"] for row in planner.calls[0]["removed_operations"]}
+    removed = {row["problem"]: row["reason"] for row in planner.calls[0]["removed_problems"]}
     assert "query" in removed["subgraph-isomorphism"]
     assert "sides" in removed["maximal-bicliques"]
     assert "triangle-counting" not in removed

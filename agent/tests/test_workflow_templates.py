@@ -37,7 +37,7 @@ def recipes(settings, triangle_graph):
                     "steps": [
                         {
                             "id": "core",
-                            "operation": "k-core",
+                            "problem": "k-core",
                             "input": {"input": "main"},
                             "parameters": {"requested_k": 1},
                             "bindings": {},
@@ -53,7 +53,7 @@ def recipes(settings, triangle_graph):
                 "core": {
                     "status": "completed",
                     "result": {
-                        "operation": "k-core",
+                        "problem": "k-core",
                         "quality": "exact",
                         "complete": True,
                         "ports": {

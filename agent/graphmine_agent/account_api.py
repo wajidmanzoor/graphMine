@@ -22,13 +22,13 @@ REQUEST_SECONDS = 300
 PLANNING_REQUEST_SECONDS = PLANNING_DEADLINE_SECONDS + 60
 
 
-async def account_io(operation, *args, on_cancel=None, **kwargs):
+async def account_io(problem, *args, on_cancel=None, **kwargs):
     """Keep SQLite waits off the loop and finish resource cleanup on cancellation.
 
     Cancelling an await cannot stop a running SQLite transaction. Wait for its
     outcome before relinquishing ownership of a lease acquired by that thread.
     """
-    task = asyncio.create_task(run_in_threadpool(operation, *args, **kwargs))
+    task = asyncio.create_task(run_in_threadpool(problem, *args, **kwargs))
     cancelled = None
     while not task.done():
         try:
@@ -425,7 +425,7 @@ def register_account_routes(app):
         )
         response.headers["Cache-Control"] = "no-store"
 
-    async def password_operation(operation, *args):
+    async def password_problem(problem, *args):
         if login_slots.locked():
             raise AccountError(
                 "Account management is busy. Please try again shortly.",
@@ -433,14 +433,14 @@ def register_account_routes(app):
                 retry_after=2,
             )
         async with login_slots:
-            return await run_in_threadpool(operation, *args)
+            return await run_in_threadpool(problem, *args)
 
     @router.post("/password", status_code=204)
     async def change_password(body: AccountPasswordChange, response: Response):
         principal = current_principal.get()
         if principal is None:
             raise AccountError("Please sign in.", "unauthorized", 401)
-        await password_operation(
+        await password_problem(
             principal.accounts.change_password,
             principal.user_id,
             body.current_password,

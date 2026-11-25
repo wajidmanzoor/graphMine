@@ -36,7 +36,7 @@ def make_case(example):
         "id": example["id"],
         "family": example["family"],
         "behavior": example["task"]["behavior"],
-        "operation_id": example["task"]["operation_id"],
+        "problem_id": example["task"]["problem_id"],
         "expected": example["gold_route"],
         "payload": {"graph_context": {}, "active_constraints": None},
     }
@@ -61,7 +61,7 @@ def test_wrong_attribute_and_false_empty_refusal_fail(corpus, catalog):
         for i in score_route(case, json.dumps(decision), catalog)["issues"]
     )
     decision = deepcopy(example["gold_route"])
-    decision.update(supported=False, operation_id=None)
+    decision.update(supported=False, problem_id=None)
     assert not score_route(case, json.dumps(decision), catalog)["passed"]
 
 
@@ -72,7 +72,7 @@ def test_weighting_is_never_dropped_to_pass(corpus, catalog):
         if e["task"]["reason"] == "filter_and_weight_required"
     )
     case, decision = make_case(example), deepcopy(example["gold_route"])
-    decision.update(supported=True, operation_id=example["task"]["operation_id"])
+    decision.update(supported=True, problem_id=example["task"]["problem_id"])
     score = score_route(case, json.dumps(decision), catalog)
     assert score["passed"] and score["capability_errors"]
     assert not score["raw_route_matches"]
@@ -121,7 +121,7 @@ def test_raw_and_semantic_scores_are_separate_and_missing_cases_incomplete():
                 "id": "a",
                 "family": "barbell",
                 "behavior": "execute",
-                "operation_id": "maximal-cliques",
+                "problem_id": "maximal-cliques",
                 "finish_reason": "stop",
                 "score": {
                     "passed": passed,
@@ -157,12 +157,12 @@ def test_truncated_generation_cannot_pass_when_rescored_on_resume(corpus, catalo
     assert score["issues"] == ["generation exhausted token budget"]
 
 
-def test_safe_refusal_is_distinct_from_preserving_problem_identity(corpus, catalog):
+def test_safe_refusal_is_distinct_from_preserving_topic_identity(corpus, catalog):
     example = next(
         e for e in corpus["examples"] if e["task"]["reason"] == "weighted_cost_required"
     )
     decision = deepcopy(example["gold_route"])
-    decision["problem_id"] = None
+    decision["topic_id"] = None
     score = score_route(make_case(example), json.dumps(decision), catalog)
     assert not score["passed"]
     assert score["behavior_correct"]
@@ -174,7 +174,7 @@ def test_application_review_does_not_reject_static_pattern_descriptions(
     corpus, catalog
 ):
     example = next(
-        e for e in corpus["examples"] if e["task"]["operation_id"] == "k-cliques"
+        e for e in corpus["examples"] if e["task"]["problem_id"] == "k-cliques"
     )
     decision = deepcopy(example["gold_route"])
     decision["intent"].update(
@@ -184,8 +184,8 @@ def test_application_review_does_not_reject_static_pattern_descriptions(
     strict, reviewed = review_generation(make_case(example), result, catalog)
     assert not strict["passed"] and reviewed["passed"]
     assert reviewed["ignored_differences"]
-    decision["operation_id"] = "maximum-clique"
-    decision["problem_id"] = "maximum_clique"
+    decision["problem_id"] = "maximum-clique"
+    decision["topic_id"] = "maximum_clique"
     _, reviewed = review_generation(
         make_case(example), {**result, "raw": json.dumps(decision)}, catalog
     )
@@ -196,7 +196,7 @@ def test_application_review_still_rejects_wrong_temporal_pattern(corpus, catalog
     example = next(
         e
         for e in corpus["examples"]
-        if e["task"]["operation_id"] == "temporal-motif-mining"
+        if e["task"]["problem_id"] == "temporal-motif-mining"
         and e["task"]["behavior"] == "execute"
     )
     decision = deepcopy(example["gold_route"])
@@ -226,19 +226,19 @@ def test_application_review_capability_refusal_precedes_missing_inputs(corpus, c
     assert reviewed["application_blocker"][0] == "unsupported"
 
 
-def test_application_review_unavailable_operation_precedes_clarification(
+def test_application_review_unavailable_problem_precedes_clarification(
     corpus, catalog
 ):
     example = next(e for e in corpus["examples"] if e["task"]["behavior"] == "execute")
     case = make_case(example)
     decision = deepcopy(case["expected"])
     decision.update(
-        problem_id="graphlet_counting",
-        operation_id=None,
+        topic_id="graphlet_counting",
+        problem_id=None,
         supported=False,
         ambiguity=["Which graphlet sizes should I use?"],
     )
-    case.update(expected=decision, behavior="unsupported", operation_id=None)
+    case.update(expected=decision, behavior="unsupported", problem_id=None)
     strict, reviewed = review_generation(
         case, {"raw": json.dumps(decision), "finish_reason": "stop"}, catalog
     )
@@ -246,18 +246,19 @@ def test_application_review_unavailable_operation_precedes_clarification(
     assert reviewed["behavior"] == "unsupported" and reviewed["passed"]
 
 
-def test_application_review_missing_operation_cannot_count_as_execution(
+def test_application_review_missing_problem_cannot_count_as_execution(
     corpus, catalog
 ):
     example = next(e for e in corpus["examples"] if e["task"]["behavior"] == "execute")
     decision = deepcopy(example["gold_route"])
-    decision["operation_id"] = None
+    decision["problem_id"] = None
     strict, reviewed = review_generation(
         make_case(example),
         {"raw": json.dumps(decision), "finish_reason": "stop"},
         catalog,
     )
-    assert strict["behavior"] == "execute"
+    # A documentation topic cannot supply the missing executable contract.
+    assert strict["behavior"] == "unsupported"
     assert reviewed["behavior"] == "unsupported"
     assert not reviewed["behavior_correct"] and not reviewed["passed"]
 

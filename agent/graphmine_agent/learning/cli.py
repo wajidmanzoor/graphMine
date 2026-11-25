@@ -279,7 +279,7 @@ def run_learning(arguments, settings: Settings) -> int:
                             "passed",
                             "total",
                             "problem_count",
-                            "operation_count",
+                            "problem_count",
                             "native_execution",
                             "model_inference",
                             "numerical_validation",

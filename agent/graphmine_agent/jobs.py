@@ -272,7 +272,7 @@ class JobManager:
             await self.event_bus.publish(
                 job.session_id,
                 "job.queued",
-                {"job_id": job.id, "operation_id": job.plan.operation_id},
+                {"job_id": job.id, "problem_id": job.plan.problem_id},
                 job_id=job.id,
             )
         return jobs
@@ -364,7 +364,7 @@ class JobManager:
         timings = {
             "version": "job-timings-v1",
             "job_id": job.id,
-            "operation_id": job.plan.operation_id,
+            "problem_id": job.plan.problem_id,
             "queued_at": job.created_at.isoformat(),
             "active_started_at": active_started_at.isoformat(),
             "queue_wait_seconds": max(
@@ -394,7 +394,7 @@ class JobManager:
         await self.event_bus.publish(
             job.session_id,
             "job.running",
-            {"job_id": job.id, "operation_id": job.plan.operation_id},
+            {"job_id": job.id, "problem_id": job.plan.problem_id},
             job_id=job.id,
         )
         workspace = self.runner.settings.workspaces_root / job.id
@@ -438,7 +438,7 @@ class JobManager:
             with _measure_stage(timings, "execution"):
                 payload, command = await self.runner.execute(job.plan, workspace)
             with _measure_stage(timings, "result_validation"):
-                validate_result(self.runner.catalog, job.plan.operation_id, payload)
+                validate_result(self.runner.catalog, job.plan.problem_id, payload)
                 if not payload["ok"]:
                     error = payload.get("error", {})
                     raise ExecutionError(
@@ -451,7 +451,7 @@ class JobManager:
                     ResultRecord(
                         job_id=job.id,
                         session_id=job.session_id,
-                        operation_id=job.plan.operation_id,
+                        problem_id=job.plan.problem_id,
                         payload=payload,
                         summary=summarize_result(payload, self.summary_items),
                     )

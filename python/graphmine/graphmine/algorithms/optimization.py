@@ -11,7 +11,7 @@ from ._common import simple, vertex_set
 
 @register(
     id="maximum-independent-set",
-    problem_id="maximum_independent_set",
+    topic_id="maximum_independent_set",
     title="Find the largest non-conflicting group",
     description="Exact maximum independent set via maximum clique enumeration of the complement.",
     parameters={"mode": P("string", "exact", choices=("exact",))},
@@ -34,7 +34,7 @@ def maximum_independent(graph, args, work, backend="networkx"):
 
 @register(
     id="minimum-vertex-cover",
-    problem_id="minimum_vertex_cover",
+    topic_id="minimum_vertex_cover",
     title="Cover every connection with as few vertices as possible",
     description="Exact minimum vertex cover through the complement of a maximum independent set.",
     parameters={
@@ -58,7 +58,7 @@ def vertex_cover(graph, args, work, backend="networkx"):
 
 @register(
     id="weighted-matching",
-    problem_id="general_graph_weighted_matching",
+    topic_id="general_graph_weighted_matching",
     title="Find the highest-value non-conflicting pairs",
     description="Exact maximum-weight matching on an undirected graph, without a maximum-cardinality constraint.",
     parameters={"solution_quality": P("string", "exact", choices=("exact",))},
@@ -86,7 +86,7 @@ def matching(graph, args, work, backend="networkx"):
 
 @register(
     id="max-flow-min-cut",
-    problem_id="max_flow_min_cut",
+    topic_id="max_flow_min_cut",
     title="Find capacity and bottlenecks between two places",
     description="Maximum flow with a minimum-cut certificate; parallel capacities are summed.",
     parameters={

@@ -56,8 +56,8 @@ def test_correctness_exclusion_overrides_rankings_and_fails_closed(
     plan = ExecutionPlan(
         session_id="session",
         graph_id="graph",
-        problem_id="maximum_clique",
-        operation_id="maximum-clique",
+        topic_id="maximum_clique",
+        problem_id="maximum-clique",
     )
     selected = selector.select(
         plan, None, {"cuda-ms", "gpu-maximum-clique", "maximum-clique-on-gpu"}
@@ -72,7 +72,7 @@ def test_correctness_exclusion_overrides_rankings_and_fails_closed(
             plan.model_copy(update={"backend_id": "cuda-ms"}), None, {"cuda-ms"}
         )
     selector.policy = {
-        "operations": {
+        "problems": {
             "maximum-clique": {
                 "global_ranked_backends": ["cuda-ms", "gpu-maximum-clique"]
             }
@@ -93,7 +93,7 @@ def test_benchmark_policy_resolves_auto_to_valid_compiled_backend(
         json.dumps(
             {
                 "schema_version": "1.0.0",
-                "operations": {
+                "problems": {
                     "maximal-cliques": {
                         "global_ranked_backends": ["rdmce"],
                         "buckets": {},
@@ -123,8 +123,8 @@ def test_benchmark_policy_resolves_auto_to_valid_compiled_backend(
         ExecutionPlan(
             session_id=session.id,
             graph_id=graph.id,
-            problem_id="maximal_clique_enumeration",
-            operation_id="maximal-cliques",
+            topic_id="maximal_clique_enumeration",
+            problem_id="maximal-cliques",
             backend_id="auto",
         ),
         tmp_path / "result.json",
@@ -141,7 +141,7 @@ def test_invalid_policy_is_reported_and_does_not_override_auto(
         json.dumps(
             {
                 "schema_version": "1.0.0",
-                "operations": {
+                "problems": {
                     "maximal-cliques": {
                         "global_ranked_backends": ["not-a-backend"],
                         "buckets": {},
@@ -158,7 +158,7 @@ def test_invalid_policy_is_reported_and_does_not_override_auto(
     assert "unknown backends" in (selector.error or "")
 
 
-def test_malformed_or_unknown_policy_operation_falls_back_safely(
+def test_malformed_or_unknown_policy_problem_falls_back_safely(
     settings, tmp_path: Path
 ) -> None:
     policy_path = tmp_path / "policy.json"
@@ -166,8 +166,8 @@ def test_malformed_or_unknown_policy_operation_falls_back_safely(
         json.dumps(
             {
                 "schema_version": "1.0.0",
-                "operations": {
-                    "not-an-operation": {
+                "problems": {
+                    "not-an-problem": {
                         "global_ranked_backends": [],
                         "buckets": {},
                     }
@@ -179,7 +179,7 @@ def test_malformed_or_unknown_policy_operation_falls_back_safely(
     catalog = Catalog(settings)
     selector = BackendSelector(policy_path, catalog, PlanValidator(catalog))
     assert not selector.loaded
-    assert "unknown operation" in (selector.error or "")
+    assert "unknown problem" in (selector.error or "")
 
 
 def test_incompatible_native_version_is_rejected(
@@ -220,7 +220,7 @@ def test_train_and_evaluate_backend_policy() -> None:
             records.append(
                 {
                     "case_id": "triangle",
-                    "operation_id": "triangle-counting",
+                    "problem_id": "triangle-counting",
                     "backend_id": backend,
                     "repetition": repetition,
                     "feature_bucket": "tiny:dense:undirected:static",
@@ -231,8 +231,8 @@ def test_train_and_evaluate_backend_policy() -> None:
             )
     report = {"schema_version": "1.0.0", "records": records}
     policy = train_backend_policy(report)
-    operation = policy["operations"]["triangle-counting"]
-    assert operation["global_ranked_backends"] == ["tot", "wetric"]
+    problem = policy["problems"]["triangle-counting"]
+    assert problem["global_ranked_backends"] == ["tot", "wetric"]
     evaluation = evaluate_backend_policy(report, policy)
     assert evaluation["evaluated_cases"] == 1
     assert evaluation["oracle_matches"] == 1
@@ -245,7 +245,7 @@ def test_policy_training_rejects_any_incorrect_timing_record() -> None:
         "records": [
             {
                 "case_id": "triangle",
-                "operation_id": "triangle-counting",
+                "problem_id": "triangle-counting",
                 "backend_id": "tot",
                 "feature_bucket": "tiny:dense:undirected:static",
                 "status": "success",
@@ -254,7 +254,7 @@ def test_policy_training_rejects_any_incorrect_timing_record() -> None:
             },
             {
                 "case_id": "triangle",
-                "operation_id": "triangle-counting",
+                "problem_id": "triangle-counting",
                 "backend_id": "wetric",
                 "feature_bucket": "tiny:dense:undirected:static",
                 "status": "failed",

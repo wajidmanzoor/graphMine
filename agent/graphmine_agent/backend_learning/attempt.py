@@ -44,7 +44,7 @@ def stop_tree(pid):
         pass
 
 
-def run(operation, graph, *, parameters=None, device="auto", backend=None, budget=None,
+def run(problem, graph, *, parameters=None, device="auto", backend=None, budget=None,
         gpu_device=0, allowed_backends=None, response_limit=None):
     from graphmine.contracts import Budget
     from graphmine.dispatch import implementation_hash
@@ -52,7 +52,7 @@ def run(operation, graph, *, parameters=None, device="auto", backend=None, budge
 
     budget = budget or Budget()
     start = time.monotonic()
-    request = dict(operation=operation, graph=graph.to_canonical() if hasattr(graph, "to_canonical") else graph,
+    request = dict(problem=problem, graph=graph.to_canonical() if hasattr(graph, "to_canonical") else graph,
                    parameters=parameters or {}, device=device, backend=backend or "auto", budget=asdict(budget),
                    gpu_device=gpu_device, allowed_backends=allowed_backends,
                    expected_implementation=implementation_hash(), response_limit=response_limit)

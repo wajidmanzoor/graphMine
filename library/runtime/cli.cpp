@@ -73,7 +73,7 @@ void filter_family(boost::json::object& catalog, const std::string& selected) {
   }
   if (!known)
     throw std::runtime_error("Unknown native family '" + selected + "'. Valid families: " + valid);
-  for (const auto* key : {"families", "operations", "problems"}) {
+  for (const auto* key : {"families", "problems", "topics"}) {
     json::array rows;
     const auto* field = std::string(key) == "families" ? "id" : "family";
     for (const auto& row : catalog.at(key).as_array()) {
@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
       }
     } else if (command == "run" && argc >= 4) {
       request = {{"command", "run"},
-                 {"operation", argv[2]},
+                 {"problem", argv[2]},
                  {"graph", graphmine::runtime::strict_json(read(argv[3]))}};
       for (int i = 4; i < argc; i += 2) {
         if (i + 1 >= argc) throw std::runtime_error("Missing option value");
@@ -153,7 +153,7 @@ int main(int argc, char** argv) {
     }
     if (family) filter_family(response, *family);
     if (command == "list")
-      protocol.emit(json::serialize(response.at("operations")));
+      protocol.emit(json::serialize(response.at("problems")));
     else if (command == "families")
       protocol.emit(json::serialize(response.at("families")));
     else

@@ -74,8 +74,8 @@ struct Fixture {
     return output;
   }
 };
-json::object request(const char* operation, const Fixture& fixture, json::object args = {}) {
-  return {{"command", "run"},       {"operation", operation},
+json::object request(const char* problem, const Fixture& fixture, json::object args = {}) {
+  return {{"command", "run"},       {"problem", problem},
           {"graph", fixture.graph}, {"parameters", args},
           {"backend", backend},     {"device", backend == "cpp" ? "cpu" : "gpu"},
           {"gpu_device", device}};
@@ -258,28 +258,28 @@ std::vector<std::string> supported_suites() {
 }
 void contracts() {
   const Fixture f(5, 513);
-  std::vector<std::pair<const char*, json::object>> operations;
+  std::vector<std::pair<const char*, json::object>> problems;
   for (const auto& suite : supported_suites()) {
-    if (suite == "maximal") operations.push_back({"maximal-cliques", {}});
-    if (suite == "maximum") operations.push_back({"maximum-clique", {}});
-    if (suite == "fixed") operations.push_back({"k-cliques", {{"k", 3}}});
-    if (suite == "core") operations.push_back({"k-core", {}});
+    if (suite == "maximal") problems.push_back({"maximal-cliques", {}});
+    if (suite == "maximum") problems.push_back({"maximum-clique", {}});
+    if (suite == "fixed") problems.push_back({"k-cliques", {{"k", 3}}});
+    if (suite == "core") problems.push_back({"k-core", {}});
     if (suite == "optimization") {
-      operations.push_back({"maximum-independent-set", {}});
-      operations.push_back({"minimum-vertex-cover", {}});
+      problems.push_back({"maximum-independent-set", {}});
+      problems.push_back({"minimum-vertex-cover", {}});
     }
   }
-  for (const auto& [operation, args] : operations) {
-    auto directed = request(operation, f, args);
+  for (const auto& [problem, args] : problems) {
+    auto directed = request(problem, f, args);
     directed.at("graph").as_object().at("graph").as_object()["directed"] = true;
     invoke(directed, "invalid_input");
-    auto unknown = request(operation, f, args);
+    auto unknown = request(problem, f, args);
     unknown.at("parameters").as_object()["unknown"] = 1;
     invoke(unknown, "invalid_input");
-    auto candidates = request(operation, f, args);
+    auto candidates = request(problem, f, args);
     candidates["budget"] = {{"max_candidates", 1}};
     invoke(candidates, "resource_limit");
-    auto deadline = request(operation, f, args);
+    auto deadline = request(problem, f, args);
     deadline["budget"] = {{"timeout_seconds", 1e-12}};
     invoke(deadline, "resource_limit");
   }
@@ -299,14 +299,14 @@ void contracts() {
   for (const auto& args : {json::object{{"mode", "decision"}}, json::object{{"k", -1}},
                            json::object{{"mode", "bad"}}, json::object{{"k", true}}})
     invoke(request("minimum-vertex-cover", f, args), "invalid_input");
-  for (const auto& [operation, args] : std::vector<std::pair<const char*, json::object>>{
+  for (const auto& [problem, args] : std::vector<std::pair<const char*, json::object>>{
            {"maximal-cliques", {}},
            {"maximum-clique", {{"return_all_ties", true}}},
            {"k-cliques", {{"k", 2}, {"mode", "enumerate"}}},
            {"k-core", {}},
            {"maximum-independent-set", {}},
            {"minimum-vertex-cover", {}}}) {
-    auto bounded = request(operation, f, args);
+    auto bounded = request(problem, f, args);
     bounded["budget"] = {{"max_output_items", 1}};
     invoke(bounded, "resource_limit");
   }

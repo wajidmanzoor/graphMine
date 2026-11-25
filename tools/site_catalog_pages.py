@@ -21,17 +21,17 @@ def quality(op):
 
 def generated_pages(document):
     reading = json.loads((ROOT / "catalog/problem_reading_guide.json").read_text())
-    assert set(reading) == {p["id"] for p in document["problems"]}, "Reading guide must cover every problem"
-    operations = {op["id"]: op for op in document["operations"]}
+    assert set(reading) == {p["id"] for p in document["topics"]}, "Reading guide must cover every topic"
+    problems = {op["id"]: op for op in document["problems"]}
     pages = {}
     for family in document["families"]:
-        members = [p for p in document["problems"] if p["family"] == family["id"]]
-        lines = [f"# {family['title']}", "", "Find the right problem in this family, understand its contract, and choose a compiled operation to run.", "",
+        members = [p for p in document["topics"] if p["family"] == family["id"]]
+        lines = [f"# {family['title']}", "", "Find the right topic in this family, understand its contract, and choose a compiled problem to run.", "",
                  family["description"], "", f"**Start with this question:** {family['deciding_question']}", "",
-                 "[Explore these operations](../explorer.md#family/" + family["id"] + ") · [Install the library](../../library/install.md) · [Code reference](../../library/code-reference.md)", "",
-                 "The definitions below describe the formal problems. Each operation implements a particular parameter profile; check its inputs before running it. Research references are reading material, not a list of installed implementations.", "",
-                 "Here, $G=(V,E)$ denotes the input graph, $S$ a vertex subset, and $G[S]$ its induced graph. Other symbols are defined with each problem.", "",
-                 "## Problems in this family", ""]
+                 "[Explore these problems](../explorer.md#family/" + family["id"] + ") · [Install the library](../../library/install.md) · [Code reference](../../library/code-reference.md)", "",
+                 "The definitions below describe the formal topics. Each problem implements a particular parameter profile; check its inputs before running it. Research references are reading material, not a list of installed implementations.", "",
+                 "Here, $G=(V,E)$ denotes the input graph, $S$ a vertex subset, and $G[S]$ its induced graph. Other symbols are defined with each topic.", "",
+                 "## Topics in this family", ""]
         for p in members:
             lines.append(f"- [{p['name']}](#{p['id']})")
         for p in members:
@@ -48,19 +48,19 @@ def generated_pages(document):
                 lines += ["**Guarantee.** " + semantics["exactness"], ""]
             if spec.get("required_outputs"):
                 lines += ["**Required outputs:** " + ", ".join(f"`{x['name']}`" for x in spec["required_outputs"]) + ".", ""]
-            lines += ["### Available operations", "", "| Operation | CPU | GPU | Quality |", "| --- | --- | --- | --- |"]
-            for oid in p["operation_ids"]:
-                op=operations[oid]
-                lines.append(f"| [`{oid}`](../explorer.md#problem/{p['id']}) | {devices(op, 'cpu')} | {devices(op, 'gpu')} | {quality(op)} |")
-            for oid in p["operation_ids"]:
-                op=operations[oid]
+            lines += ["### Available problems", "", "| Problem | CPU | GPU | Quality |", "| --- | --- | --- | --- |"]
+            for oid in p["problem_ids"]:
+                op=problems[oid]
+                lines.append(f"| [`{oid}`](../explorer.md#topic/{p['id']}) | {devices(op, 'cpu')} | {devices(op, 'gpu')} | {quality(op)} |")
+            for oid in p["problem_ids"]:
+                op=problems[oid]
                 lines += ["", f"**`{oid}`** — {op['description']}"]
-            lines += ["", "### Run it", "", "After [building the runtime](../../library/install.md), put a compatible input in `INPUT.json` and the operation's parameters in `PARAMETERS.json`.", "",
-                      "```sh", f"graphmine-native run {p['operation_ids'][0]} INPUT.json \\", "  --parameters PARAMETERS.json --device cpu", "```", "",
-                      f"The [operation details](../explorer.md#problem/{p['id']}) list required parameters, defaults, and output ports. This is a command template, not a ready-made dataset.", ""]
+            lines += ["", "### Run it", "", "After [building the runtime](../../library/install.md), put a compatible input in `INPUT.json` and the problem's parameters in `PARAMETERS.json`.", "",
+                      "```sh", f"graphmine-native run {p['problem_ids'][0]} INPUT.json \\", "  --parameters PARAMETERS.json --device cpu", "```", "",
+                      f"The [problem details](../explorer.md#topic/{p['id']}) list required parameters, defaults, and output ports. This is a command template, not a ready-made dataset.", ""]
             if p.get("contract"):
                 lines += [f"[Full formal contract]({REPO}{p['contract']}) · [Native API and implementation](../../library/code-reference.md)", ""]
-            lines += ["### Research references", "", "These papers study this problem. A paper or linked repository does not by itself establish support in the compiled runtime.", ""]
+            lines += ["### Research references", "", "These papers study this topic. A paper or linked repository does not by itself establish support in the compiled runtime.", ""]
             for a in p["research_algorithms"]:
                 title=cell(a["title"])
                 link=f"[{title}]({a['publication_url']})" if a.get("publication_url") else title
@@ -68,17 +68,17 @@ def generated_pages(document):
                 lines.append(f"- {link}. {a.get('venue') or 'Research reference'}, {a.get('year') or 'date not recorded'}{code}.{(' ' + a['note']) if a.get('note') else ''}")
             if not p["research_algorithms"]:
                 lines.append("This utility group has no separate research-paper entry in the catalog.")
-        pages[f"problem/families/{family['id']}.md"] = "\n".join(lines) + "\n"
-    lines=["# CPU and GPU backends", "", "Check which compiled implementations are recorded for each operation, and which guarantee the operation advertises.", "",
+        pages[f"topic/families/{family['id']}.md"] = "\n".join(lines) + "\n"
+    lines=["# CPU and GPU backends", "", "Check which compiled implementations are recorded for each problem, and which guarantee the problem advertises.", "",
            "This table describes the source-bound catalog snapshot used to build these docs. Your local build may include fewer backends. Run `graphmine-native catalog` to inspect it. Compilation, compatible inputs, and validation evidence are separate requirements. A GPU implementation can include CPU verification or bounded materialization.", "",
            "Quality can depend on parameters or the chosen backend. Read the actual result's guarantee and completeness fields. A CPU implementation is not automatically exact; a GPU implementation is not automatically approximate.", "",
-           "| Operation | Problem | CPU | GPU | Quality | Supported profile / limitations |", "| --- | --- | --- | --- | --- | --- |"]
-    for op in document["operations"]:
-        p=next(p for p in document["problems"] if p["id"]==op["problem_id"])
-        lines.append(f"| `{op['id']}` | [{p['name']}](../problem/families/{p['family']}.md#{p['id']}) | {devices(op,'cpu')} | {devices(op,'gpu')} | {quality(op)} | {cell(op['description'])} |")
+           "| Problem | Topic | CPU | GPU | Quality | Supported profile / limitations |", "| --- | --- | --- | --- | --- | --- |"]
+    for op in document["problems"]:
+        p=next(p for p in document["topics"] if p["id"]==op["topic_id"])
+        lines.append(f"| `{op['id']}` | [{p['name']}](../topic/families/{p['family']}.md#{p['id']}) | {devices(op,'cpu')} | {devices(op,'gpu')} | {quality(op)} | {cell(op['description'])} |")
     pages["library/backends.md"]="\n".join(lines)+"\n"
     anchors = [f'<span id="family/{f["id"]}"></span>' for f in document["families"]]
-    anchors += [f'<span id="problem/{p["id"]}"></span>' for p in document["problems"]]
-    explorer = (ROOT / "docs-src/problem/explorer.md").read_text().split("<!-- Generated catalog anchors -->")[0].rstrip()
-    pages["problem/explorer.md"] = explorer + "\n\n<!-- Generated catalog anchors -->\n<div hidden>\n" + "\n".join(anchors) + "\n</div>\n"
+    anchors += [f'<span id="topic/{p["id"]}"></span>' for p in document["topics"]]
+    explorer = (ROOT / "docs-src/topic/explorer.md").read_text().split("<!-- Generated catalog anchors -->")[0].rstrip()
+    pages["topic/explorer.md"] = explorer + "\n\n<!-- Generated catalog anchors -->\n<div hidden>\n" + "\n".join(anchors) + "\n</div>\n"
     return pages

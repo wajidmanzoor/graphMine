@@ -23,20 +23,20 @@ def workflow():
         "steps": [
             {
                 "id": "core",
-                "operation": "k-core",
+                "problem": "k-core",
                 "input": {"input": "main"},
                 "parameters": {"requested_k": 2},
             },
             {
                 "id": "sub",
-                "operation": "induced-subgraph",
+                "problem": "induced-subgraph",
                 "parameters": {"mode": "induced"},
                 "input": {"input": "main"},
                 "bindings": {"vertices_or_seeds": {"step": "core", "port": "vertices"}},
             },
             {
                 "id": "rank",
-                "operation": "pagerank",
+                "problem": "pagerank",
                 "input": {"step": "sub", "port": "graph"},
             },
         ],
@@ -48,10 +48,10 @@ CASES = [
 ]
 
 
-@pytest.mark.parametrize("operation", ["k-cliques", "triangle-counting"])
+@pytest.mark.parametrize("problem", ["k-cliques", "triangle-counting"])
 @pytest.mark.parametrize("case,n,edges", [case for case in CASES if case[1] <= 5])
 def test_requested_listing_completeness_separate_from_exact_count(
-    operation, case, n, edges
+    problem, case, n, edges
 ):
     graph = Graph.from_edges(edges, vertices=range(n))
     edge_set = {frozenset(edge) for edge in edges}
@@ -64,11 +64,11 @@ def test_requested_listing_completeness_separate_from_exact_count(
         "result_limit": 1,
         **(
             {"k": 3, "mode": "enumerate"}
-            if operation == "k-cliques"
+            if problem == "k-cliques"
             else {"mode": "enumerate"}
         ),
     }
-    result = run(operation, graph, parameters=parameters, device="cpu")
+    result = run(problem, graph, parameters=parameters, device="cpu")
     assert result["ports"]["count"]["value"] == len(expected)
     assert result["ports"]["count"]["complete"]
     rows = result["ports"]["groups"]["value"]
@@ -79,9 +79,9 @@ def test_requested_listing_completeness_separate_from_exact_count(
         == result["ports"]["groups"]["complete"]
         == (len(expected) <= 1)
     )
-    if operation == "k-cliques":
+    if problem == "k-cliques":
         counted = run(
-            operation, graph, parameters={"k": 3, "mode": "count"}, device="cpu"
+            problem, graph, parameters={"k": 3, "mode": "count"}, device="cpu"
         )
         assert counted["complete"]
         assert not counted["ports"]["groups"]["complete"]
@@ -156,7 +156,7 @@ def test_cards_and_forward_references():
         lambda p: p.update(device=[]),
         lambda p: p.update(steps=[]),
         lambda p: p.update(code="print(1)"),
-        lambda p: p["steps"][0].update(operation="invented"),
+        lambda p: p["steps"][0].update(problem="invented"),
         lambda p: p["steps"][0].update(id="../escape"),
         lambda p: p["steps"][1].update(id="core"),
         lambda p: p["steps"][1]["bindings"]["vertices_or_seeds"].update(step=[]),
@@ -210,7 +210,7 @@ def test_namespace_mismatch_and_blocked_dependents():
 def test_incomplete_and_count_only_collections_rejected(mode, limit):
     plan = workflow()
     plan["steps"][0].update(
-        operation="k-cliques", parameters={"k": 2, "mode": mode, "result_limit": limit}
+        problem="k-cliques", parameters={"k": 2, "mode": mode, "result_limit": limit}
     )
     plan["steps"][1]["bindings"]["vertices_or_seeds"] = {
         "step": "core",
@@ -236,12 +236,12 @@ def test_score_selector_and_vertex_id_binding():
         "steps": [
             {
                 "id": "degree",
-                "operation": "degree-centrality",
+                "problem": "degree-centrality",
                 "input": {"input": "main"},
             },
             {
                 "id": "distance",
-                "operation": "single-source-shortest-paths",
+                "problem": "single-source-shortest-paths",
                 "input": {"input": "main"},
                 "bindings": {
                     "source": {
@@ -253,7 +253,7 @@ def test_score_selector_and_vertex_id_binding():
             },
             {
                 "id": "sub",
-                "operation": "induced-subgraph",
+                "problem": "induced-subgraph",
                 "parameters": {"mode": "induced"},
                 "input": {"input": "main"},
                 "bindings": {
@@ -306,7 +306,7 @@ def test_gpu_variant_and_edge_id_bindings_are_checked():
     plan = workflow()
     plan["steps"][1] = {
         "id": "cycles",
-        "operation": "bounded-paths-cycles",
+        "problem": "bounded-paths-cycles",
         "input": {"input": "main"},
         "parameters": {"task": "cycle_through_edge", "max_hops": 4},
         "bindings": {
@@ -328,7 +328,7 @@ def test_independent_steps_continue_after_failure_and_emit_status():
     plan["steps"].append(
         {
             "id": "independent",
-            "operation": "triangle-counting",
+            "problem": "triangle-counting",
             "input": {"input": "main"},
         }
     )

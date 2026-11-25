@@ -36,8 +36,8 @@ def graph(pairs, *, n=4, directed=False):
     }
 
 
-def task(operation, **parameters):
-    return {"behavior": "execute", "operation_id": operation, "parameters": parameters}
+def task(problem, **parameters):
+    return {"behavior": "execute", "problem_id": problem, "parameters": parameters}
 
 
 def test_generation_reproducible_bounded_and_split_safe(synthetic, tmp_path):
@@ -210,7 +210,7 @@ def audit_fixture(root, manifest):
             row
             for row in manifest["examples"]
             if row["split"] == split
-            and row["task"]["operation_id"] == "maximal-cliques"
+            and row["task"]["problem_id"] == "maximal-cliques"
         )
         expected = example["task"]["oracle"]
         rows.append(
@@ -336,7 +336,7 @@ def test_live_checker_rejects_wrong_scope_even_when_numbers_coincide():
             "plan": {"parameters": {"minimum_clique_size": 3}},
         },
         "result": {
-            "operation_id": "maximal-cliques",
+            "problem_id": "maximal-cliques",
             "payload": {
                 "output": {
                     "cliques": [[0, 1, 2]],

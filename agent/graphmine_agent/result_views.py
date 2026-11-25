@@ -16,7 +16,7 @@ from starlette.concurrency import run_in_threadpool
 from .analytics import AnalyticsError, _key
 from .database import RecordNotFound
 
-# Every native operation has an intentional presentation contract. Adding an
+# Every native problem has an intentional presentation contract. Adding an
 # algorithm requires adding a contract (the catalog coverage test enforces it).
 _PROFILES = [
     (
@@ -190,21 +190,21 @@ _PROFILES = [
     ("scalar", "Count", ["metric", "table"], "maximal-biclique-counting", ["count"]),
 ]
 PROFILES = {
-    operation: {
+    problem: {
         "kind": kind,
         "title": title,
         "blocks": blocks,
         "preferred_ports": ports,
     }
-    for kind, title, blocks, operations, ports in _PROFILES
-    for operation in operations.split()
+    for kind, title, blocks, problems, ports in _PROFILES
+    for problem in problems.split()
 }
 
 
-def profile(operation):
+def profile(problem):
     return copy.deepcopy(
         PROFILES.get(
-            operation,
+            problem,
             {
                 "kind": "table",
                 "title": "Recorded output",
@@ -243,7 +243,7 @@ def input_graph(service, record, step_id, seen=None):
 def source_files(record, step_id):
     steps = {s["id"]: s for s in record["validation"]["plan"]["steps"]}
     for _ in steps:
-        if steps.get(step_id, {}).get("operation") in {
+        if steps.get(step_id, {}).get("problem") in {
             "graph-coarsening",
             "graph-condensation",
             "knn-graph",
@@ -379,7 +379,7 @@ def _edge_witness(graph, rows, *, maximize=False):
 
 def focus_graph(graph, result, port_name, index=None):
     """Return a full witness graph and presentation note before UI truncation."""
-    spec = profile(result.get("operation"))
+    spec = profile(result.get("problem"))
     kind = spec["kind"]
     ports = result.get("ports", {})
     port = ports.get(port_name, {})
@@ -463,7 +463,7 @@ def focus_graph(graph, result, port_name, index=None):
             )
     elif typ in ("edge_set", "edge_ids", "edge_sample"):
         edges = _edge_witness(graph, [chosen] if index is not None else rows)
-        if result.get("operation") in ("spanning-tree-forest", "group-steiner-tree"):
+        if result.get("problem") in ("spanning-tree-forest", "group-steiner-tree"):
             vertices = ports.get("vertices", {}).get("value", [])
     elif typ == "vertex_set":
         vertices = [chosen] if index is not None else rows
@@ -507,7 +507,7 @@ def focus_graph(graph, result, port_name, index=None):
             if r.get("predecessor") is not None
         ]
         edges = _edge_witness(
-            graph, witnesses, maximize=result.get("operation") == "widest-paths"
+            graph, witnesses, maximize=result.get("problem") == "widest-paths"
         )
         vertices = [
             r["vertex"]
@@ -527,7 +527,7 @@ def focus_graph(graph, result, port_name, index=None):
             note += (
                 " Predecessors identify endpoints; parallel connections use a"
                 " maximum-capacity representative."
-                if result.get("operation") == "widest-paths"
+                if result.get("problem") == "widest-paths"
                 else " Predecessors identify endpoints; parallel connections use a"
                 " minimum-weight representative."
             )
@@ -696,7 +696,7 @@ def result_view(
         return response
     graph = original if context else focused
     metadata = {
-        "profile": profile(saved.get("operation")),
+        "profile": profile(saved.get("problem")),
         "note": note,
         "workflow_id": workflow_id,
         "revision": record["revision"],

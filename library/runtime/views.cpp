@@ -261,14 +261,14 @@ CooView normalize(const Graph& graph, const ViewSpec& spec, NormalizationSummary
     if (spec.require_edge_weights)
       check(edge.weight.has_value(), "This view requires explicit edge weights");
     if (spec.nonnegative_edge_weights)
-      check(edge.weight.value_or(1) >= 0, "This operation requires nonnegative edge weights");
+      check(edge.weight.value_or(1) >= 0, "This problem requires nonnegative edge weights");
     const auto weight = spec.weights == "none" ? Weight{} : cast_weight(edge_number(edge, spec), spec, summary);
     if (spec.parallel_edges == "collapse:probability_union")
       check(*weight.rational >= 0 && *weight.rational <= 1, "Probability-union weights must lie in [0,1]");
     if (spec.nonnegative_weights)
       check(spec.weights == "rational_exact" ? *weight.rational >= 0 :
                 spec.weights == "int64_exact" ? weight.integer >= 0 : weight.f64 >= 0,
-            "This operation requires nonnegative edge weights");
+            "This problem requires nonnegative edge weights");
     auto u = result.vertices.from_original[graph.dense_index(edge.source)];
     auto v = result.vertices.from_original[graph.dense_index(edge.target)];
     if (u == v && spec.self_loops != "keep") { ++summary.self_loops_removed; continue; }

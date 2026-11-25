@@ -37,19 +37,19 @@ def status(root, phase, **details):
 def select_question_cases(root, corpus):
     selected = []
     for split, count in (("train", 2), ("validation", 1)):
-        operations = sorted(
+        problems = sorted(
             {
-                c["task"]["operation_id"]
+                c["task"]["problem_id"]
                 for c in corpus["cases"]
-                if c["task"]["operation_id"]
+                if c["task"]["problem_id"]
             }
         )
-        for operation in operations:
+        for problem in problems:
             eligible = []
             for case in corpus["cases"]:
                 if (
                     case["split"] != split
-                    or case["task"]["operation_id"] != operation
+                    or case["task"]["problem_id"] != problem
                     or case["task"]["expected_status"] != "ready"
                 ):
                     continue
@@ -160,7 +160,7 @@ async def prepare_data(settings, root):
                 case
                 for case in corpus["cases"]
                 if case["split"] in {"train", "validation"}
-                and case["task"]["operation_id"] == "k-cliques"
+                and case["task"]["problem_id"] == "k-cliques"
                 and case["task"]["expected_status"] == "ready"
             ],
         )

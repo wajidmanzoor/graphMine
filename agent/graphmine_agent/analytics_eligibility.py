@@ -87,17 +87,17 @@ def input_profile(descriptor):
 
 @lru_cache(maxsize=4)
 def _requirements(path):
-    return json.loads(Path(path).read_text())["operations"]
+    return json.loads(Path(path).read_text())["problems"]
 
 
 def attach_requirements(cards, repository_root):
-    requirements = _requirements(str(Path(repository_root) / "catalog/operation_requirements.json"))
+    requirements = _requirements(str(Path(repository_root) / "catalog/problem_requirements.json"))
     for card in cards:
         if card["id"] not in requirements:
-            raise ValueError(f"Operation requirements are missing for {card['id']}")
+            raise ValueError(f"Problem requirements are missing for {card['id']}")
         spec = deepcopy(requirements[card["id"]])
         if spec["input_kind"] != card["input_kind"]:
-            raise ValueError(f"Operation input contract changed for {card['id']}")
+            raise ValueError(f"Problem input contract changed for {card['id']}")
         card["requirements"] = spec
     return cards
 

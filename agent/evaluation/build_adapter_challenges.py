@@ -46,14 +46,14 @@ def build_cases(corpus: Path, catalog: Catalog):
     def add(
         name,
         query,
-        operation=None,
+        problem=None,
         *,
         source=ordinary,
         behavior="execute",
         intent=None,
         active=None,
         extra=(),
-        problem=None,
+        topic=None,
         category="new_wording",
     ):
         graph = graphs[source["graph_id"]]
@@ -61,9 +61,9 @@ def build_cases(corpus: Path, catalog: Catalog):
             objective=query, filter_mode="replace", **(intent or {})
         )
         route = RouteDecision(
-            problem_id=problem
-            or (catalog.operation(operation).problem_id if operation else None),
-            operation_id=operation if behavior == "execute" else None,
+            topic_id=topic
+            or (catalog.problem(problem).topic_id if problem else None),
+            problem_id=problem if behavior == "execute" else None,
             supported=behavior == "execute",
             confidence=1,
             ambiguity=["What outcome are you trying to achieve?"]
@@ -74,8 +74,8 @@ def build_cases(corpus: Path, catalog: Catalog):
             additional_analyses=[
                 AnalysisTask(
                     question=q,
-                    problem_id=catalog.operation(op).problem_id,
-                    operation_id=op,
+                    topic_id=catalog.problem(op).topic_id,
+                    problem_id=op,
                 )
                 for op, q in extra
             ],
@@ -90,7 +90,7 @@ def build_cases(corpus: Path, catalog: Catalog):
             "family": category,
             "domain": source["domain"],
             "behavior": behavior,
-            "operation_id": operation,
+            "problem_id": problem,
             "source_graph_id": source["graph_id"],
             "source_graph_sha256": digest(graph),
             "query_seen_in_training": query in train_queries,
@@ -354,7 +354,7 @@ def build_cases(corpus: Path, catalog: Catalog):
         category="ambiguous_intent",
     )
 
-    # Existing v1 safety/operation cases are development regressions. Their
+    # Existing v1 safety/problem cases are development regressions. Their
     # expected numeric parameters are deliberately not claimed by this routing check.
     legacy_path = (
         catalog.settings.repository_root / "agent/evaluation/v1_query_cases.json"
@@ -369,10 +369,10 @@ def build_cases(corpus: Path, catalog: Catalog):
             continue
         expected = item["expected"]
         query = item["user_query"]
-        if not expected["supported"] and expected["problem_id"]:
-            if expected["problem_id"] in seen_unsupported:
+        if not expected["supported"] and expected["topic_id"]:
+            if expected["topic_id"] in seen_unsupported:
                 continue
-            seen_unsupported.add(expected["problem_id"])
+            seen_unsupported.add(expected["topic_id"])
             # Preserve the formal task while matching this fixture's vocabulary.
             query = "For this network, " + query.partition(", ")[2]
         query = (
@@ -380,7 +380,7 @@ def build_cases(corpus: Path, catalog: Catalog):
             .replace("protein structure", "relationship structure")
             .replace("this transport network", "this network")
         )
-        op = expected["operation_id"]
+        op = expected["problem_id"]
         intent = {}
         source = ordinary
         if op == "maximal-bicliques":
@@ -392,7 +392,7 @@ def build_cases(corpus: Path, catalog: Catalog):
             "execute"
             if expected["supported"]
             else "unsupported"
-            if expected["problem_id"]
+            if expected["topic_id"]
             else "clarify"
         )
         add(
@@ -401,9 +401,9 @@ def build_cases(corpus: Path, catalog: Catalog):
             op,
             source=source,
             behavior=behavior,
-            problem=expected["problem_id"],
+            topic=expected["topic_id"],
             intent=intent,
-            category="existing_operation_retention"
+            category="existing_problem_retention"
             if behavior == "execute"
             else "existing_safety_retention",
         )
@@ -433,7 +433,7 @@ def prepare(template: Path, output: Path):
         limitations=[
             "Manually specified development language/scope contracts; not blinded independent review.",
             "Validation graphs were seen during token-loss evaluation, never weight training.",
-            "Existing v1 operation/safety cases are previously inspected regressions, not untouched holdouts.",
+            "Existing v1 problem/safety cases are previously inspected regressions, not untouched holdouts.",
             "Contextual scope uses explicit prior state; it is not a complete multi-turn agent replay.",
             "Numeric parameters, native answers, explanation quality and presentation are outside this routing score.",
             "FP8 has different precision/engine; only NF4 arms isolate adapter impact.",

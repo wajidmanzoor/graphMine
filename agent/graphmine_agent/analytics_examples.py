@@ -161,7 +161,7 @@ class ReviewedExamples:
         self,
         session_id,
         question,
-        operations,
+        problems,
         implementation,
         input_kinds,
         *,
@@ -182,8 +182,8 @@ class ReviewedExamples:
                 or row["provenance"]["implementation_sha256"] != implementation
             ):
                 continue
-            if not {step["operation"] for step in row["plan"]["steps"]} <= set(
-                operations
+            if not {step["problem"] for step in row["plan"]["steps"]} <= set(
+                problems
             ):
                 continue
             if Counter(v["kind"] for v in row["inputs"].values()) != Counter(

@@ -249,7 +249,7 @@ bool backend_compiled(GraphMotifBackend backend) {
 
 Provenance motif_provenance(GraphMotifBackend backend) {
   Provenance provenance;
-  provenance.problem = "graph_motif_counting";
+  provenance.topic = "graph_motif_counting";
   provenance.backend = to_string(backend);
   provenance.execution_path =
       "original GPU motif vector + canonical motif classifier";

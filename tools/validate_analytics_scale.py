@@ -34,10 +34,10 @@ def single(args):
     from graphmine_agent.config import Settings
 
     request_path = (
-        args.native_results / f"snap-ca-CondMat-{args.operation}-cpu.request.json"
+        args.native_results / f"snap-ca-CondMat-{args.problem}-cpu.request.json"
     )
     expected_path = (
-        args.native_results / f"snap-ca-CondMat-{args.operation}-cpu.result.json"
+        args.native_results / f"snap-ca-CondMat-{args.problem}-cpu.result.json"
     )
     request, expected = (
         json.loads(request_path.read_text()),
@@ -82,7 +82,7 @@ def single(args):
                 "steps": [
                     {
                         "id": "answer",
-                        "operation": args.operation,
+                        "problem": args.problem,
                         "input": {"input": "main"},
                         "parameters": request["parameters"],
                         "budget": {
@@ -124,7 +124,7 @@ def single(args):
                 assert actual["backend"]["hardware"]["uuid"] == args.gpu
             else:
                 assert actual["backend"]["device"] == "cpu"
-            if args.operation == "pagerank":
+            if args.problem == "pagerank":
                 wanted = {
                     row["vertex"]: row["score"]
                     for row in expected["ports"]["scores"]["value"]
@@ -167,7 +167,7 @@ def single(args):
                 "dataset": "SNAP ca-CondMat",
                 "vertices": len(request["graph"]["vertices"]),
                 "edges": len(request["graph"]["edges"]),
-                "operation": args.operation,
+                "problem": args.problem,
                 "backend": actual["backend"],
                 "allocation": record["allocation"],
                 "upload_seconds": upload_done - start,
@@ -197,7 +197,7 @@ def main():
     parser.add_argument("--gpus", default="")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--case", action="store_true")
-    parser.add_argument("--operation")
+    parser.add_argument("--problem")
     parser.add_argument("--gpu")
     args = parser.parse_args()
     if args.case:
@@ -210,7 +210,7 @@ def main():
     ]
     before = {str(p): sha(p) for p in files}
     rows = []
-    for operation in ("breadth-first-search", "pagerank"):
+    for problem in ("breadth-first-search", "pagerank"):
         for gpu in [None, *filter(None, args.gpus.split(","))]:
             command = [
                 sys.executable,
@@ -220,8 +220,8 @@ def main():
                 str(args.native_results),
                 "--library",
                 str(args.library),
-                "--operation",
-                operation,
+                "--problem",
+                problem,
             ]
             if gpu:
                 command.extend(["--gpu", gpu])
@@ -236,7 +236,7 @@ def main():
                 timeout=200,
             )
             rows.append(json.loads(value))
-            print(operation, gpu or "cpu", rows[-1]["total_seconds"], flush=True)
+            print(problem, gpu or "cpu", rows[-1]["total_seconds"], flush=True)
     assert before == {str(p): sha(p) for p in files}, (
         "Application changed during scale run"
     )

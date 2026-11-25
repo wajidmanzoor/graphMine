@@ -118,5 +118,5 @@ def load_input(data, kind):
     if isinstance(data, types[kind]):
         return data
     if isinstance(data, _Input):
-        raise GraphMineError(f"This operation requires {kind} input")
+        raise GraphMineError(f"This problem requires {kind} input")
     return types[kind](data)

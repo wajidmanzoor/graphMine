@@ -103,7 +103,7 @@ def test_native_table_join_builds_a_scoped_reusable_input(settings, gpu_index):
                     "steps": [
                         {
                             "id": "flow",
-                            "operation": "max-flow-min-cut",
+                            "problem": "max-flow-min-cut",
                             "input": {"input": "main"},
                             "parameters": {
                                 "source": "001",

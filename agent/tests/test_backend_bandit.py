@@ -42,8 +42,8 @@ def fingerprint(name, *, held=False):
     raise AssertionError("Could not construct a fixture partition")
 
 
-def card(operation="fixture-operation"):
-    return dict(id=operation, parameters={}, backends=[
+def card(problem="fixture-problem"):
+    return dict(id=problem, parameters={}, backends=[
         dict(id=b, device="cpu" if b == "cpp" else "gpu", verified=True, compiled=True)
         for b in ("cpp", "gpu-first")])
 
@@ -54,7 +54,7 @@ def observation(backend="cpp", duration=1, *, name="fixture", n=10, held=False, 
                  snapshot_fingerprint=fingerprint(name, held=held), input_kind="graph")
     machine = hardware(free_gpu=100 * GIB)
     machine["gpus"][1].update(utilization_percent=0, other_processes=0)
-    return dict(dict(schema_version=storage.SCHEMA_VERSION, run_id=uuid4().hex, operation="fixture-operation",
+    return dict(dict(schema_version=storage.SCHEMA_VERSION, run_id=uuid4().hex, problem="fixture-problem",
         created_at=storage.utc_now(), implementation_sha256=IMPLEMENTATION, source="benchmark", is_evaluation=False,
         graph_features=shape, hardware=machine, parameters={}, chosen_backend=backend, requested_backend=backend,
         candidates=[candidate(), candidate("gpu-first")], outcome="completed", execution_started=True,
@@ -63,8 +63,8 @@ def observation(backend="cpp", duration=1, *, name="fixture", n=10, held=False, 
         comparison_id=name, graph_id=name), **changes)
 
 
-def fit(rows, operation="fixture-operation"):
-    return linear.fit(operation, rows, ["cpp", "gpu-first"], {}, IMPLEMENTATION)
+def fit(rows, problem="fixture-problem"):
+    return linear.fit(problem, rows, ["cpp", "gpu-first"], {}, IMPLEMENTATION)
 
 
 def test_posterior_matches_scalar_gaussian_conditioning_and_wide_new_head():
@@ -218,7 +218,7 @@ def test_exploration_within_forced_device_still_consumes_daily_budget(directorie
     for index in range(10):
         storage.append_row(path, observation(source="application", selection_mode="bandit", reason="forced",
             requested_device="gpu", decision_id=str(index), backend_choice_reason="explore" if index == 0 else "exploit"))
-    result = policy.reserve_exploration(data, "fixture-operation", "next", "bandit", .1, now=now)
+    result = policy.reserve_exploration(data, "fixture-problem", "next", "bandit", .1, now=now)
     assert result["limit"] == result["reserved_explorations"] == 1
     assert not result["allowed"]
 
@@ -233,10 +233,10 @@ def test_daily_budget_is_atomic_and_never_counts_tests_benchmarks_or_fallback_tw
     for record in records:
         storage.append_row(path, record)
     with ThreadPoolExecutor(max_workers=4) as pool:
-        results = list(pool.map(lambda i: policy.reserve_exploration(data, "fixture-operation", str(i), "bandit", .1, now=now), range(4)))
+        results = list(pool.map(lambda i: policy.reserve_exploration(data, "fixture-problem", str(i), "bandit", .1, now=now), range(4)))
     assert sum(r["allowed"] for r in results) == 1
     assert all(r["logged_decisions"] == 10 and r["limit"] == 1 for r in results)
-    assert not policy.reserve_exploration(data, "fixture-operation", "unlogged-reservation", "bandit", .1, now=now)["allowed"]
+    assert not policy.reserve_exploration(data, "fixture-problem", "unlogged-reservation", "bandit", .1, now=now)["allowed"]
 
 
 def test_adaptive_timeout_obeys_minimum_job_limit_and_total_remaining_budget():
@@ -275,9 +275,9 @@ def test_shadow_gate_accepts_two_weeks_or_two_hundred_real_steps():
     now = datetime.now(timezone.utc)
     one = observation(source="application", selection_mode="shadow", model_version="fixture", shadow_choice="cpp",
                       created_at=(now - timedelta(days=14)).isoformat())
-    assert evaluation.shadow_progress([one], one["operation"], IMPLEMENTATION, now=now)["ready"]
+    assert evaluation.shadow_progress([one], one["problem"], IMPLEMENTATION, now=now)["ready"]
     one["is_evaluation"] = True
-    assert not evaluation.shadow_progress([one] * 200, one["operation"], IMPLEMENTATION, now=now)["ready"]
+    assert not evaluation.shadow_progress([one] * 200, one["problem"], IMPLEMENTATION, now=now)["ready"]
 
 
 def test_incomplete_or_missing_comparisons_never_claim_oracle_accuracy():
@@ -337,7 +337,7 @@ def test_benchmark_compatibility_accepts_only_cli_dispatcher_changes(directories
     from graphmine_agent.backend_learning.compatibility import benchmark_compatibility, CLI
     data, _ = directories
     prior = dict(implementation_sha256=IMPLEMENTATION, sources={CLI: "old-cli", "runtime.cpp": "same"},
-        binary_sha256="old-binary", profiles={"fixture-operation": {"profile_sha256": "same", "backends": {"cpp": []}}},
+        binary_sha256="old-binary", profiles={"fixture-problem": {"profile_sha256": "same", "backends": {"cpp": []}}},
         workers={"/verified/worker": "same"}, dependencies={"dependency": "same"}, isolated_build_recipes={})
     current = copy.deepcopy(prior)
     current.update(implementation_sha256="c" * 64, binary_sha256="new-binary")
@@ -347,7 +347,7 @@ def test_benchmark_compatibility_accepts_only_cli_dispatcher_changes(directories
     elif difference in ("dependencies", "workers"):
         current[difference][next(iter(current[difference]))] = "changed"
     elif difference == "profile":
-        current["profiles"]["fixture-operation"]["profile_sha256"] = "changed"
+        current["profiles"]["fixture-problem"]["profile_sha256"] = "changed"
     elif difference == "recipe":
         current["isolated_build_recipes"]["recipe"] = "changed"
     path = data / "fixture-evidence.json"
@@ -361,18 +361,18 @@ def test_benchmark_compatibility_accepts_only_cli_dispatcher_changes(directories
         assert len(accepted) == 1 and skipped == 0
         assert original == before
         assert accepted[0]["observed_implementation_sha256"] == IMPLEMENTATION
-        fitted = linear.fit(original["operation"], accepted, ["cpp", "gpu-first"], {}, "c" * 64)
+        fitted = linear.fit(original["problem"], accepted, ["cpp", "gpu-first"], {}, "c" * 64)
         assert fitted["observed_implementations"] == {IMPLEMENTATION: 1}
 
 
-def test_release_is_closed_when_another_operation_pointer_changes(directories):
+def test_release_is_closed_when_another_problem_pointer_changes(directories):
     _, directory = directories
-    rows, cards = paired_data(), [card(), card("another-operation")]
-    rows += [dict(row, operation="another-operation", run_id=uuid4().hex) for row in rows]
+    rows, cards = paired_data(), [card(), card("another-problem")]
+    rows += [dict(row, problem="another-problem", run_id=uuid4().hex) for row in rows]
     models.train(rows, cards, model_dir=directory, implementation=IMPLEMENTATION, admission_fingerprint=ADMISSION)
     _, metadata = models.load(directory, cards[0]["id"], IMPLEMENTATION)
     assert models.live_permitted(directory, cards[0]["id"], metadata, IMPLEMENTATION, ADMISSION)
-    models.atomic_text(directory / "another-operation/current", "changed-version")
+    models.atomic_text(directory / "another-problem/current", "changed-version")
     assert not models.live_permitted(directory, cards[0]["id"], metadata, IMPLEMENTATION, ADMISSION)
 
 
@@ -390,7 +390,7 @@ def test_async_oom_updates_feasibility_but_evaluation_does_not(directories):
         log.flush()
         model = json.loads((data / "memory_models/gpu-first.json").read_text())
         assert sum(p["oom_count"] for p in model["profiles"].values()) == 1
-        prediction = memory.predict_memory(item["operation"], item["candidates"][1], item["graph_features"],
+        prediction = memory.predict_memory(item["problem"], item["candidates"][1], item["graph_features"],
             item["parameters"], item["hardware"], output_estimate=item["output_estimate"],
             implementation=IMPLEMENTATION, data_dir=data)
         assert prediction[0] > item["hardware"]["gpus"][1]["free_memory_bytes"]
@@ -451,7 +451,7 @@ def test_workflow_forced_backend_validation_hash_and_native_propagation(monkeypa
     from graphmine.exceptions import GraphMineError
     from graphmine_agent.analytics_scheduler import execution_admission
     from test_backend_telemetry import graph
-    plan = dict(version=1, device="cpu", steps=[dict(id="count", operation="triangle-counting", input={"input": "main"})])
+    plan = dict(version=1, device="cpu", steps=[dict(id="count", problem="triangle-counting", input={"input": "main"})])
     inputs = {"main": {"kind": "graph", "data": graph(3, [(0, 1), (1, 2), (0, 2)])}}
     implicit = workflows.validate_workflow(plan, inputs)
     assert "backend" not in implicit["plan"]["steps"][0]
@@ -466,7 +466,7 @@ def test_workflow_forced_backend_validation_hash_and_native_propagation(monkeypa
     monkeypatch.setattr(workflows, "run", invoke)
     workflows.execute_workflow(plan, inputs)
     assert calls[0]["backend"] == "cpp" and calls[0]["device"] == "cpu"
-    caps = {"operations": [dict(id="triangle-counting", verified_backends=[], execution={"cpu": True, "gpu": True})]}
+    caps = {"problems": [dict(id="triangle-counting", verified_backends=[], execution={"cpu": True, "gpu": True})]}
     with pytest.raises(GraphMineError, match="requested backend"):
         evidence.require_workflow_evidence(explicit, caps)
     compiled_gpu = next(b["id"] for b in workflows.algorithm("triangle-counting").card()["backends"]
@@ -522,13 +522,13 @@ async def test_real_shadow_gated_bandit_and_authorized_live_selection(
     rows = []
     for backend in backends:
         row = observation(backend["id"], .01 if backend["id"] == "cpp" else 100,
-                          operation=selected["id"], implementation_sha256=implementation)
+                          problem=selected["id"], implementation_sha256=implementation)
         row["candidates"] = [{**b, "admitted": True} for b in backends]
         rows.append(row)
     trained = models.train(rows, [selected], model_dir=directory, implementation=implementation, admission_fingerprint=admission)
     assert not trained["release"]["ready"]
     service = AnalyticsService(settings, database, graph_store, EventBus(database))
-    plan = dict(version=1, device="auto", steps=[dict(id="count", operation="triangle-counting", backend=forced,
+    plan = dict(version=1, device="auto", steps=[dict(id="count", problem="triangle-counting", backend=forced,
                                                    input={"input": "main"})])
     inputs = {"main": {"kind": "graph", "data": graph(3, [(0, 1), (1, 2), (0, 2)])}}
     try:
@@ -591,9 +591,9 @@ def test_live_override_still_requires_a_valid_model(monkeypatch, failure):
 def bandit_worker(observed_environment, monkeypatch):
     graph, _ = observed_environment
     monkeypatch.setattr(worker, "hardware_snapshot", lambda **k: hardware(free_gpu=100 * GIB))
-    rows = [observation("cpp", 10, operation="triangle-counting", n=2),
-            observation("gpu-first", .1, operation="triangle-counting", n=2)]
-    model = fit(rows, operation="triangle-counting")
+    rows = [observation("cpp", 10, problem="triangle-counting", n=2),
+            observation("gpu-first", .1, problem="triangle-counting", n=2)]
+    model = fit(rows, problem="triangle-counting")
     monkeypatch.setattr(models, "load", lambda *a, **k: (model, {"model_version": "fixture"}))
     monkeypatch.setattr(models, "live_permitted", lambda *a, **k: True)
     return graph

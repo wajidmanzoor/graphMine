@@ -221,7 +221,7 @@ inline std::vector<Edge> edges(const Graph& graph, const ViewProfile& profile, W
     const auto input = consume_view(graph, profile, work, ViewBudget::record_edges);
     return edge_layout(std::get<CooView>(input->view));
   } catch (const Failure& error) {
-    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+    if (std::string(error.what()) == "This problem requires nonnegative edge weights")
       throw Failure("invalid_input", "Weights must be nonnegative");
     throw;
   }

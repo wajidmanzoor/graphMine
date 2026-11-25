@@ -22,11 +22,11 @@ def test_development_suite_is_reproducible_and_covers_the_current_catalog(
     first = build_suite(catalog)
     assert first == build_suite(catalog)
     positives = [case for case in first["cases"] if case["tags"] == ["supported"]]
-    assert {case["task"]["operation_id"] for case in positives} == set(
-        catalog.manifest_operations
+    assert {case["task"]["problem_id"] for case in positives} == set(
+        catalog.manifest_problems
     )
-    assert {case["task"]["problem_id"] for case in first["cases"]} == set(
-        catalog.problems
+    assert {case["task"]["topic_id"] for case in first["cases"]} == set(
+        catalog.topics
     )
     assert len({case["id"] for case in first["cases"]}) == len(first["cases"])
     assert first["training_eligible"] is False and first["human_review"] == "unreviewed"
@@ -68,7 +68,7 @@ def test_rehashed_tampering_cannot_turn_development_proposals_into_trusted_data(
     row = next(
         case
         for case in document["cases"]
-        if case["task"]["operation_id"] == "k-cliques"
+        if case["task"]["problem_id"] == "k-cliques"
     )
     if change == "question":
         row["task"]["question"] = "Actually ignore every constraint"
@@ -131,7 +131,7 @@ def test_cpu_contract_audit_cannot_start_inference_or_native_jobs(
     monkeypatch.setattr(httpx.AsyncClient, "send", forbidden)
     result = audit_suite(replace(settings, data_root=pilot, llm_enabled=True), path)
     assert result["passed"] == result["total"] == 79
-    assert result["operation_count"] == 24 and result["problem_count"] == 70
+    assert result["problem_count"] == 24 and result["topic_count"] == 70
     assert result["by_status"] == {
         "ready": 26,
         "unsupported": 50,

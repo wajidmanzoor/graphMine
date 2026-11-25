@@ -1,8 +1,8 @@
 # GraphMine documentation site
 
-The static GitHub Pages site organizes the library as **problem families →
-formal problems → algorithms and implementations**. Its catalog includes the
-current native operation profiles, graph-record query utilities, and collected
+The static GitHub Pages site organizes the library as **topic families →
+formal topics → algorithms and implementations**. Its catalog includes the
+current native problem profiles, graph-record query utilities, and collected
 research algorithm references. Research references are labeled separately from
 executable implementations. Device support, quality and GPU profile limits are
 visible in each algorithm's details.
@@ -16,7 +16,7 @@ with a direct YouTube link below it.
 
 ## Update the catalog
 
-Build the native runtime after changing its operation registry or taxonomy,
+Build the native runtime after changing its problem registry or taxonomy,
 then regenerate the site catalog:
 
 ```bash
@@ -46,9 +46,9 @@ python3 -m http.server 8000
 ```
 
 Open <http://localhost:8000/docs/>. Serving `docs/` as the web root also works.
-Check family navigation, problem deep links, search, CPU/GPU filters, algorithm
+Check family navigation, topic deep links, search, CPU/GPU filters, algorithm
 details and narrow screens. Useful links include `#family/dense` and
-`#problem/maximum_clique`.
+`#topic/maximum_clique`.
 
 ## Publish with GitHub Pages
 

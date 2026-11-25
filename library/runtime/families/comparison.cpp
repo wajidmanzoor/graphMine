@@ -270,7 +270,7 @@ json::object compare_graphs(const Graph& graph, const json::object& args, bool e
     json::array edits, rows;
     Exact script_cost = 0;
     auto emit = [&](const char* kind, const Exact& cost, json::object row) {
-      row["operation"] = kind;
+      row["problem"] = kind;
       row["cost"] = display_number(cost);
       row["cost_numerator"] = numerator(cost).convert_to<std::string>();
       row["cost_denominator"] = denominator(cost).convert_to<std::string>();

@@ -76,17 +76,17 @@ def child(library, request, output):
     )
 
 
-def run(args, name, document, operation, parameters, policy):
+def run(args, name, document, problem, parameters, policy):
     library = (
         args.cpu_build if policy == "cpu" else args.gpu_build
     ) / "libgraphmine_runtime.so"
-    request = args.output / f"{name}-{operation}-{policy}.request.json"
-    output = args.output / f"{name}-{operation}-{policy}.result.json"
+    request = args.output / f"{name}-{problem}-{policy}.request.json"
+    output = args.output / f"{name}-{problem}-{policy}.result.json"
     request.write_text(
         json.dumps(
             {
                 "command": "run",
-                "operation": operation,
+                "problem": problem,
                 "graph": document,
                 "parameters": parameters,
                 "device": "cpu" if policy == "cpu" else "gpu",
@@ -126,7 +126,7 @@ def run(args, name, document, operation, parameters, policy):
         if time.perf_counter() - started > 300:
             process.kill()
             raise TimeoutError(
-                f"Scale run exceeded deadline: {name}/{operation}/{policy}"
+                f"Scale run exceeded deadline: {name}/{problem}/{policy}"
             )
         if policy != "cpu":
             sample = subprocess.run(
@@ -147,13 +147,13 @@ def run(args, name, document, operation, parameters, policy):
         time.sleep(0.1)
     raw, errors = process.communicate()
     if process.returncode:
-        raise RuntimeError(f"{name}/{operation}/{policy}: {errors[-4000:]}")
+        raise RuntimeError(f"{name}/{problem}/{policy}: {errors[-4000:]}")
     metrics = json.loads(raw)
     result = json.loads(output.read_text())
     assert result["complete"]
     metrics.update(
         dataset=name,
-        operation=operation,
+        problem=problem,
         device=policy,
         vertices=len(document["vertices"]),
         edges=len(document["edges"]),
@@ -168,7 +168,7 @@ def run(args, name, document, operation, parameters, policy):
     return result, metrics
 
 
-def distances(result, operation):
+def distances(result, problem):
     payload = result["result"]
     rows = payload["distances"]
     return {row["vertex"]: row["distance"] for row in rows}
@@ -208,7 +208,7 @@ def published(args):
         document = graph(
             name, vertices, edges, properties[f"graph.{name}.directed"] == "true"
         )
-        for code, operation in [
+        for code, problem in [
             ("BFS", "breadth-first-search"),
             ("SSSP", "single-source-shortest-paths"),
             ("WCC", "connected-components"),
@@ -229,7 +229,7 @@ def published(args):
                 )
             for policy in args.devices:
                 result, metric = run(
-                    args, name, document, operation, parameters, policy
+                    args, name, document, problem, parameters, policy
                 )
                 if code == "WCC":
                     grouped = {}
@@ -239,7 +239,7 @@ def published(args):
                         frozenset(group) for group in grouped.values()
                     }
                 else:
-                    observed = distances(result, operation)
+                    observed = distances(result, problem)
                     assert set(observed) == set(expected)
                     for vertex, value in expected.items():
                         unreachable = value in ("infinity", "9223372036854775807")
@@ -341,14 +341,14 @@ def larger(args):
                 "max_iterations": 1000,
             },
         }
-        for operation, params in parameters.items():
+        for problem, params in parameters.items():
             for policy in args.devices:
-                result, metric = run(args, name, document, operation, params, policy)
-                if operation == "connected-components":
+                result, metric = run(args, name, document, problem, params, policy)
+                if problem == "connected-components":
                     assert components(result) == {
                         frozenset(group) for group in groups.values()
                     }
-                elif operation == "pagerank":
+                elif problem == "pagerank":
                     got = {
                         row["vertex"]: row["score"]
                         for row in result["ports"]["scores"]["value"]
@@ -357,10 +357,10 @@ def larger(args):
                     assert error < 2e-8 and abs(sum(got.values()) - 1) < 1e-6
                     metric["max_absolute_error"] = error
                 else:
-                    got = distances(result, operation)
+                    got = distances(result, problem)
                     assert set(got) == set(vertices)
                     for vertex, expected in zip(
-                        vertices, reference[operation], strict=True
+                        vertices, reference[problem], strict=True
                     ):
                         assert (
                             got[vertex] is None
@@ -373,7 +373,7 @@ def larger(args):
                     passed=True, oracle="SciPy csgraph / independent NetworkX PageRank"
                 )
                 records.append(metric)
-                print(name, operation, policy, "passed", flush=True)
+                print(name, problem, policy, "passed", flush=True)
     return records
 
 

@@ -163,7 +163,7 @@ def check(repository, output):
                 "steps": [
                     {
                         "id": "groups",
-                        "operation": "maximal-cliques",
+                        "problem": "maximal-cliques",
                         "input": {"input": "main"},
                         "parameters": {},
                     }

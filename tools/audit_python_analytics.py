@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reconcile formal problems with executable Python profiles and test evidence."""
+"""Reconcile formal topics with executable Python profiles and test evidence."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from graphmine.reference import list_algorithms
-from graphmine.backends.cugraph import OPERATIONS
+from graphmine.backends.cugraph import PROBLEMS
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -88,43 +88,43 @@ def audit():
         card["profile_sha256"] = hashlib.sha256(
             json.dumps(card, sort_keys=True).encode()
         ).hexdigest()
-    problems = []
+    topics = []
     for path in sorted((ROOT / "problems").glob("[0-9][0-9]_*/problem.json")):
         spec = json.loads(path.read_text())
-        operations = [
-            card for card in cards if card["problem_id"] == spec["problem_id"]
+        problems = [
+            card for card in cards if card["topic_id"] == spec["topic_id"]
         ]
-        problems.append(
+        topics.append(
             {
-                "problem_id": spec["problem_id"],
+                "topic_id": spec["topic_id"],
                 "name": spec["name"],
                 "contract": str(path.relative_to(ROOT)),
                 "contract_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-                "cpu_operations": [card["id"] for card in operations],
-                "cugraph_operations": [
-                    card["id"] for card in operations if card["id"] in OPERATIONS
+                "cpu_problems": [card["id"] for card in problems],
+                "cugraph_problems": [
+                    card["id"] for card in problems if card["id"] in PROBLEMS
                 ],
                 "status": "has_executable_profile"
-                if operations
+                if problems
                 else "integration_required",
                 "full_formal_parameter_coverage_claimed": False,
             }
         )
     return {
         "schema_version": "1.0.0",
-        "problem_count": len(problems),
-        "cpu_operation_count": len(cards),
-        "cpu_problem_operation_count": sum(len(p["cpu_operations"]) for p in problems),
-        "workflow_utility_operation_count": sum(
-            card["problem_id"] not in {p["problem_id"] for p in problems}
+        "problem_count": len(topics),
+        "cpu_problem_count": len(cards),
+        "cpu_problem_problem_count": sum(len(p["cpu_problems"]) for p in topics),
+        "workflow_utility_problem_count": sum(
+            card["topic_id"] not in {p["topic_id"] for p in topics}
             for card in cards
         ),
-        "problems_with_cpu_profile": sum(bool(p["cpu_operations"]) for p in problems),
-        "cugraph_operation_count": len(OPERATIONS),
+        "problems_with_cpu_profile": sum(bool(p["cpu_problems"]) for p in topics),
+        "cugraph_problem_count": len(PROBLEMS),
         "reports": reports,
         "scope": "Executable profiles and the specific independent oracle fixtures recorded in each report. Native backends and outer-folder diagnostics are separate; no universal correctness or full parameter coverage claim.",
-        "problems": problems,
-        "operations": cards,
+        "topics": topics,
+        "problems": cards,
     }
 
 
@@ -142,11 +142,11 @@ def main():
                 key: result[key]
                 for key in (
                     "problem_count",
-                    "cpu_operation_count",
-                    "cpu_problem_operation_count",
-                    "workflow_utility_operation_count",
+                    "cpu_problem_count",
+                    "cpu_problem_problem_count",
+                    "workflow_utility_problem_count",
                     "problems_with_cpu_profile",
-                    "cugraph_operation_count",
+                    "cugraph_problem_count",
                     "reports",
                 )
             },

@@ -1,36 +1,36 @@
 # Native library and workspace acceptance
 
-The current routing contract is family → up to two ranked problems → exact
-operation and existing implementation selection. The first call's catalog context is only
+The current routing contract is family → up to two ranked topics → exact
+problem and existing implementation selection. The first call's catalog context is only
 `catalog/family.json`; the second receives only the selected family's entries
 in `catalog/problems.json`. Required cross-family dependencies are resolved in
 later planning. One family reroute and the existing validation repair remain
-bounded. Native coverage is now 82 operations in 14 families; see
+bounded. Native coverage is now 82 problems in 14 families; see
 [the generated reference](FAMILIES.md). Current measurements and earlier releases are distinguished below.
 
-## Family and problem routing — 2026-11-17
+## Family and topic routing — 2026-11-17
 
-The catalog now contains 14 families, 70 formal problems plus one record-query
-utility problem, and 82 operations. Family metadata and problem membership live
+The catalog now contains 14 families, 70 formal topics plus one record-query
+utility topic, and 82 problems. Family metadata and topic membership live
 in `catalog/family.json` and `catalog/problems.json`; implementation metadata in
 `catalog/algo.json` is generated from the native profiles.
 
 The frozen 42-question study includes three cases per family. Three deliberately
 vague questions are graded only for family selection. These are authored local
 cases, not a public NLP benchmark. The previous flat router did not emit a
-family: its family score is inferred from its selected operation. The new router
+family: its family score is inferred from its selected problem. The new router
 emits its family explicitly; clarifications without an identifiable family count
 as misses. Both versions are scored in the current taxonomy.
 
 | Measure | Before | After |
 | --- | --- | --- |
 | Family selection, 42-question study | 38/42 (90.5%) | 42/42 (100%) |
-| Exact operation, 39 scorable questions | 38/39 (97.4%) | 39/39 (100%) |
+| Exact problem, 39 scorable questions | 38/39 (97.4%) | 39/39 (100%) |
 | Family selection, existing planner suite | 16/17 (94.1%) | 16/17 (94.1%) |
-| Complete operation set, existing planner suite | 16/17 (94.1%) | 15/17 (88.2%) |
+| Complete problem set, existing planner suite | 16/17 (94.1%) | 15/17 (88.2%) |
 | Unchanged legacy end-to-end grader | 4/20 | 4/20 |
 
-| Family | Family before | Family after | Operation before | Operation after |
+| Family | Family before | Family after | Problem before | Problem after |
 | --- | --- | --- | --- | --- |
 | Look up records | 3/3 | 3/3 | 3/3 | 3/3 |
 | Paths & reachability | 3/3 | 3/3 | 3/3 | 3/3 |
@@ -51,7 +51,7 @@ No family regressed in the 42-question study. The existing planner suite did
 regress on the explicit workflow “use query-subgraph in vertex mode, then count
 triangles in the derived graph.” The model correctly selected motifs, but then
 asked whether the stated extraction step should happen outside that family.
-It did not reach later planning. This loses complete-operation coverage for
+It did not reach later planning. This loses complete-problem coverage for
 both the records and motifs steps. The cross-family code path passes authored
 transport and workflow tests; that does not erase this live-model miss.
 
@@ -71,8 +71,8 @@ its broad integrity window; the complete study was repeated. Descriptions were
 not adjusted against the results. A separate stale browser fixture was corrected
 after evaluation to opt into the existing admin Expert-mode working notes.
 
-The rebuilt native evidence retains all 141 admitted operation/backend pairs and
-all previously admitted devices. The 82 operation cards are identical apart from
+The rebuilt native evidence retains all 141 admitted problem/backend pairs and
+all previously admitted devices. The 82 problem cards are identical apart from
 family, and the C ABI is unchanged. Detailed measurements and known misses are
 in [the routing comparison](../validation/family_routing_release/routing-comparison.json),
 with [admission comparison](../validation/family_routing_runtime/admission-comparison.json)
@@ -91,7 +91,7 @@ These follow-up changes are in the working tree; the original acceptance
 commits and measurements below remain historical records.
 
 The migration implements native CPU profiles for all **70 formal contracts**,
-with **80 operations** in one C++/CUDA catalog. **23 operations** have GPU
+with **80 problems** in one C++/CUDA catalog. **23 problems** have GPU
 profiles admitted on both locally tested RTX 6000 Ada devices. Each profile has
 specific input, numerical and scaling limits; these counts do not imply every
 literature variant or universal GPU support.
@@ -111,12 +111,12 @@ remain separate.
 | A2: standalone C++/CUDA, thin Python | Installed C/C++ consumers and CLI work with Python absent from PATH. Public Python workflows run under `python -S` without optional Python algorithm packages. The app uses the same native catalog and C ABI. `consumers.json`, `installed-gpu.json`, `public-package-isolation.json`, binding suite. |
 | A3: all 70 native CPU contracts | `catalog/native_runtime_coverage.json` maps every formal contract. Native completion tests and baseline sweeps run with CUDA hidden on both CPU and GPU-linked builds. |
 | A4/R4: GPU integrations and independent oracles | 44,884 native requests per physical GPU, including declared boundary rejections, plus independent small-graph checks and native provenance. cuGraph and original CUDA workers remain distinct profiles. |
-| A5: family then exact operation | Separate constrained stages, semantic ambiguity checks, one bounded family reroute, and one validation repair. Original real-model acceptance was 16/20; the planner follow-up passes all 20 as regression cases. Unattended language-planning reliability remains unproven; details below and in the follow-up report. |
+| A5: family then exact problem | Separate constrained stages, semantic ambiguity checks, one bounded family reroute, and one validation repair. Original real-model acceptance was 16/20; the planner follow-up passes all 20 as regression cases. Unattended language-planning reliability remains unproven; details below and in the follow-up report. |
 | A6/R5: two modes and editable review | Normal executes validated plans; Expert requires approval. Edits invalidate approval. API and Firefox checks cover both modes. |
 | A7: browser without Node | Fourteen Firefox checks with Node absent from server PATH; desktop/mobile screenshots visually inspected; keyboard, labels, overflow and typed-ID binding assertions. |
 | R1/R6: typed dependent workflows and recovery | Static DAG/port validation, native actual-input checks, completeness/namespace checks, persisted affected-step retry, cancellation and reviewed-hash checks. |
-| R2: deterministic record queries | Seven native query operations with typed IDs, exact aggregates, filters, direction, empty results, joins, paths and subgraphs checked independently. |
-| R3: truthful operation cards | Native descriptions, nested parameter schemas, input kinds, ports, numerical semantics and quality claims shared by C++, Python and planner. `NATIVE_COMPLETION_PROFILES.md`. |
+| R2: deterministic record queries | Seven native query problems with typed IDs, exact aggregates, filters, direction, empty results, joins, paths and subgraphs checked independently. |
+| R3: truthful problem cards | Native descriptions, nested parameter schemas, input kinds, ports, numerical semantics and quality claims shared by C++, Python and planner. `NATIVE_COMPLETION_PROFILES.md`. |
 | R7: bounded views and complete access | Preview bounds, typed port pagination and full export; truncated collections cannot supply complete dependencies. Complete counts remain distinct from unrequested enumeration. |
 | R8: task-aware native table construction | cuDF file reads plus C++ typed IDs, many-to-one joins, weight meaning, duplicate policies, time windows, lineage and workspace scoping. Binding, API and browser checks. |
 | R9: workflow and external evaluation | Actual worker workflows; published Graphalytics BFS/SSSP/WCC references; independent SNAP/synthetic checks; separate frozen model evaluation. |
@@ -218,7 +218,7 @@ these measurements do not establish an accuracy improvement.
 
 The four final failures stopped before execution. Minimum vertex cover returned
 a contradictory unsupported decision; weighted shortest paths and neighbor
-lookup returned empty operation selections; the dependent subgraph/triangle
+lookup returned empty problem selections; the dependent subgraph/triangle
 request still had an unknown step reference after its one permitted repair.
 All 17 executable reference cases passed independent native oracle checks in
 `heldout-oracles.json`. These planning failures do not establish native algorithm
@@ -231,7 +231,7 @@ run. These are local observations, not a controlled speed comparison.
 
 Development probes are retained separately and never counted as held-out
 results. The earlier 20-case development run scored 7/20 under strict canonical
-operation/parameter/wiring grading. Additional generation and inference-setting
+problem/parameter/wiring grading. Additional generation and inference-setting
 probes are explicitly labeled development experiments. Their failures remain
 available alongside successful runs; they are not training examples or native
 execution-admission evidence.

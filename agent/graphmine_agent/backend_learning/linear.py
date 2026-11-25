@@ -129,7 +129,7 @@ def make_encoder(rows, parameter_schema):
     vectors = [raw_vector(encoder, row) for row in rows]
     width = len(raw_vector(encoder, {"graph_features": {}, "hardware": {}}))
     if width + 1 > MAX_DIMENSIONS:
-        raise ValueError("Operation has too many context dimensions")
+        raise ValueError("Problem has too many context dimensions")
     means = [statistics.mean(v[i] for v in vectors) if vectors else 0.0 for i in range(width)]
     scales = [math.sqrt(statistics.mean((v[i] - means[i]) ** 2 for v in vectors)) if vectors else 1.0 for i in range(width)]
     encoder.update(means=means, scales=[v if v > 1e-12 else 1.0 for v in scales],
@@ -185,9 +185,9 @@ def prior_head(width, center):
                 completed_count=0, timeout_count=0, run_count=0, completed_max=None, benchmark_range=None)
 
 
-def fit(operation, rows, backend_ids, parameter_schema, implementation):
+def fit(problem, rows, backend_ids, parameter_schema, implementation):
     """Fit training graphs only. Callers retain held-out graphs for comparison."""
-    all_rows = [r for r in rows if r.get("operation") == operation
+    all_rows = [r for r in rows if r.get("problem") == problem
                 and r.get("implementation_sha256") == implementation and r.get("is_evaluation") is False
                 and r.get("source") in {"application", "benchmark"}
                 and r.get("chosen_backend") in backend_ids and not held_out(r["graph_features"]["snapshot_fingerprint"])]
@@ -222,7 +222,7 @@ def fit(operation, rows, backend_ids, parameter_schema, implementation):
                     benchmark_range={key: [min(r["graph_features"][key] for r in benchmarks),
                                           max(r["graph_features"][key] for r in benchmarks)] for key in ("n", "m")} if benchmarks else None)
         heads[backend] = head
-    return dict(schema_version=MODEL_SCHEMA, operation=operation, implementation_sha256=implementation,
+    return dict(schema_version=MODEL_SCHEMA, problem=problem, implementation_sha256=implementation,
                 encoder=encoder, heads=heads, prior_center=center, noise_variance=1.0,
                 training_rows=len(eligible), training_data_sha256=digest(sorted(
                     (r["run_id"], r.get("observed_implementation_sha256", r["implementation_sha256"]), y,

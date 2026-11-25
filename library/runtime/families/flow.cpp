@@ -25,7 +25,7 @@ FlowInput flow_input(const Graph& graph, bool unit, Work& work) {
   try {
     records = consume_view(graph,unit ? flow_unit_records : flow_weight_records,work,ViewBudget::record_edges);
   } catch (const Failure& error) {
-    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+    if (std::string(error.what()) == "This problem requires nonnegative edge weights")
       throw Failure("invalid_input","Edge capacities must be nonnegative");
     throw;
   } catch (const std::invalid_argument& error) {

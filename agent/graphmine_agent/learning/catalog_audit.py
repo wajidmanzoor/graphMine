@@ -21,7 +21,7 @@ from ..planning import (
     normalize_route,
     route_blocker,
 )
-from ..profiles import ProfileInputError, prepare_operation_graph
+from ..profiles import ProfileInputError, prepare_problem_graph
 from .catalog_reference import reference_for_case
 from .catalog_suite import digest, load_suite
 from .corpus import load_corpus
@@ -114,9 +114,9 @@ def audit_case(catalog, store, database, case):
     decision = normalize_route(
         catalog,
         RouteDecision(
+            topic_id=task["topic_id"],
             problem_id=task["problem_id"],
-            operation_id=task["operation_id"],
-            supported=task["operation_id"] is not None,
+            supported=task["problem_id"] is not None,
             confidence=1,
             explanation="Assistant-authored contract proposal; not a model prediction.",
             intent=task["intent"],
@@ -130,8 +130,8 @@ def audit_case(catalog, store, database, case):
         plan = ExecutionPlan(
             session_id=session.id,
             graph_id=graph.id,
+            topic_id=task["topic_id"],
             problem_id=task["problem_id"],
-            operation_id=task["operation_id"],
             parameters=task["parameters"],
             optional_outputs=task["optional_outputs"],
             auxiliary_inputs=auxiliary,
@@ -142,7 +142,7 @@ def audit_case(catalog, store, database, case):
             projected = project_graph(
                 store.read_graph(graph.id, session.id), plan.application_intent.filters
             )
-            prepare_operation_graph(projected, plan)
+            prepare_problem_graph(projected, plan)
             if plan.missing_inputs:
                 status, reason = "needs_information", ", ".join(plan.missing_inputs)
             else:
@@ -155,8 +155,8 @@ def audit_case(catalog, store, database, case):
     return {
         "id": case["id"],
         "case_sha256": case["sha256"],
-        "operation_id": task["operation_id"],
         "problem_id": task["problem_id"],
+        "topic_id": task["topic_id"],
         "expected_status": task["expected_status"],
         "observed_status": status,
         "passed": status == task["expected_status"],
@@ -227,9 +227,9 @@ def audit_suite(settings, suite_path: Path, *, reference_corpora=()):
         else "incomplete",
         "passed": sum(record["passed"] for record in records),
         "total": len(records),
-        "problem_count": len({record["problem_id"] for record in records}),
-        "operation_count": len(
-            {record["operation_id"] for record in records if record["operation_id"]}
+        "topic_count": len({record["topic_id"] for record in records}),
+        "problem_count": len(
+            {record["problem_id"] for record in records if record["problem_id"]}
         ),
         "by_status": dict(Counter(record["observed_status"] for record in records)),
         "overlap_checks": overlaps,

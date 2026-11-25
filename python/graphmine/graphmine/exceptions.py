@@ -4,8 +4,8 @@ class GraphMineError(ValueError):
     code = "invalid_input"
 
 
-class UnsupportedOperation(GraphMineError):
-    code = "unsupported_operation"
+class UnsupportedProblem(GraphMineError):
+    code = "unsupported_problem"
 
 
 class BackendUnavailable(GraphMineError):

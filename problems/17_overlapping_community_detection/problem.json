@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "overlapping_community_detection",
+  "topic_id": "overlapping_community_detection",
   "name": "Overlapping Community Detection by k-Clique Percolation",
   "category": "communities",
   "problem_statement": "Find overlapping communities formed by connected components of the clique-adjacency graph, where two k-cliques are adjacent when they share k-1 vertices.",

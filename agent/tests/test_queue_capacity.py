@@ -36,8 +36,8 @@ def setup_runtime(settings, triangle_graph, *, limit=3):
     plan = ExecutionPlan(
         session_id=session.id,
         graph_id=graph.id,
-        problem_id="maximal_clique_enumeration",
-        operation_id="maximal-cliques",
+        topic_id="maximal_clique_enumeration",
+        problem_id="maximal-cliques",
     )
     return runtime, plan
 
@@ -98,8 +98,8 @@ def test_competing_connections_cannot_over_admit_a_batch(database, session):
     plan = ExecutionPlan(
         session_id=session.id,
         graph_id="unused",
-        problem_id="maximal_clique_enumeration",
-        operation_id="maximal-cliques",
+        topic_id="maximal_clique_enumeration",
+        problem_id="maximal-cliques",
     )
     barrier = threading.Barrier(2)
 
@@ -122,8 +122,8 @@ def test_database_error_rolls_back_the_entire_batch(database, session):
     plan = ExecutionPlan(
         session_id=session.id,
         graph_id="unused",
-        problem_id="maximal_clique_enumeration",
-        operation_id="maximal-cliques",
+        topic_id="maximal_clique_enumeration",
+        problem_id="maximal-cliques",
     )
     valid = JobRecord(session_id=session.id, plan=plan)
     invalid = JobRecord(session_id="missing-session", plan=plan)
@@ -218,8 +218,8 @@ async def test_api_rejects_whole_supporting_analysis_with_retry_response(
             plan=plan,
             plans=[plan, plan],
             decision=RouteDecision(
+                topic_id=plan.topic_id,
                 problem_id=plan.problem_id,
-                operation_id=plan.operation_id,
                 supported=True,
                 confidence=1,
                 explanation="CPU admission fixture",

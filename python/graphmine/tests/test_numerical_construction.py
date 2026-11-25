@@ -17,8 +17,8 @@ ATLAS = [
 ]
 
 
-def execute(operation, graph, **arguments):
-    result = run(operation, graph, device="cpu", parameters=arguments)
+def execute(problem, graph, **arguments):
+    result = run(problem, graph, device="cpu", parameters=arguments)
     assert result["backend"]["device"] == "cpu"
     return result
 

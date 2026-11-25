@@ -21,8 +21,8 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
   async function load() {
     const record = state.record, step = $("result-step").value, port = $("result-port").value;
     if (!record || port === "__result") { toolbar.hidden = true; return; }
-    const operation = state.result?.steps[step]?.result?.operation;
-    if (!state.caps?.operations.some(card => card.id === operation && card.visualization)) { toolbar.hidden = true; return; }
+    const problem = state.result?.steps[step]?.result?.problem;
+    if (!state.caps?.problems.some(card => card.id === problem && card.visualization)) { toolbar.hidden = true; return; }
     const selectionScope = W.stringify([record.id, record.revision, step, port]);
     if (state.selection.scope !== selectionScope) {
       state.restoreEntitySelection = state.selection.scope === null;
@@ -120,7 +120,7 @@ window.GraphMineResultViews = ({state, api, W, node, renderGraph, applySelection
     block.replaceChildren(); block.hidden = true;
     const result = state.result?.steps[$("result-step").value]?.result, port = state.port;
     if (!result || !port) return;
-    const spec = state.caps?.operations.find(c => c.id === result.operation)?.visualization || state.resultView?.profile;
+    const spec = state.caps?.problems.find(c => c.id === result.problem)?.visualization || state.resultView?.profile;
     if (!spec) return;
     const rows = Array.isArray(port.value) ? port.value : ["motif_instances", "graphlet_instances"].includes(port.type) ? Object.entries(port.value || {}).flatMap(([pattern, instances]) => instances.map(vertices => ({pattern, vertices}))) : port.type === "eigenpairs" ? (port.value.eigenvalues || []).map(eigenvalue => ({eigenvalue})) : [];
     const scope = port.value_truncated ? `Showing ${rows.length} loaded rows of ${port.total_items}.` : `${rows.length} retained rows.`;

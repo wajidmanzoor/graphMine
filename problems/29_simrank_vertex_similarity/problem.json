@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "simrank_vertex_similarity",
+  "topic_id": "simrank_vertex_similarity",
   "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
   "category": "similarity",
   "problem_statement": "Compute a pairwise structural similarity score between vertices based on the recursive principle that two vertices are similar to the extent their in-neighbors (or neighbors) are similar, for a single source vertex, a query pair, or top-k over all vertices.",

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "k_truss_decomposition",
+  "topic_id": "k_truss_decomposition",
   "name": "k-Truss Decomposition",
   "category": "dense",
   "problem_statement": "Assign every edge the largest k for which it belongs to a maximal subgraph where each edge participates in at least k-2 triangles within that subgraph.",

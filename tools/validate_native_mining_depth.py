@@ -54,7 +54,7 @@ def main():
             }
             request = {
                 "command": "run",
-                "operation": "k-cliques",
+                "problem": "k-cliques",
                 "backend": backend,
                 "device": "gpu",
                 "gpu_device": device,

@@ -13,7 +13,7 @@ std::vector<family_util::Edge> group_steiner_edges(const Graph& graph, Work& wor
     const auto input = consume_view(graph,steiner_profile,work,ViewBudget::record_edges);
     edges = family_util::edge_layout(std::get<CooView>(input->view));
   } catch (const Failure& error) {
-    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+    if (std::string(error.what()) == "This problem requires nonnegative edge weights")
       throw Failure("invalid_input","Every group-Steiner edge needs nonnegative weight");
     throw;
   } catch (const std::invalid_argument& error) {

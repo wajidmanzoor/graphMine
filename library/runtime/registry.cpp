@@ -5,17 +5,17 @@
 
 namespace graphmine::runtime {
 namespace {
-const std::map<std::string, std::string>& operation_families() {
+const std::map<std::string, std::string>& problem_families() {
   static const auto assignments = [] {
     std::map<std::string, std::string> result;
     const auto taxonomy = json::parse(taxonomy_json).as_object();
     for (const auto& value : taxonomy.at("families").as_array()) {
       const auto& family = value.as_object();
       const auto id = string(family.at("id"), "family");
-      for (const auto& member : family.at("operations").as_array()) {
-        const auto operation = string(member, "operation");
-        require(result.emplace(operation, id).second,
-                "Native operation belongs to multiple families: " + operation);
+      for (const auto& member : family.at("problems").as_array()) {
+        const auto problem = string(member, "problem");
+        require(result.emplace(problem, id).second,
+                "Native problem belongs to multiple families: " + problem);
       }
     }
     return result;
@@ -29,15 +29,16 @@ json::object parameter(std::string kind, json::value initial, bool required = fa
   if (!required) result["default"] = std::move(initial);
   return result;
 }
-json::object card(const char* id, const char* problem, const char* title, const char* description,
+json::object card(const char* id, const char* topic, const char* title, const char* description,
                   json::object parameters, json::object ports, json::array gpu_backends) {
   json::array backends{json::object{{"id", "cpp"}, {"device", "cpu"}, {"compiled", true}}};
   for (const auto& backend : gpu_backends) backends.push_back(backend);
-  const auto declared = operation_families().find(id);
-  require(declared != operation_families().end(),
-          "Native operation has no declared family: " + std::string(id));
+  const auto declared = problem_families().find(id);
+  require(declared != problem_families().end(),
+          "Native problem has no declared family: " + std::string(id));
   return {{"id", id},
-          {"problem_id", problem},
+          {"problem_id", id},
+          {"topic_id", topic},
           {"family", declared->second},
           {"title", title},
           {"description", description},
@@ -49,12 +50,12 @@ json::object card(const char* id, const char* problem, const char* title, const 
           {"implementation_language", "c++/cuda"},
           {"evidence_status", "requires_matching_validation_report"}};
 }
-struct Operation {
+struct Problem {
   json::object metadata;
   NativeAlgorithm handler;
   NativeInputAlgorithm input_handler = nullptr;
 };
-const std::vector<Operation>& definitions() {
+const std::vector<Problem>& definitions() {
   static const auto registry = [] {
     auto source_mode = parameter("string", "independent");
     source_mode["choices"] = json::array{"independent", "nearest_source"};
@@ -95,7 +96,7 @@ const std::vector<Operation>& definitions() {
     auto betweenness_backends = gpu;
     for (const auto& backend : original_mining_backends("betweenness-centrality"))
       betweenness_backends.push_back(backend);
-    std::vector<Operation> result{
+    std::vector<Problem> result{
         {card(
              "node-lookup", "graph_record_queries", "Look up entity records",
              "Native deterministic selection of original vertex records by typed IDs and AND field "
@@ -1167,7 +1168,7 @@ const std::vector<Operation>& definitions() {
     const auto nested_schemas = json::parse(native_parameter_schemas_json).as_object();
     for (auto& definition : result) {
       auto& metadata = definition.metadata;
-      const auto id = string(metadata.at("id"), "operation");
+      const auto id = string(metadata.at("id"), "problem");
       for (const auto& backend : original_extension_backends(id))
         metadata.at("backends").as_array().push_back(backend);
       auto& parameters = metadata.at("parameters").as_object();
@@ -1321,53 +1322,52 @@ const std::vector<Operation>& definitions() {
 }
 }  // namespace
 
-json::array operation_cards() {
+json::array problem_cards() {
   json::array output;
   for (const auto& definition : definitions()) output.push_back(definition.metadata);
   return output;
 }
-const json::object& operation_card(const std::string& operation) {
+const json::object& problem_card(const std::string& problem) {
   for (const auto& definition : definitions())
-    if (definition.metadata.at("id").as_string() == operation) return definition.metadata;
-  throw Failure("unsupported_operation", "No native runtime integration for " + operation);
+    if (definition.metadata.at("id").as_string() == problem) return definition.metadata;
+  throw Failure("unsupported_problem", "No native runtime integration for " + problem);
 }
-NativeAlgorithm operation_handler(const std::string& operation) {
+NativeAlgorithm problem_handler(const std::string& problem) {
   for (const auto& definition : definitions())
-    if (definition.metadata.at("id").as_string() == operation && definition.handler)
+    if (definition.metadata.at("id").as_string() == problem && definition.handler)
       return definition.handler;
-  throw Failure("unsupported_operation", "No native runtime integration for " + operation);
+  throw Failure("unsupported_problem", "No native runtime integration for " + problem);
 }
-NativeInputAlgorithm input_operation_handler(const std::string& operation) {
+NativeInputAlgorithm input_problem_handler(const std::string& problem) {
   for (const auto& definition : definitions())
-    if (definition.metadata.at("id").as_string() == operation && definition.input_handler)
+    if (definition.metadata.at("id").as_string() == problem && definition.input_handler)
       return definition.input_handler;
-  throw Failure("unsupported_operation", "No native structured-input integration for " + operation);
+  throw Failure("unsupported_problem", "No native structured-input integration for " + problem);
 }
 
 json::object catalog() {
   auto result = json::parse(taxonomy_json).as_object();
-  const auto cards = operation_cards();
-  require(operation_families().size() == cards.size(),
-          "Family taxonomy contains an unknown native operation");
-  // Family and operation display order comes directly from the shared taxonomy.
-  for (auto& problem : result.at("problems").as_array()) {
-    json::array operations;
+  const auto cards = problem_cards();
+  require(problem_families().size() == cards.size(),
+          "Family taxonomy contains an unknown native problem");
+  // Family and problem display order comes directly from the shared taxonomy.
+  for (auto& topic : result.at("topics").as_array()) {
+    json::array problems;
     std::string family;
     for (const auto& op : cards) {
-      if (op.as_object().at("problem_id") == problem.as_object().at("id")) {
-        operations.push_back(op.as_object().at("id"));
+      if (op.as_object().at("topic_id") == topic.as_object().at("id")) {
+        problems.push_back(op.as_object().at("id"));
         const auto assigned = string(op.as_object().at("family"), "family");
         require(family.empty() || family == assigned,
-                "Native problem has operations in different families");
+                "Native topic has problems in different families");
         family = assigned;
       }
     }
-    if (!family.empty()) problem.as_object()["family"] = family;
-    problem.as_object()["operations"] = operations;
-    problem.as_object()["runtime_integration"] = operations.empty() ? "pending" : "implemented";
+    if (!family.empty()) topic.as_object()["family"] = family;
+    topic.as_object()["problems"] = problems;
   }
-  result["operations"] = cards;
-  result["abi_version"] = 1;
+  result["problems"] = cards;
+  result["abi_version"] = 2;
   result["implementation_sha256"] = implementation_sha256;
   result["python_runtime_required"] = false;
   result["file_readers"] = json::array{

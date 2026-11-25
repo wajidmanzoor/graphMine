@@ -71,7 +71,7 @@ async def test_cypher_side_confirmation_runs_all_80_vertices(setup, cypher_graph
     _, payload, schema = planner.calls[-1]
     assert len(payload["inputs"]["main"]["vertices_sample"]) == 8
     assert payload["inputs"]["main"]["bipartition"]["entity_types"] == {"User": 40, "Business": 40}
-    assert "left_partition" not in payload["operations"][0]["parameters"]
+    assert "left_partition" not in payload["problems"][0]["parameters"]
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate(proposal("maximal-bicliques", {"left_partition": ["invented"]}), schema)
     result = await execute(analytics, session, body, planned)
@@ -82,15 +82,16 @@ async def test_cypher_side_confirmation_runs_all_80_vertices(setup, cypher_graph
 
 async def test_missing_sides_stops_before_planning(setup):
     settings, analytics, events, session, body = setup
+    body.message = "Find maximal bicliques."
     planner = ReplayPlanner(settings, analytics, events, responses=[{"intent": "needs_information", "message": "Which vertices belong on each side?", "choices": []}])
     planned = await planner.plan(session, body)
     assert planned["status"] == "needs_information" and planned["plan"] is None
     assert [stage for stage, *_ in planner.calls] == ["route"]
     assert not analytics.list(session)
-    # The current native catalog makes partitions optional, so it remains
-    # eligible while the assistant asks for the user's intended sides.
-    assert not any(row["operation"] == "maximal-bicliques"
-                   for row in planner.calls[0][1]["removed_operations"])
+    # Execution eligibility records the missing sides while the router asks
+    # for the user's intended partition instead of attempting the calculation.
+    assert any(row["problem"] == "maximal-bicliques"
+               for row in planner.calls[0][1]["removed_problems"])
     assert planner.calls[0][1]["inputs"]["main"]["bipartition"]["available"] is False
 
 
@@ -196,7 +197,7 @@ async def test_conversion_changes_only_biclique_steps_in_shared_input_workflow(s
     body.inputs["biclique_input_1"] = body.inputs["main"]
     proposed = proposal("maximal-bicliques")
     proposed["plan"]["steps"].append({
-        "id": "rank", "operation": "pagerank", "input": {"input": "main"},
+        "id": "rank", "problem": "pagerank", "input": {"input": "main"},
         "parameters": {"weight_mode": "unweighted"}, "bindings": {},
     })
     planner = ReplayPlanner(settings, analytics, events, responses=[

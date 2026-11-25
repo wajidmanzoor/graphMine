@@ -143,7 +143,7 @@ async def test_native_workers_reuse_hashes_but_reject_changed_sources(
         EventBus(database),
     )
     first = await service._call({"command": "capabilities"})
-    assert any(card["execution"]["cpu"] for card in first["operations"])
+    assert any(card["execution"]["cpu"] for card in first["problems"])
     cache = service.root / "cache/evidence-hashes.json"
     before = cache.stat().st_mtime_ns
     assert cache.stat().st_mode & 0o077 == 0
@@ -157,4 +157,4 @@ async def test_native_workers_reuse_hashes_but_reject_changed_sources(
     os.utime(changed, ns=(stat.st_atime_ns, stat.st_mtime_ns))
     rejected = await service._call({"command": "capabilities"})
     assert rejected["verification_issues"]
-    assert not any(any(card["execution"].values()) for card in rejected["operations"])
+    assert not any(any(card["execution"].values()) for card in rejected["problems"])

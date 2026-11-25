@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "vertex_coloring",
+  "topic_id": "vertex_coloring",
   "name": "Vertex Coloring",
   "category": "selection",
   "problem_statement": "Assign colors so vertices within a declared graph distance receive different colors.",

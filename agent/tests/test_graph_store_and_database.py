@@ -119,8 +119,8 @@ def test_restart_fails_only_interrupted_jobs_and_preserves_queued(
     plan = ExecutionPlan(
         session_id=session.id,
         graph_id="file-placeholder",
-        problem_id="maximal_clique_enumeration",
-        operation_id="maximal-cliques",
+        topic_id="maximal_clique_enumeration",
+        problem_id="maximal-cliques",
     )
     running = database.save_job(
         JobRecord(session_id=session.id, plan=plan, status=JobStatus.running)

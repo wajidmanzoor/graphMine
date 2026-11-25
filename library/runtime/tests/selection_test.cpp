@@ -74,7 +74,7 @@ json::object fixture(int n, bool directed, unsigned bits) {
           {"edges", edges}};
 }
 json::object request(const char* op, const json::object& graph, json::object args = {}) {
-  return {{"command", "run"},    {"operation", op},    {"graph", graph},
+  return {{"command", "run"},    {"problem", op},    {"graph", graph},
           {"parameters", args},  {"backend", backend}, {"device", backend == "cpp" ? "cpu" : "gpu"},
           {"gpu_device", device}};
 }

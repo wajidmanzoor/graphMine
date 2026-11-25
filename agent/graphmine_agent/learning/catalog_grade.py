@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from collections import Counter, defaultdict
 
-from .catalog_reference import LEGACY_OPERATIONS, reference_for_case, selected_graph
+from .catalog_reference import LEGACY_PROBLEMS, reference_for_case, selected_graph
 from .oracles import adjacency, core_vertices, key, verify_output
 
 
@@ -92,7 +92,7 @@ def _pattern_keys(mappings, pattern, *, query_field, classes):
 
 
 def grade_output(catalog, case, output):
-    """Check requested values; expose narrower checks for heuristic operations.
+    """Check requested values; expose narrower checks for heuristic problems.
 
     A zero issue count is not a human intent score or proof of optimality for a
     heuristic. PageRank error is measured, not thresholded by an invented bound.
@@ -101,13 +101,13 @@ def grade_output(catalog, case, output):
     measurements = {}
     issues = []
     task = case["task"]
-    operation, parameters = task["operation_id"], task["parameters"]
+    problem, parameters = task["problem_id"], task["parameters"]
     try:
         require(task["expected_status"] == "ready", "This case must not execute")
         require(isinstance(output, dict), "Expected an output object")
         expected = reference["expected"]
-        required = set(catalog.operation(operation).instruction["required_outputs"])
-        if operation != "graph-motifs":
+        required = set(catalog.problem(problem).instruction["required_outputs"])
+        if problem != "graph-motifs":
             required |= set(task["optional_outputs"])
         require(
             required <= output.keys(),
@@ -117,7 +117,7 @@ def grade_output(catalog, case, output):
         ids, neighbors = adjacency(
             graph,
             max_vertices=256
-            if operation
+            if problem
             in {
                 "community-detection",
                 "k-core",
@@ -127,12 +127,12 @@ def grade_output(catalog, case, output):
             else 12,
         )
         edges = {key(edge["id"]): edge for edge in graph["edges"]}
-        if operation in LEGACY_OPERATIONS:
+        if problem in LEGACY_PROBLEMS:
             issues.extend(
                 verify_output(
                     graph,
                     {
-                        "operation_id": operation,
+                        "problem_id": problem,
                         "parameters": parameters,
                         "filters": [],
                         "behavior": "execute",
@@ -151,11 +151,11 @@ def grade_output(catalog, case, output):
                 ),
                 "temporal-motif-mining": ("count", expected.get("count")),
             }
-            if operation in scalar_counts:
-                field, value = scalar_counts[operation]
+            if problem in scalar_counts:
+                field, value = scalar_counts[problem]
                 same_number(output[field], value, field)
             if (
-                operation in {"maximal-cliques", "maximal-bicliques"}
+                problem in {"maximal-cliques", "maximal-bicliques"}
                 and "total_count" in task["optional_outputs"]
             ):
                 same_number(
@@ -163,7 +163,7 @@ def grade_output(catalog, case, output):
                     len(expected.get("groups", expected.get("bicliques"))),
                     "total_count",
                 )
-            if operation == "maximum-clique":
+            if problem == "maximum-clique":
                 if parameters.get("return_all_ties"):
                     require(
                         groups(output["cliques"]) == groups(expected["groups"]),
@@ -175,7 +175,7 @@ def grade_output(catalog, case, output):
                         "Invalid upper bound",
                     )
             elif (
-                operation == "k-cliques"
+                problem == "k-cliques"
                 and "per_vertex_count" in task["optional_outputs"]
             ):
                 numeric_rows(
@@ -184,7 +184,7 @@ def grade_output(catalog, case, output):
                     "vertex",
                     "count",
                 )
-            elif operation == "k-core":
+            elif problem == "k-core":
                 values = {key(value): 0 for value in ids}
                 for threshold in range(1, len(ids)):
                     for index in core_vertices(neighbors, threshold):
@@ -211,7 +211,7 @@ def grade_output(catalog, case, output):
                         == identities(correct),
                         "Wrong surviving relationships",
                     )
-            elif operation == "betweenness-centrality":
+            elif problem == "betweenness-centrality":
                 numeric_rows(
                     output["score_by_vertex"], expected["scores"], "vertex", "score"
                 )
@@ -235,7 +235,7 @@ def grade_output(catalog, case, output):
                         ),
                         "Wrong maximum-score identity",
                     )
-            elif operation == "temporal-motif-mining":
+            elif problem == "temporal-motif-mining":
                 for occurrence in output["instances"]:
                     a, b, _ = [
                         edges[key(value)]
@@ -246,7 +246,7 @@ def grade_output(catalog, case, output):
                         == [a["source"], a["target"], b["target"]],
                         "Wrong event-role identities",
                     )
-            elif operation == "community-detection":
+            elif problem == "community-detection":
                 assigned = indexed(
                     output["assignment_by_vertex"], "vertex", "community"
                 )
@@ -278,21 +278,21 @@ def grade_output(catalog, case, output):
                         ),
                         "edge_cut",
                     )
-        elif operation in {"quasi-cliques", "triangle-counting"}:
-            field = "quasi_cliques" if operation == "quasi-cliques" else "triangles"
+        elif problem in {"quasi-cliques", "triangle-counting"}:
+            field = "quasi_cliques" if problem == "quasi-cliques" else "triangles"
             require(
                 groups(output[field]) == groups(expected["groups"]),
                 "Incorrect, duplicated or missing groups",
             )
             count = (
                 "returned_count"
-                if operation == "quasi-cliques"
+                if problem == "quasi-cliques"
                 else "global_triangle_count"
             )
             same_number(output[count], expected["count"], count)
             require(
                 output[
-                    "complete" if operation == "quasi-cliques" else "instances_complete"
+                    "complete" if problem == "quasi-cliques" else "instances_complete"
                 ]
                 is True,
                 "Incomplete enumeration",
@@ -319,7 +319,7 @@ def grade_output(catalog, case, output):
                     for edge in graph["edges"]
                 ]
                 numeric_rows(output["per_edge_count"], counts, "edge", "count")
-        elif operation == "dynamic-triangle-counting":
+        elif problem == "dynamic-triangle-counting":
             for field in ("deleted", "inserted"):
                 require(
                     groups(output[field + "_triangles"]) == groups(expected[field]),
@@ -349,8 +349,8 @@ def grade_output(catalog, case, output):
                 output["changed_instances_complete"] is True,
                 "Incomplete changed instances",
             )
-        elif operation in {"graph-motifs", "subgraph-isomorphism"}:
-            if operation == "subgraph-isomorphism":
+        elif problem in {"graph-motifs", "subgraph-isomorphism"}:
+            if problem == "subgraph-isomorphism":
                 observed = [
                     {
                         "count": output["count"],
@@ -388,14 +388,14 @@ def grade_output(catalog, case, output):
                 same_number(actual["count"], wanted["count"], "pattern count")
                 require(actual["complete"] is True, "Incomplete pattern instances")
                 classes = (
-                    operation == "graph-motifs"
+                    problem == "graph-motifs"
                     and parameters["occurrence_identity"] != "all-embeddings"
                 )
                 actual_keys = _pattern_keys(
                     actual["instances"],
                     attachment["content"],
                     query_field="motif_vertex"
-                    if operation == "graph-motifs"
+                    if problem == "graph-motifs"
                     else "query_vertex",
                     classes=classes,
                 )
@@ -409,7 +409,7 @@ def grade_output(catalog, case, output):
                     actual_keys == correct_keys,
                     "Wrong pattern mappings or occurrence identity",
                 )
-        elif operation == "connected-components":
+        elif problem == "connected-components":
             assigned = indexed(output["component_assignment"], "vertex", "component")
             require(
                 assigned.keys() == {key(value) for value in ids},
@@ -432,7 +432,7 @@ def grade_output(catalog, case, output):
             )
             for size in output["component_sizes"]:
                 number(size)
-        elif operation == "transitive-closure":
+        elif problem == "transitive-closure":
             require(
                 Counter(
                     (key(row["source"]), key(row["target"]))
@@ -450,7 +450,7 @@ def grade_output(catalog, case, output):
                 output["complete"] is True and output["reachability_results"] == [],
                 "Unexpected reachability status",
             )
-        elif operation == "max-flow-min-cut":
+        elif problem == "max-flow-min-cut":
             for field in ("max_flow_value", "min_cut_value"):
                 same_number(output[field], expected[field], field)
             require(output["optimal"] is True, "Flow optimality not established")
@@ -501,7 +501,7 @@ def grade_output(catalog, case, output):
                     else 0
                 )
                 same_number(value, target, "flow conservation")
-        elif operation == "linear-assignment":
+        elif problem == "linear-assignment":
             same_number(
                 output["objective_value"],
                 expected["objective_value"],
@@ -521,15 +521,15 @@ def grade_output(catalog, case, output):
                 ),
                 "Matching is not a minimum-cost perfect assignment",
             )
-        elif operation in {"butterfly-counting", "maximal-biclique-counting"}:
+        elif problem in {"butterfly-counting", "maximal-biclique-counting"}:
             field = (
                 "butterfly_count"
-                if operation == "butterfly-counting"
+                if problem == "butterfly-counting"
                 else "total_count"
             )
             same_number(output[field], expected["count"], field)
             require(output["complete"] is True, "Count is incomplete")
-        elif operation == "k-truss":
+        elif problem == "k-truss":
             numeric_rows(
                 output["truss_number_by_edge"],
                 expected["edges"],
@@ -541,7 +541,7 @@ def grade_output(catalog, case, output):
                 expected["maximum"],
                 "maximum_truss_number",
             )
-        elif operation == "densest-subgraph":
+        elif problem == "densest-subgraph":
             same_number(output["density"], expected["density"], "density")
             same_number(output.get("clique_order", 2), expected["clique_order"], "clique_order")
             require(output["optimal"] is True, "Density optimality not established")
@@ -560,7 +560,7 @@ def grade_output(catalog, case, output):
                 match["induced_edge_value"],
                 "induced_edge_value",
             )
-        elif operation == "group-steiner-tree":
+        elif problem == "group-steiner-tree":
             require(
                 output["feasible"] is expected["feasible"]
                 and output["optimal"] is True,
@@ -579,7 +579,7 @@ def grade_output(catalog, case, output):
                     ),
                     "Returned edges and vertices do not describe an optimal group-covering tree",
                 )
-        elif operation == "personalized-pagerank":
+        elif problem == "personalized-pagerank":
             ranked = output["ranked_vertices"]
             require(
                 len(ranked) == min(parameters["top_k"], len(ids)),
@@ -629,7 +629,7 @@ def grade_output(catalog, case, output):
             )
             measurements["returned_score_mass"] = sum(scores.values())
             measurements["error_acceptance_threshold"] = None
-        elif operation == "influence-maximization":
+        elif problem == "influence-maximization":
             match = next(
                 (
                     row
@@ -664,7 +664,7 @@ def grade_output(catalog, case, output):
                 expected["best_possible_spread"] - match["spread"]
             )
         else:
-            raise ValueError(f"No output grader for {operation}")
+            raise ValueError(f"No output grader for {problem}")
     except (KeyError, TypeError, ValueError, IndexError, OverflowError) as error:
         if not issues:
             issues.append(str(error))

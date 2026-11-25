@@ -64,7 +64,7 @@
 .input-tree-list small { display: block; color: var(--muted); padding-left: 10px; }
 .input-tree-button { text-align: left; overflow-wrap: anywhere; }
 .input-tree-button[aria-current=true] { font-weight: 600; }
-#operation-dialog { width: min(680px, calc(100vw - 32px)); }
+#problem-dialog { width: min(680px, calc(100vw - 32px)); }
 .command-guarantee { white-space: nowrap; font-size: var(--text-small); }
 body:not([data-page=domains]) #connection-state, body:not([data-page=domains]) #connection-button,
 body[data-page=domains] #chat-status, body[data-page=domains] #toggle-activity { display: none; }

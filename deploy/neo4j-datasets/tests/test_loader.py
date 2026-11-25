@@ -31,14 +31,14 @@ def test_distinct_publisher_blocks_do_not_require_added_semicolons():
 
 
 @pytest.mark.parametrize("failure", [
-    {"failedBatches": 1}, {"failedOperations": 9},
+    {"failedBatches": 1}, {"failedProblems": 9},
     {"errorMessages": {"batch failed": 1}}, {"failedParams": {"0": [1]}},
     {"wasTerminated": True}, {"nested": [{"failedBatches": 2}]},
 ])
 def test_failed_apoc_batches_are_never_treated_as_success(failure):
     with pytest.raises(ValueError, match="APOC reported"):
         check_batches(failure)
-    check_batches({"failedBatches": 0, "failedOperations": 0, "errorMessages": {},
+    check_batches({"failedBatches": 0, "failedProblems": 0, "errorMessages": {},
                    "failedParams": {}, "wasTerminated": False, "total": 100})
 
 

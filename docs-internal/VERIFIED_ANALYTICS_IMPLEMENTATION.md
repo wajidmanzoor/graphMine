@@ -14,7 +14,7 @@ Implement the useful review recommendations and commit the work on this branch.
 must be C++/CUDA for both CPU and GPU. This includes the original native
 implementations, direct native cuGraph integrations, and native equivalents of
 the CPU capabilities reviewed in YiGraph. Python is a wrapper around this core,
-with the same problem/family catalog, parameters and results. Existing Python
+with the same topic/family catalog, parameters and results. Existing Python
 algorithm integrations are migration references and test oracles; their passing
 tests do **not** satisfy the native CPU coverage requirement. Native migration
 takes priority over adding further Python algorithm implementations.
@@ -22,10 +22,10 @@ The user also requires cuDF for tabular file loading and no NetworkX plotting.
 The native reader therefore links libcudf; the Python wrapper calls that reader.
 Browser rendering continues to use Cytoscape and predefined JavaScript views.
 
-The collection currently contains 70 formal problem contracts. CPU coverage
+The collection currently contains 70 formal topic contracts. CPU coverage
 means a documented executable implementation for each contract, including
-problems without a usable GPU implementation, and CPU alternatives for existing
-GPU operations. A partial implementation, a different mathematical objective,
+topics without a usable GPU implementation, and CPU alternatives for existing
+GPU problems. A partial implementation, a different mathematical objective,
 or a diagnostic that only checks output shape does not establish that coverage.
 Numerical methods, approximate algorithms, learned models, and visualization
 layouts must declare what their results do and do not establish.
@@ -36,14 +36,14 @@ layouts must declare what their results do and do not establish.
 |---|---|---|
 | A1 | Separate branch; commit all implementation, contracts, and required evidence | Branch and commits inspected; no uncommitted implementation changes |
 | A2 | C++/CUDA core: graph objects, algorithm families and backend dispatch; thin Python wrapper using the identical native catalog | Standalone C++ consumers and CLI run without Python; wrapper/core catalog and result parity; agent uses the native core |
-| A3 | Native CPU implementation for all 70 problem contracts and fallbacks for existing operations | Per-contract native coverage inventory, independent result checks, CPU-only runs without GPU access; Python algorithms count only as reference evidence |
+| A3 | Native CPU implementation for all 70 topic contracts and fallbacks for existing problems | Per-contract native coverage inventory, independent result checks, CPU-only runs without GPU access; Python algorithms count only as reference evidence |
 | A4 | cuGraph GPU integrations | Actual GPU execution, independent small-graph oracles, device/version evidence, supported-parameter checks |
-| A5 | Family-first, then exact-problem routing | Separate constrained stages; ambiguity and wrong-family recovery tests; held-out routing evaluation |
+| A5 | Family-first, then exact-topic routing | Separate constrained stages; ambiguity and wrong-family recovery tests; held-out routing evaluation |
 | A6 | Normal / Expert modes | Normal executes validated plans; Expert reviews and edits validated plans before execution; browser/API tests |
 | A7 | Improved graph/result/workflow visualization without a Node.js runtime | Browser renders predefined views and modes with Node unavailable; visual inspection, accessibility and data-binding checks |
 | R1 | Typed dependent workflows | Static DAG/port checks and runtime checks on actual derived inputs; cancellation; dependent-output numerical tests |
 | R2 | Deterministic lookup, neighbors, filtering, joins, aggregates, bounded paths, subgraphs | Independent expected outputs, typed-ID preservation, direction and empty-result tests |
-| R3 | Capability-aware family/operation cards | Planner sees executable parameters and explicit mathematical objectives; catalog consistency tests |
+| R3 | Capability-aware family/problem cards | Planner sees executable parameters and explicit mathematical objectives; catalog consistency tests |
 | R4 | Curated CPU/GPU reference tier | BFS, SSSP, PageRank, Jaccard, MST and remaining contract integrations with independent tests |
 | R5 | Inspectable/editable plans | Editing revalidates; no execution of an unapproved Expert plan; clear graph/parameter scope |
 | R6 | Structured bounded recovery | Preserve requested semantics; retry only affected steps; unsupported inputs remain explicit |
@@ -80,8 +80,8 @@ reported score substitutes for local integration tests.
   `957dc206` and `462ae1ca`, with planner fixes through `92663fc6`.
   Unrelated pre-existing work remains in the working
   tree; the isolated committed app was also tested independently.
-- All 70 formal contracts have native CPU profiles across 80 operations.
-  Twenty-three operations have admitted GPU profiles on both tested RTX 6000
+- All 70 formal contracts have native CPU profiles across 80 problems.
+  Twenty-three problems have admitted GPU profiles on both tested RTX 6000
   Ada devices. Python algorithm integrations are explicit reference oracles.
 - Final evidence includes native CPU/GPU oracle sweeps, 127 completion tests
   per build with CUDA hidden, 214 binding/ingestion checks, 36 sanitizer checks,
@@ -107,10 +107,10 @@ The checkpoints below are historical and do not describe current coverage.
 
 - Implementation commit: `cd3ec454` on the requested feature branch.
 - Added the installable `python/graphmine` library, graph objects, family modules,
-  strict operation parameters, CPU/GPU dispatch, typed result ports and source,
+  strict problem parameters, CPU/GPU dispatch, typed result ports and source,
   dependency and device provenance. The existing application is not switched
   to this library yet.
-- Added 27 CPU operations and 13 cuGraph profiles, including direct cuGraph
+- Added 27 CPU problems and 13 cuGraph profiles, including direct cuGraph
   minimum/maximum spanning forests. cuGraph 26.10.0 and NetworkX 3.7 run in the
   isolated environment on both RTX 6000 Ada GPUs.
 - Latest recorded suite: 5,617 CPU tests passed with GPUs hidden; 1,546 tests
@@ -123,15 +123,15 @@ The checkpoints below are historical and do not describe current coverage.
   auto-dispatch that otherwise bypassed CPU-only selection.
 - Test XML and per-run source/dependency snapshots are in
   `validation/python_analytics/`. Initial failed runs are retained separately.
-- All remaining problem integrations, the native adapter, evidence-based
+- All remaining topic integrations, the native adapter, evidence-based
   planner gating, application modes, routing, workflows, UI, scheduler,
   projections, MCP, retrieval and scale evaluation are still required.
 
 ### CPU structural and optimization checkpoint
 
-- CPU coverage is now 39 executable operations across 37 of the 70 problem
-  contracts. The remaining 33 problem contracts still need CPU integrations.
-  The new operations cover density, quasi-cliques, bicliques, butterflies,
+- CPU coverage is now 39 executable problems across 37 of the 70 topic
+  contracts. The remaining 33 topic contracts still need CPU integrations.
+  The new problems cover density, quasi-cliques, bicliques, butterflies,
   assignment, pattern matching/counting, communities, balanced partitioning
   and signed-network balance. Their precise objectives, limits and input
   conventions are in `CPU_REFERENCE_PROFILES.md`.
@@ -150,29 +150,29 @@ The checkpoints below are historical and do not describe current coverage.
   atlas graphs through six vertices, directed patterns and weighted fixtures.
   Counts are test executions; parameter loops inside tests add further calls.
 - `cpu-extended-initial.xml` retains the first 6,059-test pass on the new
-  operations. Final reports are `cpu-extended.xml`, `gpu-0-extended.xml` and
+  problems. Final reports are `cpu-extended.xml`, `gpu-0-extended.xml` and
   `gpu-1-extended.xml`. Metadata now includes formal contract/package hashes
   and the collected test selection. The audit checks dependency versions and
-  generates per-operation profile hashes in addition to source hashes.
+  generates per-problem profile hashes in addition to source hashes.
 - Existing agent catalog/planning regression checks: 55 passed; nine native
   worker tests were skipped because that invocation did not configure a native
   test binary. These results are not an agent integration claim for the new
   Python layer.
 - Derived graph ports now distinguish their own fingerprint from input lineage.
   Explicit SciPy provenance, malformed-parameter rejection and oversized GPU
-  integer-weight handling were verified alongside the previous operations.
+  integer-weight handling were verified alongside the previous problems.
 - The browser and agent still use the existing native path. All application,
   remaining CPU, native adapter, routing, workflow, scheduler, cache, MCP,
   reviewed-example retrieval and scale requirements above remain open.
 
 ### Numerical, construction and topology checkpoint
 
-- CPU coverage is now **48 operations across 46 of 70 problem contracts**.
+- CPU coverage is now **48 problems across 46 of 70 topic contracts**.
   Nine additional profiles cover Laplacian eigenpairs, signal denoising,
   nearest-neighbor graph construction, coarsening, hypergraph partitioning,
   SimRank, widest paths, critical DAG paths and flag-complex persistence.
-  The remaining 24 problem contracts still need CPU integrations.
-- Added validated `FeatureVectors` and `Hypergraph` input classes. Operation
+  The remaining 24 topic contracts still need CPU integrations.
+- Added validated `FeatureVectors` and `Hypergraph` input classes. Problem
   cards declare the accepted input kind. Result lineage distinguishes original
   input fingerprints from generated graph fingerprints, preserving typed IDs.
 - Added CPU dependencies CVXPY 1.9.3, CLARABEL 0.11.1 and GUDHI 3.13.0 in the
@@ -196,7 +196,7 @@ The checkpoints below are historical and do not describe current coverage.
   with no skips. The first 3,121-check numerical sweep is retained separately.
   New tests also cover signed/large-weight DAG ranking, capacity-zero
   reachability, all small hypergraphs, feature symmetrization and quotient
-  aggregation. Every previous library operation was rerun in the full suite.
+  aggregation. Every previous library problem was rerun in the full suite.
 - These profiles are library integrations. They are not yet connected to the
   existing native agent/browser. Remaining CPU coverage and every open
   application/routing/workflow/UI/scheduling/evaluation requirement above remain
@@ -204,11 +204,11 @@ The checkpoints below are historical and do not describe current coverage.
 
 ### Sampling, temporal and local-analysis checkpoint
 
-- CPU coverage is now **55 operations across 53 of 70 problem contracts**.
+- CPU coverage is now **55 problems across 53 of 70 topic contracts**.
   Seven new integrations cover random walks, neighborhood sampling, temporal
   journey objectives, bounded paths/cycles, temporal motifs, null-model
-  significance and seeded local communities. Seventeen problem contracts
-  still need a CPU integration. Operation cards continue to disclose the
+  significance and seeded local communities. Seventeen topic contracts
+  still need a CPU integration. Problem cards continue to disclose the
   supported profile rather than claiming every formal parameter variant.
 - Walks and neighborhoods use NumPy sampling with recorded seeds, explicit
   direction/parallel-edge/zero-weight semantics and validated fanouts.
@@ -227,7 +227,7 @@ The checkpoints below are historical and do not describe current coverage.
   recomputed conductance; its diffusion/sweep method is labeled heuristic.
 - Latest reports: `cpu-temporal.xml` has **16,556 passes** with CUDA hidden;
   `gpu-0-temporal.xml` and `gpu-1-temporal.xml` each have **1,546 passes**, with
-  zero failures or skips. All prior library operations were rerun. New oracles
+  zero failures or skips. All prior library problems were rerun. New oracles
   include exhaustive event journeys, vertex/event injections, cycle/path
   permutations, independent PageRank equations and conductance recomputation,
   per-sample graph invariants, and deterministic sampling-frequency checks.
@@ -247,10 +247,10 @@ The checkpoints below are historical and do not describe current coverage.
 
 ### Connection, comparison and record-analysis checkpoint
 
-- CPU coverage is now **59 operations across 57 of 70 problem contracts**.
+- CPU coverage is now **59 problems across 57 of 70 topic contracts**.
   Four additional integrations cover group Steiner trees, global network
   alignment, entity blocking/resolution and reference-based graph anomalies.
-  Thirteen problem contracts still need CPU integrations. Local many-to-one
+  Thirteen topic contracts still need CPU integrations. Local many-to-one
   alignment and arbitrary learned anomaly models are not advertised as
   executable variants of these profiles.
 - Group Steiner uses a binary tree model and separated connectivity cuts,
@@ -281,7 +281,7 @@ The checkpoints below are historical and do not describe current coverage.
   these regressions down to cost scale 1e-200 and a large-integer distinction.
 - Latest complete reports: `cpu-comparison.xml` has **19,251 passes** with CUDA
   hidden; `gpu-0-comparison.xml` and `gpu-1-comparison.xml` each have **1,546
-  passes**, with no failures or skips. All previous operations were rerun after
+  passes**, with no failures or skips. All previous problems were rerun after
   the shared optimization change. New references enumerate tree edge subsets,
   all injective mappings for the graph-pair fixtures, edit-distance dynamic
   programs, all partitions for 729 signed four-record instances, and direct
@@ -302,7 +302,7 @@ The checkpoints below are historical and do not describe current coverage.
   access, port pagination and cancellation. The existing chat/browser and native
   job API remain on their earlier execution path; browser mode integration is
   still open. See `TYPED_ANALYTICS_WORKFLOWS.md` for the exact API and limits.
-- All 59 operation cards declare possible output ports. DAG validation checks
+- All 59 problem cards declare possible output ports. DAG validation checks
   references, cycles, accepted parameters and binding types; execution checks
   actual port availability, completeness and graph identity. Original typed IDs
   survive dependent graph extraction. Failed dependencies are marked blocked
@@ -340,7 +340,7 @@ The checkpoints below are historical and do not describe current coverage.
   after a failed dependency. GPU workflows also ran serially on both physical
   devices, checking recorded device assignment and numerical results.
   Source/dependency metadata accompanies both reports.
-- CPU algorithm coverage remains **57 of 70 problem contracts**, with **13 CPU
+- CPU algorithm coverage remains **57 of 70 topic contracts**, with **13 CPU
   integrations still required**. Native adaptation, family routing, natural
   language workflow planning, browser modes/visuals, deterministic queries/table
   construction, MCP, reviewed-example retrieval, memory-aware scheduling and
@@ -355,7 +355,7 @@ The checkpoints below are historical and do not describe current coverage.
   fixed renderers. A model cannot generate algorithm or visualization code on
   this path. This implements the interaction ideas using our own code; no
   YiGraph source or visual assets were copied.
-- A family decision precedes exact-operation selection and typed workflow
+- A family decision precedes exact-problem selection and typed workflow
   planning. Shortlists come from executable evidence-checked cards and accepted
   parameter schemas. One wrong-family reroute and one contract-based plan repair
   are allowed. Follow-ups receive the previous reviewed plan only within their
@@ -370,7 +370,7 @@ The checkpoints below are historical and do not describe current coverage.
   labeled when shortened. Completed steps remain accessible after cancellation
   or interruption. Retained-output completeness is separate from table paging.
 - Browser testing exposed a real completeness error: capped `k-cliques`
-  enumeration had an incomplete groups port but a complete operation flag.
+  enumeration had an incomplete groups port but a complete problem flag.
   The flag now propagates to triangle listing and workflows. Triangle listing's
   groups port is also declared in the capability schema. An independent
   combination oracle adds 106 cases across atlas graphs through five vertices.
@@ -392,7 +392,7 @@ The checkpoints below are historical and do not describe current coverage.
   authored model transport. Desktop and narrow-screen screenshots were visually
   inspected. Two existing `/classic` browser regressions also passed on the
   working tree using their synthetic native executable fixture.
-- CPU coverage remains **59 operations across 57 of 70 contracts**. Thirteen
+- CPU coverage remains **59 problems across 57 of 70 contracts**. Thirteen
   CPU integrations, native adaptation/unified evidence, deployed-model routing
   and conversation evaluation, deterministic queries/table construction, MCP,
   reviewed examples, memory-aware two-GPU scheduling, representation caching
@@ -401,8 +401,8 @@ The checkpoints below are historical and do not describe current coverage.
 
 ### Diffusion, layout and sparsification checkpoint
 
-- Added three CPU profiles, bringing coverage to **62 executable operations
-  across 60 of 70 problem contracts**. Influence maximization computes exact
+- Added three CPU profiles, bringing coverage to **62 executable problems
+  across 60 of 70 topic contracts**. Influence maximization computes exact
   expectations and seed-set optima for independent cascade and linear threshold
   with explicit work budgets. Rational comparisons preserve differences hidden
   by rounded displayed expectations. Fixed thresholds, parallel edges and
@@ -441,14 +441,14 @@ The checkpoints below are historical and do not describe current coverage.
   distance/maximum common subgraph, node embedding, knowledge-graph embedding,
   node prediction, graph prediction, geolocation, hypergraph node learning,
   single-graph frequent subgraph mining and graph condensation. Native
-  adaptation, deployed-model evaluation, deterministic queries/table operations,
+  adaptation, deployed-model evaluation, deterministic queries/table problems,
   MCP, reviewed examples, memory-aware scheduling, representation caching and
   external-scale evaluation remain open. The overall goal is not complete.
 
 ### Frequent-pattern and graph-collection checkpoint
 
-- Added two exact CPU profiles, bringing coverage to **64 operations across
-  62 of 70 problem contracts**. Transaction mining measures presence across
+- Added two exact CPU profiles, bringing coverage to **64 problems across
+  62 of 70 topic contracts**. Transaction mining measures presence across
   graphs; single-graph mining measures minimum-image support over all vertex
   embeddings. The profiles retain their different definitions and input kinds.
   Neither has a fixed five/six-edge cap. Candidate, time and output exhaustion
@@ -500,7 +500,7 @@ The checkpoints below are historical and do not describe current coverage.
 ### Exact graph-comparison checkpoint
 
 - Added `graph-edit-distance` and `maximum-common-subgraph`, bringing CPU
-  coverage to **66 operations across 63 of 70 problem contracts**. Both preserve
+  coverage to **66 problems across 63 of 70 topic contracts**. Both preserve
   direction and selected categorical labels, with explicit loop/parallel-edge
   normalization. Their exact profiles have work budgets and no fixed small
   vertex ceiling. Approximate modes, custom predicates and timed incumbent
@@ -554,9 +554,9 @@ and workflow-evaluation gaps take priority in the resumed work.
 - Added seven CPU utilities: `node-lookup`, `edge-filter`, `neighbors`,
   `common-neighbors`, `query-paths`, `graph-aggregate` and `query-subgraph`.
   Their contracts are documented in `RECORD_QUERIES.md` and advertised in
-  the new **Look up & summarize records** family. CPU problem coverage remains
-  **66 algorithm operations across 63 of 70 formal problems**; the seven
-  utilities are counted separately. The total executable CPU operation count
+  the new **Look up & summarize records** family. CPU topic coverage remains
+  **66 algorithm problems across 63 of 70 formal topics**; the seven
+  utilities are counted separately. The total executable CPU problem count
   is now **73**. GPU coverage remains **13 cuGraph profiles**.
 - Literal nested predicates and actual input fields are validated before
   queueing; derived records are checked at execution. Original typed vertex
@@ -596,19 +596,19 @@ and workflow-evaluation gaps take priority in the resumed work.
 - Added 20 assistant-authored development probes under
   `graphmine_agent.learning.analytics_queries`: ten lookups and ten dependent
   workflows sharing a small fictional fixture. The isolated reference replay
-  passed **20/20**, with operation, normalized-parameter, wiring, completion and
+  passed **20/20**, with problem, normalized-parameter, wiring, completion and
   output-value grading. The grader rejects ID-type changes, truncation,
-  mismatched parameters and extra operations. This is application execution
+  mismatched parameters and extra problems. This is application execution
   evidence, not real-model accuracy, human labels, held-out or external-benchmark
   evidence. No training data was changed. `--mode model` requires an explicitly
   enabled model endpoint and retains the planning trace.
 
 Remaining review work includes joins and multi-table construction (R2/R8),
-additional workflow selection/clarification behavior (R1/R5), richer operation
+additional workflow selection/clarification behavior (R1/R5), richer problem
 cards and schema mapping (R3), automatic bounded affected-step recovery (R6),
 per-port planning summaries (R7), deployed-model and external evaluation (R9),
 MCP and its client guide (R10), and approved-example retrieval (R11). Seven CPU
-problem integrations, native/unified evidence, scheduler/cache work and scale
+topic integrations, native/unified evidence, scheduler/cache work and scale
 verification remain required under A3/B1–B4. Existing browser modes, routing
 and workflow execution are implemented, but their remaining review acceptance
 details must still be verified before the overall goal can be complete.
@@ -626,12 +626,12 @@ the existing Python implementations as native CPU coverage.
   are reused.
 - The checkpoint embedded a module-based taxonomy. The current
   [family reference](FAMILIES.md) derives 14 families from `catalog/family.json`
-  and `catalog/problems.json`. The thin Python binding obtains operations, parameters and
+  and `catalog/problems.json`. The thin Python binding obtains problems, parameters and
   family membership from that native catalog. CPU/GPU selection and algorithm
-  execution occur inside C++. Unmigrated problems remain explicitly pending.
+  execution occur inside C++. Unmigrated topics remain explicitly pending.
 - Native CPU breadth-first search and triangle counting are implemented.
   BFS calls libcugraph directly on GPU; triangle counting links the original
-  ToT and WeTriC CUDA backends. This is **2 of 70 formal problems** in the new
+  ToT and WeTriC CUDA backends. This is **2 of 70 formal topics** in the new
   shared runtime, not a claim about the coverage of older native entry points.
 - Native oracle requests passed: **13 contract checks**, **4,608 BFS and 2,048
   triangle requests on CPU**, **4,608 BFS and 2,048 ToT requests on GPU 0**, and
@@ -663,7 +663,7 @@ the existing Python implementations as native CPU coverage.
 
 The existing public `graphmine.run`, application worker and web upload endpoint
 still await native migration. Remaining work includes all other profiles,
-native exact-number support for rational operations, cuDF-backed table
+native exact-number support for rational problems, cuDF-backed table
 construction, application evidence gating, and the open review requirements
 above. The overall goal remains incomplete.
 
@@ -709,7 +709,7 @@ above. The overall goal remains incomplete.
   build configuration, resolved dependency hashes and the staged app sources.
 
 This completes the cuDF upload path for the current bounded delimited-file
-profile. Native formal-problem integration remains **2 of 70** in the shared
+profile. Native formal-topic integration remains **2 of 70** in the shared
 runtime. The public reference algorithm API and application algorithm worker,
 other native backends, exact-number support, multi-table/task-aware projections
 and all other open review acceptance requirements still need migration or
@@ -720,9 +720,9 @@ completion. The overall goal remains active.
 - Added native C++ CPU profiles for single-/many-source weighted paths,
   minimum/maximum spanning forests, weak/strong connected components,
   topological sort, PageRank, personalized PageRank and all eight local link
-  scores. Alongside BFS and triangles, **10 of 70 formal problems now have
-  profiles in the shared runtime**. Other profiles of those problems and the
-  remaining formal problems still require migration.
+  scores. Alongside BFS and triangles, **10 of 70 formal topics now have
+  profiles in the shared runtime**. Other profiles of those topics and the
+  remaining formal topics still require migration.
 - Weighted paths, forests, both connectivity modes, PageRank, supported
   personalized variants and Jaccard call libcugraph directly through its C API.
   Unsupported GPU variants select native CPU in auto mode with a reason;
@@ -768,7 +768,7 @@ validation in scope.
 
 ### Native mining integration checkpoint
 
-- The standalone core now implements profiles for **16 of 70 formal problems**.
+- The standalone core now implements profiles for **16 of 70 formal topics**.
   Added native C++ maximal cliques, maximum clique, fixed-size clique counting
   and enumeration, core decomposition, maximum independent set and minimum
   vertex cover. The same native catalog supplies Python family methods and
@@ -811,7 +811,7 @@ and device evidence. These reports are a migration checkpoint, not an
 application execution gate or a claim that the whole goal is complete.
 
 Remaining requirements include native profiles for the other **54 formal
-problems**, remaining profiles/backends within the sixteen integrated problems,
+topics**, remaining profiles/backends within the sixteen integrated topics,
 extended exact numeric storage, the native application worker and evidence
 gate, plus all unfinished A/R/B items above: task-aware projections and joins,
 interaction/routing/recovery, model/external evaluation, MCP and reviewed
@@ -822,8 +822,8 @@ visualization path. The overall goal remains active.
 
 ### Native structure and centrality checkpoint
 
-- The standalone core now exposes **20 operations covering profiles for 18 of
-  70 formal problems**. New C++ implementations cover biconnected edge blocks,
+- The standalone core now exposes **20 problems covering profiles for 18 of
+  70 formal topics**. New C++ implementations cover biconnected edge blocks,
   full truss decomposition, degree centrality and exact all-source betweenness.
   Direct native libcugraph adds truss extraction and betweenness; original
   TurboBC is linked through the same C++/CUDA runtime.
@@ -859,18 +859,18 @@ and results from the core. Tabular ingestion remains native cuDF and browser
 rendering remains Cytoscape.
 
 The goal remains **active**. Required work includes native coverage for the
-remaining **52 formal problems**, unimplemented contract variants within
-migrated problems, migration of the reference API/application algorithm
+remaining **52 formal topics**, unimplemented contract variants within
+migrated topics, migration of the reference API/application algorithm
 worker, and all unfinished A/R/B requirements above. Passing native profile
 checks does not establish completion of the full formal contracts or the
 review integration.
 
 ### Native matching and flow checkpoint
 
-- The standalone C++/CUDA core now exposes **23 operations covering profiles
-  for 21 of 70 formal problems**. New CPU implementations provide general
+- The standalone C++/CUDA core now exposes **23 problems covering profiles
+  for 21 of 70 formal topics**. New CPU implementations provide general
   maximum-weight matching, bipartite cardinality/weight/cost matching, and
-  maximum flow/minimum cut. The Python wrapper obtains these operations from
+  maximum flow/minimum cut. The Python wrapper obtains these problems from
   the same native family catalog and invokes the same C ABI.
 - Weighted Blossom uses checked exact integer scaling of admitted binary64
   weights. Bipartite matching uses exact residual costs and explicitly reports
@@ -909,15 +909,15 @@ Reports are under `validation/native_optimization`.
 sources, and 32 resolved native dependencies. All GPU source hashes match the
 exact Git index. The 169 pre-existing tracked modifications remain preserved.
 
-The remaining **49 formal problems**, unfinished variants within migrated
-problems, the native application worker/evidence gate, and the remaining A/R/B
+The remaining **49 formal topics**, unfinished variants within migrated
+topics, the native application worker/evidence gate, and the remaining A/R/B
 requirements still need implementation and verification. The overall review
 integration goal remains active.
 
 ### Native selection and sampling checkpoint (2026-10-11)
 
-- The standalone core now exposes **28 operations covering supported profiles
-  for 26 of 70 formal problems**. The five additions are maximal independent
+- The standalone core now exposes **28 problems covering supported profiles
+  for 26 of 70 formal topics**. The five additions are maximal independent
   sets, vertex coloring, random walks, neighborhood sampling and induced/ego
   subgraphs. Their family methods come from the same native catalog in C++,
   the CLI and the thin Python wrapper.
@@ -933,7 +933,7 @@ integration goal remains active.
 - Subgraphs retain original typed IDs, parallel records and nested properties.
   Ego discovery supports incoming/outgoing/undirected traversal. Derived graph
   ports now carry a fingerprint of the returned graph alongside input lineage,
-  verified by chaining another native operation on that output.
+  verified by chaining another native problem on that output.
 - The new independent suites passed **50,950 requests**: **22,402 CPU** and
   **14,274 per GPU**. They cover exhaustive small graphs, seeded probability
   checks, exact timestamps, resource limits and a 257-vertex path plus an
@@ -955,8 +955,8 @@ Reports are under `validation/native_selection`. The source inventory covers
 GPU build uses the committed root build configuration and preserves unrelated
 working changes.
 
-The remaining **44 formal problems**, unimplemented variants within migrated
-problems, the native application algorithm worker/evidence gate, and the
+The remaining **44 formal topics**, unimplemented variants within migrated
+topics, the native application algorithm worker/evidence gate, and the
 remaining routing, recovery, table projection, MCP, reviewed-example,
 scheduling/cache and scale-evaluation requirements remain open. This is a
 native library checkpoint, not completion of the full redesign.

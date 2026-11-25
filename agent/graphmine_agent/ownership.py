@@ -21,7 +21,7 @@ class StoreLock:
         except BlockingIOError:
             handle.close()
             raise RuntimeError(
-                "The data store is already owned by another worker or maintenance operation"
+                "The data store is already owned by another worker or maintenance problem"
             ) from None
         except BaseException:
             handle.close()

@@ -18,7 +18,7 @@ def make_workflow(runtime, principal, identifier="admin-cancel-work"):
         session = runtime.database.create_session(SessionRecord(domain_id="general", title="PRIVATE CONVERSATION"))
     record = {"id": identifier, "session_id": session.id, "revision": 1, "status": "draft", "mode": "expert", "steps": {},
               "created_at": datetime.now(timezone.utc).isoformat(), "private_question": "PRIVATE QUESTION",
-              "validation": {"workflow_hash": "test-hash", "plan": {"device": "cpu", "steps": [{"id": "core", "operation": "k-core", "device": "cpu", "parameters": {"k": 2}}]}},
+              "validation": {"workflow_hash": "test-hash", "plan": {"device": "cpu", "steps": [{"id": "core", "problem": "k-core", "device": "cpu", "parameters": {"k": 2}}]}},
               "input_provenance": {"graph": {"file_snapshot": {"name": "triangle.json", "graph": {"vertex_count": 3, "edge_count": 3}}, "private_input": "PRIVATE CONTENT"}}}
     runtime.analytics._save(record)
     runtime.analytics._write(runtime.analytics._directory(record) / "inputs.json", {})
@@ -125,7 +125,7 @@ def test_usage_measured_totals_percentiles_comparison_cache_and_missing_values(c
                             details={"tokens": 50, "reasoning_tokens": 20, "stage_ms": {"route": ms}, "private": "PRIVATE TEXT"})
     admin_events.record(accounts.database, "question", "Question completed", user_id=user, duration_ms=400, ts=now - 7 * 86400 - 10, details={"tokens": 30})
     admin_events.record(accounts.database, "calculation", "Calculation failed", user_id=user, outcome="failed", duration_ms=250,
-                        details={"datasets": ["triangle.json"], "operations": ["k-core"]})
+                        details={"datasets": ["triangle.json"], "problems": ["k-core"]})
     admin_events.record(accounts.database, "error", "Calculation failure", user_id=user, outcome="worker_failure", details={"code": "worker_failure"})
     response = client.get("/api/admin/usage?days=7", headers=admin)
     assert response.status_code == 200, response.text
@@ -166,7 +166,7 @@ def test_cancel_waiting_legacy_batch_refunds_only_cancelled_jobs(console):
 
     async def enqueue():
         with identity_scope(principal):
-            plan = ExecutionPlan(session_id=session.id, graph_id="unused-test-input", problem_id="maximal_clique_enumeration", operation_id="maximal-cliques")
+            plan = ExecutionPlan(session_id=session.id, graph_id="unused-test-input", topic_id="maximal_clique_enumeration", problem_id="maximal-cliques")
             jobs = await runtime.jobs.enqueue_many([plan, plan], analysis_id="admin-refund-batch")
         for _ in range(100):
             if accounts.waiting.get("execution"):

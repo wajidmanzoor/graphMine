@@ -29,7 +29,7 @@ def _has_path(value: Any, path: str) -> bool:
 
 
 def validate_result(
-    catalog: Catalog, operation_id: str, payload: dict[str, Any]
+    catalog: Catalog, problem_id: str, payload: dict[str, Any]
 ) -> None:
     if not isinstance(payload.get("ok"), bool):
         raise ResultValidationError("GraphMine result is missing boolean field 'ok'")
@@ -44,7 +44,7 @@ def validate_result(
     output = payload["output"]
     if not isinstance(output, dict):
         raise ResultValidationError("successful result output must be an object")
-    contract = catalog.operation(operation_id)
+    contract = catalog.problem(problem_id)
     missing = [
         path
         for path in contract.manifest["required_outputs"]
@@ -52,7 +52,7 @@ def validate_result(
     ]
     if missing:
         raise ResultValidationError(
-            f"result for {operation_id} is missing required outputs: {missing}"
+            f"result for {problem_id} is missing required outputs: {missing}"
         )
 
 

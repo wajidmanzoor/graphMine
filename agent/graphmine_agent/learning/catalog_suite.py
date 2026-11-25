@@ -126,7 +126,7 @@ def build_suite(catalog: Catalog, *, seed: int = 20261007) -> dict:
     cases = []
 
     def add(
-        operation,
+        problem,
         question,
         graph=small,
         *,
@@ -137,12 +137,12 @@ def build_suite(catalog: Catalog, *, seed: int = 20261007) -> dict:
         tag="supported",
         status="ready",
         identifier=None,
-        problem_id=None,
+        topic_id=None,
     ):
         task = {
             "question": question,
-            "problem_id": problem_id or catalog.operation(operation).problem_id,
-            "operation_id": operation,
+            "topic_id": topic_id or catalog.problem(problem).topic_id,
+            "problem_id": problem,
             "parameters": parameters or {},
             "optional_outputs": list(outputs),
             "intent": ApplicationIntent(
@@ -151,7 +151,7 @@ def build_suite(catalog: Catalog, *, seed: int = 20261007) -> dict:
             "expected_status": status,
         }
         item = {
-            "id": identifier or f"{operation}--{tag}",
+            "id": identifier or f"{problem}--{tag}",
             "domain_id": "general",
             "split": "development",
             "tags": [tag],
@@ -459,25 +459,25 @@ def build_suite(catalog: Catalog, *, seed: int = 20261007) -> dict:
     )
 
     unsupported = {
-        name: problem
-        for name, problem in catalog.problems.items()
-        if problem["library_support"]["status"] != "validated"
+        name: topic
+        for name, topic in catalog.topics.items()
+        if topic["library_support"]["status"] != "validated"
     }
-    for name, problem in sorted(unsupported.items()):
+    for name, topic in sorted(unsupported.items()):
         add(
             None,
-            problem["spec"]["problem_statement"],
-            problem_id=name,
+            topic["spec"]["problem_statement"],
+            topic_id=name,
             identifier=f"{name}--unavailable",
             tag="catalog_capability_probe",
             status="unsupported",
         )
     covered = {
-        case["task"]["operation_id"] for case in cases if case["tags"] == ["supported"]
+        case["task"]["problem_id"] for case in cases if case["tags"] == ["supported"]
     }
-    if covered != set(catalog.manifest_operations):
+    if covered != set(catalog.manifest_problems):
         raise ValueError(
-            "Current-catalog fixture coverage must be updated for the executable operations"
+            "Current-catalog fixture coverage must be updated for the executable problems"
         )
     if len({case["id"] for case in cases}) != len(cases):
         raise ValueError("Duplicate development case IDs")

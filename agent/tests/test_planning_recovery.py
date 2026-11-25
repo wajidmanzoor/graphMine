@@ -77,10 +77,10 @@ def upload(client, *, directed=False):
     return session, response.json()["id"]
 
 
-def route(catalog, operation, intent=None, **kwargs):
+def route(catalog, problem, intent=None, **kwargs):
     return RouteDecision(
-        problem_id=catalog.operation(operation).problem_id,
-        operation_id=operation,
+        topic_id=catalog.problem(problem).topic_id,
+        problem_id=problem,
         supported=True,
         confidence=1,
         explanation="Authored recovery fixture.",
@@ -120,7 +120,7 @@ def test_real_regression_can_recover_through_execution_and_grounded_answer(
         import sys
         from pathlib import Path
         if sys.argv[1] == "list":
-            print(json.dumps({"operation_count": 1, "library_version": "1.0.0", "validated_backend_count": 1, "compiled_backend_count": 1, "operations": [{"id": "k-cliques", "backends": [{"id": "kcgpu", "compiled": True, "validated": True}]}]}))
+            print(json.dumps({"problem_count": 1, "library_version": "1.0.0", "validated_backend_count": 1, "compiled_backend_count": 1, "problems": [{"id": "k-cliques", "backends": [{"id": "kcgpu", "compiled": True, "validated": True}]}]}))
         elif sys.argv[1:3] == ["run", "k-cliques"]:
             graph = json.loads(Path(sys.argv[sys.argv.index("--graph") + 1]).read_text())
             k = int(sys.argv[sys.argv.index("--k") + 1])
@@ -164,12 +164,12 @@ def test_real_regression_can_recover_through_execution_and_grounded_answer(
                     assert payload["message"] == QUESTION
                     assert (
                         payload["routing_review"]["failure"]["code"]
-                        == "selected_operation_refused"
+                        == "selected_problem_refused"
                     )
                     return route(catalog, "k-cliques", corrected_intent)
                 return route(catalog, "maximal-cliques", original_intent)
             assert kwargs["schema"] is PlanDraft
-            if payload["selected_operation"]["operation_id"] == "maximal-cliques":
+            if payload["selected_problem"]["problem_id"] == "maximal-cliques":
                 return refused()
             assert payload["message"] == QUESTION
             assert payload["application_intent"]["pattern_vertex_count"] == 3
@@ -187,7 +187,7 @@ def test_real_regression_can_recover_through_execution_and_grounded_answer(
         body = response.json()
         assert (
             body["planning_status"] == "ready"
-            and body["plan"]["operation_id"] == "k-cliques"
+            and body["plan"]["problem_id"] == "k-cliques"
         )
         assert [name for name, _ in calls] == [
             "RouteDecision",
@@ -405,8 +405,8 @@ def test_only_one_recovery_is_allowed_across_all_required_steps(settings, catalo
         calls = []
         supporting = AnalysisTask(
             question="Identify the accounts that connect these groups.",
-            problem_id=catalog.operation("maximal-cliques").problem_id,
-            operation_id="maximal-cliques",
+            topic_id=catalog.problem("maximal-cliques").topic_id,
+            problem_id="maximal-cliques",
         )
 
         async def model(**kwargs):
@@ -420,7 +420,7 @@ def test_only_one_recovery_is_allowed_across_all_required_steps(settings, catalo
                 return route(
                     catalog, "maximal-cliques", additional_analyses=[supporting]
                 )
-            if payload["selected_operation"]["operation_id"] == "k-cliques":
+            if payload["selected_problem"]["problem_id"] == "k-cliques":
                 return ready(parameters={"k": 3}, optional_outputs=["cliques"])
             return refused()
 
@@ -457,8 +457,8 @@ def test_recovery_updates_the_supporting_step_without_changing_the_primary(
         session, graph_id = upload(client)
         supporting = AnalysisTask(
             question="Rank accounts by how often they mediate shortest routes.",
-            problem_id=catalog.operation("maximal-cliques").problem_id,
-            operation_id="maximal-cliques",
+            topic_id=catalog.problem("maximal-cliques").topic_id,
+            problem_id="maximal-cliques",
         )
         question = QUESTION + " " + supporting.question
         drafts = []
@@ -474,11 +474,11 @@ def test_recovery_updates_the_supporting_step_without_changing_the_primary(
                     )
                     return route(catalog, "betweenness-centrality")
                 return route(catalog, "k-cliques", additional_analyses=[supporting])
-            operation = payload["selected_operation"]["operation_id"]
-            drafts.append(operation)
-            if operation == "maximal-cliques":
+            problem = payload["selected_problem"]["problem_id"]
+            drafts.append(problem)
+            if problem == "maximal-cliques":
                 return refused()
-            return ready(parameters={"k": 3} if operation == "k-cliques" else {})
+            return ready(parameters={"k": 3} if problem == "k-cliques" else {})
 
         client.app.state.runtime.agent.model.generate = model
         response = client.post(
@@ -489,7 +489,7 @@ def test_recovery_updates_the_supporting_step_without_changing_the_primary(
         assert response.status_code == 200, response.text
         body = response.json()
         assert body["status"] == "ready"
-        assert [plan["operation_id"] for plan in body["plans"]] == [
+        assert [plan["problem_id"] for plan in body["plans"]] == [
             "k-cliques",
             "betweenness-centrality",
         ]
@@ -497,14 +497,14 @@ def test_recovery_updates_the_supporting_step_without_changing_the_primary(
         assert body["decision"]["additional_analyses"] == [
             {
                 "question": supporting.question,
-                "operation_id": "betweenness-centrality",
-                "problem_id": catalog.operation("betweenness-centrality").problem_id,
+                "problem_id": "betweenness-centrality",
+                "topic_id": catalog.problem("betweenness-centrality").topic_id,
             }
         ]
         messages = client.app.state.runtime.database.messages(session)
         assert len(messages) == 2
         assert messages[0]["payload"]["message"] == question
-        assert [plan["operation_id"] for plan in messages[1]["payload"]["plans"]] == [
+        assert [plan["problem_id"] for plan in messages[1]["payload"]["plans"]] == [
             "k-cliques",
             "betweenness-centrality",
         ]
@@ -536,7 +536,7 @@ def test_recovery_inspection_is_bounded_and_does_not_approve_execution(
                         DataInspection(target="vertices", fields=["label"], limit=2)
                     ],
                 )
-            if payload["selected_operation"]["operation_id"] == "k-cliques":
+            if payload["selected_problem"]["problem_id"] == "k-cliques":
                 return ready(parameters={"k": 3}, optional_outputs=["cliques"])
             return refused()
 

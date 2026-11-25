@@ -1,9 +1,9 @@
 # Standard graph views: Step 3 family notes
 
-Step 3 is complete in `devlopment`: all 82 CPU operations consume declared
+Step 3 is complete in `devlopment`: all 82 CPU problems consume declared
 views. Production is unchanged. The [completion report](graph_views_step3_report.md)
 lists files, validation totals, per-dataset artifacts and evidence for every
-operation. These notes record each family's changes and independent commit gates.
+problem. These notes record each family's changes and independent commit gates.
 
 ## Prerequisite extensions
 
@@ -62,7 +62,7 @@ the factory instead of overwriting them in the adapter.
 Checkpoint `02-weighted-paths` passes 53 CTests, 238 Python tests and all 82 CPU
 admissions. Its five-profile golden compares offsets, neighbors, f64 weight bits,
 direction, successful candidate counts and rejection messages against the frozen
-old builders, including cold/warm cache cases. Real operation requests also check
+old builders, including cold/warm cache cases. Real problem requests also check
 that the consumed spec equals the adapter's declaration. CPU path arithmetic and
 tie-breaking are unchanged; the cuGraph code path remains for Step 4.
 
@@ -76,7 +76,7 @@ self-loops before consuming the view.
 
 Checkpoint `03-connectivity` passes 53 CTests, 238 Python tests and all 82 CPU
 admissions. Three profile goldens cover the complete Step 2 corpus and check
-forward/reverse arrays, weights, direction and candidate costs. Real-operation
+forward/reverse arrays, weights, direction and candidate costs. Real-problem
 checks verify each selected declaration. GPU connectivity adapters remain for
 their later migration steps.
 
@@ -90,7 +90,7 @@ construction remains part of the independent-set/vertex-cover algorithm.
 Checkpoint `04-cliques` passes 53 CTests, 238 Python tests and all 82 CPU
 admissions. Six profile goldens compare CSR arrays and the repacked row bytes
 against the frozen old adjacency builder on all 6,571 corpus graphs, with cold
-and warm cache calls and equal candidate costs (39,426 profile cases). Operation
+and warm cache calls and equal candidate costs (39,426 profile cases). Problem
 requests check the consumed declaration, including tie enumeration, fixed-size
 enumeration, core selection and vertex-cover decision modes. GPU paths retain
 their existing adapters.
@@ -153,7 +153,7 @@ continue to use their existing input path.
 
 Checkpoint `08-coloring` passes 53 CTests, 238 Python tests and all 82 CPU
 admissions. Both profiles pass 13,142 corpus cases comparing CSR and copied row
-bytes, with identical candidate costs. Real-operation checks verify declarations
+bytes, with identical candidate costs. Real-problem checks verify declarations
 for maximal independent set and both supported coloring distances.
 
 ## Similarity
@@ -187,16 +187,16 @@ gates, and the original build log is preserved in `diagnostics/`.
 
 ## Community detection and balanced partitioning
 
-Both CPU operations now declare exact-rational COO profiles for weighted and
+Both CPU problems now declare exact-rational COO profiles for weighted and
 unweighted input. Parallel sums, canonical edge order, original edge identities
 and rejection behavior match the frozen exact edge-list builder. Partition
 objectives, search order and the community heuristic remain unchanged.
 
 Checkpoint `11-partitioning` passes 53 CTests, 238 Python tests and all 82 CPU
-admissions. Four profiles pass 26,284 corpus cases. Real-operation declaration
+admissions. Four profiles pass 26,284 corpus cases. Real-problem declaration
 checks cover both community quality functions, exact/heuristic search, both
 weight modes and both balanced-cut objectives. GPU adapters and the separate
-signed-balance operation retain their existing paths for subsequent migrations.
+signed-balance problem retain their existing paths for subsequent migrations.
 
 ## Spectral operators
 
@@ -350,7 +350,7 @@ Checkpoint `22-steiner` passes 53 CTests, 238 Python tests and all 82 CPU
 admissions. All 6,571 corpus cases match edge endpoints, exact weights, selected
 original IDs, visit order, costs and rejections. Tests cover equal/lower parallel
 weights, negative/missing loop weights, budgets and both accepted quality
-settings, with fresh/cache-hit and real-operation declaration checks.
+settings, with fresh/cache-hit and real-problem declaration checks.
 
 ## Graph coarsening
 
@@ -541,7 +541,7 @@ through the corrected structured entry point, before the final evidence refresh.
 
 ## Hypergraph partitioning and learning
 
-Both CPU hypergraph operations now consume V5 incidence with exact rational
+Both CPU hypergraph problems now consume V5 incidence with exact rational
 vertex/hyperedge weights and unsorted member order. The layout decoder preserves
 original hyperedge identities and membership order. Structured validation,
 candidate budgets and typed vertex attributes stay in the common front;
@@ -689,7 +689,7 @@ Selected-label decoding and conflicting-parallel/loop validation retain their
 previous order and costs. Correspondence search and edit scripts are unchanged.
 
 Checkpoint `45-comparison` passes 53 CTests, 238 Python tests and all 82 CPU
-admissions. Both operations, exact/ignored labels and reject/collapse policies
+admissions. Both problems, exact/ignored labels and reject/collapse policies
 pass 52,568 corpus cases on builds/hits. Checks compare normalized graph JSON,
 label keys, oriented endpoints, identity indices, costs and rejections. Requests
 verify all four declarations and every supported label-field subset; boundary
@@ -712,7 +712,7 @@ Requests cover induced/non-induced mining, support IDs, images and empty/multipl
 members. A missed pointer-to-reference call site in the required-profile cleanup
 was corrected before final validation; its build diagnostic is retained.
 
-## Bipartite operations
+## Bipartite problems
 
 Maximal bicliques, butterflies, maximal biclique counting and the three matching
 objectives now consume V3. Layout decoders reverse the factory's side grouping

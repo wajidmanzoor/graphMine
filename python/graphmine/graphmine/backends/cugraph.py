@@ -3,9 +3,9 @@ from __future__ import annotations
 import importlib.util
 import os
 
-from ..exceptions import BackendUnavailable, GraphMineError, UnsupportedOperation
+from ..exceptions import BackendUnavailable, GraphMineError, UnsupportedProblem
 
-OPERATIONS = frozenset(
+PROBLEMS = frozenset(
     {
         "breadth-first-search",
         "single-source-shortest-paths",
@@ -28,34 +28,34 @@ def installed() -> bool:
     return importlib.util.find_spec("nx_cugraph") is not None
 
 
-def supports(operation: str, args: dict) -> tuple[bool, str]:
-    if operation not in OPERATIONS:
-        return False, "This operation has no cuGraph integration"
+def supports(problem: str, args: dict) -> tuple[bool, str]:
+    if problem not in PROBLEMS:
+        return False, "This problem has no cuGraph integration"
     if (
-        operation == "connected-components"
+        problem == "connected-components"
         and args["connectivity_mode"] != "weakly_connected"
     ):
         return False, "The nx-cugraph profile supports weak connectivity only"
-    if operation == "betweenness-centrality" and args["weight_mode"] != "unweighted":
+    if problem == "betweenness-centrality" and args["weight_mode"] != "unweighted":
         return False, "The cuGraph betweenness profile supports unweighted paths only"
-    if operation == "link-prediction" and args["scoring_measure"] != "jaccard":
+    if problem == "link-prediction" and args["scoring_measure"] != "jaccard":
         return False, "The nx-cugraph similarity profile currently supports Jaccard"
     if (
-        operation == "personalized-pagerank"
+        problem == "personalized-pagerank"
         and args["dangling_policy"] == "redistribute_uniformly"
     ):
         return (
             False,
             "The nx-cugraph personalized PageRank profile does not support custom dangling weights",
         )
-    if operation == "triangle-counting" and (
+    if problem == "triangle-counting" and (
         args["list_instances"] or args["include_per_edge_counts"]
     ):
         return (
             False,
             "The cuGraph triangle profile provides counts and per-vertex counts",
         )
-    if operation == "induced-subgraph" and args["mode"] != "ego":
+    if problem == "induced-subgraph" and args["mode"] != "ego":
         return (
             False,
             "Explicit vertex-induced extraction currently uses the CPU adapter",
@@ -63,13 +63,13 @@ def supports(operation: str, args: dict) -> tuple[bool, str]:
     return True, ""
 
 
-def prepare(operation: str, args: dict, graph=None) -> dict:
-    supported, reason = supports(operation, args)
+def prepare(problem: str, args: dict, graph=None) -> dict:
+    supported, reason = supports(problem, args)
     if not supported:
-        raise UnsupportedOperation(reason)
+        raise UnsupportedProblem(reason)
     if not installed():
         raise BackendUnavailable("Install graphmine[gpu] to use the cuGraph backend")
-    if graph is not None and operation in {
+    if graph is not None and problem in {
         "single-source-shortest-paths",
         "many-source-shortest-paths",
         "spanning-tree-forest",
@@ -82,17 +82,17 @@ def prepare(operation: str, args: dict, graph=None) -> dict:
         except OverflowError:
             loses_precision = True
         if loses_precision:
-            raise UnsupportedOperation(
+            raise UnsupportedProblem(
                 "cuGraph float64 cannot exactly represent these integer weights; use CPU"
             )
         if (
-            operation != "spanning-tree-forest"
+            problem != "spanning-tree-forest"
             and weights
             and all(type(value) is int for value in weights)
             and max(abs(value) for value in weights) * max(1, graph.vertex_count - 1)
             > 2**53
         ):
-            raise UnsupportedOperation(
+            raise UnsupportedProblem(
                 "Integer path costs may exceed exact float64 range; use CPU"
             )
     try:
@@ -107,7 +107,7 @@ def prepare(operation: str, args: dict, graph=None) -> dict:
             "id": "cugraph",
             "device": "gpu",
             "library": "cuGraph"
-            if operation == "spanning-tree-forest"
+            if problem == "spanning-tree-forest"
             else "nx-cugraph",
             "version": nx_cugraph.__version__,
             "device_index": index,

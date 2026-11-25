@@ -34,7 +34,7 @@ def load_config(path):
     config = json.loads(path.read_text())
     if config["schema_version"] != 1:
         raise ValueError("Unsupported benchmark configuration")
-    for name, maximum in (("bootstrap_examples_per_operation", 3), ("repeats", 10)):
+    for name, maximum in (("bootstrap_examples_per_problem", 3), ("repeats", 10)):
         if type(config[name]) is not int or not 1 <= config[name] <= maximum:
             raise ValueError(f"{name} must be between 1 and {maximum}")
     for name in ("max_candidates", "max_output_items"):
@@ -45,7 +45,7 @@ def load_config(path):
     if timeout is not None and (type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0):
         raise ValueError("timeout_seconds must be null or positive and finite")
     expand_graphs(config)
-    for profile in config["operations"].values():
+    for profile in config["problems"].values():
         for values in profile.get("parameter_grid", {}).values():
             if not isinstance(values, list) or not 1 <= len(values) <= 16:
                 raise ValueError("Parameter grid entries need 1 to 16 values")
@@ -59,15 +59,15 @@ def parameter_grid(profile):
             for combination in itertools.product(*values)]
 
 
-def bind_parameters(operation, graph, supplied):
+def bind_parameters(problem, graph, supplied):
     parameters = dict(supplied)
     vertices = [v["id"] for v in graph["vertices"]]
     if not vertices:
         raise ValueError("Benchmark bindings require a nonempty graph")
     first, last = vertices[0], vertices[-1]
     pattern = canonical("benchmark-triangle", 3, {(0, 1), (1, 2), (0, 2)},
-                        directed=operation == "temporal-motifs")
-    if operation == "temporal-motifs":
+                        directed=problem == "temporal-motifs")
+    if problem == "temporal-motifs":
         pattern["edges"] = [dict(id=i, source=u, target=v)
                             for i, (u, v) in enumerate(((0, 1), (1, 2), (0, 2)))]
     bindings = {
@@ -84,7 +84,7 @@ def bind_parameters(operation, graph, supplied):
         "motif-counting": {"motifs": [pattern]},
         "temporal-motifs": {"temporal_motif": {"graph": pattern}},
     }
-    if operation == "dynamic-triangle-counting":
+    if problem == "dynamic-triangle-counting":
         edges = graph["edges"]
         pairs = {(e["source"], e["target"]) for e in edges}
         updates = ([dict(kind="delete_edge", source=edges[0]["source"], target=edges[0]["target"])] if edges else [])
@@ -92,17 +92,17 @@ def bind_parameters(operation, graph, supplied):
             if (u, v) not in pairs and (v, u) not in pairs:
                 updates.append(dict(kind="insert_edge", source=u, target=v))
                 break
-        bindings[operation] = {"updates": updates}
+        bindings[problem] = {"updates": updates}
     # Explicit configuration wins over convenience bindings. Native validation
     # still validates graph-local identities before a backend is run.
-    return {**bindings.get(operation, {}), **parameters}
+    return {**bindings.get(problem, {}), **parameters}
 
 
 def select_graphs(config, cards, *, full=False):
     graphs = expand_graphs(config)
     by_id, selected, general = {s["id"]: s for s in graphs}, {}, 0
     for card in sorted(cards, key=lambda c: c["id"]):
-        profile = config["operations"].get(card["id"])
+        profile = config["problems"].get(card["id"])
         if profile is None:
             raise ValueError(f"No benchmark input/parameter profile for {card['id']}")
         tag = profile["graph_tag"]
@@ -120,9 +120,9 @@ def select_graphs(config, cards, *, full=False):
     return selected
 
 
-def attempt_keys(implementation, operation, backend, graph_hash, parameters, budget, repetition):
+def attempt_keys(implementation, problem, backend, graph_hash, parameters, budget, repetition):
     # A comparison set must have exactly the same input, parameters and budget.
-    comparison = digest(dict(implementation=implementation, operation=operation,
+    comparison = digest(dict(implementation=implementation, problem=problem,
                              graph=graph_hash, parameters=parameters, budget=budget))
     pair = digest(dict(comparison=comparison, backend=backend))
     return comparison, pair, digest(dict(pair=pair, repetition=repetition))

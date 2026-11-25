@@ -111,8 +111,8 @@ struct Fixture {
     return count;
   }
 };
-json::object request(const char* operation, const Fixture& f, json::object args = {}) {
-  return {{"command", "run"},    {"operation", operation},
+json::object request(const char* problem, const Fixture& f, json::object args = {}) {
+  return {{"command", "run"},    {"problem", problem},
           {"graph", f.graph},    {"parameters", args},
           {"backend", backend},  {"device", backend == "cpp" ? "cpu" : "gpu"},
           {"gpu_device", device}};
@@ -266,21 +266,21 @@ void blocks(const Fixture& f) {
 }
 void contracts() {
   const Fixture f(5, 0x3ff);
-  const auto operations = backend == "cpp"
+  const auto problems = backend == "cpp"
                               ? std::vector<const char*>{"biconnected-components", "k-truss"}
                               : std::vector<const char*>{"k-truss"};
-  for (const auto operation : operations) {
-    auto directed = request(operation, f);
+  for (const auto problem : problems) {
+    auto directed = request(problem, f);
     directed.at("graph").as_object().at("graph").as_object()["directed"] = true;
     invoke(directed, "invalid_input");
-    auto unknown = request(operation, f, {{"unknown", 1}});
+    auto unknown = request(problem, f, {{"unknown", 1}});
     invoke(unknown, "invalid_input");
     for (const auto key : {"max_output_items", "max_candidates"}) {
-      auto limited = request(operation, f);
+      auto limited = request(problem, f);
       limited["budget"] = json::object{{key, 1}};
       invoke(limited, "resource_limit");
     }
-    auto expired = request(operation, f);
+    auto expired = request(problem, f);
     expired["budget"] = {{"timeout_seconds", 1e-12}};
     invoke(expired, "resource_limit");
   }
@@ -320,7 +320,7 @@ void boundaries() {
             "Incorrect deep-graph k selection");
     }
     if (!clique && backend == "cpp") {
-      input["operation"] = "biconnected-components";
+      input["problem"] = "biconnected-components";
       input["parameters"] = json::object{};
       const auto output = invoke(input);
       const auto& result = output.at("result").as_object();

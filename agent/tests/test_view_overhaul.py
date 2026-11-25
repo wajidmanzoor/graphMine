@@ -26,8 +26,8 @@ class Service:
     def __init__(self, root, output=None):
         self.root = root
         self.g = graph()
-        self.output = output or {"operation": "densest-subgraph", "ports": {"out": {"type": "vertex_set", "value": [0, "0"], "complete": True}}}
-        self.records = {"w": {"id": "w", "session_id": "s", "revision": 1, "validation": {"plan": {"steps": [{"id": "analysis", "operation": self.output["operation"], "input": {"input": "main"}, "parameters": {}}]}, "order": ["analysis"]}}}
+        self.output = output or {"problem": "densest-subgraph", "ports": {"out": {"type": "vertex_set", "value": [0, "0"], "complete": True}}}
+        self.records = {"w": {"id": "w", "session_id": "s", "revision": 1, "validation": {"plan": {"steps": [{"id": "analysis", "problem": self.output["problem"], "input": {"input": "main"}, "parameters": {}}]}, "order": ["analysis"]}}}
 
     def get(self, key):
         if key not in self.records:
@@ -54,16 +54,16 @@ def request(cls=ViewRequest, **kwargs):
     return cls(expected_revision=1, **kwargs)
 
 
-def test_all_native_types_and_82_operations_have_roles_and_25_profile_defaults():
+def test_all_native_types_and_82_problems_have_roles_and_25_profile_defaults():
     root = Path(__file__).resolve().parents[2]
     types = set(re.findall(r'port\("([a-z_]+)"\)', (root / "library/runtime/registry.cpp").read_text()))
     assert types <= TYPE_ROLES.keys()
     source = ast.parse((root / "python/graphmine/graphmine/ports.py").read_text())
     ports = ast.literal_eval(next(n.value for n in source.body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "OUTPUT_PORTS" for t in n.targets)))
     assert len(PROFILES) == 82 and len({p["kind"] for p in PROFILES.values()}) == 25
-    for operation, declared in ports.items():
-        assert catalog_roles(operation, declared).keys() == declared.keys()
-        assert all(catalog_roles(operation, declared).values())
+    for problem, declared in ports.items():
+        assert catalog_roles(problem, declared).keys() == declared.keys()
+        assert all(catalog_roles(problem, declared).values())
 
 
 @pytest.mark.parametrize("kind", sorted({p["kind"] for p in PROFILES.values()}))
@@ -110,7 +110,7 @@ def test_connection_is_explicit_shortest_hops_preserves_direction_and_one_parall
 
 
 def test_overlapping_groups_do_not_become_meta_edges(tmp_path):
-    service = Service(tmp_path, {"operation": "overlapping-communities", "ports": {"out": {"type": "vertex_groups", "value": [{"group": 0, "vertices": [0, "0"]}, {"group": 1, "vertices": ["0", 2]}], "complete": True}}})
+    service = Service(tmp_path, {"problem": "overlapping-communities", "ports": {"out": {"type": "vertex_groups", "value": [{"group": 0, "vertices": [0, "0"]}, {"group": 1, "vertices": ["0", 2]}], "complete": True}}})
     with pytest.raises(AnalyticsError, match="overlap"):
         meta_graph(service, "w", "analysis", "out", request())
     service.output["ports"]["out"]["value"][1]["vertices"] = [2]
@@ -153,7 +153,7 @@ def test_current_rules_repair_historical_views_without_changing_recorded_provena
 
 
 def test_projection_is_explicit_cached_finite_and_separate(tmp_path, monkeypatch):
-    output = {"operation": "node-embedding", "ports": {"out": {"type": "vertex_embeddings", "value": [{"vertex": v, "values": x} for v, x in [(0, [1, 2, 3]), ("0", [2, 1, 0]), (2, [0, 0, 1])]], "complete": True}}}
+    output = {"problem": "node-embedding", "ports": {"out": {"type": "vertex_embeddings", "value": [{"vertex": v, "values": x} for v, x in [(0, [1, 2, 3]), ("0", [2, 1, 0]), (2, [0, 0, 1])]], "complete": True}}}
     service = Service(tmp_path, output)
     before = deepcopy(output)
     value = project_embedding(service, "w", "analysis", "out", request(ProjectionRequest))
@@ -166,7 +166,7 @@ def test_projection_is_explicit_cached_finite_and_separate(tmp_path, monkeypatch
 
 def test_confusion_uses_only_declared_truth_and_actual_predictions():
     port = {"type": "vertex_predictions", "value": [{"vertex": 0, "prediction": "a"}, {"vertex": "0", "prediction": "b"}, {"vertex": 2, "prediction": "a"}]}
-    saved = {"operation": "node-learning", "parameters": {"task": "classification", "training_labels": {"rows": [{"vertex": 0, "value": "a"}]}, "split": {"test_labels": [{"vertex": "0", "value": "a"}]}}, "ports": {"out": port}}
+    saved = {"problem": "node-learning", "parameters": {"task": "classification", "training_labels": {"rows": [{"vertex": 0, "value": "a"}]}, "split": {"test_labels": [{"vertex": "0", "value": "a"}]}}, "ports": {"out": port}}
     result = semantic_data(saved, port, graph(), graph()["vertices"], {})
     assert sum(r["count"] for r in result["confusion"]) == 2
     assert result["prediction_errors"] == ["0"]
@@ -203,12 +203,12 @@ def test_seventeen_saved_analysis_fixtures_have_no_source_identifiers():
 def test_route_uses_predecessors_not_input_row_order():
     rows = [{"vertex": 2, "predecessor": "0", "distance": 4}, {"vertex": 0, "predecessor": None, "distance": 0}, {"vertex": "0", "predecessor": 0, "distance": 1}]
     port = {"type": "vertex_scores", "value": rows}
-    value = semantic_data({"operation": "single-source-shortest-paths"}, port, graph(), [], {}, index=0)
+    value = semantic_data({"problem": "single-source-shortest-paths"}, port, graph(), [], {}, index=0)
     assert [r["vertex"] for r in value["route"]] == [0, "0", 2]
 
 
 def test_flow_scalar_keeps_its_recorded_flow_witness(tmp_path):
-    service = Service(tmp_path, {"operation": "max-flow-min-cut", "ports": {"out": {"type": "scalar", "value": 3, "complete": True}}, "result": {"flows": [{"edge": "a", "source": 0, "target": "0", "flow": 3}]}})
+    service = Service(tmp_path, {"problem": "max-flow-min-cut", "ports": {"out": {"type": "scalar", "value": 3, "complete": True}}, "result": {"flows": [{"edge": "a", "source": 0, "target": "0", "flow": 3}]}})
     view = result_view(service, "w", "analysis", "out", expected_revision=1)
     assert view["view_spec"]["view"] == "graph"
     assert view["edges"][0]["view"]["flow"] == 3
@@ -259,7 +259,7 @@ def test_nested_chart_payload_and_vector_signals_are_bounded():
 
 
 def test_edge_anomaly_ids_never_color_same_named_vertices(tmp_path):
-    service = Service(tmp_path, {"operation": "graph-anomalies", "ports": {"out": {"type": "entity_ranking", "value": [{"entity": "0", "anomaly_target": "edge", "score": 4}], "complete": True}}})
+    service = Service(tmp_path, {"problem": "graph-anomalies", "ports": {"out": {"type": "entity_ranking", "value": [{"entity": "0", "anomaly_target": "edge", "score": 4}], "complete": True}}})
     service.g["edges"][0]["id"] = "0"
     view = result_view(service, "w", "analysis", "out", context=True)
     assert view["profile_facts"]["field_roles"]["entity"]["namespace"] == "input_edge"
@@ -270,7 +270,7 @@ def test_edge_anomaly_ids_never_color_same_named_vertices(tmp_path):
 
 
 def test_compare_excludes_generated_namespaces_and_counts_real_membership_transitions(tmp_path):
-    output = {"operation": "community-detection", "ports": {"out": {"type": "vertex_partition", "value": [{"vertex": 0, "part": 1}, {"vertex": "0", "part": 2}], "complete": True}}}
+    output = {"problem": "community-detection", "ports": {"out": {"type": "vertex_partition", "value": [{"vertex": 0, "part": 1}, {"vertex": "0", "part": 2}], "complete": True}}}
     service = Service(tmp_path, output)
     service.records["right"] = {**deepcopy(service.records["w"]), "id": "right"}
     right = deepcopy(output)
@@ -279,7 +279,7 @@ def test_compare_excludes_generated_namespaces_and_counts_real_membership_transi
     value = compare(service, "w", "analysis", "out", request(CompareRequest, workflow_id="right", revision=1, step="analysis", port="out"))
     assert value["same_input"] and value["comparable_entities"]
     assert {tuple(r.values()) for r in value["membership_transitions"]} == {(1, 1, 1), (2, 1, 1)}
-    right["operation"] = "graph-coarsening"
+    right["problem"] = "graph-coarsening"
     with pytest.raises(AnalyticsError):
         compare(service, "w", "analysis", "out", request(CompareRequest, workflow_id="right", revision=1, step="analysis", port="out"))
     value = compare(service, "w", "analysis", "out", request(CompareRequest, workflow_id="right", revision=1, step="analysis", port="out", allow_different_inputs=True))

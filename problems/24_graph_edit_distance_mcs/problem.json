@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "graph_edit_distance_mcs",
+  "topic_id": "graph_edit_distance_mcs",
   "name": "Graph Edit Distance and Maximum Common Subgraph",
   "category": "similarity",
   "problem_statement": "Given two graphs, compute either the minimum total cost of vertex/edge insertions, deletions, and substitutions transforming one graph into the other (graph edit distance), or a largest common induced or non-induced subgraph shared by both (maximum common subgraph).",

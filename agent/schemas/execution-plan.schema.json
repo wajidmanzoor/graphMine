@@ -266,7 +266,7 @@
     },
     "backend_id": {
       "default": "auto",
-      "description": "Exact backend ID from the selected operation, or auto.",
+      "description": "Exact backend ID from the selected problem, or auto.",
       "title": "Backend Id",
       "type": "string"
     },
@@ -286,8 +286,8 @@
       "title": "Missing Inputs",
       "type": "array"
     },
-    "operation_id": {
-      "title": "Operation Id",
+    "problem_id": {
+      "title": "Problem Id",
       "type": "string"
     },
     "optional_outputs": {
@@ -347,8 +347,8 @@
       "title": "Parameters",
       "type": "object"
     },
-    "problem_id": {
-      "title": "Problem Id",
+    "topic_id": {
+      "title": "Topic Id",
       "type": "string"
     },
     "rationale": {
@@ -371,8 +371,8 @@
   "required": [
     "session_id",
     "graph_id",
-    "problem_id",
-    "operation_id"
+    "topic_id",
+    "problem_id"
   ],
   "title": "ExecutionPlan",
   "type": "object"

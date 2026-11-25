@@ -48,7 +48,7 @@ def test_measurements_include_answer_calls_and_do_not_capture_prompts():
     for stage in ("route", "plan", "answer"):
         measured.model_call("session", stage=stage, request={"model": "local", "messages": ["private prompt"]},
                             response={"usage": {"prompt_tokens": 20, "completion_tokens": 5, "total_tokens": 25}},
-                            output={"intent": "calculate", "operations": ["triangle-counting"]}, outcome="ok", seconds=1)
+                            output={"intent": "calculate", "problems": ["triangle-counting"]}, outcome="ok", seconds=1)
     rows = measured.calls["session"]
     assert baseline.usage_totals(rows) == {
         "model_calls": 3, "model_samples": 3, "by_stage": {"route": 1, "plan": 1, "answer": 1},
@@ -71,11 +71,11 @@ def test_parallel_choices_count_samples_separately_from_http_requests():
 def test_high_calibration_counts_wrong_parameters_and_low_likelihood_honestly(monkeypatch):
     monkeypatch.syspath_prepend(str(ROOT / "tools"))
     from calibrate_option_scores import fit
-    suite = {"cases": [{"id": str(i), "expected": {"operations": [["k-core"]]},
+    suite = {"cases": [{"id": str(i), "expected": {"problems": [["k-core"]]},
                         "reference": {"parameters": {"requested_k": 3}}} for i in range(7)]}
     def result(index, k):
-        return {"id": str(index), "response": {"options": [{"id": "option_1", "operations": ["k-core"], "parameters": {"requested_k": k},
-            "score": .9, "match_evidence": {"votes": 5, "operation_logprobs": [{}] * 5, "missing_parameters": []}}]}}
+        return {"id": str(index), "response": {"options": [{"id": "option_1", "problems": ["k-core"], "parameters": {"requested_k": k},
+            "score": .9, "match_evidence": {"votes": 5, "problem_logprobs": [{}] * 5, "missing_parameters": []}}]}}
     report = {"model": "test", "server": "http://test", "catalog_sha256": "test", "cases": [result(i, 3 if i < 6 else 4) for i in range(7)]}
     fitted = fit(report, suite)
     assert fitted["high"]["precision"] == 6 / 7 and fitted["high"]["threshold"] == .9
@@ -83,7 +83,7 @@ def test_high_calibration_counts_wrong_parameters_and_low_likelihood_honestly(mo
     assert fit(report, suite)["high"]["threshold"] > 1  # No misleading High band.
     report["cases"][5] = result(5, 3)
     for case in report["cases"]:
-        case["response"]["options"][0]["match_evidence"]["operation_logprobs"] = []
+        case["response"]["options"][0]["match_evidence"]["problem_logprobs"] = []
     assert fit(report, suite)["high"]["count"] == 0
 
 
@@ -100,11 +100,11 @@ def test_failed_call_with_unknown_usage_is_not_reported_as_zero_tokens():
 
 @pytest.mark.parametrize("expected_lane", ["lookup", "options", "describe_input"])
 def test_calculation_cannot_masquerade_as_a_missing_lane(expected_lane):
-    case = {"expected": {"lane": expected_lane, "operations": [["triangle-counting"]], "property": "edges_count", "value": 3},
-            "checks": [{"operation": "triangle-counting", "port": "count", "kind": "equal", "value": 1}]}
-    response = {"status": "ready", "plan": {"steps": [{"operation": "triangle-counting"}]}}
+    case = {"expected": {"lane": expected_lane, "problems": [["triangle-counting"]], "property": "edges_count", "value": 3},
+            "checks": [{"problem": "triangle-counting", "port": "count", "kind": "equal", "value": 1}]}
+    response = {"status": "ready", "plan": {"steps": [{"problem": "triangle-counting"}]}}
     saved = {"status": "completed", "complete": True, "steps": {"answer": {"status": "completed", "result": {
-        "operation": "triangle-counting", "ports": {"count": {"complete": True, "value": 1}}}}}}
+        "problem": "triangle-counting", "ports": {"count": {"complete": True, "value": 1}}}}}}
     result = baseline.grade(case, response, [], saved)
     assert result["lane_chosen"] == "calculate"
     assert result["execution_completed"] and result["result_checks"][0]["passed"]
@@ -112,7 +112,7 @@ def test_calculation_cannot_masquerade_as_a_missing_lane(expected_lane):
 
 
 def test_rejected_selection_is_a_measured_failure_with_no_invented_model_call():
-    case = {"expected": {"lane": "calculate", "operations": [["triangle-counting"]]}}
+    case = {"expected": {"lane": "calculate", "problems": [["triangle-counting"]]}}
     result = baseline.grade(case, {}, [], error={"type": "ValidationError"})
     assert result["lane_chosen"] == "unclassified"
     assert not result["success"]
@@ -132,7 +132,7 @@ def test_grounding_measurement_uses_current_tool_events_not_the_checked_flag():
 
 
 def test_explanation_needs_the_requested_saved_fact():
-    case = {"expected": {"lane": "explain", "operations": [[]], "fact_patterns": [r"\b33 bicliques\b"]}}
+    case = {"expected": {"lane": "explain", "problems": [[]], "fact_patterns": [r"\b33 bicliques\b"]}}
     response = {"status": "answered", "answer": {"workflow_id": "saved", "facts": [{"statement": "Returned 33 bicliques."}]}}
     assert baseline.grade(case, response, [])["success"]
     response["answer"]["facts"] = [{"statement": "The result is exact."}]
@@ -155,11 +155,19 @@ def test_biclique_oracle_allows_orientation_but_not_missing_members():
     assert not baseline.check_port(check, incomplete)
 
 
-def test_options_require_two_distinct_choices_without_execution():
-    case = {"expected": {"lane": "options", "operations": [["maximal-cliques"]]}}
+def test_options_require_one_to_three_distinct_choices_without_execution():
+    case = {"expected": {"lane": "options", "problems": [["maximal-cliques"]]}}
     response = {"status": "options", "options": [
-        {"operation": "maximal-cliques", "parameters": {}},
-        {"operation": "maximum-clique", "parameters": {}}]}
+        {"problem": "maximal-cliques", "parameters": {}},
+        {"problem": "maximum-clique", "parameters": {}}]}
     assert baseline.grade(case, response, [])["success"]
     response["options"][1] = deepcopy(response["options"][0])
     assert not baseline.grade(case, response, [])["success"]
+
+
+@pytest.mark.parametrize("count", [0, 1, 2, 3, 4])
+def test_ranked_option_count_matches_the_new_routing_contract(count):
+    case = {"expected": {"lane": "options"}}
+    response = {"status": "options", "options": [
+        {"problem": str(i), "parameters": {}} for i in range(count)]}
+    assert baseline.grade(case, response, [])["success"] is (1 <= count <= 3)

@@ -266,7 +266,7 @@
     "parameters": {
       "provenance": "Provenance record associated with a completed typed execution."
     },
-    "returns": "Object with problem, backend, version, source commit, and execution path.",
+    "returns": "Object with topic, backend, version, source commit, and execution path.",
     "details": [
       "Part of the optional typed-library `graphmine` CLI, which is separate from the native-runtime `graphmine-native` CLI."
     ]
@@ -383,7 +383,7 @@
     ]
   },
   "classanonymous__namespace_02graphmine_8cpp_03_1_1Arguments_1afbabf9eb6900a97dd88817f424fdcebc": {
-    "summary": "Check that the operation recognized every parsed CLI option.",
+    "summary": "Check that the problem recognized every parsed CLI option.",
     "parameters": {},
     "returns": "No value; any unconsumed option raises UsageError.",
     "details": [
@@ -452,7 +452,7 @@
     "returns": "CommonOptions with required graph path, backend/projection settings, execution preferences, and output formatting.",
     "details": [
       "Part of the optional typed-library `graphmine` CLI, which is separate from the native-runtime `graphmine-native` CLI.",
-      "Statistics are enabled unless --no-statistics is supplied. This parser leaves operation-specific options for the selected runner."
+      "Statistics are enabled unless --no-statistics is supplied. This parser leaves problem-specific options for the selected runner."
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1ab947657bb569cf462404a391efced276": {
@@ -467,7 +467,7 @@
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1a2cff4272cc2848a4ad3630be2799dfdf": {
-    "summary": "Resolve a backend name against an operation's explicit enum choices.",
+    "summary": "Resolve a backend name against an problem's explicit enum choices.",
     "parameters": {
       "value": "Already-normalized backend identifier.",
       "choices": "Admitted name/enum pairs."
@@ -653,7 +653,7 @@
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1a28ecfd314da1edf78263f025b40c67a5": {
-    "summary": "Parse largest-clique options and invoke the typed maximum-clique operation.",
+    "summary": "Parse largest-clique options and invoke the typed maximum-clique problem.",
     "parameters": {
       "arguments": "Mutable parsed CLI arguments. Consumed fields are marked; unrecognized options are rejected before execution.",
       "common": "Shared typed-library CLI options: input graph, selected backend, execution settings, and JSON output preferences."
@@ -709,7 +709,7 @@
     "returns": "Typed CLI execution envelope with output on success or the algorithm status on failure; argument/schema errors throw UsageError.",
     "details": [
       "Part of the optional typed-library `graphmine` CLI, which is separate from the native-runtime `graphmine-native` CLI.",
-      "Supports auto, kcgpu, graphset, or gamma. The CLI parser accepts positive k; the typed operation enforces its backend domain."
+      "Supports auto, kcgpu, graphset, or gamma. The CLI parser accepts positive k; the typed problem enforces its backend domain."
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1a4ffd094e9aefbfc218a9832f3e991d4d": {
@@ -797,7 +797,7 @@
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1a7b6a3cbffb6dd6695312d7317f2eb5f7": {
-    "summary": "Require the concrete adapter admitted by a typed expansion operation.",
+    "summary": "Require the concrete adapter admitted by a typed expansion problem.",
     "parameters": {
       "common": "Shared typed-library CLI options: input graph, selected backend, execution settings, and JSON output preferences.",
       "expected": "Only admitted explicit backend name; auto is also accepted."
@@ -831,22 +831,22 @@
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1aa5cbed7771550458f01af718c7403580": {
-    "summary": "Dispatch the typed expansion operations and serialize their problem-specific outputs.",
+    "summary": "Dispatch the typed expansion problems and serialize their topic-specific outputs.",
     "parameters": {
-      "operation": "connected-components, max-flow-min-cut, linear-assignment, transitive-closure, or butterfly-counting.",
+      "problem": "connected-components, max-flow-min-cut, linear-assignment, transitive-closure, or butterfly-counting.",
       "arguments": "Mutable parsed CLI arguments. Consumed fields are marked; unrecognized options are rejected before execution.",
       "common": "Shared typed-library CLI options: input graph, selected backend, execution settings, and JSON output preferences."
     },
     "returns": "Typed CLI execution envelope with output on success or the algorithm status on failure; argument/schema errors throw UsageError.",
     "details": [
       "Part of the optional typed-library `graphmine` CLI, which is separate from the native-runtime `graphmine-native` CLI.",
-      "Checks each operation's adapter name and projection contract. Connected components requires connectivity mode; flow requires source/sink; the final branch handles butterflies."
+      "Checks each problem's adapter name and projection contract. Connected components requires connectivity mode; flow requires source/sink; the final branch handles butterflies."
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1aebf9c13856958dbc9cb33a5509d7c742": {
-    "summary": "Dispatch the typed repaired-adapter operations and serialize their selected outputs.",
+    "summary": "Dispatch the typed repaired-adapter problems and serialize their selected outputs.",
     "parameters": {
-      "operation": "k-truss, densest-subgraph, maximal-biclique-counting, personalized-pagerank, group-steiner-tree, or influence-maximization.",
+      "problem": "k-truss, densest-subgraph, maximal-biclique-counting, personalized-pagerank, group-steiner-tree, or influence-maximization.",
       "arguments": "Mutable parsed CLI arguments. Consumed fields are marked; unrecognized options are rejected before execution.",
       "common": "Shared typed-library CLI options: input graph, selected backend, execution settings, and JSON output preferences."
     },
@@ -857,9 +857,9 @@
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1a2a3c719ad1c8d2f5dd6d59ed27bedd5d": {
-    "summary": "Return the typed CLI's static operation registry.",
+    "summary": "Return the typed CLI's static problem registry.",
     "parameters": {},
-    "returns": "Const reference to descriptors containing operation ID, research problem, usage, and backend provider.",
+    "returns": "Const reference to descriptors containing problem ID, research topic, usage, and backend provider.",
     "details": [
       "Part of the optional typed-library `graphmine` CLI, which is separate from the native-runtime `graphmine-native` CLI.",
       "This registry describes the optional typed CLI, not the native runtime catalog. Backend availability is obtained from each provider when serialized."
@@ -870,25 +870,25 @@
     "parameters": {
       "backend": "BackendInfo supplied by a typed algorithm's backend provider."
     },
-    "returns": "Object with ID/display name, problem/source revision, compiled/validated flags, and capabilities.",
+    "returns": "Object with ID/display name, topic/source revision, compiled/validated flags, and capabilities.",
     "details": [
       "Part of the optional typed-library `graphmine` CLI, which is separate from the native-runtime `graphmine-native` CLI."
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1a3b45d20fe18b7edfe532ce077b7b5674": {
-    "summary": "Serialize one operation and query its current backend metadata.",
+    "summary": "Serialize one problem and query its current backend metadata.",
     "parameters": {
-      "operation": "Registry descriptor with a callable backend provider."
+      "problem": "Registry descriptor with a callable backend provider."
     },
-    "returns": "Operation ID, research problem, usage string, and backend array.",
+    "returns": "Problem ID, research topic, usage string, and backend array.",
     "details": [
       "Part of the optional typed-library `graphmine` CLI, which is separate from the native-runtime `graphmine-native` CLI."
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1a557e27125947aa070ed20bbf32993c6f": {
-    "summary": "Resolve a typed CLI operation name after underscore normalization.",
+    "summary": "Resolve a typed CLI problem name after underscore normalization.",
     "parameters": {
-      "name": "Operation name; underscores are converted to hyphens before matching."
+      "name": "Problem name; underscores are converted to hyphens before matching."
     },
     "returns": "Const reference to the static descriptor; unknown names raise UsageError.",
     "details": [
@@ -898,7 +898,7 @@
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1a0bef75f3a46a95a4998512389a5aa926": {
     "summary": "Build the typed CLI catalog response and count listed/compiled backend entries.",
     "parameters": {},
-    "returns": "Versioned operation list with operation_count, validated_backend_count, and compiled_backend_count.",
+    "returns": "Versioned problem list with problem_count, validated_backend_count, and compiled_backend_count.",
     "details": [
       "Part of the optional typed-library `graphmine` CLI, which is separate from the native-runtime `graphmine-native` CLI.",
       "validated_backend_count counts listed backend entries; this function does not run validation tests."
@@ -915,9 +915,9 @@
     ]
   },
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1a6958ab676a41c9221aa6e1787de246a7": {
-    "summary": "Route a resolved typed CLI operation to its argument parser and execution wrapper.",
+    "summary": "Route a resolved typed CLI problem to its argument parser and execution wrapper.",
     "parameters": {
-      "operation": "Canonical hyphenated operation ID, normally obtained from find_operation.",
+      "problem": "Canonical hyphenated problem ID, normally obtained from find_problem.",
       "arguments": "Mutable parsed CLI arguments. Consumed fields are marked; unrecognized options are rejected before execution.",
       "common": "Shared typed-library CLI options: input graph, selected backend, execution settings, and JSON output preferences."
     },
@@ -937,7 +937,7 @@
   "namespaceanonymous__namespace_02graphmine_8cpp_03_1ae77693e27dc887390acc06ff83da1f7e": {
     "summary": "Interpret the optional ok field when choosing the CLI exit status.",
     "parameters": {
-      "result": "Result envelope emitted by a typed operation."
+      "result": "Result envelope emitted by a typed problem."
     },
     "returns": "True when ok is absent or Boolean true; false for Boolean false or a non-Boolean ok field.",
     "details": [
@@ -945,7 +945,7 @@
     ]
   },
   "graphmine_8cpp_1a3c04138a5bfe5d72780bb7e82a18e627": {
-    "summary": "Handle typed-library CLI version/help, catalog, graph validation, and operation execution commands.",
+    "summary": "Handle typed-library CLI version/help, catalog, graph validation, and problem execution commands.",
     "parameters": {
       "argc": "Process argument count including executable name.",
       "argv": "Command tokens for the optional typed-library graphmine executable."

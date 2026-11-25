@@ -59,9 +59,9 @@ from .planning import (
     route_request_payload,
 )
 from .profiles import (
-    DIRECTION_PRESERVING_OPERATIONS,
+    DIRECTION_PRESERVING_PROBLEMS,
     ProfileInputError,
-    prepare_operation_graph,
+    prepare_problem_graph,
 )
 from .reporting import iter_report
 from .visualization import (
@@ -360,7 +360,7 @@ class AgentService:
             status, message = blocker
             if status == "unsupported":
                 decision = decision.model_copy(
-                    update={"supported": False, "operation_id": None}
+                    update={"supported": False, "problem_id": None}
                 )
             return self._record_nonready(session_id, request, decision, status, message)
 
@@ -372,8 +372,8 @@ class AgentService:
                     request.model_copy(update={"message": additional.question}),
                     decision.model_copy(
                         update={
+                            "topic_id": additional.topic_id,
                             "problem_id": additional.problem_id,
-                            "operation_id": additional.operation_id,
                             "additional_analyses": [],
                         }
                     ),
@@ -389,7 +389,7 @@ class AgentService:
                 return self._record_nonready(
                     session_id, request, step_decision, *blocker
                 )
-            if not step_decision.supported or not step_decision.operation_id:
+            if not step_decision.supported or not step_decision.problem_id:
                 return self._record_nonready(
                     session_id,
                     request,
@@ -432,7 +432,7 @@ class AgentService:
                     "planning.recovery.outcome",
                     {
                         "status": attempt.outcome.status,
-                        "operation_id": step_decision.operation_id,
+                        "problem_id": step_decision.problem_id,
                         "reason": attempt.review_reason,
                     },
                 )
@@ -462,8 +462,8 @@ class AgentService:
                 "additional_analyses": [
                     AnalysisTask(
                         question=step.message,
+                        topic_id=selected.topic_id,
                         problem_id=selected.problem_id,
-                        operation_id=selected.operation_id,
                     )
                     for step, selected in planned_tasks[1:]
                 ],
@@ -516,7 +516,7 @@ class AgentService:
             "original_request": original_request.model_dump(mode="json"),
             "step_request": request.model_dump(mode="json"),
             "protected_intent": decision.intent.model_dump(mode="json"),
-            "instruction": "The selected operation could not produce a valid plan. Review the full catalog against this exact step and the original question. A limitation of one operation is not proof that all operations are unavailable. Correct the operation only when it answers the same question. Preserve every filter, weight, direction, pattern, time requirement, supplied parameter, backend, output and input. Do not add or remove supporting analyses. Missing input and genuinely unsupported requests must remain non-ready. If the meaning cannot be verified, ask a concrete question in the user's domain language. You may inspect records once; do not substitute a nearby computation to obtain a ready response.",
+            "instruction": "The selected problem could not produce a valid plan. Review the full catalog against this exact step and the original question. A limitation of one problem is not proof that all problems are unavailable. Correct the problem only when it answers the same question. Preserve every filter, weight, direction, pattern, time requirement, supplied parameter, backend, output and input. Do not add or remove supporting analyses. Missing input and genuinely unsupported requests must remain non-ready. If the meaning cannot be verified, ask a concrete question in the user's domain language. You may inspect records once; do not substitute a nearby computation to obtain a ready response.",
         }
         self.database.history.current("planning.recovery.request", review)
         await self.jobs.event_bus.publish(
@@ -606,7 +606,7 @@ class AgentService:
         if blocker:
             if blocker[0] == "unsupported":
                 revised = revised.model_copy(
-                    update={"supported": False, "operation_id": None}
+                    update={"supported": False, "problem_id": None}
                 )
             return PlanningOutcome(
                 decision=revised, status=blocker[0], message=blocker[1]
@@ -655,7 +655,7 @@ class AgentService:
             return stop("needs_information", str(error))
         inferred_inputs = {}
         if (
-            decision.operation_id == "maximal-bicliques"
+            decision.problem_id == "maximal-bicliques"
             and "left_partition" not in request.auxiliary_inputs
         ):
             existing = [
@@ -737,14 +737,14 @@ class AgentService:
                 if hasattr(graph.metadata, "model_dump")
                 else graph.metadata
             ),
-            "selected_operation": {
+            "selected_problem": {
+                "topic_id": decision.topic_id,
                 "problem_id": decision.problem_id,
-                "operation_id": decision.operation_id,
             },
             "supporting_analyses_planned_separately": [
                 item.model_dump(mode="json") for item in decision.additional_analyses
             ],
-            "operation_context": self.catalog.operation_context(decision.operation_id),
+            "problem_context": self.catalog.problem_context(decision.problem_id),
             "available_files": available_files,
             "requested_backend": request.backend_id,
             "supplied_parameters": request.parameters,
@@ -757,7 +757,7 @@ class AgentService:
         if route_review:
             planning_payload["routing_review"] = {
                 "previous_failure": route_review,
-                "instruction": "Recheck the exact original step against this operation. The catalog review did not approve execution or waive constraints. Return ready only if every requirement is met; retain genuine missing inputs and unsupported meanings.",
+                "instruction": "Recheck the exact original step against this problem. The catalog review did not approve execution or waive constraints. Return ready only if every requirement is met; retain genuine missing inputs and unsupported meanings.",
             }
         draft = await self._generate(
             mode=LLMMode.planner,
@@ -784,7 +784,7 @@ class AgentService:
             return stop(
                 draft.status,
                 draft.message,
-                code="selected_operation_refused"
+                code="selected_problem_refused"
                 if draft.status == "unsupported"
                 else None,
             )
@@ -792,15 +792,15 @@ class AgentService:
         plan = ExecutionPlan(
             session_id=session_id,
             graph_id=request.graph_id,
+            topic_id=decision.topic_id,
             problem_id=decision.problem_id,
-            operation_id=decision.operation_id,
             **draft.plan.model_dump(),
         )
         # Identity and explicit API values are authoritative; the model may only
         # fill values the user did not provide.
         merged_parameters = dict(plan.parameters)
         if (
-            plan.operation_id == "temporal-motif-mining"
+            plan.problem_id == "temporal-motif-mining"
             and "max_time_span" not in request.parameters
         ):
             if intent.time_window is None or intent.time_unit == "unspecified":
@@ -841,8 +841,8 @@ class AgentService:
             update={
                 "session_id": session_id,
                 "graph_id": request.graph_id,
+                "topic_id": decision.topic_id,
                 "problem_id": decision.problem_id,
-                "operation_id": decision.operation_id,
                 "backend_id": request.backend_id or "auto",
                 "parameters": merged_parameters,
                 "optional_outputs": optional_outputs,
@@ -854,7 +854,7 @@ class AgentService:
         )
         plan = bind_unique_required_auxiliary_inputs(
             plan,
-            self.catalog.operation(decision.operation_id),
+            self.catalog.problem(decision.problem_id),
             available_files,
             protected_names=set(request.auxiliary_inputs),
         )
@@ -869,12 +869,12 @@ class AgentService:
                 errors=error.errors,
             )
         try:
-            prepare_operation_graph(projected, plan)
+            prepare_problem_graph(projected, plan)
         except ProfileInputError as error:
             return stop(error.status, str(error))
         if (
             raw_graph["graph"]["directed"]
-            and plan.operation_id not in DIRECTION_PRESERVING_OPERATIONS
+            and plan.problem_id not in DIRECTION_PRESERVING_PROBLEMS
             and not plan.allow_directed_projection
         ):
             return stop(
@@ -1281,7 +1281,7 @@ class AgentService:
                     user_payload={
                         "message": request.message,
                         "previous_question": result.answer.get("question"),
-                        "previous_operation": result.operation_id,
+                        "previous_problem": result.problem_id,
                         "previous_parameters": previous_plan.parameters,
                         "previous_output_requests": previous_plan.optional_outputs,
                         "pending_request": self._pending_request(
@@ -1359,7 +1359,7 @@ class AgentService:
             self.validator.validate(
                 plan,
                 compiled_backends=(
-                    self.jobs.runner.compiled_backends_for(plan.operation_id)
+                    self.jobs.runner.compiled_backends_for(plan.problem_id)
                     if self.jobs.runner.capabilities.binary_available
                     else None
                 ),

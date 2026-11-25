@@ -125,7 +125,7 @@ def enrich_view(view, saved, port_name, original, focused=None, *, provenance=No
     """Never mutate saved inputs, native outputs, IDs, or witness membership."""
     port = saved["ports"][port_name]
     rows, total = rows_for(port)
-    facts = copy.deepcopy(cached_profile) if cached_profile else profile_result(saved.get("operation"), port, original, focused)
+    facts = copy.deepcopy(cached_profile) if cached_profile else profile_result(saved.get("problem"), port, original, focused)
     if port["type"] in {"vertex_predictions", "graph_predictions"}:
         facts["task"] = saved.get("parameters", {}).get("task")
         if facts["task"] == "classification":
@@ -153,7 +153,7 @@ def enrich_view(view, saved, port_name, original, focused=None, *, provenance=No
                 scores[identity(vertex)] = row[score_field]
             if port["type"] == "vertex_signal" and vertex is not None and isinstance(row.get("value"), list) and row["value"] and finite(row["value"][0]) is not None:
                 scores[identity(vertex)] = row["value"][0]
-            if saved.get("operation") == "vertex-coloring" and vertex is not None:
+            if saved.get("problem") == "vertex-coloring" and vertex is not None:
                 membership[identity(vertex)] = [row.get(port.get("score_field", "color"), row.get("score"))]
     sides = {identity(v): side for side, values in enumerate(view.get("bipartite_sides", [])) for v in values}
     predictions = {identity(r["vertex"]): r.get("prediction") for r in rows if isinstance(r, dict) and "vertex" in r and "prediction" in r}
@@ -186,7 +186,7 @@ def enrich_view(view, saved, port_name, original, focused=None, *, provenance=No
     view["edges"] = [{**edge, "view": {
         "relationship_type": edge_type(edge), "weight": edge.get("weight"), "score": edge_scores.get(identity(edge["id"])),
         "flow": flow.get(identity(edge["id"]), {}).get("flow"), "capacity": flow.get(identity(edge["id"]), {}).get("capacity"), "cut": identity(edge["id"]) in cut,
-        "edge_role": "derived" if saved.get("operation") in {"knn-graph", "graph-coarsening", "graph-condensation"} else "context" if view.get("context") and selected_edges and identity(edge["id"]) not in selected_edges else "recorded",
+        "edge_role": "derived" if saved.get("problem") in {"knn-graph", "graph-coarsening", "graph-condensation"} else "context" if view.get("context") and selected_edges and identity(edge["id"]) not in selected_edges else "recorded",
         "result": not view.get("context") or identity(edge["id"]) in selected_edges,
     }} for edge in view.get("edges", [])]
     parameters = saved.get("parameters", {})
@@ -253,10 +253,10 @@ def saved_view_manifest(service, record, step, saved):
     for name, port in result["ports"].items():
         index = default_index(port, None)
         focused, _, selected, edges = focus_graph(original, result, name, index)
-        view = {"profile": profile(result.get("operation")), "index": index, "complete": port.get("complete", False),
+        view = {"profile": profile(result.get("problem")), "index": index, "complete": port.get("complete", False),
                 "graph_available": focused is not None, "vertices": (focused or {}).get("vertices", [])[:2000], "edges": (focused or {}).get("edges", [])[:5000],
                 "vertex_count": len((focused or {}).get("vertices", [])), "edge_count": len((focused or {}).get("edges", []))}
-        facts = profile_result(result.get("operation"), port, original, focused)
+        facts = profile_result(result.get("problem"), port, original, focused)
         if port["type"] in {"vertex_predictions", "graph_predictions"} and result.get("parameters", {}).get("task") == "classification":
             facts["scores"] = None
             facts["field_roles"]["prediction"] = {"role": "group_key", "meaning": "predicted_class"}

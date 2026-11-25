@@ -51,7 +51,7 @@ def build_workflows(manifest: dict, graphs: dict) -> list[dict]:
     examples = [row for row in manifest["examples"] if row["split"] != "test"]
     records = {row["id"]: row for row in manifest["graphs"]}
     general = [
-        row for row in examples if row["task"]["operation_id"] == "maximum-clique"
+        row for row in examples if row["task"]["problem_id"] == "maximum-clique"
     ]
     if not general:
         raise ValueError("Conversation probes require general relationship graphs")
@@ -59,12 +59,12 @@ def build_workflows(manifest: dict, graphs: dict) -> list[dict]:
     def pick(domain):
         return next((row for row in general if row["domain"] == domain), general[0])
 
-    def task_for(graph_id, operation, behavior="execute"):
+    def task_for(graph_id, problem, behavior="execute"):
         return next(
             row
             for row in examples
             if row["graph_id"] == graph_id
-            and row["task"]["operation_id"] == operation
+            and row["task"]["problem_id"] == problem
             and row["task"]["behavior"] == behavior
         )
 
@@ -175,7 +175,7 @@ def build_workflows(manifest: dict, graphs: dict) -> list[dict]:
         )
     )
     base = next(
-        row for row in examples if row["task"]["operation_id"] == "maximal-bicliques"
+        row for row in examples if row["task"]["problem_id"] == "maximal-bicliques"
     )
     cases.append(
         case(
@@ -201,7 +201,7 @@ def build_workflows(manifest: dict, graphs: dict) -> list[dict]:
     base = next(
         row
         for row in examples
-        if row["task"]["operation_id"] == "temporal-motif-mining"
+        if row["task"]["problem_id"] == "temporal-motif-mining"
         and row["task"]["behavior"] == "execute"
     )
     unsupported = task_for(base["graph_id"], "temporal-motif-mining", "unsupported")
@@ -271,7 +271,7 @@ def check_workflow_step(graph: dict, task: dict, outcome: dict) -> list[str]:
     for field in ("requires_edge_weights", "requires_direction"):
         if actual.get(field, False) != task["intent"].get(field, False):
             issues.append(f"Requested {field} changed")
-    if task["operation_id"] == "temporal-motif-mining":
+    if task["problem_id"] == "temporal-motif-mining":
         for field in ("pattern_vertex_count", "pattern_edges"):
             if key(actual.get(field)) != key(task["intent"][field]):
                 issues.append(f"Requested event {field} changed")

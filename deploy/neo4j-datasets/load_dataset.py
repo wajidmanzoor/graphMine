@@ -69,7 +69,7 @@ def load(slug):
     checked = json.loads((root / "instance-check.json").read_text())
     if checked.get("nodes") != 0 or checked.get("relationships") != 0:
         raise ValueError("The empty-instance startup gate has not passed")
-    with (root / "operation.lock").open("a") as lock:
+    with (root / "problem.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         with common.driver(slug) as driver, driver.session(database="neo4j") as session:
             common.require_empty(session)

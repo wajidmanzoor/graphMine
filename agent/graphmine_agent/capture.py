@@ -194,7 +194,7 @@ class TrainingCapture:
                 self.deployment_id = self._save_deployment(*deployment)
 
     @contextmanager
-    def best_effort(self, operation: str) -> Iterator[None]:
+    def best_effort(self, problem: str) -> Iterator[None]:
         try:
             yield
         except Exception as error:  # noqa: BLE001 - the user's request continues
@@ -205,7 +205,7 @@ class TrainingCapture:
             if count == 1 or count % 100 == 0:
                 _logger.error(
                     "Training capture gap during %s (%s); %d failures since startup",
-                    operation, type(error).__name__, count,
+                    problem, type(error).__name__, count,
                 )
 
     def statistics(self) -> dict[str, Any]:

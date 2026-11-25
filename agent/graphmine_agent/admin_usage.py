@@ -1,4 +1,4 @@
-"""Sixty-second cached UTC aggregates from operational events only."""
+"""Sixty-second cached UTC aggregates from problemal events only."""
 
 import json
 from collections import Counter, defaultdict

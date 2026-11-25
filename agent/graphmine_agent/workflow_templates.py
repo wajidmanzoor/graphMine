@@ -162,8 +162,8 @@ def history(runtime):
             "status": r["status"],
             "created_at": r.get("created_at"),
             "revision": r["revision"],
-            "operations": [
-                s["operation"]
+            "problems": [
+                s["problem"]
                 for s in r.get("validation", {}).get("plan", {}).get("steps", [])
             ],
         }
@@ -184,7 +184,7 @@ def compare(runtime, body):
             steps.append(
                 {
                     "id": step["id"],
-                    "operation": step["operation"],
+                    "problem": step["problem"],
                     "parameters": step.get("parameters", {}),
                     "bindings": step.get("bindings", {}),
                     "quality": result.get("quality"),

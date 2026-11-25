@@ -16,7 +16,7 @@
   },
   "dense": {
     "title": "Cliques & dense subgraphs",
-    "description": "Which tightly connected groups exist? Clique: every pair connected. Biclique: every cross pair connected. k-core: at least k neighbours each. k-truss: each edge in at least k−2 triangles. Densest: most edges per vertex, or the declared weighted or higher-order clique density. Quasi-clique: a minimum internal-degree fraction. These operations select subgraphs satisfying a structural definition; they do not require a partition of all vertices.",
+    "description": "Which tightly connected groups exist? Clique: every pair connected. Biclique: every cross pair connected. k-core: at least k neighbours each. k-truss: each edge in at least k−2 triangles. Densest: most edges per vertex, or the declared weighted or higher-order clique density. Quasi-clique: a minimum internal-degree fraction. These problems select subgraphs satisfying a structural definition; they do not require a partition of all vertices.",
     "deciding_question": "Which tightly connected groups exist?"
   },
   "communities": {
@@ -41,7 +41,7 @@
   },
   "patterns": {
     "title": "Pattern matching & mining",
-    "description": "Where does a given pattern occur, or which patterns are frequent? Match a supplied pattern or mine frequent subgraphs in one graph or a graph collection, using the operation's declared matching and support semantics.",
+    "description": "Where does a given pattern occur, or which patterns are frequent? Match a supplied pattern or mine frequent subgraphs in one graph or a graph collection, using the problem's declared matching and support semantics.",
     "deciding_question": "Where does a given pattern occur, or which patterns are frequent?"
   },
   "selection": {

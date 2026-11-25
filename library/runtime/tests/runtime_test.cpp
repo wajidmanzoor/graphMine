@@ -87,7 +87,7 @@ void bfs_tests(const std::string& device, int ordinal) {
               {"source_mode", nearest ? "nearest_source" : "independent"},
               {"depth_limit", depth < 0 ? json::value(nullptr) : json::value(depth)}};
           const auto result = call({{"command", "run"},
-                                    {"operation", "breadth-first-search"},
+                                    {"problem", "breadth-first-search"},
                                     {"graph", graph},
                                     {"parameters", params},
                                     {"device", device},
@@ -146,7 +146,7 @@ void triangle_tests(const std::string& backend, int ordinal) {
           if (adjacent[a][b] && adjacent[a][c] && adjacent[b][c]) expected.insert({a, b, c});
     for (bool enumerate : {false, true}) {
       const auto result = call({{"command", "run"},
-                                {"operation", "triangle-counting"},
+                                {"problem", "triangle-counting"},
                                 {"graph", graph},
                                 {"parameters", {{"mode", enumerate ? "enumerate" : "count"}}},
                                 {"device", backend == "cpp" ? "cpu" : "gpu"},
@@ -182,7 +182,7 @@ void contract_tests() {
   check(expired, "An explicit finite computation deadline was ignored");
   auto graph = fixture(3, false, 7);
   const json::object good{{"command", "run"},
-                          {"operation", "breadth-first-search"},
+                          {"problem", "breadth-first-search"},
                           {"graph", graph},
                           {"parameters", {{"sources", json::array{0}}}},
                           {"device", "cpu"}};
@@ -227,13 +227,13 @@ void contract_tests() {
   bad["backend"] = "cpp";
   error(bad, "invalid_input");
   bad = good;
-  bad["operation"] = "not-ported";
-  error(bad, "unsupported_operation");
+  bad["problem"] = "not-ported";
+  error(bad, "unsupported_problem");
   bad = good;
   bad["graph"].as_object().at("vertices").as_array()[0].as_object()["id"] = 1.0;
   error(bad, "invalid_input");
   const auto full = call({{"command", "run"},
-                          {"operation", "triangle-counting"},
+                          {"problem", "triangle-counting"},
                           {"graph", fixture(5, false, 1023)},
                           {"device", "cpu"},
                           {"parameters", {{"mode", "enumerate"}, {"result_limit", 2}}}});
@@ -243,13 +243,13 @@ void contract_tests() {
   check(full.at("ports").as_object().at("count").as_object().at("complete").as_bool(),
         "Full count lost completeness");
   auto catalog = call({{"command", "catalog"}});
-  check(catalog.at("problems").as_array().size() == 71, "Problem inventory drift");
-  for (const auto& op : catalog.at("operations").as_array()) {
+  check(catalog.at("topics").as_array().size() == 71, "Topic inventory drift");
+  for (const auto& op : catalog.at("problems").as_array()) {
     bool found = false;
-    for (const auto& problem : catalog.at("problems").as_array())
-      if (problem.as_object().at("id") == op.as_object().at("problem_id"))
-        found = problem.as_object().at("family") == op.as_object().at("family");
-    check(found, "Operation family drift");
+    for (const auto& topic : catalog.at("topics").as_array())
+      if (topic.as_object().at("id") == op.as_object().at("topic_id"))
+        found = topic.as_object().at("family") == op.as_object().at("family");
+    check(found, "Problem family drift");
   }
   char* output = nullptr;
   std::size_t size = 0;

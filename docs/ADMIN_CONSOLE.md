@@ -37,7 +37,7 @@ physical artifacts for deletion. Active work prevents deletion. File cleanup is
 durable and resumes on startup; failed Studio updates remain retryable even after
 the GraphMine account is gone.
 
-Normal administrative APIs expose operational metadata. Reading a conversation
+Normal administrative APIs expose problemal metadata. Reading a conversation
 requires a reason and a support grant, bound to the administrator's current login
 session. A grant lasts one hour or until that session expires, whichever applies,
 and also stops working on sign-out, role change, or disable. Its only endpoint is a
@@ -71,11 +71,11 @@ The `accounts` command remains an alias. Passwords are entered through a hidden
 terminal prompt. `--data-root` belongs immediately after `users` or `accounts` and
 selects the same store as the running agent.
 
-## Operational events and migration
+## Problemal events and migration
 
 Schema 12 renames the old private `events` table to `conversation_events`, preserving
 its sequence numbers, payloads, and conversation timeline. The new `events` table
-contains only operational records: `id`, `ts`, `user_id`, `type`, `summary`, `outcome`,
+contains only problemal records: `id`, `ts`, `user_id`, `type`, `summary`, `outcome`,
 `duration_ms`, `details_json`, and `request_id`. The types are question, calculation,
 sign_in, error, admin_change, and support_access. Indexes cover timestamp, user and
 timestamp, and type and timestamp. `GRAPHMINE_ADMIN_EVENT_RETENTION_DAYS` defaults to
@@ -148,7 +148,7 @@ by an agent restart so both processes reload the same saved settings.
 Overview uses UTC calendar days, while account token limits retain their existing
 rolling twenty-four-hour window. Timing percentiles and token totals come from
 recorded events; incomplete provider usage is labelled unavailable. All-time
-operation counts come from saved successful workflow plans. Model call statistics
+problem counts come from saved successful workflow plans. Model call statistics
 cover stored diagnostics; missing historical automatic wake counts remain
 unavailable rather than being inferred from manual admin actions.
 
@@ -197,7 +197,7 @@ both pages beside their supplied artboards, details and mobile Usage.
 Capacity exposes the fourteen validated settings in `admin_settings.py`: model
 concurrency, vLLM requests, model queue wait, the shared token pool, calculation
 and per-user concurrency, CPU workers, calculation/queue deadlines, default token
-and storage allowances, upload size, backup count and operational-event retention.
+and storage allowances, upload size, backup count and problemal-event retention.
 Saves require confirmation, compare against the values loaded by the page, and
 record before/after values. A conflicting edit returns 409. New work receives live
 settings; vLLM request changes wait for a model restart. The displayed effective

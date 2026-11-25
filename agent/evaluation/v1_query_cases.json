@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "purpose": "Generated v1 domain/operation coverage and routing-safety matrix. This is an evaluation artifact, never a fine-tuning dataset.",
+  "purpose": "Generated v1 domain/problem coverage and routing-safety matrix. This is an evaluation artifact, never a fine-tuning dataset.",
   "cases": [
     {
       "id": "v1-general-maximal-cliques",
@@ -8,8 +8,8 @@
       "domain_id": "general",
       "user_query": "Enumerate every inclusion-maximal fully connected group of vertices in this network.",
       "expected": {
-        "problem_id": "maximal_clique_enumeration",
-        "operation_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
         "supported": true
       }
     },
@@ -19,8 +19,8 @@
       "domain_id": "general",
       "user_query": "Find one largest fully connected set of vertices in the network.",
       "expected": {
-        "problem_id": "maximum_clique",
-        "operation_id": "maximum-clique",
+        "topic_id": "maximum_clique",
+        "problem_id": "maximum-clique",
         "supported": true
       }
     },
@@ -30,8 +30,8 @@
       "domain_id": "general",
       "user_query": "Count all fully connected groups of exactly four vertices in the network.",
       "expected": {
-        "problem_id": "k_clique_counting_enumeration",
-        "operation_id": "k-cliques",
+        "topic_id": "k_clique_counting_enumeration",
+        "problem_id": "k-cliques",
         "supported": true,
         "parameters": {
           "k": 4
@@ -44,8 +44,8 @@
       "domain_id": "general",
       "user_query": "Find near-complete groups of at least five vertices where each member reaches 80 percent of the others.",
       "expected": {
-        "problem_id": "quasi_clique_mining",
-        "operation_id": "quasi-cliques",
+        "topic_id": "quasi_clique_mining",
+        "problem_id": "quasi-cliques",
         "supported": true,
         "parameters": {
           "minimum_size": 5,
@@ -59,8 +59,8 @@
       "domain_id": "general",
       "user_query": "Compute all core numbers and show the vertices in the 5-core of this network.",
       "expected": {
-        "problem_id": "k_core_decomposition",
-        "operation_id": "k-core",
+        "topic_id": "k_core_decomposition",
+        "problem_id": "k-core",
         "supported": true,
         "parameters": {
           "requested_k": 5
@@ -76,8 +76,8 @@
       "domain_id": "general",
       "user_query": "Using the attached left partition, enumerate maximal bicliques with at least two left and three right vertices.",
       "expected": {
-        "problem_id": "maximal_biclique_enumeration",
-        "operation_id": "maximal-bicliques",
+        "topic_id": "maximal_biclique_enumeration",
+        "problem_id": "maximal-bicliques",
         "supported": true,
         "parameters": {
           "minimum_left_size": 2,
@@ -94,8 +94,8 @@
       "domain_id": "general",
       "user_query": "Count all triangles among vertices and include each vertex's triangle participation.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "triangle-counting",
         "supported": true,
         "optional_outputs": [
           "per_vertex_count"
@@ -108,8 +108,8 @@
       "domain_id": "general",
       "user_query": "Apply the attached edge updates and report inserted, deleted, and net triangle counts.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "dynamic-triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "dynamic-triangle-counting",
         "supported": true,
         "auxiliary_roles": [
           "updates"
@@ -122,8 +122,8 @@
       "domain_id": "general",
       "user_query": "Count induced occurrences of the attached motif and include per-vertex participation.",
       "expected": {
-        "problem_id": "graph_motif_counting",
-        "operation_id": "graph-motifs",
+        "topic_id": "graph_motif_counting",
+        "problem_id": "graph-motifs",
         "supported": true,
         "parameters": {
           "induced": true
@@ -142,8 +142,8 @@
       "domain_id": "general",
       "user_query": "Count label-respecting embeddings of the attached query graph and include the embeddings.",
       "expected": {
-        "problem_id": "subgraph_isomorphism",
-        "operation_id": "subgraph-isomorphism",
+        "topic_id": "subgraph_isomorphism",
+        "problem_id": "subgraph-isomorphism",
         "supported": true,
         "optional_outputs": [
           "embeddings"
@@ -159,8 +159,8 @@
       "domain_id": "general",
       "user_query": "Count time-ordered feed-forward triangle events that finish within 3600 seconds; return the count only, not instance details.",
       "expected": {
-        "problem_id": "temporal_motif_mining",
-        "operation_id": "temporal-motif-mining",
+        "topic_id": "temporal_motif_mining",
+        "problem_id": "temporal-motif-mining",
         "supported": true,
         "parameters": {
           "max_time_span": 3600
@@ -173,8 +173,8 @@
       "domain_id": "general",
       "user_query": "Partition the undirected network into modularity communities and return their members.",
       "expected": {
-        "problem_id": "community_detection",
-        "operation_id": "community-detection",
+        "topic_id": "community_detection",
+        "problem_id": "community-detection",
         "supported": true,
         "optional_outputs": [
           "communities"
@@ -187,8 +187,8 @@
       "domain_id": "general",
       "user_query": "Rank vertices by betweenness centrality in this network.",
       "expected": {
-        "problem_id": "centrality_influential_node_mining",
-        "operation_id": "betweenness-centrality",
+        "topic_id": "centrality_influential_node_mining",
+        "problem_id": "betweenness-centrality",
         "supported": true,
         "optional_outputs": [
           "ranking"
@@ -201,8 +201,8 @@
       "domain_id": "fraud_detection",
       "user_query": "List all complete accounts groups that cannot be extended with another mutually connected member.",
       "expected": {
-        "problem_id": "maximal_clique_enumeration",
-        "operation_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
         "supported": true
       }
     },
@@ -212,8 +212,8 @@
       "domain_id": "fraud_detection",
       "user_query": "What is the maximum clique in this transaction network? I need the globally largest complete group.",
       "expected": {
-        "problem_id": "maximum_clique",
-        "operation_id": "maximum-clique",
+        "topic_id": "maximum_clique",
+        "problem_id": "maximum-clique",
         "supported": true
       }
     },
@@ -223,8 +223,8 @@
       "domain_id": "fraud_detection",
       "user_query": "How many 4-cliques does this transaction network contain?",
       "expected": {
-        "problem_id": "k_clique_counting_enumeration",
-        "operation_id": "k-cliques",
+        "topic_id": "k_clique_counting_enumeration",
+        "problem_id": "k-cliques",
         "supported": true,
         "parameters": {
           "k": 4
@@ -237,8 +237,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Mine quasi-cliques in the transaction network with minimum size 5 and degree ratio 0.8.",
       "expected": {
-        "problem_id": "quasi_clique_mining",
-        "operation_id": "quasi-cliques",
+        "topic_id": "quasi_clique_mining",
+        "problem_id": "quasi-cliques",
         "supported": true,
         "parameters": {
           "minimum_size": 5,
@@ -252,8 +252,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Run k-core decomposition and return the members that survive at k equals 5.",
       "expected": {
-        "problem_id": "k_core_decomposition",
-        "operation_id": "k-core",
+        "topic_id": "k_core_decomposition",
+        "problem_id": "k-core",
         "supported": true,
         "parameters": {
           "requested_k": 5
@@ -269,8 +269,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Find all maximal complete bipartite groups in the transaction network; require 2 left-side and 3 right-side members.",
       "expected": {
-        "problem_id": "maximal_biclique_enumeration",
-        "operation_id": "maximal-bicliques",
+        "topic_id": "maximal_biclique_enumeration",
+        "problem_id": "maximal-bicliques",
         "supported": true,
         "parameters": {
           "minimum_left_size": 2,
@@ -287,8 +287,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Measure closed triples in this transaction network, including per-vertex counts.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "triangle-counting",
         "supported": true,
         "optional_outputs": [
           "per_vertex_count"
@@ -301,8 +301,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Update this transaction network from my insertion/deletion file and compute the triangle-count change.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "dynamic-triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "dynamic-triangle-counting",
         "supported": true,
         "auxiliary_roles": [
           "updates"
@@ -315,8 +315,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Run a structural motif census: count induced occurrences of my uploaded motif and aggregate participation for each accounts member.",
       "expected": {
-        "problem_id": "graph_motif_counting",
-        "operation_id": "graph-motifs",
+        "topic_id": "graph_motif_counting",
+        "problem_id": "graph-motifs",
         "supported": true,
         "parameters": {
           "induced": true
@@ -335,8 +335,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Match my uploaded query pattern against this transaction network without ignoring labels, and list every embedding.",
       "expected": {
-        "problem_id": "subgraph_isomorphism",
-        "operation_id": "subgraph-isomorphism",
+        "topic_id": "subgraph_isomorphism",
+        "problem_id": "subgraph-isomorphism",
         "supported": true,
         "optional_outputs": [
           "embeddings"
@@ -352,8 +352,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Count temporal A-to-B, B-to-C, A-to-C motif occurrences in a one-hour window; do not list instances.",
       "expected": {
-        "problem_id": "temporal_motif_mining",
-        "operation_id": "temporal-motif-mining",
+        "topic_id": "temporal_motif_mining",
+        "problem_id": "temporal-motif-mining",
         "supported": true,
         "parameters": {
           "max_time_span": 3600
@@ -366,8 +366,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Detect disjoint communities among the accounts using modularity optimization and return every community's member vertices.",
       "expected": {
-        "problem_id": "community_detection",
-        "operation_id": "community-detection",
+        "topic_id": "community_detection",
+        "problem_id": "community-detection",
         "supported": true,
         "optional_outputs": [
           "communities"
@@ -380,8 +380,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Which accounts lie on the most shortest paths? Return the betweenness ranking.",
       "expected": {
-        "problem_id": "centrality_influential_node_mining",
-        "operation_id": "betweenness-centrality",
+        "topic_id": "centrality_influential_node_mining",
+        "problem_id": "betweenness-centrality",
         "supported": true,
         "optional_outputs": [
           "ranking"
@@ -394,8 +394,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Find every maximal clique in the protein interaction network; do not confuse maximal with largest.",
       "expected": {
-        "problem_id": "maximal_clique_enumeration",
-        "operation_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
         "supported": true
       }
     },
@@ -405,8 +405,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Return the largest pairwise-connected proteins group, not every maximal group.",
       "expected": {
-        "problem_id": "maximum_clique",
-        "operation_id": "maximum-clique",
+        "topic_id": "maximum_clique",
+        "problem_id": "maximum-clique",
         "supported": true
       }
     },
@@ -416,8 +416,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Measure the number of complete four-member proteins groups.",
       "expected": {
-        "problem_id": "k_clique_counting_enumeration",
-        "operation_id": "k-cliques",
+        "topic_id": "k_clique_counting_enumeration",
+        "problem_id": "k-cliques",
         "supported": true,
         "parameters": {
           "k": 4
@@ -430,8 +430,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Return dense five-or-more-member proteins groups using an 80% minimum internal-degree threshold.",
       "expected": {
-        "problem_id": "quasi_clique_mining",
-        "operation_id": "quasi-cliques",
+        "topic_id": "quasi_clique_mining",
+        "problem_id": "quasi-cliques",
         "supported": true,
         "parameters": {
           "minimum_size": 5,
@@ -445,8 +445,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Find the core number of every vertex and return only the vertex members of the requested 5-core, not its edge list.",
       "expected": {
-        "problem_id": "k_core_decomposition",
-        "operation_id": "k-core",
+        "topic_id": "k_core_decomposition",
+        "problem_id": "k-core",
         "supported": true,
         "parameters": {
           "requested_k": 5
@@ -462,8 +462,8 @@
       "domain_id": "bioinformatics",
       "user_query": "With my left-partition file, list maximal 2-by-3-or-larger bicliques.",
       "expected": {
-        "problem_id": "maximal_biclique_enumeration",
-        "operation_id": "maximal-bicliques",
+        "topic_id": "maximal_biclique_enumeration",
+        "problem_id": "maximal-bicliques",
         "supported": true,
         "parameters": {
           "minimum_left_size": 2,
@@ -480,8 +480,8 @@
       "domain_id": "bioinformatics",
       "user_query": "How many three-way closed connections exist, and how many involve each member?",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "triangle-counting",
         "supported": true,
         "optional_outputs": [
           "per_vertex_count"
@@ -494,8 +494,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Use the uploaded dynamic batch to measure how many closed triples are gained and lost.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "dynamic-triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "dynamic-triangle-counting",
         "supported": true,
         "auxiliary_roles": [
           "updates"
@@ -508,8 +508,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Using the uploaded motif definition, count induced instances and report which proteins participate.",
       "expected": {
-        "problem_id": "graph_motif_counting",
-        "operation_id": "graph-motifs",
+        "topic_id": "graph_motif_counting",
+        "problem_id": "graph-motifs",
         "supported": true,
         "parameters": {
           "induced": true
@@ -528,8 +528,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Find every embedding of the attached subgraph pattern among the proteins.",
       "expected": {
-        "problem_id": "subgraph_isomorphism",
-        "operation_id": "subgraph-isomorphism",
+        "topic_id": "subgraph_isomorphism",
+        "problem_id": "subgraph-isomorphism",
         "supported": true,
         "optional_outputs": [
           "embeddings"
@@ -545,8 +545,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Count ordered three-edge temporal motifs whose maximum span is 3600 seconds, without materializing instances.",
       "expected": {
-        "problem_id": "temporal_motif_mining",
-        "operation_id": "temporal-motif-mining",
+        "topic_id": "temporal_motif_mining",
+        "problem_id": "temporal-motif-mining",
         "supported": true,
         "parameters": {
           "max_time_span": 3600
@@ -559,8 +559,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Cluster this protein interaction network into non-overlapping communities and include each community's vertices.",
       "expected": {
-        "problem_id": "community_detection",
-        "operation_id": "community-detection",
+        "topic_id": "community_detection",
+        "problem_id": "community-detection",
         "supported": true,
         "optional_outputs": [
           "communities"
@@ -573,8 +573,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Compute every vertex's betweenness score and rank the influential bridge vertices.",
       "expected": {
-        "problem_id": "centrality_influential_node_mining",
-        "operation_id": "betweenness-centrality",
+        "topic_id": "centrality_influential_node_mining",
+        "problem_id": "betweenness-centrality",
         "supported": true,
         "optional_outputs": [
           "ranking"
@@ -587,8 +587,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Enumerate every inclusion-maximal fully connected group of hosts in this host communication network.",
       "expected": {
-        "problem_id": "maximal_clique_enumeration",
-        "operation_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
         "supported": true
       }
     },
@@ -598,8 +598,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Find one largest fully connected set of hosts in the host communication network.",
       "expected": {
-        "problem_id": "maximum_clique",
-        "operation_id": "maximum-clique",
+        "topic_id": "maximum_clique",
+        "problem_id": "maximum-clique",
         "supported": true
       }
     },
@@ -609,8 +609,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Count all fully connected groups of exactly four hosts in the host communication network.",
       "expected": {
-        "problem_id": "k_clique_counting_enumeration",
-        "operation_id": "k-cliques",
+        "topic_id": "k_clique_counting_enumeration",
+        "problem_id": "k-cliques",
         "supported": true,
         "parameters": {
           "k": 4
@@ -623,8 +623,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Find near-complete groups of at least five hosts where each member reaches 80 percent of the others.",
       "expected": {
-        "problem_id": "quasi_clique_mining",
-        "operation_id": "quasi-cliques",
+        "topic_id": "quasi_clique_mining",
+        "problem_id": "quasi-cliques",
         "supported": true,
         "parameters": {
           "minimum_size": 5,
@@ -638,8 +638,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Compute all core numbers and show the hosts in the 5-core of this host communication network.",
       "expected": {
-        "problem_id": "k_core_decomposition",
-        "operation_id": "k-core",
+        "topic_id": "k_core_decomposition",
+        "problem_id": "k-core",
         "supported": true,
         "parameters": {
           "requested_k": 5
@@ -655,8 +655,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Using the attached left partition, enumerate maximal bicliques with at least two left and three right vertices.",
       "expected": {
-        "problem_id": "maximal_biclique_enumeration",
-        "operation_id": "maximal-bicliques",
+        "topic_id": "maximal_biclique_enumeration",
+        "problem_id": "maximal-bicliques",
         "supported": true,
         "parameters": {
           "minimum_left_size": 2,
@@ -673,8 +673,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Count all triangles among hosts and include each vertex's triangle participation.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "triangle-counting",
         "supported": true,
         "optional_outputs": [
           "per_vertex_count"
@@ -687,8 +687,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Apply the attached edge updates and report inserted, deleted, and net triangle counts.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "dynamic-triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "dynamic-triangle-counting",
         "supported": true,
         "auxiliary_roles": [
           "updates"
@@ -701,8 +701,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Count induced occurrences of the attached motif and include per-vertex participation.",
       "expected": {
-        "problem_id": "graph_motif_counting",
-        "operation_id": "graph-motifs",
+        "topic_id": "graph_motif_counting",
+        "problem_id": "graph-motifs",
         "supported": true,
         "parameters": {
           "induced": true
@@ -721,8 +721,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Count label-respecting embeddings of the attached query graph and include the embeddings.",
       "expected": {
-        "problem_id": "subgraph_isomorphism",
-        "operation_id": "subgraph-isomorphism",
+        "topic_id": "subgraph_isomorphism",
+        "problem_id": "subgraph-isomorphism",
         "supported": true,
         "optional_outputs": [
           "embeddings"
@@ -738,8 +738,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Count time-ordered feed-forward triangle events that finish within 3600 seconds; return the count only, not instance details.",
       "expected": {
-        "problem_id": "temporal_motif_mining",
-        "operation_id": "temporal-motif-mining",
+        "topic_id": "temporal_motif_mining",
+        "problem_id": "temporal-motif-mining",
         "supported": true,
         "parameters": {
           "max_time_span": 3600
@@ -752,8 +752,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Partition the undirected host communication network into modularity communities and return their members.",
       "expected": {
-        "problem_id": "community_detection",
-        "operation_id": "community-detection",
+        "topic_id": "community_detection",
+        "problem_id": "community-detection",
         "supported": true,
         "optional_outputs": [
           "communities"
@@ -766,8 +766,8 @@
       "domain_id": "cybersecurity",
       "user_query": "Rank hosts by betweenness centrality in this host communication network.",
       "expected": {
-        "problem_id": "centrality_influential_node_mining",
-        "operation_id": "betweenness-centrality",
+        "topic_id": "centrality_influential_node_mining",
+        "problem_id": "betweenness-centrality",
         "supported": true,
         "optional_outputs": [
           "ranking"
@@ -780,8 +780,8 @@
       "domain_id": "social_networks",
       "user_query": "List all complete people groups that cannot be extended with another mutually connected member.",
       "expected": {
-        "problem_id": "maximal_clique_enumeration",
-        "operation_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
         "supported": true
       }
     },
@@ -791,8 +791,8 @@
       "domain_id": "social_networks",
       "user_query": "What is the maximum clique in this social network? I need the globally largest complete group.",
       "expected": {
-        "problem_id": "maximum_clique",
-        "operation_id": "maximum-clique",
+        "topic_id": "maximum_clique",
+        "problem_id": "maximum-clique",
         "supported": true
       }
     },
@@ -802,8 +802,8 @@
       "domain_id": "social_networks",
       "user_query": "How many 4-cliques does this social network contain?",
       "expected": {
-        "problem_id": "k_clique_counting_enumeration",
-        "operation_id": "k-cliques",
+        "topic_id": "k_clique_counting_enumeration",
+        "problem_id": "k-cliques",
         "supported": true,
         "parameters": {
           "k": 4
@@ -816,8 +816,8 @@
       "domain_id": "social_networks",
       "user_query": "Mine quasi-cliques in the social network with minimum size 5 and degree ratio 0.8.",
       "expected": {
-        "problem_id": "quasi_clique_mining",
-        "operation_id": "quasi-cliques",
+        "topic_id": "quasi_clique_mining",
+        "problem_id": "quasi-cliques",
         "supported": true,
         "parameters": {
           "minimum_size": 5,
@@ -831,8 +831,8 @@
       "domain_id": "social_networks",
       "user_query": "Run k-core decomposition and return the members that survive at k equals 5.",
       "expected": {
-        "problem_id": "k_core_decomposition",
-        "operation_id": "k-core",
+        "topic_id": "k_core_decomposition",
+        "problem_id": "k-core",
         "supported": true,
         "parameters": {
           "requested_k": 5
@@ -848,8 +848,8 @@
       "domain_id": "social_networks",
       "user_query": "Find all maximal complete bipartite groups in the social network; require 2 left-side and 3 right-side members.",
       "expected": {
-        "problem_id": "maximal_biclique_enumeration",
-        "operation_id": "maximal-bicliques",
+        "topic_id": "maximal_biclique_enumeration",
+        "problem_id": "maximal-bicliques",
         "supported": true,
         "parameters": {
           "minimum_left_size": 2,
@@ -866,8 +866,8 @@
       "domain_id": "social_networks",
       "user_query": "Measure closed triples in this social network, including per-vertex counts.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "triangle-counting",
         "supported": true,
         "optional_outputs": [
           "per_vertex_count"
@@ -880,8 +880,8 @@
       "domain_id": "social_networks",
       "user_query": "Update this social network from my insertion/deletion file and compute the triangle-count change.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "dynamic-triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "dynamic-triangle-counting",
         "supported": true,
         "auxiliary_roles": [
           "updates"
@@ -894,8 +894,8 @@
       "domain_id": "social_networks",
       "user_query": "Run a structural motif census: count induced occurrences of my uploaded motif and aggregate participation for each people member.",
       "expected": {
-        "problem_id": "graph_motif_counting",
-        "operation_id": "graph-motifs",
+        "topic_id": "graph_motif_counting",
+        "problem_id": "graph-motifs",
         "supported": true,
         "parameters": {
           "induced": true
@@ -914,8 +914,8 @@
       "domain_id": "social_networks",
       "user_query": "Match my uploaded query pattern against this social network without ignoring labels, and list every embedding.",
       "expected": {
-        "problem_id": "subgraph_isomorphism",
-        "operation_id": "subgraph-isomorphism",
+        "topic_id": "subgraph_isomorphism",
+        "problem_id": "subgraph-isomorphism",
         "supported": true,
         "optional_outputs": [
           "embeddings"
@@ -931,8 +931,8 @@
       "domain_id": "social_networks",
       "user_query": "Count temporal A-to-B, B-to-C, A-to-C motif occurrences in a one-hour window; do not list instances.",
       "expected": {
-        "problem_id": "temporal_motif_mining",
-        "operation_id": "temporal-motif-mining",
+        "topic_id": "temporal_motif_mining",
+        "problem_id": "temporal-motif-mining",
         "supported": true,
         "parameters": {
           "max_time_span": 3600
@@ -945,8 +945,8 @@
       "domain_id": "social_networks",
       "user_query": "Detect disjoint communities among the people using modularity optimization and return every community's member vertices.",
       "expected": {
-        "problem_id": "community_detection",
-        "operation_id": "community-detection",
+        "topic_id": "community_detection",
+        "problem_id": "community-detection",
         "supported": true,
         "optional_outputs": [
           "communities"
@@ -959,8 +959,8 @@
       "domain_id": "social_networks",
       "user_query": "Which people lie on the most shortest paths? Return the betweenness ranking.",
       "expected": {
-        "problem_id": "centrality_influential_node_mining",
-        "operation_id": "betweenness-centrality",
+        "topic_id": "centrality_influential_node_mining",
+        "problem_id": "betweenness-centrality",
         "supported": true,
         "optional_outputs": [
           "ranking"
@@ -973,8 +973,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Find every maximal clique in the customer-product network; do not confuse maximal with largest.",
       "expected": {
-        "problem_id": "maximal_clique_enumeration",
-        "operation_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
         "supported": true
       }
     },
@@ -984,8 +984,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Return the largest pairwise-connected customers group, not every maximal group.",
       "expected": {
-        "problem_id": "maximum_clique",
-        "operation_id": "maximum-clique",
+        "topic_id": "maximum_clique",
+        "problem_id": "maximum-clique",
         "supported": true
       }
     },
@@ -995,8 +995,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Measure the number of complete four-member customers groups.",
       "expected": {
-        "problem_id": "k_clique_counting_enumeration",
-        "operation_id": "k-cliques",
+        "topic_id": "k_clique_counting_enumeration",
+        "problem_id": "k-cliques",
         "supported": true,
         "parameters": {
           "k": 4
@@ -1009,8 +1009,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Return dense five-or-more-member customers groups using an 80% minimum internal-degree threshold.",
       "expected": {
-        "problem_id": "quasi_clique_mining",
-        "operation_id": "quasi-cliques",
+        "topic_id": "quasi_clique_mining",
+        "problem_id": "quasi-cliques",
         "supported": true,
         "parameters": {
           "minimum_size": 5,
@@ -1024,8 +1024,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Find the core number of every vertex and return only the vertex members of the requested 5-core, not its edge list.",
       "expected": {
-        "problem_id": "k_core_decomposition",
-        "operation_id": "k-core",
+        "topic_id": "k_core_decomposition",
+        "problem_id": "k-core",
         "supported": true,
         "parameters": {
           "requested_k": 5
@@ -1041,8 +1041,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "With my left-partition file, list maximal 2-by-3-or-larger bicliques.",
       "expected": {
-        "problem_id": "maximal_biclique_enumeration",
-        "operation_id": "maximal-bicliques",
+        "topic_id": "maximal_biclique_enumeration",
+        "problem_id": "maximal-bicliques",
         "supported": true,
         "parameters": {
           "minimum_left_size": 2,
@@ -1059,8 +1059,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "How many three-way closed connections exist, and how many involve each member?",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "triangle-counting",
         "supported": true,
         "optional_outputs": [
           "per_vertex_count"
@@ -1073,8 +1073,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Use the uploaded dynamic batch to measure how many closed triples are gained and lost.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "dynamic-triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "dynamic-triangle-counting",
         "supported": true,
         "auxiliary_roles": [
           "updates"
@@ -1087,8 +1087,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Using the uploaded motif definition, count induced instances and report which customers participate.",
       "expected": {
-        "problem_id": "graph_motif_counting",
-        "operation_id": "graph-motifs",
+        "topic_id": "graph_motif_counting",
+        "problem_id": "graph-motifs",
         "supported": true,
         "parameters": {
           "induced": true
@@ -1107,8 +1107,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Find every embedding of the attached subgraph pattern among the customers.",
       "expected": {
-        "problem_id": "subgraph_isomorphism",
-        "operation_id": "subgraph-isomorphism",
+        "topic_id": "subgraph_isomorphism",
+        "problem_id": "subgraph-isomorphism",
         "supported": true,
         "optional_outputs": [
           "embeddings"
@@ -1124,8 +1124,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Count ordered three-edge temporal motifs whose maximum span is 3600 seconds, without materializing instances.",
       "expected": {
-        "problem_id": "temporal_motif_mining",
-        "operation_id": "temporal-motif-mining",
+        "topic_id": "temporal_motif_mining",
+        "problem_id": "temporal-motif-mining",
         "supported": true,
         "parameters": {
           "max_time_span": 3600
@@ -1138,8 +1138,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Cluster this customer-product network into non-overlapping communities and include each community's vertices.",
       "expected": {
-        "problem_id": "community_detection",
-        "operation_id": "community-detection",
+        "topic_id": "community_detection",
+        "problem_id": "community-detection",
         "supported": true,
         "optional_outputs": [
           "communities"
@@ -1152,8 +1152,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "Compute every vertex's betweenness score and rank the influential bridge vertices.",
       "expected": {
-        "problem_id": "centrality_influential_node_mining",
-        "operation_id": "betweenness-centrality",
+        "topic_id": "centrality_influential_node_mining",
+        "problem_id": "betweenness-centrality",
         "supported": true,
         "optional_outputs": [
           "ranking"
@@ -1166,8 +1166,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Enumerate every inclusion-maximal fully connected group of entities in this knowledge graph.",
       "expected": {
-        "problem_id": "maximal_clique_enumeration",
-        "operation_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
         "supported": true
       }
     },
@@ -1177,8 +1177,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Find one largest fully connected set of entities in the knowledge graph.",
       "expected": {
-        "problem_id": "maximum_clique",
-        "operation_id": "maximum-clique",
+        "topic_id": "maximum_clique",
+        "problem_id": "maximum-clique",
         "supported": true
       }
     },
@@ -1188,8 +1188,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Count all fully connected groups of exactly four entities in the knowledge graph.",
       "expected": {
-        "problem_id": "k_clique_counting_enumeration",
-        "operation_id": "k-cliques",
+        "topic_id": "k_clique_counting_enumeration",
+        "problem_id": "k-cliques",
         "supported": true,
         "parameters": {
           "k": 4
@@ -1202,8 +1202,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Find near-complete groups of at least five entities where each member reaches 80 percent of the others.",
       "expected": {
-        "problem_id": "quasi_clique_mining",
-        "operation_id": "quasi-cliques",
+        "topic_id": "quasi_clique_mining",
+        "problem_id": "quasi-cliques",
         "supported": true,
         "parameters": {
           "minimum_size": 5,
@@ -1217,8 +1217,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Compute all core numbers and show the entities in the 5-core of this knowledge graph.",
       "expected": {
-        "problem_id": "k_core_decomposition",
-        "operation_id": "k-core",
+        "topic_id": "k_core_decomposition",
+        "problem_id": "k-core",
         "supported": true,
         "parameters": {
           "requested_k": 5
@@ -1234,8 +1234,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Using the attached left partition, enumerate maximal bicliques with at least two left and three right vertices.",
       "expected": {
-        "problem_id": "maximal_biclique_enumeration",
-        "operation_id": "maximal-bicliques",
+        "topic_id": "maximal_biclique_enumeration",
+        "problem_id": "maximal-bicliques",
         "supported": true,
         "parameters": {
           "minimum_left_size": 2,
@@ -1252,8 +1252,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Count all triangles among entities and include each vertex's triangle participation.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "triangle-counting",
         "supported": true,
         "optional_outputs": [
           "per_vertex_count"
@@ -1266,8 +1266,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Apply the attached edge updates and report inserted, deleted, and net triangle counts.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "dynamic-triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "dynamic-triangle-counting",
         "supported": true,
         "auxiliary_roles": [
           "updates"
@@ -1280,8 +1280,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Count induced occurrences of the attached motif and include per-vertex participation.",
       "expected": {
-        "problem_id": "graph_motif_counting",
-        "operation_id": "graph-motifs",
+        "topic_id": "graph_motif_counting",
+        "problem_id": "graph-motifs",
         "supported": true,
         "parameters": {
           "induced": true
@@ -1300,8 +1300,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Count label-respecting embeddings of the attached query graph and include the embeddings.",
       "expected": {
-        "problem_id": "subgraph_isomorphism",
-        "operation_id": "subgraph-isomorphism",
+        "topic_id": "subgraph_isomorphism",
+        "problem_id": "subgraph-isomorphism",
         "supported": true,
         "optional_outputs": [
           "embeddings"
@@ -1317,8 +1317,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Count time-ordered feed-forward triangle events that finish within 3600 seconds; return the count only, not instance details.",
       "expected": {
-        "problem_id": "temporal_motif_mining",
-        "operation_id": "temporal-motif-mining",
+        "topic_id": "temporal_motif_mining",
+        "problem_id": "temporal-motif-mining",
         "supported": true,
         "parameters": {
           "max_time_span": 3600
@@ -1331,8 +1331,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Partition the undirected knowledge graph into modularity communities and return their members.",
       "expected": {
-        "problem_id": "community_detection",
-        "operation_id": "community-detection",
+        "topic_id": "community_detection",
+        "problem_id": "community-detection",
         "supported": true,
         "optional_outputs": [
           "communities"
@@ -1345,8 +1345,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "Rank entities by betweenness centrality in this knowledge graph.",
       "expected": {
-        "problem_id": "centrality_influential_node_mining",
-        "operation_id": "betweenness-centrality",
+        "topic_id": "centrality_influential_node_mining",
+        "problem_id": "betweenness-centrality",
         "supported": true,
         "optional_outputs": [
           "ranking"
@@ -1359,8 +1359,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "List all complete routers groups that cannot be extended with another mutually connected member.",
       "expected": {
-        "problem_id": "maximal_clique_enumeration",
-        "operation_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
         "supported": true
       }
     },
@@ -1370,8 +1370,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "What is the maximum clique in this router topology? I need the globally largest complete group.",
       "expected": {
-        "problem_id": "maximum_clique",
-        "operation_id": "maximum-clique",
+        "topic_id": "maximum_clique",
+        "problem_id": "maximum-clique",
         "supported": true
       }
     },
@@ -1381,8 +1381,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "How many 4-cliques does this router topology contain?",
       "expected": {
-        "problem_id": "k_clique_counting_enumeration",
-        "operation_id": "k-cliques",
+        "topic_id": "k_clique_counting_enumeration",
+        "problem_id": "k-cliques",
         "supported": true,
         "parameters": {
           "k": 4
@@ -1395,8 +1395,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "Mine quasi-cliques in the router topology with minimum size 5 and degree ratio 0.8.",
       "expected": {
-        "problem_id": "quasi_clique_mining",
-        "operation_id": "quasi-cliques",
+        "topic_id": "quasi_clique_mining",
+        "problem_id": "quasi-cliques",
         "supported": true,
         "parameters": {
           "minimum_size": 5,
@@ -1410,8 +1410,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "Run k-core decomposition and return the members that survive at k equals 5.",
       "expected": {
-        "problem_id": "k_core_decomposition",
-        "operation_id": "k-core",
+        "topic_id": "k_core_decomposition",
+        "problem_id": "k-core",
         "supported": true,
         "parameters": {
           "requested_k": 5
@@ -1427,8 +1427,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "Find all maximal complete bipartite groups in the router topology; require 2 left-side and 3 right-side members.",
       "expected": {
-        "problem_id": "maximal_biclique_enumeration",
-        "operation_id": "maximal-bicliques",
+        "topic_id": "maximal_biclique_enumeration",
+        "problem_id": "maximal-bicliques",
         "supported": true,
         "parameters": {
           "minimum_left_size": 2,
@@ -1445,8 +1445,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "Measure closed triples in this router topology, including per-vertex counts.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "triangle-counting",
         "supported": true,
         "optional_outputs": [
           "per_vertex_count"
@@ -1459,8 +1459,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "Update this router topology from my insertion/deletion file and compute the triangle-count change.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "dynamic-triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "dynamic-triangle-counting",
         "supported": true,
         "auxiliary_roles": [
           "updates"
@@ -1473,8 +1473,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "Run a structural motif census: count induced occurrences of my uploaded motif and aggregate participation for each routers member.",
       "expected": {
-        "problem_id": "graph_motif_counting",
-        "operation_id": "graph-motifs",
+        "topic_id": "graph_motif_counting",
+        "problem_id": "graph-motifs",
         "supported": true,
         "parameters": {
           "induced": true
@@ -1493,8 +1493,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "Match my uploaded query pattern against this router topology without ignoring labels, and list every embedding.",
       "expected": {
-        "problem_id": "subgraph_isomorphism",
-        "operation_id": "subgraph-isomorphism",
+        "topic_id": "subgraph_isomorphism",
+        "problem_id": "subgraph-isomorphism",
         "supported": true,
         "optional_outputs": [
           "embeddings"
@@ -1510,8 +1510,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "Count temporal A-to-B, B-to-C, A-to-C motif occurrences in a one-hour window; do not list instances.",
       "expected": {
-        "problem_id": "temporal_motif_mining",
-        "operation_id": "temporal-motif-mining",
+        "topic_id": "temporal_motif_mining",
+        "problem_id": "temporal-motif-mining",
         "supported": true,
         "parameters": {
           "max_time_span": 3600
@@ -1524,8 +1524,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "Detect disjoint communities among the routers using modularity optimization and return every community's member vertices.",
       "expected": {
-        "problem_id": "community_detection",
-        "operation_id": "community-detection",
+        "topic_id": "community_detection",
+        "problem_id": "community-detection",
         "supported": true,
         "optional_outputs": [
           "communities"
@@ -1538,8 +1538,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "Which routers lie on the most shortest paths? Return the betweenness ranking.",
       "expected": {
-        "problem_id": "centrality_influential_node_mining",
-        "operation_id": "betweenness-centrality",
+        "topic_id": "centrality_influential_node_mining",
+        "problem_id": "betweenness-centrality",
         "supported": true,
         "optional_outputs": [
           "ranking"
@@ -1552,8 +1552,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Find every maximal clique in the transport network; do not confuse maximal with largest.",
       "expected": {
-        "problem_id": "maximal_clique_enumeration",
-        "operation_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
         "supported": true
       }
     },
@@ -1563,8 +1563,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Return the largest pairwise-connected stations group, not every maximal group.",
       "expected": {
-        "problem_id": "maximum_clique",
-        "operation_id": "maximum-clique",
+        "topic_id": "maximum_clique",
+        "problem_id": "maximum-clique",
         "supported": true
       }
     },
@@ -1574,8 +1574,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Measure the number of complete four-member stations groups.",
       "expected": {
-        "problem_id": "k_clique_counting_enumeration",
-        "operation_id": "k-cliques",
+        "topic_id": "k_clique_counting_enumeration",
+        "problem_id": "k-cliques",
         "supported": true,
         "parameters": {
           "k": 4
@@ -1588,8 +1588,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Return dense five-or-more-member stations groups using an 80% minimum internal-degree threshold.",
       "expected": {
-        "problem_id": "quasi_clique_mining",
-        "operation_id": "quasi-cliques",
+        "topic_id": "quasi_clique_mining",
+        "problem_id": "quasi-cliques",
         "supported": true,
         "parameters": {
           "minimum_size": 5,
@@ -1603,8 +1603,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Find the core number of every vertex and return only the vertex members of the requested 5-core, not its edge list.",
       "expected": {
-        "problem_id": "k_core_decomposition",
-        "operation_id": "k-core",
+        "topic_id": "k_core_decomposition",
+        "problem_id": "k-core",
         "supported": true,
         "parameters": {
           "requested_k": 5
@@ -1620,8 +1620,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "With my left-partition file, list maximal 2-by-3-or-larger bicliques.",
       "expected": {
-        "problem_id": "maximal_biclique_enumeration",
-        "operation_id": "maximal-bicliques",
+        "topic_id": "maximal_biclique_enumeration",
+        "problem_id": "maximal-bicliques",
         "supported": true,
         "parameters": {
           "minimum_left_size": 2,
@@ -1638,8 +1638,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "How many three-way closed connections exist, and how many involve each member?",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "triangle-counting",
         "supported": true,
         "optional_outputs": [
           "per_vertex_count"
@@ -1652,8 +1652,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Use the uploaded dynamic batch to measure how many closed triples are gained and lost.",
       "expected": {
-        "problem_id": "triangle_counting_listing",
-        "operation_id": "dynamic-triangle-counting",
+        "topic_id": "triangle_counting_listing",
+        "problem_id": "dynamic-triangle-counting",
         "supported": true,
         "auxiliary_roles": [
           "updates"
@@ -1666,8 +1666,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Using the uploaded motif definition, count induced instances and report which stations participate.",
       "expected": {
-        "problem_id": "graph_motif_counting",
-        "operation_id": "graph-motifs",
+        "topic_id": "graph_motif_counting",
+        "problem_id": "graph-motifs",
         "supported": true,
         "parameters": {
           "induced": true
@@ -1686,8 +1686,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Find every embedding of the attached subgraph pattern among the stations.",
       "expected": {
-        "problem_id": "subgraph_isomorphism",
-        "operation_id": "subgraph-isomorphism",
+        "topic_id": "subgraph_isomorphism",
+        "problem_id": "subgraph-isomorphism",
         "supported": true,
         "optional_outputs": [
           "embeddings"
@@ -1703,8 +1703,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Count ordered three-edge temporal motifs whose maximum span is 3600 seconds, without materializing instances.",
       "expected": {
-        "problem_id": "temporal_motif_mining",
-        "operation_id": "temporal-motif-mining",
+        "topic_id": "temporal_motif_mining",
+        "problem_id": "temporal-motif-mining",
         "supported": true,
         "parameters": {
           "max_time_span": 3600
@@ -1717,8 +1717,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Cluster this transport network into non-overlapping communities and include each community's vertices.",
       "expected": {
-        "problem_id": "community_detection",
-        "operation_id": "community-detection",
+        "topic_id": "community_detection",
+        "problem_id": "community-detection",
         "supported": true,
         "optional_outputs": [
           "communities"
@@ -1731,8 +1731,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Compute every vertex's betweenness score and rank the influential bridge vertices.",
       "expected": {
-        "problem_id": "centrality_influential_node_mining",
-        "operation_id": "betweenness-centrality",
+        "topic_id": "centrality_influential_node_mining",
+        "problem_id": "betweenness-centrality",
         "supported": true,
         "optional_outputs": [
           "ranking"
@@ -1745,8 +1745,8 @@
       "domain_id": "general",
       "user_query": "For this network, find the subgraph with maximum edge density.",
       "expected": {
-        "problem_id": "densest_subgraph",
-        "operation_id": null,
+        "topic_id": "densest_subgraph",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1756,8 +1756,8 @@
       "domain_id": "fraud_detection",
       "user_query": "For this transaction network, find the subgraph with maximum edge density.",
       "expected": {
-        "problem_id": "densest_subgraph",
-        "operation_id": null,
+        "topic_id": "densest_subgraph",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1767,8 +1767,8 @@
       "domain_id": "bioinformatics",
       "user_query": "For this protein interaction network, find the densest subgraph containing exactly 25 vertices.",
       "expected": {
-        "problem_id": "densest_k_subgraph",
-        "operation_id": null,
+        "topic_id": "densest_k_subgraph",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1778,8 +1778,8 @@
       "domain_id": "cybersecurity",
       "user_query": "For this host communication network, find the densest subgraph containing exactly 25 vertices.",
       "expected": {
-        "problem_id": "densest_k_subgraph",
-        "operation_id": null,
+        "topic_id": "densest_k_subgraph",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1789,8 +1789,8 @@
       "domain_id": "social_networks",
       "user_query": "For this social network, compute the full k-truss decomposition.",
       "expected": {
-        "problem_id": "k_truss_decomposition",
-        "operation_id": null,
+        "topic_id": "k_truss_decomposition",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1800,8 +1800,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "For this customer-product network, compute the full k-truss decomposition.",
       "expected": {
-        "problem_id": "k_truss_decomposition",
-        "operation_id": null,
+        "topic_id": "k_truss_decomposition",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1811,8 +1811,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "For this knowledge graph, count every induced graphlet orbit up to size five.",
       "expected": {
-        "problem_id": "graphlet_counting",
-        "operation_id": null,
+        "topic_id": "graphlet_counting",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1822,8 +1822,8 @@
       "domain_id": "communications_infrastructure",
       "user_query": "For this router topology, count every induced graphlet orbit up to size five.",
       "expected": {
-        "problem_id": "graphlet_counting",
-        "operation_id": null,
+        "topic_id": "graphlet_counting",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1833,8 +1833,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "For this transport network, mine frequent subgraphs across my graph collection.",
       "expected": {
-        "problem_id": "frequent_subgraph_mining",
-        "operation_id": null,
+        "topic_id": "frequent_subgraph_mining",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1844,8 +1844,8 @@
       "domain_id": "general",
       "user_query": "For this network, mine frequent subgraphs across my graph collection.",
       "expected": {
-        "problem_id": "frequent_subgraph_mining",
-        "operation_id": null,
+        "topic_id": "frequent_subgraph_mining",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1855,8 +1855,8 @@
       "domain_id": "fraud_detection",
       "user_query": "For this transaction network, find overlapping communities using exact k-clique percolation.",
       "expected": {
-        "problem_id": "overlapping_community_detection",
-        "operation_id": null,
+        "topic_id": "overlapping_community_detection",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1866,8 +1866,8 @@
       "domain_id": "bioinformatics",
       "user_query": "For this protein interaction network, find overlapping communities using exact k-clique percolation.",
       "expected": {
-        "problem_id": "overlapping_community_detection",
-        "operation_id": null,
+        "topic_id": "overlapping_community_detection",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1877,8 +1877,8 @@
       "domain_id": "cybersecurity",
       "user_query": "For this host communication network, predict and rank the most likely missing edges.",
       "expected": {
-        "problem_id": "link_prediction",
-        "operation_id": null,
+        "topic_id": "link_prediction",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1888,8 +1888,8 @@
       "domain_id": "social_networks",
       "user_query": "For this social network, predict and rank the most likely missing edges.",
       "expected": {
-        "problem_id": "link_prediction",
-        "operation_id": null,
+        "topic_id": "link_prediction",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1899,8 +1899,8 @@
       "domain_id": "recommendation_ecommerce",
       "user_query": "For this customer-product network, detect anomalous vertices and suspicious subgraphs.",
       "expected": {
-        "problem_id": "graph_anomaly_detection",
-        "operation_id": null,
+        "topic_id": "graph_anomaly_detection",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1910,8 +1910,8 @@
       "domain_id": "knowledge_graphs",
       "user_query": "For this knowledge graph, detect anomalous vertices and suspicious subgraphs.",
       "expected": {
-        "problem_id": "graph_anomaly_detection",
-        "operation_id": null,
+        "topic_id": "graph_anomaly_detection",
+        "problem_id": null,
         "supported": false
       }
     },
@@ -1921,8 +1921,8 @@
       "domain_id": "general",
       "user_query": "Find the important groups in this graph.",
       "expected": {
+        "topic_id": null,
         "problem_id": null,
-        "operation_id": null,
         "supported": false
       }
     },
@@ -1932,8 +1932,8 @@
       "domain_id": "fraud_detection",
       "user_query": "Tell me what looks interesting in these transactions.",
       "expected": {
+        "topic_id": null,
         "problem_id": null,
-        "operation_id": null,
         "supported": false
       }
     },
@@ -1943,8 +1943,8 @@
       "domain_id": "bioinformatics",
       "user_query": "Analyze the relevant protein structure.",
       "expected": {
+        "topic_id": null,
         "problem_id": null,
-        "operation_id": null,
         "supported": false
       }
     },
@@ -1954,8 +1954,8 @@
       "domain_id": "transportation_mobility",
       "user_query": "Which part of this transport network matters most?",
       "expected": {
+        "topic_id": null,
         "problem_id": null,
-        "operation_id": null,
         "supported": false
       }
     }

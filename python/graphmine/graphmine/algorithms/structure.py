@@ -11,7 +11,7 @@ from ._common import groups, scores, simple, vertex_set
 
 @register(
     id="connected-components",
-    problem_id="connected_components",
+    topic_id="connected_components",
     title="Find connected groups",
     description="Exact weakly or strongly connected components, including isolated vertices.",
     parameters={
@@ -37,7 +37,7 @@ def components(graph, args, work, backend="networkx"):
 
 @register(
     id="biconnected-components",
-    problem_id="biconnected_components",
+    topic_id="biconnected_components",
     title="Find fragile connections and cut vertices",
     description="Exact biconnected vertex blocks, bridges and articulation points of an undirected graph.",
 )
@@ -68,7 +68,7 @@ def biconnected(graph, args, work, backend="networkx"):
 
 @register(
     id="k-core",
-    problem_id="k_core_decomposition",
+    topic_id="k_core_decomposition",
     title="Find the well-connected core",
     description="Exact core numbers and an optional induced k-core.",
     parameters={"requested_k": P("integer", None, minimum=0, nullable=True)},
@@ -92,7 +92,7 @@ def core(graph, args, work, backend="networkx"):
 
 @register(
     id="k-truss",
-    problem_id="k_truss_decomposition",
+    topic_id="k_truss_decomposition",
     title="Find connections supported by triangles",
     description="Exact edge truss numbers and an optional k-truss edge set.",
     parameters={"requested_k": P("integer", None, minimum=2, nullable=True)},
@@ -144,7 +144,7 @@ def truss(graph, args, work, backend="networkx"):
 
 @register(
     id="maximal-cliques",
-    problem_id="maximal_clique_enumeration",
+    topic_id="maximal_clique_enumeration",
     title="Find complete groups that cannot be extended",
     description="Enumerate maximal cliques; these are not necessarily maximum-size cliques.",
     parameters={
@@ -173,7 +173,7 @@ def maximal_cliques(graph, args, work, backend="networkx"):
 
 @register(
     id="maximum-clique",
-    problem_id="maximum_clique",
+    topic_id="maximum_clique",
     title="Find the largest fully connected group",
     description="Exact maximum clique, with optional enumeration of every tied optimum.",
     parameters={"return_all_ties": P("boolean", False)},
@@ -200,7 +200,7 @@ def maximum_clique(graph, args, work, backend="networkx"):
 
 @register(
     id="k-cliques",
-    problem_id="k_clique_counting_enumeration",
+    topic_id="k_clique_counting_enumeration",
     title="Count or list complete groups of a chosen size",
     description="Exact k-clique counting/enumeration with k>=2 and no implementation-imposed upper k bound.",
     parameters={
@@ -240,7 +240,7 @@ def k_cliques(graph, args, work, backend="networkx"):
 
 @register(
     id="triangle-counting",
-    problem_id="triangle_counting_listing",
+    topic_id="triangle_counting_listing",
     title="Count three-way connections",
     description="Exact triangle count and optional per-vertex, per-edge and instance outputs.",
     parameters={
@@ -289,7 +289,7 @@ def triangles(graph, args, work, backend="networkx"):
 
 @register(
     id="overlapping-communities",
-    problem_id="overlapping_community_detection",
+    topic_id="overlapping_community_detection",
     title="Find overlapping tightly connected groups",
     description="Exact k-clique percolation communities. Membership may overlap.",
     parameters={
@@ -313,7 +313,7 @@ def overlapping(graph, args, work, backend="networkx"):
 
 @register(
     id="maximal-independent-set",
-    problem_id="maximal_independent_set",
+    topic_id="maximal_independent_set",
     title="Select a non-conflicting group that cannot be extended",
     description="A maximal independent set; no maximum-cardinality guarantee is made.",
     parameters={"random_seed": P("integer", 0)},
@@ -339,7 +339,7 @@ def maximal_independent(graph, args, work, backend="networkx"):
 
 @register(
     id="vertex-coloring",
-    problem_id="vertex_coloring",
+    topic_id="vertex_coloring",
     title="Assign non-conflicting groups",
     description="A valid greedy coloring at distance one or two; the number of colors is not claimed minimal.",
     parameters={

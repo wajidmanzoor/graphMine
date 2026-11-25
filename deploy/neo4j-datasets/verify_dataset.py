@@ -133,7 +133,7 @@ def verify(slug, *, timeout=300, all_queries=False):
     source = common.SOURCE_ROOT / slug
     manifest = audit(slug)
     selected = selected_queries(slug, manifest, all_queries)
-    with (root / "operation.lock").open("a") as lock:
+    with (root / "problem.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         state = json.loads((root / "status.json").read_text())
         if not state.get("load_finished_at") or state.get("phase") not in {"awaiting_verification", "verifying", "verification_failed", "ready"}:

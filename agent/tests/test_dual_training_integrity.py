@@ -14,15 +14,15 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError
 
 
-def plan_job(catalog, operation="k-cliques"):
+def plan_job(catalog, problem="k-cliques"):
     return {
         "reference_contract": {
-            "operation_id": operation,
-            "problem_id": catalog.operation(operation).problem_id,
+            "problem_id": problem,
+            "topic_id": catalog.problem(problem).topic_id,
             "question": "List all fully connected groups of exactly three records.",
             "expected_status": "ready",
-            "parameters": {"k": 3} if operation == "k-cliques" else {},
-            "optional_outputs": ["cliques"] if operation == "k-cliques" else [],
+            "parameters": {"k": 3} if problem == "k-cliques" else {},
+            "optional_outputs": ["cliques"] if problem == "k-cliques" else [],
             "intent": ApplicationIntent().model_dump(mode="json"),
         },
         "user_payload": {
@@ -70,16 +70,16 @@ def test_required_unique_attachment_uses_production_binding(
         check_target(settings, tmp_path, job, target)
 
 
-def test_recognized_operation_may_still_request_required_clarification(
+def test_recognized_problem_may_still_request_required_clarification(
     settings, catalog, tmp_path
 ):
     job = plan_job(catalog)
     job["reference_contract"].update(
-        expected_status="needs_information", problem_id=None, operation_id=None
+        expected_status="needs_information", topic_id=None, problem_id=None
     )
     target = RouteDecision(
-        problem_id=catalog.operation("k-cliques").problem_id,
-        operation_id="k-cliques",
+        topic_id=catalog.problem("k-cliques").topic_id,
+        problem_id="k-cliques",
         supported=True,
         confidence=0.6,
         explanation="The required group size is unspecified.",
@@ -96,20 +96,20 @@ def test_exact_three_clique_triangle_equivalence_does_not_extend_to_other_object
 ):
     job = plan_job(catalog)
     target = RouteDecision(
-        problem_id=catalog.operation("triangle-counting").problem_id,
-        operation_id="triangle-counting",
+        topic_id=catalog.problem("triangle-counting").topic_id,
+        problem_id="triangle-counting",
         supported=True,
         confidence=1,
         explanation="Every requested fully connected triple is a triangle.",
     )
     check_target(settings, tmp_path, job, target)
     job["reference_contract"]["parameters"]["k"] = 4
-    with pytest.raises(ValueError, match="Formal operation differs"):
+    with pytest.raises(ValueError, match="Formal problem differs"):
         check_target(settings, tmp_path, job, target)
     job["reference_contract"]["parameters"]["k"] = 3
-    target.operation_id = "maximal-cliques"
-    target.problem_id = catalog.operation("maximal-cliques").problem_id
-    with pytest.raises(ValueError, match="Formal operation differs"):
+    target.problem_id = "maximal-cliques"
+    target.topic_id = catalog.problem("maximal-cliques").topic_id
+    with pytest.raises(ValueError, match="Formal problem differs"):
         check_target(settings, tmp_path, job, target)
 
 
@@ -171,7 +171,7 @@ def test_target_export_replays_raw_response_instead_of_trusting_saved_acceptance
         "output_schema": RouteDecision.model_json_schema(),
         "reference_contract": {
             "expected_status": "needs_information",
-            "problem_id": None,
+            "topic_id": None,
         },
     }
     assert verified_target(settings, tmp_path, job, artifact).ambiguity

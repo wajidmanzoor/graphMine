@@ -10,10 +10,10 @@
     "output_flag": "--output",
     "pretty_flag": "--pretty"
   },
-  "operations": [
+  "problems": [
     {
       "id": "maximal-cliques",
-      "problem_id": "maximal_clique_enumeration",
+      "topic_id": "maximal_clique_enumeration",
       "default_backend": "rdmce",
       "parameters": {
         "minimum_clique_size": {
@@ -47,7 +47,7 @@
     },
     {
       "id": "maximum-clique",
-      "problem_id": "maximum_clique",
+      "topic_id": "maximum_clique",
       "default_backend": "gpu-maximum-clique",
       "parameters": {
         "return_all_ties": {
@@ -96,7 +96,7 @@
     },
     {
       "id": "k-cliques",
-      "problem_id": "k_clique_counting_enumeration",
+      "topic_id": "k_clique_counting_enumeration",
       "default_backend": "graphset",
       "parameters": {
         "k": {
@@ -149,7 +149,7 @@
     },
     {
       "id": "quasi-cliques",
-      "problem_id": "quasi_clique_mining",
+      "topic_id": "quasi_clique_mining",
       "default_backend": "cuqc",
       "parameters": {
         "minimum_degree_ratio": {
@@ -199,7 +199,7 @@
     },
     {
       "id": "k-core",
-      "problem_id": "k_core_decomposition",
+      "topic_id": "k_core_decomposition",
       "default_backend": "kcore-gpu",
       "parameters": {
         "requested_k": {
@@ -236,7 +236,7 @@
     },
     {
       "id": "maximal-bicliques",
-      "problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "default_backend": "cumbe",
       "parameters": {
         "minimum_left_size": {
@@ -285,7 +285,7 @@
     },
     {
       "id": "triangle-counting",
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "default_backend": "tot",
       "parameters": {
         "result_limit": {
@@ -334,7 +334,7 @@
     },
     {
       "id": "dynamic-triangle-counting",
-      "problem_id": "triangle_counting_listing",
+      "topic_id": "triangle_counting_listing",
       "default_backend": "edtc",
       "parameters": {
         "result_limit": {
@@ -377,7 +377,7 @@
     },
     {
       "id": "graph-motifs",
-      "problem_id": "graph_motif_counting",
+      "topic_id": "graph_motif_counting",
       "default_backend": "graphset",
       "parameters": {
         "induced": {
@@ -443,7 +443,7 @@
     },
     {
       "id": "subgraph-isomorphism",
-      "problem_id": "subgraph_isomorphism",
+      "topic_id": "subgraph_isomorphism",
       "default_backend": "gmatch",
       "parameters": {
         "ignore_vertex_labels": {
@@ -490,7 +490,7 @@
     },
     {
       "id": "temporal-motif-mining",
-      "problem_id": "temporal_motif_mining",
+      "topic_id": "temporal_motif_mining",
       "default_backend": "everest",
       "parameters": {
         "max_time_span": {
@@ -525,7 +525,7 @@
     },
     {
       "id": "community-detection",
-      "problem_id": "community_detection",
+      "topic_id": "community_detection",
       "default_backend": "gleiden",
       "parameters": {
         "resolution": {
@@ -562,7 +562,7 @@
     },
     {
       "id": "betweenness-centrality",
-      "problem_id": "centrality_influential_node_mining",
+      "topic_id": "centrality_influential_node_mining",
       "default_backend": "turbo-bc",
       "parameters": {},
       "optional_outputs": {
@@ -583,7 +583,7 @@
     },
     {
       "id": "connected-components",
-      "problem_id": "connected_components",
+      "topic_id": "connected_components",
       "default_backend": "ecl-scc",
       "parameters": {
         "connectivity_mode": {
@@ -612,7 +612,7 @@
     },
     {
       "id": "max-flow-min-cut",
-      "problem_id": "max_flow_min_cut",
+      "topic_id": "max_flow_min_cut",
       "default_backend": "ecl-maxflow",
       "parameters": {
         "source": {
@@ -650,7 +650,7 @@
     },
     {
       "id": "linear-assignment",
-      "problem_id": "bipartite_matching_assignment",
+      "topic_id": "bipartite_matching_assignment",
       "default_backend": "hungarian-cuda",
       "parameters": {},
       "optional_outputs": {},
@@ -669,7 +669,7 @@
     },
     {
       "id": "transitive-closure",
-      "problem_id": "transitive_closure_reachability",
+      "topic_id": "transitive_closure_reachability",
       "default_backend": "gdlog",
       "parameters": {},
       "optional_outputs": {},
@@ -688,7 +688,7 @@
     },
     {
       "id": "butterfly-counting",
-      "problem_id": "butterfly_counting_bipartite",
+      "topic_id": "butterfly_counting_bipartite",
       "default_backend": "graphminer",
       "parameters": {},
       "optional_outputs": {},
@@ -705,7 +705,7 @@
     },
     {
       "id": "k-truss",
-      "problem_id": "k_truss_decomposition",
+      "topic_id": "k_truss_decomposition",
       "default_backend": "acctd",
       "parameters": {},
       "optional_outputs": {},
@@ -723,7 +723,7 @@
     },
     {
       "id": "densest-subgraph",
-      "problem_id": "densest_subgraph",
+      "topic_id": "densest_subgraph",
       "default_backend": "cds",
       "parameters": {
         "clique_order": {
@@ -753,7 +753,7 @@
     },
     {
       "id": "maximal-biclique-counting",
-      "problem_id": "maximal_biclique_enumeration",
+      "topic_id": "maximal_biclique_enumeration",
       "default_backend": "mbe-gpu",
       "parameters": {},
       "optional_outputs": {},
@@ -771,7 +771,7 @@
     },
     {
       "id": "personalized-pagerank",
-      "problem_id": "personalized_pagerank_rwr",
+      "topic_id": "personalized_pagerank_rwr",
       "default_backend": "kpar",
       "parameters": {
         "seed_vertex": {
@@ -837,7 +837,7 @@
     },
     {
       "id": "group-steiner-tree",
-      "problem_id": "group_steiner_tree",
+      "topic_id": "group_steiner_tree",
       "default_backend": "gpu4gst",
       "parameters": {
         "groups": {
@@ -864,7 +864,7 @@
     },
     {
       "id": "influence-maximization",
-      "problem_id": "influence_maximization",
+      "topic_id": "influence_maximization",
       "default_backend": "superfuser",
       "parameters": {
         "diffusion_model": {

@@ -37,19 +37,19 @@ def assess(expected: dict, outcome: dict) -> list[str]:
     if behavior == "execute":
         if job.get("status") != "completed":
             issues.append("No new completed computation answered this request.")
-        if result.get("operation_id") not in expected.get("operations", []):
+        if result.get("problem_id") not in expected.get("problems", []):
             issues.append(
-                f"Expected one of {expected.get('operations', [])}; got {result.get('operation_id') or response.get('mode', 'no operation')}."
+                f"Expected one of {expected.get('problems', [])}; got {result.get('problem_id') or response.get('mode', 'no problem')}."
             )
         payload = result.get("payload", {})
-        if expected.get("analysis_operations"):
-            actual_operations = {
-                step["operation_id"]
+        if expected.get("analysis_problems"):
+            actual_problems = {
+                step["problem_id"]
                 for step in result.get("answer", {}).get("steps", {}).values()
             }
-            if actual_operations != set(expected["analysis_operations"]):
+            if actual_problems != set(expected["analysis_problems"]):
                 issues.append(
-                    f"Expected the complete analysis workflow {expected['analysis_operations']}; got {sorted(actual_operations)}."
+                    f"Expected the complete analysis workflow {expected['analysis_problems']}; got {sorted(actual_problems)}."
                 )
         for check in expected.get("checks", []):
             paths = check.get("paths", [check.get("path")])
@@ -232,7 +232,7 @@ async def evaluate_applications(
                 case_report["steps"].append(record)
                 HistoryStore.write(output, report)
                 print(
-                    f"  {'PASS' if not issues else 'ISSUE'}: {outcome.get('job', {}).get('status', 'no job')} / {outcome.get('result', {}).get('operation_id', 'no new result')}; {record['elapsed_seconds']:.1f}s",
+                    f"  {'PASS' if not issues else 'ISSUE'}: {outcome.get('job', {}).get('status', 'no job')} / {outcome.get('result', {}).get('problem_id', 'no new result')}; {record['elapsed_seconds']:.1f}s",
                     flush=True,
                 )
             HistoryStore.write(

@@ -46,13 +46,13 @@ def test_analysis_ownership_archive_filter_and_priority_precede_paging(library, 
     with sqlite3.connect(runtime.analytics.path) as db:
         for identifier, session, status, timestamp in records:
             doc = {"id": identifier, "session_id": session, "status": status, "revision": 3,
-                   "updated_at": timestamp, "validation": {"plan": {"steps": [{"operation": "k-core"}]}},
+                   "updated_at": timestamp, "validation": {"plan": {"steps": [{"problem": "k-core"}]}},
                    "input_files": {"secret": "private-input"}, "error": "private-error"}
             db.execute("INSERT INTO workflows VALUES (?,?,?)", (identifier, session, json.dumps(doc)))
     monkeypatch.setattr(runtime.analytics, "_all", lambda *_: pytest.fail("Home loaded full workflows"))
     first = recent(client, "analyses", alice, limit=2)
     assert [item["id"] for item in first["items"]] == ["active", "finished"]
-    assert first["has_more"] and first["items"][0]["operations"] == ["k-core"]
+    assert first["has_more"] and first["items"][0]["problems"] == ["k-core"]
     second = recent(client, "analyses", alice, limit=2, offset=2)
     assert [item["id"] for item in second["items"]] == ["older"] and not second["has_more"]
     assert "private-input" not in json.dumps(first) and "private-error" not in json.dumps(first)

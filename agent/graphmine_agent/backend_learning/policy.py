@@ -32,19 +32,19 @@ def size_allows_exploration(head, features):
                 and all(bounds[k][0] <= size[k] <= bounds[k][1] for k in size))
 
 
-def reserve_exploration(data_dir, operation, decision_id, mode, fraction, *, now=None):
+def reserve_exploration(data_dir, problem, decision_id, mode, fraction, *, now=None):
     """Reserve numerator slots atomically against authoritative logged runs.
 
     In-flight and crashed reservations never inflate the denominator. A lost
     telemetry row can only reduce exploration. Fallback attempts share a
     decision_id and count once. Benchmark and evaluation rows count neither.
     """
-    if not NAME.fullmatch(operation) or mode not in {"shadow", "bandit"} or not 0 <= fraction <= 1:
+    if not NAME.fullmatch(problem) or mode not in {"shadow", "bandit"} or not 0 <= fraction <= 1:
         raise ValueError("Invalid exploration ledger request")
     now = now or datetime.now(timezone.utc)
     directory = Path(data_dir) / "reports/exploration" / now.strftime("%Y-%m-%d")
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
-    path = directory / f"{operation}-{mode}.json"
+    path = directory / f"{problem}-{mode}.json"
     fd = os.open(path.with_suffix(".lock"), os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
     try:
         fcntl.flock(fd, fcntl.LOCK_EX)
@@ -55,7 +55,7 @@ def reserve_exploration(data_dir, operation, decision_id, mode, fraction, *, now
             for line in log.read_text().splitlines():
                 try:
                     row = json.loads(line)
-                    if (row.get("operation") == operation and row.get("source") == "application"
+                    if (row.get("problem") == problem and row.get("source") == "application"
                             and row.get("is_evaluation") is False):
                         rows.append(row)
                 except (ValueError, TypeError, AttributeError):

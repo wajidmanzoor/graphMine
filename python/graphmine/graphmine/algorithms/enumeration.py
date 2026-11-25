@@ -15,7 +15,7 @@ from ._events import timestamp
 
 @register(
     id="bounded-paths-cycles",
-    problem_id="hop_constrained_cycle_path_enumeration",
+    topic_id="hop_constrained_cycle_path_enumeration",
     title="Enumerate bounded simple paths or cycles",
     description="NetworkX simple edge paths and bounded simple cycles, with explicit parallel-edge normalization and optional chronological filtering. A result limit retains the shortest results while still counting all qualifying results.",
     parameters={

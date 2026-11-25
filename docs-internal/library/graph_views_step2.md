@@ -20,7 +20,7 @@ Completed in `devlopment` on 2026-11-16. The isolated CPU runtime is
 
 The user approved summaries inside the existing `representations` metadata.
 Weighted records now contain the resolved view spec and six normalization fields.
-Algorithm result fields, C ABI, CLI, operation IDs and parameters are unchanged.
+Algorithm result fields, C ABI, CLI, problem IDs and parameters are unchanged.
 Directed projection permission, canonical summation order, sign validation before
 loop removal, overflow rejection and candidate budgets are preserved.
 
@@ -79,7 +79,7 @@ corresponding later steps.
 | Installed `GraphMine::core`-only view consumer | Passed, including JSON ViewSpec parsing; no runtime linkage |
 
 All **82 CPU `cpp` profiles remain admitted**, with no verification issues.
-`validation/graph_views/step2/backend-admission.csv` lists every operation/backend;
+`validation/graph_views/step2/backend-admission.csv` lists every problem/backend;
 `admission.json` retains the full verification result. No GPU profiles are admitted
 by this CPU-only build. Production remains on its existing pinned build.
 

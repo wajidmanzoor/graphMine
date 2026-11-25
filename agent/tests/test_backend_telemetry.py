@@ -42,7 +42,7 @@ def graph(n, pairs, *, directed=False):
 
 def row(**kwargs):
     return dict(schema_version=1, run_id=str(uuid4()), created_at=storage.utc_now(),
-                operation="triangle-counting", chosen_backend="cpp", outcome="completed",
+                problem="triangle-counting", chosen_backend="cpp", outcome="completed",
                 runtime_seconds=1.0, graph_features={}, is_evaluation=True, **kwargs)
 
 
@@ -262,7 +262,7 @@ def test_every_native_attempt_emits_one_terminal_row(telemetry_dir, monkeypatch,
 def test_native_candidates_match_cpu_policy_and_admission():
     from graphmine.dispatch import native_request
 
-    caps = native_request(dict(command="backend_capabilities", operation="triangle-counting",
+    caps = native_request(dict(command="backend_capabilities", problem="triangle-counting",
                                graph=graph(3, [(0, 1), (1, 2), (0, 2)]), device="cpu", allowed_backends=["cpp"]))
     assert caps["legacy_backend"] == "cpp"
     assert sum(c["feasible"] for c in caps["candidates"]) == 1
@@ -277,7 +277,7 @@ def test_multistep_workflow_logs_only_executed_steps(telemetry_dir, monkeypatch)
     monkeypatch.setenv("GRAPHMINE_BACKEND_RUN_CONTEXT", json.dumps({"is_evaluation": True}))
     original_execute, original_run = workflows.execute_workflow, workflows.run
     plan = {"version": 1, "device": "cpu", "steps": [
-        {"id": name, "operation": "triangle-counting", "input": {"input": "g"}}
+        {"id": name, "problem": "triangle-counting", "input": {"input": "g"}}
         for name in ("first", "second")]}
     inputs = {"g": {"kind": "graph", "data": graph(3, [(0, 1), (1, 2), (0, 2)])}}
     events = []
@@ -412,15 +412,15 @@ def test_export_filters_and_report_artifact(telemetry_dir, capsys):
     logger.submit(row())
     logger.flush()
     logger.close()
-    args = Namespace(data_dir=telemetry_dir, since="2020-01-01", operation="triangle-counting",
+    args = Namespace(data_dir=telemetry_dir, since="2020-01-01", problem="triangle-counting",
                      backend_runs_command="export")
     assert run_command(args) == 0
     exported = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
     assert len(exported) == 1 and exported[0]["is_evaluation"]
-    args.operation = "missing-operation"
+    args.problem = "missing-problem"
     run_command(args)
     assert not capsys.readouterr().out
-    args.operation, args.backend_runs_command = None, "report"
+    args.problem, args.backend_runs_command = None, "report"
     before = dict(os.environ)
     run_command(args)
     assert dict(os.environ) == before
@@ -445,7 +445,7 @@ async def test_real_gpu1_worker_records_executed_backend_and_physical_lease(
     service = AnalyticsService(replace(settings, backend_data_dir=telemetry_dir,
                                        job_timeout_seconds=60), database, graph_store, EventBus(database))
     plan = {"version": 1, "device": "auto", "steps": [
-        {"id": "triangles", "operation": "triangle-counting", "input": {"input": "g"}}]}
+        {"id": "triangles", "problem": "triangle-counting", "input": {"input": "g"}}]}
     inputs = {"g": {"kind": "graph", "data": graph(3, [(0, 1), (1, 2), (0, 2)])}}
     try:
         checked = await service._call({"command": "validate", "plan": plan, "inputs": inputs})

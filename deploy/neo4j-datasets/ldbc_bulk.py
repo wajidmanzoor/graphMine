@@ -96,7 +96,7 @@ def import_snapshot(proof, state):
         common.status("ldbc-snb", state)
         common.write_json(root / "bulk-command.json", {"argv": command, "started_at": common.now(),
                           "memory_max_gib": 40, "max_off_heap_gib": 24, "threads": 16,
-                          "note": "Default database of this dedicated instance only; no overwrite flag, no global service operation, published schema follows through the driver."})
+                          "note": "Default database of this dedicated instance only; no overwrite flag, no global service problem, published schema follows through the driver."})
         with (root / "bulk-import.log").open("w") as log:
             result = subprocess.run(["systemd-run", "--user", "--scope", "--quiet", "-p", "MemoryMax=40G", *command],
                                     env=common.process_environment("ldbc-snb"), cwd=root, stdout=log, stderr=subprocess.STDOUT)

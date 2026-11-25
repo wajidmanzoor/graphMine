@@ -41,7 +41,7 @@ window.GraphMineActivity = ({state, api, node, W, methodName, qualityDescription
     catch (error) { notice(`Calculation details could not be loaded. ${error.message}`, true); }
     finally { requests.delete(key); }
   }
-  const stageNames = {family: "Family", problem: "Problem", route: "Route", candidates: "Candidates", clarify: "Clarify", plan: "Plan", validation: "Validation", calculation: "Calculation", answer: "Answer", grounding: "Grounding", sources: "Sources"};
+  const stageNames = {family: "Family", topic: "Topic", route: "Route", candidates: "Candidates", clarify: "Clarify", plan: "Plan", validation: "Validation", calculation: "Calculation", answer: "Answer", grounding: "Grounding", sources: "Sources"};
   const statusNames = {reply: "Documentation answer", answered: "Answered", calculate: "Use the selected calculation", needs_information: "Needs clarification", options: "Choose a calculation", ready: "Ready for review", awaiting_review: "Ready for review", selected: "Selected", passed: "Passed", completed: "Complete", running: "Running", waking: "Waking the model…", failed: "Failed"};
   const title = value => String(value || "").replaceAll("_", " ").replace(/^./, c => c.toUpperCase());
   const pretty = value => typeof value === "string" ? value : W.stringify(value, true);
@@ -60,9 +60,9 @@ window.GraphMineActivity = ({state, api, node, W, methodName, qualityDescription
     for (const [label, value] of values) if (value !== undefined && value !== null && value !== "") dl.append(node("dt", {}, label), node("dd", {}, pretty(value)));
     if (dl.children.length) parent.append(dl);
   }
-  const operation = id => state.caps?.operations?.find(row => row.id === id);
+  const problem = id => state.caps?.problems?.find(row => row.id === id);
   const family = id => (state.caps?.task_families || state.caps?.families || []).find(row => row.id === id)?.title || title(id);
-  const problem = id => state.caps?.operations?.find(row => row.problem_id === id)?.problem_title || title(id);
+  const topic = id => state.caps?.problems?.find(row => row.topic_id === id)?.topic_title || title(id);
   function sourceContent(parent, answer) {
     parent.append(node("h4", {}, "Sources"));
     for (const source of answer?.sources || []) {
@@ -79,14 +79,14 @@ window.GraphMineActivity = ({state, api, node, W, methodName, qualityDescription
   function calculation(parent, record, answer) {
     const elapsed = Date.parse(record.finished_at) - Date.parse(record.started_at);
     for (const step of record.validation?.plan?.steps || []) {
-      const result = record.steps?.[step.id] || {}, card = operation(step.operation);
+      const result = record.steps?.[step.id] || {}, card = problem(step.problem);
       const output = savedResults.get(resultKey(record))?.steps?.[step.id]?.result || (state.record?.id === record.id ? state.result?.steps?.[step.id]?.result : null);
       const backend = output?.backend || result.backend || {};
       const device = backend.device?.toUpperCase() || ((step.device || record.validation.plan.device) === "auto" ? "Automatic (GPU first)" : (step.device || record.validation.plan.device)?.toUpperCase());
       const section = node("section", {class: "activity-calculation"});
-      section.append(node("h4", {}, methodName(step.operation)), copyId(`${record.id}:${step.id}`));
-      fields(section, [["Family", family(card?.family)], ["Problem", card?.problem_title || title(card?.problem_id)], ["Operation", step.operation],
-        ["Algorithm", backend.algorithm || backend.algorithm_id || output?.diagnostics?.solver || (backend.id ? `${backend.id} · ${step.operation}` : "Not recorded")],
+      section.append(node("h4", {}, methodName(step.problem)), copyId(`${record.id}:${step.id}`));
+      fields(section, [["Family", family(card?.family)], ["Topic", card?.topic_title || title(card?.topic_id)], ["Problem", step.problem],
+        ["Algorithm", backend.algorithm || backend.algorithm_id || output?.diagnostics?.solver || (backend.id ? `${backend.id} · ${step.problem}` : "Not recorded")],
         ["Parameters", Object.keys(output?.parameters || step.parameters || {}).length ? output?.parameters || step.parameters : "Defaults"],
         ["Device", device], ["Device selection", backend.selection_reason || backend.fallback_reason],
         ["Calculation time", output?.elapsed_seconds != null ? `${output.elapsed_seconds.toLocaleString(undefined, {maximumFractionDigits: 6})} s` : null],
@@ -133,7 +133,7 @@ window.GraphMineActivity = ({state, api, node, W, methodName, qualityDescription
     checks.append(node("li", {}, record.approved_hash ? (record.approved_hash === record.validation?.workflow_hash ? "✓ Approved plan matches saved validation" : "✗ Approved plan does not match saved validation") : "— Plan approval not recorded"));
     for (const step of record.validation?.plan?.steps || []) {
       const result = record.steps?.[step.id] || {};
-      checks.append(node("li", {}, `${result.status === "completed" ? "✓" : result.status === "failed" ? "✗" : "—"} ${methodName(step.operation)}: ${result.status || "pending"}${result.complete === false ? " · incomplete output" : ""}`));
+      checks.append(node("li", {}, `${result.status === "completed" ? "✓" : result.status === "failed" ? "✗" : "—"} ${methodName(step.problem)}: ${result.status || "pending"}${result.complete === false ? " · incomplete output" : ""}`));
       if (result.error?.message) checks.append(node("li", {}, result.error.message));
     }
     parent.append(checks);
@@ -142,8 +142,8 @@ window.GraphMineActivity = ({state, api, node, W, methodName, qualityDescription
   }
   function summary(row, answer) {
     const data = row.latest, name = stageNames[row.stage] || title(row.stage);
-    let value = row.stage === "family" ? family(data.family_id) : row.stage === "problem" ? (data.candidates || []).map(item => problem(item.problem_id)).join(", ") : "";
-    if (row.stage === "calculation") value = row.record.validation.plan.steps.map(step => methodName(step.operation)).join(" → ");
+    let value = row.stage === "family" ? family(data.family_id) : row.stage === "topic" ? (data.candidates || []).map(item => topic(item.topic_id)).join(", ") : "";
+    if (row.stage === "calculation") value = row.record.validation.plan.steps.map(step => methodName(step.problem)).join(" → ");
     else if (row.stage === "sources") value = (answer?.sources || []).map(source => source.title).filter(Boolean).join(", ");
     else if (!value) value = statusNames[data.status || row.status] || title(data.status || row.status);
     if (row.state === "incomplete") value = "Not completed";
@@ -184,11 +184,11 @@ window.GraphMineActivity = ({state, api, node, W, methodName, qualityDescription
     } else {
       if (data.message && !(row.stage === "route" && data.status === "needs_information" && data.source === "selected")) body.append(md(data.message, answer));
       if (data.family_id) fields(body, [["Chosen family", family(data.family_id)]]);
-      if (data.operations?.length) fields(body, [["Chosen operation", data.operations.join(", ")]]);
+      if (data.problems?.length) fields(body, [["Chosen problem", data.problems.join(", ")]]);
       const choices = data.candidates || data.alternatives || [];
       if (choices.length) {
-        body.append(node("h4", {}, choices.length > 1 ? "Options considered" : "Chosen problem"));
-        for (const choice of choices) { const item = node("section"); item.append(node("strong", {}, choice.title || problem(choice.problem_id) || choice.operation)); if (choice.reason) item.append(md(choice.reason, answer)); fields(item, [["Score", choice.score ?? choice.confidence]]); body.append(item); }
+        body.append(node("h4", {}, choices.length > 1 ? "Options considered" : "Chosen topic"));
+        for (const choice of choices) { const item = node("section"); item.append(node("strong", {}, choice.title || topic(choice.topic_id) || choice.problem)); if (choice.reason) item.append(md(choice.reason, answer)); fields(item, [["Score", choice.score ?? choice.confidence]]); body.append(item); }
       }
       if (row.stage === "candidates") {
         const reply = events.findLast(event => event.type === "workflow.chat" && event.payload.options?.length)?.payload;
@@ -220,7 +220,7 @@ window.GraphMineActivity = ({state, api, node, W, methodName, qualityDescription
         entry.detail.dataset.state = row.state; entry.icon.textContent = {done: "✓", failed: "✗", running: "◌", incomplete: "—", waiting: "○"}[row.state];
         entry.name.textContent = summary(row, answer);
         entry.row = row;
-        const signature = JSON.stringify([row, answer, row.record ? savedResults.get(resultKey(row.record)) : null, state.caps?.operations?.length, state.files.map(file => file.id), questions.map(q => q.clarification_id)], (_, value) => typeof value === "bigint" ? `bigint:${value}` : value);
+        const signature = JSON.stringify([row, answer, row.record ? savedResults.get(resultKey(row.record)) : null, state.caps?.problems?.length, state.files.map(file => file.id), questions.map(q => q.clarification_id)], (_, value) => typeof value === "bigint" ? `bigint:${value}` : value);
         if (entry.signature !== signature) { const body = content(row, answer, question, events, questions, record); if (entry.body) entry.body.replaceWith(body); else entry.detail.append(body); entry.body = body; entry.signature = signature; }
         if (turn.timeline.children[[...retained].length - 1] !== entry.li) turn.timeline.insertBefore(entry.li, turn.timeline.children[[...retained].length - 1] || null);
       }

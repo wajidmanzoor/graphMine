@@ -101,7 +101,7 @@ def score_route(case, raw, catalog):
     try:
         effective = resolve_route_scope(catalog, decision, previous)
         capability_errors = application_capability_errors(
-            effective.intent, effective.operation_id or case["operation_id"]
+            effective.intent, effective.problem_id or case["problem_id"]
         )
     except ValueError as error:
         return {"passed": False, "schema_valid": True, "issues": [str(error)]}
@@ -113,16 +113,16 @@ def score_route(case, raw, catalog):
         behavior = "execute"
     if behavior != case["behavior"]:
         issues.append(f"behavior: expected {case['behavior']}, got {behavior}")
-    if effective.problem_id != expected.problem_id:
+    if effective.topic_id != expected.topic_id:
         issues.append(
-            f"problem_id: expected {expected.problem_id}, got {effective.problem_id}"
+            f"topic_id: expected {expected.topic_id}, got {effective.topic_id}"
         )
     if (
         case["behavior"] == "execute"
-        and effective.operation_id != expected.operation_id
+        and effective.problem_id != expected.problem_id
     ):
         issues.append(
-            f"operation_id: expected {expected.operation_id}, got {effective.operation_id}"
+            f"problem_id: expected {expected.problem_id}, got {effective.problem_id}"
         )
     unit = payload["graph_context"].get("timestamp_unit")
     actual_intent = semantic_intent(effective.intent, unit)
@@ -131,10 +131,10 @@ def score_route(case, raw, catalog):
         if actual_intent[name] != value:
             issues.append(f"{name}: expected {value!r}, got {actual_intent[name]!r}")
     actual_extra = sorted(
-        (x.problem_id, x.operation_id) for x in effective.additional_analyses
+        (x.topic_id, x.problem_id) for x in effective.additional_analyses
     )
     expected_extra = sorted(
-        (x.problem_id, x.operation_id) for x in expected.additional_analyses
+        (x.topic_id, x.problem_id) for x in expected.additional_analyses
     )
     if actual_extra != expected_extra:
         issues.append(
@@ -153,7 +153,7 @@ def score_route(case, raw, catalog):
         "raw_supported": decision.supported,
         "raw_route_matches": all(
             getattr(decision, field) == getattr(expected, field)
-            for field in ("problem_id", "operation_id", "supported")
+            for field in ("topic_id", "problem_id", "supported")
         ),
         "capability_errors": capability_errors,
         "decision": decision.model_dump(mode="json"),
@@ -228,7 +228,7 @@ def prepare_suite(run: Path, corpus: Path, output: Path, *, split="test", limit=
             "family": x["family"],
             "domain": x["domain"],
             "behavior": x["task"]["behavior"],
-            "operation_id": x["task"]["operation_id"],
+            "problem_id": x["task"]["problem_id"],
             "source_sha256": digest(x),
             "query_seen_in_training": x["task"]["query"] in train_queries,
             "payload": training_route_payload(catalog, x, graphs[x["graph_id"]]),
@@ -518,7 +518,7 @@ def summarize(rows, expected_cases, arms):
     for arm in arms:
         selected = [r for r in rows if r["arm"] == arm]
         groups = {}
-        for field in ("behavior", "family", "operation_id"):
+        for field in ("behavior", "family", "problem_id"):
             grouped = defaultdict(list)
             for row in selected:
                 grouped[str(row[field])].append(row)
@@ -682,7 +682,7 @@ async def _compare(suite, output, *, arms=ARMS[:2], batch_size=2, resume=False):
                         score = score_generation(case, result, catalog)
                         row = {
                             k: case[k]
-                            for k in ("id", "family", "behavior", "operation_id")
+                            for k in ("id", "family", "behavior", "problem_id")
                         }
                         row.update(
                             arm=arm, case_sha256=digest(case), **result, score=score

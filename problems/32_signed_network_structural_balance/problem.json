@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "signed_network_structural_balance",
+  "topic_id": "signed_network_structural_balance",
   "name": "Signed Network Structural Balance and Frustration Minimization",
   "category": "communities",
   "problem_statement": "Given a graph whose edges are each labeled positive or negative, determine whether it is structurally balanced (partitionable into two factions so every positive edge stays within a faction and every negative edge crosses factions), and when it is not, find a two-faction assignment minimizing the total weight of frustrated edges.",

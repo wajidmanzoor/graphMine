@@ -66,7 +66,7 @@ std::uint32_t greedy_coloring_upper_bound(const CsrGraph& graph) {
 
 Provenance maximum_clique_provenance(MaximumCliqueBackend backend) {
   Provenance provenance;
-  provenance.problem = "maximum_clique";
+  provenance.topic = "maximum_clique";
   provenance.backend = to_string(backend);
   switch (backend) {
     case MaximumCliqueBackend::cuda_ms:

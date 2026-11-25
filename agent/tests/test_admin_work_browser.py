@@ -21,12 +21,12 @@ def test_jobs_details_usage_charts_compare_export_and_mobile(browser_app):
         admin_events.record(accounts.database, "question", "Question completed", user_id=principal.user_id, ts=now - i * 86400 - 1,
                             duration_ms=900 + i * 100, details={"tokens": 100 + i * 20, "reasoning_tokens": 30, "stage_ms": {"route": 600 + i * 50, "analyst": 300}})
         admin_events.record(accounts.database, "calculation", "Calculation completed", user_id=principal.user_id, ts=now - i * 86400 - 1,
-                            duration_ms=300 + i * 10, outcome="completed", details={"operations": ["k-core"], "datasets": ["triangle.json"]})
+                            duration_ms=300 + i * 10, outcome="completed", details={"problems": ["k-core"], "datasets": ["triangle.json"]})
     admin_events.record(accounts.database, "error", "Queue full", outcome="queue_full", details={"code": "queue_full"})
     stamp = datetime.fromtimestamp(now - 10, timezone.utc).isoformat()
     record = {"id": "browser-saved-work", "session_id": session.id, "revision": 1, "mode": "expert", "status": "failed", "created_at": stamp,
               "approved_at": stamp, "started_at": stamp, "finished_at": datetime.fromtimestamp(now, timezone.utc).isoformat(),
-              "validation": {"plan": {"device": "cpu", "steps": [{"id": "core", "operation": "k-core", "device": "cpu", "parameters": {"k": 2}}]}},
+              "validation": {"plan": {"device": "cpu", "steps": [{"id": "core", "problem": "k-core", "device": "cpu", "parameters": {"k": 2}}]}},
               "steps": {"core": {"status": "failed"}}, "error": {"code": "worker_failure", "message": "Browser acceptance error example"},
               "input_provenance": {"graph": {"file_snapshot": {"name": "triangle.json", "graph": {"vertex_count": 3, "edge_count": 3}}}}}
     with sqlite3.connect(accounts.settings.data_root / "analytics" / "workflows.sqlite3") as db:

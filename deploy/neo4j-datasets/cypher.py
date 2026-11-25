@@ -34,7 +34,7 @@ def check_batches(value):
     """APOC can return a successful transaction containing failed inner batches."""
     if isinstance(value, dict):
         for key, item in value.items():
-            if key in {"failedBatches", "failedOperations"} and int(item or 0) > 0:
+            if key in {"failedBatches", "failedProblems"} and int(item or 0) > 0:
                 raise ValueError(f"APOC reported {key}={item}")
             if key in {"errorMessages", "failedParams", "wasTerminated"} and item:
                 raise ValueError(f"APOC reported {key}: {item}")

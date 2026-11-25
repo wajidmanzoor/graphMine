@@ -1,6 +1,6 @@
 {
   "description": "Frozen scope of the original v1 routing evaluations. These evaluations do not measure expansion routing.",
-  "problem_ids": [
+  "topic_ids": [
     "maximal_clique_enumeration",
     "maximum_clique",
     "k_clique_counting_enumeration",
@@ -22,7 +22,7 @@
     "link_prediction",
     "graph_anomaly_detection"
   ],
-  "operation_ids": [
+  "problem_ids": [
     "maximal-cliques",
     "maximum-clique",
     "k-cliques",

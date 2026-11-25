@@ -36,7 +36,7 @@
     "summary": "Solve ordinary or fixed-cardinality density with exact rational arithmetic. Ordinary density without a minimum-size restriction uses maximum-weight closure; restricted sizes use exhaustive combinations.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded.",
       "fixed": "True requires exactly `k` vertices; false uses `clique_order` and `minimum_vertices`."
     },
@@ -51,7 +51,7 @@
     "summary": "Find a nonempty subset maximizing weighted edge value or clique count per selected vertex.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -65,7 +65,7 @@
     "summary": "Find the optimum induced edge objective among subsets containing exactly `k` vertices.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -79,7 +79,7 @@
     "summary": "Enumerate undirected subsets whose minimum internal degree meets the exact decimal-rational gamma threshold.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -149,7 +149,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02cliques_8cpp_03_1aa2f86571a2261410e2a2c7edd1a1d721": {
     "summary": "Parse an optional positive cap on materialized results.",
     "parameters": {
-      "args": "Operation parameters. Recognized fields and constraints are described below."
+      "args": "Problem parameters. Recognized fields and constraints are described below."
     },
     "returns": "No limit for a missing/null value; otherwise a positive unsigned limit.",
     "details": [
@@ -212,7 +212,7 @@
     "summary": "Enumerate maximal cliques meeting a minimum size, optionally retaining only a bounded prefix.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -227,7 +227,7 @@
     "summary": "Compute the largest clique and optionally every tie for the optimum.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -242,7 +242,7 @@
     "summary": "Count all fixed-size cliques and optionally materialize a bounded collection.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -257,7 +257,7 @@
     "summary": "Compute every vertex core number by degree peeling or a selected native adapter.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -272,7 +272,7 @@
     "summary": "Find a maximum independent set by solving maximum clique on the complement.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -287,14 +287,14 @@
     "summary": "Complement a maximum independent set to obtain a minimum vertex cover.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
     "returns": "Exact cover, size, certification flag, and optional decision answer for a supplied bound k.",
     "details": [
-      "Decision mode requires k. The operation still computes a minimum cover before comparing its size with k.",
+      "Decision mode requires k. The problem still computes a minimum cover before comparing its size with k.",
       "Accepted parameter keys: `mode`, `k`."
     ]
   },
@@ -335,7 +335,7 @@
     "summary": "Compute hop distances independently for supplied sources or merge them by nearest source.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -391,7 +391,7 @@
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
       "computed": "Validated PageRank scores and L1 residual.",
-      "parameters": "Resolved operation parameters.",
+      "parameters": "Resolved problem parameters.",
       "alpha": "Continuation probability, strictly below one.",
       "tolerance": "Requested residual tolerance recorded in diagnostics."
     },
@@ -412,7 +412,7 @@
     "summary": "Rank every vertex using uniform restart and dangling distributions.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -427,7 +427,7 @@
     "summary": "Compute PageRank restarted uniformly over selected seeds, with explicit direction and dangling-node policy.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -465,7 +465,7 @@
     "summary": "Construct an independent set and verify both independence and maximality.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -480,7 +480,7 @@
     "summary": "Assign colors to a distance-one or distance-two conflict graph and verify every conflict edge.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -505,7 +505,7 @@
     "summary": "Compute weakly or strongly connected components and normalize their presentation order.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -520,14 +520,14 @@
     "summary": "Compute a deterministic topological ordering with a smallest-dense-index ready queue.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
     "returns": "Exact ordering of external vertex IDs and a vertex-set port.",
     "details": [
-      "Requires directed acyclic input, rejects self-loops and cycles, and accepts no operation parameters."
+      "Requires directed acyclic input, rejects self-loops and cycles, and accepts no problem parameters."
     ]
   },
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02centrality__measures_8cpp_03_1adf55ac66b071bbf617083c87c0a5d9b7": {
@@ -555,7 +555,7 @@
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
       "scores": "One score per canonical vertex.",
-      "parameters": "Resolved operation parameters.",
+      "parameters": "Resolved problem parameters.",
       "definition": "Score semantics object; receives the deterministic tie-break convention.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
@@ -566,7 +566,7 @@
     "summary": "Compute all-source vertex betweenness, excluding path endpoints and optionally normalizing scores.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -581,7 +581,7 @@
     "summary": "Measure incoming, outgoing, total, or projected-undirected degree after dropping loops and collapsing duplicate connections.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -658,7 +658,7 @@
     "summary": "Compute single-source weighted shortest paths and apply an optional reporting cutoff.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -673,7 +673,7 @@
     "summary": "Compute distances for a selected origin\u2013destination Cartesian product.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -688,7 +688,7 @@
     "summary": "Compute a minimum- or maximum-weight spanning forest using Kruskal on CPU or the selected adapter.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -744,13 +744,13 @@
     "parameters": {
       "backend": "Concrete backend whose provenance is requested; automatic selection has not yet resolved an artifact."
     },
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1_1anonymous__namespace_02k__core_8cpp_03_1abfca049ea98eecfcb90b6be332a037e9": {
     "summary": "Describe the source provenance and execution path of the KCoreGPU adapter.",
     "parameters": {},
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1_1anonymous__namespace_02maximum__clique_8cpp_03_1ab2470cd025692678815cb54ecae360d2": {
@@ -758,13 +758,13 @@
     "parameters": {
       "backend": "Concrete backend whose provenance is requested; automatic selection has not yet resolved an artifact."
     },
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1_1anonymous__namespace_02quasi__cliques_8cpp_03_1a8e5e906d61bac99d9067ea421657fda9": {
     "summary": "Describe the source provenance and execution path of the cuQC adapter.",
     "parameters": {},
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1_1anonymous__namespace_02triangle__counting_8cpp_03_1a659e7c6dc7f69178bf3851936283d1ed": {
@@ -772,7 +772,7 @@
     "parameters": {
       "backend": "Concrete backend whose provenance is requested; automatic selection has not yet resolved an artifact."
     },
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1_1anonymous__namespace_02k__cliques_8cpp_03_1af23774ec2de0a4c90d063ae69cbf73f4": {
@@ -967,7 +967,7 @@
   "namespacegraphmine_1_1anonymous__namespace_02maximal__bicliques_8cpp_03_1a61b8641edb7077b2fdd6e1f388166cdd": {
     "summary": "Describe the source provenance and execution path of the cuMBE adapter.",
     "parameters": {},
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1_1anonymous__namespace_02maximal__cliques_8cpp_03_1a8e8b5e2a7d87d312a186b2c9b57ebb59": {
@@ -975,7 +975,7 @@
     "parameters": {
       "backend": "Concrete backend whose provenance is requested; automatic selection has not yet resolved an artifact."
     },
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1_1anonymous__namespace_02maximal__bicliques_8cpp_03_1a33cac1c13a9ffbffd956cffb6a4511d2": {
@@ -1083,7 +1083,7 @@
   "namespacegraphmine_1_1anonymous__namespace_02betweenness__centrality_8cpp_03_1aec42458518327c468401889cb964fd91": {
     "summary": "Describe the source provenance and execution path of the TurboBC adapter.",
     "parameters": {},
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1a1c323c976de3aa5d744299d8a374458d": {
@@ -1099,7 +1099,7 @@
     "parameters": {
       "backend": "Concrete backend whose provenance is requested; automatic selection has not yet resolved an artifact."
     },
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1aa2a0e2bee250a51bbe3ce7312b024f6e": {
@@ -1235,7 +1235,7 @@
     "parameters": {
       "backend": "Concrete backend whose provenance is requested; automatic selection has not yet resolved an artifact."
     },
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1ad30636bba63274de4e7a1faf3d4f74df": {
@@ -1290,7 +1290,7 @@
   "namespacegraphmine_1_1anonymous__namespace_02subgraph__isomorphism_8cpp_03_1a99791f4e69fc6df6244cc41d6b6b526c": {
     "summary": "Describe the source provenance and execution path of the gMatch adapter.",
     "parameters": {},
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1ad2e0413f3dab2b8b213b75f830e101e0": {
@@ -1369,7 +1369,7 @@
   "namespacegraphmine_1_1anonymous__namespace_02dynamic__triangle__counting_8cpp_03_1ae187b5260f036092664f23bbca743767": {
     "summary": "Describe the source provenance and execution path of the EDTC adapter.",
     "parameters": {},
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1a42bd473885a6063f6eaaa9ad47ab961b": {
@@ -1409,7 +1409,7 @@
     "parameters": {
       "backend": "Concrete backend whose provenance is requested; automatic selection has not yet resolved an artifact."
     },
-    "returns": "A Provenance value containing problem, backend, artifact version, source revision, and execution-path fields.",
+    "returns": "A Provenance value containing topic, backend, artifact version, source revision, and execution-path fields.",
     "details": []
   },
   "namespacegraphmine_1_1anonymous__namespace_02temporal__motif__mining_8cpp_03_1a0458a1958a6cad6723e1072bb95ba0e1": {
@@ -1503,7 +1503,7 @@
     ]
   },
   "namespacegraphmine_1_1anonymous__namespace_02repaired__algorithms_8cpp_03_1a7aadbd7cb33670e6662a105f23523145": {
-    "summary": "Look up the recorded problem and source revision for a supported repaired algorithm adapter.",
+    "summary": "Look up the recorded topic and source revision for a supported repaired algorithm adapter.",
     "parameters": {
       "name": "Registered repaired adapter name."
     },
@@ -1696,7 +1696,7 @@
     ]
   },
   "namespacegraphmine_1_1anonymous__namespace_02validated__expansion_8cpp_03_1a8bdd4b6e252d517c2b27d9c257ff088d": {
-    "summary": "Describe the selected expansion adapter's problem, source revision, and execution path.",
+    "summary": "Describe the selected expansion adapter's topic, source revision, and execution path.",
     "parameters": {
       "name": "Expansion adapter identifier."
     },
@@ -1803,7 +1803,7 @@
     "summary": "Resolve an undirected graph into an explicit left/right membership mask.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "explicit_sides": "Read both partition arrays when true; otherwise require attributes.side on every vertex."
     },
     "returns": "One Boolean per original dense vertex, true for the left side.",
@@ -1815,7 +1815,7 @@
     "summary": "Fill omitted biclique partition arrays from vertex side attributes.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below."
+      "args": "Problem parameters. Recognized fields and constraints are described below."
     },
     "returns": "Copied parameters with both external-ID partitions, or the unchanged supplied parameter object.",
     "details": [
@@ -1826,7 +1826,7 @@
     "summary": "Validate a bipartite family profile and restore its normalized adjacency to original dense vertex order.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "kind": "Topology profile: butterfly, biclique materialization, or biclique counting.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
@@ -1839,7 +1839,7 @@
     "summary": "Enumerate maximal bicliques by completing each partition to a clique and enumerating maximal cliques of the transformed graph.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "counting": "Select the biclique-counting view profile when true; this helper still materializes its bounded biclique rows.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
@@ -1853,7 +1853,7 @@
     "summary": "Enumerate maximal bicliques with the materialization view profile.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -1864,10 +1864,10 @@
     ]
   },
   "namespacegraphmine_1_1runtime_1a4d0df4893fc1336b4448569cecd299d5": {
-    "summary": "Enumerate maximal bicliques using the counting operation's declared graph view.",
+    "summary": "Enumerate maximal bicliques using the counting problem's declared graph view.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
     "returns": "Biclique rows and count metadata from the common enumerator.",
@@ -1879,7 +1879,7 @@
     "summary": "Count all bipartite four-cycles and optionally report participation or iteratively peel alpha/beta cores.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -1901,7 +1901,7 @@
     "details": []
   },
   "namespacegraphmine_1_1runtime_1a452405462dc97149f1c818fad9a734bb": {
-    "summary": "Read an optional Boolean operation parameter with a caller-supplied default.",
+    "summary": "Read an optional Boolean problem parameter with a caller-supplied default.",
     "parameters": {
       "values": "Parameter object.",
       "key": "Exact field name.",
@@ -1936,11 +1936,11 @@
     ]
   },
   "namespacegraphmine_1_1runtime_1ab8f6ae4da39fba530f15ea0df551ed4d": {
-    "summary": "Check operation-specific semantic restrictions before choosing a GPU implementation.",
+    "summary": "Check problem-specific semantic restrictions before choosing a GPU implementation.",
     "parameters": {
-      "operation": "Runtime operation identifier.",
+      "problem": "Runtime problem identifier.",
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below."
+      "args": "Problem parameters. Recognized fields and constraints are described below."
     },
     "returns": "Human-readable unsupported reason, or an empty string if no restriction in this checker applies.",
     "details": [
@@ -1950,21 +1950,21 @@
   "namespacegraphmine_1_1runtime_1aea1ba4d15a146c109c507ce9245ed953": {
     "summary": "Check a concrete algorithm adapter's admitted input and arithmetic domain.",
     "parameters": {
-      "operation": "Runtime operation identifier.",
+      "problem": "Runtime problem identifier.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
     "returns": "Unsupported reason string, or empty when this checker has no exclusion.",
     "details": [
-      "Includes flow capacity/size limits, square integer-cost assignment, path-count overflow bounds, and clique-order/count bounds. Some invalid inputs are left to the normal operation validator."
+      "Includes flow capacity/size limits, square integer-cost assignment, path-count overflow bounds, and clique-order/count bounds. Some invalid inputs are left to the normal problem validator."
     ]
   },
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02matching_8cpp_03_1a8ed33ff48d998e259f40b4d1287ac817": {
     "summary": "Validate the requested matching solution-quality label.",
     "parameters": {
-      "args": "Operation parameters. Recognized fields and constraints are described below."
+      "args": "Problem parameters. Recognized fields and constraints are described below."
     },
     "returns": "exact by default, or the supplied exact/approximate label; unknown labels fail validation.",
     "details": []
@@ -2048,7 +2048,7 @@
     "summary": "Compute a maximum-weight general matching with the exact native Blossom implementation.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2075,7 +2075,7 @@
     "summary": "Optimize bipartite cardinality, weight, or cost with exact native certification.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2102,7 +2102,7 @@
     "summary": "Compute maximum flow and certify it against an exact minimum cut, including optional vertex capacities.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2132,7 +2132,7 @@
     "summary": "Enumerate simple directed paths or cycles under a hop bound, with optional strict timestamp ordering.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2148,7 +2148,7 @@
     "summary": "Classify every connected induced vertex subset of requested sizes against the embedded graphlet atlas.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2163,7 +2163,7 @@
     "summary": "Enumerate injective query-to-input vertex mappings with optional induced semantics and record predicates.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2178,7 +2178,7 @@
     "summary": "Count occurrences of connected query motifs using induced or noninduced pattern matching.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2201,7 +2201,7 @@
     "summary": "Count undirected triangles with ordered neighborhood intersections or a compiled triangle backend.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2216,7 +2216,7 @@
     "summary": "Find a seed-containing community with a degree-normalized personalized-PageRank sweep.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2231,7 +2231,7 @@
     "summary": "Compute reachability with BFS for all sources or selected query pairs.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2246,7 +2246,7 @@
     "summary": "Compute clique-percolation communities by joining maximal cliques with at least k\u22121 common vertices.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2322,21 +2322,21 @@
     "summary": "Decompose an undirected simple projection with an iterative Tarjan traversal.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
     "returns": "Exact biconnected edge blocks, bridges, articulation vertices, isolates, and normalized edge witnesses.",
     "details": [
-      "Accepts no operation parameters. Parallel records remain visible in source_edge_ids even though topology uses one unordered connection."
+      "Accepts no problem parameters. Parallel records remain visible in source_edge_ids even though topology uses one unordered connection."
     ]
   },
   "namespacegraphmine_1_1runtime_1adc801fe53f7bc25165573f5c42afc3e0": {
     "summary": "Assign edge truss numbers through triangle-support peeling or the selected GPU decomposition.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2351,7 +2351,7 @@
     "summary": "Extract an induced graph from explicit vertices or a bounded multi-seed ego neighborhood.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2366,7 +2366,7 @@
     "summary": "Initialize bounded query-result collection and retain its work accounting context.",
     "parameters": {
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded.",
-      "args": "Operation parameters. Recognized fields and constraints are described below."
+      "args": "Problem parameters. Recognized fields and constraints are described below."
     },
     "returns": "Empty collection with the optional positive result_limit.",
     "details": [
@@ -2393,7 +2393,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02queries_8cpp_03_1a34e9e7a578f1d51cb3e6eed003ac8cb7": {
     "summary": "Fill omitted query filters and optional materialization-limit metadata.",
     "parameters": {
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "filters": "Names of filter fields to initialize.",
       "capped": "Also add result_limit=null when absent."
     },
@@ -2422,7 +2422,7 @@
     "summary": "Select vertex records by optional IDs and typed record filters.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2437,7 +2437,7 @@
     "summary": "Select canonical edge records by IDs, edge predicates, and source/target predicates.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2452,7 +2452,7 @@
     "summary": "Find vertices within a bounded filtered hop neighborhood of one entity.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2467,7 +2467,7 @@
     "summary": "Intersect the filtered one-hop neighborhoods of two entities.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2482,7 +2482,7 @@
     "summary": "Enumerate filtered shortest or all-simple paths between two entities within a hop bound.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2497,7 +2497,7 @@
     "summary": "Aggregate filtered vertex or edge records with exact rational numeric arithmetic.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2512,7 +2512,7 @@
     "summary": "Extract a record-preserving graph by vertices, filtered edges, or a bounded neighborhood.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2578,7 +2578,7 @@
     "summary": "Sample uniform, weighted, or second-order node2vec walks from each requested start.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2594,7 +2594,7 @@
     "summary": "Sample edge instances over successive seed-local frontiers with optional replacement, type budgets, and time cutoff.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2609,7 +2609,7 @@
     "summary": "Score undirected candidate pairs with a local-neighborhood similarity measure.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2624,7 +2624,7 @@
     "summary": "Iterate the SimRank fixed-point equation and certify its residual-based absolute error bound.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2655,7 +2655,7 @@
     },
     "returns": "Neighbor/capacity rows retaining exact binary64 capacity values.",
     "details": [
-      "Every edge needs an explicit nonnegative capacity; invalid capacity inputs receive an operation-specific error."
+      "Every edge needs an explicit nonnegative capacity; invalid capacity inputs receive an problem-specific error."
     ]
   },
   "namespacegraphmine_1_1runtime_1a72b4398e6e820b7e0dc8bc9100d605fe": {
@@ -2666,14 +2666,14 @@
     },
     "returns": "Adjacency, indegrees, edge targets, and rational weights indexed by canonical edge position.",
     "details": [
-      "Every edge must have an explicit weight. Acyclicity is checked by the calling operation."
+      "Every edge must have an explicit weight. Acyclicity is checked by the calling problem."
     ]
   },
   "namespacegraphmine_1_1runtime_1a3c8083b7d0d012facc790b91aebdb10f": {
     "summary": "Find source-to-vertex paths maximizing the minimum edge capacity.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2688,7 +2688,7 @@
     "summary": "Rank the k highest-weight source-to-sink paths in a directed acyclic graph.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2703,7 +2703,7 @@
     "summary": "Solve earliest-arrival or fastest-duration paths in an exact time-expanded event graph.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2738,7 +2738,7 @@
     "summary": "Count event assignments matching a graph motif, edge-order constraints, predicates, and a duration window.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2771,7 +2771,7 @@
     "summary": "Propagate seed coordinates by discrete weighted geodesic-medoid coordinate descent.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2798,7 +2798,7 @@
     "summary": "Run a two- or three-dimensional Fruchterman\u2013Reingold layout from supplied or seeded random coordinates.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2824,7 +2824,7 @@
     "summary": "Build the weighted flag filtration and reduce its sparse boundary matrix over a prime field.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2840,7 +2840,7 @@
     "summary": "Find an optimal injective cross-graph correspondence by exhaustive assignment search.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2855,7 +2855,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02comparison_8cpp_03_1afebf505afe6774d7590e83bdf6843a58": {
     "summary": "Validate and canonicalize the label fields used in graph comparison.",
     "parameters": {
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "name": "Parameter field containing the requested label-field array.",
       "defaults": "Array used when that parameter is absent.",
       "vertices": "Allow label as well as type when true; edge comparison allows only type."
@@ -2892,7 +2892,7 @@
     "summary": "Search partial vertex correspondences for exact edit distance or maximum common vertex count.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "edit": "True minimizes declared edit costs; false maximizes common vertex count.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
@@ -2906,7 +2906,7 @@
     "summary": "Compute minimum declared graph-edit cost between normalized input graphs.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2920,7 +2920,7 @@
     "summary": "Find a label-compatible common subgraph maximizing vertex count.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2934,7 +2934,7 @@
     "summary": "Contract a supplied partition or a greedy maximal matching into a weighted quotient graph.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2950,7 +2950,7 @@
     "summary": "Build a nearest-neighbor graph by exhaustive pairwise vector distance evaluation.",
     "parameters": {
       "input": "Feature dataset accepted by the feature-view contract, with stable IDs and equal-width vectors.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
     "returns": "Numerical weighted graph and ordered neighbor lists, with directed/union/mutual symmetrization.",
@@ -2963,7 +2963,7 @@
     "summary": "Enumerate balanced hypergraph partitions and minimize cut-net or connectivity-minus-one cost.",
     "parameters": {
       "input": "Hypergraph dataset with vertex weights and weighted hyperedge incidence.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
     "returns": "Exact optimum and part weights, or a certified infeasible result.",
@@ -2976,7 +2976,7 @@
     "summary": "Optimize a small synthetic feature graph to match the original classifier gradient at zero readout parameters.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -2993,8 +2993,8 @@
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
       "assignment": "One partition label for every input vertex.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
-      "data": "Additional operation result fields, extended with partition_assignment and groups.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
+      "data": "Additional problem result fields, extended with partition_assignment and groups.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded.",
       "quality": "Quality label for the enclosing result."
     },
@@ -3019,7 +3019,7 @@
     "summary": "Optimize modularity or the constant Potts objective with exact partition search or positive-gain vertex moves.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "device": "CUDA device ordinal forwarded to the selected GPU implementation; not used by a CPU branch.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3034,7 +3034,7 @@
     "summary": "Enumerate exactly k nonempty graph parts subject to lower and upper balance bounds.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "backend": "Selected implementation identifier; `cpp` selects the native CPU implementation where that branch is available.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3049,7 +3049,7 @@
     "summary": "Check signed-graph two-faction balance or minimize weighted frustration by exact faction enumeration.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3076,7 +3076,7 @@
     "summary": "Select an optimal seed set by exhaustive subsets and exact diffusion-state evaluation.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3092,7 +3092,7 @@
     "summary": "Estimate graph-statistic significance against degree-preserving simple configurations or fixed-edge-count random graphs.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3119,7 +3119,7 @@
     "summary": "Sample/reweight edges by effective-resistance probability and evaluate the resulting Laplacian numerically.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3135,7 +3135,7 @@
     "summary": "Compute selected eigenpairs of a combinatorial or symmetric-normalized graph Laplacian.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3150,7 +3150,7 @@
     "summary": "Fit scalar or vector graph signals with quadratic Laplacian, total-variation, or graph trend-filtering regularization.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3177,7 +3177,7 @@
     "summary": "Find a minimum-cost connected tree meeting every terminal group and all required vertices.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3260,7 +3260,7 @@
     "summary": "Rank entities by standardized deviation from declared statistics or a reference population.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3319,7 +3319,7 @@
     "summary": "Generate blocked candidate record pairs and optionally resolve them into clusters.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3358,7 +3358,7 @@
     "summary": "Build the undirected single-graph frequent-mining view with selected vertex labels.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "vf": "label or type field selected by the operation.",
+      "vf": "label or type field selected by the problem.",
       "parallel": "reject or collapse parallel records.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
@@ -3395,7 +3395,7 @@
     "summary": "Enumerate bounded labeled patterns and retain those occurring in enough graph transactions.",
     "parameters": {
       "input": "Canonical graph collection with transaction graph IDs.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
     "returns": "Exact frequent-pattern collection, transaction-support counts/fractions, and optional supporting graph IDs.",
@@ -3408,7 +3408,7 @@
     "summary": "Mine connected patterns in one labeled undirected graph using minimum-image support.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3447,7 +3447,7 @@
     "summary": "Fit source/context vectors to LINE edge mass or DeepWalk/node2vec context mass with full-softmax loss.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3463,7 +3463,7 @@
     "summary": "Fit DistMult entity/relation embeddings to selected triples with fixed sampled corruptions.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3497,7 +3497,7 @@
   "namespacegraphmine_1_1runtime_1_1anonymous__namespace_02supervised__learning_8cpp_03_1aa6e01de82cd13f7cbb8eb7300e1d0932": {
     "summary": "Wrap fitted predictions, model state, and metrics in the common learned-estimate envelope.",
     "parameters": {
-      "parameters": "Resolved operation parameters.",
+      "parameters": "Resolved problem parameters.",
       "learned": "Fitted result containing predictions, model_state, and metrics.",
       "type": "Prediction port type, such as vertex_predictions or graph_predictions."
     },
@@ -3510,7 +3510,7 @@
     "summary": "Propagate node features with SGC and fit a supervised classification or regression readout.",
     "parameters": {
       "graph": "Input graph or adjacency representation; dense positions refer to its existing vertex ordering.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "$3": "Backend argument retained for the dispatch signature; this implementation does not use it.",
       "$4": "Device argument retained for the dispatch signature; this implementation does not use it.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
@@ -3525,7 +3525,7 @@
     "summary": "Propagate features independently within each graph, pool them, and fit graph-level predictions.",
     "parameters": {
       "input": "Nonempty canonical graph collection with graph IDs used as learning entity IDs.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
     "returns": "Learned-estimate graph predictions, model state, and split metrics.",
@@ -3538,7 +3538,7 @@
     "summary": "Propagate features through weighted hyperedge means and fit a linear supervised readout.",
     "parameters": {
       "input": "Hypergraph dataset with feature, target, and split attributes on its vertex records.",
-      "args": "Operation parameters. Recognized fields and constraints are described below.",
+      "args": "Problem parameters. Recognized fields and constraints are described below.",
       "work": "Mutable request budget and accounting context. Traversal and output allocation charge this context and can stop when its limits are exceeded."
     },
     "returns": "Learned-estimate vertex predictions, model artifact, and split metrics.",

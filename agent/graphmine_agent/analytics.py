@@ -73,9 +73,9 @@ _logger = logging.getLogger(__name__)
 # Displayed capabilities may lag evidence edits by this long; execution always
 # re-verifies evidence before admitting a workflow.
 CAPABILITY_CACHE_SECONDS = 300
-# Preserve the existing large-search warning for these operations. Cost advice
+# Preserve the existing large-search warning for these problems. Cost advice
 # is independent of the families used to organize the catalog.
-SEARCH_OPERATIONS = {
+SEARCH_PROBLEMS = {
     "balanced-partitioning",
     "butterfly-counting",
     "densest-k-subgraph",
@@ -683,7 +683,7 @@ class AnalyticsService:
         from .analytics_planning import family_catalog
 
         result = await self._call({"command": "capabilities"})
-        result["task_families"] = family_catalog(result["operations"])
+        result["task_families"] = family_catalog(result["problems"])
         self.capability_cache = (
             key,
             time.monotonic() + CAPABILITY_CACHE_SECONDS,
@@ -705,17 +705,17 @@ class AnalyticsService:
     async def capabilities(self, refresh=False):
         result = copy.deepcopy(await self._native_capabilities(refresh))
         from .analytics_eligibility import attach_requirements
-        attach_requirements(result["operations"], self.settings.repository_root)
+        attach_requirements(result["problems"], self.settings.repository_root)
         from .result_views import profile
         from .view_contracts import catalog_roles
-        from ._families import PROBLEMS
+        from ._families import TOPICS
         from .analytics_options import quality_guarantees
-        for operation in result["operations"]:
-            operation["quality_guarantees"] = quality_guarantees(operation)
-            operation["visualization"] = profile(operation["id"])
-            operation["visualization"]["field_roles"] = catalog_roles(operation["id"], operation.get("output_ports", {}))
-            problem = PROBLEMS.get(operation.get("family"), {}).get(operation.get("problem_id"), {})
-            operation["problem_title"] = problem.get("title", operation.get("problem_id"))
+        for problem in result["problems"]:
+            problem["quality_guarantees"] = quality_guarantees(problem)
+            problem["visualization"] = profile(problem["id"])
+            problem["visualization"]["field_roles"] = catalog_roles(problem["id"], problem.get("output_ports", {}))
+            topic = TOPICS.get(problem.get("topic_id"), {})
+            problem["topic_title"] = topic.get("title", problem.get("topic_id"))
         result["application_limits"] = {
             "input_bytes": self.settings.analytics_max_input_bytes,
             "result_bytes": self.settings.max_result_bytes,
@@ -784,7 +784,7 @@ class AnalyticsService:
 
     async def _build_preview(self, record, inputs):
         caps = await self.capabilities()
-        cards = {card["id"]: card for card in caps["operations"]}
+        cards = {card["id"]: card for card in caps["problems"]}
         sizes = {
             alias: {
                 "vertices": len(descriptor["data"].get("vertices", [])),
@@ -796,14 +796,14 @@ class AnalyticsService:
         steps = [
             {
                 "id": step["id"],
-                "operation": step["operation"],
-                "title": cards.get(step["operation"], {}).get(
-                    "title", step["operation"]
+                "problem": step["problem"],
+                "title": cards.get(step["problem"], {}).get(
+                    "title", step["problem"]
                 ),
-                "quality": cards.get(step["operation"], {}).get("quality"),
+                "quality": cards.get(step["problem"], {}).get("quality"),
                 "device": step.get("device"),
-                "search": step["operation"] in cards
-                and step["operation"] in SEARCH_OPERATIONS,
+                "search": step["problem"] in cards
+                and step["problem"] in SEARCH_PROBLEMS,
             }
             for step in record["validation"]["plan"]["steps"]
         ]
@@ -833,8 +833,8 @@ class AnalyticsService:
 
     def _past_runtime(self, record, input_bytes):
         """Median time of completed runs with the same steps and similar input size."""
-        operations = sorted(
-            s["operation"] for s in record["validation"]["plan"]["steps"]
+        problems = sorted(
+            s["problem"] for s in record["validation"]["plan"]["steps"]
         )
         seconds = []
         for other in self._all():
@@ -843,12 +843,12 @@ class AnalyticsService:
                 or not other.get("started_at")
                 or not other.get("finished_at")
                 or sorted(
-                    s.get("operation")
+                    s.get("problem")
                     for s in other.get("validation", {})
                     .get("plan", {})
                     .get("steps", [])
                 )
-                != operations
+                != problems
             ):
                 continue
             try:
@@ -913,18 +913,18 @@ class AnalyticsService:
             and task.exception()
         ):
             native = {"status": "error", "error": str(task.exception())[:300]}
-            native["admitted_operations"] = 0
+            native["admitted_problems"] = 0
         elif cached:
-            operations = cached[2]["operations"]
-            admitted = sum(1 for c in operations if any(c["execution"].values()))
+            problems = cached[2]["problems"]
+            admitted = sum(1 for c in problems if any(c["execution"].values()))
             native = {
                 "status": "ok" if admitted else "unverified",
-                "admitted_operations": admitted,
-                "operations": len(operations),
+                "admitted_problems": admitted,
+                "problems": len(problems),
                 "implementation_sha256": cached[2].get("implementation_sha256"),
             }
         else:
-            native = {"status": "checking", "admitted_operations": 0}
+            native = {"status": "checking", "admitted_problems": 0}
         now = datetime.now(UTC)
         since = (now - timedelta(days=1)).isoformat()
         records = self._all()
@@ -1121,7 +1121,7 @@ class AnalyticsService:
             if any(step["device"] != "cpu" for step in plan["steps"]):
                 caps = await self._call({"command": "capabilities"})
                 policy, allowed_gpu_uuids = execution_admission(
-                    plan, caps["operations"]
+                    plan, caps["problems"]
                 )
             memory = estimate_memory(plan, (directory / "inputs.json").stat().st_size)
             principal = current_principal.get()
@@ -1313,7 +1313,7 @@ class AnalyticsService:
 
         try:
             caps = await self.capabilities()
-            titles = {card["id"]: card["title"] for card in caps["operations"]}
+            titles = {card["id"]: card["title"] for card in caps["problems"]}
             saved = await asyncio.to_thread(self.result, record["id"], expected_revision=record['revision'])
             capture = self.database.capture
             if capture:
@@ -1376,7 +1376,7 @@ class AnalyticsService:
 
     @staticmethod
     def _admin_event_metadata(record):
-        return {"operations": list(dict.fromkeys(step["operation"] for step in record.get("validation", {}).get("plan", {}).get("steps", []))),
+        return {"problems": list(dict.fromkeys(step["problem"] for step in record.get("validation", {}).get("plan", {}).get("steps", []))),
                 "datasets": list(dict.fromkeys(value.get("file_snapshot", {}).get("name", "Unknown input") for value in record.get("input_provenance", {}).values()))}
 
     async def cancel(self, workflow_id, *, admin=False):

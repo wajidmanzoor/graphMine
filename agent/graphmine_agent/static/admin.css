@@ -983,9 +983,9 @@ svg.nav-icon { width:16px; height:16px; fill:none; stroke:currentColor; stroke-w
 .recent-list li { padding:9px 0; }
 .recent-list strong { font-weight:500; }
 .recent-list .hint { font-size:12px; margin-top:3px; }
-.operation-bars { display:grid; gap:13px; margin:20px 0; }
-.operation-bars > div { display:grid; grid-template-columns:minmax(110px,1fr) 2fr 32px; gap:12px; align-items:center; font-size:13px; }
-.operation-bars progress { margin:0; }
+.problem-bars { display:grid; gap:13px; margin:20px 0; }
+.problem-bars > div { display:grid; grid-template-columns:minmax(110px,1fr) 2fr 32px; gap:12px; align-items:center; font-size:13px; }
+.problem-bars progress { margin:0; }
 .bar-chart { gap:5px; height:170px; }
 .chart-column { min-width:23px; }
 .chart-label,.chart-value { font-size:10px; }

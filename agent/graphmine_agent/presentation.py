@@ -7,7 +7,7 @@ from typing import Any
 from .graph_context import identity
 
 
-def result_status(operation: str, output: dict[str, Any]) -> list[dict[str, str]]:
+def result_status(problem: str, output: dict[str, Any]) -> list[dict[str, str]]:
     """Describe reported guarantees without inferring certainty from success."""
     status = []
 
@@ -16,7 +16,7 @@ def result_status(operation: str, output: dict[str, Any]) -> list[dict[str, str]
 
     if output.get("feasible") is False:
         add("No feasible solution", "No solution satisfies the supplied constraints.")
-    elif output.get("approximate") is True or operation in {
+    elif output.get("approximate") is True or problem in {
         "personalized-pagerank",
         "influence-maximization",
     }:
@@ -39,7 +39,7 @@ def result_status(operation: str, output: dict[str, Any]) -> list[dict[str, str]
         )
 
     # Top-k PageRank is a requested subset, not a failed enumeration.
-    if operation != "personalized-pagerank" and isinstance(
+    if problem != "personalized-pagerank" and isinstance(
         output.get("complete"), bool
     ):
         if output["complete"]:
@@ -59,13 +59,13 @@ def result_status(operation: str, output: dict[str, Any]) -> list[dict[str, str]
             else:
                 add(
                     "Complete result",
-                    "The operation reports complete output.",
+                    "The problem reports complete output.",
                     "positive",
                 )
         else:
             add(
                 "Partial result",
-                "The operation did not return a complete result.",
+                "The problem did not return a complete result.",
                 "caution",
             )
     for field in (
@@ -77,7 +77,7 @@ def result_status(operation: str, output: dict[str, Any]) -> list[dict[str, str]
             if output[field]:
                 expected = {
                     "instances_complete": [
-                        "triangles" if operation == "triangle-counting" else "instances"
+                        "triangles" if problem == "triangle-counting" else "instances"
                     ],
                     "embeddings_complete": ["embeddings"],
                     "changed_instances_complete": [
@@ -89,7 +89,7 @@ def result_status(operation: str, output: dict[str, Any]) -> list[dict[str, str]
                 if all(present):
                     add(
                         "All instances returned",
-                        "The operation reports that all matching instances were returned.",
+                        "The problem reports that all matching instances were returned.",
                         "positive",
                     )
                 elif any(present):
@@ -113,7 +113,7 @@ def result_status(operation: str, output: dict[str, Any]) -> list[dict[str, str]
     return status
 
 
-def method_explanation(operation: str, parameters: dict[str, Any]) -> str:
+def method_explanation(problem: str, parameters: dict[str, Any]) -> str:
     explanations = {
         "maximal-cliques": "Every pair of members in a group has a recorded connection. No other entity from the analysed graph can be added while keeping every pair connected; different groups can overlap.",
         "maximum-clique": "Every pair of members in the returned group has a recorded connection. The analysis searches for the largest such group; the result status states whether optimality was certified.",
@@ -127,7 +127,7 @@ def method_explanation(operation: str, parameters: dict[str, Any]) -> str:
         "maximal-bicliques": "Each member on one side connects to every member on the other side. A member can belong to more than one returned group.",
         "maximal-biclique-counting": "The result counts maximal fully connected cross-group patterns. It does not list their individual members.",
         "butterfly-counting": "Each counted pattern contains two entities on each side and all four cross-group connections. The result is a total count, not a list of participants.",
-        "temporal-motif-mining": "Each match follows the ordered events A to B, B to C, then A to C within the requested time window. Other event patterns are outside this operation's scope.",
+        "temporal-motif-mining": "Each match follows the ordered events A to B, B to C, then A to C within the requested time window. Other event patterns are outside this problem's scope.",
         "quasi-cliques": "Every member must meet the requested minimum fraction of connections to the other members. This is a threshold for each member, rather than an average over the group. Returned groups also meet the requested minimum size.",
         "k-core": "A core number describes the largest remaining-partner threshold an entity survives when entities with too few partners are repeatedly removed. It is not simply the entity's original number of connections.",
         "k-truss": "An edge's truss number is the largest k for which it survives repeatedly removing edges in fewer than k−2 triangles. The computation uses an undirected graph with duplicate relationships and self-loops removed.",
@@ -138,17 +138,17 @@ def method_explanation(operation: str, parameters: dict[str, Any]) -> str:
         "linear-assignment": "Each entity on one side is paired with exactly one entity on the other side, minimizing the total supplied cost. Every entity is used once in this complete, equal-size assignment profile.",
         "transitive-closure": "A reachable pair means a directed path exists from the first entity to the second, possibly through intermediates. Each entity also reaches itself. Reachability does not imply a direct relationship.",
     }
-    if operation == "k-cliques" and isinstance(parameters.get("k"), int):
+    if problem == "k-cliques" and isinstance(parameters.get("k"), int):
         return f"Each returned group contains exactly {parameters['k']} distinct entities, with a recorded connection between every pair. Different groups can share members."
-    if operation == "densest-subgraph" and parameters.get("clique_order", 2) != 2:
+    if problem == "densest-subgraph" and parameters.get("clique_order", 2) != 2:
         return f"Density is the number of fully connected groups of {parameters['clique_order']} entities inside the selected set, divided by the number of selected entities. Clique order does not fix the size of the selected set."
-    if operation == "k-core" and isinstance(parameters.get("requested_k"), int):
+    if problem == "k-core" and isinstance(parameters.get("requested_k"), int):
         return f"Entities with fewer than {parameters['requested_k']} partners are repeatedly removed. Every remaining entity meets that threshold within the remaining graph."
-    if operation == "connected-components":
+    if problem == "connected-components":
         if parameters.get("connectivity_mode") == "strongly_connected":
             return "Every entity in a group can reach every other member by directed paths. A direct connection between each pair is not required. Different groups do not share members."
         return "Direction is ignored when grouping entities joined by paths. A direct connection between each pair is not required. Different groups do not share members."
-    return explanations.get(operation, "")
+    return explanations.get(problem, "")
 
 
 def readable_fields(row: dict[str, Any]) -> dict[str, list[str]]:
@@ -288,7 +288,7 @@ def followup_options(answer):
                 "request": "Repeat the same analysis using all records in this uploaded sample. Remove the current vertex and relationship filters; keep the other requirements unchanged.",
             }
         )
-    elif answer["operation_id"] != "betweenness-centrality":
+    elif answer["problem_id"] != "betweenness-centrality":
         options.append(
             {
                 "id": "rank_connectors",

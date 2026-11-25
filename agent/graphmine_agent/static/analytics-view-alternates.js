@@ -39,7 +39,7 @@ window.GraphMineViewAlternates = ({W, node, charts, label, context, select, over
         range.oninput = () => { const i = Number(range.value), id = walk[i]; cy.nodes().forEach(n => n.toggleClass("chosen", n.id() === W.idKey(id))); select(id === undefined ? [] : [id]); status.textContent = `Step ${i + 1} of ${walk.length}: ${id === undefined ? "No retained steps" : label(id)}`; };
         play.onclick = () => { if (timer) { clearInterval(timer); timer = null; play.textContent = "Play recorded walk"; return; } range.value = "0"; play.textContent = "Stop"; timer = setInterval(() => { range.oninput(); if (+range.value >= +range.max) { clearInterval(timer); timer = null; play.textContent = "Play recorded walk"; } else range.value = String(+range.value + 1); }, 650); }; range.oninput(); }
     } else if (choice === "predicted_edges") {
-      if (view.profile_facts?.operation !== "link-prediction") throw new Error("This output does not declare predicted relationships.");
+      if (view.profile_facts?.problem !== "link-prediction") throw new Error("This output does not declare predicted relationships.");
       const edges = rows.slice().sort((a, b) => b.score - a.score).slice(0, 200).map((r, i) => ({id: "prediction:" + i, source: r.source, target: r.target, weight: r.score, view: {edge_role: "derived", relationship_type: "Predicted relationship", weight: r.score}})), ids = new Set(source.vertices.map(v => W.idKey(v.id)));
       scene(host, {...source, edges: edges.filter(e => ids.has(W.idKey(e.source)) && ids.has(W.idKey(e.target)))}, spec); host.append(node("p", {class: "view-scope"}, "Dashed connections are the top 200 loaded link predictions. They are not recorded input edges."));
     } else if (choice === "occurrence_overlay") {

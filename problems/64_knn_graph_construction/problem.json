@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "knn_graph_construction",
+  "topic_id": "knn_graph_construction",
   "name": "k-Nearest-Neighbor Graph Construction",
   "category": "preparation",
   "problem_statement": "Construct a graph connecting each feature vector to its k nearest distinct input vectors under a declared distance metric.",

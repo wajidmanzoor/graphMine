@@ -59,7 +59,7 @@
       "label": "Eli Brown",
       "type": "employee",
       "attributes": {
-        "department": "Operations",
+        "department": "Problems",
         "role": "Coordinator",
         "tenure_years": 5,
         "office": "Austin"
@@ -70,7 +70,7 @@
       "label": "Fatima Noor",
       "type": "employee",
       "attributes": {
-        "department": "Operations",
+        "department": "Problems",
         "role": "Analyst",
         "tenure_years": 6,
         "office": "Austin"
@@ -81,7 +81,7 @@
       "label": "Gus Reed",
       "type": "employee",
       "attributes": {
-        "department": "Operations",
+        "department": "Problems",
         "role": "Specialist",
         "tenure_years": 7,
         "office": "Austin"

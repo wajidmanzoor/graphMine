@@ -136,7 +136,7 @@ Graph parse_graph(const json::value& value, bool preserve_int64_weights) {
         edge.original_weight = weight.as_double();
       require(std::isfinite(*edge.weight), "Edge weight must be finite");
       // The existing native Graph stores weights as doubles. Do not silently
-      // change an integer weight before a future weighted native operation.
+      // change an integer weight before a future weighted native problem.
       if (!preserve_int64_weights && weight.is_int64())
         require(
             static_cast<long double>(*edge.weight) == static_cast<long double>(weight.as_int64()),

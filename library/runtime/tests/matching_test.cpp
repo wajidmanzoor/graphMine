@@ -84,7 +84,7 @@ struct Fixture {
 };
 json::object request(const Fixture& f, json::object args) {
   return {{"command", "run"},
-          {"operation", f.left < 0 ? "weighted-matching" : "bipartite-matching"},
+          {"problem", f.left < 0 ? "weighted-matching" : "bipartite-matching"},
           {"graph", f.graph},
           {"parameters", args},
           {"device", backend == "cpp" ? "cpu" : "gpu"},

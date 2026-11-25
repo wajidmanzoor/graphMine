@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "community_detection",
+  "topic_id": "community_detection",
   "name": "Disjoint Community Detection",
   "category": "communities",
   "problem_statement": "Partition all graph vertices into nonoverlapping communities that maximize a declared within-community quality function.",

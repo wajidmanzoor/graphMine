@@ -20,12 +20,12 @@
 namespace graphmine::detail {
 namespace {
 
-Status cuda_status(cudaError_t code, const char* operation) {
+Status cuda_status(cudaError_t code, const char* problem) {
   if (code == cudaSuccess) {
     return Status::success();
   }
   return {StatusCode::execution_failed,
-          std::string(operation) + ": " + cudaGetErrorString(code)};
+          std::string(problem) + ": " + cudaGetErrorString(code)};
 }
 
 class BackendGraph {
@@ -119,8 +119,8 @@ KCoreBackendResult run_kcore_gpu(const CsrGraph& graph, int device_id) {
     };
 
     const auto allocate = [&](void** pointer, std::size_t bytes,
-                              const char* operation) {
-      const auto result = cuda_status(cudaMalloc(pointer, bytes), operation);
+                              const char* problem) {
+      const auto result = cuda_status(cudaMalloc(pointer, bytes), problem);
       if (!result.ok()) {
         cleanup();
         throw std::runtime_error(result.message());

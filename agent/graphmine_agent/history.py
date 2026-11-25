@@ -1,4 +1,4 @@
-"""Human-readable, append-only evidence alongside the operational database.
+"""Human-readable, append-only evidence alongside the problemal database.
 
 Snapshots are convenient current views; events retain every revision, including
 failed model calls and interpretations later replaced by a follow-up.
@@ -29,7 +29,7 @@ _logger = logging.getLogger(__name__)
 
 
 def _archive_write(method):
-    """Archive I/O cannot undo an already committed operational record."""
+    """Archive I/O cannot undo an already committed problemal record."""
 
     @wraps(method)
     def write(self, *args, **kwargs):
@@ -53,12 +53,12 @@ class HistoryStore:
         self._failure_count = 0
         self._last_failure: dict[str, Any] | None = None
 
-    def record_failure(self, operation: str, error: Exception) -> None:
+    def record_failure(self, problem: str, error: Exception) -> None:
         # Bounded diagnostics, without graph data or exception text in health.
         with self._failure_lock:
             self._failure_count += 1
             self._last_failure = {
-                "operation": operation,
+                "problem": problem,
                 "type": type(error).__name__,
                 "errno": getattr(error, "errno", None),
                 "timestamp": utc_now().isoformat(),
@@ -68,7 +68,7 @@ class HistoryStore:
         if count == 1 or count % 100 == 0:
             _logger.error(
                 "Archive/notification gap during %s (%s); %d failures since startup",
-                operation,
+                problem,
                 type(error).__name__,
                 count,
             )
@@ -85,11 +85,11 @@ class HistoryStore:
             }
 
     @contextmanager
-    def best_effort(self, operation: str):
+    def best_effort(self, problem: str):
         try:
             yield
         except OSError as error:
-            self.record_failure(operation, error)
+            self.record_failure(problem, error)
 
     @staticmethod
     def identifier(value: str) -> str:

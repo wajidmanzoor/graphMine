@@ -22,8 +22,8 @@ DIRECTED = [
 ]
 
 
-def call(operation, graph, **parameters):
-    result = run(operation, graph, device="cpu", parameters=parameters)
+def call(problem, graph, **parameters):
+    result = run(problem, graph, device="cpu", parameters=parameters)
     assert result["backend"]["device"] == "cpu"
     return result
 
@@ -398,7 +398,7 @@ def test_spectral_reweighting_triangle_zero_edges_and_target_enforcement(scale):
 
 
 @pytest.mark.parametrize(
-    "operation,arguments",
+    "problem,arguments",
     [
         ("force-directed-layout", {"force_model": "force_atlas2"}),
         ("force-directed-layout", {"iterations": None}),
@@ -435,12 +435,12 @@ def test_spectral_reweighting_triangle_zero_edges_and_target_enforcement(scale):
         ),
     ],
 )
-def test_unsupported_parameters_are_rejected(operation, arguments):
+def test_unsupported_parameters_are_rejected(problem, arguments):
     graph = Graph.from_edges(
-        [(0, 1, 0.5)], directed=operation == "influence-maximization"
+        [(0, 1, 0.5)], directed=problem == "influence-maximization"
     )
     with pytest.raises(GraphMineError):
-        call(operation, graph, **arguments)
+        call(problem, graph, **arguments)
 
 
 def test_invalid_models_weights_and_budgets_have_no_plausible_success():
@@ -479,7 +479,7 @@ def test_invalid_models_weights_and_budgets_have_no_plausible_success():
             Graph.from_edges([(0, 1, 1)], directed=True),
             edge_budget=1,
         )
-    for operation, arguments in [
+    for problem, arguments in [
         ("force-directed-layout", {"iterations": 10}),
         ("spectral-sparsification", {"edge_budget": 3}),
         (
@@ -489,11 +489,11 @@ def test_invalid_models_weights_and_budgets_have_no_plausible_success():
     ]:
         graph = Graph.from_edges(
             [(u, v, 0.5) for u, v in combinations(range(5), 2)],
-            directed=operation == "influence-maximization",
+            directed=problem == "influence-maximization",
         )
         with pytest.raises(ResourceLimit):
             run(
-                operation,
+                problem,
                 graph,
                 parameters=arguments,
                 device="cpu",

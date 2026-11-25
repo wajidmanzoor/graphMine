@@ -80,7 +80,7 @@ struct Fixture {
 json::object request(const Fixture& f, json::object args = {}) {
   args["source"] = vid(0);
   args["sink"] = vid(f.n - 1);
-  return {{"command", "run"},    {"operation", "max-flow-min-cut"},
+  return {{"command", "run"},    {"problem", "max-flow-min-cut"},
           {"graph", f.graph},    {"parameters", args},
           {"backend", backend},  {"device", backend == "cpp" ? "cpu" : "gpu"},
           {"gpu_device", device}};

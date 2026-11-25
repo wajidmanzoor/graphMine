@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "graph_based_geolocation",
+  "topic_id": "graph_based_geolocation",
   "name": "Graph-Based Geolocation",
   "category": "learning",
   "problem_statement": "Infer geographic coordinates for unlocated vertices using declared graph propagation or supervised graph-learning models.",

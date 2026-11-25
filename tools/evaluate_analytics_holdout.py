@@ -67,21 +67,21 @@ def freeze(path):
     }
     cases = []
 
-    def add(name, question, operations, checks, *, data=graph, **extra):
+    def add(name, question, problems, checks, *, data=graph, **extra):
         cases.append(
             {
                 "id": name,
                 "question": question,
                 "input": data,
-                "operations": operations,
+                "problems": problems,
                 "checks": checks,
                 "expected_status": "ready",
                 **extra,
             }
         )
 
-    def check(operation, port, kind, value):
-        return {"operation": operation, "port": port, "kind": kind, "value": value}
+    def check(problem, port, kind, value):
+        return {"problem": problem, "port": port, "kind": kind, "value": value}
 
     add(
         "triangles",
@@ -299,7 +299,7 @@ def freeze(path):
         "steps": [
             {
                 "id": "reach",
-                "operation": "breadth-first-search",
+                "problem": "breadth-first-search",
                 "input": {"input": "main"},
                 "parameters": {"sources": [start]},
             }
@@ -390,18 +390,18 @@ def validate_oracles(suite, output):
         if case["expected_status"] != "ready":
             continue
         data, results, requests = case["input"], {}, []
-        for operation in case["operations"]:
-            params = dict(case.get("required_parameters", {}).get(operation, {}))
+        for problem in case["problems"]:
+            params = dict(case.get("required_parameters", {}).get(problem, {}))
             current = data
-            if operation == "edge-filter":
+            if problem == "edge-filter":
                 params = {
                     "edge_filters": [
                         {"field": "attributes.amount", "op": "gte", "value": 50}
                     ]
                 }
-            if operation == "neighbors":
+            if problem == "neighbors":
                 params = {"entity": data["vertices"][5]["id"]}
-            if operation == "node-lookup":
+            if problem == "node-lookup":
                 params = (
                     {"vertices": [0]}
                     if case["id"] == "numeric_identity"
@@ -413,25 +413,25 @@ def validate_oracles(suite, output):
                         ]
                     }
                 )
-            if operation == "query-subgraph":
+            if problem == "query-subgraph":
                 params = {
                     "mode": "vertices",
                     "vertices": [v["id"] for v in data["vertices"][:4]],
                 }
-            if operation == "triangle-counting" and "query-subgraph" in results:
+            if problem == "triangle-counting" and "query-subgraph" in results:
                 current = results["query-subgraph"]["ports"]["graph"]["value"]
-            results[operation] = library.run(
-                operation, current, parameters=params, device="cpu"
+            results[problem] = library.run(
+                problem, current, parameters=params, device="cpu"
             )
             requests.append(
                 {
-                    "operation": operation,
+                    "problem": problem,
                     "parameters": params,
                     "input_sha256": digest(current),
                 }
             )
         checks = [
-            check_value(c, results[c["operation"]]["ports"].get(c["port"]))
+            check_value(c, results[c["problem"]]["ports"].get(c["port"]))
             for c in case["checks"]
         ]
         assert all(checks), case["id"]
@@ -477,7 +477,7 @@ async def evaluate(settings, suite, output):
             c["id"]: {
                 k: v["default"] for k, v in c["parameters"].items() if "default" in v
             }
-            for c in caps["operations"]
+            for c in caps["problems"]
         }
         for case in suite["cases"]:
             session = db.create_session(SessionRecord(domain_id="general"))
@@ -533,10 +533,10 @@ async def evaluate(settings, suite, output):
                     )
                     await asyncio.gather(*service.tasks.values())
                     result = service.result(saved["id"])
-                    steps = {s["operation"]: s for s in result["plan"]["steps"]}
+                    steps = {s["problem"]: s for s in result["plan"]["steps"]}
                     checks = []
                     for check in case["checks"]:
-                        step = steps.get(check["operation"], {})
+                        step = steps.get(check["problem"], {})
                         port = (
                             result["steps"]
                             .get(step.get("id"), {})
@@ -551,9 +551,9 @@ async def evaluate(settings, suite, output):
                                 "observed": port.get("value") if port else None,
                             }
                         )
-                    exact_operations = sorted(
-                        s["operation"] for s in result["plan"]["steps"]
-                    ) == sorted(case["operations"])
+                    exact_problems = sorted(
+                        s["problem"] for s in result["plan"]["steps"]
+                    ) == sorted(case["problems"])
                     params = all(
                         op in steps
                         and all(
@@ -575,12 +575,12 @@ async def evaluate(settings, suite, output):
                     # A wrong family hint must not trap the planner: older traces
                     # reroute; single-call routing selects outside the hint.
                     recovered = not case.get("require_reroute") or any(
-                        (t["stage"] == "operation" and t.get("status") == "reroute")
+                        (t["stage"] == "problem" and t.get("status") == "reroute")
                         or (t["stage"] == "route" and t.get("outside_preferred_family"))
                         for t in proposal["trace"]
                     )
                     row.update(
-                        operations=exact_operations,
+                        problems=exact_problems,
                         required_parameters=params,
                         wiring=wiring,
                         required_reroute=recovered,
@@ -591,7 +591,7 @@ async def evaluate(settings, suite, output):
                     row["passed"] = (
                         result["status"] == "completed"
                         and result["complete"]
-                        and exact_operations
+                        and exact_problems
                         and params
                         and wiring
                         and recovered

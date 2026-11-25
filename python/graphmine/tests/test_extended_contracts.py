@@ -2,11 +2,11 @@ from itertools import combinations, permutations, product
 
 import pytest
 from graphmine.reference import Graph, list_algorithms, run
-from graphmine.exceptions import GraphMineError, UnsupportedOperation
+from graphmine.exceptions import GraphMineError, UnsupportedProblem
 
 
-def execute(operation, graph, **args):
-    return run(operation, graph, device="cpu", parameters=args)
+def execute(problem, graph, **args):
+    return run(problem, graph, device="cpu", parameters=args)
 
 
 @pytest.mark.parametrize("supplied", [False, [], "", 0])
@@ -39,7 +39,7 @@ def test_scipy_provenance_and_explicit_backend_selection():
     )
     assert result["backend"]["id"] == "scipy"
     assert result["backend"]["version"] == result["backend"]["dependencies"]["scipy"]
-    with pytest.raises(UnsupportedOperation):
+    with pytest.raises(UnsupportedProblem):
         run("densest-k-subgraph", graph, backend="networkx", parameters={"k": 2})
     with pytest.raises(GraphMineError):
         run(
@@ -239,7 +239,7 @@ def test_parallel_matching_returns_the_id_of_the_best_edge():
 def test_new_algorithms_never_claim_an_unsupported_gpu_path():
     from graphmine.backends.cugraph import supports
 
-    operations = {
+    problems = {
         "densest-subgraph",
         "densest-k-subgraph",
         "quasi-cliques",
@@ -253,8 +253,8 @@ def test_new_algorithms_never_claim_an_unsupported_gpu_path():
         "balanced-partitioning",
         "signed-balance",
     }
-    assert operations <= {card["id"] for card in list_algorithms()}
-    assert all(not supports(op, {})[0] for op in operations)
+    assert problems <= {card["id"] for card in list_algorithms()}
+    assert all(not supports(op, {})[0] for op in problems)
 
 
 def test_oversized_integer_gpu_weight_fails_without_conversion_overflow(monkeypatch):
@@ -262,5 +262,5 @@ def test_oversized_integer_gpu_weight_fails_without_conversion_overflow(monkeypa
 
     monkeypatch.setattr(cugraph, "installed", lambda: True)
     graph = Graph.from_edges([(0, 1, 10**500)])
-    with pytest.raises(UnsupportedOperation):
+    with pytest.raises(UnsupportedProblem):
         cugraph.prepare("single-source-shortest-paths", {}, graph)

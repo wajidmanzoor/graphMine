@@ -93,7 +93,7 @@ TriangleMaterialization materialize_triangles(
 
 Provenance triangle_provenance(TriangleBackend backend) {
   Provenance provenance;
-  provenance.problem = "triangle_counting_listing";
+  provenance.topic = "triangle_counting_listing";
   provenance.backend = to_string(backend);
   switch (backend) {
     case TriangleBackend::tot:

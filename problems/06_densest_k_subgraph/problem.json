@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "densest_k_subgraph",
+  "topic_id": "densest_k_subgraph",
   "name": "Densest k-Subgraph",
   "category": "dense",
   "problem_statement": "Given an undirected graph and integer k, find exactly k vertices maximizing the total value of edges induced by those vertices.",

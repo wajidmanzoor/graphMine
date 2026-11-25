@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "densest_subgraph",
+  "topic_id": "densest_subgraph",
   "name": "Densest Subgraph",
   "category": "dense",
   "problem_statement": "Find a nonempty vertex subset maximizing its induced k-clique count divided by the number of selected vertices. Clique order k=2 gives ordinary edge density; the k=2 weighted variant uses total induced edge weight. Clique order does not constrain result cardinality.",

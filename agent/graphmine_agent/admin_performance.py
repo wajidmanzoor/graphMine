@@ -1,7 +1,7 @@
 """Read installed performance artifacts and supervise explicitly requested tests.
 
 The optional perf suite is never installed or executed just by opening a page.
-Its config and summary are reduced to operational metadata before returning them.
+Its config and summary are reduced to problemal metadata before returning them.
 """
 
 import asyncio

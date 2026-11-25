@@ -9,10 +9,10 @@ namespace graphmine::runtime {
 // resolve request IDs into a complete spec before the audited factory runs.
 struct ViewProfile {
   const std::string id;
-  const std::vector<std::string> operations;
+  const std::vector<std::string> problems;
   const ViewSpec spec;
   const bool partition_parameters;
-  ViewProfile(const char* id, std::initializer_list<const char*> operations, const char* spec_json,
+  ViewProfile(const char* id, std::initializer_list<const char*> problems, const char* spec_json,
               bool partition_parameters = false);
   ViewSpec resolved_spec(const json::object& parameters = {}) const;
 };
@@ -22,7 +22,7 @@ json::array cpu_view_declarations();
 enum class ViewBudget { algorithm_owned, original_edges, weighted_adjacency, record_edges };
 std::shared_ptr<const ViewResult> consume_view(const Graph&, const ViewProfile&, Work&, ViewBudget,
                                                const json::object& parameters = {});
-// Structured common-front parsing retains its operation-owned validation/costs.
+// Structured common-front parsing retains its problem-owned validation/costs.
 std::shared_ptr<const ViewResult> consume_view(const json::value&, const ViewProfile&, Work&);
 // Layout-only copy for algorithms that retain vector rows internally.
 MiningGraph adjacency_layout(const CsrView&);

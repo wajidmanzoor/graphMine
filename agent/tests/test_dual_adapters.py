@@ -107,12 +107,12 @@ def test_both_stage_adapters_use_one_client_and_require_both_names(
         replace(settings, llm_planner_model="planner-v2")
 
 
-def case(graph, operation, parameters):
+def case(graph, problem, parameters):
     return {
         "graph": graph,
         "attachments": {},
         "task": {
-            "operation_id": operation,
+            "problem_id": problem,
             "parameters": parameters,
             "expected_status": "ready",
             "intent": ApplicationIntent().model_dump(mode="json"),
@@ -150,7 +150,7 @@ def test_biclique_reference_uses_explicit_sides_for_any_domain():
 def test_count_only_does_not_require_an_unrequested_listing():
     graph = graph_from_pairs("triangle", [(0, 1), (1, 2), (0, 2)], ids=["a", "b", "c"])
     task = {
-        "operation_id": "k-cliques",
+        "problem_id": "k-cliques",
         "parameters": {"k": 3},
         "filters": [],
         "behavior": "execute",

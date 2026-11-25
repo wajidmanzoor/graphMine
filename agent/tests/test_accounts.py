@@ -462,7 +462,7 @@ def test_planning_does_not_block_previews_uploads_or_capabilities(
     with TestClient(create_app(account_settings)) as client:
         runtime = client.app.state.runtime
         user = runtime.accounts.create_user("alice", PASSWORD)["id"]
-        runtime.analytics.capabilities = AsyncMock(return_value={"operations": []})
+        runtime.analytics.capabilities = AsyncMock(return_value={"problems": []})
         auth = login(client)
         sid = client.post(
             "/api/sessions", json={"domain_id": "general"}, headers=auth
@@ -476,7 +476,7 @@ def test_planning_does_not_block_previews_uploads_or_capabilities(
         preview = f"/api/files/{fid}/graph-preview"
         assert client.get(preview, headers=auth).status_code == 200
         assert client.get("/api/analytics/capabilities", headers=auth).json() == {
-            "operations": []
+            "problems": []
         }
         assert (
             client.post(
@@ -856,8 +856,8 @@ def test_background_jobs_use_owner_and_results_stay_private(
             json={
                 "session_id": session,
                 "graph_id": graph,
-                "problem_id": "maximal_clique_enumeration",
-                "operation_id": "maximal-cliques",
+                "topic_id": "maximal_clique_enumeration",
+                "problem_id": "maximal-cliques",
                 "backend_id": "rdmce",
             },
         )
@@ -1066,7 +1066,7 @@ def test_expert_workflow_consumes_jobs_without_model_tokens(
                         "steps": [
                             {
                                 "id": "answer",
-                                "operation": "triangle-counting",
+                                "problem": "triangle-counting",
                                 "device": "cpu",
                             }
                         ],
@@ -1117,8 +1117,8 @@ def test_restart_does_not_resume_unadmitted_account_queue(account_settings):
         plan = ExecutionPlan(
             session_id=session.id,
             graph_id="unused",
-            problem_id="maximal_clique_enumeration",
-            operation_id="maximal-cliques",
+            topic_id="maximal_clique_enumeration",
+            problem_id="maximal-cliques",
             backend_id="rdmce",
         )
         job = db.save_job(JobRecord(session_id=session.id, plan=plan))
@@ -1162,8 +1162,8 @@ def test_graph_execution_timeout_is_visible_and_releases_capacity(
             json={
                 "session_id": sid,
                 "graph_id": fid,
-                "problem_id": "maximal_clique_enumeration",
-                "operation_id": "maximal-cliques",
+                "topic_id": "maximal_clique_enumeration",
+                "problem_id": "maximal-cliques",
                 "backend_id": "rdmce",
             },
         )
@@ -1246,10 +1246,10 @@ def test_only_admin_can_manage_users_and_password_policy_is_preserved(account_se
             ).status_code
             == 403
         )
-        for operation in ("disable", "enable", "reset-password"):
+        for problem in ("disable", "enable", "reset-password"):
             assert (
                 client.post(
-                    f"{endpoint}/owner/{operation}",
+                    f"{endpoint}/owner/{problem}",
                     headers=alice,
                     json={"password": PASSWORD},
                 ).status_code

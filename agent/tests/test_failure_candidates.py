@@ -90,7 +90,7 @@ def test_changed_evidence_without_updated_hash_is_rejected(
 
 @pytest.fixture
 def archived(tmp_path, monkeypatch):
-    task = {"query": "Which group?", "behavior": "clarify", "operation_id": None}
+    task = {"query": "Which group?", "behavior": "clarify", "problem_id": None}
     case = {
         "id": "clarification",
         "source_id": "source",

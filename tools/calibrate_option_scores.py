@@ -2,7 +2,7 @@
 """Collect option decisions on the frozen Phase 1 labels, then calibrate High.
 
 The fit is a development-set precision measurement, never a held-out accuracy
-claim. No labels or expected operations are included in model requests.
+claim. No labels or expected problems are included in model requests.
 """
 import argparse
 import asyncio
@@ -18,15 +18,15 @@ from graphmine_agent.config import Settings
 
 
 def fit(report, suite):
-    expected = {case['id']: case['expected'].get('operations', []) for case in suite['cases']}
+    expected = {case['id']: case['expected'].get('problems', []) for case in suite['cases']}
     references = {case['id']: case.get('reference', {}) for case in suite['cases']}
     rows = []
     for case in report['cases']:
         for option in case['response'].get('options', []):
             evidence = option['match_evidence']
             rows.append({'case': case['id'], 'option': option['id'], 'score': option['score'],
-                         'eligible_for_high': evidence['votes'] > 0 and len(evidence['operation_logprobs']) == evidence['votes'] and not evidence['missing_parameters'],
-                         'correct': sorted(option['operations']) in [sorted(ops) for ops in expected[case['id']]] and
+                         'eligible_for_high': evidence['votes'] > 0 and len(evidence['problem_logprobs']) == evidence['votes'] and not evidence['missing_parameters'],
+                         'correct': sorted(option['problems']) in [sorted(ops) for ops in expected[case['id']]] and
                                     all(option['parameters'].get(name) == value for name, value in references[case['id']].get('parameters', {}).items())})
     thresholds = sorted({row['score'] for row in rows if row['eligible_for_high']})
     high = {'threshold': 1.01, 'count': 0, 'correct': 0, 'precision': 0}
@@ -52,7 +52,7 @@ async def collect(settings, suite, graphs, report, output):
     service = AnalyticsService(settings, database, GraphStore(settings, database), EventBus(database))
     try:
         caps = await service.capabilities()
-        report['catalog_sha256'] = catalog_signature([card for card in caps['operations'] if card['execution']['cpu']])
+        report['catalog_sha256'] = catalog_signature([card for card in caps['problems'] if card['execution']['cpu']])
     finally:
         await service.close()
     await evaluate(settings, suite, graphs, report, output)

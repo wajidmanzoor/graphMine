@@ -25,9 +25,9 @@ def graph():
     }
 
 
-def result(operation, typ, value, **extra):
+def result(problem, typ, value, **extra):
     return {
-        "operation": operation,
+        "problem": problem,
         "ports": {"out": {"type": typ, "value": value, "complete": True}},
         **extra,
     }
@@ -37,7 +37,7 @@ def ids(g, kind):
     return [v["id"] for v in g[kind]]
 
 
-def test_all_declared_native_operations_have_intentional_views():
+def test_all_declared_native_problems_have_intentional_views():
     # The runtime's public output contract is independent of the view registry.
     source = Path(__file__).resolve().parents[2] / "python/graphmine/graphmine/ports.py"
     assignment = next(
@@ -260,7 +260,7 @@ def test_context_uses_full_immediate_input_and_default_group_is_explicit():
 
 def test_lookup_table_uses_declared_vertex_field_and_preserves_id_type():
     graph = {"graph": {"directed": False}, "vertices": [{"id": "0"}, {"id": 0}], "edges": []}
-    saved = {"operation": "node-lookup", "ports": {
+    saved = {"problem": "node-lookup", "ports": {
         "rows": {"type": "table", "vertex_field": "id", "value": [{"id": "0", "name": "Ada"}]}
     }}
     focused, _, selected, _ = focus_graph(graph, saved, "rows", 0)

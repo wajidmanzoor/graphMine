@@ -73,7 +73,7 @@ def database_tools():
         tool("discover_sources", "GET", "/api/data-sources", None,
              "List authorized Neo4j, SQLite and REST connections, their capabilities and discovery warnings. Use source_id with the provider's tools; credentials are omitted."),
         tool("database_source", "GET", "/api/database-sources/{source_id}", None,
-             "Inspect one authorized graph connection's mappings, revision and available operations."),
+             "Inspect one authorized graph connection's mappings, revision and available problems."),
         tool("database_datasets", "GET", "/api/database-sources/{source_id}/datasets", None,
              "Discover the default graph and available SQL catalog datasets for a connection.", open_world=True),
         tool("database_schema", "GET", "/api/database-sources/{source_id}/schema", DatasetSchema,

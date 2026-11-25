@@ -38,13 +38,13 @@ from graphmine_agent.planning import (
     route_blocker,
 )
 from graphmine_agent.profiles import (
-    EXPANSION_OPERATIONS,
+    EXPANSION_PROBLEMS,
     ProfileInputError,
-    prepare_operation_graph,
+    prepare_problem_graph,
 )
 from jsonschema import Draft202012Validator
 
-ORIGINAL_EXPANSION_OPERATIONS = frozenset(
+ORIGINAL_EXPANSION_PROBLEMS = frozenset(
     {
         "connected-components",
         "max-flow-min-cut",
@@ -123,14 +123,14 @@ def fixtures():
     }
 
 
-def plan(catalog, operation, **updates):
-    _, parameters, intent, _, _ = fixtures()[operation]
+def plan(catalog, problem, **updates):
+    _, parameters, intent, _, _ = fixtures()[problem]
     return ExecutionPlan.model_validate(
         {
             "session_id": "session",
             "graph_id": "graph",
-            "operation_id": operation,
-            "problem_id": catalog.operation(operation).problem_id,
+            "problem_id": problem,
+            "topic_id": catalog.problem(problem).topic_id,
             "parameters": parameters,
             "application_intent": intent,
             **updates,
@@ -139,12 +139,12 @@ def plan(catalog, operation, **updates):
 
 
 def test_expansion_catalog_preserves_all_problem_specs_and_screening(catalog, settings):
-    assert len(catalog.problems) == 70
+    assert len(catalog.topics) == 70
     assert (
-        sum(p["library_support"]["available"] for p in catalog.problems.values()) == 22
+        sum(p["library_support"]["available"] for p in catalog.topics.values()) == 22
     )
     assert len(catalog.instructions) == 24
-    for record in catalog.problems.values():
+    for record in catalog.topics.values():
         assert record["spec"] == json.loads(
             (settings.repository_root / record["source"]).read_text()
         )
@@ -152,12 +152,12 @@ def test_expansion_catalog_preserves_all_problem_specs_and_screening(catalog, se
             assert record["intent_signals"] and isinstance(
                 record["expansion_screening"], list
             )
-            if record["spec"]["problem_id"] != "null_model_significance_testing":
+            if record["spec"]["topic_id"] != "null_model_significance_testing":
                 assert record["expansion_screening"]
     context = catalog.routing_context("general")
     assert context["contract_version"] == "repaired-37-v2"
-    for operation in EXPANSION_OPERATIONS:
-        support = catalog.problem(catalog.operation(operation).problem_id)[
+    for problem in EXPANSION_PROBLEMS:
+        support = catalog.topic(catalog.problem(problem).topic_id)[
             "library_support"
         ]
         assert (
@@ -166,13 +166,13 @@ def test_expansion_catalog_preserves_all_problem_specs_and_screening(catalog, se
         )
         assert (
             not {"worker_directory", "timeout_seconds"}
-            & catalog.instructions[operation]["parameters"].keys()
+            & catalog.instructions[problem]["parameters"].keys()
         )
 
 
 def test_catalog_rejects_duplicate_ids(settings, tmp_path):
     data = json.loads(settings.catalog_path.read_text())
-    data["problems"].append(data["problems"][0])
+    data["topics"].append(data["topics"][0])
     path = tmp_path / "duplicate-catalog.json"
     path.write_text(json.dumps(data))
     with pytest.raises(CatalogError, match="unique IDs"):
@@ -189,30 +189,30 @@ def test_original_expansion_holdout_covers_its_problem_range_and_domains(catalog
     cases = document["cases"]
     assert len({c["id"] for c in cases}) == len(cases) == 66
     new_problems = {
-        p["spec"]["problem_id"]
-        for p in catalog.problems.values()
+        p["spec"]["topic_id"]
+        for p in catalog.topics.values()
         if "20" < p["source"].split("/")[1][:2] <= "37"
     }
-    assert {c["expected"]["problem_id"] for c in cases} == new_problems
+    assert {c["expected"]["topic_id"] for c in cases} == new_problems
     assert {
-        (c["domain_id"], c["expected"]["operation_id"])
+        (c["domain_id"], c["expected"]["problem_id"])
         for c in cases
         if c["expected"]["supported"]
     } == {
-        (domain, operation)
+        (domain, problem)
         for domain in catalog.domains
-        for operation in ORIGINAL_EXPANSION_OPERATIONS
+        for problem in ORIGINAL_EXPANSION_PROBLEMS
     }
 
 
-@pytest.mark.parametrize("operation", sorted(ORIGINAL_EXPANSION_OPERATIONS))
-def test_valid_profiles_pass_without_mutating_upload(catalog, operation):
-    data = fixtures()[operation][0]
+@pytest.mark.parametrize("problem", sorted(ORIGINAL_EXPANSION_PROBLEMS))
+def test_valid_profiles_pass_without_mutating_upload(catalog, problem):
+    data = fixtures()[problem][0]
     original = copy.deepcopy(data)
     normalized = PlanValidator(catalog).validate(
-        plan(catalog, operation), for_execution=True
+        plan(catalog, problem), for_execution=True
     )
-    prepared = prepare_operation_graph(data, normalized)
+    prepared = prepare_problem_graph(data, normalized)
     assert prepared == original and data == original
 
 
@@ -221,14 +221,14 @@ def test_invalid_capacity_cannot_be_coerced(catalog, value):
     data = fixtures()["max-flow-min-cut"][0]
     data["edges"][0]["attributes"]["cost"] = value
     with pytest.raises(ProfileInputError, match="integer capacity"):
-        prepare_operation_graph(data, plan(catalog, "max-flow-min-cut"))
+        prepare_problem_graph(data, plan(catalog, "max-flow-min-cut"))
 
 
 def test_capacity_mapping_and_missing_fields(catalog):
     data = fixtures()["max-flow-min-cut"][0]
     data["edges"][0]["weight"] = 999
     assert (
-        prepare_operation_graph(data, plan(catalog, "max-flow-min-cut"))["edges"][0][
+        prepare_problem_graph(data, plan(catalog, "max-flow-min-cut"))["edges"][0][
             "weight"
         ]
         == 5
@@ -236,7 +236,7 @@ def test_capacity_mapping_and_missing_fields(catalog):
     assert data["edges"][0]["weight"] == 999
     del data["edges"][0]["attributes"]["cost"]
     with pytest.raises(ProfileInputError) as error:
-        prepare_operation_graph(data, plan(catalog, "max-flow-min-cut"))
+        prepare_problem_graph(data, plan(catalog, "max-flow-min-cut"))
     assert error.value.status == "needs_information"
 
 
@@ -263,7 +263,7 @@ def test_profiles_reject_missing_terminals_sparse_assignment_bad_sides_and_large
 ):
     data = fixtures()["max-flow-min-cut"][0]
     with pytest.raises(ProfileInputError, match="not present"):
-        prepare_operation_graph(
+        prepare_problem_graph(
             data,
             plan(
                 catalog, "max-flow-min-cut", parameters={"source": "missing", "sink": 0}
@@ -272,23 +272,23 @@ def test_profiles_reject_missing_terminals_sparse_assignment_bad_sides_and_large
     data = fixtures()["linear-assignment"][0]
     data["edges"].pop()
     with pytest.raises(ProfileInputError, match="every possible pair"):
-        prepare_operation_graph(data, plan(catalog, "linear-assignment"))
+        prepare_problem_graph(data, plan(catalog, "linear-assignment"))
     data = fixtures()["butterfly-counting"][0]
     data["vertices"][0]["attributes"]["side"] = []
     with pytest.raises(ProfileInputError) as error:
-        prepare_operation_graph(data, plan(catalog, "butterfly-counting"))
+        prepare_problem_graph(data, plan(catalog, "butterfly-counting"))
     assert error.value.status == "needs_information"
     with pytest.raises(ProfileInputError, match="1,024"):
-        prepare_operation_graph(
+        prepare_problem_graph(
             graph(range(1025), [], True), plan(catalog, "transitive-closure")
         )
 
 
-@pytest.mark.parametrize("operation", sorted(ORIGINAL_EXPANSION_OPERATIONS))
-def test_projection_is_never_silently_applied(catalog, operation):
+@pytest.mark.parametrize("problem", sorted(ORIGINAL_EXPANSION_PROBLEMS))
+def test_projection_is_never_silently_applied(catalog, problem):
     with pytest.raises(PlanValidationError, match="directed projection"):
         PlanValidator(catalog).validate(
-            plan(catalog, operation, allow_directed_projection=True)
+            plan(catalog, problem, allow_directed_projection=True)
         )
 
 
@@ -298,8 +298,8 @@ def test_new_capabilities_do_not_enable_weighted_centrality_or_weak_directed_pat
     old = ExecutionPlan(
         session_id="s",
         graph_id="g",
-        operation_id="betweenness-centrality",
-        problem_id="centrality_influential_node_mining",
+        problem_id="betweenness-centrality",
+        topic_id="centrality_influential_node_mining",
         application_intent=ApplicationIntent(requires_edge_weights=True),
     )
     with pytest.raises(PlanValidationError, match="does not use"):
@@ -318,21 +318,21 @@ def test_unsupported_problem_keeps_its_identity_and_blocker(catalog):
     decision = normalize_route(
         catalog,
         RouteDecision(
-            problem_id="signed_network_structural_balance",
+            topic_id="signed_network_structural_balance",
             supported=True,
             confidence=1,
             explanation="Find a minimum-frustration partition.",
         ),
     )
-    assert not decision.supported and decision.operation_id is None
-    assert decision.problem_id == "signed_network_structural_balance"
+    assert not decision.supported and decision.problem_id is None
+    assert decision.topic_id == "signed_network_structural_balance"
     assert "certificate" in route_blocker(catalog, decision)[1].lower()
 
 
 def test_terminal_schema_accepts_typed_ids_and_no_arbitrary_paths(catalog):
     schema = PlanDraft.model_json_schema()
     constrain_plan_schema(
-        schema, {"operation_context": catalog.operation_context("max-flow-min-cut")}
+        schema, {"problem_context": catalog.problem_context("max-flow-min-cut")}
     )
     Draft202012Validator.check_schema(schema)
     parameters = schema["$defs"]["PlanConfiguration"]["properties"]["parameters"]
@@ -375,13 +375,13 @@ def test_command_preserves_typed_ids_and_maps_only_selected_weights(
     )
     assert graph_store.read_graph(record.id, session.id)["edges"][0]["weight"] == 999
     assert runner._environment()["GRAPHMINE_WORKER_INHERIT_PROCESS_GROUP"] == "1"
-    assert runner.capabilities.operation_count == 24
+    assert runner.capabilities.problem_count == 24
 
 
 def test_expanded_routing_uses_base_model_and_keeps_legacy_prompt(settings, catalog):
     assert (
         hashlib.sha256(ROUTING_SYSTEM_PROMPT.encode()).hexdigest()
-        == "689c94ceb762736604a20faf31dc13359b0e2da46da965db8b3ddcfc08470e32"
+        == "db7ea202eaae4bc9b3d73c22c0e2fd9c5e54fe338caad58836c333fa4eda0907"
     )
 
     async def scenario():
@@ -398,10 +398,10 @@ def test_expanded_routing_uses_base_model_and_keeps_legacy_prompt(settings, cata
             payload = json.loads(request.content)
             prompt = payload["messages"][0]["content"]
             assert "nonnegative integer edge capacities" in prompt
-            assert "No current native operation uses edge weights" not in prompt
+            assert "No current native problem uses edge weights" not in prompt
             decision = {
-                "problem_id": "connected_components",
-                "operation_id": "connected-components",
+                "topic_id": "connected_components",
+                "problem_id": "connected-components",
                 "supported": True,
                 "confidence": 1,
                 "explanation": "Connected groups.",
@@ -430,16 +430,16 @@ def test_expanded_routing_uses_base_model_and_keeps_legacy_prompt(settings, cata
                 "routing_context": catalog.routing_context("general"),
             },
         )
-        assert decision.operation_id == "connected-components" and len(calls) == 2
+        assert decision.problem_id == "connected-components" and len(calls) == 2
         assert configured.active_routing_model == configured.llm_model
         await model.close()
 
     asyncio.run(scenario())
 
 
-@pytest.mark.parametrize("operation", sorted(ORIGINAL_EXPANSION_OPERATIONS))
-def test_planning_preflight_for_new_profiles(settings, catalog, operation):
-    data, parameters, intent, _, _ = fixtures()[operation]
+@pytest.mark.parametrize("problem", sorted(ORIGINAL_EXPANSION_PROBLEMS))
+def test_planning_preflight_for_new_profiles(settings, catalog, problem):
+    data, parameters, intent, _, _ = fixtures()[problem]
     with TestClient(create_app(settings)) as client:
         session = client.post(
             "/api/sessions", headers=AUTH, json={"domain_id": "general"}
@@ -465,22 +465,22 @@ def test_planning_preflight_for_new_profiles(settings, catalog, operation):
         response = client.post(
             f"/api/sessions/{session}/plan",
             headers=AUTH,
-            json={"message": operation, "graph_id": file, "parameters": parameters},
+            json={"message": problem, "graph_id": file, "parameters": parameters},
         )
         assert response.status_code == 200, response.text
         assert response.json()["status"] == "ready", response.text
-        assert response.json()["plan"]["operation_id"] == operation
+        assert response.json()["plan"]["problem_id"] == problem
 
 
 @pytest.mark.skipif(
     not os.getenv("GRAPHMINE_EXPANSION_TEST_BINARY"),
     reason="Set GRAPHMINE_EXPANSION_TEST_BINARY to run native GPU integration",
 )
-@pytest.mark.parametrize("operation", sorted(ORIGINAL_EXPANSION_OPERATIONS))
+@pytest.mark.parametrize("problem", sorted(ORIGINAL_EXPANSION_PROBLEMS))
 def test_agent_runs_native_profile_and_builds_grounded_answer(
-    settings, catalog, operation
+    settings, catalog, problem
 ):
-    data, parameters, intent, metric, expected = fixtures()[operation]
+    data, parameters, intent, metric, expected = fixtures()[problem]
     configured = replace(
         settings,
         graphmine_binary=Path(os.environ["GRAPHMINE_EXPANSION_TEST_BINARY"]),
@@ -502,7 +502,7 @@ def test_agent_runs_native_profile_and_builds_grounded_answer(
         planned = client.post(
             f"/api/sessions/{session}/plan",
             headers=AUTH,
-            json={"message": operation, "graph_id": file, "parameters": parameters},
+            json={"message": problem, "graph_id": file, "parameters": parameters},
         )
         assert planned.status_code == 200 and planned.json()["status"] == "ready", (
             planned.text
@@ -533,10 +533,10 @@ def test_agent_runs_native_profile_and_builds_grounded_answer(
             not any(
                 "does not use them as costs" in text for text in answer["limitations"]
             )
-            if operation in {"linear-assignment", "max-flow-min-cut"}
+            if problem in {"linear-assignment", "max-flow-min-cut"}
             else True
         )
-        if operation == "linear-assignment":
+        if problem == "linear-assignment":
             assert (
                 sum(row["Assignment cost"] for row in answer["tables"]["members"]) == 3
             )

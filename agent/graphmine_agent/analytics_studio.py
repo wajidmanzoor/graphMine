@@ -36,7 +36,7 @@ def schema_for(name, context):
 
 
 def validate_target(name, output, context):
-    """Use the production schema builders, including per-request operation/fact enums."""
+    """Use the production schema builders, including per-request problem/fact enums."""
     jsonschema.Draft202012Validator(schema_for(name, context), registry=Registry()).validate(output)
     if name in {"AnalyticsPlan", "AnalyticsPlanNormalized"}:
         if (output["status"] == "ready") != (output["plan"] is not None):
@@ -125,8 +125,8 @@ async def export_reviewed(analytics, workflow_id, example_id, expected_revision)
         if caps["implementation_sha256"] != candidate["implementation_sha256"]:
             raise AnalyticsError("The verified implementation changed; execute and review again", "revision_conflict", 409)
         plan = review["plan"]
-        operations = {s["operation"] for s in plan["steps"]}
-        context = {"cards": [c for c in caps["operations"] if c["id"] in operations],
+        problems = {s["problem"] for s in plan["steps"]}
+        context = {"cards": [c for c in caps["problems"] if c["id"] in problems],
                    "aliases": list(review["inputs"]), "device": plan["device"]}
         output = {"status": "ready", "message": "", "plan": plan}
         validate_target("AnalyticsPlanNormalized", output, context)
@@ -138,7 +138,7 @@ async def export_reviewed(analytics, workflow_id, example_id, expected_revision)
                "evidence": {**{k: v for k, v in candidate.items() if k != "plan"},
                             "result": analytics.result(workflow_id)}}
         row["messages"] = [
-            {"role": "system", "content": "Return a normalized GraphMine workflow matching the supplied operation contracts. Use named step references and parameters/bindings."},
+            {"role": "system", "content": "Return a normalized GraphMine workflow matching the supplied problem contracts. Use named step references and parameters/bindings."},
             {"role": "user", "content": json.dumps({"question": row["question"], "context": context, "inputs": review["inputs"]}, ensure_ascii=False)},
             {"role": "assistant", "content": json.dumps(output, ensure_ascii=False)},
         ]

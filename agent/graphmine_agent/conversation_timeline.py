@@ -53,10 +53,10 @@ def initialize(db, *, backfill=False):
                     'message',{message},'plan',json_extract(payload,'$.plan'))"""
     # The rows remain derived; their sources keep the original payloads/evidence.
     for table, prefix, key, row, predicate in (("conversation_events", "event_", "sequence", event_row, public), ("messages", "legacy_", "id", message_row, f"{message} IS NOT NULL")):
-        for operation in ("INSERT", "UPDATE"):
-            delete = f"DELETE FROM conversation_entries WHERE session_id=old.session_id AND id='{prefix}'||old.{key};" if operation == "UPDATE" else ""
+        for problem in ("INSERT", "UPDATE"):
+            delete = f"DELETE FROM conversation_entries WHERE session_id=old.session_id AND id='{prefix}'||old.{key};" if problem == "UPDATE" else ""
             db.executescript(f"""
-                CREATE TRIGGER IF NOT EXISTS conversation_{table}_{operation.lower()} AFTER {operation} ON {table} BEGIN
+                CREATE TRIGGER IF NOT EXISTS conversation_{table}_{problem.lower()} AFTER {problem} ON {table} BEGIN
                   {delete}
                   INSERT OR REPLACE INTO conversation_entries SELECT {row} FROM {table} WHERE {key}=new.{key} AND {predicate};
                 END;

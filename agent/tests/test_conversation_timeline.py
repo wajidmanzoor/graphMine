@@ -233,9 +233,9 @@ def test_workflow_summary_backfill_updates_and_deletion(library):
 def test_warm_page_query_work_does_not_grow_with_complete_conversation(database, session, monkeypatch):
     seed(database, session.id, 20)
     conversation_page(database, session.id)
-    connect, operations = database._connect, [0]
+    connect, problems = database._connect, [0]
     def tick():
-        operations[0] += 100
+        problems[0] += 100
         return 0
     @contextmanager
     def measured():
@@ -244,9 +244,9 @@ def test_warm_page_query_work_does_not_grow_with_complete_conversation(database,
             yield db
     monkeypatch.setattr(database, "_connect", measured)
     conversation_page(database, session.id)
-    small = operations[0]
+    small = problems[0]
     seed(database, session.id, 2000)
-    operations[0] = 0
+    problems[0] = 0
     page = conversation_page(database, session.id)
     assert len(page["events"]) == 30
-    assert operations[0] <= small * 3 + 500  # Index depth may grow; a full-log scan cannot.
+    assert problems[0] <= small * 3 + 500  # Index depth may grow; a full-log scan cannot.

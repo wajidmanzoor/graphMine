@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "k_clique_counting_enumeration",
+  "topic_id": "k_clique_counting_enumeration",
   "name": "k-Clique Counting and Enumeration",
   "category": "dense",
   "problem_statement": "Given an undirected graph and integer k, count or enumerate every complete vertex set containing exactly k vertices.",

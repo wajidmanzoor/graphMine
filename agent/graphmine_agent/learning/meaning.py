@@ -132,7 +132,7 @@ Use exact top-level field names for evidence, e.g. filters, not filters[0].value
 def expected_meaning(task: dict) -> QuestionMeaning:
     intent, parameters = task["intent"], task["parameters"]
     return QuestionMeaning(
-        goal=GOALS[task["operation_id"]],
+        goal=GOALS[task["problem_id"]],
         minimum_group_size=parameters.get("minimum_clique_size"),
         exact_group_size=parameters.get("k"),
         partner_threshold=parameters.get("requested_k"),
@@ -230,7 +230,7 @@ def calibration_controls(manifest: dict) -> list[dict]:
         if example["split"] == "test":
             continue
         task = example["task"]
-        category = (task["operation_id"], task["behavior"], bool(task["filters"]))
+        category = (task["problem_id"], task["behavior"], bool(task["filters"]))
         selected.setdefault(category, example)
     controls = []
     for example in selected.values():

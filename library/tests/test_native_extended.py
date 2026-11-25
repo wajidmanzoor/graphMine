@@ -37,8 +37,8 @@ def native(request):
     def observe(value):
         result = transport(value)
         if value.get("command") == "run":
-            key = result["operation"] + ":" + result["backend"]["id"]
-            counts = request.session.native_observed_operations
+            key = result["problem"] + ":" + result["backend"]["id"]
+            counts = request.session.native_observed_problems
             counts[key] = counts.get(key, 0) + 1
         return result
 
@@ -69,8 +69,8 @@ def canonical(n, edges, *, directed=False, sides=None):
     }
 
 
-def run(native, operation, graph, **parameters):
-    result = native.run(operation, graph, parameters=parameters, device="cpu")
+def run(native, problem, graph, **parameters):
+    result = native.run(problem, graph, parameters=parameters, device="cpu")
     assert result["backend"]["id"] == "cpp"
     assert result["backend"]["python_runtime_required"] is False
     return result
@@ -273,23 +273,23 @@ def _replay_native_edits(result):
         for i, row in enumerate(source["edges"])
     }
     total = Fraction()
-    for operation in result["edit_path"]:
+    for problem in result["edit_path"]:
         total += Fraction(
-            int(operation["cost_numerator"]), int(operation["cost_denominator"])
+            int(problem["cost_numerator"]), int(problem["cost_denominator"])
         )
-        kind = operation["operation"]
+        kind = problem["problem"]
         if kind == "edge_deletion":
-            del edges[operation["edge_handle"]]
+            del edges[problem["edge_handle"]]
         elif kind == "vertex_deletion":
-            h = operation["vertex_handle"]
+            h = problem["vertex_handle"]
             assert all(h not in (e["source"], e["target"]) for e in edges.values())
             del vertices[h]
         elif kind.startswith("vertex_"):
-            vertices[operation["vertex_handle"]] = operation["vertex_record"]
+            vertices[problem["vertex_handle"]] = problem["vertex_record"]
         else:
-            edge = operation["edge_record"]
+            edge = problem["edge_record"]
             assert edge["source"] in vertices and edge["target"] in vertices
-            edges[operation["edge_handle"]] = edge
+            edges[problem["edge_handle"]] = edge
     final_edges = [
         {
             **row,
@@ -1240,7 +1240,7 @@ def test_signed_balance_exhaustive(native):
 
 
 @pytest.mark.parametrize(
-    "operation,parameters",
+    "problem,parameters",
     [
         ("quasi-cliques", {"gamma": 0, "minimum_size": 2}),
         ("densest-k-subgraph", {"k": 6}),
@@ -1257,9 +1257,9 @@ def test_signed_balance_exhaustive(native):
         ("signed-balance", {"task": "balance_check"}),
     ],
 )
-def test_extended_invalid_contracts(native, operation, parameters):
+def test_extended_invalid_contracts(native, problem, parameters):
     with pytest.raises(BINDING.NativeError):
-        run(native, operation, canonical(4, [(0, 1), (2, 3)]), **parameters)
+        run(native, problem, canonical(4, [(0, 1), (2, 3)]), **parameters)
 
 
 @pytest.mark.parametrize("fault", ["missing", "partial", "invalid", "same_side", "directed", "one_partition"])
@@ -1293,7 +1293,7 @@ def test_biclique_fallback_preserves_ids_isolates_caps_and_explicit_precedence(n
     for edge in graph["edges"]:
         edge["source"], edge["target"] = ids[edge["source"]], ids[edge["target"]]
     result = run(native, "maximal-bicliques", graph, result_limit=1)
-    assert native.validate("maximal-bicliques", graph, device="cpu")["operation"] == "maximal-bicliques"
+    assert native.validate("maximal-bicliques", graph, device="cpu")["problem"] == "maximal-bicliques"
     assert result["parameters"]["left_partition"] == ids[:2]
     assert result["parameters"]["right_partition"] == ids[2:]
     assert not result["complete"] and "total_count" not in result["result"]
@@ -1302,7 +1302,7 @@ def test_biclique_fallback_preserves_ids_isolates_caps_and_explicit_precedence(n
     for key in ("parameters", "result", "complete"):
         assert result[key] == explicit[key]
     assert result["ports"]["bicliques"]["value"] == explicit["ports"]["bicliques"]["value"]
-    card = next(row for row in native.catalog()["operations"] if row["id"] == "maximal-bicliques")
+    card = next(row for row in native.catalog()["problems"] if row["id"] == "maximal-bicliques")
     assert not card["parameters"]["left_partition"]["required"]
     assert not card["parameters"]["right_partition"]["required"]
 
@@ -1642,8 +1642,8 @@ def test_denoising_independent_convex_oracle(native):
                         else difference @ np.linalg.matrix_power(matrix, order // 2)
                     )
                 penalty = 0.5 * cp.norm1(difference @ variable)
-            problem = cp.Problem(cp.Minimize(loss + penalty))
-            problem.solve(solver="CLARABEL", tol_gap_abs=1e-10, tol_gap_rel=1e-10)
+            topic = cp.Problem(cp.Minimize(loss + penalty))
+            topic.solve(solver="CLARABEL", tol_gap_abs=1e-10, tol_gap_rel=1e-10)
             result = run(
                 native,
                 "graph-signal-denoising",
@@ -1659,7 +1659,7 @@ def test_denoising_independent_convex_oracle(native):
                 [row["value"] for row in result["result"]["estimated_signal"]]
             )
             assert result["result"]["objective_value"] == pytest.approx(
-                problem.value, abs=1.1e-5
+                topic.value, abs=1.1e-5
             )
             assert (
                 np.linalg.norm(x - variable.value)
@@ -1710,7 +1710,7 @@ def test_simrank_linear_system_oracle(native):
 
 def test_numerical_contract_failures(native):
     graph = canonical(2, [(0, 1, 1)])
-    for operation, args in (
+    for problem, args in (
         ("laplacian-eigenpairs", {"num_eigenpairs": 3}),
         ("laplacian-eigenpairs", {"num_eigenpairs": 1, "tolerance": 0}),
         (
@@ -1741,7 +1741,7 @@ def test_numerical_contract_failures(native):
         ),
     ):
         with pytest.raises(BINDING.NativeError):
-            run(native, operation, graph, **args)
+            run(native, problem, graph, **args)
 
 
 def test_persistence_gudhi_oracle(native):

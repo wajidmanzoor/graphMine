@@ -23,7 +23,7 @@ def records(runtime):
         for item in source:
             if kind == "workflow":
                 plan = item.get("validation", {}).get("plan", {})
-                steps = [{k: s[k] for k in ("id", "operation", "device", "backend", "parameters", "budget") if k in s} for s in plan.get("steps", [])]
+                steps = [{k: s[k] for k in ("id", "problem", "device", "backend", "parameters", "budget") if k in s} for s in plan.get("steps", [])]
                 inputs = [{"name": p.get("file_snapshot", {}).get("name"), **p.get("file_snapshot", {}).get("graph", {})} for p in item.get("input_provenance", {}).values()]
                 device = (item.get("allocation") or {}).get("device") or plan.get("device")
                 log = [{"step": k, **{field: v[field] for field in ("status", "seconds", "backend", "complete", "error") if field in v}} for k, v in item.get("steps", {}).items()]
@@ -31,7 +31,7 @@ def records(runtime):
                 cancellable = item["id"] in runtime.analytics.tasks
             else:
                 plan = item["plan"]
-                steps = [{"id": str(item.get("step_index", 0)), "operation": plan["operation_id"], "parameters": plan.get("parameters", {}), "backend": plan.get("backend_id")}]
+                steps = [{"id": str(item.get("step_index", 0)), "problem": plan["problem_id"], "parameters": plan.get("parameters", {}), "backend": plan.get("backend_id")}]
                 inputs = [{"name": plan["graph_id"], "vertex_count": None, "edge_count": None}]
                 device = plan.get("backend_id")
                 log = []
@@ -42,7 +42,7 @@ def records(runtime):
             now = runtime.accounts.clock()
             start, end, queued_at = seconds(item.get("started_at")), seconds(item.get("finished_at")), seconds(queued)
             rows.append({"id": item["id"], "kind": kind, "status": item["status"], "session_id": item["session_id"],
-                         **owners.get(item["session_id"], {"user_id": None, "username": None}), "operations": [s["operation"] for s in steps],
+                         **owners.get(item["session_id"], {"user_id": None, "username": None}), "problems": [s["problem"] for s in steps],
                          "inputs": inputs, "device": device, "queued_at": queued_at, "started_at": start, "finished_at": end,
                          "waited_seconds": max(0, (start or end or now) - queued_at) if queued_at else None,
                          "running_seconds": max(0, (end or now) - start) if start else None,
@@ -63,7 +63,7 @@ def snapshot(runtime, view="active"):
         if lease["device"] == "gpu":
             owner = next((r for r in all_rows if r["kind"] == "workflow" and r["status"] == "running" and r["device"] == "gpu"), None)
             gpu.append({**lease, "username": owner["username"] if owner else None,
-                        "operations": owner["operations"] if owner else [], "seconds": owner["running_seconds"] if owner else None})
+                        "problems": owner["problems"] if owner else [], "seconds": owner["running_seconds"] if owner else None})
     queue = queues(runtime)
     pending = [r for r in all_rows if r["status"] == "queued"]
     queue["job"].update(running=sum(r["status"] in {"running", "interpreting"} for r in all_rows), waiting=len(pending),

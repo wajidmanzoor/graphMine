@@ -2,7 +2,7 @@ Saved calculation views
 ======================
 
 Results open with a deterministic view of the retained calculation. The 82
-operation contracts map to 25 presentation profiles. Normal and Expert are the
+problem contracts map to 25 presentation profiles. Normal and Expert are the
 only calculation modes; visualization actions do not add another mode or change
 the native result. The completion card and saved-work dashboard remain removed.
 
@@ -64,7 +64,7 @@ same input and revision. Context displays are bounded to 2,000 vertices and 5,00
 edges. **Shortest connection** is a separate shortest-hop exploration, respects
 direction, ignores weights explicitly, and has hop, record and time budgets.
 **Ask about selection** and **Run on selection** create an owned induced input
-before using the existing Normal/Expert calculation flow. Run shows only operations
+before using the existing Normal/Expert calculation flow. Run shows only problems
 whose input requirements match that selection. Count-to-enumeration
 follow-ups also create a separate calculation; they do not change a saved count.
 

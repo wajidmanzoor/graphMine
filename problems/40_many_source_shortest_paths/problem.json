@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "many_source_shortest_paths",
+  "topic_id": "many_source_shortest_paths",
   "name": "Many-Source and All-Pairs Shortest Distances",
   "category": "paths",
   "problem_statement": "Compute a matrix of minimum path-weight sums for selected origins and destinations, including all-pairs queries.",

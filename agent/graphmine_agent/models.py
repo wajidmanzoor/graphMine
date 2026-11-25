@@ -84,7 +84,7 @@ class DomainProfile(StrictModel):
     description: str
     common_entities: list[str]
     common_questions: list[str]
-    relevant_problem_ids: list[str]
+    relevant_topic_ids: list[str]
     visualization_priorities: list[VisualizationKind]
 
 
@@ -143,7 +143,7 @@ class FileInfo(StrictModel):
 
 
 JsonScalar = str | int | float | bool | None
-# Nested groups are validated against the operation-specific ID contract.
+# Nested groups are validated against the problem-specific ID contract.
 JsonParameter = JsonScalar | list[list[JsonScalar]]
 
 
@@ -175,8 +175,8 @@ class ApplicationIntent(StrictModel):
 
 class AnalysisTask(StrictModel):
     question: str = Field(min_length=1, max_length=1500)
+    topic_id: str | None = Field(default=None, description="Optional documentation hint; inferred from the runnable problem.")
     problem_id: str
-    operation_id: str
 
 
 class DataInspection(StrictModel):
@@ -196,11 +196,11 @@ class ExecutionPlan(StrictModel):
     schema_version: Literal["1.0.0"] = "1.0.0"
     session_id: str
     graph_id: str
+    topic_id: str | None = Field(default=None, description="Optional documentation hint; inferred from the runnable problem.")
     problem_id: str
-    operation_id: str
     backend_id: str = Field(
         default="auto",
-        description="Exact backend ID from the selected operation, or auto.",
+        description="Exact backend ID from the selected problem, or auto.",
     )
     parameters: dict[str, JsonParameter] = Field(
         default_factory=dict,
@@ -273,24 +273,24 @@ class PlanRequest(StrictModel):
 
 
 class RouteDecision(StrictModel):
+    topic_id: str | None = Field(
+        default=None,
+        description=(
+            "Exact formal topic ID when intent is recognized, including an "
+            "unsupported topic; null only for ambiguous or unrecognized intent."
+        ),
+    )
     problem_id: str | None = Field(
         default=None,
         description=(
-            "Exact formal problem ID when intent is recognized, including an "
-            "unsupported problem; null only for ambiguous or unrecognized intent."
-        ),
-    )
-    operation_id: str | None = Field(
-        default=None,
-        description=(
-            "Exact runnable operation for a supported problem; null for an "
+            "Exact runnable problem for a supported topic; null for an "
             "unsupported, ambiguous, or unrecognized request."
         ),
     )
     supported: bool = Field(
         description=(
-            "True only when the selected problem has library_support.status "
-            "equal to 'validated' and exposes the selected operation."
+            "True only when the selected topic has library_support.status "
+            "equal to 'validated' and exposes the selected problem."
         )
     )
     confidence: float = Field(ge=0, le=1)
@@ -473,7 +473,7 @@ class GroundedNarrative(StrictModel):
     findings: list[GroundedStatement] = Field(default_factory=list, max_length=8)
     charts: list[VegaLiteDraft] = Field(default_factory=list, max_length=4)
     analysis_request: str | None = Field(default=None, max_length=2000)
-    analysis_operation_ids: list[str] = Field(default_factory=list, max_length=4)
+    analysis_problem_ids: list[str] = Field(default_factory=list, max_length=4)
 
 
 class ChartTemplateRequest(StrictModel):
@@ -584,7 +584,7 @@ class ResultRecord(StrictModel):
     id: str = Field(default_factory=lambda: new_id("result"))
     job_id: str
     session_id: str
-    operation_id: str
+    problem_id: str
     payload: dict[str, Any]
     summary: dict[str, Any]
     answer: dict[str, Any] = Field(default_factory=dict)
@@ -615,10 +615,10 @@ class CapabilityReport(StrictModel):
     binary_path: str
     library_version: str | None = None
     graph_gpu_uuid: str | None
-    operation_count: int
+    problem_count: int
     validated_backend_count: int
     compiled_backend_count: int
-    operations: list[dict[str, Any]]
+    problems: list[dict[str, Any]]
     error: str | None = None
     backend_policy_path: str | None = None
     backend_policy_loaded: bool = False

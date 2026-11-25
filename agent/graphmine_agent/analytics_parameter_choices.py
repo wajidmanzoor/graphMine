@@ -27,7 +27,7 @@ def parameter_choices(cards, question, entities=(), lookups=(), selection=None, 
         if key in seen:
             return
         seen.add(key)
-        choices.append({"id": f"value_{len(choices)}", "operation": card["id"], "parameter": name,
+        choices.append({"id": f"value_{len(choices)}", "problem": card["id"], "parameter": name,
                         "value": deepcopy(value), "description": description})
 
     for card in cards:
@@ -54,7 +54,7 @@ def parameter_choices(cards, question, entities=(), lookups=(), selection=None, 
                     if selection and selection.get("vertices") is not None:
                         add(card, name, selection["vertices"], f"Use the complete selected group's vertices for {name}.")
         for lookup in lookups:
-            if lookup["operation"] != card["id"]:
+            if lookup["problem"] != card["id"]:
                 continue
             for name, value in lookup["plan"]["steps"][0]["parameters"].items():
                 add(card, name, value, lookup["description"])
@@ -65,14 +65,14 @@ def constrain_literals(wire, choices):
     wire = deepcopy(wire)
     steps = wire["properties"]["plan"]["anyOf"][0]["properties"]["steps"]
     for position in steps["prefixItems"]:
-        for operation in position["oneOf"]:
-            props = operation["properties"]
-            operation_id = props["operation"]["const"]
+        for problem in position["oneOf"]:
+            props = problem["properties"]
+            problem_id = props["problem"]["const"]
             arguments = props["arguments"]
             retained = []
             for argument in arguments.get("items", {}).get("oneOf", []):
                 name = argument["properties"]["name"]["const"]
-                values = [row["id"] for row in choices if row["operation"] == operation_id and row["parameter"] == name]
+                values = [row["id"] for row in choices if row["problem"] == problem_id and row["parameter"] == name]
                 branches = argument["properties"]["value"]["oneOf"]
                 branches[:] = [branch for branch in branches if "literal" not in branch["properties"]]
                 if values:
@@ -100,7 +100,7 @@ def resolve_literals(proposal, choices):
             if "choice" not in argument["value"]:
                 continue
             selected = by_id[argument["value"]["choice"]]
-            if selected["operation"] != step["operation"] or selected["parameter"] != argument["name"]:
-                raise ValueError("A parameter choice belongs to another operation or argument")
+            if selected["problem"] != step["problem"] or selected["parameter"] != argument["name"]:
+                raise ValueError("A parameter choice belongs to another problem or argument")
             argument["value"] = {"literal": deepcopy(selected["value"])}
     return proposal

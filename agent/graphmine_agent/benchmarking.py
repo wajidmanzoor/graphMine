@@ -179,7 +179,7 @@ def _run_once(
     command = [
         str(settings.graphmine_binary),
         "run",
-        str(case["operation_id"]),
+        str(case["problem_id"]),
         "--graph",
         str(graph_path),
         "--backend",
@@ -283,35 +283,35 @@ def run_benchmarks(
     if not isinstance(cases, list) or not cases:
         raise BenchmarkError("benchmark manifest requires nonempty cases")
     capabilities = _capabilities(settings)
-    compiled_by_operation = {
-        str(operation["id"]): {
+    compiled_by_problem = {
+        str(problem["id"]): {
             str(backend["id"])
-            for backend in operation.get("backends", [])
+            for backend in problem.get("backends", [])
             if backend.get("compiled") and backend.get("validated")
         }
-        for operation in capabilities.get("operations", [])
+        for problem in capabilities.get("problems", [])
     }
     records: list[dict[str, Any]] = []
     for case in cases:
         if not isinstance(case, dict) or not isinstance(case.get("id"), str):
             raise BenchmarkError("every benchmark case requires a string id")
-        operation_id = str(case.get("operation_id", ""))
-        if operation_id not in compiled_by_operation:
+        problem_id = str(case.get("problem_id", ""))
+        if problem_id not in compiled_by_problem:
             raise BenchmarkError(
-                f"case {case['id']} refers to unknown operation {operation_id}"
+                f"case {case['id']} refers to unknown problem {problem_id}"
             )
         graph_path = _resolve_path(settings.repository_root, str(case.get("graph", "")))
         features = _graph_features(graph_path)
         if not isinstance(case.get("expected", {}), dict):
             raise BenchmarkError(f"case {case['id']} expected values must be an object")
-        requested = case.get("backends") or sorted(compiled_by_operation[operation_id])
+        requested = case.get("backends") or sorted(compiled_by_problem[problem_id])
         if not isinstance(requested, list) or not all(
             isinstance(backend, str) and backend for backend in requested
         ):
             raise BenchmarkError(
                 f"case {case['id']} backends must be a list of backend IDs"
             )
-        unknown = set(requested) - compiled_by_operation[operation_id]
+        unknown = set(requested) - compiled_by_problem[problem_id]
         if unknown:
             raise BenchmarkError(
                 f"case {case['id']} requests uncompiled backends: {sorted(unknown)}"
@@ -337,7 +337,7 @@ def run_benchmarks(
                 records.append(
                     {
                         "case_id": case["id"],
-                        "operation_id": operation_id,
+                        "problem_id": problem_id,
                         "backend_id": str(backend),
                         "repetition": repetition,
                         "graph": str(graph_path),
@@ -387,16 +387,16 @@ def train_backend_policy(report: dict[str, Any]) -> dict[str, Any]:
             "backend policy training requires every timing record to pass the "
             f"correctness gate; rejected {len(failed)} of {len(records)} records"
         )
-    operations: dict[str, Any] = {}
-    by_operation: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    problems: dict[str, Any] = {}
+    by_problem: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for record in records:
-        by_operation[str(record["operation_id"])].append(record)
-    for operation_id, operation_records in sorted(by_operation.items()):
+        by_problem[str(record["problem_id"])].append(record)
+    for problem_id, problem_records in sorted(by_problem.items()):
         global_times: dict[str, list[float]] = defaultdict(list)
         bucket_times: dict[str, dict[str, list[float]]] = defaultdict(
             lambda: defaultdict(list)
         )
-        for record in operation_records:
+        for record in problem_records:
             backend = str(record["backend_id"])
             duration = float(record["wall_ms"])
             global_times[backend].append(duration)
@@ -418,18 +418,18 @@ def train_backend_policy(report: dict[str, Any]) -> dict[str, Any]:
                 "median_wall_ms": medians,
                 "sample_count": sum(len(samples) for samples in values.values()),
             }
-        operations[operation_id] = {
+        problems[problem_id] = {
             "global_ranked_backends": global_ranked,
             "global_median_wall_ms": global_medians,
             "buckets": buckets,
-            "sample_count": len(operation_records),
+            "sample_count": len(problem_records),
         }
     source = json.dumps(report, sort_keys=True, separators=(",", ":")).encode()
     return {
         "schema_version": "1.0.0",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source_report_sha256": hashlib.sha256(source).hexdigest(),
-        "operations": operations,
+        "problems": problems,
     }
 
 
@@ -441,7 +441,7 @@ def evaluate_backend_policy(
     grouped: dict[tuple[str, str], dict[str, list[float]]] = defaultdict(
         lambda: defaultdict(list)
     )
-    operation_for_case: dict[str, str] = {}
+    problem_for_case: dict[str, str] = {}
     for record in report.get("records", []):
         if record.get("status") != "success" or record.get("correct") is not True:
             continue
@@ -450,20 +450,20 @@ def evaluate_backend_policy(
         grouped[(case_id, bucket)][str(record["backend_id"])].append(
             float(record["wall_ms"])
         )
-        operation_for_case[case_id] = str(record["operation_id"])
+        problem_for_case[case_id] = str(record["problem_id"])
     cases: list[dict[str, Any]] = []
     for (case_id, bucket), times in sorted(grouped.items()):
         medians = {
             backend: statistics.median(samples) for backend, samples in times.items()
         }
-        operation_id = operation_for_case[case_id]
-        operation_policy = policy.get("operations", {}).get(operation_id, {})
+        problem_id = problem_for_case[case_id]
+        problem_policy = policy.get("problems", {}).get(problem_id, {})
         ranked = list(
-            operation_policy.get("buckets", {})
+            problem_policy.get("buckets", {})
             .get(bucket, {})
             .get("ranked_backends", [])
         )
-        ranked.extend(operation_policy.get("global_ranked_backends", []))
+        ranked.extend(problem_policy.get("global_ranked_backends", []))
         selected = next((item for item in ranked if item in medians), None)
         if selected is None:
             continue
@@ -473,7 +473,7 @@ def evaluate_backend_policy(
         cases.append(
             {
                 "case_id": case_id,
-                "operation_id": operation_id,
+                "problem_id": problem_id,
                 "feature_bucket": bucket,
                 "selected_backend": selected,
                 "oracle_backend": oracle,

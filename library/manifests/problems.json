@@ -1,361 +1,361 @@
 {
   "schema_version": 1,
-  "scope": "Generated from catalog/family.json and catalog/problems.json; do not edit.",
-  "problems": [
+  "scope": "Generated documentation topics; no executable contracts.",
+  "topics": [
     {
       "id": "graph_record_queries",
-      "name": "Canonical graph record queries",
-      "contract": null
+      "title": "Canonical graph record queries",
+      "description": "Look up, filter and summarize stored vertex and edge records, query bounded paths, or extract selected graph records. query-paths returns all hop-shortest or all vertex-simple source-to-target paths up to a hop limit over filtered records; bounded-paths-cycles in paths enumerates directed simple paths or cycles, with optional chronological ordering. query-subgraph extracts vertex-induced, edge-induced or filtered-neighborhood records; induced-subgraph in preparation extracts an induced graph on selected vertices or an ego neighborhood around seeds."
     },
     {
       "id": "breadth_first_search",
-      "name": "Breadth-First Search and Unweighted Shortest Paths",
-      "contract": "problems/38_breadth_first_search/problem.json"
+      "title": "Breadth-First Search and Unweighted Shortest Paths",
+      "description": "Compute minimum hop distances and optional predecessor paths from one or more source vertices."
     },
     {
       "id": "single_source_shortest_paths",
-      "name": "Weighted Single-Source Shortest Paths",
-      "contract": "problems/39_single_source_shortest_paths/problem.json"
+      "title": "Weighted Single-Source Shortest Paths",
+      "description": "Compute minimum path-weight sums from one source to every vertex in a graph with nonnegative edge weights."
     },
     {
       "id": "many_source_shortest_paths",
-      "name": "Many-Source and All-Pairs Shortest Distances",
-      "contract": "problems/40_many_source_shortest_paths/problem.json"
+      "title": "Many-Source and All-Pairs Shortest Distances",
+      "description": "Compute a matrix of minimum path-weight sums for selected origins and destinations, including all-pairs queries."
     },
     {
       "id": "widest_paths",
-      "name": "Single-Source Widest Paths",
-      "contract": "problems/61_widest_paths/problem.json"
+      "title": "Single-Source Widest Paths",
+      "description": "For each vertex v, maximize the minimum edge capacity along a directed path from a designated source to v."
     },
     {
       "id": "temporal_fastest_paths",
-      "name": "Temporal Fastest and Earliest-Arrival Paths",
-      "contract": "problems/57_temporal_fastest_paths/problem.json"
+      "title": "Temporal Fastest and Earliest-Arrival Paths",
+      "description": "Find time-respecting journeys minimizing elapsed duration or arrival time in a directed temporal graph."
     },
     {
       "id": "top_k_critical_paths_dag",
-      "name": "Top-k Critical Paths in DAGs",
-      "contract": "problems/58_top_k_critical_paths_dag/problem.json"
+      "title": "Top-k Critical Paths in DAGs",
+      "description": "Return up to k distinct source-to-sink paths of greatest total edge delay in a directed acyclic graph."
     },
     {
       "id": "hop_constrained_cycle_path_enumeration",
-      "name": "Hop-Constrained Simple Path and Cycle Enumeration",
-      "contract": "problems/26_hop_constrained_cycle_path_enumeration/problem.json"
+      "title": "Hop-Constrained Simple Path and Cycle Enumeration",
+      "description": "Given a directed graph and a hop bound k, enumerate every simple (vertex-disjoint except endpoints) s-t path with at most k edges, or every simple cycle through a given vertex or edge with at most k edges. bounded-paths-cycles enumerates directed simple paths or cycles, with optional chronological ordering. query-paths in records also enumerates all hop-shortest or all vertex-simple paths between endpoints over filtered records; the distinction is the requested path-analysis or record-query profile, not whether enumeration is exhaustive."
     },
     {
       "id": "transitive_closure_reachability",
-      "name": "Transitive Closure and Reachability Indexing",
-      "contract": "problems/33_transitive_closure_reachability/problem.json"
+      "title": "Transitive Closure and Reachability Indexing",
+      "description": "Given a directed graph, determine for queried vertex pairs whether the target is reachable from the source via a directed path, and optionally materialize or index full reachability to answer many such queries efficiently."
     },
     {
       "id": "topological_sort",
-      "name": "Topological Sorting and DAG Levels",
-      "contract": "problems/45_topological_sort/problem.json"
+      "title": "Topological Sorting and DAG Levels",
+      "description": "Determine whether a directed graph is acyclic and return a valid topological vertex order and optional dependency levels."
     },
     {
       "id": "connected_components",
-      "name": "Connected Components (Weakly and Strongly Connected)",
-      "contract": "problems/35_connected_components/problem.json"
+      "title": "Connected Components (Weakly and Strongly Connected)",
+      "description": "Partition all vertices into maximal groups such that every pair of vertices within a group is connected according to a declared connectivity definition: weak (undirected) connectivity, or strong (directed, mutual-reachability) connectivity."
     },
     {
       "id": "biconnected_components",
-      "name": "Biconnected Components, Articulation Points and Bridges",
-      "contract": "problems/56_biconnected_components/problem.json"
+      "title": "Biconnected Components, Articulation Points and Bridges",
+      "description": "Compute vertex-biconnected blocks of a simple undirected graph, plus vertices and edges whose removal increases component count."
     },
     {
       "id": "max_flow_min_cut",
-      "name": "Maximum Flow and Minimum s-t Cut",
-      "contract": "problems/22_max_flow_min_cut/problem.json"
+      "title": "Maximum Flow and Minimum s-t Cut",
+      "description": "Given a capacitated graph and distinct source and sink vertices, compute a maximum feasible flow and a minimum-capacity separating cut. With optional vertex capacities, the cut can contain both original edges and capacity-limited vertices."
     },
     {
       "id": "spanning_tree_forest",
-      "name": "Minimum and Maximum Spanning Trees and Forests",
-      "contract": "problems/41_spanning_tree_forest/problem.json"
+      "title": "Minimum and Maximum Spanning Trees and Forests",
+      "description": "Select an acyclic spanning subgraph minimizing or maximizing total edge weight independently within each connected component."
     },
     {
       "id": "group_steiner_tree",
-      "name": "Group Steiner Tree",
-      "contract": "problems/27_group_steiner_tree/problem.json"
+      "title": "Group Steiner Tree",
+      "description": "Given an edge-weighted graph and a collection of potentially overlapping vertex groups, find a minimum-weight connected subtree that includes at least one vertex from every group."
     },
     {
       "id": "maximal_clique_enumeration",
-      "name": "Maximal Clique Enumeration",
-      "contract": "problems/01_maximal_clique_enumeration/problem.json"
+      "title": "Maximal Clique Enumeration",
+      "description": "Given an undirected graph, enumerate every vertex set that forms a clique and is not a proper subset of another clique."
     },
     {
       "id": "maximum_clique",
-      "name": "Maximum Clique",
-      "contract": "problems/02_maximum_clique/problem.json"
+      "title": "Maximum Clique",
+      "description": "Given an undirected graph, find a clique with the largest possible number of vertices."
     },
     {
       "id": "k_clique_counting_enumeration",
-      "name": "k-Clique Counting and Enumeration",
-      "contract": "problems/03_k_clique_counting_enumeration/problem.json"
+      "title": "k-Clique Counting and Enumeration",
+      "description": "Given an undirected graph and integer k, count or enumerate every complete vertex set containing exactly k vertices."
     },
     {
       "id": "maximal_biclique_enumeration",
-      "name": "Maximal Biclique Enumeration",
-      "contract": "problems/09_maximal_biclique_enumeration/problem.json"
+      "title": "Maximal Biclique Enumeration",
+      "description": "Given a bipartite graph, enumerate complete bipartite subgraphs that cannot be extended by adding a vertex to either side."
     },
     {
       "id": "quasi_clique_mining",
-      "name": "Quasi-Clique Mining",
-      "contract": "problems/04_quasi_clique_mining/problem.json"
+      "title": "Quasi-Clique Mining",
+      "description": "Find vertex subsets whose induced subgraphs satisfy a minimum internal-degree fraction, allowing dense groups that are not complete cliques."
     },
     {
       "id": "densest_subgraph",
-      "name": "Densest Subgraph",
-      "contract": "problems/05_densest_subgraph/problem.json"
+      "title": "Densest Subgraph",
+      "description": "Find a nonempty vertex subset maximizing its induced k-clique count divided by the number of selected vertices. Clique order k=2 gives ordinary edge density; the k=2 weighted variant uses total induced edge weight. Clique order does not constrain result cardinality."
     },
     {
       "id": "densest_k_subgraph",
-      "name": "Densest k-Subgraph",
-      "contract": "problems/06_densest_k_subgraph/problem.json"
+      "title": "Densest k-Subgraph",
+      "description": "Given an undirected graph and integer k, find exactly k vertices maximizing the total value of edges induced by those vertices."
     },
     {
       "id": "k_core_decomposition",
-      "name": "k-Core Decomposition",
-      "contract": "problems/07_k_core_decomposition/problem.json"
+      "title": "k-Core Decomposition",
+      "description": "Assign every vertex its largest k for which it belongs to the maximal induced subgraph whose vertices all have internal degree at least k."
     },
     {
       "id": "k_truss_decomposition",
-      "name": "k-Truss Decomposition",
-      "contract": "problems/08_k_truss_decomposition/problem.json"
+      "title": "k-Truss Decomposition",
+      "description": "Assign every edge the largest k for which it belongs to a maximal subgraph where each edge participates in at least k-2 triangles within that subgraph."
     },
     {
       "id": "community_detection",
-      "name": "Disjoint Community Detection",
-      "contract": "problems/16_community_detection/problem.json"
+      "title": "Disjoint Community Detection",
+      "description": "Partition all graph vertices into nonoverlapping communities that maximize a declared within-community quality function."
     },
     {
       "id": "seeded_local_community_detection",
-      "name": "Seeded Local Community Detection",
-      "contract": "problems/49_seeded_local_community_detection/problem.json"
+      "title": "Seeded Local Community Detection",
+      "description": "Find a nontrivial low-conductance vertex subset containing a specified seed set."
     },
     {
       "id": "overlapping_community_detection",
-      "name": "Overlapping Community Detection by k-Clique Percolation",
-      "contract": "problems/17_overlapping_community_detection/problem.json"
+      "title": "Overlapping Community Detection by k-Clique Percolation",
+      "description": "Find overlapping communities formed by connected components of the clique-adjacency graph, where two k-cliques are adjacent when they share k-1 vertices."
     },
     {
       "id": "balanced_graph_partitioning",
-      "name": "Balanced k-Way Graph Partitioning",
-      "contract": "problems/30_balanced_graph_partitioning/problem.json"
+      "title": "Balanced k-Way Graph Partitioning",
+      "description": "Given an undirected graph and a target part count k, assign every vertex to exactly one of k parts of approximately equal size so that the total weight of edges crossing between parts is minimized."
     },
     {
       "id": "hypergraph_partitioning",
-      "name": "Balanced Hypergraph Partitioning",
-      "contract": "problems/54_hypergraph_partitioning/problem.json"
+      "title": "Balanced Hypergraph Partitioning",
+      "description": "Partition vertices of a weighted hypergraph into balanced parts while minimizing a declared hyperedge cut objective."
     },
     {
       "id": "signed_network_structural_balance",
-      "name": "Signed Network Structural Balance and Frustration Minimization",
-      "contract": "problems/32_signed_network_structural_balance/problem.json"
+      "title": "Signed Network Structural Balance and Frustration Minimization",
+      "description": "Given a graph whose edges are each labeled positive or negative, determine whether it is structurally balanced (partitionable into two factions so every positive edge stays within a faction and every negative edge crosses factions), and when it is not, find a two-faction assignment minimizing the total weight of frustrated edges."
     },
     {
       "id": "centrality_influential_node_mining",
-      "name": "Centrality and Influential-Node Mining",
-      "contract": "problems/18_centrality_influential_node_mining/problem.json"
+      "title": "Centrality and Influential-Node Mining",
+      "description": "Compute a declared centrality score for graph vertices and rank the most structurally influential vertices under that definition."
     },
     {
       "id": "personalized_pagerank_rwr",
-      "name": "Personalized PageRank and Random Walk with Restart",
-      "contract": "problems/21_personalized_pagerank_rwr/problem.json"
+      "title": "Personalized PageRank and Random Walk with Restart",
+      "description": "Given one or more seed vertices, compute each vertex's steady-state visitation probability under a random walk that restarts to the seed distribution with fixed probability, and rank vertices by that score relative to the seeds."
     },
     {
       "id": "influence_maximization",
-      "name": "Influence Maximization under Diffusion Models",
-      "contract": "problems/28_influence_maximization/problem.json"
+      "title": "Influence Maximization under Diffusion Models",
+      "description": "Given a directed graph with edge-level influence probabilities and a declared stochastic diffusion model, select a seed set of a given size that maximizes the expected number of vertices eventually activated."
     },
     {
       "id": "simrank_vertex_similarity",
-      "name": "SimRank and General Vertex-to-Vertex Structural Similarity",
-      "contract": "problems/29_simrank_vertex_similarity/problem.json"
+      "title": "SimRank and General Vertex-to-Vertex Structural Similarity",
+      "description": "Compute a pairwise structural similarity score between vertices based on the recursive principle that two vertices are similar to the extent their in-neighbors (or neighbors) are similar, for a single source vertex, a query pair, or top-k over all vertices."
     },
     {
       "id": "link_prediction",
-      "name": "Link Prediction",
-      "contract": "problems/19_link_prediction/problem.json"
+      "title": "Link Prediction",
+      "description": "Score and rank currently unconnected vertex pairs according to a declared structural link-prediction measure."
     },
     {
       "id": "graph_edit_distance_mcs",
-      "name": "Graph Edit Distance and Maximum Common Subgraph",
-      "contract": "problems/24_graph_edit_distance_mcs/problem.json"
+      "title": "Graph Edit Distance and Maximum Common Subgraph",
+      "description": "Given two graphs, compute either the minimum total cost of vertex/edge insertions, deletions, and substitutions transforming one graph into the other (graph edit distance), or a largest common induced or non-induced subgraph shared by both (maximum common subgraph)."
     },
     {
       "id": "network_alignment",
-      "name": "Pairwise Network Alignment",
-      "contract": "problems/25_network_alignment/problem.json"
+      "title": "Pairwise Network Alignment",
+      "description": "Given two graphs and optional vertex-similarity priors, find a vertex mapping between them that maximizes conserved topology (and prior similarity, when supplied), either as a global one-to-one mapping or a local many-to-one set of high-scoring alignments."
     },
     {
       "id": "triangle_counting_listing",
-      "name": "Triangle Counting and Listing",
-      "contract": "problems/10_triangle_counting_listing/problem.json"
+      "title": "Triangle Counting and Listing",
+      "description": "Count all unordered triples of vertices connected by all three possible edges and optionally list the triples or their per-vertex and per-edge participation counts."
     },
     {
       "id": "butterfly_counting_bipartite",
-      "name": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
-      "contract": "problems/23_butterfly_counting_bipartite/problem.json"
+      "title": "Butterfly Counting and (alpha,beta)-Core Decomposition on Bipartite Graphs",
+      "description": "Given a bipartite graph, count butterflies (complete 2x2 bicliques) globally and per vertex/edge, and optionally compute maximal vertex sets satisfying separate left/right thresholds. core_measure explicitly distinguishes conventional degree-based (alpha,beta)-cores from the butterfly-participation variant."
     },
     {
       "id": "graphlet_counting",
-      "name": "Graphlet Counting",
-      "contract": "problems/12_graphlet_counting/problem.json"
+      "title": "Graphlet Counting",
+      "description": "Classify and count small connected induced subgraphs by their unlabeled isomorphism class, optionally including per-vertex orbit participation."
     },
     {
       "id": "graph_motif_counting",
-      "name": "Graph Motif Counting",
-      "contract": "problems/11_graph_motif_counting/problem.json"
+      "title": "Graph Motif Counting",
+      "description": "Count occurrences of one or more supplied small structural patterns in a directed or undirected graph."
     },
     {
       "id": "temporal_motif_mining",
-      "name": "Temporal Motif Mining",
-      "contract": "problems/15_temporal_motif_mining/problem.json"
+      "title": "Temporal Motif Mining",
+      "description": "Count occurrences of a small ordered edge pattern whose matched events occur in the required order within a bounded time window."
     },
     {
       "id": "subgraph_isomorphism",
-      "name": "Subgraph Isomorphism and Pattern Matching",
-      "contract": "problems/13_subgraph_isomorphism/problem.json"
+      "title": "Subgraph Isomorphism and Pattern Matching",
+      "description": "Find injective mappings from the vertices of a query graph to a data graph that preserve required edges, direction, and requested attribute predicates."
     },
     {
       "id": "frequent_subgraph_mining",
-      "name": "Frequent Subgraph Mining",
-      "contract": "problems/14_frequent_subgraph_mining/problem.json"
+      "title": "Frequent Subgraph Mining",
+      "description": "Given a collection of graphs, discover unique subgraph patterns appearing in at least a specified fraction of the collection."
     },
     {
       "id": "single_graph_frequent_subgraph_mining",
-      "name": "Frequent Subgraphs in One Labeled Graph",
-      "contract": "problems/68_single_graph_frequent_subgraph_mining/problem.json"
+      "title": "Frequent Subgraphs in One Labeled Graph",
+      "description": "Enumerate or count connected labeled patterns meeting a declared minimum-image-support threshold in one labeled host graph."
     },
     {
       "id": "bipartite_matching_assignment",
-      "name": "Bipartite Matching and Linear Assignment",
-      "contract": "problems/31_bipartite_matching_assignment/problem.json"
+      "title": "Bipartite Matching and Linear Assignment",
+      "description": "Given a bipartite graph, find a matching (a set of edges with no shared endpoints) that is optimal under a declared objective: maximum cardinality, maximum total weight, or minimum total cost."
     },
     {
       "id": "general_graph_weighted_matching",
-      "name": "General-Graph Weighted Matching",
-      "contract": "problems/44_general_graph_weighted_matching/problem.json"
+      "title": "General-Graph Weighted Matching",
+      "description": "Find a matching of high total nonnegative edge weight in an undirected graph without a bipartiteness assumption."
     },
     {
       "id": "maximal_independent_set",
-      "name": "Maximal Independent Set",
-      "contract": "problems/42_maximal_independent_set/problem.json"
+      "title": "Maximal Independent Set",
+      "description": "Find one independent vertex set that cannot be enlarged by adding any remaining vertex."
     },
     {
       "id": "maximum_independent_set",
-      "name": "Maximum Independent Set",
-      "contract": "problems/66_maximum_independent_set/problem.json"
+      "title": "Maximum Independent Set",
+      "description": "Find an independent vertex set of maximum cardinality in a simple undirected graph."
     },
     {
       "id": "minimum_vertex_cover",
-      "name": "Minimum Vertex Cover",
-      "contract": "problems/69_minimum_vertex_cover/problem.json"
+      "title": "Minimum Vertex Cover",
+      "description": "Find a smallest set of vertices touching every edge, or decide whether a cover of size at most k exists."
     },
     {
       "id": "vertex_coloring",
-      "name": "Vertex Coloring",
-      "contract": "problems/43_vertex_coloring/problem.json"
+      "title": "Vertex Coloring",
+      "description": "Assign colors so vertices within a declared graph distance receive different colors."
     },
     {
       "id": "entity_resolution_blocking",
-      "name": "Graph-Based Entity Resolution and Rule-Based Blocking",
-      "contract": "problems/34_entity_resolution_blocking/problem.json"
+      "title": "Graph-Based Entity Resolution and Rule-Based Blocking",
+      "description": "Given a collection of candidate entity records and one or more declared blocking rules over record attributes, generate the reduced set of candidate record pairs worth comparing, and optionally confirm matches and merge them into resolved-entity clusters."
     },
     {
       "id": "graph_coarsening",
-      "name": "Graph Coarsening and Quotient Construction",
-      "contract": "problems/62_graph_coarsening/problem.json"
+      "title": "Graph Coarsening and Quotient Construction",
+      "description": "Map every vertex to a nonempty coarse cluster and construct the weighted quotient graph with declared edge and feature aggregation."
     },
     {
       "id": "induced_subgraph_ego_extraction",
-      "name": "Induced Subgraph and Ego-Network Extraction",
-      "contract": "problems/48_induced_subgraph_ego_extraction/problem.json"
+      "title": "Induced Subgraph and Ego-Network Extraction",
+      "description": "Extract the graph induced by an explicit vertex set or by vertices within a hop radius of declared seeds. induced-subgraph extracts an induced graph on selected vertices or an ego neighborhood around seeds. query-subgraph in records also supports vertex-induced, edge-induced and filtered-neighborhood extraction with record selectors."
     },
     {
       "id": "knn_graph_construction",
-      "name": "k-Nearest-Neighbor Graph Construction",
-      "contract": "problems/64_knn_graph_construction/problem.json"
+      "title": "k-Nearest-Neighbor Graph Construction",
+      "description": "Construct a graph connecting each feature vector to its k nearest distinct input vectors under a declared distance metric."
     },
     {
       "id": "spectral_graph_sparsification",
-      "name": "Spectral Graph Sparsification",
-      "contract": "problems/55_spectral_graph_sparsification/problem.json"
+      "title": "Spectral Graph Sparsification",
+      "description": "Construct a sparse reweighted subgraph approximating the quadratic form of a weighted undirected graph Laplacian."
     },
     {
       "id": "neighborhood_sampling",
-      "name": "Neighborhood Sampling",
-      "contract": "problems/47_neighborhood_sampling/problem.json"
+      "title": "Neighborhood Sampling",
+      "description": "Sample multihop neighborhoods around seed vertices using declared fanouts and neighbor-selection probabilities."
     },
     {
       "id": "random_walk_generation",
-      "name": "Graph Random-Walk Generation",
-      "contract": "problems/46_random_walk_generation/problem.json"
+      "title": "Graph Random-Walk Generation",
+      "description": "Generate vertex sequences sampled from a declared graph transition process."
     },
     {
       "id": "graph_layout_force_directed",
-      "name": "Force-Directed Graph Layout",
-      "contract": "problems/36_graph_layout_force_directed/problem.json"
+      "title": "Force-Directed Graph Layout",
+      "description": "Given a graph, compute a position for every vertex in 2 or 3 dimensions under a declared force model, so that connected vertices are pulled together and all vertices repel each other, producing a drawing that visually reveals clusters and hubs."
     },
     {
       "id": "graph_laplacian_eigenpairs",
-      "name": "Graph Laplacian Eigenpairs",
-      "contract": "problems/63_graph_laplacian_eigenpairs/problem.json"
+      "title": "Graph Laplacian Eigenpairs",
+      "description": "Compute selected eigenpairs of the combinatorial or symmetric normalized Laplacian of a nonnegative undirected graph."
     },
     {
       "id": "graph_signal_denoising",
-      "name": "Graph Signal Denoising and Trend Filtering",
-      "contract": "problems/59_graph_signal_denoising/problem.json"
+      "title": "Graph Signal Denoising and Trend Filtering",
+      "description": "Estimate a vertex signal from noisy observations using a declared graph-difference regularizer."
     },
     {
       "id": "persistent_homology",
-      "name": "Flag-Complex Persistent Homology",
-      "contract": "problems/67_persistent_homology/problem.json"
+      "title": "Flag-Complex Persistent Homology",
+      "description": "Compute persistence intervals over a declared prime field for the flag-complex filtration induced by nonnegative undirected edge filtration values."
     },
     {
       "id": "graph_anomaly_detection",
-      "name": "Graph Anomaly Detection",
-      "contract": "problems/20_graph_anomaly_detection/problem.json"
+      "title": "Graph Anomaly Detection",
+      "description": "Rank graph entities by how strongly their declared structural or temporal features deviate from a specified normality reference."
     },
     {
       "id": "null_model_significance_testing",
-      "name": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
-      "contract": "problems/37_null_model_significance_testing/problem.json"
+      "title": "Null-Model Significance Testing via Degree-Preserving Graph Randomization",
+      "description": "Given an observed graph and a declared structural statistic, determine how unusual the statistic's observed value is by comparing it against its distribution over an ensemble of randomized graphs sampled from a declared null model, typically one preserving the degree sequence."
     },
     {
       "id": "node_classification_regression",
-      "name": "Node Classification and Regression",
-      "contract": "problems/52_node_classification_regression/problem.json"
+      "title": "Node Classification and Regression",
+      "description": "Train or apply a graph model to predict categorical labels or numerical targets for specified vertices."
     },
     {
       "id": "graph_classification_regression",
-      "name": "Graph Classification and Regression",
-      "contract": "problems/53_graph_classification_regression/problem.json"
+      "title": "Graph Classification and Regression",
+      "description": "Predict one categorical label or numerical target for each graph in a collection."
     },
     {
       "id": "hypergraph_node_learning",
-      "name": "Hypergraph Node Classification and Regression",
-      "contract": "problems/65_hypergraph_node_learning/problem.json"
+      "title": "Hypergraph Node Classification and Regression",
+      "description": "Train or evaluate a declared hypergraph neural model to predict vertex labels or targets while preserving hyperedge incidence."
     },
     {
       "id": "graph_condensation",
-      "name": "Learned Graph Condensation",
-      "contract": "problems/70_graph_condensation/problem.json"
+      "title": "Learned Graph Condensation",
+      "description": "Learn a smaller synthetic attributed graph whose supervised training utility approximates that of the original training graph."
     },
     {
       "id": "graph_based_geolocation",
-      "name": "Graph-Based Geolocation",
-      "contract": "problems/60_graph_based_geolocation/problem.json"
+      "title": "Graph-Based Geolocation",
+      "description": "Infer geographic coordinates for unlocated vertices using declared graph propagation or supervised graph-learning models."
     },
     {
       "id": "node_embedding",
-      "name": "Node Embedding",
-      "contract": "problems/50_node_embedding/problem.json"
+      "title": "Node Embedding",
+      "description": "Learn a vector for every vertex under a declared graph representation-learning objective."
     },
     {
       "id": "knowledge_graph_embedding",
-      "name": "Knowledge-Graph Embedding",
-      "contract": "problems/51_knowledge_graph_embedding/problem.json"
+      "title": "Knowledge-Graph Embedding",
+      "description": "Learn entity and relation representations from typed directed triples for relational link prediction."
     }
   ]
 }

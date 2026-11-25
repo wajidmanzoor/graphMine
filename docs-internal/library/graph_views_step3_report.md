@@ -1,6 +1,6 @@
 # Standard graph views: Step 3 completion
 
-All **82 CPU operations** now consume declared views across **141 profiles** in `devlopment`. The work was committed in 47 family checkpoints, following the prerequisite extensions. The implementation checkpoint is `255d45a6`. Production was not changed.
+All **82 CPU problems** now consume declared views across **141 profiles** in `devlopment`. The work was committed in 47 family checkpoints, following the prerequisite extensions. The implementation checkpoint is `255d45a6`. Production was not changed.
 
 The final checkpoint passes **53 CTests, 238 Python tests, the 129,073-request C++ oracle replay, and all 82 CPU capability admissions**, with no evidence verification issues. The Python total includes binding/native tests, evidence gates and three real agent capability checks.
 
@@ -70,9 +70,9 @@ Runtime changes are in `library/runtime/families/`, layout helpers in `library/r
 
 Each linked checkpoint includes compressed per-dataset/profile results, logs, tests, evidence and matching rejection counts. Initial failures and their corrections remain in the checkpoint diagnostics and detailed [family notes](graph_views_step3.md).
 
-## CPU evidence by operation
+## CPU evidence by problem
 
-| Operation | Declared profiles | Evidence | Checkpoint |
+| Problem | Declared profiles | Evidence | Checkpoint |
 |---|---:|---|---|
 | `balanced-partitioning` | 2 | Admitted | 11-partitioning |
 | `betweenness-centrality` | 2 | Admitted | 07-centrality |
@@ -161,4 +161,4 @@ Each linked checkpoint includes compressed per-dataset/profile results, logs, te
 
 Stopped after Step 3 as requested. Steps 4–6 cover cuGraph, in-process CUDA and worker exporters; Step 7 adds optional attribute-based sides to maximal bicliques; Step 8 generates backend registry requirements; Step 9 completes evidence and documentation across all backends. GPU builds and GPU admission were not claimed by this CPU checkpoint.
 
-C ABI, CLI operation names and request parameters remain unchanged. Existing algorithm result fields are preserved, with the approved view/normalization provenance under `representations`. Maximal bicliques still requires explicit partition parameters until Step 7. All commits are local; no deployment, service restart or push was performed for this step.
+C ABI, CLI problem names and request parameters remain unchanged. Existing algorithm result fields are preserved, with the approved view/normalization provenance under `representations`. Maximal bicliques still requires explicit partition parameters until Step 7. All commits are local; no deployment, service restart or push was performed for this step.

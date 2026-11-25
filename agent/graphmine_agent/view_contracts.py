@@ -65,7 +65,7 @@ TYPE_ROLES = {
     "table": {"row": ITEM},
 }
 
-# Field meanings for open table outputs are operation-specific, not inferred
+# Field meanings for open table outputs are problem-specific, not inferred
 # from a numeric value or an arbitrary uploaded column name.
 TABLE_ROLES = {
     "node-lookup": {"id": ENTITY},
@@ -84,17 +84,17 @@ TABLE_ROLES = {
 }
 
 
-def field_roles(operation, port, rows=()):
+def field_roles(problem, port, rows=()):
     fields = deepcopy(TYPE_ROLES.get(port.get("type"), {"value": role("diagnostic")}))
     if port.get("type") == "table":
-        fields.update(deepcopy(TABLE_ROLES.get(operation, {})))
+        fields.update(deepcopy(TABLE_ROLES.get(problem, {})))
     if port.get("vertex_field"):
         fields[port["vertex_field"]] = deepcopy(ENTITY)
     if port.get("score_field"):
         fields[port["score_field"]] = deepcopy(SCORE)
-    if operation == "vertex-coloring":
+    if problem == "vertex-coloring":
         fields[port.get("score_field", "color")] = deepcopy(GROUP)
-    if operation == "single-source-shortest-paths":
+    if problem == "single-source-shortest-paths":
         fields.update(distance=role("score", signed=True, higher_is_better=False), predecessor=deepcopy(ENTITY))
     if port.get("type") == "entity_ranking":
         targets = {r.get("anomaly_target") for r in rows if isinstance(r, dict)}
@@ -108,6 +108,6 @@ def field_roles(operation, port, rows=()):
     return fields
 
 
-def catalog_roles(operation, ports):
+def catalog_roles(problem, ports):
     """Attach roles without changing the native calculation contract."""
-    return {name: field_roles(operation, {"type": typ if isinstance(typ, str) else typ.get("type")}) for name, typ in ports.items()}
+    return {name: field_roles(problem, {"type": typ if isinstance(typ, str) else typ.get("type")}) for name, typ in ports.items()}

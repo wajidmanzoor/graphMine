@@ -8,14 +8,14 @@
     "view": "Exact saved-result display action; no new plan/run.",
     "lookup": "Small code-built query or ranking, verified through result ports.",
     "needs_information": "One required or answer-changing gap; no executable plan.",
-    "options": "Normal-mode computation request: exactly two distinct choices and no run.",
+    "options": "Normal-mode computation request: one to three distinct ranked calculations and no run.",
     "calculate": "Explicit picked-card payload from the requested Phase 4 API, followed by validated execution.",
     "unsupported": "No listed native backend computes the requested result."
   },
   "oracle_provenance": {
     "demo": "Exhaustive subsets for cliques and triangles; direct seed-record lookup and adjacency for queries.",
     "yelp": "Exhaustive nonempty User subsets and closure for bicliques; direct counts/degrees; analytic PageRank balance for the one-way User-to-Business graph.",
-    "grading": "Exact lane and allowed operation set plus structural behavior and independent complete-result checks. General explanation semantics are not human-scored; citations are required."
+    "grading": "Exact lane and allowed problem set plus structural behavior and independent complete-result checks. General explanation semantics are not human-scored; citations are required."
   },
   "fixtures": {
     "demo": {
@@ -56,14 +56,14 @@
       "question": "Show the full Business record for Los Agaves.",
       "expected": {
         "lane": "lookup",
-        "operations": [
+        "problems": [
           [
             "node-lookup"
           ]
         ]
       },
       "reference": {
-        "operation": "node-lookup",
+        "problem": "node-lookup",
         "parameters": {
           "vertices": [
             "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:129349"
@@ -72,7 +72,7 @@
       },
       "checks": [
         {
-          "operation": "node-lookup",
+          "problem": "node-lookup",
           "port": "vertices",
           "kind": "set",
           "value": [
@@ -87,7 +87,7 @@
       "question": "What do exact and approximate results mean in this graph library?",
       "expected": {
         "lane": "reply",
-        "operations": [
+        "problems": [
           []
         ],
         "rationale": "Conceptual explanation, with citations to available contracts or documentation; no graph calculation."
@@ -99,7 +99,7 @@
       "question": "How many Users are in this loaded snapshot?",
       "expected": {
         "lane": "describe_input",
-        "operations": [
+        "problems": [
           []
         ],
         "property": "vertex_type_count.User",
@@ -113,7 +113,7 @@
       "question": "Explain maximal versus maximum cliques without running an analysis.",
       "expected": {
         "lane": "reply",
-        "operations": [
+        "problems": [
           []
         ],
         "rationale": "Conceptual explanation, with citations to available contracts or documentation; no graph calculation."
@@ -125,7 +125,7 @@
       "question": "Arrange the saved graph in a grid.",
       "expected": {
         "lane": "view",
-        "operations": [
+        "problems": [
           []
         ],
         "view": {
@@ -134,12 +134,12 @@
         }
       },
       "previous": {
-        "operation": "maximal-cliques",
+        "problem": "maximal-cliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-cliques",
+          "problem": "maximal-cliques",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -175,7 +175,7 @@
       "question": "I pick the weakly connected components option.",
       "expected": {
         "lane": "calculate",
-        "operations": [
+        "problems": [
           [
             "connected-components"
           ]
@@ -183,14 +183,14 @@
         "rationale": "The selected-card payload from Phase 4; calculate this choice without rerouting."
       },
       "reference": {
-        "operation": "connected-components",
+        "problem": "connected-components",
         "parameters": {
           "connectivity_mode": "weakly_connected"
         }
       },
       "checks": [
         {
-          "operation": "connected-components",
+          "problem": "connected-components",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -221,7 +221,7 @@
       ],
       "selected_option": {
         "intent": "calculate",
-        "operations": [
+        "problems": [
           "connected-components"
         ],
         "parameters": {
@@ -235,7 +235,7 @@
       "question": "How many triangles did the completed analysis count?",
       "expected": {
         "lane": "explain",
-        "operations": [
+        "problems": [
           []
         ],
         "fact_patterns": [
@@ -243,12 +243,12 @@
         ]
       },
       "previous": {
-        "operation": "triangle-counting",
+        "problem": "triangle-counting",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "triangle-counting",
+          "problem": "triangle-counting",
           "port": "count",
           "kind": "equal",
           "value": 4
@@ -261,7 +261,7 @@
       "question": "Does this graph already have edge weights?",
       "expected": {
         "lane": "describe_input",
-        "operations": [
+        "problems": [
           []
         ],
         "property": "weighted",
@@ -275,7 +275,7 @@
       "question": "Is this transfer graph directed?",
       "expected": {
         "lane": "describe_input",
-        "operations": [
+        "problems": [
           []
         ],
         "property": "directed",
@@ -289,7 +289,7 @@
       "question": "Run breadth-first search on the graph.",
       "expected": {
         "lane": "needs_information",
-        "operations": null,
+        "problems": null,
         "rationale": "A starting vertex is required."
       }
     },
@@ -299,7 +299,7 @@
       "question": "Search the saved result rows for Tracy.",
       "expected": {
         "lane": "view",
-        "operations": [
+        "problems": [
           []
         ],
         "view": {
@@ -308,12 +308,12 @@
         }
       },
       "previous": {
-        "operation": "maximal-bicliques",
+        "problem": "maximal-bicliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-bicliques",
+          "problem": "maximal-bicliques",
           "port": "bicliques",
           "kind": "bicliques",
           "value": [
@@ -849,7 +849,7 @@
       "question": "Highlight Ada in the saved graph.",
       "expected": {
         "lane": "view",
-        "operations": [
+        "problems": [
           []
         ],
         "view": {
@@ -860,12 +860,12 @@
         }
       },
       "previous": {
-        "operation": "maximal-cliques",
+        "problem": "maximal-cliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-cliques",
+          "problem": "maximal-cliques",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -901,7 +901,7 @@
       "question": "Compute the exact crossing number of this graph.",
       "expected": {
         "lane": "unsupported",
-        "operations": [
+        "problems": [
           []
         ],
         "rationale": "No listed native backend implements the requested calculation."
@@ -913,7 +913,7 @@
       "question": "Find subgraphs isomorphic to my query pattern.",
       "expected": {
         "lane": "needs_information",
-        "operations": null,
+        "problems": null,
         "rationale": "The separate query pattern is absent."
       }
     },
@@ -923,7 +923,7 @@
       "question": "How many Businesses are in this loaded snapshot?",
       "expected": {
         "lane": "describe_input",
-        "operations": [
+        "problems": [
           []
         ],
         "property": "vertex_type_count.Business",
@@ -937,7 +937,7 @@
       "question": "Compute the maximum flow in this transfer network.",
       "expected": {
         "lane": "needs_information",
-        "operations": null,
+        "problems": null,
         "rationale": "Source and sink are required."
       }
     },
@@ -947,7 +947,7 @@
       "question": "Show the bicliques output from the saved run.",
       "expected": {
         "lane": "view",
-        "operations": [
+        "problems": [
           []
         ],
         "view": {
@@ -956,12 +956,12 @@
         }
       },
       "previous": {
-        "operation": "maximal-bicliques",
+        "problem": "maximal-bicliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-bicliques",
+          "problem": "maximal-bicliques",
           "port": "bicliques",
           "kind": "bicliques",
           "value": [
@@ -1497,7 +1497,7 @@
       "question": "Who is important in this network?",
       "expected": {
         "lane": "needs_information",
-        "operations": null,
+        "problems": null,
         "rationale": "Importance has multiple answer-changing meanings."
       }
     },
@@ -1507,7 +1507,7 @@
       "question": "How many maximal bicliques did the saved review analysis return?",
       "expected": {
         "lane": "explain",
-        "operations": [
+        "problems": [
           []
         ],
         "fact_patterns": [
@@ -1515,12 +1515,12 @@
         ]
       },
       "previous": {
-        "operation": "maximal-bicliques",
+        "problem": "maximal-bicliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-bicliques",
+          "problem": "maximal-bicliques",
           "port": "bicliques",
           "kind": "bicliques",
           "value": [
@@ -2056,7 +2056,7 @@
       "question": "Find all maximal cliques.",
       "expected": {
         "lane": "options",
-        "operations": [
+        "problems": [
           [
             "maximal-cliques"
           ]
@@ -2064,12 +2064,12 @@
         "rationale": "Normal mode must offer two ranked choices before a new calculation."
       },
       "reference": {
-        "operation": "maximal-cliques",
+        "problem": "maximal-cliques",
         "parameters": {}
       },
       "checks": [
         {
-          "operation": "maximal-cliques",
+          "problem": "maximal-cliques",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -2105,14 +2105,14 @@
       "question": "Show the full record for Ada.",
       "expected": {
         "lane": "lookup",
-        "operations": [
+        "problems": [
           [
             "node-lookup"
           ]
         ]
       },
       "reference": {
-        "operation": "node-lookup",
+        "problem": "node-lookup",
         "parameters": {
           "vertices": [
             1
@@ -2121,7 +2121,7 @@
       },
       "checks": [
         {
-          "operation": "node-lookup",
+          "problem": "node-lookup",
           "port": "vertices",
           "kind": "set",
           "value": [
@@ -2136,7 +2136,7 @@
       "question": "How many transfer connections are loaded?",
       "expected": {
         "lane": "describe_input",
-        "operations": [
+        "problems": [
           []
         ],
         "property": "edges_count",
@@ -2150,7 +2150,7 @@
       "question": "Explain what it would mean to use review stars as edge weights.",
       "expected": {
         "lane": "reply",
-        "operations": [
+        "problems": [
           []
         ],
         "rationale": "Conceptual explanation, with citations to available contracts or documentation; no graph calculation."
@@ -2162,7 +2162,7 @@
       "question": "How many accounts are loaded?",
       "expected": {
         "lane": "describe_input",
-        "operations": [
+        "problems": [
           []
         ],
         "property": "vertices_count",
@@ -2176,14 +2176,14 @@
       "question": "Which account has the most outgoing transfer connections?",
       "expected": {
         "lane": "lookup",
-        "operations": [
+        "problems": [
           [
             "degree-centrality"
           ]
         ]
       },
       "reference": {
-        "operation": "degree-centrality",
+        "problem": "degree-centrality",
         "parameters": {
           "normalized": false,
           "direction_mode": "outgoing"
@@ -2191,7 +2191,7 @@
       },
       "checks": [
         {
-          "operation": "degree-centrality",
+          "problem": "degree-centrality",
           "port": "scores",
           "kind": "argmax",
           "value": [
@@ -2206,7 +2206,7 @@
       "question": "What does a biclique mean compared with a community in a review network?",
       "expected": {
         "lane": "reply",
-        "operations": [
+        "problems": [
           []
         ],
         "rationale": "Conceptual explanation, with citations to available contracts or documentation; no graph calculation."
@@ -2218,7 +2218,7 @@
       "question": "Compute unweighted PageRank with the default damping factor on the directed review graph.",
       "expected": {
         "lane": "options",
-        "operations": [
+        "problems": [
           [
             "pagerank"
           ]
@@ -2226,12 +2226,12 @@
         "rationale": "Normal mode must offer two ranked choices before a new calculation."
       },
       "reference": {
-        "operation": "pagerank",
+        "problem": "pagerank",
         "parameters": {}
       },
       "checks": [
         {
-          "operation": "pagerank",
+          "problem": "pagerank",
           "port": "scores",
           "kind": "scores",
           "value": [
@@ -2325,14 +2325,14 @@
       "question": "Which accounts receive a direct transfer from Ada?",
       "expected": {
         "lane": "lookup",
-        "operations": [
+        "problems": [
           [
             "neighbors"
           ]
         ]
       },
       "reference": {
-        "operation": "neighbors",
+        "problem": "neighbors",
         "parameters": {
           "entity": 1,
           "direction": "out"
@@ -2340,7 +2340,7 @@
       },
       "checks": [
         {
-          "operation": "neighbors",
+          "problem": "neighbors",
           "port": "vertices",
           "kind": "set",
           "value": [
@@ -2357,7 +2357,7 @@
       "question": "Find the vertices in the 3-core.",
       "expected": {
         "lane": "options",
-        "operations": [
+        "problems": [
           [
             "k-core"
           ]
@@ -2365,14 +2365,14 @@
         "rationale": "Normal mode must offer two ranked choices before a new calculation."
       },
       "reference": {
-        "operation": "k-core",
+        "problem": "k-core",
         "parameters": {
           "requested_k": 3
         }
       },
       "checks": [
         {
-          "operation": "k-core",
+          "problem": "k-core",
           "port": "vertices",
           "kind": "set",
           "value": [
@@ -2390,7 +2390,7 @@
       "question": "Train a transformer language model to generate new review text from these reviews.",
       "expected": {
         "lane": "unsupported",
-        "operations": [
+        "problems": [
           []
         ],
         "rationale": "No listed native backend implements the requested calculation."
@@ -2402,7 +2402,7 @@
       "question": "How many connected groups did the saved run find?",
       "expected": {
         "lane": "explain",
-        "operations": [
+        "problems": [
           []
         ],
         "fact_patterns": [
@@ -2410,12 +2410,12 @@
         ]
       },
       "previous": {
-        "operation": "connected-components",
+        "problem": "connected-components",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "connected-components",
+          "problem": "connected-components",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -2439,7 +2439,7 @@
       "question": "How many cliques did the saved run find?",
       "expected": {
         "lane": "explain",
-        "operations": [
+        "problems": [
           []
         ],
         "fact_patterns": [
@@ -2447,12 +2447,12 @@
         ]
       },
       "previous": {
-        "operation": "maximal-cliques",
+        "problem": "maximal-cliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-cliques",
+          "problem": "maximal-cliques",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -2488,7 +2488,7 @@
       "question": "How does PageRank differ from degree centrality?",
       "expected": {
         "lane": "reply",
-        "operations": [
+        "problems": [
           []
         ],
         "rationale": "Conceptual explanation, with citations to available contracts or documentation; no graph calculation."
@@ -2500,7 +2500,7 @@
       "question": "Is the saved clique calculation exact?",
       "expected": {
         "lane": "explain",
-        "operations": [
+        "problems": [
           []
         ],
         "fact_patterns": [
@@ -2508,12 +2508,12 @@
         ]
       },
       "previous": {
-        "operation": "maximal-cliques",
+        "problem": "maximal-cliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-cliques",
+          "problem": "maximal-cliques",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -2549,7 +2549,7 @@
       "question": "Show the largest clique from the saved result.",
       "expected": {
         "lane": "view",
-        "operations": [
+        "problems": [
           []
         ],
         "view": {
@@ -2558,12 +2558,12 @@
         }
       },
       "previous": {
-        "operation": "maximal-cliques",
+        "problem": "maximal-cliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-cliques",
+          "problem": "maximal-cliques",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -2599,7 +2599,7 @@
       "question": "Open the results page for the saved analysis.",
       "expected": {
         "lane": "view",
-        "operations": [
+        "problems": [
           []
         ],
         "view": {
@@ -2607,12 +2607,12 @@
         }
       },
       "previous": {
-        "operation": "maximal-bicliques",
+        "problem": "maximal-bicliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-bicliques",
+          "problem": "maximal-bicliques",
           "port": "bicliques",
           "kind": "bicliques",
           "value": [
@@ -3148,7 +3148,7 @@
       "question": "Find the maximum clique.",
       "expected": {
         "lane": "options",
-        "operations": [
+        "problems": [
           [
             "maximum-clique"
           ]
@@ -3156,12 +3156,12 @@
         "rationale": "Normal mode must offer two ranked choices before a new calculation."
       },
       "reference": {
-        "operation": "maximum-clique",
+        "problem": "maximum-clique",
         "parameters": {}
       },
       "checks": [
         {
-          "operation": "maximum-clique",
+          "problem": "maximum-clique",
           "port": "vertices",
           "kind": "set",
           "value": [
@@ -3179,7 +3179,7 @@
       "question": "I pick the triangle-counting option.",
       "expected": {
         "lane": "calculate",
-        "operations": [
+        "problems": [
           [
             "triangle-counting"
           ]
@@ -3187,14 +3187,14 @@
         "rationale": "The selected-card payload from Phase 4; calculate this choice without rerouting."
       },
       "reference": {
-        "operation": "triangle-counting",
+        "problem": "triangle-counting",
         "parameters": {
           "mode": "count"
         }
       },
       "checks": [
         {
-          "operation": "triangle-counting",
+          "problem": "triangle-counting",
           "port": "count",
           "kind": "equal",
           "value": 4
@@ -3202,7 +3202,7 @@
       ],
       "selected_option": {
         "intent": "calculate",
-        "operations": [
+        "problems": [
           "triangle-counting"
         ],
         "parameters": {
@@ -3216,7 +3216,7 @@
       "question": "Which accounts are in the largest clique from the saved run?",
       "expected": {
         "lane": "explain",
-        "operations": [
+        "problems": [
           []
         ],
         "fact_patterns": [
@@ -3227,12 +3227,12 @@
         ]
       },
       "previous": {
-        "operation": "maximal-cliques",
+        "problem": "maximal-cliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-cliques",
+          "problem": "maximal-cliques",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -3268,7 +3268,7 @@
       "question": "Find the groups in this network.",
       "expected": {
         "lane": "needs_information",
-        "operations": null,
+        "problems": null,
         "rationale": "The kind of grouping is unspecified."
       }
     },
@@ -3278,7 +3278,7 @@
       "question": "Show all cliques from the saved result.",
       "expected": {
         "lane": "view",
-        "operations": [
+        "problems": [
           []
         ],
         "view": {
@@ -3287,12 +3287,12 @@
         }
       },
       "previous": {
-        "operation": "maximal-cliques",
+        "problem": "maximal-cliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-cliques",
+          "problem": "maximal-cliques",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -3328,7 +3328,7 @@
       "question": "Calculate each vertex degree, without normalization, for the undirected review graph.",
       "expected": {
         "lane": "options",
-        "operations": [
+        "problems": [
           [
             "degree-centrality"
           ]
@@ -3336,14 +3336,14 @@
         "rationale": "Normal mode must offer two ranked choices before a new calculation."
       },
       "reference": {
-        "operation": "degree-centrality",
+        "problem": "degree-centrality",
         "parameters": {
           "normalized": false
         }
       },
       "checks": [
         {
-          "operation": "degree-centrality",
+          "problem": "degree-centrality",
           "port": "scores",
           "kind": "scores",
           "value": [
@@ -3437,7 +3437,7 @@
       "question": "Return generators of the full graph automorphism group.",
       "expected": {
         "lane": "unsupported",
-        "operations": [
+        "problems": [
           []
         ],
         "rationale": "No listed native backend implements the requested calculation."
@@ -3449,7 +3449,7 @@
       "question": "Find the weakly connected components of the transfer graph.",
       "expected": {
         "lane": "options",
-        "operations": [
+        "problems": [
           [
             "connected-components"
           ]
@@ -3457,14 +3457,14 @@
         "rationale": "Normal mode must offer two ranked choices before a new calculation."
       },
       "reference": {
-        "operation": "connected-components",
+        "problem": "connected-components",
         "parameters": {
           "connectivity_mode": "weakly_connected"
         }
       },
       "checks": [
         {
-          "operation": "connected-components",
+          "problem": "connected-components",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -3488,14 +3488,14 @@
       "question": "Show the full User record for Tracy.",
       "expected": {
         "lane": "lookup",
-        "operations": [
+        "problems": [
           [
             "node-lookup"
           ]
         ]
       },
       "reference": {
-        "operation": "node-lookup",
+        "problem": "node-lookup",
         "parameters": {
           "vertices": [
             "neo4j:yelp:4:2b9a6b66-cebd-490e-9242-085a1c2b41db:201008"
@@ -3504,7 +3504,7 @@
       },
       "checks": [
         {
-          "operation": "node-lookup",
+          "problem": "node-lookup",
           "port": "vertices",
           "kind": "set",
           "value": [
@@ -3519,7 +3519,7 @@
       "question": "Find all maximal bicliques in the undirected review snapshot.",
       "expected": {
         "lane": "options",
-        "operations": [
+        "problems": [
           [
             "maximal-bicliques"
           ]
@@ -3527,12 +3527,12 @@
         "rationale": "Normal mode must offer two ranked choices before a new calculation."
       },
       "reference": {
-        "operation": "maximal-bicliques",
+        "problem": "maximal-bicliques",
         "parameters": {}
       },
       "checks": [
         {
-          "operation": "maximal-bicliques",
+          "problem": "maximal-bicliques",
           "port": "bicliques",
           "kind": "bicliques",
           "value": [
@@ -4068,7 +4068,7 @@
       "question": "Count all triangles in the entire graph.",
       "expected": {
         "lane": "options",
-        "operations": [
+        "problems": [
           [
             "triangle-counting"
           ]
@@ -4076,14 +4076,14 @@
         "rationale": "Normal mode must offer two ranked choices before a new calculation."
       },
       "reference": {
-        "operation": "triangle-counting",
+        "problem": "triangle-counting",
         "parameters": {
           "mode": "count"
         }
       },
       "checks": [
         {
-          "operation": "triangle-counting",
+          "problem": "triangle-counting",
           "port": "count",
           "kind": "equal",
           "value": 4
@@ -4096,7 +4096,7 @@
       "question": "How many review connections are loaded?",
       "expected": {
         "lane": "describe_input",
-        "operations": [
+        "problems": [
           []
         ],
         "property": "edges_count",
@@ -4110,7 +4110,7 @@
       "question": "I pick the maximum-clique option.",
       "expected": {
         "lane": "calculate",
-        "operations": [
+        "problems": [
           [
             "maximum-clique"
           ]
@@ -4118,12 +4118,12 @@
         "rationale": "The selected-card payload from Phase 4; calculate this choice without rerouting."
       },
       "reference": {
-        "operation": "maximum-clique",
+        "problem": "maximum-clique",
         "parameters": {}
       },
       "checks": [
         {
-          "operation": "maximum-clique",
+          "problem": "maximum-clique",
           "port": "vertices",
           "kind": "set",
           "value": [
@@ -4136,7 +4136,7 @@
       ],
       "selected_option": {
         "intent": "calculate",
-        "operations": [
+        "problems": [
           "maximum-clique"
         ],
         "parameters": {}
@@ -4148,7 +4148,7 @@
       "question": "What is the difference between k-core and k-truss?",
       "expected": {
         "lane": "reply",
-        "operations": [
+        "problems": [
           []
         ],
         "rationale": "Conceptual explanation, with citations to available contracts or documentation; no graph calculation."
@@ -4160,7 +4160,7 @@
       "question": "Find the shortest path between two accounts.",
       "expected": {
         "lane": "needs_information",
-        "operations": null,
+        "problems": null,
         "rationale": "Both path endpoints are missing."
       }
     },
@@ -4170,7 +4170,7 @@
       "question": "What guarantee does the saved maximal-biclique analysis provide?",
       "expected": {
         "lane": "explain",
-        "operations": [
+        "problems": [
           []
         ],
         "fact_patterns": [
@@ -4178,12 +4178,12 @@
         ]
       },
       "previous": {
-        "operation": "maximal-bicliques",
+        "problem": "maximal-bicliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-bicliques",
+          "problem": "maximal-bicliques",
           "port": "bicliques",
           "kind": "bicliques",
           "value": [
@@ -4719,7 +4719,7 @@
       "question": "Find all maximal bicliques, with Users on one side and Businesses on the other.",
       "expected": {
         "lane": "needs_information",
-        "operations": null,
+        "problems": null,
         "rationale": "Directed reviews require explicit confirmation before an undirected copy."
       }
     },
@@ -4729,14 +4729,14 @@
       "question": "List all account records whose country is US.",
       "expected": {
         "lane": "lookup",
-        "operations": [
+        "problems": [
           [
             "node-lookup"
           ]
         ]
       },
       "reference": {
-        "operation": "node-lookup",
+        "problem": "node-lookup",
         "parameters": {
           "vertex_filters": [
             {
@@ -4749,7 +4749,7 @@
       },
       "checks": [
         {
-          "operation": "node-lookup",
+          "problem": "node-lookup",
           "port": "vertices",
           "kind": "set",
           "value": [
@@ -4764,7 +4764,7 @@
       "question": "How many triangles did the saved review-graph analysis find?",
       "expected": {
         "lane": "explain",
-        "operations": [
+        "problems": [
           []
         ],
         "fact_patterns": [
@@ -4772,12 +4772,12 @@
         ]
       },
       "previous": {
-        "operation": "triangle-counting",
+        "problem": "triangle-counting",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "triangle-counting",
+          "problem": "triangle-counting",
           "port": "count",
           "kind": "equal",
           "value": 0
@@ -4790,7 +4790,7 @@
       "question": "I pick the maximal-bicliques option.",
       "expected": {
         "lane": "calculate",
-        "operations": [
+        "problems": [
           [
             "maximal-bicliques"
           ]
@@ -4798,12 +4798,12 @@
         "rationale": "The selected-card payload from Phase 4; calculate this choice without rerouting."
       },
       "reference": {
-        "operation": "maximal-bicliques",
+        "problem": "maximal-bicliques",
         "parameters": {}
       },
       "checks": [
         {
-          "operation": "maximal-bicliques",
+          "problem": "maximal-bicliques",
           "port": "bicliques",
           "kind": "bicliques",
           "value": [
@@ -5334,7 +5334,7 @@
       ],
       "selected_option": {
         "intent": "calculate",
-        "operations": [
+        "problems": [
           "maximal-bicliques"
         ],
         "parameters": {}
@@ -5346,7 +5346,7 @@
       "question": "Switch the saved graph to a circle layout.",
       "expected": {
         "lane": "view",
-        "operations": [
+        "problems": [
           []
         ],
         "view": {
@@ -5355,12 +5355,12 @@
         }
       },
       "previous": {
-        "operation": "maximal-cliques",
+        "problem": "maximal-cliques",
         "parameters": {}
       },
       "previous_checks": [
         {
-          "operation": "maximal-cliques",
+          "problem": "maximal-cliques",
           "port": "groups",
           "kind": "groups",
           "value": [
@@ -5396,7 +5396,7 @@
       "question": "Find all maximal bicliques.",
       "expected": {
         "lane": "needs_information",
-        "operations": null,
+        "problems": null,
         "rationale": "The Account-only graph has no declared sides and is not two-type bipartite."
       }
     },
@@ -5406,7 +5406,7 @@
       "question": "Run a continuous-time SIR epidemic simulation on this review network.",
       "expected": {
         "lane": "unsupported",
-        "operations": [
+        "problems": [
           []
         ],
         "rationale": "No listed native backend implements the requested calculation."
@@ -5418,7 +5418,7 @@
       "question": "Which vertex types are present in this snapshot?",
       "expected": {
         "lane": "describe_input",
-        "operations": [
+        "problems": [
           []
         ],
         "property": "vertex_types",

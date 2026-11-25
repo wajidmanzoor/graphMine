@@ -144,8 +144,8 @@ def test_deployed_adapter_is_routing_only_and_checks_its_fingerprint(settings):
                         "adapter_sha256": fingerprint[0],
                     },
                     "decision": {
-                        "problem_id": "maximal_clique_enumeration",
-                        "operation_id": "maximal-cliques",
+                        "topic_id": "maximal_clique_enumeration",
+                        "problem_id": "maximal-cliques",
                         "supported": True,
                         "confidence": 1,
                         "ambiguity": [],
@@ -245,8 +245,8 @@ def test_explicit_expanded_adapter_dispatch_checks_server_compatibility(
                 json={
                     "identity": identity,
                     "decision": {
-                        "problem_id": "connected_components",
-                        "operation_id": "connected-components",
+                        "topic_id": "connected_components",
+                        "problem_id": "connected-components",
                         "supported": True,
                         "confidence": 1,
                         "explanation": "Connected groups.",
@@ -278,7 +278,7 @@ def test_explicit_expanded_adapter_dispatch_checks_server_compatibility(
         if server_contract == "current":
             assert (
                 await model.generate(**request)
-            ).operation_id == "connected-components"
+            ).problem_id == "connected-components"
         else:
             with pytest.raises(LLMError, match="different catalog"):
                 await model.generate(**request)
@@ -297,7 +297,7 @@ def test_generation_schema_uses_the_exact_tool_and_available_file_allowlists(cat
     constrain_plan_schema(
         schema,
         {
-            "operation_context": catalog.operation_context("maximal-bicliques"),
+            "problem_context": catalog.problem_context("maximal-bicliques"),
             "available_files": [
                 {"id": "customers", "role": "left_partition"},
                 {"id": "other-graph", "role": "graph"},
@@ -308,18 +308,18 @@ def test_generation_schema_uses_the_exact_tool_and_available_file_allowlists(cat
     assert properties["backend_id"]["const"] == "auto"
     assert properties["parameters"]["additionalProperties"] is False
     assert set(properties["parameters"]["properties"]) == set(
-        catalog.operation("maximal-bicliques").instruction["parameters"]
+        catalog.problem("maximal-bicliques").instruction["parameters"]
     )
     assert properties["auxiliary_inputs"]["additionalProperties"] is False
     partition = properties["auxiliary_inputs"]["properties"]["left_partition"]
     assert partition["items"]["enum"] == ["customers"] and partition["maxItems"] == 1
     assert set(properties["optional_outputs"]["items"]["enum"]) == set(
-        catalog.operation("maximal-bicliques").instruction["optional_outputs"]
+        catalog.problem("maximal-bicliques").instruction["optional_outputs"]
     )
 
     schema = PlanDraft.model_json_schema()
     constrain_plan_schema(
-        schema, {"operation_context": catalog.operation_context("community-detection")}
+        schema, {"problem_context": catalog.problem_context("community-detection")}
     )
     assert schema["$defs"]["PlanConfiguration"]["properties"]["auxiliary_inputs"] == {
         "type": "object",
@@ -346,8 +346,8 @@ class _RetryClient:
                         "message": {
                             "content": jsonlib.dumps(
                                 {
-                                    "problem_id": "maximal_clique_enumeration",
-                                    "operation_id": "maximal-cliques",
+                                    "topic_id": "maximal_clique_enumeration",
+                                    "problem_id": "maximal-cliques",
                                     "supported": True,
                                     "confidence": 1.0,
                                     "ambiguity": [],
@@ -376,7 +376,7 @@ def test_local_model_retries_one_transport_failure(settings: Settings) -> None:
             schema=RouteDecision,
             user_payload={"message": "Enumerate every maximal clique."},
         )
-        assert decision.operation_id == "maximal-cliques"
+        assert decision.problem_id == "maximal-cliques"
         assert retry_client.calls == 2
         await model.close()
 

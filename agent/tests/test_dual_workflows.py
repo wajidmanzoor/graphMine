@@ -48,8 +48,8 @@ def authored_capture(catalog):
     intent = ApplicationIntent(objective=question)
     task = {
         "question": question,
-        "operation_id": "maximal-cliques",
-        "problem_id": "maximal_clique_enumeration",
+        "problem_id": "maximal-cliques",
+        "topic_id": "maximal_clique_enumeration",
         "parameters": {},
         "optional_outputs": [],
         "intent": intent.model_dump(mode="json"),
@@ -59,8 +59,8 @@ def authored_capture(catalog):
     plan = ExecutionPlan(
         session_id="session-fixture",
         graph_id="graph-fixture",
+        topic_id=task["topic_id"],
         problem_id=task["problem_id"],
-        operation_id=task["operation_id"],
         application_intent=intent,
     )
     plan = PlanValidator(catalog).validate(plan)
@@ -104,8 +104,8 @@ def authored_capture(catalog):
             {
                 "schema": "RouteDecision",
                 "target": RouteDecision(
+                    topic_id=task["topic_id"],
                     problem_id=task["problem_id"],
-                    operation_id=task["operation_id"],
                     supported=True,
                     confidence=1,
                     explanation="Authored fixture.",
@@ -286,8 +286,8 @@ def test_live_harness_injects_one_error_and_exercises_real_agent_recovery(
     question = "Count and list fully connected groups of exactly three records, including those inside larger groups."
     task = {
         "question": question,
-        "operation_id": "k-cliques",
-        "problem_id": catalog.operation("k-cliques").problem_id,
+        "problem_id": "k-cliques",
+        "topic_id": catalog.problem("k-cliques").topic_id,
         "parameters": {"k": 3},
         "optional_outputs": ["cliques"],
         "expected_status": "ready",
@@ -338,8 +338,8 @@ def test_live_harness_injects_one_error_and_exercises_real_agent_recovery(
                     return await offline_generate(**request)
                 if schema is RouteDecision:
                     return RouteDecision(
-                        problem_id=task["problem_id"],
-                        operation_id="k-cliques",
+                        topic_id=task["topic_id"],
+                        problem_id="k-cliques",
                         supported=True,
                         confidence=1,
                         explanation="Authored CPU fixture.",
@@ -378,8 +378,8 @@ def test_live_harness_injects_one_error_and_exercises_real_agent_recovery(
 
             runtime.agent.model.generate = model
             runtime.runner.execute = execute
-            runtime.runner.compiled_backends_for = lambda operation: set(
-                runtime.catalog.operation(operation).allowed_backends
+            runtime.runner.compiled_backends_for = lambda problem: set(
+                runtime.catalog.problem(problem).allowed_backends
             )
             yield client, history
 

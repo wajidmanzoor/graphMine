@@ -2,7 +2,7 @@
   "version": 1,
   "scope": "Application routing requirements; native validation and backend admission remain authoritative. Direction mismatches are scored and require explicit preparation, not automatic exclusion.",
   "source": "library/runtime/registry.cpp and library/runtime/families/",
-  "operations": {
+  "problems": {
     "node-lookup": {
       "input_kind": "graph",
       "direction": "either",

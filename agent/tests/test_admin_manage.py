@@ -191,9 +191,9 @@ def test_old_legacy_results_are_removed_without_losing_the_plan(console, triangl
     _, principal = accounts.login("member", PASSWORD, "local")
     old = accounts.clock() - 200 * 86400
     with identity_scope(principal):
-        plan = ExecutionPlan(session_id=sid, graph_id=file_id, problem_id="core", operation_id="k-core", parameters={"k": 2})
+        plan = ExecutionPlan(session_id=sid, graph_id=file_id, topic_id="core", problem_id="k-core", parameters={"k": 2})
         job = runtime.database.save_job(JobRecord(session_id=sid, plan=plan, status=JobStatus.completed))
-        result = runtime.database.save_result(ResultRecord(job_id=job.id, session_id=sid, operation_id="k-core", payload={"private": "values"}, summary={}, created_at=datetime.fromtimestamp(old, timezone.utc)))
+        result = runtime.database.save_result(ResultRecord(job_id=job.id, session_id=sid, problem_id="k-core", payload={"private": "values"}, summary={}, created_at=datetime.fromtimestamp(old, timezone.utc)))
     with accounts.database._connect() as db:
         db.execute("UPDATE admin_metadata SET value=? WHERE key='resource_access_since'", (str(old),))
     preview = client.get("/api/admin/data/cleanup-preview?kind=results&days=180", headers=admin).json()

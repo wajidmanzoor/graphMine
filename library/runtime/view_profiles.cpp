@@ -21,9 +21,9 @@ void observe(const ViewProfile& profile, Work& work, const ViewResult& view, boo
       {"normalization", json::parse(view.normalization_json())}});
 }
 }
-ViewProfile::ViewProfile(const char* name, std::initializer_list<const char*> operations,
+ViewProfile::ViewProfile(const char* name, std::initializer_list<const char*> problems,
                          const char* spec_json, bool bind_partitions)
-    : id(name), operations(names(operations)), spec(ViewSpec::from_json(spec_json)), partition_parameters(bind_partitions) {
+    : id(name), problems(names(problems)), spec(ViewSpec::from_json(spec_json)), partition_parameters(bind_partitions) {
   if (partition_parameters && (spec.bipartite_sides != "parameters" || !spec.parameters ||
       !spec.parameters->left_partition.empty() || !spec.parameters->right_partition.empty()))
     throw std::logic_error("Partition binding needs an empty parameter template");
@@ -49,9 +49,9 @@ const ViewProfile& cpu_view_profile(const std::string& id) {
 json::array cpu_view_declarations() {
   json::array result;
   for (const auto& [id, profile] : profiles()) {
-    json::array operations;
-    for (const auto& operation : profile.operations) operations.push_back(json::value(operation));
-    json::object declaration{{"id", id}, {"backend", "cpp"}, {"operations", operations},
+    json::array problems;
+    for (const auto& problem : profile.problems) problems.push_back(json::value(problem));
+    json::object declaration{{"id", id}, {"backend", "cpp"}, {"problems", problems},
                              {"view", json::parse(profile.spec.canonical_json())}};
     if (profile.partition_parameters)
       declaration["view_bindings"]=json::object{{"parameters.left_partition","left_partition"},
@@ -92,8 +92,8 @@ std::shared_ptr<const ViewResult> consume_view(const Graph& graph, const ViewPro
     const std::string message = error.what();
     if (message == "Graph view: f64 sum overflows")
       throw Failure("invalid_input", "Aggregated edge weight overflowed");
-    if (message == "Graph view: This operation requires nonnegative edge weights")
-      throw Failure("invalid_input", "This operation requires nonnegative edge weights");
+    if (message == "Graph view: This problem requires nonnegative edge weights")
+      throw Failure("invalid_input", "This problem requires nonnegative edge weights");
     throw;
   }
 }

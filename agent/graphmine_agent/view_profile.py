@@ -90,9 +90,9 @@ def graph_facts(graph):
     }
 
 
-def profile_result(operation, port, original=None, focused=None):
+def profile_result(problem, port, original=None, focused=None):
     rows, total = rows_for(port)
-    roles = field_roles(operation, port, rows[:100])
+    roles = field_roles(problem, port, rows[:100])
     group_counts = Counter()
     membership = Counter()
     sizes = []
@@ -101,7 +101,7 @@ def profile_result(operation, port, original=None, focused=None):
     for i, row in enumerate(rows):
         if not isinstance(row, dict):
             continue
-        if operation == "vertex-coloring":
+        if problem == "vertex-coloring":
             group_counts[identity(row.get(port.get("score_field", "score")))] += 1
         elif port.get("type") == "vertex_groups":
             members = row.get("vertices", [])
@@ -155,7 +155,7 @@ def profile_result(operation, port, original=None, focused=None):
              for r in rows if isinstance(r, dict)] if port.get("type") == "bipartite_groups" else []
     largest_pair = max(pairs, key=lambda pair: (sum(pair), pair[0] * pair[1]), default=None)
     return {
-        "version": "1.0.0", "operation": operation, "port_type": port.get("type"), "field_roles": roles, "input": source, "witness": witness,
+        "version": "1.0.0", "problem": problem, "port_type": port.get("type"), "field_roles": roles, "input": source, "witness": witness,
         "coverage": coverage, "items": total, "scanned_items": len(rows),
         "collection": {"count": len(group_counts) if port.get("type") == "vertex_partition" else total,
                        "covered_vertices": len(set(membership) & source_ids) if collection_complete and source and source["statistics_complete"] else None,

@@ -47,7 +47,7 @@ def test_non_graph_input_retains_its_kind_without_inventing_graph_counts(databas
 @pytest.mark.parametrize("complete", [False, True])
 def test_preview_bounds_do_not_change_completeness_or_quality(complete):
     graph = {"graph": {"directed": False}, "vertices": [{"id": i} for i in range(5)], "edges": [{"id": i, "source": i, "target": i+1} for i in range(4)]}
-    output = {"operation": "k-core", "quality": "exact", "complete": complete,
+    output = {"problem": "k-core", "quality": "exact", "complete": complete,
               "ports": {"vertices": {"type": "vertex_set", "complete": complete, "value": [0, 1, 2, 3, 4]}}}
     record = {"id": "analysis", "revision": 4, "input_files": {"main": {"file_id": "deleted-source"}},
               "validation": {"plan": {"steps": [{"id": "core", "input": {"input": "main"}}]}}}
@@ -72,8 +72,8 @@ def test_result_routes_pin_revision_after_owner_check(library, suffix, method):
     client, runtime, alice, bob, sessions, file = library
     record = {"id": "pinned", "session_id": sessions[0], "revision": 2, "status": "completed", "steps": {"core": {"status": "completed"}},
               "input_files": {"main": {"file_id": file["id"], "kind": "graph"}},
-              "validation": {"workflow_hash": "a" * 64, "plan": {"steps": [{"id": "core", "operation": "maximal-cliques", "input": {"input": "main"}}]}}}
-    output = {"result": {"operation": "maximal-cliques", "quality": "exact", "complete": True,
+              "validation": {"workflow_hash": "a" * 64, "plan": {"steps": [{"id": "core", "problem": "maximal-cliques", "input": {"input": "main"}}]}}}
+    output = {"result": {"problem": "maximal-cliques", "quality": "exact", "complete": True,
                         "ports": {"groups": {"type": "vertex_groups", "value": [{"vertices": [0, 1, 2]}], "complete": True}}}}
     graph = {"graph": {"directed": False}, "vertices": [{"id": i} for i in range(3)], "edges": []}
     runtime.analytics._save(record)

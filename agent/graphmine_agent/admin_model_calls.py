@@ -8,7 +8,7 @@ from uuid import uuid4
 from .identity import AccountError, current_principal
 
 current_call = ContextVar("admin_model_call", default=None)
-STAGES = {"AnalyticsFamily": "family", "AnalyticsProblem": "problem", "AnalyticsRoute": "route",
+STAGES = {"AnalyticsFamily": "family", "AnalyticsProblem": "topic", "AnalyticsRoute": "route",
           "AnalyticsClarify": "clarify", "AnalyticsCandidates": "candidates", "AnalyticsPlan": "plan",
           "AnalyticsAnswer": "explanation", "RouteDecision": "route", "TurnDecision": "clarify",
           "PlanDraft": "plan", "GroundedNarrative": "explanation", "TemplateNarrative": "explanation"}

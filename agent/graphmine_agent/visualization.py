@@ -42,10 +42,10 @@ def answer_visualizations(
             f"Only matched events; timestamps are from the original data. Unit: {answer['provenance']['timestamp_unit']}.",
         )
     if (
-        answer["operation_id"] in {"betweenness-centrality", "personalized-pagerank"}
+        answer["problem_id"] in {"betweenness-centrality", "personalized-pagerank"}
         and answer["rows"]
     ):
-        proximity = answer["operation_id"] == "personalized-pagerank"
+        proximity = answer["problem_id"] == "personalized-pagerank"
         add(
             "bar",
             "ranking",
@@ -58,7 +58,7 @@ def answer_visualizations(
             if proximity
             else "Shortest-route mediation scores; not measured traffic or business importance. Equal values are ties.",
         )
-    if answer["operation_id"] == "k-core" and answer["rows"]:
+    if answer["problem_id"] == "k-core" and answer["rows"]:
         add(
             "histogram",
             "core_distribution",
@@ -96,7 +96,7 @@ def answer_visualizations(
     if answer["network"]["nodes"]:
         nodes = answer["network"]["nodes"]
         color = "community"
-        if answer["operation_id"] != "community-detection":
+        if answer["problem_id"] != "community-detection":
             for attribute in ("department", "category", "city", "organism"):
                 if (
                     len(
@@ -168,26 +168,26 @@ def answer_visualizations(
     from .view_rules import choose_view
     network = answer.get("network", {})
     graph = {"graph": {"directed": network.get("directed", False)}, "vertices": network.get("nodes", []), "edges": network.get("edges", [])}
-    operation = answer.get("operation_id", "")
-    kind = profile(operation)["kind"]
+    problem = answer.get("problem_id", "")
+    kind = profile(problem)["kind"]
     typ, value = ("vertex_groups", [{"group": g["id"], "vertices": g.get("vertices", [])} for g in answer.get("groups", [])]) if kind in {"groups", "partition"} else ("vertex_scores", answer.get("rows", [])) if kind == "scores" else ("vertex_set", [v["id"] for v in graph["vertices"]])
     port = {"type": typ, "value": value}
-    facts = profile_result(operation, port, None, graph)
+    facts = profile_result(problem, port, None, graph)
     view = {"graph_available": bool(graph["vertices"]), "vertices": graph["vertices"], "edges": graph["edges"], "vertex_count": network.get("total_nodes", len(graph["vertices"])), "edge_count": network.get("total_edges", len(graph["edges"])), "vertices_truncated": network.get("truncated", False), "complete": not network.get("truncated", False)}
-    spec = ViewSpec.model_validate(choose_view(profile(operation), facts, view, provenance={"adapter": "legacy-grounded-answer-v1", **answer.get("provenance", {})}))
+    spec = ViewSpec.model_validate(choose_view(profile(problem), facts, view, provenance={"adapter": "legacy-grounded-answer-v1", **answer.get("provenance", {})}))
     for item in views:
         item.view_spec = spec
     return views
 
 
 def default_visualizations(
-    operation_id: str, payload: dict[str, Any]
+    problem_id: str, payload: dict[str, Any]
 ) -> list[VisualizationSpec]:
     """Safe fallback views; the analyst model may replace or extend them."""
 
     output = payload.get("output", {})
     views: list[VisualizationSpec] = []
-    if operation_id == "community-detection":
+    if problem_id == "community-detection":
         views.append(
             VisualizationSpec(
                 type=VisualizationKind.network,
@@ -208,7 +208,7 @@ def default_visualizations(
                     interactions=["select_row", "filter"],
                 )
             )
-    elif operation_id == "betweenness-centrality":
+    elif problem_id == "betweenness-centrality":
         views.extend(
             [
                 VisualizationSpec(
@@ -234,7 +234,7 @@ def default_visualizations(
                 ),
             ]
         )
-    elif operation_id == "k-core":
+    elif problem_id == "k-core":
         views.extend(
             [
                 VisualizationSpec(
@@ -253,7 +253,7 @@ def default_visualizations(
                 ),
             ]
         )
-    elif operation_id == "temporal-motif-mining":
+    elif problem_id == "temporal-motif-mining":
         views.append(
             VisualizationSpec(
                 type=VisualizationKind.timeline,
@@ -266,7 +266,7 @@ def default_visualizations(
                 interactions=["time_range", "select_row", "filter"],
             )
         )
-    elif operation_id == "graph-motifs":
+    elif problem_id == "graph-motifs":
         views.append(
             VisualizationSpec(
                 type=VisualizationKind.bar,
@@ -276,7 +276,7 @@ def default_visualizations(
                 interactions=["select_row", "filter"],
             )
         )
-    elif operation_id == "triangle-counting":
+    elif problem_id == "triangle-counting":
         views.append(
             VisualizationSpec(
                 type=VisualizationKind.metric_cards,
@@ -296,7 +296,7 @@ def default_visualizations(
                     limit=100,
                 )
             )
-    elif operation_id == "dynamic-triangle-counting":
+    elif problem_id == "dynamic-triangle-counting":
         views.append(
             VisualizationSpec(
                 type=VisualizationKind.metric_cards,
@@ -318,12 +318,12 @@ def default_visualizations(
             "maximal-bicliques": "bicliques",
             "subgraph-isomorphism": "embeddings",
         }
-        field = candidate_fields.get(operation_id)
+        field = candidate_fields.get(problem_id)
         if field and field in output:
             views.append(
                 VisualizationSpec(
                     type=VisualizationKind.network,
-                    title=f"{operation_id.replace('-', ' ').title()} results",
+                    title=f"{problem_id.replace('-', ' ').title()} results",
                     data_ref=f"output.{field}",
                     encodings={"selection": "items"},
                     interactions=["zoom", "pan", "select_row", "filter"],

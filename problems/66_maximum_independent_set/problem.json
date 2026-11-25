@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "maximum_independent_set",
+  "topic_id": "maximum_independent_set",
   "name": "Maximum Independent Set",
   "category": "selection",
   "problem_statement": "Find an independent vertex set of maximum cardinality in a simple undirected graph.",

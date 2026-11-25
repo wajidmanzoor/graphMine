@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "max_flow_min_cut",
+  "topic_id": "max_flow_min_cut",
   "name": "Maximum Flow and Minimum s-t Cut",
   "category": "connectivity",
   "problem_statement": "Given a capacitated graph and distinct source and sink vertices, compute a maximum feasible flow and a minimum-capacity separating cut. With optional vertex capacities, the cut can contain both original edges and capacity-limited vertices.",

@@ -87,7 +87,7 @@ async def check(output: Path):
                         "steps": [
                             {
                                 "id": "groups",
-                                "operation": "maximal-cliques",
+                                "problem": "maximal-cliques",
                                 "input": {"input": "main"},
                                 "parameters": {},
                             }
@@ -158,7 +158,7 @@ async def check(output: Path):
                     ]
                     assert response["status"] == expected, response["status"]
                     if name == "calculate":
-                        assert [s["operation"] for s in response["plan"]["steps"]] == [
+                        assert [s["problem"] for s in response["plan"]["steps"]] == [
                             "triangle-counting"
                         ]
                         assert stages == ["route", "plan"], stages

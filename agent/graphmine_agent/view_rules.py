@@ -98,9 +98,9 @@ def choose_view(profile, facts, view, *, provenance=None):
     if facts.get("port_type") == "walk_sample":
         chart_ids = ["route", "visits"]
         alternates = ["walk", "visit_heat", *alternates]
-    if facts.get("operation") == "link-prediction":
+    if facts.get("problem") == "link-prediction":
         alternates.insert(0, "predicted_edges")
-    if facts.get("operation") == "temporal-paths":
+    if facts.get("problem") == "temporal-paths":
         alternates.insert(0, "timeline")
     if kind == "instances":
         alternates.insert(0, "occurrence_overlay")

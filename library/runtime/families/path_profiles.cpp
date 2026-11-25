@@ -47,7 +47,7 @@ CapacityRows widest_path_input(const Graph& graph, Work& work) {
   try {
     input = consume_view(graph,widest_profile,work,ViewBudget::record_edges);
   } catch (const Failure& error) {
-    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+    if (std::string(error.what()) == "This problem requires nonnegative edge weights")
       throw Failure("invalid_input","Every widest-path edge requires a nonnegative capacity");
     throw;
   } catch (const std::invalid_argument& error) {

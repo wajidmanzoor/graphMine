@@ -45,7 +45,7 @@ def redacted_log(raw):
     lines = []
     for line in raw.splitlines()[-200:]:
         # Arbitrary tracebacks and model logs can contain private user text.
-        # Extract only known operational fields rather than guessing secret names.
+        # Extract only known problemal fields rather than guessing secret names.
         access = re.search(r'"(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) (/[^?\s"]*)(?:\?[^\s"]*)? HTTP/[0-9.]+" (\d{3})', line)
         lifecycle = re.search(r'(Application startup complete|Application shutdown complete|Waiting for application startup|Waiting for application shutdown|Started server process|Finished server process|Shutting down)\b', line)
         date = re.match(r"\d{4}-\d{2}-\d{2}T[0-9:.+-]+", line)
@@ -211,7 +211,7 @@ class Monitor:
                 workflow = by_allocation.get(lease["id"], {})
                 owner = db.execute("SELECT a.username FROM sessions s JOIN accounts a ON a.id=s.owner_id WHERE s.id=?", (workflow.get("session_id"),)).fetchone()
                 lease.update(username=owner[0] if owner else None, workflow_id=workflow.get("id"),
-                             operations=[s["operation"] for s in workflow.get("validation", {}).get("plan", {}).get("steps", [])], started_at=workflow.get("started_at"))
+                             problems=[s["problem"] for s in workflow.get("validation", {}).get("plan", {}).get("steps", [])], started_at=workflow.get("started_at"))
         return {"status": "healthy" if items else "unavailable", "reason": None if items else "nvidia-smi returned no GPUs",
                 "items": items, "leases": leases}
 

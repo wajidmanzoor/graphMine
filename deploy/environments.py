@@ -373,5 +373,5 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except (ValueError, RuntimeError, OSError) as error:
-        print(f"Environment operation failed: {error}", file=sys.stderr)
+        print(f"Environment problem failed: {error}", file=sys.stderr)
         raise SystemExit(1)

@@ -30,7 +30,7 @@ def main():
     runtime = json.loads(
         subprocess.check_output([str(args.binary.resolve()), "list"], text=True)
     )
-    runtime_ops = {o["id"]: o for o in runtime["operations"]}
+    runtime_ops = {o["id"]: o for o in runtime["problems"]}
     definitions = [
         (
             "k-truss",
@@ -171,8 +171,8 @@ def main():
     manifest = read("graphmine_manifest.json")
     instructions = read("agent/program_instructions.json")
     registry = read("catalog/backend_registry.json")
-    operations = {o["id"]: o for o in manifest["operations"]}
-    programs = {o["id"]: o for o in instructions["operations"]}
+    problems = {o["id"]: o for o in manifest["problems"]}
+    programs = {o["id"]: o for o in instructions["problems"]}
     # Keep planner ranges synchronized with CLI representations and kernels.
     for program in programs.values():
         for name, spec in program["parameters"].items():
@@ -195,9 +195,9 @@ def main():
     programs["community-detection"]["parameters"]["resolution"] = parameter("--resolution", "number", minimum=0, default=1.0)
     programs["community-detection"]["backend_constraints"] = {"gleiden": {"parameter_equals": {"resolution": 1.0}}}
     programs["community-detection"]["validated_profile"] = "Unweighted undirected modularity clustering. Parallel Louvain/Leiden backends accept finite nonnegative resolution; gLeiden requires resolution=1. Heuristic partition with independently recomputed objective, not a global optimum certificate."
-    if "--resolution R" not in operations["community-detection"]["parameters"]:
-        operations["community-detection"]["parameters"].append("--resolution R")
-    registered = {o["id"]: o for o in registry["operations"]}
+    if "--resolution R" not in problems["community-detection"]["parameters"]:
+        problems["community-detection"]["parameters"].append("--resolution R")
+    registered = {o["id"]: o for o in registry["problems"]}
     for backend in registered["k-cliques"]["backends"]:
         maximum = {"kcgpu": 10, "graphset": 6, "gamma": 7}[backend["id"]]
         backend["capabilities"] = [
@@ -209,25 +209,25 @@ def main():
         "routing_contract_version": "repaired-37-v2",
         "integration_report": REPORT,
         "public_api_evidence": API_EVIDENCE,
-        "operations": {},
+        "problems": {},
         "backends": [],
     }
-    for operation, problem, backend, cls, outputs, parameters, profile in definitions:
-        native = runtime_ops[operation]
+    for problem, topic, backend, cls, outputs, parameters, profile in definitions:
+        native = runtime_ops[problem]
         cpp = dict(
             header="graphmine/problems/repaired_algorithms.hpp",
             **{"class": "graphmine::" + cls},
             options_type="graphmine::" + cls + "Options",
         )
-        profiles["operations"][operation] = {
-            "problem_id": problem,
+        profiles["problems"][problem] = {
+            "topic_id": topic,
             "backend_id": backend,
             "profile": profile,
             "cpp": cpp,
         }
-        operations[operation] = {
-            "id": operation,
-            "research_problem_id": problem,
+        problems[problem] = {
+            "id": problem,
+            "topic_id": topic,
             "cpp_class": cpp["class"],
             "cpp_header": cpp["header"],
             "cmake_component": "GraphMine::repaired_algorithms",
@@ -240,9 +240,9 @@ def main():
             "validated_profile": profile,
             "validation_report": REPORT,
         }
-        programs[operation] = {
-            "id": operation,
-            "problem_id": problem,
+        programs[problem] = {
+            "id": problem,
+            "topic_id": topic,
             "default_backend": backend,
             "parameters": parameters,
             "optional_outputs": {},
@@ -251,27 +251,27 @@ def main():
             "validated_profile": profile,
             "visualization_candidates": ["table", "metric_cards", "network"],
         }
-        registered[operation] = {
+        registered[problem] = {
             k: native[k] for k in ["id", "research_problem", "usage"]
         }
-        registered[operation]["backends"] = [
+        registered[problem]["backends"] = [
             {k: v for k, v in b.items() if k != "compiled"} for b in native["backends"]
         ]
-    # GAMMA is an alternative for the existing global butterfly operation.
-    for collection in [operations, registered]:
+    # GAMMA is an alternative for the existing global butterfly problem.
+    for collection in [problems, registered]:
         collection["butterfly-counting"]["backends"] = (
             ["graphminer", "gamma-butterfly"]
-            if collection is operations
+            if collection is problems
             else [
                 {k: v for k, v in b.items() if k != "compiled"}
                 for b in runtime_ops["butterfly-counting"]["backends"]
             ]
         )
-    operations["butterfly-counting"]["parameters"] = [
+    problems["butterfly-counting"]["parameters"] = [
         "--timeout-seconds N",
         "--worker-directory PATH",
     ]
-    operations["butterfly-counting"]["command"] = runtime_ops["butterfly-counting"][
+    problems["butterfly-counting"]["command"] = runtime_ops["butterfly-counting"][
         "usage"
     ]
     registered["butterfly-counting"]["usage"] = runtime_ops["butterfly-counting"][
@@ -279,16 +279,16 @@ def main():
     ]
     # Keep the established default until repaired-backend timings are benchmarked.
     programs["maximum-clique"]["default_backend"] = "gpu-maximum-clique"
-    operations["maximum-clique"]["validation_report"] = REPORT
+    problems["maximum-clique"]["validation_report"] = REPORT
     artifacts = read("catalog/artifact_sources.json")
-    known = {(a["problem_id"], a["paper_id"]) for a in artifacts["artifacts"]}
-    for operation, native in runtime_ops.items():
+    known = {(a["topic_id"], a["paper_id"]) for a in artifacts["artifacts"]}
+    for problem, native in runtime_ops.items():
         for backend in native["backends"]:
             name = backend["id"]
             if name not in repairs:
                 continue
             repair, paper = repairs[name]
-            profile = operations[operation].get(
+            profile = problems[problem].get(
                 "validated_profile",
                 "Exact single maximum-clique witness; single GPU; no all-ties mode.",
             )
@@ -307,16 +307,16 @@ def main():
             }
             profiles["backends"].append(
                 {
-                    "problem_id": native["research_problem"],
+                    "topic_id": native["research_problem"],
                     "backend_id": name,
-                    "operation_id": operation,
+                    "problem_id": problem,
                     "repair_directory": repair,
                     "validation": evidence,
                 }
             )
             if name in ["cuda-ms", "maximum-clique-on-gpu"]:
                 old = next(
-                    b for b in registered[operation]["backends"] if b["id"] == name
+                    b for b in registered[problem]["backends"] if b["id"] == name
                 )
                 old.update({k: v for k, v in backend.items() if k != "compiled"})
             key = (native["research_problem"], paper)
@@ -340,7 +340,7 @@ def main():
                     )
                 artifacts["artifacts"].append(
                     {
-                        "problem_id": key[0],
+                        "topic_id": key[0],
                         "paper_id": paper,
                         "title": metadata.get("title", paper),
                         "year": metadata.get("year"),
@@ -360,7 +360,7 @@ def main():
                 artifact = next(
                     a
                     for a in artifacts["artifacts"]
-                    if (a["problem_id"], a["paper_id"]) == key
+                    if (a["topic_id"], a["paper_id"]) == key
                 )
                 artifact.update(
                     source_distribution="external_checkout",
@@ -373,22 +373,22 @@ def main():
                     ),
                 )
     assert len(profiles["backends"]) == 9
-    manifest["operations"] = list(operations.values())
-    instructions["operations"] = list(programs.values())
-    registry["operations"] = list(registered.values())
-    supported = {o["research_problem_id"] for o in manifest["operations"]}
-    count = sum(len(o["backends"]) for o in manifest["operations"])
+    manifest["problems"] = list(problems.values())
+    instructions["problems"] = list(programs.values())
+    registry["problems"] = list(registered.values())
+    supported = {o["topic_id"] for o in manifest["problems"]}
+    count = sum(len(o["backends"]) for o in manifest["problems"])
     manifest["scope"].update(
-        research_problem_count=len(supported),
-        runnable_operation_count=len(operations),
+        topic_count=len(supported),
+        runnable_problem_count=len(problems),
         validated_backend_count=count,
         selection_rule="Validated baseline and expansion profiles plus the nine repaired integrations in validation/repaired_library. Only each explicit executable profile is supported.",
-        operation_count_note="Triangle and dynamic-triangle operations share a family; maximal-biclique enumeration and count-only operations also share a family.",
+        problem_count_note="Triangle and dynamic-triangle problems share a family; maximal-biclique enumeration and count-only problems also share a family.",
     )
-    manifest["included_problem_specs"] = [
+    manifest["included_topic_specs"] = [
         {"source": str(p.relative_to(ROOT)), "spec": json.loads(p.read_text())}
         for p in sorted((ROOT / "problems").glob("*/problem.json"))
-        if json.loads(p.read_text())["problem_id"] in supported
+        if json.loads(p.read_text())["topic_id"] in supported
     ]
     prepare = "python3 library/tools/prepare_repaired_workers.py --fetch --gpu 1"
     manifest["build_once_run_many"]["build"] = [prepare] + [
@@ -396,7 +396,7 @@ def main():
         for c in manifest["build_once_run_many"]["build"]
         if "prepare_repaired_workers" not in c
     ]
-    registry.update(operation_count=len(operations), validated_backend_count=count)
+    registry.update(problem_count=len(problems), validated_backend_count=count)
     for path in [
         "graphmine_manifest.json",
         "library/manifests/graphmine_manifest.json",
@@ -407,7 +407,7 @@ def main():
     write("catalog/artifact_sources.json", artifacts)
     write("catalog/repaired_profiles.json", profiles)
     print(
-        f"{len(operations)} operations, {len(supported)} problem families, {count} backend choices; nine repaired profiles"
+        f"{len(problems)} problems, {len(supported)} topic families, {count} backend choices; nine repaired profiles"
     )
 
 

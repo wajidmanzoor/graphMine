@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "biconnected_components",
+  "topic_id": "biconnected_components",
   "name": "Biconnected Components, Articulation Points and Bridges",
   "category": "connectivity",
   "problem_statement": "Compute vertex-biconnected blocks of a simple undirected graph, plus vertices and edges whose removal increases component count.",

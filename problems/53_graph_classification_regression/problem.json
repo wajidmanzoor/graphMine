@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "graph_classification_regression",
+  "topic_id": "graph_classification_regression",
   "name": "Graph Classification and Regression",
   "category": "learning",
   "problem_statement": "Predict one categorical label or numerical target for each graph in a collection.",

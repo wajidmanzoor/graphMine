@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "neighborhood_sampling",
+  "topic_id": "neighborhood_sampling",
   "name": "Neighborhood Sampling",
   "category": "preparation",
   "problem_statement": "Sample multihop neighborhoods around seed vertices using declared fanouts and neighbor-selection probabilities.",

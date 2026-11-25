@@ -251,15 +251,15 @@ def compare(service, workflow_id, step, port, body):
     other = ViewRequest(expected_revision=body.revision, index=body.other_index)
     right_record, right_saved, right_graph = snapshot(service, body.workflow_id, body.step, body.port, other)
     same_input = fingerprint(graph) == fingerprint(right_graph)
-    same_operation = saved.get("operation") == right_saved.get("operation")
-    if not (same_input and same_operation) and not body.allow_different_inputs:
-        raise AnalyticsError("Automatic comparison requires the same saved input and operation. Choose an explicit comparison to inspect different runs.", "incompatible_views", 409)
+    same_problem = saved.get("problem") == right_saved.get("problem")
+    if not (same_input and same_problem) and not body.allow_different_inputs:
+        raise AnalyticsError("Automatic comparison requires the same saved input and problem. Choose an explicit comparison to inspect different runs.", "incompatible_views", 409)
     left = result_view(service, workflow_id, step, port, index=body.index, expected_revision=body.expected_revision)
     right = result_view(service, body.workflow_id, body.step, body.port, index=body.other_index, expected_revision=body.revision)
     a, b = {_key(v["id"]): v["id"] for v in left["vertices"]}, {_key(v["id"]): v["id"] for v in right["vertices"]}
     # IDs in independently generated/coarsened namespaces do not establish a
     # correspondence, even when the source input happens to match.
-    comparable = same_input and all(r.get("operation") not in {"graph-coarsening", "graph-condensation", "knn-graph"} and r["ports"][p]["type"] != "cross_graph_mapping" for r, p in ((saved, port), (right_saved, body.port)))
+    comparable = same_input and all(r.get("problem") not in {"graph-coarsening", "graph-condensation", "knn-graph"} and r["ports"][p]["type"] != "cross_graph_mapping" for r, p in ((saved, port), (right_saved, body.port)))
     diff = {"left_only": [a[k] for k in sorted(a.keys() - b.keys())], "right_only": [b[k] for k in sorted(b.keys() - a.keys())], "both": [a[k] for k in sorted(a.keys() & b.keys())]} if comparable else None
     edge_diff = None
     if comparable:
@@ -279,14 +279,14 @@ def compare(service, workflow_id, step, port, body):
             transitions = [{"source": json.loads(x), "target": json.loads(y), "count": count} for (x, y), count in counts.most_common(1000)]
         except ValueError:
             skipped = None
-    return {"left": left, "right": right, "same_input": same_input, "comparable_entities": comparable, "same_operation": same_operation, "diff": diff, "edge_diff": edge_diff, "membership_transitions": transitions, "ambiguous_memberships": skipped,
+    return {"left": left, "right": right, "same_input": same_input, "comparable_entities": comparable, "same_problem": same_problem, "diff": diff, "edge_diff": edge_diff, "membership_transitions": transitions, "ambiguous_memberships": skipped,
             "diff_complete": not any(v.get("vertices_truncated") or v.get("edges_truncated") or not v.get("complete") for v in (left, right)),
             "parameters": [next((s for s in r["validation"]["plan"]["steps"] if s["id"] == key), {}) for r, key in ((record, step), (right_record, body.step))]}
 
 
 def require_input_namespace(saved, port):
     typ = saved["ports"][port]["type"]
-    if typ in {"pattern_collection", "cross_graph_mapping", "relation_embeddings"} or typ == "graph" and saved.get("operation") in {"graph-coarsening", "graph-condensation", "knn-graph"}:
+    if typ in {"pattern_collection", "cross_graph_mapping", "relation_embeddings"} or typ == "graph" and saved.get("problem") in {"graph-coarsening", "graph-condensation", "knn-graph"}:
         raise AnalyticsError("This view uses a different entity namespace. Open its source input before exploring neighbors or creating a selection.", "invalid_view")
 
 
@@ -311,15 +311,15 @@ def selection_input(runtime, workflow_id, step, port, body):
 def enumeration_input(runtime, workflow_id, step, port, body):
     _, saved, graph = snapshot(runtime.analytics, workflow_id, step, port, body)
     require_graph(graph)
-    operation = saved.get("operation")
+    problem = saved.get("problem")
     options = {"maximal-biclique-counting": ("maximal-bicliques", {}), "triangle-counting": ("triangle-counting", {"mode": "enumerate"}), "k-cliques": ("k-cliques", {"mode": "enumerate"}), "motif-counting": ("motif-counting", {"list_instances": True}), "graphlet-counting": ("graphlet-counting", {"list_instances": True}), "temporal-motifs": ("temporal-motifs", {"list_instances": True})}
-    if operation not in options:
+    if problem not in options:
         raise AnalyticsError("This metric does not declare a corresponding enumeration calculation.", "invalid_view")
     if len(graph["vertices"]) > 50000:
         raise AnalyticsError("This follow-up exceeds the 50,000-vertex input-copy budget.", "resource_limit", 413)
-    target, overrides = options[operation]
+    target, overrides = options[problem]
     result = selection_input(runtime, workflow_id, step, port, SelectionRequest(expected_revision=body.expected_revision, vertices=[v["id"] for v in graph["vertices"]]))
-    result.update(operation=target, parameters={**(saved.get("parameters", {}) if target == operation else {}), **overrides})
+    result.update(problem=target, parameters={**(saved.get("parameters", {}) if target == problem else {}), **overrides})
     return result
 
 
@@ -406,9 +406,9 @@ def register_view_action_routes(router):
         runtime = request.app.state.runtime
         response = await run_in_threadpool(selection_input, runtime, workflow_id, step, port, body)
         profile = response.pop("selection_profile")
-        cards = (await runtime.analytics.capabilities())["operations"]
+        cards = (await runtime.analytics.capabilities())["problems"]
         direction = "directed" if profile["directed"] else "undirected"
-        response["compatible_operations"] = [card["id"] for card in cards if eligible(card, profile)[0]
+        response["compatible_problems"] = [card["id"] for card in cards if eligible(card, profile)[0]
                                              and card["requirements"]["direction"] in {"either", direction}]
         return response
 

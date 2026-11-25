@@ -133,8 +133,8 @@ def test_weighted_missing_data_is_unsupported_before_drafting(
                 "Capability failure must not reach drafting"
             )
             return RouteDecision(
-                problem_id="centrality_influential_node_mining",
-                operation_id="betweenness-centrality" if supported else None,
+                topic_id="centrality_influential_node_mining",
+                problem_id="betweenness-centrality" if supported else None,
                 supported=supported,
                 confidence=1,
                 missing_information=["Upload monetary costs"],
@@ -174,8 +174,8 @@ def test_input_clarification_is_not_mislabeled_as_missing_capability(catalog):
         == "needs_information"
     )
     missing_threshold = RouteDecision(
-        problem_id="k_core_decomposition",
-        operation_id="k-core",
+        topic_id="k_core_decomposition",
+        problem_id="k-core",
         supported=True,
         confidence=1,
         explanation="How many remaining partners should each have?",
@@ -209,8 +209,8 @@ def test_uncertain_followup_reaches_full_planner_with_original_question(
         plan = ExecutionPlan(
             session_id=session.id,
             graph_id=graph.id,
-            operation_id="maximal-cliques",
-            problem_id="maximal_clique_enumeration",
+            problem_id="maximal-cliques",
+            topic_id="maximal_clique_enumeration",
             parameters={"minimum_clique_size": 3},
             application_intent=ApplicationIntent(),
         )
@@ -221,7 +221,7 @@ def test_uncertain_followup_reaches_full_planner_with_original_question(
             ResultRecord(
                 job_id=job.id,
                 session_id=session.id,
-                operation_id=plan.operation_id,
+                problem_id=plan.problem_id,
                 payload={},
                 summary={},
                 answer={"question": "Find every qualifying group", "facts": []},
@@ -244,7 +244,7 @@ def test_uncertain_followup_reaches_full_planner_with_original_question(
                 return TurnDecision(action="clarify", request="Which starting point?")
             assert kwargs["schema"] is RouteDecision
             return RouteDecision(
-                problem_id="centrality_influential_node_mining" if weighted else None,
+                topic_id="centrality_influential_node_mining" if weighted else None,
                 supported=False,
                 confidence=0.8,
                 explanation="Costs are unavailable"
@@ -273,15 +273,15 @@ def test_uncertain_followup_reaches_full_planner_with_original_question(
 
 
 def test_unavailable_catalog_problem_does_not_invite_more_uploads(catalog):
-    problem_id = next(
+    topic_id = next(
         name
-        for name, value in catalog.problems.items()
+        for name, value in catalog.topics.items()
         if value["library_support"]["status"] != "validated"
     )
     decision = normalize_route(
         catalog,
         RouteDecision(
-            problem_id=problem_id,
+            topic_id=topic_id,
             supported=False,
             confidence=1,
             explanation="Upload a new input to enable this.",
@@ -309,7 +309,7 @@ def test_unsupported_event_pattern_outranks_missing_units(catalog, intent):
     decision = normalize_route(
         catalog,
         RouteDecision(
-            problem_id="temporal_motif_mining",
+            topic_id="temporal_motif_mining",
             supported=False,
             confidence=1,
             intent=intent,
@@ -319,6 +319,7 @@ def test_unsupported_event_pattern_outranks_missing_units(catalog, intent):
     )
     status, message = route_blocker(catalog, decision)
     assert status == "unsupported" and "three-entity pattern" in message
+    assert decision.problem_id is None  # The topic cannot authorize execution.
 
 
 def test_routing_does_not_invent_a_missing_event_pattern():
@@ -555,7 +556,7 @@ def cached_evidence(synthetic, tmp_path):
         "id": result_id,
         "session_id": session_id,
         "job_id": job_id,
-        "operation_id": task["operation_id"],
+        "problem_id": task["problem_id"],
         "payload": {
             "output": {
                 "cliques": task["oracle"]["groups"],

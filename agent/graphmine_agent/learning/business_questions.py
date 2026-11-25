@@ -1,4 +1,4 @@
-"""Authored application questions, with operation IDs kept out of user text.
+"""Authored application questions, with problem IDs kept out of user text.
 
 These are synthetic task cards, not collected customer requests or independently
 reviewed paraphrases. Each card keeps the source task's mathematical contract.
@@ -250,7 +250,7 @@ def question_for(example, *, broad_goal=False):
             if task["behavior"] == "clarify"
             else "four-host-chain"
             if task["behavior"] == "unsupported"
-            else task["operation_id"]
+            else task["problem_id"]
         )
         query = QUESTIONS[domain][kind][index].format(
             threshold=task["parameters"].get("requested_k")

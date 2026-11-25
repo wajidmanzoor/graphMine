@@ -131,8 +131,8 @@ def universe(nmax, *, directed=False, labeled=False, connected_only=False, max_e
     return result
 
 
-def call(operation, data, **parameters):
-    value = run(operation, data, parameters=parameters, device="cpu")
+def call(problem, data, **parameters):
+    value = run(problem, data, parameters=parameters, device="cpu")
     assert value["backend"]["device"] == "cpu"
     assert value["backend"]["library"] == "igraph"
     assert value["quality"] == "exact" and value["complete"]
@@ -483,12 +483,12 @@ def test_loop_parallel_labels_and_parameter_contracts():
     loop = deepcopy(source)
     loop["graph"]["allows_self_loops"] = True
     loop["edges"].append({"id": "loop", "source": 0, "target": 0})
-    for operation, data, parameters in [
+    for problem, data, parameters in [
         ("frequent-subgraphs", collection(loop), args),
         ("single-graph-frequent-subgraphs", loop, mni),
     ]:
         with pytest.raises(GraphMineError, match="self-loops"):
-            run(operation, data, device="cpu", parameters=parameters)
+            run(problem, data, device="cpu", parameters=parameters)
     assert (
         call("frequent-subgraphs", collection(loop), **args, self_loops="drop")[
             "result"
@@ -544,13 +544,13 @@ def test_loop_parallel_labels_and_parameter_contracts():
 
 @pytest.mark.parametrize("kind", ["work", "output"])
 @pytest.mark.parametrize(
-    "operation", ["frequent-subgraphs", "single-graph-frequent-subgraphs"]
+    "problem", ["frequent-subgraphs", "single-graph-frequent-subgraphs"]
 )
-def test_exhaustion_never_claims_completion(kind, operation):
+def test_exhaustion_never_claims_completion(kind, problem):
     source = graph(3, [(0, 1), (1, 2)], labels=["A"] * 3)
     parameters = (
         {"minimum_support_fraction": 1, "maximum_edges": 2}
-        if operation == "frequent-subgraphs"
+        if problem == "frequent-subgraphs"
         else {
             "minimum_image_support": 1,
             "max_pattern_edges": 2,
@@ -560,8 +560,8 @@ def test_exhaustion_never_claims_completion(kind, operation):
     budget = Budget(max_candidates=1) if kind == "work" else Budget(max_output_items=1)
     with pytest.raises(ResourceLimit):
         run(
-            operation,
-            collection(source) if operation == "frequent-subgraphs" else source,
+            problem,
+            collection(source) if problem == "frequent-subgraphs" else source,
             device="cpu",
             parameters=parameters,
             budget=budget,
@@ -577,7 +577,7 @@ def test_pattern_graph_workflow_and_count_only_rejection():
         "steps": [
             {
                 "id": "mine",
-                "operation": "frequent-subgraphs",
+                "problem": "frequent-subgraphs",
                 "input": {"input": "database"},
                 "parameters": {
                     "minimum_support_fraction": 1,
@@ -587,7 +587,7 @@ def test_pattern_graph_workflow_and_count_only_rejection():
             },
             {
                 "id": "degrees",
-                "operation": "degree-centrality",
+                "problem": "degree-centrality",
                 "input": {
                     "step": "mine",
                     "port": "patterns",
@@ -618,7 +618,7 @@ def test_pattern_graph_workflow_and_count_only_rejection():
             validate_workflow(invalid, inputs)
     plan["steps"][0] = {
         "id": "mine",
-        "operation": "single-graph-frequent-subgraphs",
+        "problem": "single-graph-frequent-subgraphs",
         "input": {"input": "host"},
         "parameters": {"minimum_image_support": 1, "max_pattern_edges": 2},
     }

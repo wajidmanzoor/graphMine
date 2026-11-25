@@ -2,32 +2,32 @@
 (() => {
   "use strict";
   const qualityLabel = value => value === "mixed" ? "Mixed guarantees" : String(value || "Unspecified").replaceAll("_", " ").replace(/^./, c => c.toUpperCase());
-  const guarantee = (option, catalog, operation) => catalog?.operations?.find(row => row.id === operation)?.quality_guarantees || option.quality_guarantees?.[operation];
+  const guarantee = (option, catalog, problem) => catalog?.problems?.find(row => row.id === problem)?.quality_guarantees || option.quality_guarantees?.[problem];
   window.GraphMineDistinctOptions = (options, catalog, wire) => {
     const seen = new Set();
     const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === "object" ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
     return options.filter(option => {
-      const parameters = option.operations.map(operation => {
-        const values = {...(option.operations.length === 1 ? option.parameters : option.parameters?.[operation])};
-        const equivalents = guarantee(option, catalog, operation)?.canonical_requests;
+      const parameters = option.problems.map(problem => {
+        const values = {...(option.problems.length === 1 ? option.parameters : option.parameters?.[problem])};
+        const equivalents = guarantee(option, catalog, problem)?.canonical_requests;
         if (equivalents && Object.hasOwn(equivalents, values.solution_quality)) values.solution_quality = equivalents[values.solution_quality];
         return values;
       });
-      const key = wire.stringify(canonical([option.input ?? null, option.operations, parameters]));
+      const key = wire.stringify(canonical([option.input ?? null, option.problems, parameters]));
       if (seen.has(key)) return false;
       seen.add(key); return true;
     });
   };
   window.GraphMineOptionQuality = (option, catalog, edited = {}) => {
     let verified = true;
-    const qualities = option.operations.map(operation => {
+    const qualities = option.problems.map(problem => {
       // Current server contracts also correct the badges on historical cards.
-      const contract = guarantee(option, catalog, operation);
-      const values = option.operations.length === 1 ? option.parameters : option.parameters?.[operation];
-      const requested = Object.hasOwn(edited, operation) ? edited[operation] : values?.solution_quality;
+      const contract = guarantee(option, catalog, problem);
+      const values = option.problems.length === 1 ? option.parameters : option.parameters?.[problem];
+      const requested = Object.hasOwn(edited, problem) ? edited[problem] : values?.solution_quality;
       if (contract) return requested == null ? contract.default : contract.by_request?.[requested] || contract.default;
       verified = false;
-      return requested || option.operation_qualities?.[operation] || option.quality;
+      return requested || option.problem_qualities?.[problem] || option.quality;
     });
     const quality = new Set(qualities).size === 1 ? qualities[0] : "mixed";
     return (verified ? "" : "Requested: ") + qualityLabel(quality);
@@ -41,12 +41,12 @@
     if (/potentially expensive|higher cost/i.test(option.cost_hint || "")) heading.append(node("span", {class: "option-cost pill", title: option.cost_hint}, "Potentially expensive"));
     const edited = node("small", {class: "option-edited", hidden: !option.preselected}, "Preselected · awaiting your choice");
     card.append(node("h3", {}, option.title), heading, edited);
-    for (const id of option.operations) {
-      const operation = catalog?.operations?.find(item => item.id === id);
-      const family = (catalog?.task_families || catalog?.families || []).find(item => item.id === operation?.family);
+    for (const id of option.problems) {
+      const problem = catalog?.problems?.find(item => item.id === id);
+      const family = (catalog?.task_families || catalog?.families || []).find(item => item.id === problem?.family);
       const selection = node("dl", {class: "option-selection", "aria-label": `Selected calculation: ${id}`});
       const unavailable = catalog ? "Not available in the current catalog" : "Loading catalog…";
-      for (const [label, value] of [["Family", family?.title || operation?.family || unavailable], ["Problem", operation?.problem_title || operation?.problem_id || unavailable], ["Operation", id]]) {
+      for (const [label, value] of [["Family", family?.title || problem?.family || unavailable], ["Topic", problem?.topic_title || problem?.topic_id || unavailable], ["Problem", id]]) {
         const field = node("div"); field.append(node("dt", {}, label), node("dd", {}, value)); selection.append(field);
       }
       card.append(selection);
@@ -70,7 +70,7 @@
     for (const [index, field] of (option.parameter_fields || []).entries()) {
       const id = `${option.id}-parameter-${index}-${Math.random().toString(36).slice(2, 8)}`;
       const row = node("div", {class: "option-parameter"});
-      row.append(node("label", {for: id}, `${option.operations.length > 1 ? field.operation + " · " : ""}${field.label}${field.required ? " (required)" : ""}`));
+      row.append(node("label", {for: id}, `${option.problems.length > 1 ? field.problem + " · " : ""}${field.label}${field.required ? " (required)" : ""}`));
       const choices = field.schema.enum || field.schema.anyOf?.find(branch => branch.enum)?.enum;
       let control, parse;
       if (choices || field.kind === "boolean") {
@@ -99,7 +99,7 @@
         card.classList.remove("is-preselected");
         edited.hidden = false; edited.textContent = "Parameters edited · review before choosing";
         if (field.name === "solution_quality") {
-          editedQuality[field.operation] = parse();
+          editedQuality[field.problem] = parse();
           quality.textContent = window.GraphMineOptionQuality(option, catalog, editedQuality);
         }
       });
@@ -112,12 +112,12 @@
     const error = node("p", {class: "option-error", role: "alert", hidden: ""});
     const button = node("button", {class: "primary", type: "button", "data-pick-option": option.id}, "Use this option");
     button.addEventListener("click", async () => {
-      const parameters = controls.length ? (option.operations.length > 1 ? Object.fromEntries(option.operations.map(op => [op, {}])) : {}) : option.parameters;
+      const parameters = controls.length ? (option.problems.length > 1 ? Object.fromEntries(option.problems.map(op => [op, {}])) : {}) : option.parameters;
       try {
         for (const {field, control, parse} of controls) {
           let value;
           try { value = parse(); } catch { control.focus(); throw new Error(`Enter valid ${field.kind === "array" || field.kind === "object" ? "JSON" : field.kind} for ${field.label}.`); }
-          if (value !== undefined) (option.operations.length > 1 ? parameters[field.operation] : parameters)[field.name] = value;
+          if (value !== undefined) (option.problems.length > 1 ? parameters[field.problem] : parameters)[field.name] = value;
         }
         error.hidden = true; button.disabled = true;
         await onChoose({...option, parameters});

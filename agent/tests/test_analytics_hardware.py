@@ -19,7 +19,7 @@ from graphmine_agent.models import FileRole
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "operation,parameters,available,device,quality",
+    "problem,parameters,available,device,quality",
     [
         ("triangle-counting", {}, True, "gpu", "exact"),
         ("triangle-counting", {}, False, "cpu", "exact"),
@@ -54,7 +54,7 @@ async def test_auto_workflow_gpu_priority_and_quality_preserving_fallback(
     session,
     triangle_graph,
     monkeypatch,
-    operation,
+    problem,
     parameters,
     available,
     device,
@@ -98,7 +98,7 @@ async def test_auto_workflow_gpu_priority_and_quality_preserving_fallback(
                     "steps": [
                         {
                             "id": "answer",
-                            "operation": operation,
+                            "problem": problem,
                             "input": {"input": "main"},
                             "parameters": parameters,
                         }
@@ -117,9 +117,9 @@ async def test_auto_workflow_gpu_priority_and_quality_preserving_fallback(
             assert (
                 result["backend"]["hardware"]["uuid"] == final["allocation"]["gpu_uuid"]
             )
-        if operation == "triangle-counting":
+        if problem == "triangle-counting":
             assert result["ports"]["count"]["value"] == 1
-        elif operation == "community-detection":
+        elif problem == "community-detection":
             if device == "gpu":
                 assert final["allocation"]["device"] == "gpu"
                 assert result["backend"]["id"] in {
@@ -128,7 +128,7 @@ async def test_auto_workflow_gpu_priority_and_quality_preserving_fallback(
                     "parallel-leiden",
                     "parallel-leiden-plus",
                 }
-        elif operation == "induced-subgraph":
+        elif problem == "induced-subgraph":
             assert "native CPU" in result["backend"]["selection_reason"]
     finally:
         await service.close()
@@ -162,7 +162,7 @@ async def test_physical_gpu1_serial_reservation_and_cancelled_waiter(
         "steps": [
             {
                 "id": "bfs",
-                "operation": "breadth-first-search",
+                "problem": "breadth-first-search",
                 "input": {"input": "main"},
                 "parameters": {"sources": [source]},
             }

@@ -86,7 +86,7 @@ def _maximum_density_closure(n, terms, work):
 
 @register(
     id="densest-subgraph",
-    problem_id="densest_subgraph",
+    topic_id="densest_subgraph",
     title="Find the region with the most edges or cliques per vertex",
     description="Maximize induced k-clique count / vertex count. k is clique order, not result size. Weighted density is defined only for k=2.",
     parameters={
@@ -171,7 +171,7 @@ def densest(graph, args, work, backend="networkx"):
 
 @register(
     id="densest-k-subgraph",
-    problem_id="densest_k_subgraph",
+    topic_id="densest_k_subgraph",
     title="Find exactly k vertices with the greatest internal edge value",
     description="Binary vertex/edge optimization with an exact cardinality constraint; solver optimality and the recomputed objective are checked.",
     parameters={
@@ -219,7 +219,7 @@ def densest_k(graph, args, work, backend="networkx"):
 
 @register(
     id="quasi-cliques",
-    problem_id="quasi_clique_mining",
+    topic_id="quasi_clique_mining",
     title="Find groups meeting a minimum internal-degree fraction",
     description="Enumerate all gamma quasi-cliques via binary feasibility models; maximality is checked against all qualifying larger sets within the size bounds.",
     parameters={
@@ -240,7 +240,7 @@ def quasi_cliques(graph, args, work, backend="networkx"):
     g = simple(graph)
     accepted = []
     # Decimal semantics avoid accidental ceil(0.14 * 50) == 8 from binary
-    # rounding. This threshold rule is part of the operation's public contract.
+    # rounding. This threshold rule is part of the problem's public contract.
     gamma = Fraction(str(args["gamma"]))
     for size in range(
         min(len(g), upper if upper is not None else len(g)), minimum - 1, -1

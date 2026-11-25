@@ -16,7 +16,7 @@ def exchange(recipes, monkeypatch):
     result.update(complete=True, workflow_hash="a" * 64)
     result["steps"]["core"]["result"]["ports"]["count"]["value"] = 9007199254740993
     runtime.analytics._write(runtime.analytics._directory(record) / "result.json", result)
-    caps = {"implementation_sha256": "b" * 64, "operations": [{"id": "k-core", "parameters": {"requested_k": {"kind": "integer"}}, "output_ports": {"count": {"type": "scalar"}}}]}
+    caps = {"implementation_sha256": "b" * 64, "problems": [{"id": "k-core", "parameters": {"requested_k": {"kind": "integer"}}, "output_ports": {"count": {"type": "scalar"}}}]}
     async def capabilities():
         return deepcopy(caps)
     monkeypatch.setattr(runtime.analytics, "capabilities", capabilities)
@@ -65,14 +65,14 @@ def test_changed_or_unreviewed_execution_cannot_be_exported(exchange, change):
     assert response.status_code == (422 if change == "evaluation" else 409), response.text
 
 
-def test_current_stage_contracts_use_available_operations_facts_and_wire_format(exchange):
+def test_current_stage_contracts_use_available_problems_facts_and_wire_format(exchange):
     _, _, _, _, _, _, caps, _, _ = exchange
-    context = {"cards": caps["operations"], "aliases": ["main"], "device": "cpu", "facts": [{"id": "f1"}]}
+    context = {"cards": caps["problems"], "aliases": ["main"], "device": "cpu", "facts": [{"id": "f1"}]}
     for name in ("AnalyticsRoute", "AnalyticsPlan", "AnalyticsPlanNormalized", "AnalyticsAnswer"):
         jsonschema.Draft202012Validator.check_schema(schema_for(name, context))
-    validate_target("AnalyticsRoute", {"intent": "calculate", "operations": ["k-core"], "message": "Find the core"}, context)
+    validate_target("AnalyticsRoute", {"intent": "calculate", "problems": ["k-core"], "message": "Find the core"}, context)
     with pytest.raises(jsonschema.ValidationError):
-        validate_target("AnalyticsRoute", {"intent": "calculate", "operations": ["invented"], "message": "x"}, context)
+        validate_target("AnalyticsRoute", {"intent": "calculate", "problems": ["invented"], "message": "x"}, context)
     validate_target("AnalyticsAnswer", {"lead": "Here is the result", "fact_ids": ["f1"]}, context)
     with pytest.raises(ValueError):
         validate_target("AnalyticsAnswer", {"lead": "There are 42", "fact_ids": ["f1"]}, context)

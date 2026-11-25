@@ -65,7 +65,7 @@ def test_business_wording_preserves_contracts_and_keeps_split_wording_separate()
     broad = [row for row in examples if row["question_kind"] == "broad_business_goal"]
     assert broad and all(row["task"]["behavior"] == "clarify" for row in broad)
     assert all(
-        row["gold_route"]["operation_id"] is None and row["gold_route"]["ambiguity"]
+        row["gold_route"]["problem_id"] is None and row["gold_route"]["ambiguity"]
         for row in broad
     )
 

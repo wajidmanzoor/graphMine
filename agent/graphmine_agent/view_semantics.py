@@ -8,8 +8,8 @@ from .view_profile import GRAPH_BUDGET, ROW_BUDGET, finite, rows_for
 def semantic_data(saved, port, graph, vertices, membership, index=None):
     rows, _ = rows_for(port)
     data = {}
-    operation = saved.get("operation")
-    if operation == "max-flow-min-cut":
+    problem = saved.get("problem")
+    if problem == "max-flow-min-cut":
         raw = saved.get("result", {})
         if isinstance(raw.get("source_side"), list) and isinstance(raw.get("sink_side"), list):
             data["cut_sides"] = [raw["source_side"][:GRAPH_BUDGET], raw["sink_side"][:GRAPH_BUDGET]]
@@ -27,14 +27,14 @@ def semantic_data(saved, port, graph, vertices, membership, index=None):
         data["item_previews"] = previews
     route = None
     route_partial = False
-    if operation == "topological-sort" and port["type"] == "vertex_set":
+    if problem == "topological-sort" and port["type"] == "vertex_set":
         route = [{"vertex": v} for v in rows[:200]]
     elif port["type"] in {"path_set", "walk_sample", "edge_sequence_collection"}:
         values = port.get("value", [])
         chosen = values[index or 0] if values and (index or 0) < len(values) else None
         sequence = chosen if isinstance(chosen, list) and port["type"] != "edge_sequence_collection" else chosen.get("vertices", []) if isinstance(chosen, dict) else []
         route = [{"vertex": v} for v in sequence[:200] if type(v) in (str, int)]
-    elif operation in {"single-source-shortest-paths", "widest-paths", "breadth-first-search"} and index is not None and isinstance(port.get("value"), list):
+    elif problem in {"single-source-shortest-paths", "widest-paths", "breadth-first-search"} and index is not None and isinstance(port.get("value"), list):
         values = port["value"]
         lookup = {(identity(r.get("source")), identity(r["vertex"])): r for r in values[:100000] if isinstance(r, dict) and "vertex" in r}
         cursor = values[index] if index < len(values) else None
@@ -100,7 +100,7 @@ def semantic_data(saved, port, graph, vertices, membership, index=None):
                 elif isinstance(v, dict):
                     metrics.extend({"name": (k + " · " + field).replace("_", " "), "value": value} for field, value in v.items() if finite(value) is not None)
             data["learning_metrics"] = metrics[:64]
-        if name == "scores" and saved.get("operation") == "k-core":
+        if name == "scores" and saved.get("problem") == "k-core":
             data["core_scores"] = rows_for(other, 2000)[0]
     # Confusion is valid only with an explicit retained truth per observation.
     confusion = Counter()

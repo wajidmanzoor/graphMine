@@ -172,7 +172,7 @@ def audit(
     for ordinal in (0, 1):
         request = {
             "command": "run",
-            "operation": "breadth-first-search",
+            "problem": "breadth-first-search",
             "graph": {
                 "graph": {
                     "id": "hardware-inventory",
@@ -603,38 +603,38 @@ def audit(
     taxonomy = json.loads(
         (ROOT / "library/manifests/problems.json").read_text()
     )
-    problems = {row["id"]: row for row in taxonomy["problems"]}
+    topics = {row["id"]: row for row in taxonomy["topics"]}
     contracts = [
         json.loads(path.read_text())
         for path in sorted((ROOT / "problems").glob("[0-9][0-9]_*/problem.json"))
     ]
-    assert {row["problem_id"] for row in contracts} == set(problems) - {
+    assert {row["topic_id"] for row in contracts} == set(topics) - {
         "graph_record_queries"
     }
     references = json.loads(
         (ROOT / "catalog/python_analytics_coverage.json").read_text()
-    )["operations"]
+    )["problems"]
     from family_catalog import taxonomy as load_taxonomy
     families = load_taxonomy(ROOT)["families"]
-    operation_families = {
-        operation: family["id"] for family in families for operation in family["operations"]
+    problem_families = {
+        problem: family["id"] for family in families for problem in family["problems"]
     }
     assert all(
-        card["family"] == operation_families[card["id"]] for card in references
+        card["family"] == problem_families[card["id"]] for card in references
     )
     return {
         "schema_version": 1,
         "scope": "Native runtime migration checkpoint; not a complete architecture migration or application gate",
         "native_formal_problem_count": len(
             {
-                row["problem_id"]
-                for row in builds["cpu"]["catalog"]["operations"]
-                if row["problem_id"] != "graph_record_queries"
+                row["topic_id"]
+                for row in builds["cpu"]["catalog"]["problems"]
+                if row["topic_id"] != "graph_record_queries"
             }
         ),
         "formal_problem_count": 70,
-        "cpu_runtime_operations": [
-            row["id"] for row in builds["cpu"]["catalog"]["operations"]
+        "cpu_runtime_problems": [
+            row["id"] for row in builds["cpu"]["catalog"]["problems"]
         ],
         "standalone_core_requires_python": False,
         "application_uses_native_runtime": False,

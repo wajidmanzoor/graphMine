@@ -1,6 +1,6 @@
 """Review frozen routing outputs without regenerating or changing model weights.
 
-Temporal-only fields have no effect on static operations, and a bounded read-only
+Temporal-only fields have no effect on static problems, and a bounded read-only
 inspection is a request for another routing stage, not a wrong computation.
 Behavior uses the production blocker, where capability limitations outrank input
 requests. Optional, hash-bound label audits produce a separate third score set.
@@ -33,7 +33,7 @@ def review_generation(case, result, catalog):
     if not strict.get("decision"):
         return strict, review
     expected = RouteDecision.model_validate(case["expected"])
-    temporal = expected.problem_id == "temporal_motif_mining"
+    temporal = expected.topic_id == "temporal_motif_mining"
     ignored = []
     for issue in review["issues"]:
         field = issue.partition(":")[0]
@@ -163,9 +163,9 @@ def review(suite: Path, results: list[Path], output: Path, *, label_audit=None):
         "strict_summary": summarize(originals, len(cases), arms),
         "application_review_summary": summarize(reviewed, len(cases), arms),
         "grading_changes": [
-            "Non-temporal operations ignore temporal pattern/window fields in application_capability_errors and planning; redundant descriptions are tracked separately.",
+            "Non-temporal problems ignore temporal pattern/window fields in application_capability_errors and planning; redundant descriptions are tracked separately.",
             "A bounded inspection is allowed by the production prompt; record it without claiming the complete follow-up succeeded.",
-            "Effective behavior uses production route_blocker, including capability-before-input priority and missing operation identity; no gold operation fallback.",
+            "Effective behavior uses production route_blocker, including capability-before-input priority and missing problem identity; no gold problem fallback.",
         ],
         "caution": "Grading corrections were defined after inspecting early test outputs. Original scores and raw outputs are preserved. This is not an untouched final benchmark or complete-agent validation.",
         "limitations": plan["limitations"],

@@ -52,7 +52,7 @@ def planning_cards(cards, inputs):
             "attributes.side or the inferred two types. If bipartition.available is true, "
             "the sides are available: do not ask for IDs or repeat a side confirmation. "
             "For directed inputs the application asks permission to create an undirected "
-            "copy before validation. Do not invent a conversion operation or parameter."
+            "copy before validation. Do not invent a conversion problem or parameter."
         )
     return result
 
@@ -70,7 +70,7 @@ def complete_partitions(plan, inputs):
     plan = deepcopy(plan)
     directed = set()
     for step in plan["steps"]:
-        if step["operation"] != "maximal-bicliques":
+        if step["problem"] != "maximal-bicliques":
             continue
         descriptor = inputs.get(step["input"].get("input"))
         if descriptor is None or descriptor["kind"] != "graph":
@@ -105,7 +105,7 @@ def missing_required_parameter(plan, cards, entities=()):
     """Ask for unavailable values; an omitted, identified entity is repairable."""
     by_id = {card["id"]: card for card in cards}
     for step in plan["steps"]:
-        specs = by_id[step["operation"]]["parameters"]
+        specs = by_id[step["problem"]]["parameters"]
         assigned = {identity(step["parameters"][name]) for name, spec in specs.items()
                     if spec["kind"] == "vertex_id" and name in step["parameters"]}
         for name, spec in specs.items():

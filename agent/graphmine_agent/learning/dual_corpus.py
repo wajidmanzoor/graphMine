@@ -143,7 +143,7 @@ def graph_from_pairs(
             "allows_parallel_edges": False,
             "attributes": {
                 "description": description
-                or "Fictional operational records. Edge strength is a recorded score, not a probability, cost or causal effect. No claims about real people or organizations are supported.",
+                or "Fictional problemal records. Edge strength is a recorded score, not a probability, cost or causal effect. No claims about real people or organizations are supported.",
                 **({"timestamp_unit": "seconds"} if times is not None else {}),
             },
         },
@@ -265,7 +265,7 @@ def build_corpus(
         graph,
         lineage,
         split,
-        operation,
+        problem,
         question,
         *,
         parameters=None,
@@ -273,12 +273,12 @@ def build_corpus(
         intent=None,
         attachments=None,
         status="ready",
-        problem=None,
+        topic=None,
         tag="clear",
     ):
         index = len(cases)
         case = {
-            "id": f"dual-{index:04d}-{operation or 'clarify'}",
+            "id": f"dual-{index:04d}-{problem or 'clarify'}",
             "domain_id": "general",
             "split": split,
             "lineage": lineage,
@@ -287,9 +287,9 @@ def build_corpus(
             "attachments": copy.deepcopy(attachments or {}),
             "task": {
                 "question": question,
-                "problem_id": problem
-                or (catalog.operation(operation).problem_id if operation else None),
-                "operation_id": operation,
+                "topic_id": topic
+                or (catalog.problem(problem).topic_id if problem else None),
+                "problem_id": problem,
                 "parameters": parameters or {},
                 "optional_outputs": list(outputs),
                 "intent": ApplicationIntent(
@@ -638,7 +638,7 @@ def build_corpus(
                 "weight_usage": "other",
             },
         )
-        for operation, question in [
+        for problem, question in [
             (
                 "maximal-bicliques",
                 "Find every group of workers and tasks where each worker links to every task, and neither side can be enlarged while retaining that property.",
@@ -667,14 +667,14 @@ def build_corpus(
                         }
                     ]
                 }
-                if operation == "maximal-bicliques"
+                if problem == "maximal-bicliques"
                 else {}
             )
             add(
                 unweighted,
                 b_lineage,
                 split,
-                operation,
+                problem,
                 question,
                 attachments=attachments,
             )
@@ -848,8 +848,8 @@ async def verify_corpus(settings, corpus, destination, *, retry_quarantined=Fals
                     ExecutionPlan(
                         session_id=session.id,
                         graph_id=graph.id,
+                        topic_id=task["topic_id"],
                         problem_id=task["problem_id"],
-                        operation_id=task["operation_id"],
                         parameters=task["parameters"],
                         optional_outputs=task["optional_outputs"],
                         auxiliary_inputs=auxiliary,

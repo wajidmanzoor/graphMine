@@ -66,7 +66,7 @@ def validate(build, label, ordinal, output):
     if not cpu:
         request = {
             "command": "run",
-            "operation": "breadth-first-search",
+            "problem": "breadth-first-search",
             "graph": {
                 "graph": {
                     "id": "evidence-device",

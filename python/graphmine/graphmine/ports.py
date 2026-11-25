@@ -115,12 +115,12 @@ OUTPUT_PORTS = {
 }
 
 
-def validate_ports(operation, ports):
-    declared = OUTPUT_PORTS.get(operation, {})
+def validate_ports(problem, ports):
+    declared = OUTPUT_PORTS.get(problem, {})
     for name, value in ports.items():
         if name not in declared or value.get("type") != declared[name]:
             raise GraphMineError(
-                f"Undeclared or mistyped output port: {operation}.{name}"
+                f"Undeclared or mistyped output port: {problem}.{name}"
             )
         if "value" not in value or type(value.get("complete")) is not bool:
             raise GraphMineError(f"Output port needs a value and completeness: {name}")

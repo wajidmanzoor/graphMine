@@ -3,7 +3,7 @@
     "summary": "Create a successful execution envelope owning the output and associated metadata.",
     "parameters": {
       "output": "Output value to move into the result.",
-      "provenance": "Problem/backend provenance to retain.",
+      "provenance": "Topic/backend provenance to retain.",
       "statistics": "Timing and optional memory measurements to retain.",
       "warnings": "Nonfatal messages to retain."
     },
@@ -53,7 +53,7 @@
     ]
   },
   "classgraphmine_1_1ExecutionResult_1adeba8503383f6c010144d1fe701c851d": {
-    "summary": "Read the selected problem, backend, and source provenance.",
+    "summary": "Read the selected topic, backend, and source provenance.",
     "parameters": {},
     "returns": "A const reference to the owned Provenance.",
     "details": [
@@ -274,7 +274,7 @@
     "returns": "A Graph retaining canonical record order, external identifiers, attributes, and optional metadata.",
     "details": [
       "Throws std::invalid_argument for an empty graph ID, too many vertices for VertexIndex, duplicate vertex or edge IDs, unknown endpoints, or loops/parallel edges forbidden by the descriptor.",
-      "For an undirected graph, reversed endpoint pairs count as the same logical edge. Weight and timestamp semantics are validated by the selected operation or view, not by this constructor."
+      "For an undirected graph, reversed endpoint pairs count as the same logical edge. Weight and timestamp semantics are validated by the selected problem or view, not by this constructor."
     ]
   },
   "classgraphmine_1_1Graph_1a0a2f80140c5540f3a2e48b84889d7050": {
@@ -1729,7 +1729,7 @@
       "data": "Readable memory region containing at least size bytes.",
       "size": "Number of bytes to append."
     },
-    "returns": "No value. Updates the digest state or throws std::runtime_error if the digest operation fails."
+    "returns": "No value. Updates the digest state or throws std::runtime_error if the digest problem fails."
   },
   "classgraphmine_1_1view__detail_1_1anonymous__namespace_02graph__fingerprint_8cpp_03_1_1Fingerprint_1a9cecc1f6a87c052d6faf416a8ff8fb15": {
     "summary": "Initialize an incremental SHA-256 context for canonical native records.",
@@ -1839,7 +1839,7 @@
     "returns": "A lowercase SHA-256 digest using the graphmine-native-records-v2 encoding.",
     "details": [
       "The hash preserves numeric representations, external-ID types, missing-versus-present fields, and record order. It is a snapshot fingerprint, not a graph-isomorphism invariant.",
-      "Floating property values retain their bits even when an operation ignores that property. Digest failures raise std::runtime_error."
+      "Floating property values retain their bits even when an problem ignores that property. Digest failures raise std::runtime_error."
     ]
   },
   "structgraphmine_1_1representation__store_1_1anonymous__namespace_02representation__store_8cpp_03_1_1Cache_1a17c6443364e731c7bffedb4dc7636168": {

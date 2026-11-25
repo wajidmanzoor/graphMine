@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "problem_id": "group_steiner_tree",
+  "topic_id": "group_steiner_tree",
   "name": "Group Steiner Tree",
   "category": "connectivity",
   "problem_statement": "Given an edge-weighted graph and a collection of potentially overlapping vertex groups, find a minimum-weight connected subtree that includes at least one vertex from every group.",

@@ -208,7 +208,7 @@ def test_selftest_real_signin_calculation_and_result_with_question_provider_doub
     assert question_calls == ["What is a k-core?"]
     from graphmine_agent.admin_summary import overview
     summary = overview(client.app.state.runtime)
-    assert summary["saved_analyses"] == 1 and summary["operations"] == [{"operation": "k-core", "count": 1}]
+    assert summary["saved_analyses"] == 1 and summary["problems"] == [{"problem": "k-core", "count": 1}]
     with accounts.database._connect() as db:
         user = db.execute("SELECT id,login_disabled FROM accounts WHERE username='selftest'").fetchone()
         assert user["login_disabled"] == 1
@@ -253,7 +253,7 @@ def test_queue_totals_use_execution_slots_and_measure_oldest_wait(console):
     client.portal.call(scenario)
 
 
-def test_log_view_only_extracts_operational_fields():
+def test_log_view_only_extracts_problemal_fields():
     from graphmine_agent.admin_monitor import redacted_log
     raw = '2026-11-19T12:00:00+00:00 agent: INFO: "GET /api/health?token=private HTTP/1.1" 200 OK\nprivate question words\npassword=hunter-test\n2026-11-19T12:00:01+00:00 agent: Application startup complete.'
     result = redacted_log(raw)

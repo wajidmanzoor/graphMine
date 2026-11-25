@@ -68,7 +68,7 @@ SamplingInput sampling_input(const Graph& graph, bool weighted, bool typed, cons
     for (const auto e : order) {
       const auto original = view.edge_ids->at(e);
       if (typed) result.types[original] = view.side_tables.edge_label_dictionary[view.side_tables.edge_label->at(e)];
-      if (!eligible[original]) continue; // Apply the operation's time-window selection.
+      if (!eligible[original]) continue; // Apply the problem's time-window selection.
       result.adjacency[view.vertices.to_original[u]].push_back({view.vertices.to_original[view.indices[e]],original,
         Exact(Integer(weights[e].numerator))/Integer(weights[e].denominator)});
     }
@@ -81,7 +81,7 @@ WalkAdjacency walk_adjacency(const Graph& graph, bool uniform, Work& work) {
   try {
     input = consume_view(graph,uniform ? uniform_walk : weighted_walk,work,ViewBudget::record_edges);
   } catch (const Failure& error) {
-    if (std::string(error.what()) == "This operation requires nonnegative edge weights")
+    if (std::string(error.what()) == "This problem requires nonnegative edge weights")
       throw Failure("invalid_input","Walk weights must be nonnegative");
     throw;
   }

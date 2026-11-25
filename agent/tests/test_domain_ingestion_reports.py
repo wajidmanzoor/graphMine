@@ -101,13 +101,13 @@ def test_unknown_unsupported_problem_remains_a_clear_refusal(catalog):
     result = normalize_route(
         catalog,
         RouteDecision(
-            problem_id="shortest_path",
+            topic_id="shortest_path",
             supported=False,
             confidence=0.9,
             explanation="I cannot find a fastest delivery route with the available tools.",
         ),
     )
-    assert not result.supported and result.operation_id is None
+    assert not result.supported and result.problem_id is None
     assert result.explanation.startswith("I cannot find")
 
 

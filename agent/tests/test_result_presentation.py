@@ -12,7 +12,7 @@ from graphmine_agent.visualization import answer_visualizations
 
 
 @pytest.mark.parametrize(
-    ("operation", "output", "labels"),
+    ("problem", "output", "labels"),
     [
         ("maximum-clique", {}, []),
         ("maximum-clique", {"optimal": False}, ["Optimality not certified"]),
@@ -58,9 +58,9 @@ from graphmine_agent.visualization import answer_visualizations
     ],
 )
 def test_status_uses_only_reported_guarantees_and_preserves_partial_lists(
-    operation, output, labels
+    problem, output, labels
 ):
-    assert [item["label"] for item in result_status(operation, output)] == labels
+    assert [item["label"] for item in result_status(problem, output)] == labels
 
 
 @pytest.mark.parametrize("complete", [True, False])
@@ -81,8 +81,8 @@ def test_group_explanation_counts_distinct_members_and_survives_model_selection(
     plan = ExecutionPlan(
         session_id="session",
         graph_id="graph",
-        operation_id="maximal-cliques",
-        problem_id="maximal_clique_enumeration",
+        problem_id="maximal-cliques",
+        topic_id="maximal_clique_enumeration",
         application_intent=ApplicationIntent(
             objective="Find full collaboration groups"
         ),
@@ -132,8 +132,8 @@ def test_filter_scope_retains_original_counts_without_claiming_missing_data():
     plan = ExecutionPlan(
         session_id="s",
         graph_id="g",
-        operation_id="maximal-cliques",
-        problem_id="maximal_clique_enumeration",
+        problem_id="maximal-cliques",
+        topic_id="maximal_clique_enumeration",
         application_intent=ApplicationIntent(
             filters=[
                 {
@@ -157,9 +157,9 @@ def test_filter_scope_retains_original_counts_without_claiming_missing_data():
     assert answer["provenance"]["source_edges"] == 4
 
 
-def test_every_executable_operation_has_a_readable_method(catalog):
-    for operation in catalog.manifest_operations:
-        assert method_explanation(operation, {"k": 3}), operation
+def test_every_executable_problem_has_a_readable_method(catalog):
+    for problem in catalog.manifest_problems:
+        assert method_explanation(problem, {"k": 3}), problem
 
 
 def test_approved_undirected_projection_is_visible_even_when_narrator_omits_it():
@@ -171,8 +171,8 @@ def test_approved_undirected_projection_is_visible_even_when_narrator_omits_it()
     plan = ExecutionPlan(
         session_id="s",
         graph_id="g",
-        operation_id="maximal-cliques",
-        problem_id="maximal_clique_enumeration",
+        problem_id="maximal-cliques",
+        topic_id="maximal_clique_enumeration",
         allow_directed_projection=True,
     )
     answer = build_answer(
@@ -200,8 +200,8 @@ def test_complete_count_does_not_hide_a_partial_instance_list():
     plan = ExecutionPlan(
         session_id="s",
         graph_id="g",
-        operation_id="triangle-counting",
-        problem_id="triangle_counting",
+        problem_id="triangle-counting",
+        topic_id="triangle_counting",
     )
     answer = build_answer(
         graph,
@@ -236,8 +236,8 @@ def test_pattern_counts_have_views_and_do_not_invent_missing_memberships():
     plan = ExecutionPlan(
         session_id="s",
         graph_id="g",
-        operation_id="graph-motifs",
-        problem_id="graph_motif_counting",
+        problem_id="graph-motifs",
+        topic_id="graph_motif_counting",
     )
     output = {
         "motifs": [

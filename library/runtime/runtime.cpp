@@ -59,11 +59,11 @@ std::string input_fingerprint(const json::value& input) { return hash(input); }
 // input restrictions remain owned by the same native support functions as run.
 json::object backend_capabilities(const json::object& request) {
   fields(request,
-         {"command", "operation", "graph", "parameters", "device", "backend", "gpu_device",
+         {"command", "problem", "graph", "parameters", "device", "backend", "gpu_device",
           "budget", "allowed_backends"},
-         {"command", "operation", "graph"});
-  const auto operation = string(request.at("operation"), "operation");
-  const auto& card = operation_card(operation);
+         {"command", "problem", "graph"});
+  const auto problem = string(request.at("problem"), "problem");
+  const auto& card = problem_card(problem);
   const auto policy = request.contains("device") ? string(request.at("device"), "device") : "auto";
   require(policy == "cpu" || policy == "gpu" || policy == "auto", "Invalid device policy");
   const auto ordinal = request.contains("gpu_device") ? uint(request.at("gpu_device"), "gpu_device") : 0;
@@ -84,9 +84,9 @@ json::object backend_capabilities(const json::object& request) {
   if (card.at("input_kind") == "graph") graph = cached_graph(request.at("graph"), work);
   else inspect_input(string(card.at("input_kind"), "input_kind"), request.at("graph"), work);
   work.input_graph = graph.get();
-  if (operation == "maximal-bicliques")
+  if (problem == "maximal-bicliques")
     parameters = resolve_biclique_parameters(*graph, parameters);
-  const auto gpu_reason = graph ? gpu_support_reason(operation, *graph, parameters)
+  const auto gpu_reason = graph ? gpu_support_reason(problem, *graph, parameters)
                                 : "This structured-input profile has a native CPU implementation";
   // CPU requests do not initialize CUDA, even when gathering telemetry.
   const bool available = policy != "cpu" && gpu_available(static_cast<int>(ordinal));
@@ -120,7 +120,7 @@ json::object backend_capabilities(const json::object& request) {
         // Comparing another candidate must not consume this one's work budget.
         auto candidate_work = work;
         candidate_work.started = std::chrono::steady_clock::now();
-        reason = backend_support_reason(operation, id, *graph, parameters, candidate_work);
+        reason = backend_support_reason(problem, id, *graph, parameters, candidate_work);
       } catch (const Failure& failure) {
         reason = failure.code;  // Avoid copying graph-specific error contents.
       }
@@ -135,7 +135,7 @@ json::object backend_capabilities(const json::object& request) {
                      (requested == "auto" && !cpu && selected.empty()))) selected = id;
   }
   if (requested == "auto" && selected.empty() && cpu_feasible) selected = "cpp";
-  return {{"operation", operation}, {"problem_id", card.at("problem_id")},
+  return {{"problem", problem}, {"topic_id", card.at("topic_id")},
           {"family", card.at("family")}, {"input_kind", card.at("input_kind")},
           {"input_fingerprint", work.input_fingerprint}, {"candidates", candidates},
           {"legacy_backend", selected.empty() ? json::value(nullptr) : json::value(selected)},
@@ -144,11 +144,11 @@ json::object backend_capabilities(const json::object& request) {
 
 json::object execute(const json::object& request) {
   fields(request,
-         {"command", "operation", "graph", "parameters", "device", "backend", "gpu_device",
+         {"command", "problem", "graph", "parameters", "device", "backend", "gpu_device",
           "budget", "allowed_backends"},
-         {"command", "operation", "graph"});
-  const auto operation = string(request.at("operation"), "operation");
-  const auto& card = operation_card(operation);
+         {"command", "problem", "graph"});
+  const auto problem = string(request.at("problem"), "problem");
+  const auto& card = problem_card(problem);
   const auto policy = request.contains("device") ? string(request.at("device"), "device") : "auto";
   require(policy == "cpu" || policy == "gpu" || policy == "auto",
           "device must be cpu, gpu or auto");
@@ -163,7 +163,7 @@ json::object execute(const json::object& request) {
     require(request.at("allowed_backends").is_array(), "allowed_backends must be an array");
     for (const auto& value : request.at("allowed_backends").as_array())
       allowed.push_back(string(value, "allowed backend"));
-    require(!allowed.empty(), "No verified backend was admitted for this operation");
+    require(!allowed.empty(), "No verified backend was admitted for this problem");
   }
   const auto admitted = [&](const std::string& id) {
     return !request.contains("allowed_backends") ||
@@ -180,9 +180,9 @@ json::object execute(const json::object& request) {
                               ? object(request.at("parameters"), "parameters")
                               : json::object{};
   validate_parameters(card, parameters);
-  if (operation == "maximal-bicliques")
+  if (problem == "maximal-bicliques")
     parameters = resolve_biclique_parameters(*graph, parameters);
-  const auto gpu_reason = graph ? gpu_support_reason(operation, *graph, parameters)
+  const auto gpu_reason = graph ? gpu_support_reason(problem, *graph, parameters)
                                 : "This structured-input profile has a native CPU implementation";
   std::string selection_reason = gpu_reason;
   bool compiled = false;
@@ -195,7 +195,7 @@ json::object execute(const json::object& request) {
             gpu_available(device)) {
           const auto id = string(candidate.at("id"), "backend id");
           if (!admitted(id)) continue;
-          const auto reason = backend_support_reason(operation, id, *graph, parameters, work);
+          const auto reason = backend_support_reason(problem, id, *graph, parameters, work);
           if (!reason.empty()) {
             selection_reason = reason;
             continue;
@@ -207,7 +207,7 @@ json::object execute(const json::object& request) {
       if (policy == "gpu" && backend == "cpp")
         throw Failure(selection_reason.empty() ? "backend_unavailable" : "unsupported_input",
                       selection_reason.empty()
-                          ? "No compiled GPU backend and usable device for " + operation
+                          ? "No compiled GPU backend and usable device for " + problem
                           : selection_reason);
     }
   }
@@ -221,23 +221,23 @@ json::object execute(const json::object& request) {
       break;
     }
   }
-  require(known, "Backend is not declared for this native operation");
+  require(known, "Backend is not declared for this native problem");
   require(admitted(backend), "Selected backend has no admitted correctness evidence");
   require(!((policy == "cpu" && backend != "cpp") || (policy == "gpu" && backend == "cpp")),
           "Backend conflicts with requested device policy");
   if (!compiled) throw Failure("backend_unavailable", "Selected native backend was not compiled");
   if (backend != "cpp" && !gpu_reason.empty()) throw Failure("unsupported_input", gpu_reason);
   const auto backend_reason =
-      graph ? backend_support_reason(operation, backend, *graph, parameters, work) : std::string{};
+      graph ? backend_support_reason(problem, backend, *graph, parameters, work) : std::string{};
   if (!backend_reason.empty()) throw Failure("unsupported_input", backend_reason);
   if (backend != "cpp" && !gpu_available(device))
     throw Failure("backend_unavailable", "Selected CUDA device is unavailable");
   std::optional<DeviceScope> device_scope;
   if (backend != "cpp") device_scope.emplace(device);
-  auto result = graph ? (original_extension_backend(operation, backend)
-                            ? original_extension_run(operation, *graph, parameters, backend, device, work)
-                            : operation_handler(operation)(*graph, parameters, backend, device, work))
-                      : input_operation_handler(operation)(request.at("graph"), parameters, work);
+  auto result = graph ? (original_extension_backend(problem, backend)
+                            ? original_extension_run(problem, *graph, parameters, backend, device, work)
+                            : problem_handler(problem)(*graph, parameters, backend, device, work))
+                      : input_problem_handler(problem)(request.at("graph"), parameters, work);
   work.tick(0);
   const auto& fingerprint = work.input_fingerprint;
   for (auto& port : result.at("ports").as_object()) {
@@ -247,8 +247,8 @@ json::object execute(const json::object& request) {
         record.at("type") == "graph" ? hash(record.at("value")) : fingerprint;
   }
   result["schema_version"] = "2.0.0";
-  result["operation"] = operation;
-  result["problem_id"] = card.at("problem_id");
+  result["problem"] = problem;
+  result["topic_id"] = card.at("topic_id");
   result["family"] = card.at("family");
   result["input_kind"] = input_kind;
   result["input_fingerprint"] = fingerprint;
@@ -275,12 +275,19 @@ json::object execute(const json::object& request) {
   return result;
 }
 
-int abi_version() noexcept { return 1; }
+int abi_version() noexcept { return 2; }
 std::string request(std::string_view raw) {
   try {
     if (raw.size() > 64 * 1024 * 1024)
       throw Failure("resource_limit", "Native request exceeds 64 MiB");
-    const auto value = object(strict_json(raw), "request");
+    auto value = object(strict_json(raw), "request");
+    // Read the former wire key only at the boundary; all responses use problem.
+    if (value.contains("operation")) {
+      require(!value.contains("problem") || value.at("problem") == value.at("operation"),
+              "Conflicting problem and operation identifiers");
+      value["problem"] = value.at("operation");
+      value.erase("operation");
+    }
     require(value.contains("command"), "Missing command");
     const auto command = string(value.at("command"), "command");
     if (command == "catalog") {
