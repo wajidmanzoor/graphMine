@@ -133,13 +133,22 @@ def test_failed_checks_do_not_approve_a_candidate(config, monkeypatch):
     monkeypatch.setattr(controller, "clean", lambda role: None)
     monkeypatch.setattr(controller, "health", lambda role: None)
 
+    scratch_paths = []
+
     def fail(*args, **kwargs):
+        scratch = Path(kwargs["env"]["GRAPHMINE_AGENT_DATA_ROOT"])
+        assert scratch.is_dir() and scratch.parent == Path(config["state_directory"])
+        assert all(not controller.overlaps(scratch, live)
+                   for role in config["environments"].values()
+                   for live in controller.writable_paths(role))
+        scratch_paths.append(scratch)
         raise RuntimeError("regression failed")
 
     monkeypatch.setattr(controller, "command", fail)
     with pytest.raises(RuntimeError, match="regression"):
         controller.verify_testing(config)
     assert "verified_at" not in json.loads(path.read_text())
+    assert scratch_paths and all(not scratch.exists() for scratch in scratch_paths)
 
 
 @pytest.mark.parametrize("state", [

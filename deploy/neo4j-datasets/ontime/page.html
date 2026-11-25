@@ -510,8 +510,8 @@
       f.LongestAddGTime = toInteger(row.LongestAddGTime)
   ",
   {batchSize:1000, parallel:false}
-) YIELD batches, total, timeTaken, committedProblems, failedProblems
-RETURN batches, total, timeTaken/1000.0 AS seconds, committedProblems, failedProblems;</span>
+) YIELD batches, total, timeTaken, committedOperations, failedOperations
+RETURN batches, total, timeTaken/1000.0 AS seconds, committedOperations, failedOperations;</span>
 <span class="sh-kw">CYPHER</span>
     <span class="sh-cmd">echo</span> <span class="sh-str">"Completed: ${FILE}"</span>
   <span class="sh-kw">done</span>

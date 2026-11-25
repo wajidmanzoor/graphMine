@@ -76,7 +76,16 @@ and end-to-end workflow success are not inferred from the routing score.
 
 ## Testing and production acceptance
 
-Promotion uses the existing environment controller: the testing environment
+The first testing-environment pass exposed a validation-harness issue: its
+scratch store was under `/tmp`, which backend persistence correctly rejects.
+The controller now creates and cleans its isolated validation store under its
+private state directory. Its isolation/recovery tests and all dataset-deployment
+tests pass (60 checks). Two archived upstream HTML pages also contained renamed
+external API terminology; their original bytes were restored so the published
+source audits pass. The original failed testing report remains in the private
+release directory.
+
+Promotion uses the environment controller: the testing environment
 must pass its configured application, frontend, binding and native checks on
 the exact candidate commit before the production branch can advance. The
 verified native runtime is a separate pinned snapshot; development rebuilds do

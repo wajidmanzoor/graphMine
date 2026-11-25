@@ -77,6 +77,8 @@ The retained dataset has 1237 unique attempts spanning 36 problems and 52 graph 
 | idle | 625 | 0.2380 | 51.14% |
 | busy_cpu | 612 | 0.4542 | 86.29% |
 
+Fitted empirical controls cover 35 problems. `influence-maximization` has no accepted paired comparison in this model, so measured-size exploration is unavailable for that problem; its raw timings and verified executable backends remain available.
+
 Pair exclusions were `{"incomplete_pairs": 7, "inconsistent_pair": 15}`; 6 rows failed current admission checks. The accepted split contains 42 graph fingerprints; the raw archive also retains incomplete and superseded-workload measurements.
 
 These are small generated graphs (up to 512 vertices), with one timing per backend/settings/load combination. The host also ran other workloads. This establishes functional coverage and an initial policy dataset; it does not establish large-graph performance or reliable production tail estimates. CPU exact algorithms use deliberately small cases. cuMBE observations are excluded from fitting after its correctness failure; its original measurements remain in the data.

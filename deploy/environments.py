@@ -260,7 +260,9 @@ def verify_testing(config):
         if key in role["env"]:
             env[key] = role["env"][key]
     env["GRAPHMINE_REPO"] = role["code"]
-    with tempfile.TemporaryDirectory(prefix="graphmine-release-check-") as scratch:
+    # Backend run/model stores reject /tmp; keep isolated validation data under
+    # the controller's private state directory and remove it after the checks.
+    with tempfile.TemporaryDirectory(prefix="graphmine-release-check-", dir=config["state_directory"]) as scratch:
         env["GRAPHMINE_AGENT_DATA_ROOT"] = scratch
         for args in config["validation_commands"]:
             expanded = [item.replace("{python}", role["python"]).replace("{code}", role["code"]) for item in args]
