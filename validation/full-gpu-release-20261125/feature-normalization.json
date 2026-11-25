@@ -1,0 +1,769 @@
+{
+  "feature_schema": [
+    {
+      "name": "log_n",
+      "kind": "aggregate"
+    },
+    {
+      "name": "log_n:missing",
+      "kind": "missing",
+      "feature": "log_n"
+    },
+    {
+      "name": "log_m",
+      "kind": "aggregate"
+    },
+    {
+      "name": "log_m:missing",
+      "kind": "missing",
+      "feature": "log_m"
+    },
+    {
+      "name": "average_degree",
+      "kind": "aggregate"
+    },
+    {
+      "name": "average_degree:missing",
+      "kind": "missing",
+      "feature": "average_degree"
+    },
+    {
+      "name": "log_max_degree",
+      "kind": "aggregate"
+    },
+    {
+      "name": "log_max_degree:missing",
+      "kind": "missing",
+      "feature": "log_max_degree"
+    },
+    {
+      "name": "degree_cv",
+      "kind": "aggregate"
+    },
+    {
+      "name": "degree_cv:missing",
+      "kind": "missing",
+      "feature": "degree_cv"
+    },
+    {
+      "name": "log_degeneracy",
+      "kind": "aggregate"
+    },
+    {
+      "name": "log_degeneracy:missing",
+      "kind": "missing",
+      "feature": "log_degeneracy"
+    },
+    {
+      "name": "directed",
+      "kind": "aggregate"
+    },
+    {
+      "name": "directed:missing",
+      "kind": "missing",
+      "feature": "directed"
+    },
+    {
+      "name": "weighted",
+      "kind": "aggregate"
+    },
+    {
+      "name": "weighted:missing",
+      "kind": "missing",
+      "feature": "weighted"
+    },
+    {
+      "name": "bipartite_ratio",
+      "kind": "aggregate"
+    },
+    {
+      "name": "bipartite_ratio:missing",
+      "kind": "missing",
+      "feature": "bipartite_ratio"
+    },
+    {
+      "name": "free_core_fraction",
+      "kind": "aggregate"
+    },
+    {
+      "name": "free_core_fraction:missing",
+      "kind": "missing",
+      "feature": "free_core_fraction"
+    },
+    {
+      "name": "logical_cores",
+      "kind": "aggregate"
+    },
+    {
+      "name": "logical_cores:missing",
+      "kind": "missing",
+      "feature": "logical_cores"
+    },
+    {
+      "name": "log_free_ram",
+      "kind": "aggregate"
+    },
+    {
+      "name": "log_free_ram:missing",
+      "kind": "missing",
+      "feature": "log_free_ram"
+    },
+    {
+      "name": "gpu_utilization",
+      "kind": "aggregate"
+    },
+    {
+      "name": "gpu_utilization:missing",
+      "kind": "missing",
+      "feature": "gpu_utilization"
+    },
+    {
+      "name": "log_free_vram",
+      "kind": "aggregate"
+    },
+    {
+      "name": "log_free_vram:missing",
+      "kind": "missing",
+      "feature": "log_free_vram"
+    },
+    {
+      "name": "isolated",
+      "kind": "aggregate"
+    },
+    {
+      "name": "isolated:missing",
+      "kind": "missing",
+      "feature": "isolated"
+    },
+    {
+      "name": "problem:balanced-partitioning",
+      "kind": "problem",
+      "problem": "balanced-partitioning"
+    },
+    {
+      "name": "problem:betweenness-centrality",
+      "kind": "problem",
+      "problem": "betweenness-centrality"
+    },
+    {
+      "name": "problem:biconnected-components",
+      "kind": "problem",
+      "problem": "biconnected-components"
+    },
+    {
+      "name": "problem:bipartite-matching",
+      "kind": "problem",
+      "problem": "bipartite-matching"
+    },
+    {
+      "name": "problem:bounded-paths-cycles",
+      "kind": "problem",
+      "problem": "bounded-paths-cycles"
+    },
+    {
+      "name": "problem:breadth-first-search",
+      "kind": "problem",
+      "problem": "breadth-first-search"
+    },
+    {
+      "name": "problem:butterfly-counting",
+      "kind": "problem",
+      "problem": "butterfly-counting"
+    },
+    {
+      "name": "problem:common-neighbors",
+      "kind": "problem",
+      "problem": "common-neighbors"
+    },
+    {
+      "name": "problem:community-detection",
+      "kind": "problem",
+      "problem": "community-detection"
+    },
+    {
+      "name": "problem:connected-components",
+      "kind": "problem",
+      "problem": "connected-components"
+    },
+    {
+      "name": "problem:degree-centrality",
+      "kind": "problem",
+      "problem": "degree-centrality"
+    },
+    {
+      "name": "problem:densest-k-subgraph",
+      "kind": "problem",
+      "problem": "densest-k-subgraph"
+    },
+    {
+      "name": "problem:densest-subgraph",
+      "kind": "problem",
+      "problem": "densest-subgraph"
+    },
+    {
+      "name": "problem:dynamic-triangle-counting",
+      "kind": "problem",
+      "problem": "dynamic-triangle-counting"
+    },
+    {
+      "name": "problem:edge-filter",
+      "kind": "problem",
+      "problem": "edge-filter"
+    },
+    {
+      "name": "problem:entity-resolution",
+      "kind": "problem",
+      "problem": "entity-resolution"
+    },
+    {
+      "name": "problem:force-directed-layout",
+      "kind": "problem",
+      "problem": "force-directed-layout"
+    },
+    {
+      "name": "problem:frequent-subgraphs",
+      "kind": "problem",
+      "problem": "frequent-subgraphs"
+    },
+    {
+      "name": "problem:graph-aggregate",
+      "kind": "problem",
+      "problem": "graph-aggregate"
+    },
+    {
+      "name": "problem:graph-anomalies",
+      "kind": "problem",
+      "problem": "graph-anomalies"
+    },
+    {
+      "name": "problem:graph-coarsening",
+      "kind": "problem",
+      "problem": "graph-coarsening"
+    },
+    {
+      "name": "problem:graph-condensation",
+      "kind": "problem",
+      "problem": "graph-condensation"
+    },
+    {
+      "name": "problem:graph-edit-distance",
+      "kind": "problem",
+      "problem": "graph-edit-distance"
+    },
+    {
+      "name": "problem:graph-geolocation",
+      "kind": "problem",
+      "problem": "graph-geolocation"
+    },
+    {
+      "name": "problem:graph-learning",
+      "kind": "problem",
+      "problem": "graph-learning"
+    },
+    {
+      "name": "problem:graph-signal-denoising",
+      "kind": "problem",
+      "problem": "graph-signal-denoising"
+    },
+    {
+      "name": "problem:graphlet-counting",
+      "kind": "problem",
+      "problem": "graphlet-counting"
+    },
+    {
+      "name": "problem:group-steiner-tree",
+      "kind": "problem",
+      "problem": "group-steiner-tree"
+    },
+    {
+      "name": "problem:hypergraph-node-learning",
+      "kind": "problem",
+      "problem": "hypergraph-node-learning"
+    },
+    {
+      "name": "problem:hypergraph-partitioning",
+      "kind": "problem",
+      "problem": "hypergraph-partitioning"
+    },
+    {
+      "name": "problem:induced-subgraph",
+      "kind": "problem",
+      "problem": "induced-subgraph"
+    },
+    {
+      "name": "problem:influence-maximization",
+      "kind": "problem",
+      "problem": "influence-maximization"
+    },
+    {
+      "name": "problem:k-cliques",
+      "kind": "problem",
+      "problem": "k-cliques"
+    },
+    {
+      "name": "problem:k-core",
+      "kind": "problem",
+      "problem": "k-core"
+    },
+    {
+      "name": "problem:k-truss",
+      "kind": "problem",
+      "problem": "k-truss"
+    },
+    {
+      "name": "problem:knn-graph",
+      "kind": "problem",
+      "problem": "knn-graph"
+    },
+    {
+      "name": "problem:knowledge-graph-embedding",
+      "kind": "problem",
+      "problem": "knowledge-graph-embedding"
+    },
+    {
+      "name": "problem:laplacian-eigenpairs",
+      "kind": "problem",
+      "problem": "laplacian-eigenpairs"
+    },
+    {
+      "name": "problem:link-prediction",
+      "kind": "problem",
+      "problem": "link-prediction"
+    },
+    {
+      "name": "problem:many-source-shortest-paths",
+      "kind": "problem",
+      "problem": "many-source-shortest-paths"
+    },
+    {
+      "name": "problem:max-flow-min-cut",
+      "kind": "problem",
+      "problem": "max-flow-min-cut"
+    },
+    {
+      "name": "problem:maximal-biclique-counting",
+      "kind": "problem",
+      "problem": "maximal-biclique-counting"
+    },
+    {
+      "name": "problem:maximal-bicliques",
+      "kind": "problem",
+      "problem": "maximal-bicliques"
+    },
+    {
+      "name": "problem:maximal-cliques",
+      "kind": "problem",
+      "problem": "maximal-cliques"
+    },
+    {
+      "name": "problem:maximal-independent-set",
+      "kind": "problem",
+      "problem": "maximal-independent-set"
+    },
+    {
+      "name": "problem:maximum-clique",
+      "kind": "problem",
+      "problem": "maximum-clique"
+    },
+    {
+      "name": "problem:maximum-common-subgraph",
+      "kind": "problem",
+      "problem": "maximum-common-subgraph"
+    },
+    {
+      "name": "problem:maximum-independent-set",
+      "kind": "problem",
+      "problem": "maximum-independent-set"
+    },
+    {
+      "name": "problem:minimum-vertex-cover",
+      "kind": "problem",
+      "problem": "minimum-vertex-cover"
+    },
+    {
+      "name": "problem:motif-counting",
+      "kind": "problem",
+      "problem": "motif-counting"
+    },
+    {
+      "name": "problem:neighborhood-sampling",
+      "kind": "problem",
+      "problem": "neighborhood-sampling"
+    },
+    {
+      "name": "problem:neighbors",
+      "kind": "problem",
+      "problem": "neighbors"
+    },
+    {
+      "name": "problem:network-alignment",
+      "kind": "problem",
+      "problem": "network-alignment"
+    },
+    {
+      "name": "problem:node-embedding",
+      "kind": "problem",
+      "problem": "node-embedding"
+    },
+    {
+      "name": "problem:node-learning",
+      "kind": "problem",
+      "problem": "node-learning"
+    },
+    {
+      "name": "problem:node-lookup",
+      "kind": "problem",
+      "problem": "node-lookup"
+    },
+    {
+      "name": "problem:null-model-significance",
+      "kind": "problem",
+      "problem": "null-model-significance"
+    },
+    {
+      "name": "problem:overlapping-communities",
+      "kind": "problem",
+      "problem": "overlapping-communities"
+    },
+    {
+      "name": "problem:pagerank",
+      "kind": "problem",
+      "problem": "pagerank"
+    },
+    {
+      "name": "problem:persistent-homology",
+      "kind": "problem",
+      "problem": "persistent-homology"
+    },
+    {
+      "name": "problem:personalized-pagerank",
+      "kind": "problem",
+      "problem": "personalized-pagerank"
+    },
+    {
+      "name": "problem:quasi-cliques",
+      "kind": "problem",
+      "problem": "quasi-cliques"
+    },
+    {
+      "name": "problem:query-paths",
+      "kind": "problem",
+      "problem": "query-paths"
+    },
+    {
+      "name": "problem:query-subgraph",
+      "kind": "problem",
+      "problem": "query-subgraph"
+    },
+    {
+      "name": "problem:random-walks",
+      "kind": "problem",
+      "problem": "random-walks"
+    },
+    {
+      "name": "problem:seeded-local-community",
+      "kind": "problem",
+      "problem": "seeded-local-community"
+    },
+    {
+      "name": "problem:signed-balance",
+      "kind": "problem",
+      "problem": "signed-balance"
+    },
+    {
+      "name": "problem:simrank",
+      "kind": "problem",
+      "problem": "simrank"
+    },
+    {
+      "name": "problem:single-graph-frequent-subgraphs",
+      "kind": "problem",
+      "problem": "single-graph-frequent-subgraphs"
+    },
+    {
+      "name": "problem:single-source-shortest-paths",
+      "kind": "problem",
+      "problem": "single-source-shortest-paths"
+    },
+    {
+      "name": "problem:spanning-tree-forest",
+      "kind": "problem",
+      "problem": "spanning-tree-forest"
+    },
+    {
+      "name": "problem:spectral-sparsification",
+      "kind": "problem",
+      "problem": "spectral-sparsification"
+    },
+    {
+      "name": "problem:subgraph-isomorphism",
+      "kind": "problem",
+      "problem": "subgraph-isomorphism"
+    },
+    {
+      "name": "problem:temporal-motifs",
+      "kind": "problem",
+      "problem": "temporal-motifs"
+    },
+    {
+      "name": "problem:temporal-paths",
+      "kind": "problem",
+      "problem": "temporal-paths"
+    },
+    {
+      "name": "problem:top-k-critical-paths",
+      "kind": "problem",
+      "problem": "top-k-critical-paths"
+    },
+    {
+      "name": "problem:topological-sort",
+      "kind": "problem",
+      "problem": "topological-sort"
+    },
+    {
+      "name": "problem:transitive-closure",
+      "kind": "problem",
+      "problem": "transitive-closure"
+    },
+    {
+      "name": "problem:triangle-counting",
+      "kind": "problem",
+      "problem": "triangle-counting"
+    },
+    {
+      "name": "problem:vertex-coloring",
+      "kind": "problem",
+      "problem": "vertex-coloring"
+    },
+    {
+      "name": "problem:weighted-matching",
+      "kind": "problem",
+      "problem": "weighted-matching"
+    },
+    {
+      "name": "problem:widest-paths",
+      "kind": "problem",
+      "problem": "widest-paths"
+    }
+  ],
+  "normalization": {
+    "indices": [
+      0,
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      17,
+      18,
+      22,
+      24,
+      26,
+      31,
+      33,
+      35,
+      36,
+      38,
+      39,
+      42,
+      43,
+      57,
+      60,
+      62,
+      63,
+      64,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      77,
+      78,
+      79,
+      88,
+      90,
+      91,
+      94,
+      99,
+      100,
+      102,
+      103,
+      107,
+      108,
+      109
+    ],
+    "means": [
+      3.9274633617788677,
+      4.531757077835075,
+      3.931543342911877,
+      2.5093083441957615,
+      0.6051303609698399,
+      1.3010049797122798,
+      0.08045977011494253,
+      0.09195402298850575,
+      0.09195402298850575,
+      0.9080459770114943,
+      0.3573538462320964,
+      25.635869223149022,
+      70.01724137931035,
+      24.327399261898744,
+      0.022988505747126436,
+      0.034482758620689655,
+      0.028735632183908046,
+      0.022988505747126436,
+      0.028735632183908046,
+      0.028735632183908046,
+      0.022988505747126436,
+      0.022988505747126436,
+      0.028735632183908046,
+      0.028735632183908046,
+      0.05747126436781609,
+      0.028735632183908046,
+      0.028735632183908046,
+      0.028735632183908046,
+      0.028735632183908046,
+      0.028735632183908046,
+      0.022988505747126436,
+      0.011494252873563218,
+      0.022988505747126436,
+      0.028735632183908046,
+      0.022988505747126436,
+      0.022988505747126436,
+      0.022988505747126436,
+      0.04597701149425287,
+      0.028735632183908046,
+      0.022988505747126436,
+      0.022988505747126436,
+      0.028735632183908046,
+      0.028735632183908046,
+      0.028735632183908046,
+      0.022988505747126436,
+      0.034482758620689655,
+      0.022988505747126436,
+      0.05747126436781609,
+      0.028735632183908046
+    ],
+    "scales": [
+      1.5035557405937032,
+      1.60583295843075,
+      1.6125823458046735,
+      0.8407789610294644,
+      0.3608485303738305,
+      0.3200767391283402,
+      0.27200366818848765,
+      0.28896103655118516,
+      0.2889610365511853,
+      0.2889610365511853,
+      0.1545955850423169,
+      0.013259370933351434,
+      34.96952271374021,
+      0.06426245746467772,
+      0.14986672195868136,
+      0.1824656076596264,
+      0.16706255004308782,
+      0.1498667219586812,
+      0.16706255004308734,
+      0.16706255004308762,
+      0.14986672195868112,
+      0.14986672195868136,
+      0.16706255004308768,
+      0.16706255004308787,
+      0.23274088196915682,
+      0.1670625500430873,
+      0.16706255004308754,
+      0.16706255004308787,
+      0.16706255004308793,
+      0.16706255004308732,
+      0.14986672195868136,
+      0.10659331604018031,
+      0.14986672195868134,
+      0.1670625500430879,
+      0.14986672195868117,
+      0.1498667219586813,
+      0.14986672195868128,
+      0.20943525469297214,
+      0.16706255004308793,
+      0.14986672195868123,
+      0.14986672195868123,
+      0.16706255004308754,
+      0.16706255004308648,
+      0.16706255004308745,
+      0.14986672195868114,
+      0.18246560765962616,
+      0.1498667219586812,
+      0.23274088196915707,
+      0.16706255004308765
+    ],
+    "dropped_features": [
+      "log_n:missing",
+      "log_m:missing",
+      "average_degree:missing",
+      "log_max_degree:missing",
+      "degree_cv:missing",
+      "log_degeneracy:missing",
+      "directed:missing",
+      "weighted:missing",
+      "free_core_fraction:missing",
+      "logical_cores",
+      "logical_cores:missing",
+      "log_free_ram:missing",
+      "gpu_utilization:missing",
+      "log_free_vram:missing",
+      "isolated",
+      "isolated:missing",
+      "problem:balanced-partitioning",
+      "problem:biconnected-components",
+      "problem:bounded-paths-cycles",
+      "problem:common-neighbors",
+      "problem:degree-centrality",
+      "problem:densest-k-subgraph",
+      "problem:edge-filter",
+      "problem:entity-resolution",
+      "problem:force-directed-layout",
+      "problem:frequent-subgraphs",
+      "problem:graph-aggregate",
+      "problem:graph-anomalies",
+      "problem:graph-coarsening",
+      "problem:graph-condensation",
+      "problem:graph-edit-distance",
+      "problem:graph-geolocation",
+      "problem:graph-learning",
+      "problem:graph-signal-denoising",
+      "problem:graphlet-counting",
+      "problem:hypergraph-node-learning",
+      "problem:hypergraph-partitioning",
+      "problem:influence-maximization",
+      "problem:knn-graph",
+      "problem:knowledge-graph-embedding",
+      "problem:laplacian-eigenpairs",
+      "problem:maximum-common-subgraph",
+      "problem:neighborhood-sampling",
+      "problem:neighbors",
+      "problem:network-alignment",
+      "problem:node-embedding",
+      "problem:node-learning",
+      "problem:node-lookup",
+      "problem:null-model-significance",
+      "problem:overlapping-communities",
+      "problem:persistent-homology",
+      "problem:query-paths",
+      "problem:query-subgraph",
+      "problem:seeded-local-community",
+      "problem:signed-balance",
+      "problem:simrank",
+      "problem:single-graph-frequent-subgraphs",
+      "problem:spectral-sparsification",
+      "problem:temporal-paths",
+      "problem:top-k-critical-paths",
+      "problem:topological-sort",
+      "problem:weighted-matching",
+      "problem:widest-paths"
+    ]
+  }
+}

@@ -1,0 +1,1695 @@
+{
+  "schema_version": 1,
+  "model_version": "20261125t091238.591482z-db0bc337c9a7",
+  "created_at": "2026-11-25T09:12:38.597049+00:00",
+  "implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66",
+  "admission_fingerprint": "9354b0f9eedc0dae68884544fc0d772d05398d90737fd20773bf9857e051a57d",
+  "model_sha256": "a01c196a1cba3e24456bcd32543c22a18e773802e9cbd8ca3e6ef88ea3ac08ca",
+  "configuration": {
+    "temperature": 1.0,
+    "floor": 0.02,
+    "exploration_enabled": true,
+    "exploration_budget": 0.1
+  },
+  "comparison": {
+    "policies": {
+      "shared_nn": {
+        "metrics": {
+          "mean": 1.0106731048691107,
+          "median": 1.0,
+          "p90": 1.0,
+          "p99": 1.0,
+          "tail_seconds_p90": 0.17828184738755226,
+          "tail_seconds_p99": 0.2101675346493721,
+          "failure_rate": 0.0,
+          "timeout_rate": 0.0
+        },
+        "cases": 102,
+        "by_problem": {
+          "quasi-cliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.2101675346493721,
+            "tail_seconds_p99": 0.2101675346493721,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-cliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1455906592309475,
+            "tail_seconds_p99": 0.1455906592309475,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "community-detection": {
+            "mean": 1.0252109213325087,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.5868151834690343,
+            "tail_seconds_p90": 0.12128175422549248,
+            "tail_seconds_p99": 0.30886968970298767,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "random-walks": {
+            "mean": 1.0225688335638354,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.9331576018709677,
+            "tail_seconds_p90": 0.1335847359150648,
+            "tail_seconds_p99": 0.391825083643198,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-cliques": {
+            "mean": 1.0356153952921072,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.6132088511531233,
+            "tail_seconds_p90": 0.14204596169292927,
+            "tail_seconds_p99": 0.340669771656394,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "subgraph-isomorphism": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.15811034105718136,
+            "tail_seconds_p99": 0.15811034105718136,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "butterfly-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.2040637955069542,
+            "tail_seconds_p99": 0.2040637955069542,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "motif-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1952049806714058,
+            "tail_seconds_p99": 0.1952049806714058,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-core": {
+            "mean": 1.0156475665724423,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.0815953488941212,
+            "tail_seconds_p90": 0.17603248171508312,
+            "tail_seconds_p99": 0.2634052075445652,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "densest-subgraph": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.12604098208248615,
+            "tail_seconds_p99": 0.12604098208248615,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "single-source-shortest-paths": {
+            "mean": 1.0170990919941783,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.6465970466894735,
+            "tail_seconds_p90": 0.1755417436361313,
+            "tail_seconds_p99": 0.3476629089564085,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "betweenness-centrality": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.14021231979131699,
+            "tail_seconds_p99": 0.14021231979131699,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-biclique-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1585048120468855,
+            "tail_seconds_p99": 0.1585048120468855,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "connected-components": {
+            "mean": 1.0390040088092802,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 3.6139752771576865,
+            "tail_seconds_p90": 0.12272787466645241,
+            "tail_seconds_p99": 0.44353550486266613,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "breadth-first-search": {
+            "mean": 1.0205589862893936,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.9829454457838205,
+            "tail_seconds_p90": 0.13628067448735237,
+            "tail_seconds_p99": 0.35503038950264454,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximum-independent-set": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.18799095042049885,
+            "tail_seconds_p99": 0.18799095042049885,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "dynamic-triangle-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.17158285900950432,
+            "tail_seconds_p99": 0.17158285900950432,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "minimum-vertex-cover": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1594348382204771,
+            "tail_seconds_p99": 0.1594348382204771,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "transitive-closure": {
+            "mean": 1.0144940620643808,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.19935468211770058,
+            "tail_seconds_p99": 0.19935468211770058,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "spanning-tree-forest": {
+            "mean": 1.01921224509633,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.801976607153632,
+            "tail_seconds_p90": 0.16283621080219746,
+            "tail_seconds_p99": 0.35660367645323277,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximum-clique": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1626046746969223,
+            "tail_seconds_p99": 0.1626046746969223,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-truss": {
+            "mean": 1.0346561927813331,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 3.2300636556806803,
+            "tail_seconds_p90": 0.1304988767951727,
+            "tail_seconds_p99": 0.3761824332177639,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "triangle-counting": {
+            "mean": 1.0190138660291295,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.2704985216972555,
+            "tail_seconds_p90": 0.1566806621849537,
+            "tail_seconds_p99": 0.31182390078902245,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "induced-subgraph": {
+            "mean": 1.0140197095159416,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.9052330253842855,
+            "tail_seconds_p90": 0.195002019405365,
+            "tail_seconds_p99": 0.3715242873877287,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "personalized-pagerank": {
+            "mean": 1.0153104344083204,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.20255673862993717,
+            "tail_seconds_p99": 0.20255673862993717,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-bicliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1675230637192726,
+            "tail_seconds_p99": 0.1675230637192726,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-independent-set": {
+            "mean": 1.0187817835531363,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.8640989040643134,
+            "tail_seconds_p90": 0.1646078508347273,
+            "tail_seconds_p99": 0.3623320572078228,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "group-steiner-tree": {
+            "mean": 1.0355091516142918,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 4.543536271427173,
+            "tail_seconds_p90": 0.12581316009163857,
+            "tail_seconds_p99": 0.5243549663573503,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "pagerank": {
+            "mean": 1.015818817034111,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.369905215925435,
+            "tail_seconds_p90": 0.16017289459705353,
+            "tail_seconds_p99": 0.2568525280803442,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "link-prediction": {
+            "mean": 1.0206297609338608,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 3.039819685393378,
+            "tail_seconds_p90": 0.12875568494200706,
+            "tail_seconds_p99": 0.3913940656930208,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "max-flow-min-cut": {
+            "mean": 1.0288254113868205,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 3.7727415622685188,
+            "tail_seconds_p90": 0.16052039712667465,
+            "tail_seconds_p99": 0.4837746601551771,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "vertex-coloring": {
+            "mean": 1.0273215413796764,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 3.660073209229122,
+            "tail_seconds_p90": 0.11202347278594971,
+            "tail_seconds_p99": 0.4100141115486622,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "many-source-shortest-paths": {
+            "mean": 1.0205968108796344,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.8319716882529304,
+            "tail_seconds_p90": 0.15365196578204632,
+            "tail_seconds_p99": 0.415712583810091,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "by_k": {
+          "2": {
+            "mean": 1.0111511641296143,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.195002019405365,
+            "tail_seconds_p99": 0.2101675346493721,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "4": {
+            "mean": 1.0071230790584216,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1626046746969223,
+            "tail_seconds_p99": 0.18799095042049885,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "5": {
+            "mean": 1.0252109213325087,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.5868151834690343,
+            "tail_seconds_p90": 0.12128175422549248,
+            "tail_seconds_p99": 0.30886968970298767,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "3": {
+            "mean": 1.0121504899259965,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.18275166861712933,
+            "tail_seconds_p99": 0.2040637955069542,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "1": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1675230637192726,
+            "tail_seconds_p99": 0.1675230637192726,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "native_to_oracle_gap_closed": 0.9944073981441562
+      },
+      "shared_linear": {
+        "metrics": {
+          "mean": 1.0107241996028755,
+          "median": 1.0,
+          "p90": 1.0,
+          "p99": 1.0,
+          "tail_seconds_p90": 0.17828184738755226,
+          "tail_seconds_p99": 0.2101675346493721,
+          "failure_rate": 0.0,
+          "timeout_rate": 0.0
+        },
+        "cases": 102,
+        "by_problem": {
+          "quasi-cliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.2101675346493721,
+            "tail_seconds_p99": 0.2101675346493721,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-cliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1455906592309475,
+            "tail_seconds_p99": 0.1455906592309475,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "community-detection": {
+            "mean": 1.0252173020606272,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.5868151834690343,
+            "tail_seconds_p90": 0.12128175422549248,
+            "tail_seconds_p99": 0.30886968970298767,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "random-walks": {
+            "mean": 1.0227371532513159,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.9331576018709677,
+            "tail_seconds_p90": 0.1335847359150648,
+            "tail_seconds_p99": 0.391825083643198,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-cliques": {
+            "mean": 1.0356482505529683,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.6132088511531233,
+            "tail_seconds_p90": 0.14204596169292927,
+            "tail_seconds_p99": 0.340669771656394,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "subgraph-isomorphism": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.15811034105718136,
+            "tail_seconds_p99": 0.15811034105718136,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "butterfly-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.2040637955069542,
+            "tail_seconds_p99": 0.2040637955069542,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "motif-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1952049806714058,
+            "tail_seconds_p99": 0.1952049806714058,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-core": {
+            "mean": 1.0158058392186005,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.0815953488941212,
+            "tail_seconds_p90": 0.17603248171508312,
+            "tail_seconds_p99": 0.2634052075445652,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "densest-subgraph": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.12604098208248615,
+            "tail_seconds_p99": 0.12604098208248615,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "single-source-shortest-paths": {
+            "mean": 1.0172310360671013,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.6465970466894735,
+            "tail_seconds_p90": 0.1755417436361313,
+            "tail_seconds_p99": 0.3476629089564085,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "betweenness-centrality": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.14021231979131699,
+            "tail_seconds_p99": 0.14021231979131699,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-biclique-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1585048120468855,
+            "tail_seconds_p99": 0.1585048120468855,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "connected-components": {
+            "mean": 1.0392711309029243,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 3.6139752771576865,
+            "tail_seconds_p90": 0.12272787466645241,
+            "tail_seconds_p99": 0.44353550486266613,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "breadth-first-search": {
+            "mean": 1.0207268734594432,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.9829454457838205,
+            "tail_seconds_p90": 0.13628067448735237,
+            "tail_seconds_p99": 0.35503038950264454,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximum-independent-set": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.18799095042049885,
+            "tail_seconds_p99": 0.18799095042049885,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "dynamic-triangle-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.17158285900950432,
+            "tail_seconds_p99": 0.17158285900950432,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "minimum-vertex-cover": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1594348382204771,
+            "tail_seconds_p99": 0.1594348382204771,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "transitive-closure": {
+            "mean": 1.0144999232513947,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.19935468211770058,
+            "tail_seconds_p99": 0.19935468211770058,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "spanning-tree-forest": {
+            "mean": 1.0194701216093554,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.801976607153632,
+            "tail_seconds_p90": 0.16283621080219746,
+            "tail_seconds_p99": 0.35660367645323277,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximum-clique": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1626046746969223,
+            "tail_seconds_p99": 0.1626046746969223,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-truss": {
+            "mean": 1.0347731898225239,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 3.2300636556806803,
+            "tail_seconds_p90": 0.1304988767951727,
+            "tail_seconds_p99": 0.3761824332177639,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "triangle-counting": {
+            "mean": 1.0190792080009343,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.2704985216972555,
+            "tail_seconds_p90": 0.1566806621849537,
+            "tail_seconds_p99": 0.31182390078902245,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "induced-subgraph": {
+            "mean": 1.0141181724352697,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.9052330253842855,
+            "tail_seconds_p90": 0.195002019405365,
+            "tail_seconds_p99": 0.3715242873877287,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "personalized-pagerank": {
+            "mean": 1.015318482378401,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.20255673862993717,
+            "tail_seconds_p99": 0.20255673862993717,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-bicliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1675230637192726,
+            "tail_seconds_p99": 0.1675230637192726,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-independent-set": {
+            "mean": 1.01890530631248,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.8640989040643134,
+            "tail_seconds_p90": 0.1646078508347273,
+            "tail_seconds_p99": 0.3623320572078228,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "group-steiner-tree": {
+            "mean": 1.0355326841913042,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 4.543536271427173,
+            "tail_seconds_p90": 0.12581316009163857,
+            "tail_seconds_p99": 0.5243549663573503,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "pagerank": {
+            "mean": 1.0159729258234231,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.369905215925435,
+            "tail_seconds_p90": 0.16017289459705353,
+            "tail_seconds_p99": 0.2568525280803442,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "link-prediction": {
+            "mean": 1.020825817422775,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 3.039819685393378,
+            "tail_seconds_p90": 0.12875568494200706,
+            "tail_seconds_p99": 0.3913940656930208,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "max-flow-min-cut": {
+            "mean": 1.0288550562741419,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 3.7727415622685188,
+            "tail_seconds_p90": 0.16052039712667465,
+            "tail_seconds_p99": 0.4837746601551771,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "vertex-coloring": {
+            "mean": 1.02753204900987,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 3.660073209229122,
+            "tail_seconds_p90": 0.11202347278594971,
+            "tail_seconds_p99": 0.4100141115486622,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "many-source-shortest-paths": {
+            "mean": 1.0208677935181052,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.8319716882529304,
+            "tail_seconds_p90": 0.15365196578204632,
+            "tail_seconds_p99": 0.415712583810091,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "by_k": {
+          "2": {
+            "mean": 1.0112221090722067,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.195002019405365,
+            "tail_seconds_p99": 0.2101675346493721,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "4": {
+            "mean": 1.0071296501105935,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1626046746969223,
+            "tail_seconds_p99": 0.18799095042049885,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "5": {
+            "mean": 1.0252173020606272,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 2.5868151834690343,
+            "tail_seconds_p90": 0.12128175422549248,
+            "tail_seconds_p99": 0.30886968970298767,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "3": {
+            "mean": 1.0122035031309784,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.18275166861712933,
+            "tail_seconds_p99": 0.2040637955069542,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "1": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1675230637192726,
+            "tail_seconds_p99": 0.1675230637192726,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "native_to_oracle_gap_closed": 0.9943806250067814
+      },
+      "native": {
+        "metrics": {
+          "mean": 2.908432808954258,
+          "median": 2.77818749117283,
+          "p90": 4.270521861992903,
+          "p99": 4.90173893508015,
+          "tail_seconds_p90": 0.5678371079266071,
+          "tail_seconds_p99": 0.7377773225307465,
+          "failure_rate": 0.0,
+          "timeout_rate": 0.0
+        },
+        "cases": 102,
+        "by_problem": {
+          "quasi-cliques": {
+            "mean": 2.1445673203254874,
+            "median": 2.1090990039696376,
+            "p90": 2.2316699717974777,
+            "p99": 2.2316699717974777,
+            "tail_seconds_p90": 0.4346169885247946,
+            "tail_seconds_p99": 0.4346169885247946,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-cliques": {
+            "mean": 2.333801757666908,
+            "median": 2.1893682865124307,
+            "p90": 2.6747202750546,
+            "p99": 2.6747202750546,
+            "tail_seconds_p90": 0.3894142881035805,
+            "tail_seconds_p99": 0.3894142881035805,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "community-detection": {
+            "mean": 2.5667635539542064,
+            "median": 2.5467119244393785,
+            "p90": 2.5868151834690343,
+            "p99": 2.5868151834690343,
+            "tail_seconds_p90": 0.30886968970298767,
+            "tail_seconds_p99": 0.30886968970298767,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "random-walks": {
+            "mean": 3.2567306650488073,
+            "median": 2.9331576018709677,
+            "p90": 3.580303728226647,
+            "p99": 3.580303728226647,
+            "tail_seconds_p90": 0.4642404243350029,
+            "tail_seconds_p99": 0.4642404243350029,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-cliques": {
+            "mean": 2.496009505852234,
+            "median": 2.589365050220637,
+            "p90": 2.77818749117283,
+            "p99": 2.77818749117283,
+            "tail_seconds_p90": 0.3587745241820812,
+            "tail_seconds_p99": 0.3587745241820812,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "subgraph-isomorphism": {
+            "mean": 2.333766217912499,
+            "median": 2.248336608221093,
+            "p90": 2.580768283892089,
+            "p99": 2.580768283892089,
+            "tail_seconds_p90": 0.3554852679371834,
+            "tail_seconds_p99": 0.3554852679371834,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "butterfly-counting": {
+            "mean": 2.4442230091604262,
+            "median": 2.3408242145726126,
+            "p90": 3.118429771653358,
+            "p99": 3.118429771653358,
+            "tail_seconds_p90": 0.3752818629145622,
+            "tail_seconds_p99": 0.3752818629145622,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "motif-counting": {
+            "mean": 3.1897941303016024,
+            "median": 2.8573589902624863,
+            "p90": 4.77304589935016,
+            "p99": 4.77304589935016,
+            "tail_seconds_p90": 0.7381311487406492,
+            "tail_seconds_p99": 0.7381311487406492,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-core": {
+            "mean": 2.557887547541842,
+            "median": 2.3217770685701193,
+            "p90": 2.793998026513565,
+            "p99": 2.793998026513565,
+            "tail_seconds_p90": 0.4087081793695688,
+            "tail_seconds_p99": 0.4087081793695688,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "densest-subgraph": {
+            "mean": 4.518167092928938,
+            "median": 4.33005652309608,
+            "p90": 4.809454692763279,
+            "p99": 4.809454692763279,
+            "tail_seconds_p90": 0.605654701590538,
+            "tail_seconds_p99": 0.605654701590538,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "single-source-shortest-paths": {
+            "mean": 2.7098660484699355,
+            "median": 2.6465970466894735,
+            "p90": 2.7731350502503975,
+            "p99": 2.7731350502503975,
+            "tail_seconds_p90": 0.46458826027810574,
+            "tail_seconds_p99": 0.46458826027810574,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "betweenness-centrality": {
+            "mean": 3.0734870378621477,
+            "median": 2.916707251057462,
+            "p90": 3.804858179977515,
+            "p99": 3.804858179977515,
+            "tail_seconds_p90": 0.44164918176829815,
+            "tail_seconds_p99": 0.44164918176829815,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-biclique-counting": {
+            "mean": 4.611069633169574,
+            "median": 4.494918223867169,
+            "p90": 5.396716096326491,
+            "p99": 5.396716096326491,
+            "tail_seconds_p90": 0.7173449788242579,
+            "tail_seconds_p99": 0.7173449788242579,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "connected-components": {
+            "mean": 3.520928836157198,
+            "median": 3.42788239515671,
+            "p90": 3.6139752771576865,
+            "p99": 3.6139752771576865,
+            "tail_seconds_p90": 0.44353550486266613,
+            "tail_seconds_p99": 0.44353550486266613,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "breadth-first-search": {
+            "mean": 3.0558444598108494,
+            "median": 2.9829454457838205,
+            "p90": 3.1287434738378788,
+            "p99": 3.1287434738378788,
+            "tail_seconds_p90": 0.42638727091252804,
+            "tail_seconds_p99": 0.42638727091252804,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximum-independent-set": {
+            "mean": 2.3835526085323595,
+            "median": 2.4025971584841144,
+            "p90": 2.5874041367827054,
+            "p99": 2.5874041367827054,
+            "tail_seconds_p90": 0.4020731672644615,
+            "tail_seconds_p99": 0.4020731672644615,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "dynamic-triangle-counting": {
+            "mean": 2.247907348684037,
+            "median": 2.1242328264209975,
+            "p90": 2.4452643255157045,
+            "p99": 2.4452643255157045,
+            "tail_seconds_p90": 0.3407536968588829,
+            "tail_seconds_p99": 0.3407536968588829,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "minimum-vertex-cover": {
+            "mean": 2.6833417642665487,
+            "median": 2.6070210130430627,
+            "p90": 3.110421001788932,
+            "p99": 3.110421001788932,
+            "tail_seconds_p90": 0.37327006459236145,
+            "tail_seconds_p99": 0.37327006459236145,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "transitive-closure": {
+            "mean": 3.7153974927196867,
+            "median": 3.5270774374472507,
+            "p90": 4.270521861992903,
+            "p99": 4.270521861992903,
+            "tail_seconds_p90": 0.6288138814270496,
+            "tail_seconds_p99": 0.6288138814270496,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "spanning-tree-forest": {
+            "mean": 2.9204782217031564,
+            "median": 2.801976607153632,
+            "p90": 3.0389798362526803,
+            "p99": 3.0389798362526803,
+            "tail_seconds_p90": 0.45626325346529484,
+            "tail_seconds_p99": 0.45626325346529484,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximum-clique": {
+            "mean": 2.355863734179141,
+            "median": 2.121858263285918,
+            "p90": 2.8649081282315296,
+            "p99": 2.8649081282315296,
+            "tail_seconds_p90": 0.39379372633993626,
+            "tail_seconds_p99": 0.39379372633993626,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-truss": {
+            "mean": 3.0563562378895126,
+            "median": 2.8826488200983453,
+            "p90": 3.2300636556806803,
+            "p99": 3.2300636556806803,
+            "tail_seconds_p90": 0.3761824332177639,
+            "tail_seconds_p99": 0.3761824332177639,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "triangle-counting": {
+            "mean": 2.4473313631566116,
+            "median": 2.2704985216972555,
+            "p90": 2.852050291319087,
+            "p99": 2.852050291319087,
+            "tail_seconds_p90": 0.3887922689318657,
+            "tail_seconds_p99": 0.3887922689318657,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "induced-subgraph": {
+            "mean": 2.4019483912700275,
+            "median": 1.9052330253842855,
+            "p90": 2.898663757155769,
+            "p99": 2.898663757155769,
+            "tail_seconds_p90": 0.37345609441399574,
+            "tail_seconds_p99": 0.37345609441399574,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "personalized-pagerank": {
+            "mean": 2.6006195140345936,
+            "median": 2.174255584482774,
+            "p90": 3.217578096825904,
+            "p99": 3.217578096825904,
+            "tail_seconds_p90": 0.48265716806054115,
+            "tail_seconds_p99": 0.48265716806054115,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-bicliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1675230637192726,
+            "tail_seconds_p99": 0.1675230637192726,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-independent-set": {
+            "mean": 2.8779195655248646,
+            "median": 2.8640989040643134,
+            "p90": 2.8917402269854153,
+            "p99": 2.8917402269854153,
+            "tail_seconds_p90": 0.47600314393639565,
+            "tail_seconds_p99": 0.47600314393639565,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "group-steiner-tree": {
+            "mean": 4.55074106718069,
+            "median": 4.543536271427173,
+            "p90": 4.557945862934208,
+            "p99": 4.557945862934208,
+            "tail_seconds_p90": 0.5716366562992334,
+            "tail_seconds_p99": 0.5716366562992334,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "pagerank": {
+            "mean": 2.581620674291735,
+            "median": 2.369905215925435,
+            "p90": 2.793336132658035,
+            "p99": 2.793336132658035,
+            "tail_seconds_p90": 0.4474167339503765,
+            "tail_seconds_p99": 0.4474167339503765,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "link-prediction": {
+            "mean": 3.062913570683023,
+            "median": 3.039819685393378,
+            "p90": 3.086007455972668,
+            "p99": 3.086007455972668,
+            "tail_seconds_p90": 0.3958118613809347,
+            "tail_seconds_p99": 0.3958118613809347,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "max-flow-min-cut": {
+            "mean": 3.8825175980697546,
+            "median": 3.7727415622685188,
+            "p90": 3.992293633870991,
+            "p99": 3.992293633870991,
+            "tail_seconds_p90": 0.6056019738316536,
+            "tail_seconds_p99": 0.6056019738316536,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "vertex-coloring": {
+            "mean": 3.7319954343274637,
+            "median": 3.660073209229122,
+            "p90": 3.8039176594258053,
+            "p99": 3.8039176594258053,
+            "tail_seconds_p90": 0.4144537001848221,
+            "tail_seconds_p99": 0.4144537001848221,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "many-source-shortest-paths": {
+            "mean": 3.058174062635336,
+            "median": 2.8319716882529304,
+            "p90": 3.284376437017742,
+            "p99": 3.284376437017742,
+            "tail_seconds_p90": 0.4351380169391632,
+            "tail_seconds_p99": 0.4351380169391632,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "by_k": {
+          "2": {
+            "mean": 3.2595745584607565,
+            "median": 3.0389798362526803,
+            "p90": 4.557945862934208,
+            "p99": 5.396716096326491,
+            "tail_seconds_p90": 0.6064462494105101,
+            "tail_seconds_p99": 0.7381311487406492,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "4": {
+            "mean": 2.4505138740994385,
+            "median": 2.4217860099897224,
+            "p90": 2.77818749117283,
+            "p99": 3.110421001788932,
+            "tail_seconds_p90": 0.3894142881035805,
+            "tail_seconds_p99": 0.4020731672644615,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "5": {
+            "mean": 2.5667635539542064,
+            "median": 2.5467119244393785,
+            "p90": 2.5868151834690343,
+            "p99": 2.5868151834690343,
+            "tail_seconds_p90": 0.30886968970298767,
+            "tail_seconds_p99": 0.30886968970298767,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "3": {
+            "mean": 2.731479418595303,
+            "median": 2.793998026513565,
+            "p90": 3.42788239515671,
+            "p99": 3.804858179977515,
+            "tail_seconds_p90": 0.44164918176829815,
+            "tail_seconds_p99": 0.48265716806054115,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "1": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1675230637192726,
+            "tail_seconds_p99": 0.1675230637192726,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "native_to_oracle_gap_closed": 0.0
+      },
+      "oracle": {
+        "metrics": {
+          "mean": 1.0,
+          "median": 1.0,
+          "p90": 1.0,
+          "p99": 1.0,
+          "tail_seconds_p90": 0.17603248171508312,
+          "tail_seconds_p99": 0.2040637955069542,
+          "failure_rate": 0.0,
+          "timeout_rate": 0.0
+        },
+        "cases": 102,
+        "by_problem": {
+          "quasi-cliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.2101675346493721,
+            "tail_seconds_p99": 0.2101675346493721,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-cliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1455906592309475,
+            "tail_seconds_p99": 0.1455906592309475,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "community-detection": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.12128175422549248,
+            "tail_seconds_p99": 0.12128175422549248,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "random-walks": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1335847359150648,
+            "tail_seconds_p99": 0.1335847359150648,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-cliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.14204596169292927,
+            "tail_seconds_p99": 0.14204596169292927,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "subgraph-isomorphism": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.15811034105718136,
+            "tail_seconds_p99": 0.15811034105718136,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "butterfly-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.2040637955069542,
+            "tail_seconds_p99": 0.2040637955069542,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "motif-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1952049806714058,
+            "tail_seconds_p99": 0.1952049806714058,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-core": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.17603248171508312,
+            "tail_seconds_p99": 0.17603248171508312,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "densest-subgraph": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.12604098208248615,
+            "tail_seconds_p99": 0.12604098208248615,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "single-source-shortest-paths": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1755417436361313,
+            "tail_seconds_p99": 0.1755417436361313,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "betweenness-centrality": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.14021231979131699,
+            "tail_seconds_p99": 0.14021231979131699,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-biclique-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1585048120468855,
+            "tail_seconds_p99": 0.1585048120468855,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "connected-components": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.12272787466645241,
+            "tail_seconds_p99": 0.12272787466645241,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "breadth-first-search": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.13628067448735237,
+            "tail_seconds_p99": 0.13628067448735237,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximum-independent-set": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.18799095042049885,
+            "tail_seconds_p99": 0.18799095042049885,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "dynamic-triangle-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.17158285900950432,
+            "tail_seconds_p99": 0.17158285900950432,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "minimum-vertex-cover": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1594348382204771,
+            "tail_seconds_p99": 0.1594348382204771,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "transitive-closure": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.19935468211770058,
+            "tail_seconds_p99": 0.19935468211770058,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "spanning-tree-forest": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.16283621080219746,
+            "tail_seconds_p99": 0.16283621080219746,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximum-clique": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1626046746969223,
+            "tail_seconds_p99": 0.1626046746969223,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "k-truss": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1304988767951727,
+            "tail_seconds_p99": 0.1304988767951727,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "triangle-counting": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1566806621849537,
+            "tail_seconds_p99": 0.1566806621849537,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "induced-subgraph": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.195002019405365,
+            "tail_seconds_p99": 0.195002019405365,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "personalized-pagerank": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.20255673862993717,
+            "tail_seconds_p99": 0.20255673862993717,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-bicliques": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1675230637192726,
+            "tail_seconds_p99": 0.1675230637192726,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "maximal-independent-set": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1646078508347273,
+            "tail_seconds_p99": 0.1646078508347273,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "group-steiner-tree": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.12581316009163857,
+            "tail_seconds_p99": 0.12581316009163857,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "pagerank": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.16017289459705353,
+            "tail_seconds_p99": 0.16017289459705353,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "link-prediction": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.12875568494200706,
+            "tail_seconds_p99": 0.12875568494200706,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "max-flow-min-cut": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.16052039712667465,
+            "tail_seconds_p99": 0.16052039712667465,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "vertex-coloring": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.11202347278594971,
+            "tail_seconds_p99": 0.11202347278594971,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "many-source-shortest-paths": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.15365196578204632,
+            "tail_seconds_p99": 0.15365196578204632,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "by_k": {
+          "2": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.17828184738755226,
+            "tail_seconds_p99": 0.2101675346493721,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "4": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.16061312891542912,
+            "tail_seconds_p99": 0.18799095042049885,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "5": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.12128175422549248,
+            "tail_seconds_p99": 0.12128175422549248,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "3": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.18275166861712933,
+            "tail_seconds_p99": 0.2040637955069542,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          },
+          "1": {
+            "mean": 1.0,
+            "median": 1.0,
+            "p90": 1.0,
+            "p99": 1.0,
+            "tail_seconds_p90": 0.1675230637192726,
+            "tail_seconds_p99": 0.1675230637192726,
+            "failure_rate": 0.0,
+            "timeout_rate": 0.0
+          }
+        },
+        "native_to_oracle_gap_closed": 1.0
+      }
+    },
+    "whole_graph_holdout": true,
+    "graph_count": 8,
+    "probability_integration": "Exact masked distribution within measured sizes; deterministic greedy outside. Daily budget exhaustion can only remove exploration; no synthetic traffic ledger is assumed.",
+    "failure_cost": "Configured multiple of the slowest completed paired runtime; all measured timings retained.",
+    "removed_policy": "Per-problem regressions were removed at the user request; no current-policy comparison is fabricated.",
+    "live_ready": false,
+    "recommendation": "keep_native_until_paired_shadow_evidence",
+    "shadow": {
+      "rows": 0,
+      "agreement_count": 0,
+      "distinct_graphs": 0,
+      "metrics": null,
+      "live_ready": false,
+      "reason": "Paired real-traffic measurements are required to measure counterfactual runtime, failure and timeout rates."
+    }
+  },
+  "skipped_rows": 6,
+  "excluded_comparisons": {
+    "incomplete_pairs": 7,
+    "inconsistent_pair": 15
+  },
+  "dropped_features": [
+    "log_n:missing",
+    "log_m:missing",
+    "average_degree:missing",
+    "log_max_degree:missing",
+    "degree_cv:missing",
+    "log_degeneracy:missing",
+    "directed:missing",
+    "weighted:missing",
+    "free_core_fraction:missing",
+    "logical_cores",
+    "logical_cores:missing",
+    "log_free_ram:missing",
+    "gpu_utilization:missing",
+    "log_free_vram:missing",
+    "isolated",
+    "isolated:missing",
+    "problem:balanced-partitioning",
+    "problem:biconnected-components",
+    "problem:bounded-paths-cycles",
+    "problem:common-neighbors",
+    "problem:degree-centrality",
+    "problem:densest-k-subgraph",
+    "problem:edge-filter",
+    "problem:entity-resolution",
+    "problem:force-directed-layout",
+    "problem:frequent-subgraphs",
+    "problem:graph-aggregate",
+    "problem:graph-anomalies",
+    "problem:graph-coarsening",
+    "problem:graph-condensation",
+    "problem:graph-edit-distance",
+    "problem:graph-geolocation",
+    "problem:graph-learning",
+    "problem:graph-signal-denoising",
+    "problem:graphlet-counting",
+    "problem:hypergraph-node-learning",
+    "problem:hypergraph-partitioning",
+    "problem:influence-maximization",
+    "problem:knn-graph",
+    "problem:knowledge-graph-embedding",
+    "problem:laplacian-eigenpairs",
+    "problem:maximum-common-subgraph",
+    "problem:neighborhood-sampling",
+    "problem:neighbors",
+    "problem:network-alignment",
+    "problem:node-embedding",
+    "problem:node-learning",
+    "problem:node-lookup",
+    "problem:null-model-significance",
+    "problem:overlapping-communities",
+    "problem:persistent-homology",
+    "problem:query-paths",
+    "problem:query-subgraph",
+    "problem:seeded-local-community",
+    "problem:signed-balance",
+    "problem:simrank",
+    "problem:single-graph-frequent-subgraphs",
+    "problem:spectral-sparsification",
+    "problem:temporal-paths",
+    "problem:top-k-critical-paths",
+    "problem:topological-sort",
+    "problem:weighted-matching",
+    "problem:widest-paths"
+  ]
+}

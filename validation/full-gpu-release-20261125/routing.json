@@ -1,0 +1,2551 @@
+{
+  "scope": "Assistant-authored routing regression cases, frozen before live evaluation; not a held-out benchmark. Empty problem lists score family selection only because the question is mathematically ambiguous.",
+  "pipeline": "hierarchical",
+  "suite_sha256": "f2f86c363da5fd8d4b536c8c8c41b7bc211437926ec4bd5c5ecf35bc40cd1959",
+  "sources": {
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_connectors.py": "a44fdfedcaea2346574481590e4b7d0fefe61750c25a4c9d0c4d24730e902415",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_workflow_compat.py": "bd4f7dc0e04dd1776b41c7dd3cad42e4d5f0490f275abc2a0432487e80d83a13",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_bicliques.py": "4feb10a5cda533996c0c03cc34fbc2ee4725d0a6ff18bd8a6bfd0ed367f88c77",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_exploration.py": "90d5a71ee76d8dd11a698f2692a5013727ac7dfe10630a3f8fa6f21bb7be50c5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_history_and_terminal.py": "d053584829a2d20a819191d5eb3937b98128079315e6ea99280acc3875462dd5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_view_overhaul.py": "d09ea1e38c31653a4ae3911fb40e22ebe47a361f4e96b5444f63feb7a054a980",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_backend_benchmark.py": "f2dbad20719dee4bce8919a07ffbb0b95269f007ee36855d19518eea820a3af5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_options.py": "9dc9fe93e08c114e6980b24554d0032d041f020412f8a0e04715eb2208686ac8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_export_streams.py": "b56b98450d5010de5f7cb9ed7e56ba6629b8c684fe989775bf551d1b57ced94e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_activity_visibility.py": "e2f4457c36fcf8cb02ef4953880d77c5300be147726fed962b764ab172fad25d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/conftest.py": "a377653dcd3b72fdf11ec32c3495b4abd14498d5c274af9c2dbba6ada50cb3c8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_managed_connectors.py": "699bad34ce0733ca175398672e68a9f7c9e54e9c34e822dd064f8f8a4d6e3698",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_accounts.py": "7f6257849832cba43cc9266e421cbd9748dd8da5686b7bbd39f8dac656bc2877",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_dual_eval.py": "3f4430d59ca24fbb16e459d717f254a7002370c839f24011e885b0277f62b8d9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_mcp.py": "6b6d55f4671ea62735de6a8963893d81719dda0822b2a1aa589fc051c44b4ad6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_result_views.py": "4461b118da2f0226084a6a39fb65701b4bb9d8b7c91e650a73dfbc7793aca873",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_application_fixtures.py": "c73c2632e390f7327e103a585b6e025601ffd5c151c6c712b213cb3fa76a6d89",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_llm_power.py": "61cda6585301518a80dfa38c25eeff0ba02940c275d3e71d2af8af8d40540bc1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_eligibility.py": "54b2a2c40192be342a088d587e1ae52654eb31a52c22337fe1dfbc3ddc45f4fe",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_results.py": "04a81c0bcffa144eb5321c1ce8e3d62c3b7ec46dbdc30073379e2c1b49ad75fa",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_unlimited_query_graphs.py": "d9a78d4ee873dc7f7f73450d7ab461ceca2758e841b5daea463d9a01b3a948be",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_jobs.py": "bb2c2855b3410e01aa168aade97b6c8f682388b1321e23da1110d8baeb11db62",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_pilot_feedback.py": "e8b3531b8cf4bf02fc448ef5297df54fbd2e791db2ce3f9538ef516059281b9c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_query_projection.py": "dc32c2fdaba226597aebc1ca264085849924a5c52d5b56c9a633657da923ebcf",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_adapter_workflows.py": "14e5e93f05758da003b498fad0f545129b74b3957ead8b7b0484757a56b0bc25",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_serving_adapter.py": "3fee27292398d3ecb3a9aaa3654e3f1d2fb9e0c7cb00b4cadabb6c06e0cfbcb3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_benchmark_instances_integration.py": "535782cf148531d1c251084b1b3d3e1f8ac1e4b1a711f6da42b294599b296c76",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_query_tables.py": "d0a06a8e9770f657419dacd701807e284fa101ac120c6a1dc639d3222bc48a74",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_dual_workflows.py": "a7afefd99b7b8d2cadb30ed40e77550b73a71746e0f0e1a2665bfe30822b6478",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_lane_baseline.py": "abab797d51d65e1a833810e0cf2bd07e472c6f1938fb7a6f79d984be14d41f3e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_current_catalog_suite.py": "1071e34f18540e370050c6d469f232e33d2a3bb5c508a2a57729b2d30c14ae49",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_native_runner.py": "2dc41de462ee5209b6d7fc3040d160d8b390d8220b12f14eaaa144e65d147b9b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_workflow_templates.py": "ef4e69a0acfe04ddf9724f67c47287ea7f19c144ee89f621c67747f8c8abb401",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_admin_manage_browser.py": "a0b8111b0d5c1b996a1342313db01c3add1d9b2eda138d28fc5a08d9aaf7103a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_admin_work.py": "fc119dfa8c5d5199b873e583d4a9665228cb6ed3d13ff2e425476f28355ff072",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_sync_integration.py": "6a340ac74601464baced71219a9e5a1e84023a364d868e41b1d015b431909c6e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_domain_answers.py": "ebbadb5fa7ff74ebdd82ba8a293dcbe59e554652d4dce7dd015528593ac367e5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_group_views.py": "201e1116317b51c810f67e7f7dd7dd86de76c928ca7c90ecf1739cc7ea0ea29c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_expansion_contracts.py": "619c30ac634d2bfd73a3d0fc82fc980755a5177d2558b09a7b55976377bc2cd3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_benchmark_mappings.py": "b17ded63afc9b762257985842284d2111dfaa41eaca93d15c6bdb422facf89a2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_catalog_replay.py": "83f2c65ab0a6898710b5f31bf74b2ea40b0196a3f8a5c15282ab7562496e3b12",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_workspace_commands.py": "76d0593231dc184c8e88c819f2e375d3a0564fdbb0d8723e4f672ce1aa0395c4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_conversation_workflows.py": "f0a9d02cda0a4729786e914160e19a495cb37cd3cf34d91a3939abab9b4a76b9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_native_uploads.py": "b4f8ddef22f8669c9c659e845d9d3a846c17648159d6ef93c5be63e39f21dc53",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_dual_training_integrity.py": "f102189a9b209c4456fde8fe03d1ddfc1955d2be94aac289899764d6d75b7776",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_adapter_eval.py": "24a3fc6208fae9dacd00fdfd4cd691134ede39baeabb91a2f02b3939751f2ba1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_domain_ingestion_reports.py": "1ca3b87a1c18ce6d707cbdecc714b2ab4ed7aa38ea240d7e4c11dea61ac31c07",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_answers.py": "129aa7a09362f1b93f6916a435f1fc71a98b969ffedd1eeadb93746189c95393",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_learning_realworld.py": "71f4860490946f5be82339eead52e7d8daf9f6815f87afa9ac4ce18a1bd7d819",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_clarification.py": "8d85b6d975fc2a5eece38c92abe710b5a5a150747b51d39578a10a1a4acd7b8d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_business_workflows.py": "a49086f7684a358640f654490cc07ad7d0489b528c5e9d87d95088e4bc68070d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_adapter_server.py": "2726b8c2fb3c4166bb33e3355c07f00861894d94d4677622f98bbe15b7ad9284",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_realworld_fixes.py": "29cde016f88e35e223c01a15f7cd4be3efbb986e5f68149967457b81a95347b8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_llm_power_integration.py": "2532744be1c85df79949bed7b1bdcb45eaac5ada3199f4ba4ed7bd5ca936ff6c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_sync.py": "d4d711ea12f2bc593805f91fa53827a776980b7380be883a7f32382fceb79803",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_conversation_context.py": "8e00ea68744280e9bcabc04d3faa33406737a5ec6764c6456a61cb65098389ab",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_adapter_holdout.py": "50cc76ddaefe05df3f35ff28ba92feb8e06a06fec5c87dbc354078bbc301190c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_grounded_lanes.py": "dde5948c1711e922bce6b254c3c3fec974dc1b3c84aaf0976f8928ddab3a979f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_adapter_workflow_review.py": "2b4518f1e79532238871e3e2a5a7397049fe70a4e15b6239a4c8a329b18aea7b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_repaired_contracts.py": "e57e2e5294adc18b2067732c2382486bbd7d1a1f4f3fdac5e39bf6049d905e77",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_review_regressions.py": "ac205046261669b9dd529a6baa6e64ae6e7db50b1a281b61d25dbb9d0356fde5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_schema.py": "0f40439a3320b283b935ef1988040b97b052ccc67d22fd402609f066b072d9a8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_independent_sources.py": "c5821f97bdac4ca03bb2827b8c59aaaec4a22072978e6b6d53bc6f881c2c8641",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_pool_integration.py": "296ef90bd29bb224056772f5e0ceff5d8e9aa2371c241f4578fa78863423b4ef",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_admin_manage.py": "12153b354ba0b41d97556eed532e6ce27d8d434ce2a64905831b825b8c874fde",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_admin_console.py": "7fdb54fc4bcd70b0370897b3d1edfe4fee34ba0e8d21b938cadeae711a5c5842",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_learning_review.py": "8bb82a2377838eb13687042ec795cc31d8bd272da64f0db99018fbf1ca64ea8f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_query_previews.py": "03db68d266e601f7e9e7ecfac376312769fe8536a0bf3245982e603cdfcdfa71",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_catalog_compare.py": "fd2276864688336c04026e5c9569c00188a9f6d7b19e7d4bc34d6a8a0f959137",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_connections.py": "6af781ccac0d7b17d33cf5ff452e2a61f93da79f82ac5e10ce4a5ce190048b7d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_catalog_grade.py": "35d72c685725818e3f36666e98c7b1c36cd69414ee4e7f899d870f153a0bbfff",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_failure_candidates.py": "5159a43aaffd19cb88b9394a4af86c9f166ed51aff9ebdd1d7865a939ff6d2ab",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_calculation_limits.py": "6178bb1a6379d4ea6494c715abb99fe23a30e821fe1722cb994da65ed7127cfe",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_answer_determinism.py": "59165e0637092a47b9bcdc59204c98ec7819eb1be9ed96b0f7c014ca6321f959",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_parameter_expansion.py": "2d4b4b5c52196f54ad0888156f835b96c28092d0115f90370763a4874b6c21e1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_admin_monitor_browser.py": "2c7a7688edcae626120ae3200381169084bd46b6620344b551ed3c39a663d2f0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_api_flow.py": "c51dca4d93542743acd35fadf925ee76922d133e92c5afe65ee26208fbc253b6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_projects.py": "80b083893712480dbfc48ab3cf0c6330dcd5c62c629f39b35cbb1b1b12d84f43",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_workspace_recent.py": "9a2c9f81294e563ee713084fa0260ef7885232f508a3b88d093a204b11d08670",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_results_page_contracts.py": "24eac1e736b01cd8c3694e88e29857fe05d452e280750b32433ff152c8b645a1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_result_context.py": "3b895d64289aa4dd0e49b6dae0602539ae34bd084931993f6834bf62b9e146bb",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_admin_monitor.py": "8003e94d1ab358a5d713a3d985e787ca388f46f8a235d9965d6a9bfc65c765c9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_workspace.py": "8798949e0b6d26dde7926e27e427c13f126f12b16622ec2ccb925ea9101ca3fa",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_storage_recovery.py": "8757faf7d5184c5af55ccebfccf326438f00de58dc3117d597351f3119342e7a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_backup_recovery.py": "08f4636117d65a4455b02c6d4680c34f2fd16f63977ff6ee9bf842ceec1aa297",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_upload_resources.py": "954162fdb070eb55947711b5fda1f88931bdf56a1a1d78b1fddf30e4187ff60f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_projection.py": "33261be7f2c845a0b4ddc8695f2d0ee12216fe69047035f6d6c0e8f06b984648",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_planning_recovery.py": "73bfffe9b8431f0d71ee2f1f0988b0adc689854371898122d56bf65e7e6d767b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_graph_store_and_database.py": "026381b98cbb591124d3b1a565df4069c839270e27afa745132931db6e2ee051",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_finetune.py": "f7510db8f8de5f50c915e2c2546094ff46663163aaad32c54e9b989e8864bad2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_csv_import.py": "a8fa6c2fdfd400be54885dcf8e32f63b2103adb788480d6f1aeda7cc2a08b14f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_hardware.py": "2fd39500b1ff6c052001f55d31f21209a91c21225c5c0785ab471e2f3e538d93",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_backend_telemetry.py": "bcc00da846cda410c5d8698ff1247cd7ea8c4f1bfa76e2ccf64ce78c6cd94612",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_planning.py": "9502beac47c1afd165044dad2200bc27c81ca081489ab2c01dc450d7dfa6cff7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_learning_codex.py": "b8e7d912dd1585deef2993b81b2002deacba3e78c29e15df101e81906cb05a34",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_deploy_launchers.py": "c77492c964f8161dcbf7e9824696310c3a7b10757729636e319ac79963661960",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_api_contracts.py": "580ebda6f25c01a99b48508a6049feaa53e04a11ec47672bad7be9ec0111550d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_rich_analysis.py": "96e386a51aa11942f59e93abf1a719bba6ac2f31adb68535be40fde0442f431c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_result_presentation.py": "bc40909cabaa002613d50f89daff22e93ecec4a5ee77848acfe6b1f3f426ca3a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_result_index.py": "25642a073dcb856e8b302211e79dc6f31ca17f145b402b24e43677c746806e03",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_dual_adapters.py": "26702bf31afe5e207105685a7905bebe0ba7f602fcc537b18629363c04e6c770",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_llm_power_api.py": "d9fd767c783d08434767317d9a6b3d4fd343bf2d41b03584d650b76bedf5d91d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_query_editor.py": "32e684f3671b311cac813df5d8fcaaff2f15d6454d960d72a81f258794646ce9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_learning.py": "7ffe4ecf1c7232fb6e6687db40ccdcbcdc8befa73ee1ac62c592a2596eab6128",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_backend_feasibility.py": "d5aec1909711a5f8f81e889d1f7eaf64d9bf8a930130a8db39f2cdd6059bad79",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_integration.py": "de96e2c35c7391172b60e735c7610cffb8811f5f42fbc30218809557506effb7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_partitions.py": "8e438e598781fc570177cf441f5c9b80eb3da9399325890ad5f2e39c7eb1cc05",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_business_curriculum.py": "3a614a25370f89ef730f3d861c39c00d4c347c2e04e1ca37c01b67601c898ced",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_catalog_reference.py": "516574ad78c45ebd9b5bf346ff723d2b99c63feaa136a462f4745b9b07df4654",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_pools.py": "fe43d45ac2f0d0b8a319c6e8d8edf0e5b403793aec6b790899a3436d02cae9f5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_shared_backend_policy.py": "72a36f45cee7b96fd0a03025fe9d60b57a423c4e3c43bf0158e4157afb7110dd",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_lanes.py": "eb53c08e13075e0e2d01d1f97a24e28dd5126c53629180a5a22e00496232dd05",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_release_gate.py": "38374d4dda8ffb9d24e8be0d1a3f52f09ec9c70906ca034ae62925a0a34f202e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_admin_browser.py": "b175c86361c6d7be44499b668024142f1b2b31db411062a7791e64402a0f5c25",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_result_resources.py": "a47964df16ef256b72ae5999e698a63ecb86d67b2d6eed7170595517732f71a5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_yelp_instance_integration.py": "6b288c74e5f1a20c34bdf535a3dc797e6b94a6497cfe5e0921c05a1bf82e2d31",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_queue_capacity.py": "de25e4820249f5e50463c19ae7d1973aaa17df0ab3ce4424bfb49ff28d2cf0b2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_answer_grounding.py": "b24065f55d7c6a918be92f4ff8a899b9e63dec65d00618892b11caf0f7a99f94",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_scheduler.py": "82e02e57bfcc7de957bee691a48008197bfced235eb3faf9e63ca01101584538",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_session_search.py": "40cefe523521fad87c9af1013acd1bed5759e8402e72b8662dc49bee4e9c145b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_catalog_and_planning.py": "d4192a7b818baf6603a3e3cbcb38c86e3f0cf8fb5e489e31dc9127c88e70bd09",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_google_search.py": "b8aa1945dc44a31c257a65f6d792fe2746879b6db7b06db407aa6083a790e42f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_query_evaluation.py": "0efceaf411ff9cc0159d9c6bad0f865fb4093323abae7912569b8cecbfcb71bb",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_benchmark_datasets.py": "4c4c01576d13ee79ef2ded1f42dd94e94439eee38d5a022e849e2488793b59a6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_admin_work_browser.py": "883362e32fd5e27e37c143ba19e87a440e42b1dc20925bb0094f6d870e04b97d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_llm.py": "25cd4bc0faa14a4ca6158dbf13ace7333298c007f3dd8dd424a46361814e314a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_conversation_timeline.py": "46a593e5fd7c0cde0ba63175f83736cbc833029cc27230667d1aed2363089940",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_result_cache.py": "fbc8c02e63d27ac300221310500a8b0a76a647da8d2bf46ebf2d09b7629b3455",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_database_datasets.py": "ea8b19f46a4e156a882f5935497bd381381ab63f8268ad5ad3575cd552944733",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_datasets.py": "3d866124e81a539d4fe350b117bf49106d5d751e200fa5b9dc43b30eb67c1fc0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_mcp_examples.py": "506a7afb227a503d3808176180f6a66299038976cd018bf2bc250fd2243c1fc3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_parameter_choices.py": "3015789fd998eb0e1bc85e2b27dc1d8906b108d94ba45f223fa84e8758e6daf8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_context.py": "5893bd302bf5a0f376e0e6a0380453c5824ada32829cdb5e866384eb4ce76178",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_evidence_cache.py": "91148a1c3f2e51bcd41efdeb5e292f271c24a7b1b02e0f4e3493bda406f3e1e6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_dataset_paging.py": "ecf147f57e808a2cf4db7c047f2610f6b91f0aee738b600530a367d2f019364b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_training_capture.py": "96e5b4477c8272a1c45bc7bec818a4a89dd90564f0d80ad1bcbae5600598c532",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_full_training_data.py": "85b2863077754b08635ce62629d476b1b2baabadd9bd841b9226a62834387705",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_taxonomy.py": "241a29d3f09324e9b4eeebca8ca160fa351c7d822cdd181c3b9a5e6e0eb472c2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_curated_datasets.py": "e799cd1a3afdc29256d214adbcebeea690a01023abfb03c9852172657dc1e239",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_studio_exchange.py": "91da63635cfc8175d079b7cc4e475a4d5e9a71e6a43d8c8bd881bcc531e164c3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_exports_and_activity.py": "4363966d3207f4e6eab2e5650d232a5998def7251b460edb983ad11b747e68eb",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_business_eval.py": "5efad23a89e2ffec7fb61a14e5438174a2772429775f00a76a925eaf23a2a14b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_analytics_workflows.py": "1803c2c64e3853fd5fe90e19ccf9716df86ae7527d2a0b4ff7794ec334804bac",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/tests/test_release_artifacts.py": "5b87f3bdeb526c06de58eceba21d90edc9af0d7cc1f34666c2ef8512e813f647",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_history.py": "623b7d02a0c885349a12a19befb24c0cb060526cdc3d7c55675d3989d12af4cc",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_exploration.py": "fa1931f4dc270dc0ad15ff66f81752d408fa43933e38fdf2b39fc172b705a67c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_templates.py": "4a67cc194d5a2781411d7691d0e962ef2439c5d47a37841efc26f2ece4109ad5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_results_page_playwright.py": "acfbaeeb82bff7a18e786a81809cf34f712f2468bcc64b536275132ff186898e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_library.py": "e89b9f5fc219b4f96d2c33aa5b00b798860031e80cb31c7ef3c70e76e03e25d1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_device_quality.py": "df30ec82958ff045bd7e8932a04fd488c9f27b224adcde9179c10079c7436498",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_database_jobs.py": "0f87c90ff63081a8d09f41dde2edd7140b8ff24d3917119d6ba199acf367a4fc",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_query_tables.py": "bbedac51023dd71ed30f32d4612d0b2a05a00d6f83edd718ced23cb927472208",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_query_editor.py": "a495df2305aca69230464fbfc3ea750bb2a69e59c41507e12c04b452f73e05f0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_analytics_workspace.py": "19b5b663b7d190477d17b72ff3d278b65bbf22d829cc1183368bee3d113380f7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_database_roundtrip.py": "fa228252bae82c51c697f11c5920c2876fa45b20485a8af2020a3b795ecd2055",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_commands.py": "9e6168ae63039ca211e620f559b0ad30e7b61c96ce5f030db718befc381c8e98",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_incremental.py": "2c3f63e73c4e3bbe8a876a6ceeda115cbfe1a68508769c10529ba0ac8b67d7cb",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_visualization_overhaul.py": "227982118674aae1205e0b3cdde80f07265d611e1df86754884b0a1e00dccaf9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_conversation_graph.py": "86d229f033bdcdf36d76803ba392b12adff63c6f7c82e7f97c97f142c7fe05e1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_accessibility.py": "cac025fa022bfe7f855ba7ee74d9f155af8b1cc9121d93e3eb8fa0de2224417d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_projects_and_connectors.py": "aec30f5a2677587aa4e4df0a9a7ce9fb3fe15bdd244f60d25234d4a33699de77",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_loading.py": "b8f8f8c8024a9ba2f1e810136e5f03272c42ed80f406363821afe2776677f1d3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_home.py": "24afb199ecbee1542a8324b62f59c23f52af202593572cd6528846aafb9bb347",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_data_layout.py": "2ea13a669db741502c8e0a71fc8bb44d2501c59b829d1b16ac0cfbe2e59fce9d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_sources.py": "9afe73919ae8532873dff734f2ab6382e2e77e918039f59e9d87822830baa1f8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_query_previews.py": "ff33439fb4f8176defdf08630f57e216378ed394e3b4ff7c9e34bbbd1ff71b0a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_grounding.py": "3b3b8aaff0f371e626a0b39bb321139d09391d4e1344d226558c9fb17453c723",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_options.py": "1f05d1a92f1b1a768412efa780253084a4db1f70f937755e4eb32d6a92ee4736",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/workspace_browser_helpers.py": "c7f254685213f63c2e88259d865a1ab2e8cb042df80dd2036298e7a4bb34edf4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_expert.py": "d2d607678678f843a627dfe11017b1d2229a57bc8c2d1fc6a9ebc1e4e2056f98",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/results_page_app.py": "956e5ef5a8da2a73a256341c6abe20b9bc5334979bcfab3ba8e3e43cae3e4427",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_dataset_paging.py": "2dbeaa9caa1b808623c1020a0a1a6a4ee20c941e6567fb6bb84c5048fd3267a3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_navigation.py": "db3004082bfb1ae730e1948849f4b10b6822667f1b3c278d1a5a54cd61d9f61e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_accounts_browser.py": "4867aa191b9d94d8992b0615224be99cb024e9325249d34f2a74b99b350c928c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_database_query_editor.py": "98aba47b05f3c125f8e5b4c8583988050a88fbe4327a46e0993e7442a573b750",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_connection_setup.py": "d0f0a901b83275a0255d36ccd31350fa35a75a02f6c4406574366ea769674ff8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_biclique_views.py": "6f0ff1ee0a8d50047984b4c3f5e52a057a58fa85aa8b36840332c0f246298c0a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_query_drafts.py": "b85510f1ae9df53eb11367489f861d64ec4eba3ceb5c038eacc68406b81ae7f9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_shell.py": "879c9f09e49b7b06988dc6efdff1b22ebb780d9b22bf67f317d050305be49d34",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_curated_dataset_picker.py": "661af2651dd6760125a023813ee5e28642e60cfa373d2426294294cbd45989e9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_llm_power.py": "ffa7152051a328ff18db2ffc345b7c3dcb7cdd96998595863fb33121bb7d2cbe",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_browser_e2e.py": "6f7de17976fa1a09b91c4ef65c08446eb199b4f7370c7936ac5ade465bafcefb",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_result_exploration.py": "c19af7e22ad7d42ca07ae16d2395bb79bb3ebe44d1489d66dba4dc385ed60c32",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_recovery_views.py": "7e9550830bd0e21f6d9fc13bb0c990e2eafac67c5be6b70443a435c345c63a85",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_polling.py": "6a4c808d39d445b6229b4f010c36d41bbfd0998fdba73b11a64e5a247ecf6f3c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_data_source_workspace.py": "21c96885fd3a6d4948f2ee5f301762484cc57cf8cd51d26b61a364c440bd3023",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/browser_tests/test_workspace_result_context.py": "5128898a0dabafbaea03cc58370189a52d8bfac81c650e357340dbb789c62236",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/build_finetune_checkpoint.py": "5224b17f81e76fd2c3c140c28352d2dcb4ffeb61622647456547f0b48c0fc9a3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/build_adapter_challenges.py": "c4b615f43059a2c1e28d641cef87dd66144d1a4e0c2bef84f15c28b22eb9d2e4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/build_v1_cases.py": "70e4f810ef488a863af6bb3e9cb8fbf82692ebe27733da292605743829909bfb",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/_families.py": "b6d42b0e048af4b908a10ece2aaa9481372005bf7f6248d45da864be6ebbb4ec",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_sources.py": "2aefda1b6d4176b2f0a0f7e4fda135a35e641cf74ba49985287b095e667e1be4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/planning.py": "85c00dc50b80d288ba15344942d593187d83a4ca72c97ed453659c1b1174f0d6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/reporting.py": "95c84f950c9b5b9621a6342b03e94d1a12850be8617eabea2ff229e403281905",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/identity.py": "acb78ea263f9f1e99f149ab962752eb9ec7606ea26a44e1e66b334efd2fb5c22",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/presentation.py": "348f16ab935526c7f80772a48c510946b4a66d7d8c344e0ce8640d37fbd36016",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/neo4j_schema.py": "5f4c2691caaa5905315076d52b513560b9d47f9ce57e59c9bdc70fc095c81b44",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_monitor.py": "5f8f1d0c6cb656ebd0b60ad0cfe750768dcb011e0220d995d7bfaa044b483130",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/visualization.py": "e193f96642655b1e5ddb4fda884277701c093b95d045d7f834ff51aa88e36974",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_parameter_choices.py": "b8797c2818ad43e41f131b96eaac2f6e52db7f9bd831d2477a97b3a59e6b5a6c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/studio_sync.py": "4e93e1117a4f8285fb5bffde7438dd92543200bff8ce13b922e1e735866436c7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_usage.py": "451ed2cc4227f069abd5110d21de429ef2b3e9c398efb13775a9a1af00a789a5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/data_sources.py": "f872a66f01a0e4160bc08ccaafa5be8ed7c91e7f28c63b79b19818fcbe4175ae",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/managed_connectors.py": "3ba1dd9760fd38031be76423d7295ce0daf0cb71fb3662d68f55294959710eb9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/smoke.py": "8489ad60c1defc0b78afa7132615d186997601def2a1d3d0ffc4c8c944e6ed6d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_answers.py": "cdc508b047b450ed79ec447c8919522715e946df9324b5750125cf2db19d5528",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/llm_errors.py": "2c52f162eb4b4bf6ddde3e7c73ea52209973ba3617611aa2a5c9f78255e41e76",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/accounts_cli.py": "4d70d083c921b4181192a3fedc18a71abd05c1316a584f9a0e92b529a932b263",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_settings.py": "a8b4a74fe9583386d6e9b96ec1c0f4b4a64d40d57635512cfa07c3ac461ebde7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/native_ingestion.py": "11b73ca7c2401ef619d15d397c8374e95ce66ac70ac73d60c7c1ad161216c70e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_planning.py": "195f75269e3091c38baa36d8da5c6f71da32c4d2eed34aa5a3078932947a4fda",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/web_assets.py": "c3843724b1478c1f808a79226f6994e0660a6a72c069294191048c690e5536f7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_model_calls.py": "a8a84bf29b04f56ec4bbf3274fb94de03a0a4d5921a5d2bab710875066b65d39",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/datasets.py": "cbdf5b0f711f5ec0bde79482d0250b2327144579582ad94f2550f7cfd9377d70",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/mcp_database.py": "f414085b6714156ff6850781d68c710e1f5461011d5bb4a7c10a6c5ea1efaeaf",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/view_actions.py": "ee4cb46edf01c1794a3ab8e977a030ef137435a033ea0a548c540db2bbe6631d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/mcp.py": "a7e554c9a4274b7bfef04ea739ec1e0ec19d6a21b2067a5184b9eaf9122f0421",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/api.py": "74a5c177811c8905fcd2d2e437168b3ee87a244bac8c04037fced31b4408d5d0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/result_cache.py": "420a462bf2417e15031c133151bdcb629b394ce233e2f50ac9576877df51b6ad",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/view_semantics.py": "05c3baf8aa8f771b79e3f63bdcddc7ce72e84affa81f9206a4e12fef6b6a4a7b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/query_previews.py": "0323c94f834441ea8c71c55a7189dbac7dd774c274dd526ec10a92f60678a735",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/dataset_index.py": "f15cc6a53d24b8fa7d5a5df9e658373f973e41c050b398840fdd561578a0a084",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_modes.py": "71f0aa8569ea94d172c54d9f94cc7279e3e969984d3487a91e54de9e14a593ec",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_data.py": "002a349a1942d4345e84b8d051973c0387473601342526a5f0d4fcdc858669ef",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/errors.py": "e9a6fb4a6e9249c5a7ed3f42b0b2260a9adc4e53995bcc80febc2f0dbdb149e9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_options.py": "4540d6158805a2b763d64fc814c12588faf445f08e74a83461cd39e87274ab99",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_lane_choices.py": "aebfe5de236742d496f3cd63ae470ac40824e882f78b3d3d50480c0d41950d11",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/benchmarking.py": "425cf5a7a87c7d6fdd2c91d902c8bd042cf630aa10c517f821e18ff45f93c930",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_eligibility.py": "efbab980f17fbc709d3b773770470a0e0fc6fbec26978b1463351e5bc30355ee",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/connectors.py": "2696faf9a62ff8b1212da16cc76d61d704300ae83c9aafb261c5c4b83dd77e03",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_examples.py": "f153c6a2186a54ccec36b2eb40bfad901f736f609455aed92907d89b7f71c7ff",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/neo4j_registry.py": "d772d623c6d0deaad67b2bdadc4b0249bca24a75f0c791e502097f9d4fab2e04",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/view_profile.py": "0d9f047fe330e8c73c2c6f4b94b1abf1e76996a619d72fcf87a8443f1226f8d9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/result_index.py": "6dd4856f5d5e792bb54c79bdff51e758f2020371f6d07f5f4726bf11029819b1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/ownership.py": "cac4fc2802642ca6923849d06bfe91647af22737637a1368cf1e7e5f35bda80b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_pools.py": "5d15da2e3a2c3b891e493b80471ff4d4f5637d63ae91643650851794225f908e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/table_artifacts.py": "b80627fed8bef70f90f245f32cddfbe26ccf1a01810ed913287afe0dfa267c87",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/__init__.py": "8059d39218be1587366d977a6d7ff946fc36d19169d7a9285803ac6b3a3345de",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/conversation_timeline.py": "9d521198195c0060b74b9635e79729bcbe47e48ffb015f8ab1922b9ea324e90f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/query_results.py": "a0020598d1b7a9b582325624c92f33a1dddef05bb2c1ba5cd96476a5b7819dfa",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_api.py": "b5a3cf8c3949a84c4e92df6559312018095ed393d221490beab2f2c9b2188eb4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/view_data.py": "5c0fbd4588e6935866f7af671895b41598364a1ed767145a419fe207e0a862f8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/evaluation.py": "46ca16433ec76d4e340ec5465b7e14c8b3b97a4fcf9d23b9364141fc5c7a3da7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/jobs.py": "dcd7924a93f663b798d273fae74b981dff848485fd95704fd8223f8a399c4f0d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/history.py": "232c208f4af385cd71c19a81646c785cce24bc769be800c516b7dfde2d324c94",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/config.py": "cff4e3d200fdb57a64cce0614fc48028e082898a2a939580aad3477621925191",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_exports.py": "031b0f855128257440b57f888e598a3a8aef5e04845c133a01e2ce433054ac03",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_sync.py": "45b1ecb605cdfc8b16ef86fb33ec73bd9e9937150c7af0cdf438cbd43442af77",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/evidence_cache.py": "1cb8e37de375061455acb10fbf01c62243045445294b83417b56fdfe31901c06",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_job_context.py": "e937e9d307852f181e36e1bf2bf037100beb24cee3f6cf9bee5881510d637d11",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/commands.py": "c13d73c454ae46a378559cf622d44e6ca3e040f5ab550be408d0397dee34a7d6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_enrichment.py": "114dc8d0e5f32e0692bb2730542d787ba4df9016ff6d91f2f4f416c9162cea55",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/workflow_api.py": "a3befc8584c3aa584a5ef97d6b1290084da9636772c3e1697322744e23763606",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/projects.py": "cdc7d94367b56f159b245b713040cec974a3604300532fc162a979b087a21326",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/api_errors.py": "e7ae0a185667b94daaaf61f6edbe4782d1402baaacc3c8195dd290f40a4c7ef2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_connections.py": "426a223a09a661bfd634c194347503c0feb549bea33ce6dad40d4ce8db28f024",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/result_views.py": "f515f36a1bfd4ec206c81e5c715f51f23748e60614c12a5d10588d61588004b4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_schema.py": "372fd43b60c4cd3f4ed9ec4dbc55dfd9fdffbd8a42f93d659b82cc8b009bb5ef",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/llm.py": "5ab5edf7f835a158b37c3a5e22c4604719090b15a03a946ad89d834e1edf637b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/legacy_exports.py": "f425c18bc3374dab08111e1c905e282fe5dd50cdc2a1c333c6dc21654998a73e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/export_streams.py": "203ec2b0e43bc20f26ae8355815629398c87c91de09340050700f800ecd60ccd",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_telemetry.py": "eb37cff398bb79241120470a1d66df24211b38cb6336bfe06d791184cec6b5a2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_projection.py": "48a4a206b36bcedfc9518469aacb908c9ba0275e2f2d35d4ca3404d7f6025705",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/result_tables.py": "796b93d3642bd3cda9ba58f3fcc9b220265373748d942600c53e327e6cc3b5a2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_queries.py": "b4db068b93b272a6004d17ae8d12cf9375bdca17150a08902a42c35d1141f1e9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/view_contracts.py": "a36a3e76d624239e8f1d33eeba3d22940b71e9eb9b62d47fca49bcf88b1eb297",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_accounts.py": "ebf4d82b390e44901751601b72bdef38bd79de6e779048a3285e31b38247422d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/llm_power.py": "97f319d84a697d1e1a4b57ee02ca5ae1746443d1e18f44f87b6db2a792209412",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_context.py": "0e25e2a79779be7705edb7359a732a989c7a69e783613b0f13f96845a2dc082b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/workspace_recent.py": "8557d4070421d4e36324f1811bb2e5d19e3c5987d46b53f2a09768abeeeebb58",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/adapter_server.py": "e28d4cba1d1b561c344ce89a64a9703f3345b0358a728b3a38c0fd4c90b2f3d5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/csv_ingestion.py": "75191c894cfa96f0a1b480760b7f5fe0b55ed7744c916cec79071ab151f5f2a1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/result_summary.py": "64c24f7b33018636f298b9d3e45676f96bb1865d99e6b5c084caf839b2d3e858",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/import_preview.py": "4e50474a22298bdf2f3bc31cd9d2a23ac97a6f7c9f7cde8c38be00ee2f488769",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_jobs.py": "7948a1c59212569c8b3f4ed668a83e5b265997f6ea90be58ae00ecefa8131fab",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_lanes.py": "feb1fd225af5be8ec659e863401ba9cdb1891d13ae3b9941d664e118df974ca8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/google_search.py": "04dc7d349e4c05166ab86ece7fd58385909cc87564688960ccf9099790e8ab2c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_lifecycle.py": "c818fc4a31e879981b7033ee8a09242548d7d3f28c8d74d6b9e6c86fef2a21f2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/catalog.py": "3fe36fd8979346c1204662358aec0c15a966d8fb9b1e3f0f415c9a7c7e963d9f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/profiles.py": "dd52e4e62fd89480ce109eda98b2983ad9c6054578c8c3d379a20f620bfbd34e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/mcp_downloads.py": "adaee483a2982e4fad7f920255f6d3f993845e2dfec57af30b709ff775fd58d8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/answers.py": "5951694b74a08397e524dddd03310405d2c096cb4ff376ef2439543dbb0cb426",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/graph_store.py": "e0b809086c526a4db5cc5ab9906f91d5bfd2c8bb45585b687c599890934c74b3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_jobs.py": "2ccf80291362c5474b8d9b240382bce11ace571ddd67ea1a0282b245bc4e784f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_datasets.py": "9be5a954e7fc87bcb7a8c5d6395d447d93cb5956a4633633fc9cd01cddedd2f3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/accounts.py": "5b4d7c9a9811f819d9ddd4c4d29f64cdd10d1172c37616958dc1b6b7c874afbe",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_events.py": "09a67769fbfd59e4c0a7674ed7d98d1f1ce9eadc0252e5a25bca7f977a10f0d6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analysis.py": "753788609a2f733cf4e0fcf7d3f2e37bbc475875e4edf2beed0a47f3e99b8b62",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/cli.py": "99fab97f35be76f535af25d02deed92edd230f4758fc3855f2c3921ce142fb52",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_partitions.py": "749a67cc768e06e82d4a25d71bba569a1f8067afcaf4fd1db69a4f14f62fa9cf",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/models.py": "e42b0e7c9dc8c692df2ba08207ab9b6557cb9e1d815b41aeb4e9151820c6a438",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/account_api.py": "e1ba6179144c654b86a28a9b24ffa4614b8da7d691615bec8a17d5ad20eac84c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/results.py": "375aa08b52c1a051390ee85eff83b87ef33f957cc69b1340a993b7be254a5b29",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_performance.py": "488b86d45b0407b8e242f303ef060cae5f584cc3d1d4eaf928c8a2b72f67ee4a",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_summary.py": "60306c7e387d3ec07a5001a923961071fb4c5373a7cb7132ddc144df8bc15e79",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/view_rules.py": "39f73cf01bbabfd2473acacc02137995e3f3ea01376946f9851a708154072bc0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/workflow_compat.py": "8db6ba25efada441e227d5dd37a5bdc5b4990a7ff227199fe6d001e30d61f857",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/workflow_templates.py": "29256022792617184439947ba5f99152db63781e8519935259fabad11fcb6252",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_bipartite.py": "5cc095d7ab245397ab7a1b206cf734a41893c7085c1c4521ff83bd96b5b6d61b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/answer_grounding.py": "7885471ea847eb44bb1ff348beb50d62687558f180fe8cce383761cc6405dece",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database.py": "d378232c455505fbc92a93666b9ffc3403296cf8569ccc7f1c566d1de0c20094",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/graph_context.py": "9a3f6d28f58015220861de2bc570b7195a78c168b14d23cbb779851b30b85e55",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_taxonomy.py": "1d50023f8b301635dc24309af32f038ed78957d196a143c64dba379f893de608",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/workflow_index.py": "c7037cf2b174b12118842fb721a8a2359da0fb827e4778ea15a135190eb82a38",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_studio.py": "70b61fe36840cb6df0f1a8d38e281b824efaa294a714de51dcd35670aaca22be",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/agent_service.py": "5dd82b296ffaa6fecf69dfc89965ea1182ffe4204b6a97cee95bb3c988d3954b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/benchmark_mappings.py": "b4b85aecd17aa93f1bce06304fbf10b3c9e248c88168e0e38c3c9a4f19658848",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backup.py": "04f054c514f10895b0c2383db13124e0e8f74e060fa75d05f40c3aaa2b130602",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/exploration.py": "0c4d990f5029892aefff8b639d307e4f706c34f630a250419fd9f77cb54bb2fb",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/usability.py": "0ba9ba9d7844765599befd6d10cb7cc812388123d0704641f569b71e96e14298",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/benchmark_datasets.py": "35cae337cb91e6809ad33a150232a487392029bd167591a2b1e783c7423afbf9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_clarification.py": "653737dce774178a368ec29ba8828759b488e3ca6ca55aa06f582efc25a3d431",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/terminal.py": "26b8f601d589122d6bc1ffca6f811d8c01119a5a48d78fc4b08e0dcd4b9cf063",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics.py": "0e90711528f8a3091f3e6cdfe60f721251ecc2d828a5023b0a3c17de073685f0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/activity_visibility.py": "bde14e3012f062d1413c5dcbf6d421e42a1a8481baa9a471801abf5b73d764e8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/admin_selftest.py": "fab0af6ca9375ffe22e22d43646a19a5755632d153bfc577e0b24b0ce5238a7c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/execution.py": "302794b5f3ab900d2c520d567d91457d9b0c8267b2c9d5d469d44bb217218ca7",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/capture.py": "d3cdbaf9f1a3094066035ca52961d3b6a17b9c563c9a1f76edd4ec316dae5ccf",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/database_reconciliation.py": "0183cb2803e1508322ed9be7d7d4517768ab116c550c5ebe02a93c41d254d100",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/calculation_limits.py": "50a6894656923cd0f8f544075d29685841e5a6cc411be97a77f007d33c3ed900",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/analytics_scheduler.py": "3a3364cba725dca017c4398941d23fc4f67de77a14d18b618e7f6ede156e3e57",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/scripts/backup_store.py": "4eae596d9b25398912d4396a082dab598f5db64be1bd89eaa12124f25aadea0c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/scripts/profile_result_loading.py": "5580075cded99b12cf7d8b448f4bb06f6102e910c26514959bd598c5236f6ab4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/scripts/profile_agent_resources.py": "2709bc3699c58aaa6dc53290717b17e915601c8dd0712babd9cfca6de3065a52",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/scripts/verify_cpu.py": "18f2356887e798074b1806cffcf017089a3e933b3bb6468456a84ba9ef757b44",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/scripts/collect_failure_candidates.py": "672638165d770a6095ba4ed40ea43fe1658bb56c30ed08d0ba88d9d64d6fbff4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/reports/adapter-challenge-fp8-audit-v2-2026-10-03-review-source.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/reports/adapter-business-new-review-v1-review-source.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/reports/adapter-test-review-2026-10-03-review-source.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/reports/adapter-workflow-comparison-2026-10-03-review-source.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/reports/adapter-challenge-review-2026-10-03-review-source.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/reports/adapter-realworld-comparison-2026-10-03-review-source.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/reports/adapter-business-fp8-review-2026-10-03-review-source.py": "fc14503ae1043d5eb269fbd20b12599db54f23508979af79c48910b367b23bc1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/reports/numeric-filter-audit-replay-v1-audit-source.py": "2ca32623d48e9bf3568e4ea8063fcee817a727d64780497ab816b1f295d12fa0",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/dual_recovery.py": "9fd8dd565b7257586b40c59ff20593ed674f29429bdf9a436ef7f9ac580868f8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/dual_finetune.py": "741dba75a00ad6e6cb316719c0a89c322a6b36201e72bd6d31f6c32309997cde",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/dual_questions.py": "3715eaa14349831923d98cb5b65ccb691baf6892af541877ea978a696a30457e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/catalog_compare.py": "ce4c16ab9401c7521f22efb8697e40fc8264b6481894e80ae8929cc8e5660267",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/dual_conversations.py": "7e35c8a22fb0950d576ee2c075a39125f8bf3c17c3a21dbc015ca0b0375c937e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/serving_adapter.py": "485b15c324c194596f24f526a77944fa84858e14bd85c2f20fa5ce6764dbd507",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/realworld_cases.py": "64743a844749c1a19bbddfc5183224a421f8e2d4e0ef7d4aee7efca7d58cc503",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/proposals.py": "a84400738575e9e7a596b9a407c1fc96d0a68dbcf6c8de0bb3a10b3a2361c9a8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/catalog_grade.py": "61a581f6ac6a18a0a8dfeb270f61a40ac062bc07e9afbb0b1ebee8800fadf27f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/full_corpus.py": "63ccf27bd210b4a0b50ccb3322887f813164f7ea2b95080b5f1d170b8b7ae1d8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/business_curriculum.py": "30341939f429dd9537772dcce46ca95b94264cad1adb723dc495e11a519cfc1e",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/reusable_data.py": "8b0027db41f5ae8e65bd9fc4b4191afc6ae1d9f3181c3f9ff59c3384c11013a4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/finetune.py": "eb82044cbfcffd93298b13a9b5ea8fd007b50111c8d34c89f1c0edbe0f039c77",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/catalog_suite.py": "7c194a152b928765093c6958eb54f2db3598c9e3fb6724030d1d91f2de97c59c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/adapter_eval.py": "80a75f5427af8904b567b95f9dd3dcba9105c13cbf62fdf079b0c68f9766c5a5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/dual_eval.py": "e4b8d46b17b944d1c300b6d556f78dda7ea03b73cb655a1108b258ed5514dcd9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/business_eval.py": "8ca41aeedc5f55822700c4ba31610d697868c39eea772d0bbabb07e9034dbb96",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/catalog_replay.py": "31f72a9ba94b7081311b4c624a62763caeb7f235452e2805ce5a4fee6c93f28c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/analytics_queries.py": "abe8c598549deea1c7fb9d7db03581e57cc282fff84e99121693a497ce373174",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/presentation_checks.py": "af7ba952b04b0eb3867c24308351159227a622220d136b475ea2fc51f2dfb6d3",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/collection_only.py": "77e964f823962d10f1ebaebf63b33491dc232cd35cb18a602491e9eae9eb2b78",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/realworld_eval.py": "ee3731b2d8f0474eaf86b56ca1069e3e1e71538a3231e5710155ae8ffa23d4c5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/dual_review.py": "da314beb58340cb25b782cdd0c6db370dac03c43e3f072e7e353711e48676b38",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/__init__.py": "18ddf5f2ec79711640cab59ce8da25a7ac4f51be8b239a1c0236714f094eca22",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/catalog_audit.py": "d39ad70fd07731eeee9e9aaa4a548f27da73a8999db10c6e8bb0f16547057e68",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/dual_teacher.py": "04696648afbdd2b6e687f2a9bd642688799f3d59a2bcda8de701444eef635c7d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/realworld.py": "abab014d564a29f0cadea7cf3d4258f7b18f2f88531cb2a911b6ff0510d1a821",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/workflows.py": "5edf9f1bfe168c512349f50bcbe869d3b56a784eaaf0ecb927d2f07373ebebf1",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/pipeline.py": "dbd2d5998238f062016d104251cda4fa73b416a4158deb8931229858568e18f5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/inference.py": "1c54e75c37cbcf158305fe08c0c3429fa8261b834eca4dce4747c1e194b5888f",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/failure_candidates.py": "0ecd4bd56d60a9ac2298497d4ee86a4093bd6a5f2ce2febd036aa93e7a6cd6cd",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/data_selection.py": "dd46a5df60414326adf2e49d8ff1e723969e7974f0c6b518a2d6d08997ad61b4",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/corpus.py": "fac88d22f372a4b1277a6408d268854f624d2a0e4c7fdb753348c2af685e2b31",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/review.py": "f06b3f83f071185d506874a60bee72d180166689f7a36964ce31faa6c465f8c9",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/adapter_workflow_review.py": "3af325f3749a7561bbfa4b193fb955f6305a80d4e2e53cee4260a65d9fd8aa83",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/dual_workflows.py": "02e0ba74e6d50ab3af05ac9a62c303b5ef30198a4fc0dc4a56e70ffcb943042c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/cli.py": "5569ed5f919bf15bd8243c96ed4baa2758ab838593c4a9a3d5091deed0c28140",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/adapter_workflows.py": "e9a6fa3aac26a64b529b75f43ee96279efe90b368d7701596d00ff1fae09ab24",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/teacher.py": "7e47e9ec14c26bbc8276a5a4615c05f851f6d46cfeeec7408e82b8220d35619c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/full_cycle.py": "b44431fa3a5c9067f37a93623ef82a2467ae6d2ed90e6daa62e9832e0905f2a2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/business_questions.py": "35cbb988a8346e751704ec46a2a738af32001a91f193f89b94be42ba38d18a1c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/oracles.py": "e2810bd6446652a8431c7ff4a24284a2d6a8b3e2bc45c5e5fccd3a2bbf4db21c",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/business_workflows.py": "424b7f6b3ce6347d4dcd5432a5568cfd62added663fb56fb80decc63d4cea800",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/adapter_review.py": "00237ed09447f7b78294269fd237354509c3e93226c721d26211d4b427800171",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/catalog_reference.py": "72430b422fed90ce51a3c03876abb2645035a20887a39d4c726700eadcb9a3aa",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/dual_corpus.py": "e48b934b1ad04be66a5ec986213c3e135fc0ede837a69f8431a9ee180ee8fb36",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/codex.py": "e54bec1c8b27e8d29cd993057056c8f3bfe2d2884be6fe7db4cab666e3fc2488",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/full_train.py": "f4067dc7b8e416a4d10aeba3c5a5949add24dfc2d623e6a00ac73d4ce19803e6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/adapter_holdout.py": "4d9e1d7e01fb0ced5359b462d6285305ad0d0fd872aca884668cdf2cd06fd275",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/review_export.py": "3f6ea7880fad4113a1df506f7566960fd160a2fbd9ebec333117f3feb6bde9ed",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/learning/meaning.py": "0f029a46039d99ac5b26e7cc2cadac95f2aa8e232ab16adfca71531c1026c672",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/benchmark_profiles.py": "3bd72ef1c534bcb07fb76ccc2475a318e3067f39a0839fbb27e4d0634fd53d7b",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/memory.py": "afefde09a9697d3ce5dcb8e6a5b8ba6339159f5c740d91ab8f6e757e7335ff06",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/benchmark.py": "2ea84db5166add7581485333817ea790336312263580a745f975d743e31d1c3d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/paired.py": "4cb0edd5435df739a6af6c6a31987d23ec959a7ebf5ec8c2a02956c010f2599d",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/policy.py": "d088edd6c1f9824b7f175301876bbf5c94f4995e55edd6e3843a021e22d41dc6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/__init__.py": "8bffbc8946b9111c1c3d15547617b005babacbbcd3da2206df044db192747008",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/features.py": "517ae58df081b4a0da027e0375ece01148368dd065c75dfeef2e89bc8a882abc",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/evaluation.py": "229881312857d5e7d5c2f7d67658cdb4b3335a4b5096586eebcac4fb69a07a95",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/feasibility.py": "3e3090a297aca43c04fbe8e223eaab39237b432bbb834dcbcb5e298e4bcecad8",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/attempt.py": "a5c6343e53733455e234fc7c02427e9665877150b5bbb8d9b05d1353d60cefde",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/benchmark_graphs.py": "e1d525709bd1f9f144c0d2ad7819665b10f85ef8a2f08c50a77cbcb03f58c040",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/shared.py": "dd8f45cce8224a50910dbc969d80b277a53c82d2272ec386455a6e0e7ba27178",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/compatibility.py": "9916a7f580c50996053437b914ea4b8a9b77e828cd5cceaa45eed9f46d888543",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/leases.py": "cdbed0485dfe6602398474bfd38a17b13e7ff8244de40083f63ccb426e340aa6",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/cli.py": "1b500cfcc1e62d4fbfe8ebed8194312a5f85d6d8d0a32607c73b0f3b1c69c407",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/storage.py": "4fe6b03f08b69e22bdb76ceec91852a67f7a8fed70643736dd24d6ab494bbde5",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/models.py": "46a0c916bdcb7b29f6520502789e95ee0e11212aede969cbc2e28495a77ffb51",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/model_cli.py": "dca723b288179e8b2697c70430c3b7ab833f8baa88245714195904933ca9c6ab",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/hardware.py": "98e2d404c2d88119cf258c3404ed4a9c123ce108114e251d9f6099aa2db176a2",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/graphmine_agent/backend_learning/worker.py": "f64633401e36e21a09ffed1665af0f3e1a1055170453484f6405999819ac0b77",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/agent/evaluation/family_routing_cases.json": "f2f86c363da5fd8d4b536c8c8c41b7bc211437926ec4bd5c5ecf35bc40cd1959",
+    "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/tools/evaluate_family_routing.py": "21df63019b4cad8ed3871810ce00816fba739c7bb4f08cef9ad35ad18f2e8957"
+  },
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "native_implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66",
+  "family_metric": "Explicit family decision for hierarchical routing; family inferred from the selected problem for the previous flat router. Both are scored in the new taxonomy.",
+  "cases": [
+    {
+      "id": "records-1",
+      "question": "Look up the stored record for vertex A.",
+      "expected_family": "records",
+      "acceptable_problems": [
+        "node-lookup"
+      ],
+      "initial_family": "records",
+      "selected_family": "records",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "node-lookup"
+        ],
+        "message": "The request is a direct record retrieval by vertex ID, which maps exactly to the node-lookup problem for selecting original vertex records by typed IDs.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "node-lookup"
+            ],
+            "reason": "The request is a direct record retrieval by vertex ID, which maps exactly to the node-lookup problem for selecting original vertex records by typed IDs."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 26.68,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "records",
+          "message": "The user is asking to retrieve a stored vertex record, which directly matches the records family's goal of looking up stored vertex and edge records.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 55
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2005,
+          "payload_characters": 24897
+        }
+      ]
+    },
+    {
+      "id": "records-2",
+      "question": "List the stored neighbours of vertex A.",
+      "expected_family": "records",
+      "acceptable_problems": [
+        "neighbors"
+      ],
+      "initial_family": "records",
+      "selected_family": "records",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "neighbors"
+        ],
+        "message": "The request asks to list the stored neighbours of a specific vertex, which is exactly the native filtered hop-reachability query provided by the **Find nearby entities over selected relationships** problem.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "neighbors"
+            ],
+            "reason": "The request asks to list the stored neighbours of a specific vertex, which is exactly the native filtered hop-reachability query provided by the **Find nearby entities over selected relationships** problem."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 24.839,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "records",
+          "message": "Listing the stored neighbours of a vertex is a bounded connection query retrieving stored edge records incident to that vertex.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 55
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2005,
+          "payload_characters": 24897
+        }
+      ]
+    },
+    {
+      "id": "records-3",
+      "question": "Group the stored edges by their type and count each type.",
+      "expected_family": "records",
+      "acceptable_problems": [
+        "graph-aggregate"
+      ],
+      "initial_family": "records",
+      "selected_family": "records",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "graph-aggregate"
+        ],
+        "message": "Count edges grouped by their type field, which is a direct aggregation over the stored edge records.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "graph-aggregate"
+            ],
+            "reason": "Count edges grouped by their type field, which is a direct aggregation over the stored edge records."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 27.196,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "records",
+          "message": "The request is to look up stored edge records, group them by a property (type), and count each group \u2014 a filter-and-summarize operation on stored records.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 73
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2005,
+          "payload_characters": 24915
+        }
+      ]
+    },
+    {
+      "id": "paths-1",
+      "question": "Run breadth-first search from A and return all reachable vertices.",
+      "expected_family": "paths",
+      "acceptable_problems": [
+        "breadth-first-search"
+      ],
+      "initial_family": "paths",
+      "selected_family": "paths",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "breadth-first-search"
+        ],
+        "message": "Breadth-first search from vertex A computes minimum hop distances to every reachable vertex, which directly yields the full set of reachable vertices.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "breadth-first-search"
+            ],
+            "reason": "Single-source BFS from A returns all reachable vertices with their minimum hop distances."
+          }
+        ],
+        "cross_family_steps": []
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 32.288,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "paths",
+          "message": "BFS from A to enumerate all reachable vertices is a reachability query, matching the paths family's deciding question 'what can reach what'.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 82
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2472,
+          "payload_characters": 24552
+        }
+      ]
+    },
+    {
+      "id": "paths-2",
+      "question": "Find weighted shortest-path distances from A to every other vertex.",
+      "expected_family": "paths",
+      "acceptable_problems": [
+        "single-source-shortest-paths"
+      ],
+      "initial_family": "paths",
+      "selected_family": "paths",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "single-source-shortest-paths"
+        ],
+        "message": "The request asks for weighted shortest-path distances from one source vertex to all others, which is exactly the single-source shortest-paths problem.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "single-source-shortest-paths"
+            ],
+            "reason": "The request asks for weighted shortest-path distances from one source vertex to all others, which is exactly the single-source shortest-paths problem."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 27.703,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "paths",
+          "message": "Finding weighted shortest-path distances from a source to all other vertices is a single-source route/distance computation, matching the paths family's deciding question about getting from A to B.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 83
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2472,
+          "payload_characters": 24553
+        }
+      ]
+    },
+    {
+      "id": "paths-3",
+      "question": "Order these directed dependencies so every prerequisite comes first.",
+      "expected_family": "paths",
+      "acceptable_problems": [
+        "topological-sort"
+      ],
+      "initial_family": "paths",
+      "selected_family": "paths",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "topological-sort"
+        ],
+        "message": "The request to order directed dependencies so every prerequisite precedes its dependents is exactly a topological sort of a DAG.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "topological-sort"
+            ],
+            "reason": "The request to order directed dependencies so every prerequisite precedes its dependents is exactly a topological sort of a DAG."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 19.523,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "paths",
+          "message": "Ordering directed dependencies so prerequisites come first is a topological ordering problem, explicitly covered by the paths family's 'order dependencies' capability.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 84
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2472,
+          "payload_characters": 24554
+        }
+      ]
+    },
+    {
+      "id": "connectivity-1",
+      "question": "which parts disconnect if this node fails",
+      "expected_family": "connectivity",
+      "acceptable_problems": [
+        "biconnected-components"
+      ],
+      "initial_family": "connectivity",
+      "selected_family": "connectivity",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "biconnected-components"
+        ],
+        "message": "Biconnected components and articulation-point analysis directly identifies which connected parts separate when a given vertex is removed.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "biconnected-components"
+            ],
+            "reason": "Biconnected components and articulation-point analysis directly identifies which connected parts separate when a given vertex is removed."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 28.508,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "connectivity",
+          "message": "The question asks where the graph breaks when a specific node is removed, which maps directly to biconnected components and articulation-point analysis under connectivity.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 57
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1482,
+          "payload_characters": 25423
+        }
+      ]
+    },
+    {
+      "id": "connectivity-2",
+      "question": "Find all connected components, including isolated vertices.",
+      "expected_family": "connectivity",
+      "acceptable_problems": [
+        "connected-components"
+      ],
+      "initial_family": "connectivity",
+      "selected_family": "connectivity",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "connected-components"
+        ],
+        "message": "The request asks for all connected components including isolated vertices, which is exactly the Connected vertex groups problem (weak or strong connectivity, exact).",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "connected-components"
+            ],
+            "reason": "Find all connected components, including isolated vertices, is the exact objective of the Connected vertex groups problem."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 26.393,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "connectivity",
+          "message": "Finding all connected components (including isolated vertices) is explicitly the core task of the connectivity family.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 75
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1482,
+          "payload_characters": 25441
+        }
+      ]
+    },
+    {
+      "id": "connectivity-3",
+      "question": "Find the minimum spanning forest to connect each component as cheaply as possible.",
+      "expected_family": "connectivity",
+      "acceptable_problems": [
+        "spanning-tree-forest"
+      ],
+      "initial_family": "connectivity",
+      "selected_family": "connectivity",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "spanning-tree-forest"
+        ],
+        "message": "The request is a direct minimum spanning forest computation: the spanning-tree-forest problem with objective=minimum exactly matches 'connect each component as cheaply as possible' on an undirected weighted graph, producing an exact optimal forest with isolates retained.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "spanning-tree-forest"
+            ],
+            "reason": "The request is a direct minimum spanning forest computation: the spanning-tree-forest problem with objective=minimum exactly matches 'connect each component as cheaply as possible' on an undirected weighted graph, producing an exact optimal forest with isolates retained."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 28.648,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "connectivity",
+          "message": "A minimum spanning forest is the cheapest way to connect vertices within each component using trees, which is explicitly covered by the connectivity family's 'connect vertices and required groups with trees' scope.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 98
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1482,
+          "payload_characters": 25464
+        }
+      ]
+    },
+    {
+      "id": "dense-1",
+      "question": "find tightly knit groups",
+      "expected_family": "dense",
+      "acceptable_problems": [],
+      "initial_family": "dense",
+      "selected_family": "dense",
+      "decision": {
+        "intent": "needs_information",
+        "message": "Which of these meanings do you intend?",
+        "choices": [
+          "Find groups where every member is directly connected to every other member",
+          "Find the densest region with the most connections per member",
+          "Find groups where most members are connected to each other (not necessarily all)",
+          "Find the well-connected core that remains after peeling away loosely attached members"
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": null,
+      "seconds": 30.582,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "dense",
+          "message": "The deciding question 'Which tightly connected groups exist?' directly matches the request to find tightly knit groups (cliques, k-cores, k-trusses, densest subgraphs).",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 40
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2606,
+          "payload_characters": 24346
+        }
+      ]
+    },
+    {
+      "id": "dense-2",
+      "question": "Enumerate every maximal clique: each group must be complete and impossible to extend.",
+      "expected_family": "dense",
+      "acceptable_problems": [
+        "maximal-cliques"
+      ],
+      "initial_family": "dense",
+      "selected_family": "dense",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "maximal-cliques"
+        ],
+        "message": "The request asks for every maximal clique (complete and non-extendable), which is exactly the maximal-cliques problem.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "maximal-cliques"
+            ],
+            "reason": "Exact enumeration of all inclusion-maximal cliques in the undirected simple projection."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 26.308,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "dense",
+          "message": "Enumerating maximal cliques (complete, non-extendable groups) is the core clique problem described in the dense family.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 101
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2606,
+          "payload_characters": 24407
+        }
+      ]
+    },
+    {
+      "id": "dense-3",
+      "question": "Find the largest complete vertex group, an exact maximum clique.",
+      "expected_family": "dense",
+      "acceptable_problems": [
+        "maximum-clique"
+      ],
+      "initial_family": "dense",
+      "selected_family": "dense",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "maximum-clique"
+        ],
+        "message": "The request explicitly asks for the exact maximum clique, which maps directly to the 'maximum-clique' problem (exact quality, undirected simple projection).",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "maximum-clique"
+            ],
+            "reason": "Exact maximum clique: find the largest fully connected vertex group."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 21.606,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "dense",
+          "message": "Finding the exact maximum clique is the canonical dense-subgraph problem: selecting the largest set of vertices where every pair is connected.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 80
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2606,
+          "payload_characters": 24386
+        }
+      ]
+    },
+    {
+      "id": "communities-1",
+      "question": "split the network into groups",
+      "expected_family": "communities",
+      "acceptable_problems": [],
+      "initial_family": "communities",
+      "selected_family": "communities",
+      "decision": {
+        "intent": "needs_information",
+        "message": "What kind of split do you want?",
+        "choices": [
+          "Find natural communities where groups are tightly connected internally and loosely connected to each other",
+          "Split into a specific number of balanced groups with as few crossing edges as possible",
+          "Find overlapping tightly connected groups that can share vertices",
+          "Find the naturally disconnected pieces of the network"
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": null,
+      "seconds": 25.009,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "communities",
+          "message": "Splitting a network into groups is a vertex partitioning/grouping task, which is the core question of the communities family.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 45
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2140,
+          "payload_characters": 24783
+        }
+      ]
+    },
+    {
+      "id": "communities-2",
+      "question": "Find overlapping communities using k-clique percolation.",
+      "expected_family": "communities",
+      "acceptable_problems": [
+        "overlapping-communities"
+      ],
+      "initial_family": "communities",
+      "selected_family": "communities",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "overlapping-communities"
+        ],
+        "message": "The request explicitly names k-clique percolation for overlapping community detection, which maps directly to the exact overlapping-communities problem.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "overlapping-communities"
+            ],
+            "reason": "The request explicitly names k-clique percolation for overlapping community detection, which maps directly to the exact overlapping-communities problem."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 22.675,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "communities",
+          "message": "The main requested result is finding overlapping communities (grouping vertices), which directly matches the communities family's deciding question about how vertices should be grouped or partitioned.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 72
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2140,
+          "payload_characters": 24810
+        }
+      ]
+    },
+    {
+      "id": "communities-3",
+      "question": "Divide the graph into four balanced partitions while minimizing cut edges.",
+      "expected_family": "communities",
+      "acceptable_problems": [
+        "balanced-partitioning"
+      ],
+      "initial_family": "communities",
+      "selected_family": "communities",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "balanced-partitioning"
+        ],
+        "message": "The request asks for a balanced k-way partition (k=4) minimizing cut edges, which maps directly to the balanced-partitioning problem with objective=edge_cut.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "balanced-partitioning"
+            ],
+            "reason": "The request asks for a balanced k-way partition (k=4) minimizing cut edges, which maps directly to the balanced-partitioning problem with objective=edge_cut."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 25.724,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "communities",
+          "message": "The request is to divide the graph into four balanced partitions minimizing cut edges, which is a balanced partitioning problem directly matching the communities family's deciding question about how vertices should be grouped or partitioned.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 90
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2140,
+          "payload_characters": 24828
+        }
+      ]
+    },
+    {
+      "id": "importance-1",
+      "question": "Calculate degree centrality for every vertex.",
+      "expected_family": "importance",
+      "acceptable_problems": [
+        "degree-centrality"
+      ],
+      "initial_family": "importance",
+      "selected_family": "importance",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "degree-centrality"
+        ],
+        "message": "The request asks for degree centrality on every vertex, which is exactly the degree-centrality problem: exact degree scores with outgoing, incoming, both or undirected-projection semantics.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "degree-centrality"
+            ],
+            "reason": "The request asks for degree centrality on every vertex, which is exactly the degree-centrality problem: exact degree scores with outgoing, incoming, both or undirected-projection semantics."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 25.185,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "importance",
+          "message": "Degree centrality is a vertex centrality measure, directly matching the importance family's focus on measuring vertex centrality.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 61
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1727,
+          "payload_characters": 25176
+        }
+      ]
+    },
+    {
+      "id": "importance-2",
+      "question": "Rank the vertices by betweenness centrality on shortest paths.",
+      "expected_family": "importance",
+      "acceptable_problems": [
+        "betweenness-centrality"
+      ],
+      "initial_family": "importance",
+      "selected_family": "importance",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "betweenness-centrality"
+        ],
+        "message": "The request asks to rank vertices by betweenness centrality on shortest paths, which maps directly to the all-source betweenness centrality problem.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "betweenness-centrality"
+            ],
+            "reason": "The request asks to rank vertices by betweenness centrality on shortest paths, which maps directly to the all-source betweenness centrality problem."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 19.022,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "importance",
+          "message": "Ranking vertices by betweenness centrality is a vertex centrality measurement, which directly matches the importance family's deciding question about which vertices matter most.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 78
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1727,
+          "payload_characters": 25193
+        }
+      ]
+    },
+    {
+      "id": "importance-3",
+      "question": "Compute global PageRank scores for this network.",
+      "expected_family": "importance",
+      "acceptable_problems": [
+        "pagerank"
+      ],
+      "initial_family": "importance",
+      "selected_family": "importance",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "pagerank"
+        ],
+        "message": "Global PageRank with uniform restart is exactly the standard PageRank problem, so only the pagerank calculation is needed.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "pagerank"
+            ],
+            "reason": "Global PageRank with uniform restart is exactly the standard PageRank problem, so only the pagerank calculation is needed."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 25.786,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "importance",
+          "message": "PageRank is a global vertex centrality measure, directly matching the importance family's deciding question about which vertices matter most.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 64
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1727,
+          "payload_characters": 25179
+        }
+      ]
+    },
+    {
+      "id": "similarity-1",
+      "question": "how similar are these two graphs",
+      "expected_family": "similarity",
+      "acceptable_problems": [],
+      "initial_family": "similarity",
+      "selected_family": "similarity",
+      "decision": {
+        "intent": "needs_information",
+        "message": "What do you mean by how similar the two graphs are?",
+        "choices": [
+          "Compute the minimum graph edit cost between them",
+          "Find the largest common subgraph by vertex count",
+          "Align the two graphs while conserving edges and supplied similarities",
+          "Compare vertices by the similarity of their neighbors (SimRank)"
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": null,
+      "seconds": 25.084,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "similarity",
+          "message": "The question directly asks how alike two graphs are, matching the similarity family's deciding question about comparing two graphs.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 48
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1648,
+          "payload_characters": 25233
+        }
+      ]
+    },
+    {
+      "id": "similarity-2",
+      "question": "Score likely missing links between vertices.",
+      "expected_family": "similarity",
+      "acceptable_problems": [
+        "link-prediction"
+      ],
+      "initial_family": "similarity",
+      "selected_family": "similarity",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "link-prediction"
+        ],
+        "message": "The request to score likely missing links between vertices maps directly to the link-prediction problem, which scores potential edges from local neighborhood structure.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "link-prediction"
+            ],
+            "reason": "The request to score likely missing links between vertices maps directly to the link-prediction problem, which scores potential edges from local neighborhood structure."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 20.082,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "similarity",
+          "message": "The question asks to score likely missing links between vertices, which directly matches the similarity family's description of scoring possible missing links.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 60
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1648,
+          "payload_characters": 25245
+        }
+      ]
+    },
+    {
+      "id": "similarity-3",
+      "question": "Compute SimRank similarity between pairs of vertices.",
+      "expected_family": "similarity",
+      "acceptable_problems": [
+        "simrank"
+      ],
+      "initial_family": "similarity",
+      "selected_family": "similarity",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "simrank"
+        ],
+        "message": "The request explicitly names SimRank, which maps directly to the simrank problem for vertex-to-vertex structural similarity via neighbor overlap.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "simrank"
+            ],
+            "reason": "The request explicitly names SimRank, which maps directly to the simrank problem for vertex-to-vertex structural similarity via neighbor overlap."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 22.01,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "similarity",
+          "message": "SimRank is a vertex-pair similarity measure that compares how alike two vertices are based on their structural neighborhoods, directly matching the family's deciding question about how alike two vertices are.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 69
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1648,
+          "payload_characters": 25254
+        }
+      ]
+    },
+    {
+      "id": "motifs-1",
+      "question": "count triangles",
+      "expected_family": "motifs",
+      "acceptable_problems": [
+        "triangle-counting"
+      ],
+      "initial_family": "motifs",
+      "selected_family": "motifs",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "triangle-counting"
+        ],
+        "message": "Counting triangles is a direct match for the triangle-counting problem, which exactly counts three-vertex cliques in an undirected graph.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "triangle-counting"
+            ],
+            "reason": "Counting triangles is a direct match for the triangle-counting problem, which exactly counts three-vertex cliques in an undirected graph."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 16.353,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "motifs",
+          "message": "Counting triangles is explicitly the core task of the motifs family.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 31
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1784,
+          "payload_characters": 25109
+        }
+      ]
+    },
+    {
+      "id": "motifs-2",
+      "question": "Count butterflies in this bipartite graph.",
+      "expected_family": "motifs",
+      "acceptable_problems": [
+        "butterfly-counting"
+      ],
+      "initial_family": "motifs",
+      "selected_family": "motifs",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "butterfly-counting"
+        ],
+        "message": "Counting butterflies (2\u00d72 bicliques) in a bipartite graph maps directly to the exact butterfly-counting problem with mode=count.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "butterfly-counting"
+            ],
+            "reason": "Counting butterflies (2\u00d72 bicliques) in a bipartite graph maps directly to the exact butterfly-counting problem with mode=count."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 20.58,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "motifs",
+          "message": "Counting butterflies is explicitly a motif-counting task, matching the deciding question 'How many small shapes (triangles, butterflies, graphlets, motifs, timed motifs) are there?'",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 58
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1784,
+          "payload_characters": 25136
+        }
+      ]
+    },
+    {
+      "id": "motifs-3",
+      "question": "Count the induced graphlets and their vertex orbits.",
+      "expected_family": "motifs",
+      "acceptable_problems": [
+        "graphlet-counting"
+      ],
+      "initial_family": "motifs",
+      "selected_family": "motifs",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "graphlet-counting"
+        ],
+        "message": "The request for counting induced graphlets and their vertex orbits maps directly to the graphlet-counting problem, which performs native isomorphism classification against the complete connected undirected graph atlas and reports vertex roles (orbits) for each shape.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "graphlet-counting"
+            ],
+            "reason": "The request for counting induced graphlets and their vertex orbits maps directly to the graphlet-counting problem, which performs native isomorphism classification against the complete connected undirected graph atlas and reports vertex roles (orbits) for each shape."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 27.925,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "motifs",
+          "message": "Counting induced graphlets and their vertex orbits is explicitly the core task of the motifs family, which covers counting small shapes including graphlets.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 68
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1784,
+          "payload_characters": 25146
+        }
+      ]
+    },
+    {
+      "id": "patterns-1",
+      "question": "where does this pattern appear",
+      "expected_family": "patterns",
+      "acceptable_problems": [
+        "subgraph-isomorphism"
+      ],
+      "initial_family": "patterns",
+      "selected_family": "patterns",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "subgraph-isomorphism"
+        ],
+        "message": "The request asks to locate all occurrences of a supplied graph pattern within the data, which is exactly the subgraph-isomorphism problem (exact injective matching preserving direction, loops, and multiplicities).",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "subgraph-isomorphism"
+            ],
+            "reason": "The request asks to locate all occurrences of a supplied graph pattern within the data, which is exactly the subgraph-isomorphism problem (exact injective matching preserving direction, loops, and multiplicities)."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 19.12,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "patterns",
+          "message": "The question asks where a given pattern occurs, which is the core deciding question of the patterns family.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 46
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 953,
+          "payload_characters": 25906
+        }
+      ]
+    },
+    {
+      "id": "patterns-2",
+      "question": "Mine frequent connected subgraphs across this collection of graphs.",
+      "expected_family": "patterns",
+      "acceptable_problems": [
+        "frequent-subgraphs"
+      ],
+      "initial_family": "patterns",
+      "selected_family": "patterns",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "frequent-subgraphs"
+        ],
+        "message": "The request to mine frequent connected subgraphs across a collection of graphs maps directly to the frequent-subgraphs problem, which performs exact bounded enumeration of patterns shared across graph transactions on a graph_collection input.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "frequent-subgraphs"
+            ],
+            "reason": "The request to mine frequent connected subgraphs across a collection of graphs maps directly to the frequent-subgraphs problem, which performs exact bounded enumeration of patterns shared across graph transactions on a graph_collection input."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 27.743,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "patterns",
+          "message": "The request to mine frequent connected subgraphs across a graph collection directly matches the patterns family's deciding question 'which patterns are frequent?' and its description of mining frequent subgraphs in a graph collection.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 83
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 953,
+          "payload_characters": 25943
+        }
+      ]
+    },
+    {
+      "id": "patterns-3",
+      "question": "Mine frequent subgraphs within one large graph using minimum-image support.",
+      "expected_family": "patterns",
+      "acceptable_problems": [
+        "single-graph-frequent-subgraphs"
+      ],
+      "initial_family": "patterns",
+      "selected_family": "patterns",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "single-graph-frequent-subgraphs"
+        ],
+        "message": "The request is to mine frequent labeled patterns within a single graph using minimum-image support, which maps directly to the single-graph frequent-subgraph mining problem (exact, input: graph).",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "single-graph-frequent-subgraphs"
+            ],
+            "reason": "Exact connected undirected pattern mining within one graph with a minimum-image support threshold."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 28.972,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "patterns",
+          "message": "The request is to mine frequent subgraphs in one graph with a declared support semantics (minimum-image), which is the core task of the patterns family.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 91
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 953,
+          "payload_characters": 25951
+        }
+      ]
+    },
+    {
+      "id": "selection-1",
+      "question": "match workers to tasks",
+      "expected_family": "selection",
+      "acceptable_problems": [
+        "bipartite-matching"
+      ],
+      "initial_family": "selection",
+      "selected_family": "selection",
+      "decision": {
+        "intent": "needs_information",
+        "message": "What should the worker-to-task matching optimize?",
+        "choices": [
+          "Match as many workers to tasks as possible",
+          "Maximize the total value or skill of the assignments",
+          "Minimize the total cost of the assignments",
+          "I just need any valid one-to-one assignment"
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": false,
+      "seconds": 25.345,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "selection",
+          "message": "The question 'match workers to tasks' is explicitly described in the selection family as 'Match pairs or assign workers to tasks.'",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 38
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1917,
+          "payload_characters": 24993
+        }
+      ]
+    },
+    {
+      "id": "selection-2",
+      "question": "Find an exact maximum independent set of vertices.",
+      "expected_family": "selection",
+      "acceptable_problems": [
+        "maximum-independent-set"
+      ],
+      "initial_family": "selection",
+      "selected_family": "selection",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "maximum-independent-set"
+        ],
+        "message": "The request explicitly asks for an exact maximum independent set, which maps directly to the maximum-independent-set problem (exact mode via maximum clique of the complement).",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "maximum-independent-set"
+            ],
+            "reason": "The request explicitly asks for an exact maximum independent set, which maps directly to the maximum-independent-set problem (exact mode via maximum clique of the complement)."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 21.214,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "selection",
+          "message": "Maximum independent set is selecting vertices with no conflicts (no edges between them), which is explicitly listed under this family.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 66
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1917,
+          "payload_characters": 25021
+        }
+      ]
+    },
+    {
+      "id": "selection-3",
+      "question": "Colour vertices so adjacent vertices never share a colour.",
+      "expected_family": "selection",
+      "acceptable_problems": [
+        "vertex-coloring"
+      ],
+      "initial_family": "selection",
+      "selected_family": "selection",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "vertex-coloring"
+        ],
+        "message": "The request is a proper vertex coloring (adjacent vertices receive different colors), which maps directly to the vertex-coloring problem in the selection family.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "vertex-coloring"
+            ],
+            "reason": "The request is a proper vertex coloring (adjacent vertices receive different colors), which maps directly to the vertex-coloring problem in the selection family."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 23.636,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "selection",
+          "message": "Graph coloring (assigning colours so adjacent vertices differ) is explicitly listed under the selection family's 'colour without conflicts' and 'assign colours under the declared conflict rules'.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 74
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 1917,
+          "payload_characters": 25029
+        }
+      ]
+    },
+    {
+      "id": "preparation-1",
+      "question": "Build a k-nearest-neighbour graph from these feature vectors.",
+      "expected_family": "preparation",
+      "acceptable_problems": [
+        "knn-graph"
+      ],
+      "initial_family": "preparation",
+      "selected_family": "preparation",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "knn-graph"
+        ],
+        "message": "The request maps directly to the k-Nearest-Neighbor Graph Construction problem, which builds a graph by connecting each feature vector to its k closest neighbors using a chosen distance metric.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "knn-graph"
+            ],
+            "reason": "The request maps directly to the k-Nearest-Neighbor Graph Construction problem, which builds a graph by connecting each feature vector to its k closest neighbors using a chosen distance metric."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 26.307,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "preparation",
+          "message": "The user's goal is to construct a graph (k-NN graph) from raw feature vectors, which is a graph-building/preparation task before any downstream analysis.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 77
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2555,
+          "payload_characters": 24421
+        }
+      ]
+    },
+    {
+      "id": "preparation-2",
+      "question": "Sample a fixed number of neighbours at each hop around my seeds.",
+      "expected_family": "preparation",
+      "acceptable_problems": [
+        "neighborhood-sampling"
+      ],
+      "initial_family": "preparation",
+      "selected_family": "preparation",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "neighborhood-sampling"
+        ],
+        "message": "The request to sample a fixed number of neighbours at each hop around seed vertices maps directly to the neighborhood-sampling problem, which performs outgoing edge-instance sampling with hop and seed-batch provenance.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "neighborhood-sampling"
+            ],
+            "reason": "The request to sample a fixed number of neighbours at each hop around seed vertices maps directly to the neighborhood-sampling problem, which performs outgoing edge-instance sampling with hop and seed-batch provenance."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 30.28,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "preparation",
+          "message": "Sampling a fixed number of neighbours at each hop around seeds is a neighborhood-sampling operation, which the preparation family explicitly covers ('sample neighborhoods or walks').",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 80
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2555,
+          "payload_characters": 24424
+        }
+      ]
+    },
+    {
+      "id": "preparation-3",
+      "question": "Compute a force-directed layout for drawing this graph.",
+      "expected_family": "preparation",
+      "acceptable_problems": [
+        "force-directed-layout"
+      ],
+      "initial_family": "preparation",
+      "selected_family": "preparation",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "force-directed-layout"
+        ],
+        "message": "The request asks for a force-directed network drawing, which maps directly to the force-directed-layout problem in the preparation family.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "force-directed-layout"
+            ],
+            "reason": "The request asks for a force-directed network drawing, which maps directly to the force-directed-layout problem in the preparation family."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 15.742,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "preparation",
+          "message": "Computing a force-directed layout is explicitly a graph drawing/preparation task, matching the deciding question 'Build, clean, shrink, sample, extract or draw a graph before analysis.'",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 71
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2555,
+          "payload_characters": 24415
+        }
+      ]
+    },
+    {
+      "id": "spectral-1",
+      "question": "Compute the smallest eigenpairs of the graph Laplacian.",
+      "expected_family": "spectral",
+      "acceptable_problems": [
+        "laplacian-eigenpairs"
+      ],
+      "initial_family": "spectral",
+      "selected_family": "spectral",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "laplacian-eigenpairs"
+        ],
+        "message": "The request asks for the smallest eigenvalues and eigenvectors of the graph Laplacian, which is exactly the laplacian-eigenpairs problem in the spectral family.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "laplacian-eigenpairs"
+            ],
+            "reason": "The request asks for the smallest eigenvalues and eigenvectors of the graph Laplacian, which is exactly the laplacian-eigenpairs problem in the spectral family."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 17.285,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "spectral",
+          "message": "Computing Laplacian eigenpairs is explicitly the core task of the spectral family.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 71
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 955,
+          "payload_characters": 25921
+        }
+      ]
+    },
+    {
+      "id": "spectral-2",
+      "question": "Denoise the signal attached to vertices by smoothing over graph edges.",
+      "expected_family": "spectral",
+      "acceptable_problems": [
+        "graph-signal-denoising"
+      ],
+      "initial_family": "spectral",
+      "selected_family": "spectral",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "graph-signal-denoising"
+        ],
+        "message": "The request to denoise a vertex signal by smoothing over graph edges maps directly to the graph-signal-denoising problem, which minimizes signal error plus a Laplacian or total-variation penalty.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "graph-signal-denoising"
+            ],
+            "reason": "The request to denoise a vertex signal by smoothing over graph edges maps directly to the graph-signal-denoising problem, which minimizes signal error plus a Laplacian or total-variation penalty."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 19.668,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "spectral",
+          "message": "The request to denoise a vertex signal by smoothing over graph edges directly matches the spectral family's description of denoising graph signals and smoothing signals over the graph.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 86
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 955,
+          "payload_characters": 25936
+        }
+      ]
+    },
+    {
+      "id": "spectral-3",
+      "question": "Compute persistent homology as the edge threshold changes.",
+      "expected_family": "spectral",
+      "acceptable_problems": [
+        "persistent-homology"
+      ],
+      "initial_family": "spectral",
+      "selected_family": "spectral",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "persistent-homology"
+        ],
+        "message": "The request directly asks to track topological features (connected components and holes) as the edge threshold varies, which is exactly the persistent-homology problem.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "persistent-homology"
+            ],
+            "reason": "The request directly asks to track topological features (connected components and holes) as the edge threshold varies, which is exactly the persistent-homology problem."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 21.214,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "spectral",
+          "message": "Persistent homology tracks topological features (components, loops, voids) through a filtration parameterized by edge threshold, which is explicitly covered by the spectral family's 'track topological features through a filtration' description.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 74
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 955,
+          "payload_characters": 25924
+        }
+      ]
+    },
+    {
+      "id": "statistics-1",
+      "question": "Score structural anomalies in this graph.",
+      "expected_family": "statistics",
+      "acceptable_problems": [
+        "graph-anomalies"
+      ],
+      "initial_family": "statistics",
+      "selected_family": "statistics",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "graph-anomalies"
+        ],
+        "message": "The request to score structural anomalies maps directly to the graph-anomalies problem, which ranks vertices and edges using native structural and numeric features against a declared reference.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "graph-anomalies"
+            ],
+            "reason": "The request to score structural anomalies maps directly to the graph-anomalies problem, which ranks vertices and edges using native structural and numeric features against a declared reference."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 29.452,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "statistics",
+          "message": "Scoring structural anomalies is about detecting what is unusual in the graph relative to a baseline, which matches the statistics family's deciding question.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 57
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 703,
+          "payload_characters": 26132
+        }
+      ]
+    },
+    {
+      "id": "statistics-2",
+      "question": "Compare the observed graph statistic with random null-model graphs to assess significance.",
+      "expected_family": "statistics",
+      "acceptable_problems": [
+        "null-model-significance"
+      ],
+      "initial_family": "statistics",
+      "selected_family": "statistics",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "null-model-significance"
+        ],
+        "message": "The request asks to compare an observed graph statistic against random null-model graphs for significance assessment, which is exactly the null-model-significance problem (uniform G(n,m) or degree-preserving stub pairing).",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "null-model-significance"
+            ],
+            "reason": "The request asks to compare an observed graph statistic against random null-model graphs for significance assessment, which is exactly the null-model-significance problem (uniform G(n,m) or degree-preserving stub pairing)."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 31.174,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "statistics",
+          "message": "The question asks to assess significance of an observed graph statistic against random null-model graphs, which is exactly the statistics family's deciding question about comparing to a baseline or random graph.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 106
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 703,
+          "payload_characters": 26181
+        }
+      ]
+    },
+    {
+      "id": "statistics-3",
+      "question": "Find vertices whose structure is unusual relative to the rest of this network.",
+      "expected_family": "statistics",
+      "acceptable_problems": [
+        "graph-anomalies"
+      ],
+      "initial_family": "statistics",
+      "selected_family": "statistics",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "graph-anomalies"
+        ],
+        "message": "The request to find vertices whose structure is unusual relative to the rest of the network maps directly to graph-anomalies, which ranks vertices by native structural and numeric features against the network's own distribution.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "graph-anomalies"
+            ],
+            "reason": "The request to find vertices whose structure is unusual relative to the rest of the network maps directly to graph-anomalies, which ranks vertices by native structural and numeric features against the network's own distribution."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 33.092,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "statistics",
+          "message": "The request to find vertices whose structure is unusual relative to the rest of the network is an anomaly-detection task, matching the statistics family's deciding question about what is unusual compared with a baseline.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 94
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 703,
+          "payload_characters": 26169
+        }
+      ]
+    },
+    {
+      "id": "learning-1",
+      "question": "Learn embedding vectors for the vertices.",
+      "expected_family": "learning",
+      "acceptable_problems": [
+        "node-embedding"
+      ],
+      "initial_family": "learning",
+      "selected_family": "learning",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "node-embedding"
+        ],
+        "message": "The request to learn embedding vectors for vertices maps directly to the Node Embedding problem, which learns vertex vectors from edge or walk context objectives.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "node-embedding"
+            ],
+            "reason": "The request to learn embedding vectors for vertices maps directly to the Node Embedding problem, which learns vertex vectors from edge or walk context objectives."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 18.256,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "learning",
+          "message": "The request to learn embedding vectors for vertices directly matches the learning family's scope of learning vectors for vertices.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 57
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2258,
+          "payload_characters": 24684
+        }
+      ]
+    },
+    {
+      "id": "learning-2",
+      "question": "Train a node classifier from features and known vertex labels.",
+      "expected_family": "learning",
+      "acceptable_problems": [
+        "node-learning"
+      ],
+      "initial_family": "learning",
+      "selected_family": "learning",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "node-learning"
+        ],
+        "message": "The request to train a node classifier from features and known vertex labels maps directly to the graph-based vertex classifier problem (node-learning), which performs graph convolution with a trained linear softmax readout.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "node-learning"
+            ],
+            "reason": "The request to train a node classifier from features and known vertex labels maps directly to the graph-based vertex classifier problem (node-learning), which performs graph convolution with a trained linear softmax readout."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 20.81,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "learning",
+          "message": "Training a node classifier from features and known vertex labels is a direct match for 'Learn from features and labels' / 'Train vertex predictors'.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 78
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2258,
+          "payload_characters": 24705
+        }
+      ]
+    },
+    {
+      "id": "learning-3",
+      "question": "Train a graph classifier from labelled example graphs.",
+      "expected_family": "learning",
+      "acceptable_problems": [
+        "graph-learning"
+      ],
+      "initial_family": "learning",
+      "selected_family": "learning",
+      "decision": {
+        "intent": "options",
+        "problems": [
+          "graph-learning"
+        ],
+        "message": "Train a permutation-invariant graph predictor on your labelled example graphs using per-graph mean message passing, pooling, and a trained linear softmax readout.",
+        "ranked_calculations": [
+          {
+            "problems": [
+              "graph-learning"
+            ],
+            "reason": "Train a permutation-invariant graph predictor on your labelled example graphs using per-graph mean message passing, pooling, and a trained linear softmax readout."
+          }
+        ]
+      },
+      "family_correct": true,
+      "problem_correct": true,
+      "seconds": 26.898,
+      "trace": [
+        {
+          "stage": "family",
+          "status": "selected",
+          "family_id": "learning",
+          "message": "Training a graph classifier from labelled example graphs is explicitly a graph predictor training task, matching the learning family's scope of training vertex, graph, or hypergraph predictors from features and labels.",
+          "attempt": 1
+        }
+      ],
+      "calls": [
+        {
+          "stage": "family",
+          "catalog_characters": 5986,
+          "payload_characters": 70
+        },
+        {
+          "stage": "route",
+          "catalog_characters": 2258,
+          "payload_characters": 24697
+        }
+      ]
+    }
+  ],
+  "per_family": {
+    "records": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 3,
+      "problem_total": 3
+    },
+    "paths": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 3,
+      "problem_total": 3
+    },
+    "connectivity": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 3,
+      "problem_total": 3
+    },
+    "dense": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 2,
+      "problem_total": 2
+    },
+    "communities": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 2,
+      "problem_total": 2
+    },
+    "importance": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 3,
+      "problem_total": 3
+    },
+    "similarity": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 2,
+      "problem_total": 2
+    },
+    "motifs": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 3,
+      "problem_total": 3
+    },
+    "patterns": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 3,
+      "problem_total": 3
+    },
+    "selection": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 2,
+      "problem_total": 3
+    },
+    "preparation": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 3,
+      "problem_total": 3
+    },
+    "spectral": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 3,
+      "problem_total": 3
+    },
+    "statistics": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 3,
+      "problem_total": 3
+    },
+    "learning": {
+      "family_correct": 3,
+      "family_total": 3,
+      "problem_correct": 3,
+      "problem_total": 3
+    }
+  },
+  "metrics": {
+    "completed_cases": 42,
+    "unavailable_cases": 0,
+    "correct_calculation_rate": 0.9743589743589743,
+    "clarification_rate": 0.09523809523809523,
+    "useful_clarification_rate": 1.0,
+    "model_calls_per_question": 2.0,
+    "parameter_selection_rate": null,
+    "workflow_success_rate": null,
+    "scope": "Routing only; parameter and workflow execution require the corresponding integration suites."
+  },
+  "sources_unchanged": true
+}

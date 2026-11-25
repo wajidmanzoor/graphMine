@@ -50,6 +50,54 @@ IDs, and the operator-cancelled attempt remains in its original log. See
 training workload only. Execution allowances remain six hours and input-byte
 limits remain disabled.
 
-Collection, final shared-policy evaluation and the live deployment checks are
-completed in the subsequent release report. This commit records the validated
-build, compatibility fixes and the cuMBE quarantine before promotion.
+The completed collection and whole-graph policy comparison are reported in
+[POLICY_EVALUATION.md](POLICY_EVALUATION.md), with all original timings in
+[paired-timings.csv](paired-timings.csv) and the model's dropped features in
+[shared-policy-evaluation.json](shared-policy-evaluation.json).
+
+## Routing regression
+
+The [release rerun](routing.json) completed all 42 frozen questions with unchanged
+source hashes and no unavailable cases. It reproduces the previously measured
+runnable-problem results:
+
+| Metric | Previous three-call router | Full GPU release |
+|---|---:|---:|
+| Correct family | 42/42 | 42/42 |
+| Expected calculation selected | 39/39 | 38/39 (97.44%) |
+| Questions clarified | 2/42 | 4/42 (9.52%) |
+| Authored ambiguous cases clarified | 2/3 | 3/3 |
+| Model calls per question | 3 | 2 |
+
+The extra clarification asks what “match workers to tasks” should optimize,
+while the frozen expected answer is bipartite matching. The expected label
+remains unchanged. These are authored routing regressions; parameter accuracy
+and end-to-end workflow success are not inferred from the routing score.
+
+## Testing and production acceptance
+
+Promotion uses the existing environment controller: the testing environment
+must pass its configured application, frontend, binding and native checks on
+the exact candidate commit before the production branch can advance. The
+verified native runtime is a separate pinned snapshot; development rebuilds do
+not replace production binaries. Each environment has its own shared model and
+backend log store. Earlier production model/log stores are retained.
+
+`deploy/validate-full-gpu-release.py` checks a running release through its actual
+HTTP API and browser. It verifies the 82/35/58 capability counts, the cuMBE
+quarantine, six-hour timeouts, unlimited input-byte settings and a parameter-free
+NN. It runs CPU triangles, GPU triangles, GPU k-core, GPU communities and an
+automatically selected triangle calculation, checking the logged model version
+and exact selection probability. A legacy `operation` request must normalize to
+`problem`. Evaluation-tagged runs cannot train the policy; the temporary test
+account is disabled afterwards. Testing also checks a live two-call routing
+question and the saved-results browser.
+
+Controller reports and environment-specific acceptance results are saved in
+`graphmine-data/environments/state/full-gpu-release-20261125/` outside Git.
+`last-promotion.json` records the exact tested commit and production backup.
+The earlier [42-question routing comparison](../../docs-internal/RUNNABLE_POLICY_EVALUATION.md#routing-and-workflows)
+records the three-call to two-call change; the release rerun uses the same frozen
+suite and is also mirrored in the private release report directory.
+These authored routing regressions do not establish production workflow success
+rates or paired shadow-policy performance.
