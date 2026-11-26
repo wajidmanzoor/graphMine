@@ -1,0 +1,53 @@
+{
+  "units": [
+    {
+      "unit": "graphmine-neo4j-browser.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-ldbc-snb.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-movielens-32m.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-movielens-genome.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-ontime.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-transfers-demo.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-yelp.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    }
+  ],
+  "rss_bytes": 0
+}

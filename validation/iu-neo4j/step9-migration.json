@@ -1,0 +1,14 @@
+{
+  "immutable_result_files": 126,
+  "original_unchanged": true,
+  "rehearsal_bytes_unchanged": true,
+  "schema": 13,
+  "local_query_library": 52,
+  "tagged_files": 36,
+  "iu_visible_files": 22,
+  "local_visible_files": 58,
+  "workflow_backends": {
+    "local": 28,
+    "upload": 19
+  }
+}

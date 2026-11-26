@@ -1,0 +1,8 @@
+{
+  "endpoint": "bolt://10.2.147.169:7689",
+  "authentication": "none",
+  "wake_requested": false,
+  "tunnel_reachable": true,
+  "bolt_connectivity": true,
+  "return_1": 1
+}

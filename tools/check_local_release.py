@@ -96,6 +96,7 @@ def discover(directory, patterns):
 # suites stay explicit because they synchronize the disposable database demo.
 BACKEND = sorted(set(BACKEND) | (discover(ROOT / "agent/tests", (
     "test_database*.py", "test_benchmark*.py", "test_query*.py", "test_*mapping*.py",
+    "test_neo4j*.py", "test_remote_neo4j*.py", "test_iu_neo4j*.py", "test_admin_neo4j.py", "test_check_iu_neo4j.py",
     "test_result_views.py", "test_result_resources.py", "test_result_context.py", "test_result_index.py",
 )) - set(DATABASE_BACKEND)))
 BROWSER = sorted(set(BROWSER) | (discover(ROOT / "agent/browser_tests", (

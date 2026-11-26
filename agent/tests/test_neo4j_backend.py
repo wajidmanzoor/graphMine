@@ -195,7 +195,7 @@ def test_grep_no_runtime_module_reads_neo4j_uri_outside_resolver():
     # fixture values are not URI reads; source.attribute and record[key] are.
     pattern = re.compile(r'\.neo4j_uri\b|\[\s*[\"\x27](?:neo4j_uri|bolt_uri)[\"\x27]\s*\]')
     offenders = []
-    for folder in (root / "agent/graphmine_agent", root / "deploy"):
+    for folder in (root / "agent/graphmine_agent", root / "deploy", root / "scripts"):
         for path in folder.rglob("*.py"):
             if "tests" in path.parts or path.name == "neo4j_backend.py":
                 continue
