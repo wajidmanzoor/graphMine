@@ -2,6 +2,7 @@
   {
     "id": "iu-remote",
     "name": "IU Neo4j",
+    "backend_id": "iu-remote",
     "users": ["*"],
     "neo4j_uri": "bolt://10.2.147.169:7689",
     "auth_disabled": true

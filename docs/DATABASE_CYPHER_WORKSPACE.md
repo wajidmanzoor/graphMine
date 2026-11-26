@@ -1,5 +1,9 @@
 # Database queries and result views
 
+The default database backend is IU over WireGuard. Local Neo4j remains supported
+and parked. See [backend switching and visibility](NEO4J_BACKENDS.md) and
+[IU connectivity](IU_NEO4J.md) before using the local provisioning commands below.
+
 This feature connects Neo4j to the existing GraphMine conversation and native
 analysis engine. PostgreSQL or server-configured SQLite tables can optionally
 supply mapped attributes and relationships. The same source picker also offers

@@ -19,6 +19,10 @@ Accounts are created by the administrator; there is no public signup form.
 Once you receive your credentials, open the live app and sign in. You do not
 need to install anything to use the hosted system.
 
+Database operators: [local/IU backend switching](docs/NEO4J_BACKENDS.md) and
+[IU WireGuard connectivity](docs/IU_NEO4J.md). IU is the default; local stores
+remain available through activation.
+
 ## How to use GraphMine
 
 1. **Start a conversation.** Choose a domain that matches your data, or use the
