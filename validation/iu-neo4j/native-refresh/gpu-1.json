@@ -1,0 +1,18 @@
+[
+  {
+    "suite": "bfs",
+    "backend": "gpu",
+    "gpu_device": 0,
+    "passed_requests": 4608,
+    "failed": 0,
+    "implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"
+  },
+  {
+    "suite": "triangles",
+    "backend": "tot",
+    "gpu_device": 0,
+    "passed_requests": 2048,
+    "failed": 0,
+    "implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66"
+  }
+]

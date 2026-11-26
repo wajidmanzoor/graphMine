@@ -13,7 +13,20 @@ ordinary uploads from cleanup, without exposing its identifiers. Switching
 back restores access without changing file or result bytes. The admin and
 visibility regression suite passed 55 tests (release-admin-visibility.xml).
 
-Native release admission is being refreshed after a host zlib update. The
-native implementation and compiled library are unchanged. Existing correctness
-quarantines remain in effect; no native evidence requirement is bypassed.
-Deployment results will be recorded after validation and promotion.
+After a host zlib update, fresh native validation passed 170,599 oracle requests
+across 23 completed reports and all 175 CPU contract tests. The native
+implementation and compiled library are unchanged. Five historical GPU reports
+remain attached to this binary because shared GPU memory prevented the remaining
+reruns. The user explicitly authorized documenting those checks for later and
+proceeding to production; see [DEFERRED_GPU_CHECKS.md](DEFERRED_GPU_CHECKS.md).
+The evidence validator and existing cuMBE correctness quarantine remain intact.
+The resulting catalog retains 82 CPU profiles and the existing GPU backend
+coverage; this is not a claim that all GPU backends were freshly revalidated
+against the updated dependency.
+
+Application preflight passed 734 tests. The refreshed CPU workflow check passed
+31 tests with one physical-GPU test skipped. Deployment uses the existing
+testing/promote controller, with physical-GPU validation explicitly deferred;
+application, CPU, frontend and migration gates remain enabled. The controller
+records exact candidate verification and promotion outside the release checkout
+in graphmine-data/environments/state/iu-neo4j-20261126 and last-promotion.json.

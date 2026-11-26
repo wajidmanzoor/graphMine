@@ -95178,7 +95178,7 @@
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/cusparse/lib/libcusparse.so.12": "6d85ab1acdabfe3b5a54aa76bc948c719bcd03e07eede3eb8122b083c1a6ecf7",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/curand/lib/libcurand.so.10": "ab8c07338fa663c018b16df5b3f3878c84aaae98bda930e9e8bad340427b0faa",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/libkvikio/lib64/libkvikio.so": "55e895504b72e3b9c8c9245459c1fea92da802749cd0d0d1dfbccdb462852d77",
-        "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892",
+        "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
         "/usr/lib/x86_64-linux-gnu/libnvrtc.so.12.8.93": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a",
         "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/lib/python3.12/site-packages/nvidia/nccl/lib/libnccl.so.2": "a23d2e3e47ad7f8987ac73eb04a373d6d40cfbb3a7a5bf41a9e0e8434817559b",
         "/usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0": "e748efcae5753fe4a652877fccdb5895ac6f7605668a2db878b19c914e78e3a8",
@@ -95205,7 +95205,7 @@
           "profile_sha256": "3040420e700761a9c69c6d59e54a5512bb4b253dde741c7222f51f8a3f833c28",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95213,7 +95213,7 @@
           "profile_sha256": "147bb23beb02f13a4312f282e4215fca0a1b65ef04bdd01d154333ff1dff3472",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95221,7 +95221,7 @@
           "profile_sha256": "05f2f10c0f9fd58eaa29e30e1cff4c03ea78a35b538341bc6a8ccedf6ac9fe9b",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95229,7 +95229,7 @@
           "profile_sha256": "e6642c46c5c70ede1e686e6da13933b2dbd4c393d56c7dab6da746de1a68bf25",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95237,7 +95237,7 @@
           "profile_sha256": "a2eb581a32229d5303d55a6a2630dcd27cd2e41e8addf4f6ff40821fa81832cb",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95245,7 +95245,7 @@
           "profile_sha256": "210db8bde2d9d74d85b5817fabc73bba3975384ddb48a8cdda8a379fc3ef1d2a",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95253,7 +95253,7 @@
           "profile_sha256": "87f89297a33fcf2c8c5dd47d68ac22f6af30fd441220a9342e7762811844c584",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95261,7 +95261,7 @@
           "profile_sha256": "88342f13992dd555b5b2937b9cd1c3290a409f0a9b0d5f16451eee68d8e88c46",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95269,7 +95269,7 @@
           "profile_sha256": "8ead26128c794b14dab5d92964215b24673af6cde7501eb42f573e691adf9b70",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95277,7 +95277,7 @@
           "profile_sha256": "312770764c9710b5eb918d499b22cee62344da36bb23fbbba31f6c447b14e802",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95285,7 +95285,7 @@
           "profile_sha256": "dbe4ebae0f5f55650c8b0c71beaf9eeec619eb6fb3e9a239256348c80dd6cec0",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95293,7 +95293,7 @@
           "profile_sha256": "c17521c07e777b2fc383558ca065efc20605676b73fec5f32fab4055de22ebaf",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95301,7 +95301,7 @@
           "profile_sha256": "3bdda6c72f55c75950d5f70fb96b292c5535044b302a50390b9775e2b5461222",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95309,7 +95309,7 @@
           "profile_sha256": "08ebab0cd7ba4cd2fdd966f2efd75844ad45e532835ac090e019e588fe19f762",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95317,7 +95317,7 @@
           "profile_sha256": "0bf7a0f82d41adf4246a9f122c7bd340b35b53d8ad61115af0a99f459f769d92",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95325,7 +95325,7 @@
           "profile_sha256": "b86f21ce21b8281f20b641b2e49f6bdd59e20f2ebf838a32055e5ab82a38a4c4",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95333,7 +95333,7 @@
           "profile_sha256": "a824b2f2cf1e58225bb8feb4171642b941a5f59c8b15050501421b2dc68b9e9f",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95341,7 +95341,7 @@
           "profile_sha256": "f538c707639a3b35c3992df340689b3112c6c283a4b087cb5f6cf720695dbead",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95349,7 +95349,7 @@
           "profile_sha256": "c1405585c195315e955af086ddb5c2468f7cd173d97ce2852ea601e2e7adbe51",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95357,7 +95357,7 @@
           "profile_sha256": "6326e1b675f378136f96426775c3ec3732d6a2f42c56440e9bdd48de80032992",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95365,7 +95365,7 @@
           "profile_sha256": "d816ee51e2a6314130f37db06404cb6c9f63bf1dbc9dabff284be24adf49043f",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95373,7 +95373,7 @@
           "profile_sha256": "d9ba733da1f98bd9bd96ac94977fb1dc01218d1629fc57a030ca0b12bb2a8540",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95381,7 +95381,7 @@
           "profile_sha256": "81be6c2af366d1272e53d3ec4754221f114e2cfbc0cf0443bf36279248e36912",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "everest": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95395,7 +95395,7 @@
           "profile_sha256": "e6cb17fd0383c0c170a85872c5ff23bd3f02f6688a86530bea4bf814f23a4fcf",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95403,7 +95403,7 @@
           "profile_sha256": "1484673731511fea342e8ba88d6c7ec7cbbc67f54008f20a2f67eb662454ea51",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95411,7 +95411,7 @@
           "profile_sha256": "0533fc5ea1cf8d29009b1f532183de3b7e73dfc73ba2af31b59b4d91fb4c8850",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "gmatch": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95422,7 +95422,7 @@
           "profile_sha256": "dd80f0f4e6a361eb83ac81c6ae1dbe6b04c1ac3aa813fb51b934006097fe698a",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "graphminer": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95439,7 +95439,7 @@
           "profile_sha256": "377423fc112d3f11c92f3530870135437175da729d3d23555962dc5e8a8eddfc",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95447,7 +95447,7 @@
           "profile_sha256": "b22045c2962a84f4240ce80b78e5ccdf7ee4db62257976b42df7139c29c0362f",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "gpu4gst": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95458,7 +95458,7 @@
           "profile_sha256": "4abb3252262017d3b0399eabba83d2273e1112fad43910ad52d67c22f4494976",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95466,7 +95466,7 @@
           "profile_sha256": "b4ef359366551bdf106e6b85e294855bffcd7046818664668b9a9ac00c800e8f",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "superfuser": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95477,7 +95477,7 @@
           "profile_sha256": "4d25a88e21688b5b2f0223e40f27aab8a07d5edf9470dafeb6146dcd215dbd43",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95485,7 +95485,7 @@
           "profile_sha256": "af36d1c8615ffd8e8fdf09ddad008c0cec554f30e1ef05466aa4b3bc71b309f3",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95493,7 +95493,7 @@
           "profile_sha256": "e937fc40caff5d1f22fe7dee8671d71614b10e9ea61ee67b6a9750408afdef34",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95501,7 +95501,7 @@
           "profile_sha256": "622024c3a81a3ccfc694bd78facd644db21f1d146ec33e23895157948756b514",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95509,7 +95509,7 @@
           "profile_sha256": "7df6989040917684e8249681704c9bffb1af689ba09982c771af0819562c6b32",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95517,7 +95517,7 @@
           "profile_sha256": "59b01d08ce1b1aae45becd98774e447d1496700c16d22051af28f0223553416b",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95525,7 +95525,7 @@
           "profile_sha256": "912690b2b319c51fe05a93fca72b02e0c45269fc68c091bfa619edbd1d704f11",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95533,7 +95533,7 @@
           "profile_sha256": "da02197fc96642a1f2eb292ed2caf967e8b50ffae4373fa1cfa6e77012e754a8",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95541,7 +95541,7 @@
           "profile_sha256": "16e51ed0060a92575070a7039b0fb9c0ef91c6039a62cbb57db9c90a44f5b072",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95549,7 +95549,7 @@
           "profile_sha256": "07d82c05dff52bf02ef2479ca36a8d5d1831320daf3d12cc00204e4c91082b23",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95557,7 +95557,7 @@
           "profile_sha256": "9d3a6fe12428c8838539dbe509aec416dce963e574a96b7b42f2c8b9cef51778",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95565,7 +95565,7 @@
           "profile_sha256": "33ce2710c82aefc55ba9bfc5a69e6314e6bc323e9f0581591f0c8e3972170269",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "gleiden": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95585,7 +95585,7 @@
           "profile_sha256": "1d3d70a3e34f1e9afb8e8a149aed2cadfc8917816f6ff2491f4cda67e1c37a01",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95593,7 +95593,7 @@
           "profile_sha256": "5cc28e6ec59dae99211bfbe1ab81c4235afdb5bd60e4b7c215ac764132e1d132",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95601,7 +95601,7 @@
           "profile_sha256": "d2a6bca8872e940bc9a7b1f903931649c31444ebbee3032bf2ddbbdecf0642ad",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "cds": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95612,7 +95612,7 @@
           "profile_sha256": "8789174bdef1d72d242ef554763d4d1de93e9259328e6296778cba5ab42e9f5a",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95620,7 +95620,7 @@
           "profile_sha256": "382a221db9566ca7d396c1aa6738c9e6e3c2e32ac7aba01d8b7fe4100d639c6a",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "cuqc": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95631,7 +95631,7 @@
           "profile_sha256": "8f61d9296b83f8a1aad7850b2e3266cdc323a55f79a3a61ad896047da415b913",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "cumbe": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95642,7 +95642,7 @@
           "profile_sha256": "e66c41c495fe8ea1b864fd8208828a38ce38541cfd1b07b3aaa1d990963c95b5",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "graphminer": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95656,7 +95656,7 @@
           "profile_sha256": "892911c0cd4e28aa8d24c6d9461f0b227a121da2779c7e178ce41b76967c43f8",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "gdlog": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95667,7 +95667,7 @@
           "profile_sha256": "ca687a605ae5ff4315f5479812a266c0a06336ff24019b7660e9d01365906936",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ]
           }
         },
@@ -95675,11 +95675,11 @@
           "profile_sha256": "17d7c0ed2dfadcb4f8d953d0e10bef808bb1217dd6099a8d852c37a2db52bdbf",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml",
-              "validation/full-gpu-release-20261125/native/cpu.json"
+              "validation/iu-neo4j/native-cpu.xml",
+              "validation/iu-neo4j/native-refresh/cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/gpu-1.json"
+              "validation/iu-neo4j/native-refresh/gpu-1.json"
             ]
           }
         },
@@ -95687,12 +95687,12 @@
           "profile_sha256": "c7da6bd9bdb215bec2fa39e6c2d88e890da1dafd4a41a4794f6dce0d02f92575",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml",
-              "validation/full-gpu-release-20261125/native/cpu.json"
+              "validation/iu-neo4j/native-cpu.xml",
+              "validation/iu-neo4j/native-refresh/cpu.json"
             ],
             "tot": [
-              "validation/full-gpu-release-20261125/gpu-original.xml",
-              "validation/full-gpu-release-20261125/native/gpu-1.json"
+              "validation/iu-neo4j/native-refresh/gpu-1.json",
+              "validation/full-gpu-release-20261125/gpu-original.xml"
             ],
             "wetric": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95703,11 +95703,11 @@
           "profile_sha256": "24c62aabeaa71952f12d89e5a3ada462d2871945a72cd4886e029e48363481ed",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml",
-              "validation/full-gpu-release-20261125/native/reference-cpu.json"
+              "validation/iu-neo4j/native-cpu.xml",
+              "validation/iu-neo4j/native-refresh/reference-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/reference-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/reference-gpu-1.json"
             ]
           }
         },
@@ -95715,10 +95715,10 @@
           "profile_sha256": "438a43616aaac19753919fb91e1868f04bf5f45481360d75a5a25d06f6b4fca6",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/reference-cpu.json"
+              "validation/iu-neo4j/native-refresh/reference-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/reference-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/reference-gpu-1.json"
             ]
           }
         },
@@ -95726,10 +95726,10 @@
           "profile_sha256": "69e1018a2e140726149dbde55e09c842c8aabdfbfc774beda836e2e12716539b",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/reference-cpu.json"
+              "validation/iu-neo4j/native-refresh/reference-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/reference-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/reference-gpu-1.json"
             ]
           }
         },
@@ -95737,11 +95737,11 @@
           "profile_sha256": "00218ba9d04814c3764dea697ab2a19fef96e5a5d985977f0a1d608279b2cd3e",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml",
-              "validation/full-gpu-release-20261125/native/reference-cpu.json"
+              "validation/iu-neo4j/native-cpu.xml",
+              "validation/iu-neo4j/native-refresh/reference-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/reference-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/reference-gpu-1.json"
             ],
             "ecl-scc": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95752,7 +95752,7 @@
           "profile_sha256": "62804aa324e889cf9631fed8aeda0f30f35e1fe4b1391604ac428441d0021985",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/reference-cpu.json"
+              "validation/iu-neo4j/native-refresh/reference-cpu.json"
             ]
           }
         },
@@ -95760,11 +95760,11 @@
           "profile_sha256": "c5b1d6e58dd2da9268baffcb8e59c6faadc910e7fd2b6b08052092c13bb7169f",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml",
-              "validation/full-gpu-release-20261125/native/reference-cpu.json"
+              "validation/iu-neo4j/native-cpu.xml",
+              "validation/iu-neo4j/native-refresh/reference-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/reference-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/reference-gpu-1.json"
             ]
           }
         },
@@ -95772,7 +95772,7 @@
           "profile_sha256": "56214ae4dc499f98e4fdf9ee794c4f4199acf697c7cda71bfda0441b69f3cc40",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/centrality-cpu.json"
+              "validation/iu-neo4j/native-refresh/centrality-cpu.json"
             ]
           }
         },
@@ -95780,13 +95780,13 @@
           "profile_sha256": "ea9f0b3ad749a99587514942fc9c1624f6c3e0e4e5be4d9007df21d1da06a40f",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/centrality-cpu.json"
+              "validation/iu-neo4j/native-refresh/centrality-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/centrality-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/centrality-gpu-1.json"
             ],
             "turbo-bc": [
-              "validation/full-gpu-release-20261125/native/centrality-turbo-bc-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/centrality-turbo-bc-gpu-1.json"
             ]
           }
         },
@@ -95794,11 +95794,11 @@
           "profile_sha256": "5bd0cfcfab997133600b6a151ca442479c3fb674dab718c96a44980e765889ca",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml",
-              "validation/full-gpu-release-20261125/native/reference-cpu.json"
+              "validation/iu-neo4j/native-cpu.xml",
+              "validation/iu-neo4j/native-refresh/reference-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/reference-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/reference-gpu-1.json"
             ],
             "kpar": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95809,10 +95809,10 @@
           "profile_sha256": "bc7c68ac3e9d9ee1e9a66bb9f4d997333bbfbc7547d5c4503f862dc518e1f9b1",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/reference-cpu.json"
+              "validation/iu-neo4j/native-refresh/reference-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/reference-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/reference-gpu-1.json"
             ]
           }
         },
@@ -95820,10 +95820,10 @@
           "profile_sha256": "ff5fa50cc87815d123da83f210df4a8f6bf6f9c62bc6ebc8df1a3af56dd1c2b7",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/selection-cpu.json"
+              "validation/iu-neo4j/native-refresh/selection-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/selection-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/selection-gpu-1.json"
             ]
           }
         },
@@ -95831,10 +95831,10 @@
           "profile_sha256": "53f02e043a2ac22f2864e53ab86b67113074c52b057823416fc141e5c84058b1",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/selection-cpu.json"
+              "validation/iu-neo4j/native-refresh/selection-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/selection-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/selection-gpu-1.json"
             ]
           }
         },
@@ -95842,10 +95842,10 @@
           "profile_sha256": "0700dd7c025537583d409e471fcea64d0023396b2dea8e6e9ed0707fd227121c",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/selection-cpu.json"
+              "validation/iu-neo4j/native-refresh/selection-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/selection-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/selection-gpu-1.json"
             ]
           }
         },
@@ -95853,7 +95853,7 @@
           "profile_sha256": "2604d0ae4397f26adcd291e426c0ac8a05032ee064cd3580ac5e4b1fd6a13abc",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/selection-cpu.json"
+              "validation/iu-neo4j/native-refresh/selection-cpu.json"
             ]
           }
         },
@@ -95861,11 +95861,11 @@
           "profile_sha256": "09b65c96c4c2601fa06f17c020d860dfe81622ad717727f02353ad0103fee19a",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml",
-              "validation/full-gpu-release-20261125/native/selection-cpu.json"
+              "validation/iu-neo4j/native-cpu.xml",
+              "validation/iu-neo4j/native-refresh/selection-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/selection-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/selection-gpu-1.json"
             ]
           }
         },
@@ -95873,10 +95873,10 @@
           "profile_sha256": "375d57e9178e00a63253a411840832ca793b01d4a13db0b601724a6c87f30885",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/flow-cpu.json"
+              "validation/iu-neo4j/native-refresh/flow-cpu.json"
             ],
             "ecl-maxflow": [
-              "validation/full-gpu-release-20261125/native/flow-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/flow-gpu-1.json"
             ]
           }
         },
@@ -95884,7 +95884,7 @@
           "profile_sha256": "2b6c6610844f35d1281ac7d40553ee013e02642a352b8440ea9d45c3505608b3",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/matching-cpu.json"
+              "validation/iu-neo4j/native-refresh/matching-cpu.json"
             ]
           }
         },
@@ -95892,10 +95892,10 @@
           "profile_sha256": "e7a78168b214e748ccd5994e9b68e9d494b6e20bb38940dec6f1b407f32f7d1a",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/matching-cpu.json"
+              "validation/iu-neo4j/native-refresh/matching-cpu.json"
             ],
             "hungarian-cuda": [
-              "validation/full-gpu-release-20261125/native/matching-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/matching-gpu-1.json"
             ]
           }
         },
@@ -95903,16 +95903,16 @@
           "profile_sha256": "9e5b2f1b073fbbf7add73b1974ca668e9df700496c252b00f2d9b2249cb23048",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/mining-cpu.json"
+              "validation/iu-neo4j/native-refresh/mining-cpu.json"
             ],
             "rdmce": [
-              "validation/full-gpu-release-20261125/native/mining-rdmce-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-rdmce-gpu-1.json"
             ],
             "mce-gpu": [
-              "validation/full-gpu-release-20261125/native/mining-mce-gpu-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-mce-gpu-gpu-1.json"
             ],
             "g2-aimd": [
-              "validation/full-gpu-release-20261125/native/mining-g2-aimd-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-g2-aimd-gpu-1.json"
             ]
           }
         },
@@ -95920,16 +95920,16 @@
           "profile_sha256": "ae7451fa45f919cbf8f79b3b58869f5d60a8b16267d17c15302a4c16c6f3271a",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/mining-cpu.json"
+              "validation/iu-neo4j/native-refresh/mining-cpu.json"
             ],
             "cuda-ms": [
-              "validation/full-gpu-release-20261125/native/mining-cuda-ms-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-cuda-ms-gpu-1.json"
             ],
             "gpu-maximum-clique": [
-              "validation/full-gpu-release-20261125/native/mining-gpu-maximum-clique-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-gpu-maximum-clique-gpu-1.json"
             ],
             "maximum-clique-on-gpu": [
-              "validation/full-gpu-release-20261125/native/mining-maximum-clique-on-gpu-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-maximum-clique-on-gpu-gpu-1.json"
             ]
           }
         },
@@ -95937,10 +95937,10 @@
           "profile_sha256": "d97cb16c7ee4efb3075b575f0e8506426b37945a4243c7f586fececa3a4adc87",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/mining-cpu.json"
+              "validation/iu-neo4j/native-refresh/mining-cpu.json"
             ],
             "graphset": [
-              "validation/full-gpu-release-20261125/native/mining-graphset-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-graphset-gpu-1.json"
             ],
             "gamma": [
               "validation/full-gpu-release-20261125/native/mining-gamma-gpu-1.json"
@@ -95954,7 +95954,7 @@
           "profile_sha256": "818c6b9a6afbc348dff3c3cf032a71e530a84ca72f40d7aeded1d1ffb43e669e",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/structure-cpu.json"
+              "validation/iu-neo4j/native-refresh/structure-cpu.json"
             ]
           }
         },
@@ -95962,11 +95962,11 @@
           "profile_sha256": "1ed6cedbf723b296a59c2e8036d2586008c754e7515638ea3e176be0d4d6691b",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml",
-              "validation/full-gpu-release-20261125/native/structure-cpu.json"
+              "validation/iu-neo4j/native-cpu.xml",
+              "validation/iu-neo4j/native-refresh/structure-cpu.json"
             ],
             "libcugraph": [
-              "validation/full-gpu-release-20261125/native/structure-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/structure-gpu-1.json"
             ],
             "acctd": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -95977,7 +95977,7 @@
           "profile_sha256": "79567c98503793272a6aa80acdecab2be42139f7826fda019f65754198044036",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/mining-cpu.json"
+              "validation/iu-neo4j/native-refresh/mining-cpu.json"
             ],
             "libcugraph": [
               "validation/full-gpu-release-20261125/native/mining-libcugraph-gpu-1.json"
@@ -95991,16 +95991,16 @@
           "profile_sha256": "c4b63a1ed24d25c72b051c7065c5266da2100ffa6157ec619134ba00759196ec",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/mining-cpu.json"
+              "validation/iu-neo4j/native-refresh/mining-cpu.json"
             ],
             "cuda-ms": [
-              "validation/full-gpu-release-20261125/native/mining-cuda-ms-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-cuda-ms-gpu-1.json"
             ],
             "gpu-maximum-clique": [
-              "validation/full-gpu-release-20261125/native/mining-gpu-maximum-clique-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-gpu-maximum-clique-gpu-1.json"
             ],
             "maximum-clique-on-gpu": [
-              "validation/full-gpu-release-20261125/native/mining-maximum-clique-on-gpu-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-maximum-clique-on-gpu-gpu-1.json"
             ]
           }
         },
@@ -96008,16 +96008,16 @@
           "profile_sha256": "367efd837c2bc336f07df3fe4ed3a54386ffcc236d81e3cad0d5f8a2de2062ff",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/native/mining-cpu.json"
+              "validation/iu-neo4j/native-refresh/mining-cpu.json"
             ],
             "cuda-ms": [
-              "validation/full-gpu-release-20261125/native/mining-cuda-ms-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-cuda-ms-gpu-1.json"
             ],
             "gpu-maximum-clique": [
-              "validation/full-gpu-release-20261125/native/mining-gpu-maximum-clique-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-gpu-maximum-clique-gpu-1.json"
             ],
             "maximum-clique-on-gpu": [
-              "validation/full-gpu-release-20261125/native/mining-maximum-clique-on-gpu-gpu-1.json"
+              "validation/iu-neo4j/native-refresh/mining-maximum-clique-on-gpu-gpu-1.json"
             ]
           }
         },
@@ -96025,7 +96025,7 @@
           "profile_sha256": "3850a963630dd28f37296fc8182ce74d7e9ba0e4a8bedc31b51f662aa362cce0",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "edtc": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -96036,7 +96036,7 @@
           "profile_sha256": "0715678767da3ded19aba8b0007a9f74531dcb2c6f6e29a297acbd3cb390a081",
           "backends": {
             "cpp": [
-              "validation/full-gpu-release-20261125/cpu-completion.xml"
+              "validation/iu-neo4j/native-cpu.xml"
             ],
             "mbe-gpu": [
               "validation/full-gpu-release-20261125/gpu-original.xml"
@@ -96046,147 +96046,291 @@
       },
       "reports": [
         {
-          "id": "validation/full-gpu-release-20261125/native/centrality-cpu.json",
-          "report": "validation/full-gpu-release-20261125/native/centrality-cpu.json",
-          "metadata": "validation/full-gpu-release-20261125/native/centrality-cpu.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/centrality-cpu.json",
+          "report": "validation/iu-neo4j/native-refresh/centrality-cpu.json",
+          "metadata": "validation/iu-neo4j/native-refresh/centrality-cpu.json.metadata.json",
           "format": "native_suites",
           "passed": 16259,
           "device": "cpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/centrality-cpu.json": "688388f7b873ae28aaf5c9ac0577f500d594eef906be1e0803e6a247429fc279",
-            "validation/full-gpu-release-20261125/native/centrality-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
+            "validation/iu-neo4j/native-refresh/centrality-cpu.json": "688388f7b873ae28aaf5c9ac0577f500d594eef906be1e0803e6a247429fc279",
+            "validation/iu-neo4j/native-refresh/centrality-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/centrality-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/centrality-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/centrality-gpu-1.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/centrality-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/centrality-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/centrality-gpu-1.json.metadata.json",
           "format": "native_suites",
           "passed": 2674,
           "device": "gpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/centrality-gpu-1.json": "7d0b0623b108048ed610cf8f655391b9df970512742e57f7d0a3c16c47ea642c",
-            "validation/full-gpu-release-20261125/native/centrality-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+            "validation/iu-neo4j/native-refresh/centrality-gpu-1.json": "7d0b0623b108048ed610cf8f655391b9df970512742e57f7d0a3c16c47ea642c",
+            "validation/iu-neo4j/native-refresh/centrality-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/centrality-turbo-bc-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/centrality-turbo-bc-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/centrality-turbo-bc-gpu-1.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/centrality-turbo-bc-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/centrality-turbo-bc-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/centrality-turbo-bc-gpu-1.json.metadata.json",
           "format": "native_suites",
           "passed": 2065,
           "device": "gpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/centrality-turbo-bc-gpu-1.json": "290ab5f9ff1e5e26ddba5b6a385183184865e0466f2641f9036cf34baf43ff5d",
-            "validation/full-gpu-release-20261125/native/centrality-turbo-bc-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+            "validation/iu-neo4j/native-refresh/centrality-turbo-bc-gpu-1.json": "290ab5f9ff1e5e26ddba5b6a385183184865e0466f2641f9036cf34baf43ff5d",
+            "validation/iu-neo4j/native-refresh/centrality-turbo-bc-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/cpu.json",
-          "report": "validation/full-gpu-release-20261125/native/cpu.json",
-          "metadata": "validation/full-gpu-release-20261125/native/cpu.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/cpu.json",
+          "report": "validation/iu-neo4j/native-refresh/cpu.json",
+          "metadata": "validation/iu-neo4j/native-refresh/cpu.json.metadata.json",
           "format": "native_suites",
           "passed": 6678,
           "device": "cpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/cpu.json": "81e5d397e857303117b904f9e6146696557bbb45e796964f83b48f101028ee45",
-            "validation/full-gpu-release-20261125/native/cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
+            "validation/iu-neo4j/native-refresh/cpu.json": "81e5d397e857303117b904f9e6146696557bbb45e796964f83b48f101028ee45",
+            "validation/iu-neo4j/native-refresh/cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/flow-cpu.json",
-          "report": "validation/full-gpu-release-20261125/native/flow-cpu.json",
-          "metadata": "validation/full-gpu-release-20261125/native/flow-cpu.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/flow-cpu.json",
+          "report": "validation/iu-neo4j/native-refresh/flow-cpu.json",
+          "metadata": "validation/iu-neo4j/native-refresh/flow-cpu.json.metadata.json",
           "format": "native_suites",
           "passed": 25587,
           "device": "cpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/flow-cpu.json": "6d466e5f27eca8c4af6107d3d6b5a3a45fc317d648a1a505adc84c98477ed3e9",
-            "validation/full-gpu-release-20261125/native/flow-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
+            "validation/iu-neo4j/native-refresh/flow-cpu.json": "6d466e5f27eca8c4af6107d3d6b5a3a45fc317d648a1a505adc84c98477ed3e9",
+            "validation/iu-neo4j/native-refresh/flow-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/flow-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/flow-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/flow-gpu-1.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/flow-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/flow-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/flow-gpu-1.json.metadata.json",
           "format": "native_suites",
           "passed": 1069,
           "device": "gpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/flow-gpu-1.json": "2702e14d09209b5ddbaaf68f48193bb8dd4f0f60f12d78dcd7bf198e548df475",
-            "validation/full-gpu-release-20261125/native/flow-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+            "validation/iu-neo4j/native-refresh/flow-gpu-1.json": "2702e14d09209b5ddbaaf68f48193bb8dd4f0f60f12d78dcd7bf198e548df475",
+            "validation/iu-neo4j/native-refresh/flow-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/gpu-1.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/gpu-1.json.metadata.json",
           "format": "native_suites",
           "passed": 6656,
           "device": "gpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/gpu-1.json": "8b6b8788fbb845d72d7cecca6018e0e30cb3f4e84be1cb9edb007ef9daa1ad98",
-            "validation/full-gpu-release-20261125/native/gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+            "validation/iu-neo4j/native-refresh/gpu-1.json": "8b6b8788fbb845d72d7cecca6018e0e30cb3f4e84be1cb9edb007ef9daa1ad98",
+            "validation/iu-neo4j/native-refresh/gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/matching-cpu.json",
-          "report": "validation/full-gpu-release-20261125/native/matching-cpu.json",
-          "metadata": "validation/full-gpu-release-20261125/native/matching-cpu.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/matching-cpu.json",
+          "report": "validation/iu-neo4j/native-refresh/matching-cpu.json",
+          "metadata": "validation/iu-neo4j/native-refresh/matching-cpu.json.metadata.json",
           "format": "native_suites",
           "passed": 12740,
           "device": "cpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/matching-cpu.json": "ca8690d7e8f46b54f317147630bc5a46c0b2548a2c94cde6ea998a42e82e31dc",
-            "validation/full-gpu-release-20261125/native/matching-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
+            "validation/iu-neo4j/native-refresh/matching-cpu.json": "ca8690d7e8f46b54f317147630bc5a46c0b2548a2c94cde6ea998a42e82e31dc",
+            "validation/iu-neo4j/native-refresh/matching-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/matching-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/matching-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/matching-gpu-1.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/matching-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/matching-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/matching-gpu-1.json.metadata.json",
           "format": "native_suites",
           "passed": 751,
           "device": "gpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/matching-gpu-1.json": "ca2f2535d4bfc5774205a2d5708de3e51d5e229b1aada66f4a04b27a309ec453",
-            "validation/full-gpu-release-20261125/native/matching-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+            "validation/iu-neo4j/native-refresh/matching-gpu-1.json": "ca2f2535d4bfc5774205a2d5708de3e51d5e229b1aada66f4a04b27a309ec453",
+            "validation/iu-neo4j/native-refresh/matching-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/mining-cpu.json",
-          "report": "validation/full-gpu-release-20261125/native/mining-cpu.json",
-          "metadata": "validation/full-gpu-release-20261125/native/mining-cpu.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/mining-cpu.json",
+          "report": "validation/iu-neo4j/native-refresh/mining-cpu.json",
+          "metadata": "validation/iu-neo4j/native-refresh/mining-cpu.json.metadata.json",
           "format": "native_suites",
           "passed": 32015,
           "device": "cpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/mining-cpu.json": "6041f34491f540cc604124b75f1a3ef564f08b61ff8bc2c9ff15b174e871a0dd",
-            "validation/full-gpu-release-20261125/native/mining-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
+            "validation/iu-neo4j/native-refresh/mining-cpu.json": "6041f34491f540cc604124b75f1a3ef564f08b61ff8bc2c9ff15b174e871a0dd",
+            "validation/iu-neo4j/native-refresh/mining-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/mining-cuda-ms-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/mining-cuda-ms-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/mining-cuda-ms-gpu-1.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/mining-cuda-ms-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/mining-cuda-ms-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/mining-cuda-ms-gpu-1.json.metadata.json",
           "format": "native_suites",
           "passed": 367,
           "device": "gpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/mining-cuda-ms-gpu-1.json": "e0d44ba591401e0c9ae08a40e7f9b1e000c587291c8ea1d75f0de50374b8c1ea",
-            "validation/full-gpu-release-20261125/native/mining-cuda-ms-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+            "validation/iu-neo4j/native-refresh/mining-cuda-ms-gpu-1.json": "e0d44ba591401e0c9ae08a40e7f9b1e000c587291c8ea1d75f0de50374b8c1ea",
+            "validation/iu-neo4j/native-refresh/mining-cuda-ms-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/mining-g2-aimd-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/mining-g2-aimd-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/mining-g2-aimd-gpu-1.json.metadata.json",
+          "id": "validation/iu-neo4j/native-refresh/mining-g2-aimd-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/mining-g2-aimd-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/mining-g2-aimd-gpu-1.json.metadata.json",
           "format": "native_suites",
           "passed": 289,
           "device": "gpu",
           "artifacts": {
-            "validation/full-gpu-release-20261125/native/mining-g2-aimd-gpu-1.json": "0be946ee2dcb2757f3ed968792f0e333134eefccc7590228d03b79145f37a1b4",
-            "validation/full-gpu-release-20261125/native/mining-g2-aimd-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+            "validation/iu-neo4j/native-refresh/mining-g2-aimd-gpu-1.json": "0be946ee2dcb2757f3ed968792f0e333134eefccc7590228d03b79145f37a1b4",
+            "validation/iu-neo4j/native-refresh/mining-g2-aimd-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/mining-gpu-maximum-clique-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/mining-gpu-maximum-clique-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/mining-gpu-maximum-clique-gpu-1.json.metadata.json",
+          "format": "native_suites",
+          "passed": 367,
+          "device": "gpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/mining-gpu-maximum-clique-gpu-1.json": "b0ecafad13935abd1175eb42ef1ff5f1824fefe3944a4af0cffc47ee8abb643c",
+            "validation/iu-neo4j/native-refresh/mining-gpu-maximum-clique-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/mining-graphset-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/mining-graphset-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/mining-graphset-gpu-1.json.metadata.json",
+          "format": "native_suites",
+          "passed": 860,
+          "device": "gpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/mining-graphset-gpu-1.json": "a53e5fb90ebb6438e04498780ea6b88200e6725d982acbc98c318dd57e103db0",
+            "validation/iu-neo4j/native-refresh/mining-graphset-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/mining-maximum-clique-on-gpu-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/mining-maximum-clique-on-gpu-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/mining-maximum-clique-on-gpu-gpu-1.json.metadata.json",
+          "format": "native_suites",
+          "passed": 367,
+          "device": "gpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/mining-maximum-clique-on-gpu-gpu-1.json": "6abb457dfb1ba88b3c7d6b50a68696a43d61cd136b00ee13ad527b9bcbd333bd",
+            "validation/iu-neo4j/native-refresh/mining-maximum-clique-on-gpu-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/mining-mce-gpu-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/mining-mce-gpu-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/mining-mce-gpu-gpu-1.json.metadata.json",
+          "format": "native_suites",
+          "passed": 289,
+          "device": "gpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/mining-mce-gpu-gpu-1.json": "ac926f7d4d5678ad12aded5d6736eeb3dabc482942389402a879820dfaa621ee",
+            "validation/iu-neo4j/native-refresh/mining-mce-gpu-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/mining-rdmce-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/mining-rdmce-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/mining-rdmce-gpu-1.json.metadata.json",
+          "format": "native_suites",
+          "passed": 289,
+          "device": "gpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/mining-rdmce-gpu-1.json": "38fefa2c2798af193332527668e7f0f5a1efd4a1faf144811e402d177a4d3270",
+            "validation/iu-neo4j/native-refresh/mining-rdmce-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/reference-cpu.json",
+          "report": "validation/iu-neo4j/native-refresh/reference-cpu.json",
+          "metadata": "validation/iu-neo4j/native-refresh/reference-cpu.json.metadata.json",
+          "format": "native_suites",
+          "passed": 7181,
+          "device": "cpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/reference-cpu.json": "e1995e145d8b2fcc01fc74510c51f4df44b30d894a132d3ba52e2549c7e7260d",
+            "validation/iu-neo4j/native-refresh/reference-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/reference-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/reference-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/reference-gpu-1.json.metadata.json",
+          "format": "native_suites",
+          "passed": 6031,
+          "device": "gpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/reference-gpu-1.json": "03a3d0aa9bc2aff5ab7d661cc5b83ed5af70d35952dcda7d950cbee5e1589bf6",
+            "validation/iu-neo4j/native-refresh/reference-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/selection-cpu.json",
+          "report": "validation/iu-neo4j/native-refresh/selection-cpu.json",
+          "metadata": "validation/iu-neo4j/native-refresh/selection-cpu.json.metadata.json",
+          "format": "native_suites",
+          "passed": 22403,
+          "device": "cpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/selection-cpu.json": "842e1a76c858466a3984a6fc658a8f1f57e456be9a1c201ff06c4f8c6140c24e",
+            "validation/iu-neo4j/native-refresh/selection-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/selection-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/selection-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/selection-gpu-1.json.metadata.json",
+          "format": "native_suites",
+          "passed": 14274,
+          "device": "gpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/selection-gpu-1.json": "d9af91a07b6abf8d23949aaac912ca7694ef6dee84fe3e36c180eb1c2934d7ff",
+            "validation/iu-neo4j/native-refresh/selection-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/structure-cpu.json",
+          "report": "validation/iu-neo4j/native-refresh/structure-cpu.json",
+          "metadata": "validation/iu-neo4j/native-refresh/structure-cpu.json.metadata.json",
+          "format": "native_suites",
+          "passed": 6213,
+          "device": "cpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/structure-cpu.json": "89a7b42bc55bac303c856fb164871caf2b3728bcc407d610fc29b9f0f5c4ca4b",
+            "validation/iu-neo4j/native-refresh/structure-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-refresh/structure-gpu-1.json",
+          "report": "validation/iu-neo4j/native-refresh/structure-gpu-1.json",
+          "metadata": "validation/iu-neo4j/native-refresh/structure-gpu-1.json.metadata.json",
+          "format": "native_suites",
+          "passed": 5175,
+          "device": "gpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-refresh/structure-gpu-1.json": "f920025077a935985b85f1e24796fd4449f2467138b4caa5c836ce0cbfc97358",
+            "validation/iu-neo4j/native-refresh/structure-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
+          }
+        },
+        {
+          "id": "validation/iu-neo4j/native-cpu.xml",
+          "report": "validation/iu-neo4j/native-cpu.xml",
+          "metadata": "validation/iu-neo4j/native-cpu.xml.native.metadata.json",
+          "format": "junit",
+          "passed": 175,
+          "device": "cpu",
+          "artifacts": {
+            "validation/iu-neo4j/native-cpu.xml": "eb7e17377d4bb1169ac98e9dc8434c754e4193b44cbb379b457973fe380bbf9c",
+            "validation/iu-neo4j/native-cpu.xml.native.metadata.json": "22145094fe543c5fa3b757d88de06af60301e6a0d9fe2097a29c06569f0fd2a6"
           }
         },
         {
@@ -96199,30 +96343,6 @@
           "artifacts": {
             "validation/full-gpu-release-20261125/native/mining-gamma-gpu-1.json": "dd596ea5ff62193e9ce3a2bbeba3d156cb4105b54d153f3820da58c89b2912cc",
             "validation/full-gpu-release-20261125/native/mining-gamma-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/native/mining-gpu-maximum-clique-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/mining-gpu-maximum-clique-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/mining-gpu-maximum-clique-gpu-1.json.metadata.json",
-          "format": "native_suites",
-          "passed": 367,
-          "device": "gpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/mining-gpu-maximum-clique-gpu-1.json": "b0ecafad13935abd1175eb42ef1ff5f1824fefe3944a4af0cffc47ee8abb643c",
-            "validation/full-gpu-release-20261125/native/mining-gpu-maximum-clique-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/native/mining-graphset-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/mining-graphset-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/mining-graphset-gpu-1.json.metadata.json",
-          "format": "native_suites",
-          "passed": 860,
-          "device": "gpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/mining-graphset-gpu-1.json": "a53e5fb90ebb6438e04498780ea6b88200e6725d982acbc98c318dd57e103db0",
-            "validation/full-gpu-release-20261125/native/mining-graphset-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
           }
         },
         {
@@ -96262,126 +96382,6 @@
           }
         },
         {
-          "id": "validation/full-gpu-release-20261125/native/mining-maximum-clique-on-gpu-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/mining-maximum-clique-on-gpu-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/mining-maximum-clique-on-gpu-gpu-1.json.metadata.json",
-          "format": "native_suites",
-          "passed": 367,
-          "device": "gpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/mining-maximum-clique-on-gpu-gpu-1.json": "6abb457dfb1ba88b3c7d6b50a68696a43d61cd136b00ee13ad527b9bcbd333bd",
-            "validation/full-gpu-release-20261125/native/mining-maximum-clique-on-gpu-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/native/mining-mce-gpu-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/mining-mce-gpu-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/mining-mce-gpu-gpu-1.json.metadata.json",
-          "format": "native_suites",
-          "passed": 289,
-          "device": "gpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/mining-mce-gpu-gpu-1.json": "ac926f7d4d5678ad12aded5d6736eeb3dabc482942389402a879820dfaa621ee",
-            "validation/full-gpu-release-20261125/native/mining-mce-gpu-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/native/mining-rdmce-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/mining-rdmce-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/mining-rdmce-gpu-1.json.metadata.json",
-          "format": "native_suites",
-          "passed": 289,
-          "device": "gpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/mining-rdmce-gpu-1.json": "38fefa2c2798af193332527668e7f0f5a1efd4a1faf144811e402d177a4d3270",
-            "validation/full-gpu-release-20261125/native/mining-rdmce-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/native/reference-cpu.json",
-          "report": "validation/full-gpu-release-20261125/native/reference-cpu.json",
-          "metadata": "validation/full-gpu-release-20261125/native/reference-cpu.json.metadata.json",
-          "format": "native_suites",
-          "passed": 7181,
-          "device": "cpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/reference-cpu.json": "e1995e145d8b2fcc01fc74510c51f4df44b30d894a132d3ba52e2549c7e7260d",
-            "validation/full-gpu-release-20261125/native/reference-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/native/reference-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/reference-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/reference-gpu-1.json.metadata.json",
-          "format": "native_suites",
-          "passed": 6031,
-          "device": "gpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/reference-gpu-1.json": "03a3d0aa9bc2aff5ab7d661cc5b83ed5af70d35952dcda7d950cbee5e1589bf6",
-            "validation/full-gpu-release-20261125/native/reference-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/native/selection-cpu.json",
-          "report": "validation/full-gpu-release-20261125/native/selection-cpu.json",
-          "metadata": "validation/full-gpu-release-20261125/native/selection-cpu.json.metadata.json",
-          "format": "native_suites",
-          "passed": 22403,
-          "device": "cpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/selection-cpu.json": "842e1a76c858466a3984a6fc658a8f1f57e456be9a1c201ff06c4f8c6140c24e",
-            "validation/full-gpu-release-20261125/native/selection-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/native/selection-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/selection-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/selection-gpu-1.json.metadata.json",
-          "format": "native_suites",
-          "passed": 14274,
-          "device": "gpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/selection-gpu-1.json": "d9af91a07b6abf8d23949aaac912ca7694ef6dee84fe3e36c180eb1c2934d7ff",
-            "validation/full-gpu-release-20261125/native/selection-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/native/structure-cpu.json",
-          "report": "validation/full-gpu-release-20261125/native/structure-cpu.json",
-          "metadata": "validation/full-gpu-release-20261125/native/structure-cpu.json.metadata.json",
-          "format": "native_suites",
-          "passed": 6213,
-          "device": "cpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/structure-cpu.json": "89a7b42bc55bac303c856fb164871caf2b3728bcc407d610fc29b9f0f5c4ca4b",
-            "validation/full-gpu-release-20261125/native/structure-cpu.json.metadata.json": "5756beea8a81fc9a7053c9e89e32ac27446eafedd5544cc44a65bf3d8550ca6a"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/native/structure-gpu-1.json",
-          "report": "validation/full-gpu-release-20261125/native/structure-gpu-1.json",
-          "metadata": "validation/full-gpu-release-20261125/native/structure-gpu-1.json.metadata.json",
-          "format": "native_suites",
-          "passed": 5175,
-          "device": "gpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/native/structure-gpu-1.json": "f920025077a935985b85f1e24796fd4449f2467138b4caa5c836ce0cbfc97358",
-            "validation/full-gpu-release-20261125/native/structure-gpu-1.json.metadata.json": "8728c865c8638010bb5fe71f35255262ca90499af05a8a626c6f6b408ee61d07"
-          }
-        },
-        {
-          "id": "validation/full-gpu-release-20261125/cpu-completion.xml",
-          "report": "validation/full-gpu-release-20261125/cpu-completion.xml",
-          "metadata": "validation/full-gpu-release-20261125/cpu-completion.xml.native.metadata.json",
-          "format": "junit",
-          "passed": 175,
-          "device": "cpu",
-          "artifacts": {
-            "validation/full-gpu-release-20261125/cpu-completion.xml": "a216da4cc6eb3fe832d285eb0b85b679805aa1fc48323ad317c1c96e52b320b7",
-            "validation/full-gpu-release-20261125/cpu-completion.xml.native.metadata.json": "22145094fe543c5fa3b757d88de06af60301e6a0d9fe2097a29c06569f0fd2a6"
-          }
-        },
-        {
           "id": "validation/full-gpu-release-20261125/gpu-original.xml",
           "report": "validation/full-gpu-release-20261125/gpu-original.xml",
           "metadata": "validation/full-gpu-release-20261125/gpu-original.xml.native.metadata.json",
@@ -96393,7 +96393,22 @@
             "validation/full-gpu-release-20261125/gpu-original.xml.native.metadata.json": "9a9411ad0532d460734d329dff9ed18d0ae611337aa267d53b4d8b55f986ac30"
           }
         }
-      ]
+      ],
+      "deferred_revalidation": {
+        "date": "2026-11-26",
+        "reason": "Shared analytics GPU memory contention; user explicitly requested documenting the remaining checks and proceeding to production.",
+        "historical_reports_retained": [
+          "validation/full-gpu-release-20261125/native/mining-gamma-gpu-1.json",
+          "validation/full-gpu-release-20261125/native/mining-kcgpu-gpu-1.json",
+          "validation/full-gpu-release-20261125/native/mining-kcore-gpu-gpu-1.json",
+          "validation/full-gpu-release-20261125/native/mining-libcugraph-gpu-1.json",
+          "validation/full-gpu-release-20261125/gpu-original.xml"
+        ],
+        "fresh_native_oracle_requests": 170599,
+        "fresh_cpu_contract_tests": 175,
+        "compiled_library_unchanged": true,
+        "follow_up": "validation/iu-neo4j/DEFERRED_GPU_CHECKS.md"
+      }
     }
   ],
   "known_failures": [

@@ -35,7 +35,7 @@ example has no SQL mappings, so sync is unavailable. Provisioning and benchmark
 loaders remain pinned to local. This work performed no database write on IU and
 ran no remote SSH command.
 
-Release is still pending: an unrelated zlib update invalidated native runtime
-dependency evidence. Fresh native oracle/contract checks and a new evidence
-manifest are being prepared before testing and production promotion. The
-correctness gate remains enforced.
+Release verification after a host zlib update is recorded in RELEASE.md. The
+user authorized deferring the remaining GPU checks because another workload
+occupied the analytics GPU; DEFERRED_GPU_CHECKS.md records the precise scope.
+The correctness gate remains enforced.
