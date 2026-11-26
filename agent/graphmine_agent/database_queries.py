@@ -22,6 +22,7 @@ from .database_sources import (
     get_source,
     json_value,
     neo4j_session,
+    neo4j_read,
     stable_id,
     validate_cypher,
 )
@@ -332,67 +333,70 @@ def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
     if byte_limit is not None:
         byte_limit = minimum_limit(byte_limit, source.max_bytes)
     collector_class = RowGraphCollector if body.projection == "rows" else GraphCollector
-    collector, sample_records, rows, used = collector_class(source, byte_limit, body.weight_property), [], 0, 0
-    scalar_rows = []
+    def read(transaction):
+        # A managed read can retry; every attempt needs a fresh collector.
+        collector, sample_records, rows, used = collector_class(source, byte_limit, body.weight_property), [], 0, 0
+        scalar_rows = []
+        explanation = transaction.run(
+            "EXPLAIN " + body.statement, body.parameters
+        ).consume()
+        if explanation.query_type != "r":
+            raise AnalyticsError(
+                "This editor accepts read queries only.", "cypher_read_only"
+            )
+        response = transaction.run(body.statement, body.parameters)
+        checkpoint("reading", 0)
+        columns = list(response.keys())
+        if body.projection == "rows" and not {"source", "target"}.issubset(columns):
+            raise AnalyticsError(
+                "This graph mode requires RETURN a AS source, b AS target. "
+                "Return nodes for both columns; weight and type are optional.",
+                "query_projection",
+            )
+        for record in response:
+            rows += 1
+            checkpoint("reading", rows)
+            if byte_limit is not None and rows > source.max_rows:
+                raise AnalyticsError(
+                    "Query exceeds the row limit. Add a filter or an explicit LIMIT.",
+                    "resource_limit",
+                )
+            item = collector.record(record, rows)
+            if byte_limit is None and not (collector.vertices or collector.edges):
+                # Scalar tables retain their separate row/byte budgets.
+                if rows > source.max_rows:
+                    raise AnalyticsError("Query exceeds the row limit. Add a filter or an explicit LIMIT.", "resource_limit")
+                used += len(_json(item).encode())
+                if source.max_bytes is not None and used > source.max_bytes:
+                    raise AnalyticsError("Query exceeds the result byte limit.", "resource_limit")
+            if byte_limit is not None:
+                used += len(_json(item).encode())
+            if byte_limit is not None and used > byte_limit:
+                raise AnalyticsError(
+                    "Query exceeds the result byte limit.", "resource_limit"
+                )
+            if len(sample_records) < 50:
+                sample_records.append((rows, record))
+            if collector.vertices or collector.edges:
+                scalar_rows = None
+            elif scalar_rows is not None:
+                scalar_rows.append(item)
+        response.consume()
+        checkpoint("hydrating", rows)
+        collector.hydrate_endpoints(transaction)
+        sample = [
+            collector.record(record, row_number)
+            for row_number, record in sample_records
+        ]
+        return collector, sample, rows, scalar_rows, columns
+
     try:
-        with (
-            neo4j_session(source) as session,
-            # Zero disables the transaction timeout; None inherits the server's.
-            session.begin_transaction(timeout=0 if timeout_seconds is None else timeout_seconds) as transaction,
-        ):
-            explanation = transaction.run(
-                "EXPLAIN " + body.statement, body.parameters
-            ).consume()
-            if explanation.query_type != "r":
-                raise AnalyticsError(
-                    "This editor accepts read queries only.", "cypher_read_only"
-                )
-            response = transaction.run(body.statement, body.parameters)
-            checkpoint("reading", 0)
-            columns = list(response.keys())
-            if body.projection == "rows" and not {"source", "target"}.issubset(columns):
-                raise AnalyticsError(
-                    "This graph mode requires RETURN a AS source, b AS target. "
-                    "Return nodes for both columns; weight and type are optional.",
-                    "query_projection",
-                )
-            for record in response:
-                rows += 1
-                checkpoint("reading", rows)
-                if byte_limit is not None and rows > source.max_rows:
-                    raise AnalyticsError(
-                        "Query exceeds the row limit. Add a filter or an explicit LIMIT.",
-                        "resource_limit",
-                    )
-                item = collector.record(record, rows)
-                if byte_limit is None and not (collector.vertices or collector.edges):
-                    # Scalar tables retain their separate row/byte budgets.
-                    if rows > source.max_rows:
-                        raise AnalyticsError("Query exceeds the row limit. Add a filter or an explicit LIMIT.", "resource_limit")
-                    used += len(_json(item).encode())
-                    if source.max_bytes is not None and used > source.max_bytes:
-                        raise AnalyticsError("Query exceeds the result byte limit.", "resource_limit")
-                if byte_limit is not None:
-                    used += len(_json(item).encode())
-                if byte_limit is not None and used > byte_limit:
-                    raise AnalyticsError(
-                        "Query exceeds the result byte limit.", "resource_limit"
-                    )
-                if len(sample_records) < 50:
-                    sample_records.append((rows, record))
-                if collector.vertices or collector.edges:
-                    scalar_rows = None
-                elif scalar_rows is not None:
-                    scalar_rows.append(item)
-            response.consume()
-            checkpoint("hydrating", rows)
-            collector.hydrate_endpoints(transaction)
-            sample = [
-                collector.record(record, row_number)
-                for row_number, record in sample_records
-            ]
-            # A read editor has no writes to commit.
-            transaction.rollback()
+        with neo4j_session(source) as session:
+            collector, sample, rows, scalar_rows, columns = neo4j_read(
+                session, source, read,
+                # Zero disables the transaction timeout; None inherits the server's.
+                timeout=0 if timeout_seconds is None else timeout_seconds,
+            )
     except AnalyticsError:
         raise
     except Exception as exc:

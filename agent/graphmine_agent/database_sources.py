@@ -25,7 +25,7 @@ from urllib.parse import urlsplit
 from .analytics import AnalyticsError, _json
 from .database import RecordNotFound
 from .identity import current_principal
-from .neo4j_backend import get_active_neo4j, source_details, source_origin
+from .neo4j_backend import get_active_neo4j, source_details, source_origin, validate_configured_source
 
 IDENTIFIER = r"^[A-Za-z_][A-Za-z0-9_]*$"
 MAX_SOURCE_ROWS = 100_000
@@ -65,6 +65,7 @@ class DatabaseSource(Strict):
     _catalog: dict = PrivateAttr(default_factory=dict)
     _config_stamp: tuple | None = PrivateAttr(default=None)
     _managed: bool = PrivateAttr(default=False)
+    _configured: bool = PrivateAttr(default=False)
     _registry_password_file: Path | None = PrivateAttr(default=None)
     _credentials_file: Path | None = PrivateAttr(default=None)
     id: str = Field(pattern=r"^[A-Za-z0-9_-]{1,64}$")
@@ -77,7 +78,8 @@ class DatabaseSource(Strict):
     neo4j_uri: str
     neo4j_database: str = "neo4j"
     neo4j_username: str = "neo4j"
-    neo4j_password_env: str
+    neo4j_password_env: str | None = None
+    auth_disabled: bool = Field(default=False, strict=True)
     neo4j_writer_username: str | None = None
     neo4j_writer_password_env: str | None = None
     entities: list[EntityMapping] = Field(default_factory=list, max_length=64)
@@ -236,7 +238,11 @@ def configured(settings):
         if len(sources) > 100 or len({s.id for s in sources}) != len(sources):
             raise ValueError("Invalid source inventory")
         for source in sources:
+            validate_configured_source(source)
+            source._configured = True
             source._backend_settings = settings
+            if source.auth_disabled:
+                source._network_settings = settings
             source._config_stamp = (path, info.st_ino, info.st_mtime_ns, info.st_size)
             source._credentials_file = settings.database_credentials_file
         return sources
@@ -654,3 +660,14 @@ def neo4j_session(source, *, write=False):
         ) as session,
     ):
         yield session
+
+
+def neo4j_read(session, source, work, *, timeout):
+    """IU reads use driver-managed read transactions; local rollback behavior stays intact."""
+    if source.auth_disabled:
+        from neo4j import unit_of_work
+        return session.execute_read(unit_of_work(timeout=timeout)(work))
+    with session.begin_transaction(timeout=timeout) as transaction:
+        result = work(transaction)
+        transaction.rollback()
+        return result

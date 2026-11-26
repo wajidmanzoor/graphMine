@@ -175,11 +175,17 @@ class Neo4jBackend:
         return self.endpoints[0]
 
 
-def registry_endpoint(entry, password_file=None, credentials=None):
+def registry_endpoint(entry, password_file=None, credentials=None, *, local_only=False):
     if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,47}", entry["id"]):
         raise ValueError("Invalid Neo4j instance identifier")
     uri = entry["bolt_uri"]
+    if uri == IU_URI:
+        if local_only or entry.get("auth_disabled") is not True:
+            raise ValueError("IU requires an explicit configured source with authentication disabled")
+        return Neo4jEndpoint(entry["id"], IU_URI, auth_disabled=True)
     _parse(uri, local=True)
+    if entry.get("auth_disabled"):
+        raise ValueError("Authentication may be disabled only for the configured IU endpoint")
     return Neo4jEndpoint(entry["id"], uri, _password_env=entry.get("password_env"),
                          _password_file=password_file, _credentials=credentials)
 
@@ -199,7 +205,7 @@ def local_registry(settings):
                        for entry in document["datasets"])
         if len({item.identifier for item in result}) != len(result):
             raise ValueError
-        return result
+        return tuple(item for item in result if not item.auth_disabled)
     except (OSError, ValueError, KeyError, TypeError):
         raise _configuration_error() from None
 
@@ -258,10 +264,12 @@ def get_active_neo4j(settings=None, source=None, *, write=False, target=None,
         if local_record is not None or source is not None and source.neo4j_uri != IU_URI:
             from .database import RecordNotFound
             raise RecordNotFound("Database source not found")
+        if source is not None and (not source.auth_disabled or source.managed or not source._configured):
+            raise _configuration_error()
         return Neo4jBackend(identifier, (Neo4jEndpoint(identifier, IU_URI, auth_disabled=True),))
     if local_record is not None:
         return Neo4jBackend(identifier, (registry_endpoint(local_record,
-            getattr(settings, "neo4j_datasets_password_file", None), credentials),))
+            getattr(settings, "neo4j_datasets_password_file", None), credentials, local_only=True),))
     if source is not None:
         parsed = _parse(source.neo4j_uri)
         if parsed.hostname == IU_HOST:
@@ -283,7 +291,20 @@ def source_details(source):
     if ":" in host:
         host = f"[{host}]"
     return {"uri": f"{parsed.scheme}://{host}" + (f":{parsed.port}" if parsed.port else ""),
-            "database": source.neo4j_database, "username": source.neo4j_username}
+            "database": source.neo4j_database, "username": source.neo4j_username,
+            "auth_disabled": source.auth_disabled}
+
+
+def validate_configured_source(source):
+    """Authentication bypass belongs only to the exact administrator-owned IU source."""
+    _parse(source.neo4j_uri)
+    if source.auth_disabled:
+        if source.neo4j_uri != IU_URI:
+            raise ValueError("Authentication may be disabled only for the configured IU endpoint")
+    elif source.neo4j_uri == IU_URI:
+        raise ValueError("The IU source requires auth_disabled=true")
+    elif not source.neo4j_password_env:
+        raise ValueError("A Neo4j password environment reference is required")
 
 
 def configured_address(source):
@@ -309,11 +330,14 @@ def same_pair_endpoint(previous, body):
 
 def registry_fields(entry):
     endpoint = registry_endpoint(entry)
-    return {"neo4j_uri": endpoint.uri, "neo4j_password_env": entry["password_env"]}
+    return {"neo4j_uri": endpoint.uri, "neo4j_password_env": entry.get("password_env"),
+            "auth_disabled": endpoint.auth_disabled}
 
 
 def matches_registry(source, entry):
-    return source.neo4j_uri == registry_endpoint(entry).uri and source.neo4j_password_env == entry["password_env"]
+    endpoint = registry_endpoint(entry)
+    return (source.neo4j_uri == endpoint.uri and source.auth_disabled == endpoint.auth_disabled
+            and source.neo4j_password_env == entry.get("password_env"))
 
 
 def deployment_settings(repository, *, registry=None, password_file=None, data_root=None):

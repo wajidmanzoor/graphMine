@@ -69,6 +69,8 @@ def owner_directory(settings):
 
 def load_source(settings, document):
     source = DatabaseSource.model_validate(document["source"])
+    if source.auth_disabled:
+        raise ValueError("Saved user connections require Neo4j credentials")
     source._sql_credentials = document.get("sql") or {}
     source._neo4j_password = document["neo4j_password"]
     if not isinstance(source._sql_credentials, dict) or bool(source._sql_credentials) != bool(source.sql_type):
@@ -147,9 +149,15 @@ def check_connection(source):
 
     def neo4j():
         try:
-            from neo4j import Query
+            from neo4j import Query, unit_of_work
             with neo4j_session(source) as session:
-                session.run(Query("RETURN 1 AS connected", timeout=5)).consume()
+                if source.auth_disabled:
+                    @unit_of_work(timeout=5)
+                    def read(transaction):
+                        return transaction.run("RETURN 1 AS connected").consume()
+                    session.execute_read(read)
+                else:
+                    session.run(Query("RETURN 1 AS connected", timeout=5)).consume()
             return {"connected": True, "message": "Connected"}
         except Exception:
             return {"connected": False, "message": "Could not connect. Check the server address and credentials."}

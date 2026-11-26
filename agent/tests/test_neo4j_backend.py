@@ -123,7 +123,8 @@ def test_application_driver_uses_resolved_direct_endpoint_and_no_auth(backend_se
         def close(self):
             pass
     monkeypatch.setattr("neo4j.GraphDatabase.driver", Driver)
-    source = DatabaseSource(id="iu-remote", name="IU", users=["*"], neo4j_uri=IU_URI, neo4j_password_env="UNUSED")
+    source = DatabaseSource(id="iu-remote", name="IU", users=["*"], neo4j_uri=IU_URI, auth_disabled=True)
+    source._configured = True
     source._backend_settings = backend_settings
     with neo4j_session(source) as session:
         assert session["default_access_mode"] == "READ"

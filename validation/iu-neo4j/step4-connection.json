@@ -1,0 +1,33 @@
+{
+  "checked_at": "2026-11-26T21:15:31.295137+00:00",
+  "backend": "iu-remote",
+  "endpoint": "bolt://10.2.147.169:7689",
+  "auth": null,
+  "configured_sources_file": "/tmp/graphmine-iu-step4-f1p002nm/sources.json",
+  "route": "10.2.147.169 dev wg-iu src 10.66.0.8 uid 1002 \n    cache",
+  "verify_connectivity": true,
+  "application_connection_check": {
+    "sql": {
+      "configured": false,
+      "connected": null,
+      "message": "SQL enrichment is not configured."
+    },
+    "neo4j": {
+      "connected": true,
+      "message": "Connected"
+    },
+    "connected": true,
+    "query_available": true,
+    "enrichment_available": false
+  },
+  "application_query": "RETURN 1 AS connected",
+  "application_query_sample": [
+    {
+      "connected": 1
+    }
+  ],
+  "transaction_api": "session.execute_read",
+  "ssh_commands": [],
+  "remote_writes": false,
+  "production_sources_modified": false
+}

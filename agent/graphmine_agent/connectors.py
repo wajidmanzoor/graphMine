@@ -269,7 +269,9 @@ def neo4j_rows(runtime, config, limit):
     parameters = {"label": config.node_label or None,
                   "relationship_type": config.relationship_type or None, "limit": MAX_ROWS + 1}
     if endpoint.transport == "bolt":
+        from .database_connections import network_address
         from neo4j import GraphDatabase, READ_ACCESS, unit_of_work
+        network_address(runtime.settings, *endpoint.address)
         @unit_of_work(timeout=30)
         def read(tx):
             rows, used = [], 0
