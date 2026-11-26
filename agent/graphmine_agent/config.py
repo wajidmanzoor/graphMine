@@ -153,6 +153,9 @@ class Settings:
     neo4j_datasets_registry: Path | None = None
     neo4j_instances_root: Path | None = None
     neo4j_datasets_password_file: Path | None = None
+    iu_neo4j_autowake: bool = False
+    iu_neo4j_idle_minutes: int = 30
+    iu_neo4j_state_dir: Path | None = None
     backend_data_dir: Path = Path.home() / ".local/state/graphmine/backend-runs"
     backend_model_dir: Path = Path.home() / ".local/state/graphmine/backend-models"
     backend_selection: str = "native"
@@ -221,6 +224,8 @@ class Settings:
                               ("database_pool_wait_seconds", 120), ("database_pool_idle_seconds", 3600)):
             if not 1 <= getattr(self, name) <= maximum:
                 raise ValueError(f"{name} must be between 1 and {maximum}")
+        if type(self.iu_neo4j_idle_minutes) is not int or self.iu_neo4j_idle_minutes < 1:
+            raise ValueError("GRAPHMINE_IU_NEO4J_IDLE_MINUTES must be a positive integer")
         for name in (
             "account_session_seconds",
             "max_accounts",
@@ -385,6 +390,10 @@ class Settings:
             if os.getenv("GRAPHMINE_NEO4J_INSTANCES_ROOT") else None,
             neo4j_datasets_password_file=Path(os.environ["GRAPHMINE_NEO4J_DATASETS_PASSWORD_FILE"]).expanduser().absolute()
             if os.getenv("GRAPHMINE_NEO4J_DATASETS_PASSWORD_FILE") else None,
+            iu_neo4j_autowake=_boolean("GRAPHMINE_IU_NEO4J_AUTOWAKE", False),
+            iu_neo4j_idle_minutes=_integer("GRAPHMINE_IU_NEO4J_IDLE_MINUTES", 30),
+            iu_neo4j_state_dir=Path(os.environ["GRAPHMINE_IU_NEO4J_STATE_DIR"]).expanduser().absolute()
+            if os.getenv("GRAPHMINE_IU_NEO4J_STATE_DIR") else None,
             benchmark_datasets_root=Path(os.environ["GRAPHMINE_BENCHMARK_DATASETS_ROOT"])
             .expanduser().resolve()
             if os.getenv("GRAPHMINE_BENCHMARK_DATASETS_ROOT") else None,

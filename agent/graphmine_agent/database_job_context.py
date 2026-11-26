@@ -5,10 +5,13 @@ from contextvars import ContextVar
 current_database_job = ContextVar("graphmine_database_job", default=None)
 
 
-def checkpoint(stage=None, completed=None, total=None):
+def checkpoint(stage=None, completed=None, total=None, *, message=None):
     control = current_database_job.get()
     if control:
-        control.checkpoint(stage, completed, total)
+        if message is None:
+            control.checkpoint(stage, completed, total)
+        else:
+            control.checkpoint(stage, completed, total, message=message)
 
 
 def begin_commit(stage="committing"):

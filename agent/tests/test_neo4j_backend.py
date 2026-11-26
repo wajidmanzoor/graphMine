@@ -113,6 +113,10 @@ def test_state_symlink_cannot_read_or_overwrite_other_files(backend_settings, tm
 
 def test_application_driver_uses_resolved_direct_endpoint_and_no_auth(backend_settings, monkeypatch):
     from contextlib import contextmanager
+    from graphmine_agent.remote_neo4j import get_remote
+    power = get_remote(backend_settings)
+    monkeypatch.setattr(power, "tcp", lambda *_: True)
+    monkeypatch.setattr(power, "verify", lambda _: True)
     made = []
     class Driver:
         def __init__(self, uri, **options):
@@ -142,6 +146,10 @@ def test_remote_connector_uses_direct_bolt_and_managed_read_transaction(backend_
     from contextlib import contextmanager
     from types import SimpleNamespace
     from graphmine_agent.connectors import Connector, neo4j_rows
+    from graphmine_agent.remote_neo4j import get_remote
+    power = get_remote(backend_settings)
+    monkeypatch.setattr(power, "tcp", lambda *_: True)
+    monkeypatch.setattr(power, "verify", lambda _: True)
     events = []
     class Driver:
         def __init__(self, uri, **options):

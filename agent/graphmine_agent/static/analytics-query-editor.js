@@ -82,7 +82,7 @@ window.GraphMineQueryEditor = ({api, node, W, editor, parameters, parameterBox, 
     if (editor.value[end] === "`") end++;
     const before = editor.value[start - 1], query = editor.value;
     let data = {entities: [], relationships: []};
-    try { data = await getSchema(); } catch (error) { if (current !== epoch || error.name === "AbortError") return; toolStatus.textContent = "Schema is unavailable. Showing query keywords and parameters."; }
+    try { data = await getSchema(); } catch (error) { if (current !== epoch || error.name === "AbortError") return; toolStatus.textContent = error.code?.startsWith("database_") ? error.message : "Schema is unavailable. Showing query keywords and parameters."; }
     if (current !== epoch || editor.value !== query) return;
     const identifier = text => "`" + text.replaceAll("`", "``") + "`";
     let items = [];

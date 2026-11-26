@@ -73,6 +73,7 @@ def settings(tmp_path: Path, fake_binary: Path) -> Settings:
         # Capture tests enable it; it would snapshot the source tree per app.
         capture_enabled=False,
         data_root=tmp_path / "data",
+        iu_neo4j_state_dir=tmp_path / "iu-power",
         graphmine_binary=fake_binary,
         api_token="test-secret",
         graph_gpu_uuid=os.getenv("GRAPHMINE_TEST_GRAPH_GPU_UUID", "GPU-test-graph"),

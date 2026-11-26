@@ -73,7 +73,8 @@ def test_incomplete_or_disabled_sql_details_are_rejected(values):
 def test_health_and_default_selection_skip_sql_and_report_optional_outage(settings, monkeypatch):
     source = graph_source(); calls = []
     @contextmanager
-    def neo(_):
+    def neo(_, *, wake=True):
+        assert wake is False
         yield SimpleNamespace(run=lambda _: SimpleNamespace(consume=lambda: None))
     def unavailable(*_):
         calls.append(1); raise OSError('private SQL credential')

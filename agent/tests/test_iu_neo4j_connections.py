@@ -29,6 +29,10 @@ def iu_settings(settings, tmp_path):
 
 
 def test_configured_iu_driver_uses_no_credentials_and_pins_only_exact_address(iu_settings, monkeypatch):
+    from graphmine_agent.remote_neo4j import get_remote
+    power = get_remote(iu_settings)
+    monkeypatch.setattr(power, "tcp", lambda *_: True)
+    monkeypatch.setattr(power, "verify", lambda _: True)
     calls = []
     class Driver:
         def __init__(self, uri, **options):

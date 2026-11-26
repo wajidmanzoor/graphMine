@@ -13,7 +13,7 @@ import math
 import os
 import re
 import sqlite3
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
@@ -608,7 +608,7 @@ def validate_cypher(statement):
 
 
 @contextmanager
-def neo4j_session(source, *, write=False):
+def neo4j_session(source, *, write=False, wake=True):
     if write and source._catalog.get("registry"):
         raise AnalyticsError("Benchmark connections allow read queries only.", "cypher_read_only", 409)
     try:
@@ -639,6 +639,9 @@ def neo4j_session(source, *, write=False):
         options["resolver"] = resolver
     pools = current_database_pools.get()
     signature = [backend.id, endpoint.uri, endpoint.database, credential, address_key]
+    from .remote_neo4j import get_remote
+    settings = source._backend_settings or source._network_settings or (pools.settings if pools else None)
+    activity = get_remote(settings).request(wake=wake) if backend.id == "iu-remote" else nullcontext()
 
     def create():
         return GraphDatabase.driver(
@@ -653,6 +656,7 @@ def neo4j_session(source, *, write=False):
         )
 
     with (
+        activity,
         resource(source, "neo4j-write" if write else "neo4j-read", signature, create) as driver,
         driver.session(
             database=endpoint.database,

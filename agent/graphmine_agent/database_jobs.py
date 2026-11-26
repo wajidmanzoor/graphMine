@@ -54,7 +54,7 @@ class JobControl:
         self.last_update = 0
         self.stage = None
 
-    def checkpoint(self, stage=None, completed=None, total=None):
+    def checkpoint(self, stage=None, completed=None, total=None, *, message=None):
         if self.sealed:
             return
         if self.stopped.is_set():
@@ -70,6 +70,8 @@ class JobControl:
                 raise WorkStopped()
             if stage:
                 job["progress"] = {"stage": stage, "completed": completed, "total": total}
+                if message:
+                    job["progress"]["message"] = message
         self.service._change(self.job["id"], update)
 
     def seal(self, stage):

@@ -97,6 +97,7 @@ from .workflow_api import register_workflow_routes
 from .api_errors import register_error_handlers
 from .web_assets import WebAssets, WebHeaders
 from .llm_power import LLMPowerRegistry, LLMPowerBusy, get_registry
+from .remote_neo4j import RemoteNeo4j, get_remote
 
 
 @dataclass(slots=True)
@@ -116,6 +117,7 @@ class Runtime:
     database_pools: DatabasePools
     llm_power: LLMPowerRegistry
     database_jobs: DatabaseJobs | None = None
+    remote_neo4j: RemoteNeo4j | None = None
 
 
 _logger = logging.getLogger(__name__)
@@ -252,6 +254,9 @@ def build_runtime(settings: Settings, *, serving: bool = False) -> Runtime:
         llm_power=power,
     )
     runtime.database_jobs = DatabaseJobs(runtime)
+    from .database_progress import publish
+    runtime.remote_neo4j = get_remote(settings)
+    runtime.remote_neo4j.publish = lambda payload: publish(runtime, payload)
     return runtime
 
 
@@ -374,6 +379,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 # Both store locks are held and interrupted jobs are now terminal.
                 with runtime.database._connect() as db:
                     db.execute("DELETE FROM account_leases WHERE kind != 'model'")
+            try:
+                await run_in_threadpool(runtime.remote_neo4j.register_store)
+            except AnalyticsError:
+                _logger.warning("Remote database power state is unavailable; database actions will report the configuration error")
+            runtime.remote_neo4j.start()
             await runtime.database_jobs.start()
             app.state.admin_monitor.start()
             yield
@@ -387,6 +397,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             try:
                 await runtime.database_jobs.stop()
             finally:
+                await runtime.remote_neo4j.close()
                 try:
                     await runtime.analytics.close()
                 finally:

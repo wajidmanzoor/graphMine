@@ -270,6 +270,7 @@ def neo4j_rows(runtime, config, limit):
                   "relationship_type": config.relationship_type or None, "limit": MAX_ROWS + 1}
     if endpoint.transport == "bolt":
         from .database_connections import network_address
+        from .remote_neo4j import get_remote
         from neo4j import GraphDatabase, READ_ACCESS, unit_of_work
         network_address(runtime.settings, *endpoint.address)
         @unit_of_work(timeout=30)
@@ -282,7 +283,7 @@ def neo4j_rows(runtime, config, limit):
                     raise AnalyticsError("The source exceeds the row or byte limit.", "resource_limit")
                 rows.append(row)
             return rows
-        with GraphDatabase.driver(endpoint.uri, auth=endpoint.auth, connection_timeout=3) as driver:
+        with get_remote(runtime.settings).request(), GraphDatabase.driver(endpoint.uri, auth=endpoint.auth, connection_timeout=3) as driver:
             with driver.session(database=endpoint.database, default_access_mode=READ_ACCESS) as session:
                 return session.execute_read(read)
     raw = rest_bytes(

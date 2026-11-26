@@ -285,6 +285,41 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
         renderHealth({sql: {connected: false, message: error.message}, neo4j: {connected: false, message: error.message}});
       }
     }
+    async function openSource() {
+      if (!source.value || importing()) return;
+      const id = source.value, current = ++healthGeneration;
+      let timer = null, polling = false, observing = true, after = 0;
+      setBusy(true); status.textContent = "Connecting to the database…";
+      try {
+        const initial = await api("/api/database-progress", {signal: readController.signal});
+        after = initial.after;
+        timer = setInterval(async () => {
+          if (polling || !observing || !dialog.isConnected || current !== healthGeneration) return;
+          polling = true;
+          try {
+            const update = await api(`/api/database-progress?after=${after}`, {signal: readController.signal});
+            after = update.after;
+            if (observing && dialog.isConnected && current === healthGeneration) {
+              for (const event of update.events) if (event.type === "database.power") status.textContent = event.payload.message;
+            }
+          } catch (_) { /* The action response reports connection failures. */ }
+          finally { polling = false; }
+        }, 500);
+        const result = await api(`/api/database-sources/${encodeURIComponent(id)}/open`, {method: "POST", signal: readController.signal});
+        if (current === healthGeneration && dialog.isConnected && source.value === id) {
+          renderHealth(result);
+          status.textContent = result.neo4j?.connected ? "Database is ready." : result.neo4j?.message || "The database is unavailable.";
+        }
+      } catch (error) {
+        if (current === healthGeneration && dialog.isConnected && error.name !== "AbortError") {
+          status.textContent = error.message;
+          renderHealth({neo4j: {connected: false, message: error.message}});
+        }
+      } finally {
+        observing = false; clearInterval(timer);
+        if (current === healthGeneration && dialog.isConnected) setBusy(false);
+      }
+    }
     const defaultQuery = item => item?.entities?.length
       ? `MATCH p = (a:${item.entities[0].label})-[r${item.relationships?.length ? ":" + item.relationships[0].label : ""}]->(b)\nRETURN p\nLIMIT 1000`
       : "MATCH p = (a)-[r]->(b)\nRETURN p\nLIMIT 1000";
@@ -385,10 +420,10 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
         if (current === datasetGeneration && dialog.isConnected) { datasets = []; dataset.replaceChildren(); datasetStatus.textContent = error.message; setBusy(false); }
       }
     }
-    source.onchange = () => { remember(); dataset.replaceChildren(); describe(); };
+    source.onchange = async () => { remember(); dataset.replaceChildren(); await describe(); await openSource(); };
     dataset.onchange = () => { remember(); describeDataset(); };
     reloadDatasets.onclick = async () => { try { if (await refresh(source.value)) await describe(false, true); } catch (error) { if (dialog.isConnected) datasetStatus.textContent = error.message; } };
-    check.onclick = checkHealth;
+    check.onclick = openSource;
     const refresh = async selected => {
       const current = ++sourceGeneration;
       discoveryPending = true; setBusy(busy);

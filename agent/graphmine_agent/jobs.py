@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import sqlite3
 import time
@@ -41,6 +42,33 @@ class EventBus:
         self._subscribers: dict[str, set[asyncio.Queue[ConversationEvent]]] = (
             defaultdict(set)
         )
+
+    def notify(self, topic, event_type, payload):
+        """Bounded owner-scoped progress for work outside a conversation.
+
+        Persist these notifications so a polling request in another server
+        worker sees the same progress as the worker doing the database work.
+        """
+        try:
+            with self.database._lock, self.database._connect() as db:
+                db.execute("CREATE TABLE IF NOT EXISTS event_notifications (topic TEXT NOT NULL, sequence INTEGER NOT NULL, document TEXT NOT NULL, PRIMARY KEY(topic,sequence))")
+                db.execute("BEGIN IMMEDIATE")
+                sequence = db.execute("SELECT coalesce(max(sequence),0)+1 FROM event_notifications WHERE topic=?", (topic,)).fetchone()[0]
+                event = {"sequence": sequence, "type": event_type, "payload": payload, "created_at": utc_now().isoformat()}
+                db.execute("INSERT INTO event_notifications VALUES (?,?,?)", (topic, sequence, json.dumps(event)))
+                db.execute("DELETE FROM event_notifications WHERE topic=? AND sequence<=?", (topic, sequence - 100))
+            return event
+        except (sqlite3.Error, OSError):
+            return None  # Notifications must not turn successful database work into failure.
+
+    def notifications(self, topic, after=0):
+        with self.database._connect() as db:
+            if not db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='event_notifications'").fetchone():
+                return {"events": [], "after": after}
+            rows = db.execute("SELECT document FROM event_notifications WHERE topic=? AND sequence>? ORDER BY sequence LIMIT 100",
+                              (topic, after)).fetchall()
+        events = [json.loads(row[0]) for row in rows]
+        return {"events": events, "after": events[-1]["sequence"] if events else after}
 
     async def publish(
         self,

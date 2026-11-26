@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from fastapi import Request
+from fastapi import Query, Request
 from pydantic import Field, SecretStr, ValidationError, model_validator
 from starlette.concurrency import run_in_threadpool
 
@@ -150,7 +150,7 @@ def check_connection(source):
     def neo4j():
         try:
             from neo4j import Query, unit_of_work
-            with neo4j_session(source) as session:
+            with neo4j_session(source, wake=False) as session:
                 if source.auth_disabled:
                     @unit_of_work(timeout=5)
                     def read(transaction):
@@ -274,6 +274,26 @@ def register_connection_routes(router):
     async def status(source_id: str, request: Request):
         source = get_source(request.app.state.runtime.settings, source_id)
         return await execute(request, check_connection, source)
+
+    @router.post("/database-sources/{source_id}/open")
+    async def open_source(source_id: str, request: Request):
+        from .neo4j_backend import get_active_neo4j
+        from .remote_neo4j import get_remote
+        settings = request.app.state.runtime.settings
+        source = get_source(settings, source_id)
+        def work():
+            backend = get_active_neo4j(settings, source)
+            if backend.id == "iu-remote":
+                network_address(settings, *backend.connection.address)
+                with get_remote(settings).request():
+                    return check_connection(source)
+            return check_connection(source)
+        return await execute(request, work)
+
+    @router.get("/database-progress")
+    def progress(request: Request, after: int = Query(0, ge=0, le=9223372036854775807)):
+        from .database_progress import topic
+        return request.app.state.runtime.events.notifications(topic(), after)
 
     @router.get("/database-sources/{source_id}/settings")
     def detail(source_id: str, request: Request):
