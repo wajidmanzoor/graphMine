@@ -290,6 +290,13 @@ def source_backend_id(source):
     return "iu-remote" if source.neo4j_uri == IU_URI else "local"
 
 
+def connector_backend_id(connector):
+    if connector.type != "neo4j":
+        return None
+    parsed = urlsplit(connector.url or "")
+    return "iu-remote" if parsed.hostname == IU_HOST and (parsed.port or 80) == 7474 else "local"
+
+
 def verification_endpoints(settings, target):
     endpoints = list(get_active_neo4j(settings, target=target).endpoints)
     if target == "local":

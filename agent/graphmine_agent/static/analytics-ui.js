@@ -247,6 +247,7 @@
     try {
       const workspace = await reads.get(`/api/sessions/${encodeURIComponent(id)}/workspace?history_limit=30`);
       state.session = workspace.session;
+      state.neo4jBackend = workspace.active_backend;
       renderSessions();
       state.files = workspace.files.filter(f => ["graph", "query_graph", "motif", "attachment"].includes(f.role));
       state.legacyMessages = workspace.messages;
@@ -559,6 +560,11 @@
     const id = state.session.id, epoch = state.epoch;
     const page = await api(`/api/sessions/${id}/events?after=${state.eventCursor}&limit=500&paged=true`, {signal: sessionController.signal});
     if (epoch !== state.epoch) return false;
+    if (page.active_backend && state.neo4jBackend && page.active_backend !== state.neo4jBackend) {
+      await openSession(id);
+      notice("The database backend changed. Your conversation now shows its available data.");
+      return true;
+    }
     const events = Array.isArray(page) ? page : page.events;
     for (const [turn, number] of Object.entries(page.turn_numbers || {})) turnNumbers.set(turn, number);
     state.eventBacklog = Boolean(page.has_more);
@@ -1857,6 +1863,13 @@
   window.GraphMineProjects({state, api, W, node, runAction, notice, renderFiles, previewActive});
   templates = window.GraphMineTemplates({state, api, W, node, runAction, notice, card, parameterControl, parametersFrom, onCreated: async record => { state.record = record; loadEditor(); setMode("expert"); clearResults(); renderWorkflow(); await loadSaved(); go("chat"); }});
   setMode("normal"); renderOutput();
+  window.addEventListener("storage", event => {
+    if (event.key === "graphmine-backend-changed") runAction(async () => {
+      databaseWorkspace?.close();
+      await openSession(state.session?.id || null);
+      notice("The database backend changed. Your saved work remains available when its backend is selected.");
+    });
+  });
   (window.GraphMineAccount?.ready || Promise.resolve(false)).then(enabled => {
     // Signed-in accounts use this server; there is no connection to configure.
     if (enabled) { state.base = ""; state.token = ""; $("connection-button").hidden = true; }

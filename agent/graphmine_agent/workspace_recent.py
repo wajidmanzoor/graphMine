@@ -35,7 +35,7 @@ def recent_work(runtime, section, *, offset=0, limit=4):
             "(SELECT json_group_array(json_extract(value,'$.problem')) "
             "FROM json_each(w.document,'$.validation.plan.steps')) AS problems "
             "FROM analysis.workflows w JOIN sessions s ON s.id=w.session_id "
-            "WHERE s.owner_id IS ? AND coalesce(json_extract(s.payload,'$.archived'),0)=0 "
+            "WHERE s.owner_id IS ? AND neo4j_visible(w.document) AND coalesce(json_extract(s.payload,'$.archived'),0)=0 "
             "ORDER BY CASE WHEN json_extract(w.document,'$.status') IN ('running','queued','awaiting_review') "
             "THEN 0 ELSE 1 END,updated_at DESC,w.id DESC LIMIT ? OFFSET ?",
             (_owner(), limit + 1, offset),

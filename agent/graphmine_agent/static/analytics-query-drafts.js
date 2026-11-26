@@ -2,7 +2,8 @@
 (() => {
   "use strict";
   const memory = new Map(), volatile = new Set(), VERSION = 1;
-  window.GraphMineQueryDrafts = async ({base = "", token = "", userId = "", conversationId = "new", inputId = ""} = {}) => {
+  window.GraphMineQueryDrafts = async ({base = "", token = "", userId = "", conversationId = "new", inputId = "", backendId = "local"} = {}) => {
+    if (!["local", "iu-remote"].includes(backendId)) throw new Error("Unknown database backend");
     const endpoint = new URL(base || location.origin, location.href);
     const identity = userId && endpoint.origin === location.origin ? ["account", userId] : ["token", token];
     const context = JSON.stringify([endpoint.href.replace(/\/$/, ""), ...identity]);
@@ -12,7 +13,8 @@
       namespace = [...new Uint8Array(hash)].map(byte => byte.toString(16).padStart(2, "0")).join("");
     } catch { /* An insecure browser context retains drafts only in memory. */ }
     const prefix = `graphmine.queryDraft.v${VERSION}.${namespace}.`;
-    const scope = [conversationId, inputId];
+    // Existing keys belong to local. Keep them intact and give IU a new scope.
+    const scope = backendId === "local" ? [conversationId, inputId] : [conversationId, inputId, backendId];
     const key = (type, source = "", dataset = "") => JSON.stringify([type, ...scope, source, dataset]);
     function read(key) {
       // A failed persistent write must still restore the newest edit in this tab.
@@ -20,13 +22,13 @@
       if (namespace) {
         try {
           const value = JSON.parse(localStorage.getItem(prefix + key) || "null");
-          if (value?.version === VERSION) return value;
+          if (value?.version === VERSION && (!value.backend_id || value.backend_id === backendId)) return {...value, backend_id: backendId};
         } catch { /* Corrupt or unavailable browser storage must not block editing. */ }
       }
       return memory.get(context + key) || null;
     }
     function write(key, value) {
-      value = {...value, version: VERSION, updatedAt: new Date().toISOString()};
+      value = {...value, backend_id: backendId, version: VERSION, updatedAt: new Date().toISOString()};
       memory.set(context + key, value);
       volatile.add(context + key);
       if (namespace) {

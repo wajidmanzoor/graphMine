@@ -101,6 +101,9 @@ def archive_entry(event):
         row.update(role="assistant", result_id=data["id"], message=data["interpretation"]["summary"], job_id=data["job_id"])
     else:
         return None
+    from .neo4j_records import backend_id
+    if backend_id(data):
+        row["backend_id"] = backend_id(data)
     return row, key
 
 
@@ -130,6 +133,8 @@ def refresh_archive(database, session_id):
                         db.execute("DELETE FROM conversation_entries WHERE session_id=? AND origin=?", (session_id, filename))
                         if entry:
                             row, key = entry
+                            from .neo4j_records import tag_references
+                            tag_references(db, row)
                             db.execute("INSERT OR REPLACE INTO conversation_entries VALUES (?,?,?,?,?,?,?,?,?)",
                                        (session_id, row["id"], row["created_at"], 1, 0, row.get("turn_id"), key, filename, _json(row)))
                         db.execute("INSERT OR REPLACE INTO conversation_archive_files VALUES (?,?,?,?)", (session_id, filename, mtime, size))
@@ -176,11 +181,14 @@ def conversation_page(database, session_id, *, before=None, limit=30, analytics=
     latest = """NOT EXISTS (SELECT 1 FROM conversation_entries newer WHERE newer.session_id=e.session_id
         AND newer.dedupe_key=e.dedupe_key AND (newer.created_at,newer.ordinal,newer.id)>(e.created_at,e.ordinal,e.id))"""
     # Legacy messages end where the public append-only transcript starts.
-    boundary = "SELECT min(e.created_at) FROM conversation_entries e WHERE e.session_id=? AND e.lane=1 AND " + latest
+    boundary = "SELECT min(e.created_at) FROM conversation_entries e WHERE e.session_id=? AND e.lane=1 AND neo4j_visible(e.document) AND " + latest
     with database._connect() as db:
         db.execute("BEGIN")
         earliest = db.execute(boundary, (session_id,)).fetchone()[0]
-        where, args = ["e.session_id=?", latest], [session_id]
+        visibility = """((e.lane=2 AND EXISTS (SELECT 1 FROM conversation_events original WHERE original.sequence=e.ordinal AND neo4j_visible(original.payload)))
+            OR (e.lane=0 AND EXISTS (SELECT 1 FROM messages original WHERE original.id=e.ordinal AND neo4j_visible(original.payload)))
+            OR (e.lane=1 AND neo4j_visible(e.document)))"""
+        where, args = ["e.session_id=?", latest, visibility], [session_id]
         if earliest is not None:
             where.append("(e.lane!=0 OR e.created_at<?)"); args.append(earliest)
         if cursor:
@@ -200,7 +208,7 @@ def conversation_page(database, session_id, *, before=None, limit=30, analytics=
             marks = ",".join("?" for _ in turn_ids)
             # Completed reasoning contains the full text. Earlier delta chunks
             # are redundant for display, but remain in the source event ledger.
-            for row in db.execute(f"""SELECT e.* FROM conversation_events e INDEXED BY events_turn WHERE e.session_id=? AND json_extract(e.payload,'$.turn_id') IN ({marks})
+            for row in db.execute(f"""SELECT e.* FROM conversation_events e INDEXED BY events_turn WHERE e.session_id=? AND neo4j_visible(e.payload) AND json_extract(e.payload,'$.turn_id') IN ({marks})
                 AND (e.type!='workflow.reasoning.delta' OR (
                   json_extract(e.payload,'$.call_id') IS NOT NULL AND NOT EXISTS (
                     SELECT 1 FROM conversation_events done WHERE done.session_id=e.session_id AND done.type='workflow.reasoning'
@@ -215,7 +223,7 @@ def conversation_page(database, session_id, *, before=None, limit=30, analytics=
                 events[row["sequence"]] = dict(row)
             numbers = dict(db.execute(f"SELECT turn_id,number FROM conversation_turns WHERE session_id=? AND turn_id IN ({marks})", [session_id, *turn_ids]).fetchall())
         if event_ids:
-            for row in db.execute(f"SELECT * FROM conversation_events WHERE session_id=? AND sequence IN ({','.join('?' for _ in event_ids)})", [session_id, *event_ids]):
+            for row in db.execute(f"SELECT * FROM conversation_events WHERE session_id=? AND neo4j_visible(payload) AND sequence IN ({','.join('?' for _ in event_ids)})", [session_id, *event_ids]):
                 events[row["sequence"]] = dict(row)
         for item in rows:
             if item["lane"] != 3:

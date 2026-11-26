@@ -227,6 +227,7 @@ def test_counts_classify_legacy_neo4j_provenance_and_exclude_uploads(control, tr
     p = control
     library = DatasetLibrary(p.runtime)
     for source in ({"type": "database_query"}, {"type": "database_query", "backend_id": "iu-remote"}, {"type": "upload"}):
+        set_active_backend(p.runtime.settings, source.get("backend_id", "local"))
         library.store(json.loads(triangle_graph), name="Example", kind="graph", source=source, complete=True)
     with p.runtime.database._connect() as db:
         db.execute("CREATE TABLE query_library (id TEXT PRIMARY KEY)")

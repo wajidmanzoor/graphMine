@@ -115,7 +115,7 @@ def records(runtime):
         return []
     with runtime.database._connect() as db:
         rows = db.execute(
-            "SELECT document FROM user_connectors WHERE owner_id=? ORDER BY rowid",
+            "SELECT document FROM user_connectors WHERE owner_id=? AND neo4j_visible(document) ORDER BY rowid",
             (user.user_id,),
         ).fetchall()
     from .connectors import Connector
@@ -127,7 +127,7 @@ def saved(runtime, identifier):
     user = principal()
     with runtime.database._connect() as db:
         row = db.execute(
-            "SELECT document,content,size_bytes,sha256 FROM user_connectors WHERE id=? AND owner_id=?",
+            "SELECT document,content,size_bytes,sha256 FROM user_connectors WHERE id=? AND owner_id=? AND neo4j_visible(document)",
             (identifier, user.user_id),
         ).fetchone()
     if row is None:
@@ -190,6 +190,7 @@ def public(config):
     values = config.model_dump(
         include={
             "id",
+            "backend_id",
             "name",
             "type",
             "url",

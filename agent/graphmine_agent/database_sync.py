@@ -235,6 +235,7 @@ def sync_source(source, byte_limit=None):
     summary = reconcile_records(source, nodes, edges, byte_limit)
     return {
         "source_id": source.id,
+        "backend_id": source.backend_id,
         "build": build,
         "nodes": len(nodes),
         "relationships": len(edges),

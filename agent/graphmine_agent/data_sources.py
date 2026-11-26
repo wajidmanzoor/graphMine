@@ -25,6 +25,8 @@ def discover(runtime):
         for source in sources:
             item = {"id": f"{provider}:{source.id}", "source_id": source.id,
                     "provider": provider, "name": source.name, "managed": source.managed}
+            if source.backend_id:
+                item["backend_id"] = source.backend_id
             if provider == "database":
                 item.update(type="neo4j", capabilities=source.capabilities(), connection=source.public())
             else:
@@ -33,7 +35,8 @@ def discover(runtime):
             items.append(item)
     if not curated:
         items.sort(key=lambda item: (item["name"].casefold(), item["id"]))
-    return {"items": items, "warnings": warnings, "dataset_picker_only": curated,
+    from .neo4j_backend import active_backend_id
+    return {"active_backend": active_backend_id(runtime.settings), "items": items, "warnings": warnings, "dataset_picker_only": curated,
             "can_manage_imports": not curated and current_principal.get() is not None}
 
 

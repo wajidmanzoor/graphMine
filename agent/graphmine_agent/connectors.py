@@ -15,7 +15,7 @@ from urllib.parse import urlsplit
 
 import httpx
 from fastapi import Request, UploadFile
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 from starlette.concurrency import run_in_threadpool
 
 from . import managed_connectors as managed
@@ -33,6 +33,7 @@ class Connector(BaseModel):
     id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,64}$")
     name: str = Field(min_length=1, max_length=160)
     type: Literal["sqlite", "rest", "neo4j"]
+    backend_id: Literal["local", "iu-remote"] | None = None
     users: list[str] = Field(min_length=1, max_length=100)
     path: str | None = None
     table: str | None = None
@@ -49,6 +50,15 @@ class Connector(BaseModel):
     username: str = "neo4j"
     node_label: str | None = None
     relationship_type: str | None = None
+
+    @model_validator(mode="after")
+    def backend(self):
+        from .neo4j_backend import connector_backend_id
+        expected = connector_backend_id(self)
+        if self.backend_id is not None and self.backend_id != expected:
+            raise ValueError("The connection backend does not match its endpoint")
+        self.backend_id = expected
+        return self
 
 
 class ImportConnector(BaseModel):
@@ -87,9 +97,11 @@ def configured(settings):
 
 
 def available(runtime):
+    from .neo4j_records import visible
     user = current_principal.get()
     return [
-        entry for entry in configured(runtime.settings) if "*" in entry.users or user and user.username in entry.users
+        entry for entry in configured(runtime.settings) if visible(entry.model_dump(), runtime.settings)
+        and ("*" in entry.users or user and user.username in entry.users)
     ] + (managed.records(runtime) if user else [])
 
 
@@ -476,6 +488,7 @@ def _import_source(runtime, connector_id, body):
         dataset_id=body.dataset_id,
         source={
             "type": "connector",
+            "backend_id": config.backend_id,
             "connector_id": config.id,
             "connector_name": config.name,
             "connector_type": config.type,
@@ -513,6 +526,7 @@ def register_connector_routes(router):
                 "id": entry.id,
                 "name": entry.name,
                 "type": entry.type,
+                **({"backend_id": entry.backend_id} if entry.backend_id else {}),
                 **({"managed": True} if entry.managed else {}),
             }
             for entry in available(request.app.state.runtime)

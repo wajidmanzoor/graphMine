@@ -355,3 +355,19 @@ def test_saved_view_roundtrip_keeps_whitespace_and_integer_ids_distinct(library)
         saved["selected"] == view["selected"]
         and saved["positions"] == view["positions"]
     )
+
+
+def test_shared_neo4j_item_is_hidden_for_members_and_link_holders(library):
+    from graphmine_agent.neo4j_backend import set_active_backend
+    client, runtime, alice, bob, _, file = library
+    with runtime.database._connect() as db:
+        db.execute("UPDATE files SET payload=json_set(payload,'$.backend_id','local') WHERE id=?", (file["id"],))
+    project, item = shared(library)
+    link = call(client, alice, "POST", f"/api/project-items/{item['id']}/links", {}, 201)
+    token = link["url"].split("#")[1]
+    set_active_backend(runtime.settings, "iu-remote")
+    call(client, bob, "GET", f"/api/project-items/{item['id']}", expected=404)
+    call(client, {}, "POST", "/api/shared/read", {"token": token}, expected=404)
+    assert call(client, alice, "GET", f"/api/projects/{project['id']}")["items"] == []
+    set_active_backend(runtime.settings, "local")
+    assert call(client, {}, "POST", "/api/shared/read", {"token": token})["name"] == item["name"]

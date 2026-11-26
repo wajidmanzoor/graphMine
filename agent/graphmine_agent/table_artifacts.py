@@ -115,12 +115,12 @@ class TableArtifacts:
             with self.runtime.database._connect() as db:
                 row = db.execute("""SELECT json_remove(p.metadata,'$.source'),r.token,p.expires_at
                     FROM query_previews p JOIN preview_blob_revisions r ON r.owner_id=p.owner_id AND r.sha256=p.sha256
-                    WHERE p.id=? AND p.owner_id=?""", (identifier, _owner() or "")).fetchone()
+                    WHERE p.id=? AND p.owner_id=? AND neo4j_visible(p.metadata)""", (identifier, _owner() or "")).fetchone()
                 if row is not None:
                     if row[2] <= time.time():
                         raise AnalyticsError("This query preview expired. Run the query again.", "preview_expired", 410)
                 else:
-                    row = db.execute("SELECT metadata,token FROM dataset_summaries WHERE id=? AND owner_id IS ?", (identifier, _owner())).fetchone()
+                    row = db.execute("SELECT metadata,token FROM dataset_summaries WHERE id=? AND owner_id IS ? AND neo4j_visible(metadata)", (identifier, _owner())).fetchone()
             if row is None:
                 raise RecordNotFound("Dataset version not found")
             metadata = json.loads(row[0])
@@ -159,10 +159,10 @@ class TableArtifacts:
             table = "query_preview_blobs"
             row = db.execute("""SELECT b.rowid,length(b.content),p.expires_at FROM query_previews p
                 JOIN query_preview_blobs b ON b.owner_id=p.owner_id AND b.sha256=p.sha256
-                WHERE p.id=? AND p.owner_id=?""", (identifier, _owner() or "")).fetchone()
+                WHERE p.id=? AND p.owner_id=? AND neo4j_visible(p.metadata)""", (identifier, _owner() or "")).fetchone()
             if row is None:
                 table = "dataset_versions"
-                row = db.execute("SELECT rowid,length(content),NULL FROM dataset_versions WHERE id=? AND owner_id IS ?", (identifier, _owner())).fetchone()
+                row = db.execute("SELECT rowid,length(content),NULL FROM dataset_versions WHERE id=? AND owner_id IS ? AND neo4j_visible(metadata)", (identifier, _owner())).fetchone()
             if row is None:
                 raise RecordNotFound("Dataset version not found")
             if row[2] is not None and row[2] <= time.time():

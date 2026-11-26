@@ -12,6 +12,7 @@ from .datasets import DatasetLibrary, _owner
 from .identity import AccountError, current_principal
 from .models import new_id
 from .query_results import is_database_query
+from .neo4j_records import require_visible, tagged
 
 PREVIEW_SECONDS = 24 * 3600
 
@@ -48,6 +49,7 @@ class QueryPreviews:
     def __init__(self, runtime, *, clock=time.time):
         self.runtime, self.database, self.clock = runtime, runtime.database, clock
         self.library = DatasetLibrary(runtime)
+        self.settings = self.library.settings
 
     def store(self, value, *, name, kind, source, complete):
         if kind == "graph":
@@ -74,6 +76,8 @@ class QueryPreviews:
             from .table_artifacts import summary
 
             metadata["table"] = summary(value)
+        tagged(metadata)
+        require_visible(metadata, self.settings)
         owner = _owner() or ""
         with self.database._lock, self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
@@ -93,6 +97,8 @@ class QueryPreviews:
             JOIN query_preview_blobs AS b ON b.owner_id=p.owner_id AND b.sha256=p.sha256
             WHERE p.id=? AND p.owner_id=?
         """, (version_id, _owner() or "")).fetchone()
+        if row:
+            require_visible(json.loads(row["metadata"]), self.settings)
         if row and row["expires_at"] <= self.clock():
             raise AnalyticsError("This query preview expired. Run the query again.", "preview_expired", 410)
         return row
@@ -128,6 +134,7 @@ class QueryPreviews:
         # Discarding a preview must never delete a dataset already saved or used.
         with self.database._lock, self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
+            self._row(db, version_id)
             removed = db.execute("DELETE FROM query_previews WHERE id=? AND owner_id=?", (version_id, _owner() or "")).rowcount
             _discard_unreferenced(db)
         if removed:

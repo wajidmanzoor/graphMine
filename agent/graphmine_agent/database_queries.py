@@ -457,6 +457,7 @@ def _run_query(runtime, source_id, body):
     metadata = table_metadata = None
     provenance = {
         "type": "database_query",
+        "backend_id": source.backend_id,
         "database_dataset": {key: dataset[key] for key in ("id", "name", "registry", "workload_url", "load_finished_at", "load_seconds", "script_hashes")
                              if key in dataset} if dataset else None,
         "database_source": {"id": source.id, "name": source.name, "mapping_hash": source.fingerprint(), "revision": source.revision,

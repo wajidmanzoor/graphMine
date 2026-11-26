@@ -6,6 +6,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 from threading import RLock
+from types import SimpleNamespace
 from typing import Any
 
 from .history import HistoryStore
@@ -35,7 +36,8 @@ from .models import (
 # 9: bounded conversation exploration settings are private and quota-accounted.
 # 10: transactional dataset summaries and change tokens for indexed tables.
 # 11: indexed public conversation entries and stable question numbering.
-SCHEMA_VERSION = 12
+# 13: Neo4j-derived records are private to the selected database backend.
+SCHEMA_VERSION = 13
 
 
 class RecordNotFound(KeyError):
@@ -59,6 +61,7 @@ class Database:
 
     def __init__(self, path: Path, history: HistoryStore | None = None):
         self.path = path
+        self.backend_settings = SimpleNamespace(data_root=path.parent)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = RLock()
         self.history = history or HistoryStore(path.parent / "history")
@@ -72,6 +75,8 @@ class Database:
         try:
             connection.row_factory = sqlite3.Row
             connection.create_function("casefold", 1, lambda value: (value or "").casefold(), deterministic=True)
+            from .neo4j_records import register_visibility
+            register_visibility(connection, self.backend_settings)
             connection.execute("PRAGMA foreign_keys = ON")
             connection.execute("PRAGMA journal_mode = WAL")
             with connection:
@@ -264,6 +269,9 @@ class Database:
             from .conversation_timeline import initialize as initialize_timeline
 
             initialize_timeline(connection, backfill=stored < 11)
+            if stored < 13:
+                from .neo4j_records import migrate_database
+                migrate_database(connection)
             connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
 
     @staticmethod
@@ -431,6 +439,8 @@ class Database:
         return updated
 
     def add_file(self, record: StoredFile) -> StoredFile:
+        from .neo4j_records import backend_id
+        record.backend_id = record.backend_id or backend_id(record.provenance)
         self.get_session(record.session_id)
         with self._lock, self._connect() as connection:
             connection.execute(
@@ -457,6 +467,8 @@ class Database:
             raise RecordNotFound(f"unknown file: {file_id}")
         record = StoredFile.model_validate_json(row["payload"])
         self.get_session(record.session_id)
+        from .neo4j_records import require_visible
+        require_visible(record.model_dump(), self.backend_settings)
         from .admin_data import touch
         touch(self, "file", file_id)
         return record
@@ -465,7 +477,7 @@ class Database:
         self.get_session(session_id)
         with self._connect() as connection:
             rows = connection.execute(
-                "SELECT payload FROM files WHERE session_id=? ORDER BY created_at",
+                "SELECT payload FROM files WHERE session_id=? AND neo4j_visible(payload) ORDER BY created_at",
                 (session_id,),
             ).fetchall()
         return [StoredFile.model_validate_json(row["payload"]) for row in rows]
@@ -473,6 +485,8 @@ class Database:
     def save_job(self, job: JobRecord) -> JobRecord:
         now = utc_now().isoformat()
         with self._lock, self._connect() as connection:
+            from .neo4j_records import tag_references
+            job.backend_id = tag_references(connection, job.model_dump()).get("backend_id")
             connection.execute(
                 """
                 INSERT INTO jobs(id,session_id,status,payload,created_at,updated_at)
@@ -510,6 +524,10 @@ class Database:
             )
         with self._lock, self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
+            from .neo4j_records import tag_references, require_visible
+            for job in jobs:
+                job.backend_id = tag_references(connection, job.model_dump()).get("backend_id")
+                require_visible(job.model_dump(), self.backend_settings)
             pending = connection.execute(
                 "SELECT COUNT(*) FROM jobs WHERE status IN ('queued','running','interpreting')"
             ).fetchone()[0]
@@ -567,12 +585,14 @@ class Database:
             raise RecordNotFound(f"unknown job: {job_id}")
         record = JobRecord.model_validate_json(row["payload"])
         self.get_session(record.session_id)
+        from .neo4j_records import require_visible
+        require_visible(record.model_dump(), self.backend_settings)
         return record
 
     def list_jobs(
         self, session_id: str | None = None, statuses: set[JobStatus] | None = None, *, limit: int | None = None
     ) -> list[JobRecord]:
-        clauses: list[str] = []
+        clauses: list[str] = ["neo4j_visible(payload)"]
         arguments: list[Any] = []
         principal = current_principal.get()
         if principal:
@@ -597,6 +617,8 @@ class Database:
 
     def save_result(self, result: ResultRecord) -> ResultRecord:
         with self._lock, self._connect() as connection:
+            from .neo4j_records import tag_references
+            result.backend_id = tag_references(connection, result.model_dump()).get("backend_id")
             connection.execute(
                 "INSERT INTO results(id,job_id,session_id,payload,created_at) VALUES(?,?,?,?,?)",
                 (
@@ -612,6 +634,8 @@ class Database:
 
     def update_result(self, result: ResultRecord) -> ResultRecord:
         with self._lock, self._connect() as connection:
+            from .neo4j_records import tag_references
+            result.backend_id = tag_references(connection, result.model_dump()).get("backend_id")
             cursor = connection.execute(
                 "UPDATE results SET payload=? WHERE id=?",
                 (self._json(result), result.id),
@@ -646,6 +670,8 @@ class Database:
             raise RecordNotFound(f"unknown result: {result_id}")
         record = ResultRecord.model_validate_json(row["payload"])
         self.get_session(record.session_id)
+        from .neo4j_records import require_visible
+        require_visible(record.model_dump(), self.backend_settings)
         from .admin_data import touch
         touch(self, "result", result_id)
         return record
@@ -657,7 +683,7 @@ class Database:
         with self._connect() as connection:
             row = connection.execute(
                 "SELECT results.payload FROM results JOIN jobs ON jobs.id=results.job_id "
-                "WHERE results.session_id=? "
+                "WHERE results.session_id=? AND neo4j_visible(results.payload) "
                 + (
                     "AND json_extract(jobs.payload, '$.plan.graph_id')=? "
                     if graph_id
@@ -682,6 +708,8 @@ class Database:
     ) -> None:
         self.get_session(session_id)
         with self._lock, self._connect() as connection:
+            from .neo4j_records import tag_references
+            payload = tag_references(connection, payload)
             connection.execute(
                 "INSERT INTO messages(session_id,role,mode,payload,created_at) VALUES(?,?,?,?,?)",
                 (session_id, role, mode, self._json(payload), utc_now().isoformat()),
@@ -704,7 +732,7 @@ class Database:
             rows = connection.execute(
                 """
                 SELECT role,mode,payload,created_at FROM messages
-                WHERE session_id=? ORDER BY id DESC
+                WHERE session_id=? AND neo4j_visible(payload) ORDER BY id DESC
                 """
                 + (" LIMIT ?" if limit is not None else ""),
                 (session_id, limit) if limit is not None else (session_id,),
@@ -723,6 +751,9 @@ class Database:
         """Include chats created before the append-only history feature existed."""
         self.get_session(session_id)
         current = self.history.transcript(session_id)
+        from .neo4j_records import tag_references, visible
+        with self._connect() as connection:
+            current = [row for row in current if visible(tag_references(connection, row), self.backend_settings)]
         boundary = min((row["created_at"] for row in current), default=None)
         legacy = []
         for index, row in enumerate(self.messages(session_id, limit=None)):
@@ -776,6 +807,10 @@ class Database:
 
     def add_event(self, event: ConversationEvent) -> ConversationEvent:
         with self._lock, self._connect() as connection:
+            from .neo4j_records import tag_references
+            tagged = tag_references(connection, {**event.payload, **({"job_id": event.job_id} if event.job_id else {})})
+            if tagged.get("backend_id"):
+                event.payload = {**event.payload, "backend_id": tagged["backend_id"]}
             cursor = connection.execute(
                 "INSERT INTO conversation_events(session_id,job_id,type,payload,created_at) VALUES(?,?,?,?,?)",
                 (
@@ -847,7 +882,7 @@ class Database:
             rows = connection.execute(
                 """
                 SELECT sequence,session_id,job_id,type,payload,created_at
-                FROM conversation_events WHERE session_id=? AND sequence>?
+                FROM conversation_events WHERE session_id=? AND sequence>? AND neo4j_visible(payload)
                 """ + kinds + " ORDER BY sequence" + (" LIMIT ?" if limit is not None else ""),
                 values,
             ).fetchall()

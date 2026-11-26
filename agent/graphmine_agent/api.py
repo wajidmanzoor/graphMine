@@ -214,6 +214,8 @@ def build_runtime(settings: Settings, *, serving: bool = False) -> Runtime:
     database = Database(settings.database_path, HistoryStore(settings.history_root))
     from .admin_settings import load as load_admin_settings
     settings = load_admin_settings(settings, database)
+    from .neo4j_records import migrate_connections
+    migrate_connections(settings)
     catalog = Catalog(settings)
     accounts = Accounts(settings, database)
     if settings.capture_enabled:
@@ -641,6 +643,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @router.get("/sessions/{session_id}/workspace")
     def session_workspace(session_id: str, request: Request, history_limit: int | None = Query(None, ge=1, le=100)):
+        from .neo4j_backend import active_backend_id
         runtime = _runtime(request)
         database = runtime.database
         session = database.get_session(session_id)
@@ -651,6 +654,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
             timeline = conversation_page(database, session_id, limit=history_limit, analytics=runtime.analytics)
         return {
+            "active_backend": active_backend_id(runtime.settings),
             "session": session,
             "messages": timeline["messages"] if timeline else database.conversation_transcript(session_id),
             "files": [
@@ -682,8 +686,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def model_reasoning(session_id: str, request: Request):
         if not can_read_notes():
             raise AccountError("Model working notes are available to administrators only.", "forbidden", 403)
-        database = _runtime(request).database
-        database.get_session(session_id)
+        from .neo4j_records import require_history_visible
+        runtime = _runtime(request)
+        require_history_visible(runtime, session_id)
+        database = runtime.database
         return database.history.model_reasoning(session_id)
 
     @router.post(
@@ -702,8 +708,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @router.get("/sessions/{session_id}/history")
     async def history(session_id: str, request: Request) -> dict[str, Any]:
-        database = _runtime(request).database
-        database.get_session(session_id)
+        from .neo4j_records import require_history_visible
+        runtime = _runtime(request)
+        require_history_visible(runtime, session_id)
+        database = runtime.database
         return database.history.manifest(session_id)
 
     @router.get("/sessions/{session_id}/history/archive")
@@ -875,7 +883,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 for offset in range(0, len(turns), 400):
                     chunk = turns[offset:offset + 400]
                     numbers.update(db.execute(f"SELECT turn_id,number FROM conversation_turns WHERE session_id=? AND turn_id IN ({','.join('?' for _ in chunk)})", [session_id, *chunk]).fetchall())
-        return ConversationEventPage(events=[visible_event(event) for event in chosen], after=after, last_sequence=chosen[-1].sequence if chosen else after,
+        from .neo4j_backend import active_backend_id
+        return ConversationEventPage(active_backend=active_backend_id(runtime.settings), events=[visible_event(event) for event in chosen], after=after, last_sequence=chosen[-1].sequence if chosen else after,
                                      has_more=len(rows) > size, turn_numbers=numbers)
 
     register_workflow_routes(router)
@@ -938,6 +947,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     await websocket.send_json({"type": "heartbeat"})
                     continue
                 if event.sequence and event.sequence <= last_sequence:
+                    continue
+                from .neo4j_records import visible
+                if not visible(event.payload, runtime.settings):
+                    last_sequence = event.sequence or last_sequence
                     continue
                 await websocket.send_json(visible_event(event).model_dump(mode="json"))
                 last_sequence = event.sequence or last_sequence

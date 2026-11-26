@@ -15,6 +15,7 @@ from .analytics import AnalyticsError, _json, _key
 from .database import RecordNotFound
 from .identity import AccountError, current_principal
 from .models import FileInfo, FileRole, SessionCreate, SessionRecord, new_id, utc_now
+from .neo4j_records import backend_id, require_visible, tagged
 
 
 class SaveDataset(BaseModel):
@@ -57,17 +58,18 @@ class DatasetLibrary:
     def __init__(self, runtime):
         self.runtime = runtime
         self.database = runtime.database
+        self.settings = getattr(runtime, "settings", self.database.backend_settings)
 
     def list(self):
         with self.database._connect() as db:
             rows = db.execute(
-                "SELECT metadata FROM dataset_versions WHERE owner_id IS ? ORDER BY rowid DESC",
+                "SELECT metadata FROM dataset_versions WHERE owner_id IS ? AND neo4j_visible(metadata) ORDER BY rowid DESC",
                 (_owner(),),
             )
             return [json.loads(row[0]) for row in rows]
 
     def page(self, *, offset=0, limit=20, search="", kind=None, latest=False):
-        where, args = ["v.owner_id IS ?"], [_owner()]
+        where, args = ["v.owner_id IS ?", "neo4j_visible(v.metadata)"], [_owner()]
         if search.strip():
             where.append("instr(casefold(v.name || ' ' || v.kind),?)>0")
             args.append(search.strip().casefold())
@@ -91,6 +93,7 @@ class DatasetLibrary:
         if row is None:
             raise RecordNotFound("Dataset version not found")
         metadata = json.loads(row[0])
+        require_visible(metadata, self.settings)
         return (metadata, row[1]) if content else metadata
 
     def _step_input(self, record, step):
@@ -148,6 +151,7 @@ class DatasetLibrary:
                 body.kind,
                 {
                     "type": "upload",
+                    "backend_id": file.backend_id,
                     "session_id": file.session_id,
                     "file_id": file.id,
                     "filename": file.original_name,
@@ -171,6 +175,7 @@ class DatasetLibrary:
         value = output["value"]
         source = {
             "type": "result",
+            "backend_id": record.get("backend_id"),
             "session_id": record["session_id"],
             "workflow_id": record["id"],
             "revision": record["revision"],
@@ -259,6 +264,8 @@ class DatasetLibrary:
 
     def _persist(self, db, metadata, raw, *, dataset_id=None, storage_credit=0):
         """Called inside the metadata write transaction with validated content."""
+        tagged(metadata)
+        require_visible(metadata, self.settings)
         if dataset_id:
             previous = db.execute(
                 "SELECT kind,last_version FROM dataset_catalog WHERE id=? AND owner_id IS ?",
@@ -266,6 +273,13 @@ class DatasetLibrary:
             ).fetchone()
             if previous is None:
                 raise RecordNotFound("Dataset not found")
+            retained = db.execute("SELECT metadata FROM dataset_versions WHERE dataset_id=? AND owner_id IS ? ORDER BY version DESC LIMIT 1",
+                                  (dataset_id, _owner())).fetchone()
+            if retained:
+                old = json.loads(retained[0])
+                require_visible(old, self.settings)
+                if backend_id(old) != backend_id(metadata):
+                    raise AnalyticsError("Save data from a different database backend as a new dataset.", "dataset_backend", 409)
             if previous[0] != metadata["kind"]:
                 raise AnalyticsError("A new version must keep the dataset's input kind")
             metadata["version"] = previous[1] + 1

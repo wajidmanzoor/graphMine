@@ -72,6 +72,7 @@ class DatabaseSource(Strict):
     name: str = Field(min_length=1, max_length=160)
     users: list[str] = Field(min_length=1)
     revision: int = Field(default=1, ge=1)
+    backend_id: Literal["local", "iu-remote"] | None = None
     sql_type: Literal["postgres", "sqlite"] | None = None
     sql_dsn_env: str | None = None
     sqlite_path: str | None = None
@@ -92,6 +93,11 @@ class DatabaseSource(Strict):
 
     @model_validator(mode="after")
     def mappings(self):
+        from .neo4j_backend import source_backend_id
+        expected = source_backend_id(self)
+        if self.backend_id is not None and self.backend_id != expected:
+            raise ValueError("The source backend does not match its configured endpoint")
+        self.backend_id = expected
         # Older configurations inferred PostgreSQL from the DSN reference.
         if self.sql_type is None:
             self.sql_type = "sqlite" if self.sqlite_path else "postgres" if self.sql_dsn_env else None
@@ -177,6 +183,7 @@ class DatabaseSource(Strict):
         sql = self.connection_details()
         return {
             "id": self.id,
+            "backend_id": self.backend_id,
             "name": self.name,
             "revision": self.revision,
             "mapping_hash": self.fingerprint(),
@@ -258,21 +265,23 @@ def available(settings):
     from .database_connections import managed_sources
     from .neo4j_registry import sources as registry_sources
 
+    from .neo4j_backend import active_backend_id
+    active = active_backend_id(settings)
     principal = current_principal.get()
     sources = [
         s
         for s in configured(settings)
-        if "*" in s.users or principal and principal.username in s.users
+        if s.backend_id == active and ("*" in s.users or principal and principal.username in s.users)
     ]
-    benchmarks = registry_sources(settings)
+    benchmarks = [source for source in registry_sources(settings) if source.backend_id == active]
     allowlist = settings.database_dataset_allowlist
     if allowlist:
         # The configured demo and verified registries are the only routes in
         # curated mode, including requests made directly to the query API.
-        choices = {"default": s for s in sources if s.id == "local-transfers"}
+        choices = {"default": s for s in sources if s.id == "local-transfers" or active == "iu-remote"}
         choices.update({s._catalog["id"]: s for s in benchmarks})
         return [choices[key] for key in dict.fromkeys(allowlist) if key in choices]
-    return sources + benchmarks + managed_sources(settings)
+    return sources + benchmarks + [source for source in managed_sources(settings) if source.backend_id == active]
 
 
 def get_source(settings, identifier):

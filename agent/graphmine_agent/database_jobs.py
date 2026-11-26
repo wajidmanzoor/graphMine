@@ -117,12 +117,19 @@ class DatabaseJobs:
         row = db.execute("SELECT document FROM database_jobs WHERE id=?" + (" AND owner_id=?" if owned else ""),
                          (identifier, _owner() or "") if owned else (identifier,)).fetchone()
         if row is not None:
-            return json.loads(row[0])
+            job = json.loads(row[0])
+            if owned:
+                from .neo4j_records import require_visible
+                require_visible(job, self.runtime.settings)
+            return job
         self._prune_finished()
         entry = self._finished.get(identifier)
         job = json.loads(entry[1]) if entry else None
         if job is None or owned and job["owner_id"] != (_owner() or ""):
             raise RecordNotFound("Database job not found or its temporary result has expired")
+        if owned:
+            from .neo4j_records import require_visible
+            require_visible(job, self.runtime.settings)
         return job
 
     @staticmethod
@@ -166,7 +173,7 @@ class DatabaseJobs:
             return self.public(self._row(db, identifier))
 
     def list(self, *, source_id=None, kind=None, offset=0, limit=20):
-        clauses, values = ["owner_id=?", "status IN ('queued','running','cancelling')"], [_owner() or ""]
+        clauses, values = ["owner_id=?", "status IN ('queued','running','cancelling')", "neo4j_visible(document)"], [_owner() or ""]
         if source_id is not None:
             clauses.append("source_id=?"); values.append(source_id)
         if kind is not None:
@@ -200,6 +207,7 @@ class DatabaseJobs:
         request_hash = hashlib.sha256(_json({"kind": kind, "source": source_id, "query": body}).encode()).hexdigest()
         owner, now = _owner() or "", utc_now().isoformat()
         job = {"id": new_id("database_job"), "owner_id": owner, "kind": kind, "source_id": source_id,
+               "backend_id": source.backend_id,
                "source_name": source.name, "source_fingerprint": source.fingerprint(), "query": body,
                "status": "queued", "progress": {"stage": "queued", "completed": None, "total": None},
                "cancellable": True, "created_at": now, "updated_at": now, "error": None, "result": None}

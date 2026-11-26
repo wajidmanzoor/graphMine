@@ -363,6 +363,11 @@ class JobManager:
                 self._active.pop(job.id, None)
 
     async def _execute(self, job: JobRecord) -> None:
+        from .neo4j_records import worker_backend
+        with worker_backend(job.backend_id):
+            await self._execute_admitted(job)
+
+    async def _execute_admitted(self, job: JobRecord) -> None:
         if self.accounts is None:
             return await self._execute_unlimited(job)
         try:

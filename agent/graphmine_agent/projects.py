@@ -154,7 +154,7 @@ class Projects:
             project["items"] = [
                 json.loads(row[0])
                 for row in db.execute(
-                    "SELECT metadata FROM project_items WHERE project_id=? ORDER BY rowid DESC",
+                    "SELECT metadata FROM project_items WHERE project_id=? AND neo4j_visible(metadata) ORDER BY rowid DESC",
                     (project_id,),
                 )
             ]
@@ -281,6 +281,9 @@ class Projects:
             "sha256": hashlib.sha256(raw).hexdigest(),
             "size_bytes": len(raw),
         }
+        from .neo4j_records import tagged, require_visible
+        tagged(metadata)
+        require_visible(metadata, self.runtime.settings)
         encoded = _json(metadata)
         with self.db._lock, self.db._connect() as db:
             db.execute("BEGIN IMMEDIATE")
@@ -304,7 +307,7 @@ class Projects:
     def item(self, item_id):
         with self.db._connect() as db:
             row = db.execute(
-                "SELECT * FROM project_items WHERE id=?", (item_id,)
+                "SELECT * FROM project_items WHERE id=? AND neo4j_visible(metadata)", (item_id,)
             ).fetchone()
             if row is None:
                 raise RecordNotFound("Shared item not found")
@@ -333,7 +336,7 @@ class Projects:
 
     def item_access(self, db, item_id, **permissions):
         row = db.execute(
-            "SELECT project_id FROM project_items WHERE id=?", (item_id,)
+            "SELECT project_id FROM project_items WHERE id=? AND neo4j_visible(metadata)", (item_id,)
         ).fetchone()
         if row is None:
             raise RecordNotFound("Shared item not found")
@@ -431,7 +434,7 @@ class Projects:
         with self.db._connect() as db:
             row = db.execute(
                 "SELECT i.* FROM project_links l JOIN project_items i ON i.id=l.item_id JOIN projects p ON p.id=i.project_id "
-                "JOIN accounts a ON a.id=p.owner_id WHERE l.token_hash=? AND l.expires_at>? AND a.disabled=0",
+                "JOIN accounts a ON a.id=p.owner_id WHERE l.token_hash=? AND l.expires_at>? AND a.disabled=0 AND neo4j_visible(i.metadata)",
                 (hashlib.sha256(token.encode()).hexdigest(), time.time()),
             ).fetchone()
             if row is None:

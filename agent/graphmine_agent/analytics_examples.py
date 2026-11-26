@@ -89,6 +89,7 @@ class ReviewedExamples:
             record = self.analytics.get(workflow_id)
             principal = current_principal.get()
             example = {
+                "backend_id": record.get("backend_id"),
                 "id": str(uuid4()),
                 "session_id": record["session_id"],
                 "status": "approved",
@@ -133,8 +134,10 @@ class ReviewedExamples:
     def list(self, session_id):
         self.analytics.database.get_session(session_id)
         with closing(sqlite3.connect(self.analytics.path)) as db:
+            from .neo4j_records import register_visibility
+            register_visibility(db, self.analytics.settings)
             rows = db.execute(
-                "SELECT document FROM reviewed_examples WHERE session_id=? ORDER BY id",
+                "SELECT document FROM reviewed_examples WHERE session_id=? AND neo4j_visible(document) ORDER BY id",
                 (session_id,),
             ).fetchall()
         return [json.loads(row[0]) for row in rows]
@@ -149,6 +152,8 @@ class ReviewedExamples:
             if row is None:
                 raise RecordNotFound("No such reviewed example in this workspace")
             example = json.loads(row[0])
+            from .neo4j_records import require_visible
+            require_visible(example, self.analytics.settings)
             example["status"] = "revoked"
             example["revoked_at"] = datetime.now(timezone.utc).isoformat()
             db.execute(

@@ -21,6 +21,9 @@ DATASETS = {
 
 
 def visible_ids(settings):
+    from .neo4j_backend import active_backend_id
+    if active_backend_id(settings) != "local":
+        return ()
     if not settings.database_dataset_allowlist:
         return tuple(DATASETS)
     from .neo4j_registry import ready_datasets
@@ -76,7 +79,7 @@ def describe(settings, identifier):
         expected = 2
     complete = bool(expected and len(files) >= expected)
     return {
-        "id": identifier, "name": name, "source_url": f"https://pgraphbenchweb.vercel.app/datasets/{page}.html",
+        "id": identifier, "name": name, "backend_id": "local", "source_url": f"https://pgraphbenchweb.vercel.app/datasets/{page}.html",
         "schemas": schemas, "files": files, "downloaded_files": len(files),
         "expected_files": expected, "size_bytes": sum(item["size_bytes"] for item in files),
         "status": "downloaded" if complete else "downloading" if expected else "schema_only",

@@ -58,6 +58,7 @@ def ready_datasets(settings):
             counts = state["counts"]
             result.append({
                 "id": identifier, "name": entry["name"], "status": "ready", "registry": True,
+                "backend_id": "iu-remote" if endpoint.auth_disabled else "local",
                 "graph_label": None, "schemas": [], "tables": [], "workload_url": entry["workload_url"],
                 "default_query": entry["default_query"], "bolt_uri": endpoint.uri,
                 "password_env": entry.get("password_env"), "auth_disabled": endpoint.auth_disabled,

@@ -107,6 +107,7 @@ class GraphMetadata(StrictModel):
 
 
 class StoredFile(StrictModel):
+    backend_id: Literal["local", "iu-remote"] | None = None
     id: str = Field(default_factory=lambda: new_id("file"))
     session_id: str
     role: FileRole
@@ -123,6 +124,8 @@ class StoredFile(StrictModel):
 
 class FileInfo(StrictModel):
     """Public file metadata; server-local workspace paths never cross the API."""
+
+    backend_id: Literal["local", "iu-remote"] | None = None
 
     id: str
     session_id: str
@@ -564,6 +567,7 @@ class FeedbackRecord(FeedbackCreate):
 
 
 class JobRecord(StrictModel):
+    backend_id: Literal["local", "iu-remote"] | None = None
     id: str = Field(default_factory=lambda: new_id("job"))
     session_id: str
     plan: ExecutionPlan
@@ -581,6 +585,7 @@ class JobRecord(StrictModel):
 
 
 class ResultRecord(StrictModel):
+    backend_id: Literal["local", "iu-remote"] | None = None
     id: str = Field(default_factory=lambda: new_id("result"))
     job_id: str
     session_id: str
@@ -603,6 +608,7 @@ class ConversationEvent(StrictModel):
 
 
 class ConversationEventPage(StrictModel):
+    active_backend: Literal["local", "iu-remote"] | None = None
     events: list[ConversationEvent]
     after: int
     last_sequence: int

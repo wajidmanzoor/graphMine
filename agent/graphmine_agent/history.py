@@ -191,6 +191,9 @@ class HistoryStore:
                 "created_at": event["timestamp"],
                 "kind": kind,
             }
+            from .neo4j_records import backend_id
+            if backend_id(data):
+                row["backend_id"] = backend_id(data)
             if kind in {"chat.request", "feedback_command.request"}:
                 rows.append({**row, "role": "user", "message": data["message"]})
             elif kind in {"chat.response", "feedback_command.response"}:

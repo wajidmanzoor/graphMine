@@ -13,6 +13,7 @@ from .neo4j_registry import ready_datasets
 def default_dataset(source):
     return {
         "id": "default",
+        "backend_id": source.backend_id,
         "name": ("Transfers demo" if source.id == "local-transfers" else "Mapped graph") if source.entities else "Neo4j graph",
         "status": "ready", "graph_label": None, "schemas": [],
         "tables": [

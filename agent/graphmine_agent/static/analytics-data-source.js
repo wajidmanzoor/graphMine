@@ -26,10 +26,12 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const currentMount = ++mounting, epoch = state.epoch;
     opening = true;
     const currentFile = state.files.find(f => f.id === state.active) || [...state.files].reverse().find(f => f.provenance?.kind === "table");
-    let drafts;
+    let drafts, initialInventory;
     try {
       await window.GraphMineAccount?.ready;
-      drafts = await window.GraphMineQueryDrafts({base: state.base, token: state.token, userId: window.GraphMineAccount?.user?.id, conversationId: state.session?.id || "new", inputId: currentFile?.id || state.active});
+      try { initialInventory = await api("/api/data-sources"); }
+      catch (error) { if (error.status !== 404) throw error; initialInventory = {active_backend: "local", items: (await api("/api/database-sources")).map(connection => ({provider: "database", connection})), warnings: []}; }
+      drafts = await window.GraphMineQueryDrafts({base: state.base, token: state.token, userId: window.GraphMineAccount?.user?.id, conversationId: state.session?.id || "new", inputId: currentFile?.id || state.active, backendId: initialInventory.active_backend || "local"});
     } catch (error) { if (currentMount === mounting) { opening = false; notice(error.message, true); } return; }
     if (currentMount !== mounting || epoch !== state.epoch || state.view !== "data") return;
     const draftSelection = drafts.selection();
@@ -429,7 +431,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       discoveryPending = true; setBusy(busy);
       try {
         let response;
-        try { response = await api("/api/data-sources", {signal: readController.signal}); }
+        try { response = initialInventory || await api("/api/data-sources", {signal: readController.signal}); initialInventory = null; }
         catch (error) {
           if (error.status !== 404) throw error;
           const entries = await api("/api/database-sources", {signal: readController.signal});

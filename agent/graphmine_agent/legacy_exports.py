@@ -35,6 +35,8 @@ def answer_report(runtime, result_id):
 
 
 def history_archive(runtime, session_id):
+    from .neo4j_records import require_history_visible
+    require_history_visible(runtime, session_id)
     database, history = runtime.database, runtime.database.history
     database.get_session(session_id)
     # Snapshot existing source views on the preparation worker. The original
@@ -57,7 +59,7 @@ def history_archive(runtime, session_id):
                 for path in sorted(directory.rglob("*")):
                     if path.is_file() and path.resolve().is_relative_to(directory.resolve()) and not is_workflow_index(path):
                         bundle.write(path, f"{session_id}/analytics/{directory.name}/{path.relative_to(directory)}")
-        database.get_session(session_id)
+        require_history_visible(runtime, session_id)
         return output
     except BaseException:
         output.close(); raise

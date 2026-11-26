@@ -211,6 +211,8 @@ class AnalyticsService:
             from .workflow_index import initialize
 
             initialize(db)
+        from .neo4j_records import migrate_workflows
+        migrate_workflows(self)
         from .analytics_examples import ReviewedExamples
 
         self.examples = ReviewedExamples(self)
@@ -282,7 +284,8 @@ class AnalyticsService:
 
             return summaries(self, session_id)
         self.database.get_session(session_id)
-        return self._all(session_id)
+        from .neo4j_records import visible
+        return [record for record in self._all(session_id) if visible(record, self.settings)]
 
     def get(self, workflow_id):
         with closing(sqlite3.connect(self.path)) as db:
@@ -293,18 +296,27 @@ class AnalyticsService:
             raise RecordNotFound(f"Workflow {workflow_id} not found")
         record = json.loads(row[0])
         self.database.get_session(record["session_id"])
+        from .neo4j_records import require_visible
+        require_visible(record, self.settings)
         return saved_mode(record)
 
     def _save(self, record):
         from .workflow_compat import saved_workflow
 
         record = saved_workflow(record)
+        from .neo4j_records import backend_id
+        record["backend_id"] = backend_id({"input_provenance": record.get("input_provenance", {})})
         record["updated_at"] = _now()
         with closing(sqlite3.connect(self.path)) as db, db:
             db.execute(
                 "INSERT INTO workflows VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET document=excluded.document",
                 (record["id"], record["session_id"], _json(record)),
             )
+        with self.database._connect() as db:
+            if record.get("backend_id"):
+                db.execute("INSERT OR REPLACE INTO neo4j_workflow_backends VALUES (?,?)", (record["id"], record["backend_id"]))
+            else:
+                db.execute("DELETE FROM neo4j_workflow_backends WHERE id=?", (record["id"],))
         if self.database.capture:
             self.database.capture.workflow(record)
 
@@ -322,6 +334,11 @@ class AnalyticsService:
         temporary = path.with_suffix(path.suffix + ".tmp")
         temporary.write_bytes(raw)
         temporary.replace(path)
+        if path.name == "result.json" or path.name.startswith("step-"):
+            with closing(sqlite3.connect(self.path)) as db, db:
+                row = db.execute("SELECT json_extract(document,'$.backend_id') FROM workflows WHERE id=?", (path.parent.parent.name,)).fetchone()
+                if row and row[0]:
+                    db.execute("INSERT OR REPLACE INTO neo4j_result_backends VALUES (?,?)", (str(path.relative_to(self.root)), row[0]))
 
     def _inputs(self, session_id, references):
         self.database.get_session(session_id)
@@ -388,6 +405,7 @@ class AnalyticsService:
         return {
             alias: {
                 **file.provenance,
+                "backend_id": file.backend_id,
                 "file_id": file.id,
                 "sha256": file.sha256,
                 "file_snapshot": {
@@ -1117,6 +1135,15 @@ class AnalyticsService:
         return cache
 
     async def _execute(self, workflow_id, admission=None):
+        from .neo4j_records import worker_backend
+        with closing(sqlite3.connect(self.path)) as db:
+            row = db.execute("SELECT document FROM workflows WHERE id=?", (workflow_id,)).fetchone()
+        if row is None:
+            raise RecordNotFound("Workflow not found")
+        with worker_backend(json.loads(row[0]).get("backend_id")):
+            return await self._execute_admitted(workflow_id, admission)
+
+    async def _execute_admitted(self, workflow_id, admission=None):
         record = self.get(workflow_id)
         directory = self._directory(record)
         try:
@@ -1471,7 +1498,10 @@ class AnalyticsService:
         """Share immutable parses only while their byte budget permits."""
         from .workflow_compat import saved_result
 
-        return saved_result(self.result_cache.read(path, self.settings.max_result_bytes))
+        value = saved_result(self.result_cache.read(path, self.settings.max_result_bytes))
+        with closing(sqlite3.connect(self.path)) as db:
+            row = db.execute("SELECT backend_id FROM neo4j_result_backends WHERE artifact=?", (str(path.relative_to(self.root)),)).fetchone()
+        return {**value, "backend_id": row[0]} if row else value
 
     def result_summary(self, workflow_id, limit=SUMMARY_ITEMS, *, expected_revision=None):
         """Read a bounded summary from the saved artifact's row index."""

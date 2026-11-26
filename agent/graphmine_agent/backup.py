@@ -223,6 +223,12 @@ def online_snapshot(data_root: Path, destination: Path) -> dict:
         for name in ONLINE_DIRECTORIES:
             if (source / name).is_dir():
                 _copy_files(source / name, destination / "data" / name, skip=skip)
+        # Restore the selected workspace alongside its preserved backend tags.
+        # Power ownership is shared host state and must never be restored here.
+        selection = source / "neo4j_backend.json"
+        if selection.is_file():
+            shutil.copyfile(selection, destination / "data" / selection.name)
+            (destination / "data" / selection.name).chmod(0o600)
         (destination / "data" / "history").mkdir(
             parents=True, exist_ok=True, mode=0o700
         )
