@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "checked_at_utc": "2026-11-26T20:17:42Z",
+  "conflict_checks_empty": true,
+  "configuration_uid": 0,
+  "configuration_gid": 0,
+  "configuration_mode": "0o600",
+  "wg_show": "interface: wg-iu\n  public key: sNhbYbgw0hOtGG9dsqEHxJuaxhB7ocHTls9XIrO6nz0=\n  private key: (hidden)\n  listening port: 51491\n\npeer: mWAQABbOR+Ev/78Aq28zqQpcFt3l7k+Qaf0sbKysXmw=\n  preshared key: (hidden)\n  endpoint: 149.165.170.197:51820\n  allowed ips: 10.66.0.0/24, 10.2.147.0/24\n  latest handshake: Now\n  transfer: 188 B received, 468 B sent\n  persistent keepalive: every 25 seconds",
+  "recent_handshake": true,
+  "allowed_subnets": [
+    "10.2.147.0/24",
+    "10.66.0.0/24"
+  ],
+  "routes": [
+    {
+      "dst": "10.2.147.0/24",
+      "scope": "link",
+      "flags": []
+    },
+    {
+      "dst": "10.66.0.0/24",
+      "scope": "link",
+      "flags": []
+    },
+    {
+      "type": "local",
+      "dst": "10.66.0.8",
+      "table": "local",
+      "protocol": "kernel",
+      "scope": "host",
+      "prefsrc": "10.66.0.8",
+      "flags": []
+    },
+    {
+      "type": "multicast",
+      "dst": "ff00::/8",
+      "table": "local",
+      "protocol": "kernel",
+      "metric": 256,
+      "flags": [],
+      "pref": "medium"
+    }
+  ],
+  "default_route_before": "default via 10.33.76.1 dev eno1np0 proto dhcp src 10.33.76.25 metric 100",
+  "default_route_after": "default via 10.33.76.1 dev eno1np0 proto dhcp src 10.33.76.25 metric 100",
+  "dns_unchanged": true,
+  "enabled_at_boot": "enabled",
+  "bolt_exit_code": 0,
+  "bolt_output": "Connection to 10.2.147.169 7689 port [tcp/*] succeeded!"
+}
