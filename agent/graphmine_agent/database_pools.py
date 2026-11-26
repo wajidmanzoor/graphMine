@@ -69,6 +69,7 @@ class _Resource:
 
 class DatabasePools:
     def __init__(self, settings):
+        self.settings = settings
         self.limit = settings.database_pool_limit
         self.size = settings.database_pool_size
         self.wait_seconds = settings.database_pool_wait_seconds

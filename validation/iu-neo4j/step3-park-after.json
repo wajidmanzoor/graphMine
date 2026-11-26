@@ -1,0 +1,67 @@
+{
+  "checked_at": "2026-11-26T21:07:33.009026+00:00",
+  "park_exit_code": 0,
+  "services": {
+    "units": [
+      {
+        "unit": "graphmine-neo4j-browser.service",
+        "active": "inactive",
+        "enabled": "disabled",
+        "rss_bytes": 0
+      },
+      {
+        "unit": "graphmine-neo4j-ldbc-snb.service",
+        "active": "inactive",
+        "enabled": "disabled",
+        "rss_bytes": 0
+      },
+      {
+        "unit": "graphmine-neo4j-movielens-32m.service",
+        "active": "inactive",
+        "enabled": "disabled",
+        "rss_bytes": 0
+      },
+      {
+        "unit": "graphmine-neo4j-movielens-genome.service",
+        "active": "inactive",
+        "enabled": "disabled",
+        "rss_bytes": 0
+      },
+      {
+        "unit": "graphmine-neo4j-ontime.service",
+        "active": "inactive",
+        "enabled": "disabled",
+        "rss_bytes": 0
+      },
+      {
+        "unit": "graphmine-neo4j-transfers-demo.service",
+        "active": "inactive",
+        "enabled": "disabled",
+        "rss_bytes": 0
+      },
+      {
+        "unit": "graphmine-neo4j-yelp.service",
+        "active": "inactive",
+        "enabled": "disabled",
+        "rss_bytes": 0
+      },
+      {
+        "unit": "graphmine-neo4j.service",
+        "active": "inactive",
+        "enabled": "disabled",
+        "rss_bytes": 0
+      }
+    ],
+    "rss_bytes": 0
+  },
+  "list_units": "  UNIT LOAD ACTIVE SUB DESCRIPTION\n\n0 loaded units listed.\nTo show all installed unit files use 'systemctl list-unit-files'.\n",
+  "list_unit_files": "UNIT FILE                                STATE    PRESET\ngraphmine-neo4j-browser.service          disabled enabled\ngraphmine-neo4j-ldbc-snb.service         disabled enabled\ngraphmine-neo4j-movielens-32m.service    disabled enabled\ngraphmine-neo4j-movielens-genome.service disabled enabled\ngraphmine-neo4j-ontime.service           disabled enabled\ngraphmine-neo4j-transfers-demo.service   disabled enabled\ngraphmine-neo4j-yelp.service             disabled enabled\n\n7 unit files listed.\n",
+  "legacy_unit": "MainPID=0\nActiveState=inactive\nUnitFileState=disabled\n",
+  "free_h": "               total        used        free      shared  buff/cache   available\nMem:           251Gi        76Gi       112Gi        55Gi       119Gi       174Gi\nSwap:          8.0Gi        14Mi       8.0Gi\n",
+  "persisted_backend": "iu-remote",
+  "selection_file": "/data/labdata/wajid/graphmine_data/store/neo4j_backend.json",
+  "browser_launcher": ".database-workspace/deployment/neo4j-browser-proxy.py",
+  "preserved_browser_launcher": ".database-workspace/deployment/neo4j-browser-proxy.pre-iu-backend.py",
+  "preserved_browser_launcher_sha256": "4a9b87b4e0f199473f94fe61269a409a1b8a23a9ed4e1810d66f3ddd5f83064e",
+  "browser_unit_note": "Original definition retained; identical regular unit installed disabled after systemd removed its old registration symlink."
+}

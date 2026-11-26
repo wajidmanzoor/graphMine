@@ -17,6 +17,7 @@ import httpx
 from . import admin_settings
 from .admin_summary import percentile
 from .identity import AccountError
+from .errors import AnalyticsError
 from .llm_power import server_root
 
 
@@ -270,16 +271,29 @@ class Monitor:
                       ("tunnel-graphmine", "Cloudflare · GraphMine", lambda: self.http_check(os.getenv("GRAPHMINE_PUBLIC_URL"))),
                       ("tunnel-studio", "Cloudflare · Studio", lambda: self.http_check(os.getenv("GRAPHMINE_STUDIO_PUBLIC_URL")))]
             try:
+                from .database import RecordNotFound
                 from .database_sources import configured, source_secret
-                from .neo4j_registry import sources
-                inventory = configured(self.runtime.settings) + sources(self.runtime.settings)
+                from .neo4j_backend import get_active_neo4j
+                backend = get_active_neo4j(self.runtime.settings)
+                seen = set()
+                for endpoint in backend.endpoints:
+                    checks.append(("neo4j-" + endpoint.identifier, "Neo4j · " + endpoint.identifier,
+                                   lambda e=endpoint: self.tcp(e.uri, e.address[1])))
+                    seen.add(endpoint.uri)
+                inventory = configured(self.runtime.settings)
                 for source in inventory:
-                    if source.neo4j_uri:
-                        checks.append(("neo4j-" + source.id, "Neo4j · " + source.name, lambda s=source: self.tcp(s.neo4j_uri, 7687)))
+                    try:
+                        endpoint = get_active_neo4j(self.runtime.settings, source).connection
+                    except RecordNotFound:
+                        endpoint = None
+                    if endpoint is not None and endpoint.uri not in seen:
+                        checks.append(("neo4j-" + source.id, "Neo4j · " + source.name,
+                                       lambda e=endpoint: self.tcp(e.uri, e.address[1])))
+                        seen.add(endpoint.uri)
                     if source.sql_type == "postgres":
                         dsn = source_secret(source, source.sql_dsn_env)
                         checks.append(("postgres-" + source.id, "Postgres · " + source.name, lambda uri=dsn: self.tcp(uri, 5432)))
-            except (ValueError, OSError, AccountError):
+            except (ValueError, OSError, AccountError, AnalyticsError):
                 checks.append(("database-registry", "Database registry", lambda: self._unavailable("Database inventory is unavailable")))
             if not any(k.startswith("neo4j-") for k, _, _ in checks):
                 checks.append(("neo4j", "Neo4j datasets", lambda: self._unavailable("No Neo4j datasets are configured")))

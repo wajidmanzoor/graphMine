@@ -25,6 +25,7 @@ from urllib.parse import urlsplit
 from .analytics import AnalyticsError, _json
 from .database import RecordNotFound
 from .identity import current_principal
+from .neo4j_backend import get_active_neo4j, source_details, source_origin
 
 IDENTIFIER = r"^[A-Za-z_][A-Za-z0-9_]*$"
 MAX_SOURCE_ROWS = 100_000
@@ -60,6 +61,7 @@ class DatabaseSource(Strict):
     _sql_credentials: dict = PrivateAttr(default_factory=dict)
     _neo4j_password: str | None = PrivateAttr(default=None)
     _network_settings: object = PrivateAttr(default=None)
+    _backend_settings: object = PrivateAttr(default=None)
     _catalog: dict = PrivateAttr(default_factory=dict)
     _config_stamp: tuple | None = PrivateAttr(default=None)
     _managed: bool = PrivateAttr(default=False)
@@ -156,8 +158,7 @@ class DatabaseSource(Strict):
                 "sql_type": self.sql_type,
                 "sql_dsn_env": self.sql_dsn_env,
                 "sqlite_path": self.sqlite_path,
-                "neo4j_uri": self.neo4j_uri,
-                "neo4j_database": self.neo4j_database,
+                **source_origin(self),
             },
             "entities": [m.model_dump() for m in self.entities],
             "relationships": [m.model_dump() for m in self.relationships],
@@ -210,18 +211,9 @@ class DatabaseSource(Strict):
                 sql = {}
         if self.sql_type == "sqlite":
             sql = {"database": Path(self.sqlite_path).name}
-        parsed = urlsplit(self.neo4j_uri)
-        host = parsed.hostname or ""
-        if ":" in host:
-            host = f"[{host}]"
         return {
             "sql": {"type": self.sql_type, **sql} if self.sql_type else None,
-            "neo4j": {
-                "uri": f"{parsed.scheme}://{host}"
-                + (f":{parsed.port}" if parsed.port else ""),
-                "database": self.neo4j_database,
-                "username": self.neo4j_username,
-            },
+            "neo4j": source_details(self),
         }
 
 
@@ -244,6 +236,7 @@ def configured(settings):
         if len(sources) > 100 or len({s.id for s in sources}) != len(sources):
             raise ValueError("Invalid source inventory")
         for source in sources:
+            source._backend_settings = settings
             source._config_stamp = (path, info.st_ino, info.st_mtime_ns, info.st_size)
             source._credentials_file = settings.database_credentials_file
         return sources
@@ -620,26 +613,18 @@ def neo4j_session(source, *, write=False):
             "database_driver",
             503,
         ) from exc
-    user = (
-        (source.neo4j_writer_username or source.neo4j_username)
-        if write
-        else source.neo4j_username
-    )
-    password = (
-        source.neo4j_writer_password_env
-        if write and source.neo4j_writer_password_env
-        else source.neo4j_password_env
-    )
     from .database_pools import current_database_pools, resource
     from .identity import identity_scope
 
-    credential = source._neo4j_password or source_secret(source, password)
+    backend = get_active_neo4j(source=source, write=write)
+    endpoint = backend.connection
+    credential = endpoint.auth
     options, address_key = {}, None
     if source._network_settings is not None:
         from .database_connections import network_address
         settings, principal = source._network_settings, current_principal.get()
-        target = urlsplit(source.neo4j_uri)
-        address_key = network_address(settings, target.hostname, target.port or 7687)
+        host, port = endpoint.address
+        address_key = network_address(settings, host, port)
         # Check and pin every routing address, including discovered cluster hosts.
         def resolver(address):
             with identity_scope(principal):
@@ -647,12 +632,12 @@ def neo4j_session(source, *, write=False):
 
         options["resolver"] = resolver
     pools = current_database_pools.get()
-    signature = [source.neo4j_uri, source.neo4j_database, user, credential, address_key]
+    signature = [backend.id, endpoint.uri, endpoint.database, credential, address_key]
 
     def create():
         return GraphDatabase.driver(
-            source.neo4j_uri,
-            auth=(user, credential),
+            endpoint.uri,
+            auth=credential,
             connection_timeout=5,
             connection_acquisition_timeout=pools.wait_seconds if pools else 10,
             max_connection_pool_size=pools.size if pools else 4,
@@ -664,7 +649,7 @@ def neo4j_session(source, *, write=False):
     with (
         resource(source, "neo4j-write" if write else "neo4j-read", signature, create) as driver,
         driver.session(
-            database=source.neo4j_database,
+            database=endpoint.database,
             default_access_mode=WRITE_ACCESS if write else READ_ACCESS,
         ) as session,
     ):

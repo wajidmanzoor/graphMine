@@ -23,12 +23,14 @@ from test_database_connections import pair  # noqa: F401
 
 
 @pytest.fixture
-def source(monkeypatch):
+def source(monkeypatch, settings):
     monkeypatch.setenv("POOL_READER", "reader-secret")
     monkeypatch.setenv("POOL_WRITER", "writer-secret")
-    return DatabaseSource(id="source", name="Research", users=["*"], sql_dsn_env="POOL_SQL",
+    value = DatabaseSource(id="source", name="Research", users=["*"], sql_dsn_env="POOL_SQL",
                           neo4j_uri="bolt://graph.example", neo4j_username="reader", neo4j_password_env="POOL_READER",
                           neo4j_writer_username="writer", neo4j_writer_password_env="POOL_WRITER")
+    value._backend_settings = settings
+    return value
 
 
 @pytest.fixture

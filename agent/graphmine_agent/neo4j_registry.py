@@ -8,6 +8,7 @@ import shlex
 from urllib.parse import urlsplit
 
 from .analytics import AnalyticsError
+from .neo4j_backend import registry_endpoint, registry_fields
 
 
 def read_json(path, limit=1024 * 1024):
@@ -32,10 +33,8 @@ def ready_datasets(settings):
             if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,47}", identifier) or identifier in identifiers:
                 raise ValueError("Invalid or duplicate dataset ID")
             identifiers.add(identifier)
-            uri, workload = urlsplit(entry["bolt_uri"]), urlsplit(entry["workload_url"])
-            if (uri.scheme != "bolt" or uri.hostname not in {"127.0.0.1", "::1", "localhost"}
-                    or not uri.port or uri.username or uri.password or uri.path or uri.query or uri.fragment
-                    or workload.scheme != "https" or workload.hostname != "pgraphbenchweb.vercel.app"
+            endpoint, workload = registry_endpoint(entry), urlsplit(entry["workload_url"])
+            if (workload.scheme != "https" or workload.hostname != "pgraphbenchweb.vercel.app"
                     or not re.fullmatch(r"GRAPHMINE_NEO4J_[A-Z0-9_]+_PASSWORD", entry["password_env"])):
                 raise ValueError("Invalid benchmark connection metadata")
             directory = root / identifier
@@ -59,7 +58,7 @@ def ready_datasets(settings):
             result.append({
                 "id": identifier, "name": entry["name"], "status": "ready", "registry": True,
                 "graph_label": None, "schemas": [], "tables": [], "workload_url": entry["workload_url"],
-                "default_query": entry["default_query"], "bolt_uri": entry["bolt_uri"], "password_env": entry["password_env"],
+                "default_query": entry["default_query"], "bolt_uri": endpoint.uri, "password_env": entry["password_env"],
                 "node_count": counts["total_nodes"], "relationship_count": counts["total_relationships"],
                 "label_counts": counts["nodes"], "relationship_counts": counts["relationships"],
                 "load_finished_at": state["load_finished_at"], "load_seconds": state["load_seconds"],
@@ -76,7 +75,8 @@ def sources(settings):
     result = []
     for entry in ready_datasets(settings):
         source = DatabaseSource(id="benchmark-" + entry["id"], name=entry["name"], users=["*"],
-                                neo4j_uri=entry["bolt_uri"], neo4j_password_env=entry["password_env"])
+                                **registry_fields(entry))
+        source._backend_settings = settings
         source._catalog = {key: entry[key] for key in ("id", "registry", "load_finished_at", "load_seconds", "script_hashes", "workload_url")}
         source._registry_password_file = settings.neo4j_datasets_password_file
         result.append(source)

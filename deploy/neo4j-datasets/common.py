@@ -10,11 +10,14 @@ import os
 from pathlib import Path
 import re
 import shlex
+import sys
 
 from source_pages import DATASETS, audit
 
 
 REPOSITORY = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPOSITORY / "agent"))
+from graphmine_agent.neo4j_backend import deployment_settings, get_active_neo4j, local_uri
 SOURCE_ROOT = Path(__file__).resolve().parent
 LAB_ROOT = Path(os.environ.get("GRAPHMINE_LAB_DATA_ROOT", "/data/labdata/wajid/graphmine_data"))
 INSTANCE_ROOT = LAB_ROOT / "neo4j-instances"
@@ -51,7 +54,7 @@ def definition(slug):
     if slug not in ORDER:
         raise ValueError("Unknown dataset")
     index = ORDER.index(slug) + 1
-    return {"id": slug, "name": DATASETS[slug][0], "bolt_uri": f"bolt://127.0.0.1:{17700 + index}",
+    return {"id": slug, "name": DATASETS[slug][0], "bolt_uri": local_uri(17700 + index),
             "http_port": 17400 + index, "bolt_port": 17700 + index,
             "password_env": "GRAPHMINE_NEO4J_" + slug.upper().replace("-", "_") + "_PASSWORD",
             "workload_url": f"https://pgraphbenchweb.vercel.app/workloads/{DATASETS[slug][1]}-neo4j.html",
@@ -138,11 +141,14 @@ def verify_inputs(slug, *, content=True):
     return proof
 
 
-def driver(slug):
+def driver(slug, *, secret=None, connection_timeout=10):
     from neo4j import GraphDatabase
 
-    return GraphDatabase.driver(definition(slug)["bolt_uri"], auth=("neo4j", password(slug)),
-                                connection_timeout=10, max_connection_pool_size=4)
+    endpoint = get_active_neo4j(deployment_settings(REPOSITORY, password_file=PASSWORD_FILE),
+        target="local", local_record=definition(slug),
+        credentials=("neo4j", secret or password(slug))).connection
+    return GraphDatabase.driver(endpoint.uri, auth=endpoint.auth,
+                                connection_timeout=connection_timeout, max_connection_pool_size=4)
 
 
 def graph_counts(session):

@@ -1,0 +1,51 @@
+{
+  "units": [
+    {
+      "unit": "graphmine-neo4j-ldbc-snb.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-movielens-32m.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-movielens-genome.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-ontime.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-transfers-demo.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-yelp.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    }
+  ],
+  "rss_bytes": 0,
+  "rss_before_bytes": 18501095424,
+  "rss_after_bytes": 0,
+  "rss_freed_bytes": 18501095424
+}
+RSS freed: 18501095424 bytes (ps before: 18501095424; after: 0)

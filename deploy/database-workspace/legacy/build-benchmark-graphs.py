@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -23,6 +24,8 @@ from benchmark_import import ROOT, NAMES, postgres, publish_catalog, write_json,
 from benchmark_parquet import source_signature, write_parquet
 
 BRANCH = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(BRANCH / "agent"))
+from graphmine_agent.neo4j_backend import deployment_settings, get_active_neo4j, legacy_local_record
 NEO_HOME = Path(os.environ.get("GRAPHMINE_NEO4J_HOME", BRANCH / ".database-workspace" / "neo4j-community-5.26.32"))
 NEO_ROOT = Path(os.environ.get("GRAPHMINE_NEO4J_ROOT", ROOT / "databases" / "neo4j"))
 STAGING = NEO_ROOT / "benchmark-build"
@@ -59,10 +62,10 @@ def restore_installed_catalog(receipt):
 
 
 def driver():
-    return GraphDatabase.driver(
-        f"bolt://127.0.0.1:{os.environ.get('GRAPHMINE_DEMO_BOLT_PORT', '17687')}",
-        auth=("neo4j", os.environ["GRAPHMINE_DEMO_NEO4J_PASSWORD"]),
-    )
+    endpoint = get_active_neo4j(deployment_settings(BRANCH), target="local",
+        local_record=legacy_local_record(),
+        credentials=("neo4j", os.environ["GRAPHMINE_DEMO_NEO4J_PASSWORD"])).connection
+    return GraphDatabase.driver(endpoint.uri, auth=endpoint.auth)
 
 
 def save_demo():

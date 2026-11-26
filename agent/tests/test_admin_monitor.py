@@ -106,6 +106,42 @@ def test_health_hanging_services_timeout_in_parallel_and_cache(console, monkeypa
     assert client.get("/api/admin/badges", headers=admin).json()["health"] >= 8
 
 
+@pytest.mark.parametrize("backend, expected", [
+    ("local", {("bolt://127.0.0.1:17701", 17701), ("bolt://127.0.0.1:17700", 17700)}),
+    ("iu-remote", {("bolt://10.2.147.169:7689", 7689)}),
+])
+def test_health_probes_only_active_backend_and_keeps_configured_local_demo(console, tmp_path, monkeypatch, backend, expected):
+    from graphmine_agent.neo4j_backend import set_active_backend
+    client, _, admin, _ = console
+    registry, sources = tmp_path / "registry.json", tmp_path / "sources.json"
+    registry.write_text(json.dumps({"version": 1, "datasets": [
+        {"id": "yelp", "bolt_uri": "bolt://127.0.0.1:17701"},
+    ]}))
+    sources.write_text(json.dumps([{
+        "id": "local-transfers", "name": "Transfers", "users": ["*"],
+        "neo4j_uri": "bolt://127.0.0.1:17700", "neo4j_password_env": "UNUSED",
+    }]))
+    sources.chmod(0o600)
+    monitor = client.app.state.admin_monitor
+    monitor.runtime.settings = replace(monitor.runtime.settings,
+        neo4j_datasets_registry=registry, database_sources_file=sources)
+    set_active_backend(monitor.runtime.settings, backend)
+    probed = []
+
+    async def tcp(uri, port):
+        probed.append((uri, port))
+        return {"status": "healthy"}
+
+    async def probe(key, name, work):
+        result = await work() if key.startswith("neo4j-") else {"status": "unavailable"}
+        return {"id": key, "name": name, "checked_at": 0, **result}
+
+    monkeypatch.setattr(monitor, "tcp", tcp)
+    monkeypatch.setattr(monitor, "probe", probe)
+    assert client.get("/api/admin/health?refresh=true", headers=admin).status_code == 200
+    assert set(probed) == expected
+
+
 def test_incidents_warning_delay_recovery_and_restart_persistence(console):
     client, _, _, _ = console
     monitor = client.app.state.admin_monitor

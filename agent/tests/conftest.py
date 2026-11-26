@@ -67,7 +67,7 @@ def fake_binary(tmp_path: Path) -> Path:
 @pytest.fixture
 def settings(tmp_path: Path, fake_binary: Path) -> Settings:
     base = Settings.from_env(REPOSITORY_ROOT)
-    return replace(
+    configured = replace(
         base,
         accounts_enabled=False,
         # Capture tests enable it; it would snapshot the source tree per app.
@@ -82,6 +82,11 @@ def settings(tmp_path: Path, fake_binary: Path) -> Settings:
         max_upload_bytes=1_000_000,
         job_timeout_seconds=10,
     )
+    # Existing database fixtures represent the retained local backend. New
+    # backend tests use fresh stores to exercise the production IU default.
+    from graphmine_agent.neo4j_backend import set_active_backend
+    set_active_backend(configured, "local")
+    return configured
 
 
 @pytest.fixture

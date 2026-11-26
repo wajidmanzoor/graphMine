@@ -74,14 +74,11 @@ def validate_memory_budget():
 
 
 def wait_ready(slug, secret, seconds=120):
-    from neo4j import GraphDatabase
-
-    definition = common.definition(slug)
     deadline = time.monotonic() + seconds
     last = "not started"
     while time.monotonic() < deadline:
         try:
-            with GraphDatabase.driver(definition["bolt_uri"], auth=("neo4j", secret), connection_timeout=3) as driver:
+            with common.driver(slug, secret=secret, connection_timeout=3) as driver:
                 with driver.session(database="neo4j") as session:
                     nodes = session.run("MATCH (n) RETURN count(n) AS count").single()["count"]
                     relationships = session.run("MATCH ()-[r]->() RETURN count(r) AS count").single()["count"]

@@ -1,0 +1,56 @@
+{
+  "units": [
+    {
+      "unit": "graphmine-neo4j-browser.service",
+      "active": "active",
+      "enabled": "enabled",
+      "rss_bytes": 44523520
+    },
+    {
+      "unit": "graphmine-neo4j-ldbc-snb.service",
+      "active": "active",
+      "enabled": "enabled",
+      "rss_bytes": 2496520192
+    },
+    {
+      "unit": "graphmine-neo4j-movielens-32m.service",
+      "active": "active",
+      "enabled": "enabled",
+      "rss_bytes": 2165051392
+    },
+    {
+      "unit": "graphmine-neo4j-movielens-genome.service",
+      "active": "active",
+      "enabled": "enabled",
+      "rss_bytes": 2642501632
+    },
+    {
+      "unit": "graphmine-neo4j-ontime.service",
+      "active": "inactive",
+      "enabled": "disabled",
+      "rss_bytes": 0
+    },
+    {
+      "unit": "graphmine-neo4j-transfers-demo.service",
+      "active": "active",
+      "enabled": "enabled",
+      "rss_bytes": 1506684928
+    },
+    {
+      "unit": "graphmine-neo4j-yelp.service",
+      "active": "active",
+      "enabled": "enabled",
+      "rss_bytes": 2632003584
+    },
+    {
+      "unit": "graphmine-neo4j.service",
+      "active": "active",
+      "enabled": "enabled",
+      "rss_bytes": 6933856256
+    }
+  ],
+  "rss_bytes": 18421141504,
+  "checked_at": "2026-11-26T20:56:32.975634+00:00",
+  "operation": "status only; parking not yet authorized",
+  "free_h": "               total        used        free      shared  buff/cache   available\nMem:           251Gi        93Gi        94Gi        55Gi       119Gi       157Gi\nSwap:          8.0Gi        14Mi       8.0Gi\n"
+}

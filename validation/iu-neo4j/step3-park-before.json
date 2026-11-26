@@ -1,0 +1,58 @@
+{
+  "checked_at": "2026-11-26T21:03:12.432696+00:00",
+  "authorization": "User confirmed: park local neo4j yes",
+  "services": {
+    "units": [
+      {
+        "unit": "graphmine-neo4j-browser.service",
+        "active": "active",
+        "enabled": "enabled",
+        "rss_bytes": 44523520
+      },
+      {
+        "unit": "graphmine-neo4j-ldbc-snb.service",
+        "active": "active",
+        "enabled": "enabled",
+        "rss_bytes": 2518777856
+      },
+      {
+        "unit": "graphmine-neo4j-movielens-32m.service",
+        "active": "active",
+        "enabled": "enabled",
+        "rss_bytes": 2187190272
+      },
+      {
+        "unit": "graphmine-neo4j-movielens-genome.service",
+        "active": "active",
+        "enabled": "enabled",
+        "rss_bytes": 2664603648
+      },
+      {
+        "unit": "graphmine-neo4j-ontime.service",
+        "active": "inactive",
+        "enabled": "disabled",
+        "rss_bytes": 0
+      },
+      {
+        "unit": "graphmine-neo4j-transfers-demo.service",
+        "active": "active",
+        "enabled": "enabled",
+        "rss_bytes": 1509826560
+      },
+      {
+        "unit": "graphmine-neo4j-yelp.service",
+        "active": "active",
+        "enabled": "enabled",
+        "rss_bytes": 2642325504
+      },
+      {
+        "unit": "graphmine-neo4j.service",
+        "active": "active",
+        "enabled": "enabled",
+        "rss_bytes": 6933798912
+      }
+    ],
+    "rss_bytes": 18501046272
+  },
+  "free_h": "               total        used        free      shared  buff/cache   available\nMem:           251Gi        93Gi        94Gi        55Gi       119Gi       157Gi\nSwap:          8.0Gi        14Mi       8.0Gi\n"
+}

@@ -5,7 +5,11 @@ import json
 import os
 import secrets
 import shlex
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "agent"))
+from graphmine_agent.neo4j_backend import local_uri
 
 
 def main():
@@ -36,7 +40,7 @@ def main():
         "users": args.user or ["*"],
         "sql_type": "postgres",
         "sql_dsn_env": "GRAPHMINE_DEMO_SQL_DSN",
-        "neo4j_uri": f"bolt://127.0.0.1:{args.bolt_port}",
+        "neo4j_uri": local_uri(args.bolt_port),
         "neo4j_password_env": "GRAPHMINE_DEMO_NEO4J_PASSWORD",
         "entities": [
             {

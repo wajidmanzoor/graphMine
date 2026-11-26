@@ -22,6 +22,7 @@ from .database_sources import (
 )
 from .identity import current_principal
 from .database_pools import invalidate, pool_scope
+from .neo4j_backend import configured_address, pair_fields, same_pair_endpoint, validate_pair_endpoint
 
 
 class ConnectionPair(Strict):
@@ -49,22 +50,12 @@ class ConnectionPair(Strict):
             raise ValueError("SQL enrichment needs a host, database and username")
         if not self.sql_enabled and any(value is not None for value in sql_fields):
             raise ValueError("Remove SQL credentials and server details when SQL enrichment is disabled")
-        try:
-            uri = urlsplit(self.neo4j_uri)
-            if (
-                uri.scheme not in {"bolt", "bolt+s", "bolt+ssc", "neo4j", "neo4j+s", "neo4j+ssc"}
-                or not uri.hostname or uri.username or uri.password
-                or uri.query or uri.fragment or uri.path not in {"", "/"}
-                or not 1 <= (uri.port or 7687) <= 65535
-            ):
-                raise ValueError
-        except ValueError as exc:
-            raise ValueError("Use a Neo4j or Bolt server URI without embedded credentials") from exc
+        validate_pair_endpoint(self)
         # Validate cross-table keys here so errors never reach the persistence
         # layer (or include the credential-bearing request in a response).
         DatabaseSource(
             id="validation", name=self.name, users=["*"], sql_dsn_env="MANAGED" if self.sql_enabled else None,
-            neo4j_uri=self.neo4j_uri, neo4j_password_env="MANAGED",
+            **pair_fields(self), neo4j_password_env="MANAGED",
             entities=self.entities, relationships=self.relationships,
         )
         return self
@@ -88,6 +79,7 @@ def load_source(settings, document):
         raise ValueError("Neo4j credential settings are incomplete")
     source._managed = True
     source._network_settings = settings
+    source._backend_settings = settings
     return source
 
 
@@ -125,8 +117,7 @@ def network_address(settings, host, port):
             sql = details["sql"] or {}
             if sql.get("host"):
                 allowed.add((sql["host"], sql["port"]))
-            neo = urlsplit(source.neo4j_uri)
-            allowed.add((neo.hostname, neo.port or 7687))
+            allowed.add(configured_address(source))
     try:
         addresses = sorted({r[4][0] for r in socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)})
         if not addresses:
@@ -185,10 +176,7 @@ def save_pair(settings, body, identifier=None):
         previous._sql_credentials[key] == getattr(body, key)
         for key in ("host", "port", "database", "username", "sslmode")
     )
-    same_neo = previous and all(
-        getattr(previous, key) == getattr(body, key)
-        for key in ("neo4j_uri", "neo4j_database", "neo4j_username")
-    )
+    same_neo = same_pair_endpoint(previous, body)
     sql_password = body.password.get_secret_value() if body.password else (
         previous._sql_credentials["password"] if same_sql else None
     )
@@ -200,12 +188,11 @@ def save_pair(settings, body, identifier=None):
     # Validate network targets before saving credentials.
     if body.sql_enabled:
         network_address(settings, body.host, body.port)
-    neo = urlsplit(body.neo4j_uri)
-    network_address(settings, neo.hostname, neo.port or 7687)
+    host, port = configured_address(body)
+    network_address(settings, host, port)
     source = DatabaseSource(
         id=identifier, name=body.name, users=["*"], revision=(previous.revision if previous else 1),
-        sql_dsn_env="MANAGED" if body.sql_enabled else None, neo4j_uri=body.neo4j_uri,
-        neo4j_database=body.neo4j_database, neo4j_username=body.neo4j_username,
+        sql_dsn_env="MANAGED" if body.sql_enabled else None, **pair_fields(body),
         neo4j_password_env="MANAGED", entities=body.entities, relationships=body.relationships,
     )
     document = {

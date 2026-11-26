@@ -253,6 +253,9 @@ def rest_bytes(config, limit, *, settings=None, payload=None):
 
 
 def neo4j_rows(runtime, config, limit):
+    from .neo4j_backend import get_active_neo4j
+    backend = get_active_neo4j(runtime.settings, connector=config)
+    endpoint = backend.connection
     # Only this parameterized read query is exposed, never user-provided Cypher.
     # It exports relationships and their endpoints, not isolated database nodes.
     statement = (
@@ -263,19 +266,31 @@ def neo4j_rows(runtime, config, limit):
         "type(r) AS relationship, elementId(r) AS relationship_id "
         "ORDER BY relationship_id LIMIT $limit"
     )
-    url = (config.url or "").rstrip("/") + f"/db/{config.database}/query/v2"
+    parameters = {"label": config.node_label or None,
+                  "relationship_type": config.relationship_type or None, "limit": MAX_ROWS + 1}
+    if endpoint.transport == "bolt":
+        from neo4j import GraphDatabase, READ_ACCESS, unit_of_work
+        @unit_of_work(timeout=30)
+        def read(tx):
+            rows, used = [], 0
+            for record in tx.run(statement, parameters):
+                row = dict(record)
+                used += len(_json(row).encode())
+                if len(rows) >= MAX_ROWS or limit is not None and used > limit:
+                    raise AnalyticsError("The source exceeds the row or byte limit.", "resource_limit")
+                rows.append(row)
+            return rows
+        with GraphDatabase.driver(endpoint.uri, auth=endpoint.auth, connection_timeout=3) as driver:
+            with driver.session(database=endpoint.database, default_access_mode=READ_ACCESS) as session:
+                return session.execute_read(read)
     raw = rest_bytes(
-        config.model_copy(update={"url": url}),
+        config.model_copy(update={"url": endpoint.uri}),
         limit,
         settings=runtime.settings,
         payload={
             "statement": statement,
             "accessMode": "Read",
-            "parameters": {
-                "label": config.node_label or None,
-                "relationship_type": config.relationship_type or None,
-                "limit": MAX_ROWS + 1,
-            },
+            "parameters": parameters,
         },
     )
     value = json.loads(raw)

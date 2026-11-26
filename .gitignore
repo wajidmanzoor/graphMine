@@ -21,6 +21,16 @@ __pycache__/
 agent/.coverage
 agent/htmlcov/
 agent/.env
+# WireGuard configuration and private operator secrets never belong in Git.
+**/wireguard/
+wg-*.conf
+*.wireguard.conf
+*.secrets
+*.secrets.*
+.env
+.env.local
+secrets.env
+secrets.json
 benchmark-results/
 .graphmine-domain-evaluation/
 .graphmine-learning/
