@@ -122,6 +122,25 @@ def test_park_preserves_linked_unit_definition_for_later_activation(control, tmp
     assert systemd.units[unit]["active"] == "active"
 
 
+def test_restore_recovers_original_states_after_switch_parking(control):
+    manager, _ = control
+    previous = manager.status()
+    manager.park()
+    restored = manager.restore(previous)
+    assert [(r["unit"], r["active"], r["enabled"]) for r in restored["units"]] == [
+        (r["unit"], r["active"], r["enabled"]) for r in previous["units"]]
+
+
+def test_restore_undoes_activation_when_switch_verification_fails(control):
+    manager, _ = control
+    manager.park()
+    previous = manager.status()
+    manager.activate()
+    restored = manager.restore(previous)
+    assert restored["rss_bytes"] == 0
+    assert all(r["active"] == "inactive" and r["enabled"] == "disabled" for r in restored["units"])
+
+
 def test_failed_stop_does_not_claim_zero_ram_and_still_disables_units(control):
     manager, systemd = control
     systemd.fail_stop = "graphmine-neo4j.service"

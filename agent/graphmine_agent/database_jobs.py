@@ -178,6 +178,11 @@ class DatabaseJobs:
                 "offset": offset, "has_more": len(rows) > limit}
 
     def enqueue(self, kind, source_id, query=None, *, request_key=None):
+        from .neo4j_access import admission
+        with admission(self.runtime.settings):
+            return self._enqueue(kind, source_id, query, request_key=request_key)
+
+    def _enqueue(self, kind, source_id, query=None, *, request_key=None):
         source = get_source(self.runtime.settings, source_id)
         if kind not in {"query", "sync"}:
             raise ValueError("Unknown database job kind")
@@ -230,7 +235,7 @@ class DatabaseJobs:
             self._loop.call_soon_threadsafe(self._ready.set)
         return self.public(job)
 
-    def cancel(self, identifier):
+    def cancel(self, identifier, *, administrator=False):
         def update(job):
             if job["status"] in TERMINAL or job["status"] == "cancelling":
                 return
@@ -240,7 +245,7 @@ class DatabaseJobs:
             job["cancellable"] = False
             if job["status"] == "cancelled":
                 job["finished_at"] = utc_now().isoformat()
-        job = self._change(identifier, update, owned=True)
+        job = self._change(identifier, update, owned=not administrator)
         control = self._controls.get(identifier)
         if control and job["status"] == "cancelling":
             control.cancelled.set()

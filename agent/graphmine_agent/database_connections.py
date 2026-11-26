@@ -282,6 +282,10 @@ def register_connection_routes(router):
         settings = request.app.state.runtime.settings
         source = get_source(settings, source_id)
         def work():
+            from .neo4j_access import session
+            with session(settings):
+                return open_connection()
+        def open_connection():
             backend = get_active_neo4j(settings, source)
             if backend.id == "iu-remote":
                 network_address(settings, *backend.connection.address)

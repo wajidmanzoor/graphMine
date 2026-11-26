@@ -253,6 +253,12 @@ def rest_bytes(config, limit, *, settings=None, payload=None):
 
 
 def neo4j_rows(runtime, config, limit):
+    from .neo4j_access import session
+    with session(runtime.settings):
+        return _neo4j_rows(runtime, config, limit)
+
+
+def _neo4j_rows(runtime, config, limit):
     from .neo4j_backend import get_active_neo4j
     backend = get_active_neo4j(runtime.settings, connector=config)
     endpoint = backend.connection
@@ -441,6 +447,15 @@ def preview(runtime, connector_id):
 
 
 def import_source(runtime, connector_id, body):
+    config = get(runtime, connector_id)
+    if config.type == "neo4j":
+        from .neo4j_access import session
+        with session(runtime.settings):
+            return _import_source(runtime, connector_id, body)
+    return _import_source(runtime, connector_id, body)
+
+
+def _import_source(runtime, connector_id, body):
     config = get(runtime, connector_id)
     graph, digest, complete = fetch(runtime, config)
     if get(runtime, connector_id) != config:

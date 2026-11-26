@@ -218,6 +218,22 @@ class DatabasePools:
             self._condition.notify_all()
         self._dispose(disposal)
 
+    def drain(self, timeout=30):
+        """Retire every old connection after switch admission has closed."""
+        disposal = []
+        deadline = time.monotonic() + timeout
+        with self._condition:
+            for entry in list(self._entries.values()):
+                self._retire(entry, disposal)
+            self._condition.notify_all()
+        self._dispose(disposal)
+        with self._condition:
+            while self._entries or self._closing:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise AnalyticsError("Database connections did not drain in time.", "database_sessions_busy", 409)
+                self._condition.wait(min(remaining, .1))
+
 
 @contextmanager
 def resource(source, kind, signature, factory):

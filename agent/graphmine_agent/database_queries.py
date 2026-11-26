@@ -434,6 +434,12 @@ def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
 
 
 def run_query(runtime, source_id, body):
+    from .neo4j_access import session
+    with session(runtime.settings):
+        return _run_query(runtime, source_id, body)
+
+
+def _run_query(runtime, source_id, body):
     started = perf_counter()
     source = get_source(runtime.settings, source_id)
     dataset = None

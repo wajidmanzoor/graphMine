@@ -84,7 +84,7 @@
   }
 
   routes.set("data", async (container, params, revision) => {
-    const data = await api("/api/admin/data"); if (revision !== state.revision) return;
+    const [data, neo4j] = await Promise.all([api("/api/admin/data"), window.GraphMineNeo4jCard()]); if (revision !== state.revision) return;
     const filter = params.get("filter") || "all", selected = data.files.filter(row => filter === "unused" ? !row.used_by.length : filter === "large" ? row.size_bytes > 100 * 2 ** 20 : true);
     const palette = ["#16734b", "#9dc7b1", "#ee7b2d", "#4e82b4", "#d5e4da"];
     const storage = card("Storage", el("div", {class: "storage-headline"}, el("div", {}, el("strong", {}, bytes(data.total_bytes)), el("span", {}, " total stored")), el("span", {class: data.disk.percent >= 80 ? "warning" : "hint"}, `${bytes(data.disk.used)} of ${bytes(data.disk.total)} disk used · ${percent(data.disk.percent)}`)),
@@ -116,7 +116,7 @@
     const backups = card("Backups", backupInfo.items.length ? select : null, status, backup, backupError,
       hint(backupInfo.scheduled ? `Every ${n(backupInfo.interval_hours)} hours · keep ${n(backupInfo.keep)} scheduled snapshots.` : `Automatic backups are not configured. Manual snapshots are available; retention is ${n(backupInfo.keep)} for scheduled snapshots.`),
       hint("Manual snapshots are retained until removed by the operator. Restore stages data in a new directory."), el("a", {href: "#capacity"}, "Retention settings"));
-    container.replaceChildren(heading("Data & storage", "Uploaded files, saved analyses and backups.", button("Refresh", () => A.route())), storage, el("div", {class: "storage-layout"}, files, el("div", {class: "storage-sidebar"}, clean, users, backups)), hint(data.scope));
+    container.replaceChildren(heading("Data & storage", "Uploaded files, saved analyses and backups.", button("Refresh", () => A.route())), neo4j, storage, el("div", {class: "storage-layout"}, files, el("div", {class: "storage-sidebar"}, clean, users, backups)), hint(data.scope));
   });
 
   function startPerformance(data) {

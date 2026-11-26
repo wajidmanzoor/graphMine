@@ -609,6 +609,16 @@ def validate_cypher(statement):
 
 @contextmanager
 def neo4j_session(source, *, write=False, wake=True):
+    from .database_pools import current_database_pools
+    from .neo4j_access import session as access
+    pools = current_database_pools.get()
+    settings = source._backend_settings or source._network_settings or (pools.settings if pools else None)
+    with access(settings), _neo4j_session(source, write=write, wake=wake) as session:
+        yield session
+
+
+@contextmanager
+def _neo4j_session(source, *, write=False, wake=True):
     if write and source._catalog.get("registry"):
         raise AnalyticsError("Benchmark connections allow read queries only.", "cypher_read_only", 409)
     try:

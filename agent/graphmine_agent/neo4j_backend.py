@@ -285,6 +285,23 @@ def source_origin(source):
     return {"neo4j_uri": source.neo4j_uri, "neo4j_database": source.neo4j_database}
 
 
+def source_backend_id(source):
+    """Classify retained connection metadata without selecting or connecting."""
+    return "iu-remote" if source.neo4j_uri == IU_URI else "local"
+
+
+def verification_endpoints(settings, target):
+    endpoints = list(get_active_neo4j(settings, target=target).endpoints)
+    if target == "local":
+        from .database_sources import configured
+        for source in configured(settings):
+            if source_backend_id(source) == target:
+                endpoint = get_active_neo4j(settings, source, target=target).connection
+                if all(item.uri != endpoint.uri for item in endpoints):
+                    endpoints.append(endpoint)
+    return endpoints
+
+
 def source_details(source):
     parsed = _parse(source.neo4j_uri)
     host = parsed.hostname

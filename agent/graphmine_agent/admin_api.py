@@ -90,6 +90,8 @@ class PerformanceStart(Confirm):
 
 def register_admin_routes(app):
     router = APIRouter(prefix="/api/admin", dependencies=[Depends(administrator)])
+    from .admin_neo4j import register as register_neo4j
+    register_neo4j(router)
 
     @router.get("/badges")
     def badges(request: Request):

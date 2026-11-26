@@ -79,8 +79,9 @@ class LocalNeo4j:
 
     @contextmanager
     def _lock(self):
-        self.state.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-        fd = os.open(self.state.with_suffix(".lock"), os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+        # All environments control the same per-user services.
+        self.unit_directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+        fd = os.open(self.unit_directory / ".graphmine-neo4j.lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
         with os.fdopen(fd, "a+") as stream:
             fcntl.flock(stream, fcntl.LOCK_EX)
             yield
@@ -168,6 +169,41 @@ class LocalNeo4j:
                 raise RuntimeError("Some local Neo4j services could not be parked: " + ", ".join(sorted(set(failures + pending))))
             return {**after, "rss_before_bytes": before["rss_bytes"], "rss_after_bytes": after["rss_bytes"],
                     "rss_freed_bytes": before["rss_bytes"] - after["rss_bytes"]}
+
+    def restore(self, previous):
+        """Undo only service-state changes introduced by a failed switch."""
+        with self._lock():
+            current = {row["unit"]: row for row in self.status()["units"]}
+            for row in previous["units"]:
+                unit = row["unit"]
+                if unit not in current:
+                    raise RuntimeError("A retained local Neo4j unit is missing")
+                before, now = row, current[unit]
+                enabled = before["enabled"].startswith("enabled")
+                if before["active"] == "active" and now["active"] != "active":
+                    if enabled:
+                        self._systemctl("enable", "--now", unit)
+                        now["enabled"] = "enabled"
+                    else:
+                        self._systemctl("start", unit)
+                elif before["active"] in STOPPED and now["active"] not in STOPPED:
+                    self._systemctl("stop", unit)
+                if enabled != now["enabled"].startswith("enabled"):
+                    self._systemctl("enable" if enabled else "disable", unit)
+            endpoints = local_control_endpoints(self.settings,
+                [row["unit"] for row in previous["units"] if row["active"] == "active"])
+            deadline = self.clock() + 120
+            while any(not self.probe(endpoint.address) for endpoint in endpoints.values()):
+                if self.clock() >= deadline:
+                    raise RuntimeError("Previous local Neo4j services did not recover within 120 seconds")
+                self.sleep(2)
+            restored = self.status()
+            after = {row["unit"]: row for row in restored["units"]}
+            if any((row["active"] == "active") != (after[row["unit"]]["active"] == "active")
+                   or row["enabled"].startswith("enabled") != after[row["unit"]]["enabled"].startswith("enabled")
+                   for row in previous["units"]):
+                raise RuntimeError("Previous local Neo4j service states could not be restored")
+            return restored
 
     def activate(self, timeout=120):
         with self._lock():
