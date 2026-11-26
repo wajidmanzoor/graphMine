@@ -12,6 +12,7 @@ import pytest
 from graphmine_agent import admin_data, admin_settings
 from graphmine_agent.identity import identity_scope
 from graphmine_agent.models import ExecutionPlan, JobRecord, JobStatus, ResultRecord, SessionRecord
+from graphmine_agent.neo4j_backend import set_active_backend
 from test_accounts import PASSWORD, login
 from test_admin_console import console
 from test_admin_work import make_workflow
@@ -134,6 +135,71 @@ def test_cleanup_blocks_busy_owner_and_external_source(console, triangle_graph, 
     assert client.get(f"/api/admin/data/files/{file_id}/download", headers=admin).status_code == 409
     assert client.get("/api/admin/data/cleanup-preview?kind=unused", headers=admin).json()["count"] == 0
     assert outside.read_bytes() == triangle_graph
+
+
+def test_storage_inventory_download_and_cleanup_hide_inactive_files(console, triangle_graph):
+    client, accounts, admin, _ = console
+    runtime = client.app.state.runtime
+    set_active_backend(runtime.settings, "local")
+    file_id, _, _ = upload(console, triangle_graph)
+    with accounts.database._connect() as db:
+        db.execute("UPDATE files SET payload=json_set(payload,'$.backend_id','local') WHERE id=?", (file_id,))
+        original = db.execute("SELECT payload FROM files WHERE id=?", (file_id,)).fetchone()[0]
+    preview = client.get("/api/admin/data/cleanup-preview?kind=unused", headers=admin).json()
+    assert preview["count"] == 1
+    set_active_backend(runtime.settings, "iu-remote")
+    inventory = client.get("/api/admin/data", headers=admin).json()
+    assert inventory["files"] == [] and inventory["unused_count"] == 0 and inventory["unused_bytes"] == 0
+    assert client.get(f"/api/admin/data/files/{file_id}/download", headers=admin).status_code == 404
+    assert client.get("/api/admin/data/cleanup-preview?kind=unused", headers=admin).json()["count"] == 0
+    assert client.post("/api/admin/data/cleanup", headers=admin, json=cleanup_body(preview)).status_code == 404
+    with accounts.database._connect() as db:
+        assert db.execute("SELECT payload FROM files WHERE id=?", (file_id,)).fetchone()[0] == original
+    set_active_backend(runtime.settings, "local")
+    assert client.get(f"/api/admin/data/files/{file_id}/download", headers=admin).content == triangle_graph
+    assert client.get("/api/admin/data", headers=admin).json()["files"][0]["id"] == file_id
+
+
+def test_hidden_results_stay_retained_and_protect_shared_uploads(console, triangle_graph):
+    client, accounts, admin, _ = console
+    runtime = client.app.state.runtime
+    set_active_backend(runtime.settings, "local")
+    file_id, sid, _ = upload(console, triangle_graph)
+    _, principal = accounts.login("member", PASSWORD, "local")
+    old = accounts.clock() - 200 * 86400
+    created = datetime.fromtimestamp(old, timezone.utc)
+    work = make_workflow(runtime, principal, "hidden-analysis")
+    work["input_provenance"]["graph"]["backend_id"] = "local"
+    work.update(status="completed", finished_at=created.isoformat(), backend_id="local", input_files={"graph": {"file_id": file_id}})
+    runtime.analytics._save(work)
+    path = runtime.analytics._directory(work) / "result.json"
+    path.write_bytes(b'{"private":"retained result"}')
+    with identity_scope(principal):
+        plan = ExecutionPlan(session_id=sid, graph_id=file_id, topic_id="core", problem_id="k-core", parameters={"k": 2})
+        job = runtime.database.save_job(JobRecord(session_id=sid, plan=plan, status=JobStatus.completed, backend_id="local"))
+        result = runtime.database.save_result(ResultRecord(job_id=job.id, session_id=sid, problem_id="k-core", payload={"private": "values"}, summary={}, created_at=created, backend_id="local"))
+    with accounts.database._connect() as db:
+        db.execute("UPDATE admin_metadata SET value=? WHERE key='resource_access_since'", (str(old),))
+        original = db.execute("SELECT payload FROM results WHERE id=?", (result.id,)).fetchone()[0]
+    preview = client.get("/api/admin/data/cleanup-preview?kind=results&days=180", headers=admin).json()
+    assert {row["id"] for row in preview["items"]} == {work["id"], result.id}
+    set_active_backend(runtime.settings, "iu-remote")
+    inventory = client.get("/api/admin/data", headers=admin).json()
+    assert inventory["files"][0]["id"] == file_id
+    assert inventory["files"][0]["used_by"] == ["Retained reference"]
+    assert not inventory["files"][0]["deletable"]
+    for kind in ("unused", "results"):
+        assert client.get(f"/api/admin/data/cleanup-preview?kind={kind}&days=180", headers=admin).json()["count"] == 0
+    assert client.post("/api/admin/data/cleanup", headers=admin, json=cleanup_body(preview)).status_code == 404
+    assert path.read_bytes() == b'{"private":"retained result"}'
+    for kind, identifier in (("workflow", work["id"]), ("job", job.id)):
+        assert client.get(f"/api/admin/jobs/{kind}/{identifier}", headers=admin).status_code == 404
+    assert client.get("/api/admin/jobs?view=finished", headers=admin).json()["calculations"] == []
+    with accounts.database._connect() as db:
+        assert db.execute("SELECT payload FROM results WHERE id=?", (result.id,)).fetchone()[0] == original
+    set_active_backend(runtime.settings, "local")
+    assert client.get("/api/admin/data/cleanup-preview?kind=results&days=180", headers=admin).json()["count"] == 2
+    assert client.get(f"/api/admin/jobs/workflow/{work['id']}", headers=admin).status_code == 200
 
 
 def test_result_retention_respects_unknown_recent_and_saved_references(console):

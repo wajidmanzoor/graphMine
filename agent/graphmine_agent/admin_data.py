@@ -14,6 +14,7 @@ from uuid import uuid4
 
 from . import admin_lifecycle
 from .identity import AccountError, current_principal
+from .neo4j_records import require_visible, visible
 
 storage_lock = RLock()
 _logger = logging.getLogger(__name__)
@@ -95,20 +96,26 @@ def _inventory(db, runtime):
             if when:
                 last[key] = max(last.get(key, 0), when)
     for work in workflows:
-        add(work.get("input_files", {}), "Analysis " + work["id"], timestamp(work.get("updated_at") or work.get("created_at")))
-        add(work.get("input_provenance", {}), "Analysis " + work["id"], timestamp(work.get("updated_at") or work.get("created_at")))
+        shown = visible(work, runtime.settings)
+        label = "Analysis " + work["id"] if shown else "Retained reference"
+        when = timestamp(work.get("updated_at") or work.get("created_at")) if shown else None
+        add(work.get("input_files", {}), label, when)
+        add(work.get("input_provenance", {}), label, when)
         protected_workflows.update((set(strings(work.get("input_provenance", {}))) | set(strings(work.get("input_files", {})))) & result_ids)
     for row in db.execute("SELECT id,payload,updated_at FROM jobs"):
-        add(json.loads(row[1]).get("plan", {}), "Calculation " + row[0], timestamp(row[2]))
+        document = json.loads(row[1])
+        shown = visible(document, runtime.settings)
+        add(document.get("plan", {}), "Calculation " + row[0] if shown else "Retained reference", timestamp(row[2]) if shown else None)
     for table, column, label in (("session_exploration", "document", "Saved view"), ("project_items", "metadata", "Project share"),
                                   ("dataset_versions", "metadata", "Saved snapshot"), ("workflow_templates", "document", "Saved template")):
         for row in db.execute(f"SELECT {column} FROM {table}"):
             value = json.loads(row[0])
-            add(value, label)
+            add(value, label if visible(value, runtime.settings) else "Retained reference")
             protected_workflows.update(set(strings(value)) & result_ids)
     for row in files:
         record = json.loads(row["payload"])
-        add(record.get("provenance", {}), "Snapshot " + record.get("original_name", row["id"]), timestamp(record.get("created_at")))
+        shown = visible(record, runtime.settings)
+        add(record.get("provenance", {}), "Snapshot " + record.get("original_name", row["id"]) if shown else "Retained reference", timestamp(record.get("created_at")) if shown else None)
         protected_workflows.update(set(strings(record.get("provenance", {}))) & result_ids)
     accesses = {(row[0], row[1]): row[2] for row in db.execute("SELECT kind,id,opened_at FROM admin_resource_access")}
     active = busy_owners(db, runtime)
@@ -175,6 +182,9 @@ def inventory(runtime):
         categories["Other"] -= portion
         categories[key] += portion
     disk = shutil.disk_usage(runtime.settings.data_root)
+    # Keep all references and physical byte accounting above: hidden work must
+    # still protect an ordinary upload from cleanup. Only its details are hidden.
+    files = [row for row in files if visible(row["record"], runtime.settings)]
     public = [{k: v for k, v in f.items() if k not in {"record", "sha256", "owner_id", "session_id"}} for f in files]
     return {"files": public, "users": users, "total_bytes": sum(categories.values()), "categories": [{"name": k, "bytes": v} for k, v in categories.items()],
             "disk": {"used": disk.used, "total": disk.total, "percent": disk.used / disk.total * 100},
@@ -185,6 +195,17 @@ def inventory(runtime):
 
 def _preview(db, runtime, kind, days, identifiers=None):
     files, workflows, protected, accesses = _inventory(db, runtime)
+    if identifiers:
+        documents = [(row["id"], row["record"]) for row in files] + [(row["id"], row) for row in workflows]
+        for identifier, document in documents:
+            if identifier in identifiers:
+                require_visible(document, runtime.settings)
+        for identifier in identifiers:
+            row = db.execute("SELECT payload FROM results WHERE id=?", (identifier,)).fetchone()
+            if row:
+                require_visible(json.loads(row[0]), runtime.settings)
+    files = [row for row in files if visible(row["record"], runtime.settings)]
+    workflows = [row for row in workflows if visible(row, runtime.settings)]
     if kind == "unused":
         items = [{"id": row["id"], "name": row["name"], "owner": row["owner"], "size_bytes": row["size_bytes"], "sha256": row["sha256"]} for row in files if row["deletable"]]
         reason = "Only files with no analysis, snapshot, project, template or saved-view references and no active owner work are eligible."
@@ -205,7 +226,7 @@ def _preview(db, runtime, kind, days, identifiers=None):
             if paths:
                 items.append({"id": row["id"], "kind": "workflow", "name": ", ".join(s["problem"] for s in row.get("validation", {}).get("plan", {}).get("steps", [])) or "Saved analysis", "owner": owners.get(row["session_id"]),
                               "size_bytes": sum(p.stat().st_size for p in paths), "revision": row["revision"], "last_used": observed})
-        for row in db.execute("SELECT r.id,r.job_id,r.session_id,r.created_at,length(CAST(r.payload AS BLOB)),r.payload FROM results r JOIN jobs j ON j.id=r.job_id WHERE j.status NOT IN ('queued','running','interpreting')"):
+        for row in db.execute("SELECT r.id,r.job_id,r.session_id,r.created_at,length(CAST(r.payload AS BLOB)),r.payload FROM results r JOIN jobs j ON j.id=r.job_id WHERE j.status NOT IN ('queued','running','interpreting') AND neo4j_visible(r.payload) AND neo4j_visible(j.payload)"):
             observed = accesses.get(("result", row[0]), max(timestamp(row[3]) or 0, since))
             if observed >= cutoff or row[0] in protected or row[1] in protected or row[2] in busy_sessions:
                 continue
@@ -293,6 +314,7 @@ def download_file(runtime, identifier):
         if not row:
             raise AccountError("File not found.", "not_found", 404)
         file = json.loads(row[0])
+        require_visible(file, runtime.settings)
         path = safe_path(runtime, file["source_path"])
         if not path.is_file():
             raise AccountError("The uploaded source is no longer available.", "not_found", 404)

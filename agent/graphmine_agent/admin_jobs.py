@@ -7,6 +7,7 @@ from . import admin_model_calls
 from .accounts import MODEL_QUEUE_SECONDS
 from .admin_summary import queues
 from .identity import AccountError, Principal, identity_scope
+from .neo4j_records import visible
 
 
 def seconds(value):
@@ -21,6 +22,8 @@ def records(runtime):
     rows = []
     for kind, source in (("workflow", runtime.analytics._all()), ("job", jobs)):
         for item in source:
+            if not visible(item, runtime.settings):
+                continue
             if kind == "workflow":
                 plan = item.get("validation", {}).get("plan", {})
                 steps = [{k: s[k] for k in ("id", "problem", "device", "backend", "parameters", "budget") if k in s} for s in plan.get("steps", [])]

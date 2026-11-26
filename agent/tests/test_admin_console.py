@@ -251,7 +251,7 @@ def test_private_event_migration_preserves_sequence_and_conversation_timeline(se
     with migrated._connect() as db:
         assert "session_id" in {row[1] for row in db.execute("PRAGMA table_info(conversation_events)")}
         assert "details_json" in {row[1] for row in db.execute("PRAGMA table_info(events)")}
-        assert db.execute("PRAGMA user_version").fetchone()[0] == 12
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 13
     events = migrated.events(session.id)
     assert events[0].sequence == original.sequence
     assert events[0].payload["message"] == "Preserve this private message"
