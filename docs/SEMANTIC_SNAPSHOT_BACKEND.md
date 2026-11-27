@@ -1,15 +1,16 @@
 # Semantic snapshot backend
 
-Phase 2 refines an owned, complete database graph snapshot in a disposable
+GraphMine refines an owned, complete database graph snapshot in a disposable
 in-memory Tentō process. It creates a separate immutable graph or table preview,
 retains the parent snapshot hash and source lineage, and reuses save/chat/export
 and database-job controls. It never reruns the original Neo4j query.
 
-The pinned engine currently supports **plain reads and explicit mock execution**
-through this backend. Live models and saved-answer reuse return 503 before
-starting a worker. Phase 3 adds administration at **Admin → Configure → Semantic
-engine** (`/admin#semantic`). Phase 4 adds **Refine with model** after a complete
-database graph preview and in a saved conversation input's source details.
+The pinned engine plus the locked local patch supports **plain reads, explicit
+mocks and supervised live execution**. Administrators enable live mode and
+answer retention at **Admin → Configure → Semantic engine** (`/admin#semantic`).
+Defaults remain mock mode and administrator-only model access. Open **Refine
+with model** after a complete database graph preview or in a saved conversation
+input's source details.
 Install the optional source-built engine using the [build guide](../deploy/tento/README.md).
 
 ## Refinement workspace
@@ -19,7 +20,7 @@ The workspace shows its version/hash, actual loaded tables, original labels,
 property aliases and types. It does not refresh the source database. Use
 `Vertex` and `has_label()` rather than source label patterns.
 
-Start with a plain query, or explicitly choose a mock template/model. Templates
+Start with a plain query, or select an available live or explicit mock template/model. Templates
 cover extraction, filtering, ranking, group summaries, subgraphs, paths,
 consecutive steps and carried path state. Relationship-dependent examples appear
 when the snapshot has a relationship table. Prompts use variables bound with
@@ -31,14 +32,15 @@ syntax and schema binding are checked on execution.
 The editor reuses formatting, schema suggestions (Ctrl+Space), typed/JSON
 parameters and error navigation. Ctrl/Cmd+Enter runs the refinement. Projection,
 direction and optional edge weight are explicit controls. Call limits follow
-administrator policy and apply per expression; live aliases and saved-answer
-reuse remain unavailable. Drafts are scoped to API identity, conversation and
+administrator policy. Live budgets count all HTTP attempts across the entire
+query, including retries. Mocks retain the upstream per-expression limit.
+Answer reuse is available when enabled by an administrator. Drafts are scoped to API identity, conversation and
 base snapshot. Editing inputs clears the current result selection.
 
 **Run refinement** uses the durable job queue with measured progress and
-cancellation. Match counts and completed judgments are not reported by the
-engine; selected inputs, engine calls and in-worker cache hits are labeled
-separately. Closing the workspace stops observation; it does not cancel a job.
+cancellation. Selected inputs, completed answer evaluations, HTTP attempts,
+counters for cached inputs and independently retained hits are reported separately. These
+counters are not a per-input judgments export. Closing the workspace stops observation; it does not cancel a job.
 Late responses cannot select a result in another workspace or conversation.
 
 On success, inspect the graph or complete paged table, returned row samples and
@@ -51,8 +53,7 @@ when the active conversation input changes. Mock provenance is visibly simulated
 **Run again without saved answers** opens the original parent snapshot and
 recorded query/parameters/direction for review; running creates another version
 under current access and limits. The parent must still be available. Saving a
-result does not independently retain an expired temporary parent. Estimates,
-live models and a per-row judgments table remain gated on author fixes.
+result does not independently retain an expired temporary parent. Estimates and a per-row judgments table still require additional engine APIs.
 
 ## API
 
@@ -84,10 +85,12 @@ Example mock request:
 }
 ```
 
-`model` defaults to `qwen`, whose live calls are blocked at this pin. A query
+`model` defaults to `qwen`; live steps require administrator-enabled live mode
+and the verified patched installation. A query
 with no model operators works without a provider. Mock operators require an
 explicit request `model: "mock"` and query alias `'mock'` or `'mock:echo'`.
-No arbitrary endpoint/model configuration is accepted from query text.
+Every model step must use the selected configured alias. No arbitrary
+endpoint/model configuration is accepted from query text.
 Omit `call_limit`, or send null, to use the current administrator default. The
 server clamps an explicit limit to the current maximum when the worker starts.
 With accounts enabled, only administrators may run model steps by default;
@@ -162,7 +165,7 @@ samples do not truncate the saved artifact.
 The read dialect rejects writes, multiple statements, procedures, extension or
 file loading, database import/export, images, arbitrary functions and
 `llm_build_graph`. Prompt inputs are checked too. Model aliases and prompts must
-be literals. The supported mock operators are `llm`, `llm_score`, `llm_agg`,
+be literals. The supported operators are `llm`, `llm_score`, `llm_agg`,
 `llm_path_agg` and both `llm_sg_agg` forms. `subgraph` retains native graph types.
 `llm_score` supplies its integer output automatically; omit `{score INT64}` from
 its prompt. Other operators accept typed outputs, with STRING as the default.
@@ -172,11 +175,12 @@ Current server ceilings:
 - 64 MiB serialized worker input and output; 256 KiB parameters.
 - Default 120-second execution timeout, configurable from 5 to 600 seconds;
   256 MiB native buffer pool; two compute threads.
-- One mock dispatch thread per worker. Default 16 inputs per batch, configurable
+- One model dispatch thread per worker. Default 16 inputs per batch, configurable
   from 1 to 128. Default call limit 100 and maximum 1,000, both configurable from
-  1 to 1,000, with default no greater than maximum. These limits apply **per
-  expression**. A requested `call_limit` is clamped to the current maximum. It is not
-  a total query budget: two expressions may each consume that limit.
+  1 to 1,000, with default no greater than maximum. A requested `call_limit` is
+  clamped to the current maximum. Live limits cover **all query HTTP attempts**;
+  mock limits retain the upstream per-expression scope. Live requests require
+  thinking off, temperature zero, strict JSON and at most 4,096 output tokens.
 - One semantic worker at once by default, configurable from 1 to 4. Kernel locks
   share this limit across application processes using the same data root,
   including admin mock tests. Lowering the limit admits no new worker until
@@ -187,16 +191,19 @@ Current server ceilings:
 `CALL llm_usage()` resets counters on read, so the worker accumulates each
 observation. `calls` counts engine calls; mock execution sends zero HTTP
 requests. `input_rows` and `llm_rows` describe candidate/selected inputs, not
-confirmed completed judgments. `cache_hits` describes reuse inside the worker,
-not durable answer retention. `answers_retained` is zero; answer reuse is
-rejected until the author provides an independent answer store. Counters observed
+confirmed completed judgments. `cache_hits` includes cached inputs; `stored_hits` identifies independently
+retained answers. `http_requests` counts outbound attempts and `completed_rows`
+counts valid answer evaluations. `answers_retained` counts distinct stored keys
+for the account, including answers beyond this query. These counters never reset
+the atomic request budget. The budget counts native completion attempts; parent
+quota-tokenization and power-control requests are outside that count. Counters observed
 before termination may omit work performed since the last progress event.
 
 The parent monitors the child independently of native execution and kills/reaps
 it on cancellation or timeout. On Linux, a child also receives SIGKILL if its
 supervisor dies. Temporary files are private and removed when the supervisor
-exits normally, including handled errors, cancellation and timeout. No provider
-credentials enter the current mock-only child. Errors
+exits normally, including handled errors, cancellation and timeout. A live child receives only its selected provider
+credential; mock children receive no provider credential. Errors
 expose stable codes and parser positions where available, not raw engine messages
 that can contain query/property values. Complete results are validated before
 publication; failure exposes no partial snapshot.
@@ -204,10 +211,11 @@ publication; failure exposes no partial snapshot.
 Provenance records the parent hash, query/parameters, model steps, actual schema,
 engine commit/hash, effective settings, usage, effective graph direction and simulation status. It preserves
 original source identity and filtered entity lineage. Mock judgments are marked
-as simulated. Thinking controls, strict structured output without fallback,
-durable answers, a query-wide call budget and shared live-provider scheduling
-must be verified before live execution can be enabled. See the
-[remaining author requests](../deploy/tento/AUTHOR_REQUESTS.md).
+as simulated. Live provenance is model dependent and records the patch identity,
+provider/model, strict/thinking controls and effective request budget. The
+[verification report](../agent/evaluation/reports/tento_fixes_20261127.md) records
+real Qwen and CPU-solver measurements. A model-derived input does not change the
+solver's independently recorded quality guarantee.
 
 ## Administration
 
@@ -216,7 +224,9 @@ protection and the secret-free Activity audit. Settings persist in the existing
 settings database and apply without restarting services. `GRAPHMINE_SEMANTIC_*`
 names identify durable admin overrides; this phase does not add environment
 variable parsing for them. The default model-step mode is `mock`; `disabled`
-blocks model operators while allowing plain reads. Live mode returns 503.
+blocks model operators while allowing plain reads. Enabling `live` or retained
+answers requires the verified patched installation; clearing lock blocker lists
+alone is insufficient.
 
 Provider metadata and aliases are stored centrally. **GraphMine vLLM** follows
 the server base endpoint and base model; `qwen` and `mock` are reserved aliases.
@@ -245,21 +255,40 @@ one engine call and zero HTTP requests.
 | `PUT /api/admin/semantic/aliases` | Add or update an alias; update requires expected revision |
 | `DELETE /api/admin/semantic/aliases/{alias}` | Confirm removal with expected revision |
 | `POST /api/admin/semantic/test-mock` | Native mock pipeline test under the shared semantic worker limit |
-| `POST /api/admin/semantic/cache/clear` | 503 until independent answer retention exists |
+| `POST /api/admin/semantic/cache/clear` | Confirmed all-account clear; active workers prevent deletion |
 
 Account access is checked at submission, worker admission and before result
 publication. Queued work uses current limits; an active worker retains its
 recorded limits. Changing settings, providers or aliases does not rewrite saved
 provenance. Legacy operation without accounts retains its existing local access.
 
-Cache enablement and clearing remain unavailable. The maximum answer age
-(default 30 days, configurable from 1 to 365) is saved as inactive policy; zero
-answers are independently retained. Thinking off, strict JSON and temperature 0
-are required policies for future live acceptance, not claims about outbound
-requests made by a mock. The page warns when configured semantic concurrency
-meets or exceeds `GRAPHMINE_LLM_MAX_NUM_SEQS`; it never raises planner/server
-capacity. Live execution still requires verified integration with the existing
-planner admission and model wake/sleep lifecycle.
+Answer reuse defaults off. The maximum answer age is 30 days by default,
+configurable from 1 to 365 days. Thinking off, strict JSON and temperature zero
+are enforced on live requests. The page warns when semantic concurrency meets
+or exceeds `GRAPHMINE_LLM_MAX_NUM_SEQS`; it never raises planner/server capacity.
+Each live attempt uses existing planner admission and model wake/sleep leases.
 
 See the [Phase 3 report](../agent/evaluation/reports/tento_phase3_20261127.md) for
 authorization, secret handling, concurrency and browser evidence.
+
+## Retained answers and request admission
+
+Retention is independent of graph storage. Private `semantic-answers` files use
+account-derived filenames, a 0700 directory and 0600 files. Process-shared locks
+serialize writers within an account and exclude administrative clearing. An
+active worker prevents clear; retry after it finishes. Clear changes no saved
+snapshot or provenance. Maximum age controls reuse eligibility. Retained bytes
+remain until cleared; this setting is not a scheduled deletion policy.
+
+The engine persists and fsyncs each valid batch before attempting the next
+request. Killing a worker or exhausting its budget preserves those answers. A
+subsequent run over the same snapshot can reuse them. Changed input, prompt,
+model/provider, schema, credential or relevant configuration revisions miss the
+cache. Reuse-disabled runs bypass reads while retaining new completed answers.
+Cache retention defaults off and can be cleared through the audited admin route.
+
+Before each native HTTP attempt the supervisor uses the same account/model
+quota, token reservation and power lease as planner requests. Cancellation
+closes its private socket and releases the lease. Native requests are not
+proxied. Provider schema rejection and malformed final answers fail without
+publishing a partial result. Shared vLLM defaults are unchanged.

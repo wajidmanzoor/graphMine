@@ -1,0 +1,1730 @@
+{
+  "generated_at": "2026-11-27T20:16:14.983202+00:00",
+  "kind": "tento_supervised_live_acceptance",
+  "status": "local_implementation_verified_paper_reproduction_partial",
+  "base_commit": "adcf0f5f",
+  "branch": "devlopment",
+  "engine_lock": {
+    "repository": "https://github.com/zacharyzhijun/francis",
+    "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+    "distribution": "graphmine-tento",
+    "version": "0.1.0+62e124217e2c.gm1",
+    "required_functions": [
+      "LLM",
+      "LLM_SCORE",
+      "LLM_AGG",
+      "LLM_PATH_AGG",
+      "LLM_SG_AGG",
+      "SUBGRAPH"
+    ],
+    "live_blockers": [],
+    "integration_blockers": [],
+    "graph_mapping": "explicit-labels-v1",
+    "patches": [
+      {
+        "path": "deploy/tento/patches/0001-supervised-live-contracts.patch",
+        "sha256": "c711e4c782ae05bb0e7218689027bf989a901f6853970c4bb5425550728388fe"
+      }
+    ],
+    "contract": "supervised-live-v1"
+  },
+  "implementation_commit": "95aabcfb5487716d48019fda3f6ae5b64020df45",
+  "build": {
+    "timestamp": "2026-11-27T18:51:54.337605+00:00",
+    "source": {
+      "repository": "https://github.com/zacharyzhijun/francis",
+      "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+      "backend": "pybind",
+      "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+      "native_sha256": "eaf1a5a0dccc3dc7cca09b16a4f055679fb34c7bbd1005f5a6f233c87d495bb0",
+      "patches": [
+        {
+          "path": "deploy/tento/patches/0001-supervised-live-contracts.patch",
+          "sha256": "c711e4c782ae05bb0e7218689027bf989a901f6853970c4bb5425550728388fe"
+        }
+      ]
+    },
+    "target": {
+      "venv": true,
+      "implementation": "cpython",
+      "version": [
+        3,
+        12
+      ],
+      "platform": "linux",
+      "suffix": ".cpython-312-x86_64-linux-gnu.so"
+    },
+    "build_requirements": [
+      "setuptools==80.9.0",
+      "wheel==0.45.1",
+      "numpy==2.5.5"
+    ],
+    "jobs": 8,
+    "wheel": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/build/wheels/graphmine_tento-0.1.0+62e124217e2c.gm1-cp312-cp312-linux_x86_64.whl",
+    "wheel_sha256": "4d774169d2be9a7322b6de12fb572ab50eb230797b042f24f90ca1c942935f90",
+    "installed": true,
+    "log": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/build/build.log",
+    "live_blockers": [
+      "thinking_off_control",
+      "strict_json_without_fallback"
+    ]
+  },
+  "patched_source_verification": {
+    "status": "passed",
+    "files": [
+      {
+        "file": "ladybug/src/function/llm/llm_answer_store.cpp",
+        "sha256": "b4196b44406938b8238909f0080c810e4c9778f9aad5f526fe034c2daa9b7e31"
+      },
+      {
+        "file": "ladybug/src/function/llm/llm_runtime.cpp",
+        "sha256": "99fcd7873d2bbec5ea7c4b719c3b246ddf9c8cebd02369df37fe541b058483dd"
+      },
+      {
+        "file": "ladybug/src/function/llm/llm_table_functions.cpp",
+        "sha256": "47f1e54ed012cafcd570da013dd16376f72b0807e62ae63e669946e622d511e0"
+      },
+      {
+        "file": "ladybug/src/include/function/llm/graphmine_contract.h",
+        "sha256": "f7abd2a007b8fe98541d07199c0a5bb8bb982e18e688ccccfb4f14dc41c1547e"
+      },
+      {
+        "file": "ladybug/src/include/function/llm/llm_runtime.h",
+        "sha256": "cff3645624d7d6dd593ccd6ebf0859b40aced014b6f6393eac75a94b5d6de199"
+      },
+      {
+        "file": "ladybug/src/main/database.cpp",
+        "sha256": "e21a72921997d813455d5ae347152fe48f693116deaa6bc2be82a72f490b0ec8"
+      }
+    ]
+  },
+  "live_smoke": {
+    "status": "passed",
+    "mock": {
+      "status": "passed",
+      "result": {
+        "columns": [
+          "answer"
+        ],
+        "rows": [
+          [
+            "[\"alpha\"]"
+          ]
+        ]
+      }
+    },
+    "live": {
+      "status": "passed",
+      "requests_sent": 1,
+      "usage": {
+        "calls": 1,
+        "input_rows": 1,
+        "llm_rows": 1,
+        "cache_hits": 0,
+        "failed_rows": 0,
+        "prompt_tokens": 138,
+        "completion_tokens": 13,
+        "stored_hits": 0,
+        "request_chars": 16,
+        "request_images": 0,
+        "http_requests": 1,
+        "completed_rows": 1
+      },
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "settings": {
+        "llm_base_url": "\"http://127.0.0.1:8001/v1\"",
+        "llm_threads": "1",
+        "llm_batch_size": "1",
+        "llm_max_calls": "1000000000",
+        "llm_timeout_ms": "30000",
+        "llm_persistent_cache": "false",
+        "llm_answer_max_age": "0",
+        "semantic_selectivity_samples": "0",
+        "semantic_path_decomposition": "false",
+        "semantic_join_decomposition": "false",
+        "provider": {
+          "id": "graphmine",
+          "base_url": "http://127.0.0.1:8001/v1",
+          "revision": 1
+        },
+        "model": "Qwen/Qwen3.8-27B-FP8",
+        "model_alias": "qwen",
+        "http_requests": 1,
+        "call_limit_scope": "query_http_attempts",
+        "query_wide_call_limit_supported": true,
+        "request_limit": 1,
+        "answers_retained": 0,
+        "reuse_answers": false,
+        "thinking": "off",
+        "strict_json": true,
+        "temperature": 0,
+        "mock": false,
+        "admin_policy": {
+          "provider": {
+            "id": "graphmine",
+            "base_url": "http://127.0.0.1:8001/v1",
+            "revision": 1
+          },
+          "aliases": {
+            "qwen": "Qwen/Qwen3.8-27B-FP8"
+          },
+          "batch_size": 1,
+          "timeout_seconds": 30
+        }
+      },
+      "answer": true
+    },
+    "engine": {
+      "repository": "https://github.com/zacharyzhijun/francis",
+      "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+      "backend": "pybind",
+      "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+      "native_sha256": "eaf1a5a0dccc3dc7cca09b16a4f055679fb34c7bbd1005f5a6f233c87d495bb0",
+      "patches": [
+        {
+          "path": "deploy/tento/patches/0001-supervised-live-contracts.patch",
+          "sha256": "c711e4c782ae05bb0e7218689027bf989a901f6853970c4bb5425550728388fe"
+        }
+      ]
+    },
+    "functions": [
+      "LLM",
+      "LLM_AGG",
+      "LLM_PATH_AGG",
+      "LLM_SCORE",
+      "LLM_SG_AGG",
+      "SUBGRAPH"
+    ]
+  },
+  "live_flow": {
+    "status": "passed",
+    "neo4j_version": "5.26.32",
+    "source": "supplied semantic_movies CSVs",
+    "model": "Qwen/Qwen3.8-27B-FP8",
+    "input_version": "dataset_version_a02dab8c24b74732a311ba7ab84211de",
+    "input_sha256": "36fd0469ec46a2e8d81eff67861509ace08bc59801cfd0e54f058c1def5a808b",
+    "output_version": "dataset_version_5b67316b81c44806b4d672a31e206dca",
+    "output_sha256": "f6827046c59153597efec03aa72e40b3cd863647ed3268394a1fad5e88b5a376",
+    "original_unchanged": true,
+    "original_vertices": 8,
+    "original_edges": 6,
+    "output_vertices": 7,
+    "output_edges": 5,
+    "query": "MATCH (r:Vertex)-[e:REVIEWS]->(m:Vertex) WHERE has_label(r,'Review') AND llm('qwen','Is this review negative? {{r.text}} {negative BOOLEAN}') RETURN r,e,m",
+    "usage": {
+      "calls": 1,
+      "input_rows": 6,
+      "llm_rows": 6,
+      "cache_hits": 0,
+      "failed_rows": 0,
+      "prompt_tokens": 408,
+      "completion_tokens": 53,
+      "stored_hits": 0,
+      "request_chars": 995,
+      "request_images": 0,
+      "http_requests": 1,
+      "completed_rows": 6
+    },
+    "reuse_usage": {
+      "calls": 0,
+      "input_rows": 6,
+      "llm_rows": 0,
+      "cache_hits": 6,
+      "failed_rows": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "stored_hits": 6,
+      "request_chars": 0,
+      "request_images": 0,
+      "http_requests": 0,
+      "completed_rows": 0
+    },
+    "effective_settings": {
+      "llm_base_url": "\"http://127.0.0.1:8001/v1\"",
+      "llm_threads": "1",
+      "llm_batch_size": "16",
+      "llm_max_calls": "1000000000",
+      "llm_timeout_ms": "120000",
+      "llm_persistent_cache": "true",
+      "llm_answer_max_age": "2592000",
+      "semantic_selectivity_samples": "0",
+      "semantic_path_decomposition": "false",
+      "semantic_join_decomposition": "false",
+      "provider": {
+        "id": "graphmine",
+        "name": "GraphMine vLLM",
+        "base_url": "http://127.0.0.1:8001/v1",
+        "configuration_valid": true,
+        "revision": 1,
+        "builtin": true,
+        "key_configured": true,
+        "authentication": "server"
+      },
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "model_alias": "qwen",
+      "http_requests": 1,
+      "call_limit_scope": "query_http_attempts",
+      "query_wide_call_limit_supported": true,
+      "request_limit": 5,
+      "answers_retained": 6,
+      "reuse_answers": true,
+      "thinking": "off",
+      "strict_json": true,
+      "temperature": 0,
+      "mock": false,
+      "admin_policy": {
+        "call_limit": 5,
+        "batch_size": 16,
+        "timeout_seconds": 180,
+        "max_concurrent_requests": 1,
+        "queue_seconds": 60,
+        "mode": "live",
+        "cache_enabled": true,
+        "cache_max_age_seconds": 2592000,
+        "thinking": "off",
+        "strict_json": true,
+        "temperature": 0,
+        "provider": {
+          "id": "graphmine",
+          "name": "GraphMine vLLM",
+          "base_url": "http://127.0.0.1:8001/v1",
+          "configuration_valid": true,
+          "revision": 1,
+          "builtin": true,
+          "key_configured": true,
+          "authentication": "server"
+        },
+        "aliases": {
+          "qwen": "Qwen/Qwen3.8-27B-FP8"
+        }
+      }
+    },
+    "engine": {
+      "repository": "https://github.com/zacharyzhijun/francis",
+      "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+      "backend": "pybind",
+      "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+      "native_sha256": "eaf1a5a0dccc3dc7cca09b16a4f055679fb34c7bbd1005f5a6f233c87d495bb0",
+      "patches": [
+        {
+          "path": "deploy/tento/patches/0001-supervised-live-contracts.patch",
+          "sha256": "c711e4c782ae05bb0e7218689027bf989a901f6853970c4bb5425550728388fe"
+        }
+      ]
+    },
+    "sentiment": {
+      "review_ids": [
+        "1859989",
+        "1856082",
+        "1842217",
+        "2482279",
+        "2440981",
+        "102785931"
+      ],
+      "ground_truth_negative_ids": [
+        "1856082",
+        "1859989",
+        "2440981",
+        "2482279"
+      ],
+      "selected_negative_ids": [
+        "1842217",
+        "1856082",
+        "1859989",
+        "2440981",
+        "2482279"
+      ],
+      "accuracy": 0.8333333333333334,
+      "ground_truth_sent_to_model": false
+    },
+    "solver": {
+      "workflow_id": "eaf6d27b-3240-4fd8-8a02-a8078abb2412",
+      "backend": {
+        "id": "cpp",
+        "device": "cpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false
+      },
+      "optimum_density_exhaustive": 0.75,
+      "selected_density": 0.75,
+      "subsets_checked": 127,
+      "reported_quality": "exact",
+      "ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "value": [
+            "neo4j:4:35ab0186-d76e-49f1-a015-ea43c55ac25c:3",
+            "neo4j:4:35ab0186-d76e-49f1-a015-ea43c55ac25c:0",
+            "neo4j:4:35ab0186-d76e-49f1-a015-ea43c55ac25c:2",
+            "neo4j:4:35ab0186-d76e-49f1-a015-ea43c55ac25c:1"
+          ],
+          "complete": true,
+          "input_fingerprint": "22817540c018e2ee586a4dc4ceda3823b0e704bf99570b01e81cafc942475413",
+          "graph_fingerprint": "22817540c018e2ee586a4dc4ceda3823b0e704bf99570b01e81cafc942475413"
+        }
+      }
+    },
+    "save_and_chat": true
+  },
+  "data_preparation": {
+    "origins": {
+      "semantic_movies": {
+        "repository_commit": "62e124217e2c0f82e327136b5888263e95671fae",
+        "loader": "load_semantic_movies.py"
+      },
+      "openflights": {
+        "repository": "https://github.com/jpatokal/openflights",
+        "commit": "a438edcb869bd882506add5abdb9ff1f4aae1ae7",
+        "license": "ODbL"
+      },
+      "kg": {
+        "workload": "W19",
+        "initial_state": "empty database; model designs the schema"
+      }
+    },
+    "files": {
+      "demo/flights.lbdb": "49f0d6caf644e888dfc8c27c2aa878aa57edcf6d82d8ce8b7a12c54556b11d59",
+      "demo/flights_code.lbdb": "da0a35dc93ed978ce533f14982ad3da1ca30971c86ba1d2f48494ef6d2b3dc0d",
+      "demo/flights_country.lbdb": "ac8719a025db548071717487dc9edabe886bb53cca0ea78456815c96f1a4439a",
+      "demo/kg.lbdb": "05187d198245d1b6207040bc69a3df6efb6d7c88de4b9d5b88feab495e6da7af",
+      "demo/semantic_movies.lbdb": "628801e2ecdaa87d583a7243911f1497b659b990b6461d5b13cdacc696bd7adc",
+      "openflights/airports.dat": "9387cdb38df5bd664da823f8ccb69fdd9b33a1888f5b7cca09c34a3cd9ff59f9",
+      "openflights/codes.csv": "57cfe66fd8e39de2069f81d659146313a11e2b2bc8f409384d48503d4c1ae562",
+      "openflights/csv/airport.csv": "ddd7c959c90599e9797528448caa9945a7c3ee73c585cf6f03d5d11ce45064cf",
+      "openflights/csv/flight.csv": "36b0b660d536b1abef8fb61de0b6c9280daf782ec1357fff7da0ab742a5d815b",
+      "openflights/csv/load.cypher": "f3acbd5fc8bd6334348b39128d21ca06f77ff3861acc364cc62fc5acc08b6025",
+      "openflights/routes.dat": "bd373706238134f619c624c606dccc74c05c2582a977c489c81de501735f2390",
+      "paper_eval/export/airport.csv": "ddd7c959c90599e9797528448caa9945a7c3ee73c585cf6f03d5d11ce45064cf",
+      "paper_eval/export/flight.csv": "9358a39dd33bd7fe6f4cb1cffd3f19a48fddc5456e589bedb23921dab2bc6b70",
+      "paper_eval/export/movie.csv": "0f37c377594d5bcd1a5c019af4f765deddd581cd08998731c48634feb0c4ecb6",
+      "paper_eval/export/person.csv": "8389f7a7d6e4f0126f694fb68c3f761cd02bf70657879472ddc83a386cbb0e29",
+      "paper_eval/export/review.csv": "2077fe2599cb58da1da6e8b99c6c73d137c4d596384a58931f5adb960ee48812",
+      "paper_eval/export/worked_on.csv": "83b9104eb550bb9e2c4e7dbd7d3cf1e74d7441cd8e145657f43c36cd4ad19e92",
+      "semantic_movies/load.cypher": "f96bf882cbdff59cf791e3b50d2f382ef82771a2f65e21e1b90e341437f22e45",
+      "semantic_movies/movie.csv": "0f37c377594d5bcd1a5c019af4f765deddd581cd08998731c48634feb0c4ecb6",
+      "semantic_movies/person.csv": "8389f7a7d6e4f0126f694fb68c3f761cd02bf70657879472ddc83a386cbb0e29",
+      "semantic_movies/review.csv": "be07145658bb5bc1c7ccfca8e998f8c8bb9f2f46b79e5687da4f2dd143b0e755",
+      "semantic_movies/reviews.csv": "d7682fe51583ba349a60811b8ec6686a2769b60d1f934c397c8c8b216160f213",
+      "semantic_movies/worked_on.csv": "e50214abb70283a62b5881d9e3187f1b95237ddf8346b114d2d2b46020ae0f9f"
+    },
+    "unavailable": [
+      "author's LDBC SF0.1 sample",
+      "author's reference judgments",
+      "SemBench sf500 image sample and vectors",
+      "Visual Genome vg100 sample"
+    ],
+    "scorer_export_columns": {
+      "flight.csv": {
+        "src": "original from",
+        "dst": "original to"
+      }
+    },
+    "corrected_fixture": {
+      "previous_sha256": "76c0bc73fdea7f5b62faa6b6e8995d75e57116cbeefdba3e78f442f5e185b36c",
+      "reason": "Legacy Professor(field) schema collided with generated research_area property; W19 requires schema generation."
+    }
+  },
+  "workload_measurements": {
+    "generated_at": "2026-11-27T20:14:27.057798+00:00",
+    "status": "partial",
+    "kind": "local_qwen_workload_measurements",
+    "engine_commit": "62e124217e2c0f82e327136b5888263e95671fae",
+    "engine_lock": {
+      "repository": "https://github.com/zacharyzhijun/francis",
+      "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+      "distribution": "graphmine-tento",
+      "version": "0.1.0+62e124217e2c.gm1",
+      "required_functions": [
+        "LLM",
+        "LLM_SCORE",
+        "LLM_AGG",
+        "LLM_PATH_AGG",
+        "LLM_SG_AGG",
+        "SUBGRAPH"
+      ],
+      "live_blockers": [],
+      "integration_blockers": [],
+      "graph_mapping": "explicit-labels-v1",
+      "patches": [
+        {
+          "path": "deploy/tento/patches/0001-supervised-live-contracts.patch",
+          "sha256": "c711e4c782ae05bb0e7218689027bf989a901f6853970c4bb5425550728388fe"
+        }
+      ],
+      "contract": "supervised-live-v1"
+    },
+    "source_matches_lock": true,
+    "runner": {
+      "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/third_party/tento/ladybug/scripts/paper/run_tento.py",
+      "sha256": "3a1e343f7c1cc4d514598c1190428d3c3309d83612f09d7f1ff9798483624c51",
+      "workload_sha256": "7ae942ffac84cf7cfd7e058ac69e5e7d9f1f434bc11ba795d2e7cff73a307053",
+      "quality_scorer_sha256": "a4a0c8ab93f77f801d550af233f78c55a65e3da307d9cfba90907d33bad29b50",
+      "target_aliases": [],
+      "existing_model_ids": {
+        "g38": "google/gemini-3.8-flash",
+        "h55": "anthropic/claude-haiku-5.5",
+        "r_gemma": "gemma-4-31B-it",
+        "r_gptoss": "gpt-oss-120b",
+        "r_qwen": "qwen3.8-27b",
+        "g38low": "google/gemini-3.8-flash",
+        "mock": "mock",
+        "o55": "anthropic/claude-opus-5.5"
+      },
+      "invoked": true,
+      "required_queries": [
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "W5",
+        "W6",
+        "W7",
+        "W8",
+        "W9",
+        "W10",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18",
+        "W19",
+        "W20",
+        "W21",
+        "W22",
+        "W23",
+        "W24"
+      ],
+      "adapter": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/deploy/tento/run_local.py",
+      "adapter_sha256": "15dcc92e7fd7090d5bd27be5232ea5fb1e5319f0e424f5d613362433f5065a4c",
+      "adapter_identity_scope": "Final adapter used for the corrected W19 rerun; original runner, workload and scorer hashes are unchanged."
+    },
+    "model": {
+      "configured_id": "Qwen/Qwen3.8-27B-FP8",
+      "loaded_version": null,
+      "verified_live": true,
+      "verification_scope": "Successful requests establish the served model ID; weight revision is not exposed by this server."
+    },
+    "data_root": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data",
+    "requested_settings": {
+      "thinking": "off",
+      "strict_json": true,
+      "temperature": 0
+    },
+    "effective_live_settings": {
+      "thinking": "off",
+      "strict_json": true,
+      "temperature": 0,
+      "max_output_tokens": 4096,
+      "threads": 1,
+      "batch_size": 16,
+      "total_http_request_limit": 200,
+      "parent_admission": true
+    },
+    "provider_requests_sent": 430,
+    "completed_workloads": 8,
+    "failed_workloads": 7,
+    "blocked_workloads": 9,
+    "live_flow": {
+      "status": "separately_verified",
+      "evidence": {
+        "artifact": "live-flow/report.json",
+        "sha256": "33590acce62a05914369eda3338f9efc7a8790f757ab7d5ae6c5f03297d6bc36"
+      }
+    },
+    "workloads": [
+      {
+        "query": "W1",
+        "feature": 1,
+        "status": "completed",
+        "execution_started": true,
+        "database": "semantic_movies.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 291.038,
+        "usage": {
+          "calls": 38,
+          "input_rows": 605,
+          "llm_rows": 605,
+          "cache_hits": 0,
+          "failed_rows": 0,
+          "prompt_tokens": 29835,
+          "completion_tokens": 8214,
+          "stored_hits": 0,
+          "request_chars": 95719,
+          "request_images": 0,
+          "http_requests": 38,
+          "completed_rows": 605
+        },
+        "provider_requests_sent": 38,
+        "effective_settings": {
+          "thinking": "off",
+          "strict_json": true,
+          "temperature": 0,
+          "max_output_tokens": 4096,
+          "threads": 1,
+          "batch_size": 16,
+          "total_http_request_limit": 200,
+          "parent_admission": true
+        },
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Review sentiment accuracy",
+          "score": 0.915702479338843,
+          "missing_inputs": [],
+          "status": "measured",
+          "optional_metric": null
+        },
+        "record": "W1.json",
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "628801e2ecdaa87d583a7243911f1497b659b990b6461d5b13cdacc696bd7adc"
+      },
+      {
+        "query": "W2",
+        "feature": 1,
+        "status": "timeout",
+        "execution_started": true,
+        "database": "semantic_movies.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 300.006,
+        "usage": {
+          "http_requests": 31,
+          "prompt_tokens": 69871,
+          "completion_tokens": 7656
+        },
+        "provider_requests_sent": 31,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Genre accuracy",
+          "score": null,
+          "missing_inputs": [],
+          "status": "not_measured",
+          "optional_metric": null
+        },
+        "error": {
+          "code": "workload_timeout",
+          "timeout_seconds": 300
+        },
+        "record": null,
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "628801e2ecdaa87d583a7243911f1497b659b990b6461d5b13cdacc696bd7adc"
+      },
+      {
+        "query": "W3",
+        "feature": 2,
+        "status": "timeout",
+        "execution_started": true,
+        "database": "semantic_movies.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 300.005,
+        "usage": {
+          "http_requests": 42,
+          "prompt_tokens": 30572,
+          "completion_tokens": 8277
+        },
+        "provider_requests_sent": 42,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "One minus relative error of negative-review counts",
+          "score": null,
+          "missing_inputs": [],
+          "status": "not_measured",
+          "optional_metric": null
+        },
+        "error": {
+          "code": "workload_timeout",
+          "timeout_seconds": 300
+        },
+        "record": null,
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "628801e2ecdaa87d583a7243911f1497b659b990b6461d5b13cdacc696bd7adc"
+      },
+      {
+        "query": "W4",
+        "feature": 2,
+        "status": "blocked",
+        "execution_started": false,
+        "database": "ldbc.lbdb",
+        "database_present": false,
+        "missing_inputs": [
+          "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/demo/ldbc.lbdb"
+        ],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [
+          "workload_database_missing"
+        ],
+        "duration_seconds": null,
+        "usage": null,
+        "provider_requests_sent": 0,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Precision against reference-model athlete judgments",
+          "score": null,
+          "missing_inputs": [
+            "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/paper_eval/reference/W4.json"
+          ],
+          "status": "not_measured",
+          "optional_metric": null
+        }
+      },
+      {
+        "query": "W5",
+        "feature": 3,
+        "status": "timeout",
+        "execution_started": true,
+        "database": "semantic_movies.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 300.005,
+        "usage": {
+          "http_requests": 19,
+          "prompt_tokens": 45073,
+          "completion_tokens": 7934
+        },
+        "provider_requests_sent": 19,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Mean genre and reference-year accuracy",
+          "score": null,
+          "missing_inputs": [
+            "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/paper_eval/reference/W5_year.json"
+          ],
+          "status": "not_measured",
+          "optional_metric": null
+        },
+        "error": {
+          "code": "workload_timeout",
+          "timeout_seconds": 300
+        },
+        "record": null,
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "628801e2ecdaa87d583a7243911f1497b659b990b6461d5b13cdacc696bd7adc"
+      },
+      {
+        "query": "W6",
+        "feature": 4,
+        "status": "completed",
+        "execution_started": true,
+        "database": "semantic_movies.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 18.294,
+        "usage": {
+          "calls": 1,
+          "input_rows": 3,
+          "llm_rows": 3,
+          "cache_hits": 0,
+          "failed_rows": 0,
+          "prompt_tokens": 18544,
+          "completion_tokens": 221,
+          "stored_hits": 0,
+          "request_chars": 83840,
+          "request_images": 0,
+          "http_requests": 1,
+          "completed_rows": 3
+        },
+        "provider_requests_sent": 1,
+        "effective_settings": {
+          "thinking": "off",
+          "strict_json": true,
+          "temperature": 0,
+          "max_output_tokens": 4096,
+          "threads": 1,
+          "batch_size": 16,
+          "total_http_request_limit": 200,
+          "parent_admission": true
+        },
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": null,
+          "score": null,
+          "missing_inputs": [],
+          "status": "not_scored_by_paper_systems_table",
+          "optional_metric": null
+        },
+        "record": "W6.json",
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "628801e2ecdaa87d583a7243911f1497b659b990b6461d5b13cdacc696bd7adc"
+      },
+      {
+        "query": "W7",
+        "feature": 5,
+        "status": "completed",
+        "execution_started": true,
+        "database": "semantic_movies.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 282.342,
+        "usage": {
+          "calls": 39,
+          "input_rows": 568,
+          "llm_rows": 568,
+          "cache_hits": 0,
+          "failed_rows": 0,
+          "prompt_tokens": 27552,
+          "completion_tokens": 7970,
+          "stored_hits": 0,
+          "request_chars": 82778,
+          "request_images": 0,
+          "http_requests": 39,
+          "completed_rows": 568
+        },
+        "provider_requests_sent": 39,
+        "effective_settings": {
+          "thinking": "off",
+          "strict_json": true,
+          "temperature": 0,
+          "max_output_tokens": 4096,
+          "threads": 1,
+          "batch_size": 16,
+          "total_http_request_limit": 200,
+          "parent_admission": true
+        },
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Negative-review precision at five",
+          "score": 1.0,
+          "missing_inputs": [],
+          "status": "measured",
+          "optional_metric": null
+        },
+        "record": "W7.json",
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "628801e2ecdaa87d583a7243911f1497b659b990b6461d5b13cdacc696bd7adc"
+      },
+      {
+        "query": "W8",
+        "feature": 5,
+        "status": "timeout",
+        "execution_started": true,
+        "database": "semantic_movies.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 300.006,
+        "usage": {
+          "http_requests": 37,
+          "prompt_tokens": 29034,
+          "completion_tokens": 8298
+        },
+        "provider_requests_sent": 37,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Pairwise movie-ranking accuracy",
+          "score": null,
+          "missing_inputs": [],
+          "status": "not_measured",
+          "optional_metric": null
+        },
+        "error": {
+          "code": "workload_timeout",
+          "timeout_seconds": 300
+        },
+        "record": null,
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "628801e2ecdaa87d583a7243911f1497b659b990b6461d5b13cdacc696bd7adc"
+      },
+      {
+        "query": "W9",
+        "feature": 6,
+        "status": "completed",
+        "execution_started": true,
+        "database": "semantic_movies.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 3.822,
+        "usage": {
+          "calls": 1,
+          "input_rows": 0,
+          "llm_rows": 0,
+          "cache_hits": 0,
+          "failed_rows": 0,
+          "prompt_tokens": 110,
+          "completion_tokens": 108,
+          "stored_hits": 0,
+          "request_chars": 0,
+          "request_images": 0,
+          "http_requests": 1,
+          "completed_rows": 0
+        },
+        "provider_requests_sent": 1,
+        "effective_settings": {
+          "thinking": "off",
+          "strict_json": true,
+          "temperature": 0,
+          "max_output_tokens": 4096,
+          "threads": 1,
+          "batch_size": 16,
+          "total_http_request_limit": 200,
+          "parent_admission": true
+        },
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "MPAA rating-set F1",
+          "score": 1.0,
+          "missing_inputs": [],
+          "status": "measured",
+          "optional_metric": null
+        },
+        "record": "W9.json",
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "628801e2ecdaa87d583a7243911f1497b659b990b6461d5b13cdacc696bd7adc"
+      },
+      {
+        "query": "W10",
+        "feature": 7,
+        "status": "timeout",
+        "execution_started": true,
+        "database": "flights_country.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 300.006,
+        "usage": {
+          "http_requests": 14,
+          "prompt_tokens": 2248,
+          "completion_tokens": 1135
+        },
+        "provider_requests_sent": 14,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Airport-country pair F1",
+          "score": null,
+          "missing_inputs": [],
+          "status": "not_measured",
+          "optional_metric": null
+        },
+        "error": {
+          "code": "workload_timeout",
+          "timeout_seconds": 300
+        },
+        "record": null,
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "ac8719a025db548071717487dc9edabe886bb53cca0ea78456815c96f1a4439a"
+      },
+      {
+        "query": "W11",
+        "feature": 7,
+        "status": "completed",
+        "execution_started": true,
+        "database": "semantic_movies.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 221.447,
+        "usage": {
+          "calls": 28,
+          "input_rows": 446,
+          "llm_rows": 446,
+          "cache_hits": 0,
+          "failed_rows": 0,
+          "prompt_tokens": 24008,
+          "completion_tokens": 6204,
+          "stored_hits": 0,
+          "request_chars": 79703,
+          "request_images": 0,
+          "http_requests": 28,
+          "completed_rows": 446
+        },
+        "provider_requests_sent": 28,
+        "effective_settings": {
+          "thinking": "off",
+          "strict_json": true,
+          "temperature": 0,
+          "max_output_tokens": 4096,
+          "threads": 1,
+          "batch_size": 16,
+          "total_http_request_limit": 200,
+          "parent_admission": true
+        },
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Negative-review ID F1",
+          "score": 0.9627906976744187,
+          "missing_inputs": [],
+          "status": "measured",
+          "optional_metric": null
+        },
+        "record": "W11.json",
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "628801e2ecdaa87d583a7243911f1497b659b990b6461d5b13cdacc696bd7adc"
+      },
+      {
+        "query": "W12",
+        "feature": 8,
+        "status": "timeout",
+        "execution_started": true,
+        "database": "flights.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 300.004,
+        "usage": {
+          "http_requests": 61,
+          "prompt_tokens": 20235,
+          "completion_tokens": 8586
+        },
+        "provider_requests_sent": 61,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "End-airport F1 against reference model",
+          "score": null,
+          "missing_inputs": [
+            "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/paper_eval/reference/W12.json"
+          ],
+          "status": "not_measured",
+          "optional_metric": null
+        },
+        "error": {
+          "code": "workload_timeout",
+          "timeout_seconds": 300
+        },
+        "record": null,
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "49f0d6caf644e888dfc8c27c2aa878aa57edcf6d82d8ce8b7a12c54556b11d59"
+      },
+      {
+        "query": "W13",
+        "feature": 8,
+        "status": "timeout",
+        "execution_started": true,
+        "database": "flights.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 300.005,
+        "usage": {
+          "http_requests": 39,
+          "prompt_tokens": 29378,
+          "completion_tokens": 8340
+        },
+        "provider_requests_sent": 39,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Reachable-airport F1",
+          "score": null,
+          "missing_inputs": [],
+          "status": "not_measured",
+          "optional_metric": null
+        },
+        "error": {
+          "code": "workload_timeout",
+          "timeout_seconds": 300
+        },
+        "record": null,
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "49f0d6caf644e888dfc8c27c2aa878aa57edcf6d82d8ce8b7a12c54556b11d59"
+      },
+      {
+        "query": "W14",
+        "feature": 9,
+        "status": "completed",
+        "execution_started": true,
+        "database": "flights_code.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 287.203,
+        "usage": {
+          "calls": 57,
+          "input_rows": 1043,
+          "llm_rows": 876,
+          "cache_hits": 167,
+          "failed_rows": 0,
+          "prompt_tokens": 26704,
+          "completion_tokens": 8126,
+          "stored_hits": 0,
+          "request_chars": 61105,
+          "request_images": 0,
+          "http_requests": 57,
+          "completed_rows": 876
+        },
+        "provider_requests_sent": 57,
+        "effective_settings": {
+          "thinking": "off",
+          "strict_json": true,
+          "temperature": 0,
+          "max_output_tokens": 4096,
+          "threads": 1,
+          "batch_size": 16,
+          "total_http_request_limit": 200,
+          "parent_admission": true
+        },
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Route F1",
+          "score": 0.8810321715817694,
+          "missing_inputs": [],
+          "status": "measured",
+          "optional_metric": null,
+          "rescore": {
+            "query": "W14",
+            "score": 0.8810321715817694,
+            "method": "Original scorer; only export headers normalized; native results unchanged",
+            "artifact": "route-quality-recheck.json",
+            "sha256": "7bbee9d13dc99666a378613a44620248cadaa1e6080a5e9a8006e9d33646c776"
+          }
+        },
+        "record": "W14.json",
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "da0a35dc93ed978ce533f14982ad3da1ca30971c86ba1d2f48494ef6d2b3dc0d"
+      },
+      {
+        "query": "W15",
+        "feature": 10,
+        "status": "blocked",
+        "execution_started": false,
+        "database": "ldbc.lbdb",
+        "database_present": false,
+        "missing_inputs": [
+          "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/demo/ldbc.lbdb"
+        ],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [
+          "workload_database_missing"
+        ],
+        "duration_seconds": null,
+        "usage": null,
+        "provider_requests_sent": 0,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Reply-path state F1",
+          "score": null,
+          "missing_inputs": [
+            "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/paper_eval/export/ldbc_w15_truth.csv"
+          ],
+          "status": "not_measured",
+          "optional_metric": null
+        }
+      },
+      {
+        "query": "W16",
+        "feature": 11,
+        "status": "blocked",
+        "execution_started": false,
+        "database": "ldbc.lbdb",
+        "database_present": false,
+        "missing_inputs": [
+          "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/demo/ldbc.lbdb"
+        ],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [
+          "workload_database_missing"
+        ],
+        "duration_seconds": null,
+        "usage": null,
+        "provider_requests_sent": 0,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Friendship-structure predicate accuracy",
+          "score": null,
+          "missing_inputs": [
+            "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/paper_eval/export/ldbc_knows.csv"
+          ],
+          "status": "not_measured",
+          "optional_metric": null
+        }
+      },
+      {
+        "query": "W17",
+        "feature": 11,
+        "status": "blocked",
+        "execution_started": false,
+        "database": "ldbc.lbdb",
+        "database_present": false,
+        "missing_inputs": [
+          "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/demo/ldbc.lbdb"
+        ],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [
+          "workload_database_missing"
+        ],
+        "duration_seconds": null,
+        "usage": null,
+        "provider_requests_sent": 0,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": null,
+          "score": null,
+          "missing_inputs": [],
+          "status": "not_scored_by_paper_systems_table",
+          "optional_metric": null
+        }
+      },
+      {
+        "query": "W18",
+        "feature": 12,
+        "status": "completed",
+        "execution_started": true,
+        "database": "flights_code.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 97.75,
+        "usage": {
+          "calls": 19,
+          "input_rows": 296,
+          "llm_rows": 296,
+          "cache_hits": 0,
+          "failed_rows": 0,
+          "prompt_tokens": 6194,
+          "completion_tokens": 2810,
+          "stored_hits": 0,
+          "request_chars": 7622,
+          "request_images": 0,
+          "http_requests": 19,
+          "completed_rows": 296
+        },
+        "provider_requests_sent": 19,
+        "effective_settings": {
+          "thinking": "off",
+          "strict_json": true,
+          "temperature": 0,
+          "max_output_tokens": 4096,
+          "threads": 1,
+          "batch_size": 16,
+          "total_http_request_limit": 200,
+          "parent_admission": true
+        },
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Airport-country accuracy",
+          "score": 0.2972972972972973,
+          "missing_inputs": [],
+          "status": "measured",
+          "optional_metric": null
+        },
+        "record": "W18.json",
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "database_sha256": "da0a35dc93ed978ce533f14982ad3da1ca30971c86ba1d2f48494ef6d2b3dc0d"
+      },
+      {
+        "query": "W19",
+        "feature": 12,
+        "status": "completed",
+        "execution_started": true,
+        "database": "kg.lbdb",
+        "database_present": true,
+        "missing_inputs": [],
+        "required_native_functions": [
+          "LLM_BUILD_GRAPH"
+        ],
+        "requires_explicit_query_selection": false,
+        "blockers": [],
+        "duration_seconds": 24.41,
+        "usage": {
+          "calls": 4,
+          "input_rows": 7,
+          "llm_rows": 7,
+          "cache_hits": 0,
+          "failed_rows": 0,
+          "prompt_tokens": 1358,
+          "completion_tokens": 709,
+          "stored_hits": 0,
+          "request_chars": 325,
+          "request_images": 0,
+          "http_requests": 4,
+          "completed_rows": 7
+        },
+        "provider_requests_sent": 4,
+        "effective_settings": {
+          "thinking": "off",
+          "strict_json": true,
+          "temperature": 0,
+          "max_output_tokens": 4096,
+          "threads": 1,
+          "batch_size": 16,
+          "total_http_request_limit": 200,
+          "parent_admission": true
+        },
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": null,
+          "score": null,
+          "missing_inputs": [],
+          "status": "not_scored_by_paper_systems_table",
+          "optional_metric": null
+        },
+        "timeout_seconds": 300,
+        "request_limit": 200,
+        "record": "W19.json",
+        "prior_attempts": [
+          {
+            "query": "W19",
+            "feature": 12,
+            "status": "failed",
+            "execution_started": true,
+            "database": "kg.lbdb",
+            "database_present": true,
+            "missing_inputs": [],
+            "required_native_functions": [
+              "LLM_BUILD_GRAPH"
+            ],
+            "requires_explicit_query_selection": false,
+            "blockers": [],
+            "duration_seconds": 22.946,
+            "usage": {
+              "calls": 3,
+              "input_rows": 3,
+              "llm_rows": 3,
+              "cache_hits": 0,
+              "failed_rows": 0,
+              "prompt_tokens": 1063,
+              "completion_tokens": 662,
+              "stored_hits": 0,
+              "request_chars": 155,
+              "request_images": 0,
+              "http_requests": 3,
+              "completed_rows": 3
+            },
+            "provider_requests_sent": 3,
+            "effective_settings": {
+              "thinking": "off",
+              "strict_json": true,
+              "temperature": 0,
+              "max_output_tokens": 4096,
+              "threads": 1,
+              "batch_size": 16,
+              "total_http_request_limit": 200,
+              "parent_admission": true
+            },
+            "requested_cache_policy": "fresh database copy; answers off",
+            "quality": {
+              "metric": null,
+              "score": null,
+              "missing_inputs": [],
+              "status": "not_scored_by_paper_systems_table",
+              "optional_metric": null
+            },
+            "error": {
+              "code": "semantic_syntax",
+              "message": "The semantic query does not match the loaded schema or supported syntax.",
+              "status": 422,
+              "details": {
+                "usage": {
+                  "calls": 3,
+                  "input_rows": 3,
+                  "llm_rows": 3,
+                  "cache_hits": 0,
+                  "failed_rows": 0,
+                  "prompt_tokens": 1063,
+                  "completion_tokens": 662,
+                  "stored_hits": 0,
+                  "request_chars": 155,
+                  "request_images": 0,
+                  "http_requests": 3,
+                  "completed_rows": 3
+                }
+              }
+            },
+            "record": "W19-initial.json",
+            "database_sha256": "76c0bc73fdea7f5b62faa6b6e8995d75e57116cbeefdba3e78f442f5e185b36c",
+            "diagnosed_cause": "Legacy Professor(field) schema collided with generated research_area property; W19 requires schema generation."
+          }
+        ],
+        "database_sha256": "05187d198245d1b6207040bc69a3df6efb6d7c88de4b9d5b88feab495e6da7af",
+        "rerun_evidence": {
+          "artifact": "workload-w19-fixed/report.json",
+          "sha256": "7697402f3e3986aeac14ef0f6a401d1cd9dcb5e050b7b83c0a861a91c9650fde"
+        },
+        "completion_scope": "Execution completed; the original systems table provides no quality metric. Returned counts: 3 universities, 4 professors, 4 faculty edges."
+      },
+      {
+        "query": "W20",
+        "feature": 13,
+        "status": "blocked",
+        "execution_started": false,
+        "database": "ldbc.lbdb",
+        "database_present": false,
+        "missing_inputs": [
+          "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/demo/ldbc.lbdb"
+        ],
+        "required_native_functions": [
+          "LLM_PATH_AGG"
+        ],
+        "requires_explicit_query_selection": false,
+        "blockers": [
+          "workload_database_missing"
+        ],
+        "duration_seconds": null,
+        "usage": null,
+        "provider_requests_sent": 0,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": null,
+          "score": null,
+          "missing_inputs": [],
+          "status": "not_scored_by_paper_systems_table",
+          "optional_metric": null
+        }
+      },
+      {
+        "query": "W21",
+        "feature": 13,
+        "status": "blocked",
+        "execution_started": false,
+        "database": "ldbc.lbdb",
+        "database_present": false,
+        "missing_inputs": [
+          "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/demo/ldbc.lbdb"
+        ],
+        "required_native_functions": [
+          "LLM_SG_AGG"
+        ],
+        "requires_explicit_query_selection": false,
+        "blockers": [
+          "workload_database_missing"
+        ],
+        "duration_seconds": null,
+        "usage": null,
+        "provider_requests_sent": 0,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Company country and central-member accuracy",
+          "score": null,
+          "missing_inputs": [
+            "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/paper_eval/export/ldbc_w21_truth.csv"
+          ],
+          "status": "not_measured",
+          "optional_metric": null
+        }
+      },
+      {
+        "query": "W22",
+        "feature": 14,
+        "status": "blocked",
+        "execution_started": false,
+        "database": "ecomm_sf500.lbdb",
+        "database_present": false,
+        "missing_inputs": [
+          "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/demo/ecomm_sf500.lbdb",
+          "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/third_party/tento/ladybug/extension/vector/build/libvector.lbug_extension"
+        ],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": true,
+        "blockers": [
+          "workload_database_missing",
+          "vector_extension_missing",
+          "image_assets_unverified",
+          "model_image_input_unverified"
+        ],
+        "duration_seconds": null,
+        "usage": null,
+        "provider_requests_sent": 0,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Description-image pair F1",
+          "score": null,
+          "missing_inputs": [
+            "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/ecomm_sf500/products.json"
+          ],
+          "status": "not_measured",
+          "optional_metric": null
+        }
+      },
+      {
+        "query": "W23",
+        "feature": 14,
+        "status": "blocked",
+        "execution_started": false,
+        "database": "ecomm_sf500.lbdb",
+        "database_present": false,
+        "missing_inputs": [
+          "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/demo/ecomm_sf500.lbdb"
+        ],
+        "required_native_functions": [],
+        "requires_explicit_query_selection": true,
+        "blockers": [
+          "workload_database_missing",
+          "image_assets_unverified",
+          "model_image_input_unverified"
+        ],
+        "duration_seconds": null,
+        "usage": null,
+        "provider_requests_sent": 0,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers off",
+        "quality": {
+          "metric": "Image-pair F1",
+          "score": null,
+          "missing_inputs": [
+            "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/ecomm_sf500/products.json"
+          ],
+          "status": "not_measured",
+          "optional_metric": null
+        }
+      },
+      {
+        "query": "W24",
+        "feature": 14,
+        "status": "blocked",
+        "execution_started": false,
+        "database": "vg100.lbdb",
+        "database_present": false,
+        "missing_inputs": [
+          "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/demo/vg100.lbdb"
+        ],
+        "required_native_functions": [
+          "LLM_BUILD_GRAPH"
+        ],
+        "requires_explicit_query_selection": true,
+        "blockers": [
+          "workload_database_missing",
+          "image_assets_unverified",
+          "model_image_input_unverified"
+        ],
+        "duration_seconds": null,
+        "usage": null,
+        "provider_requests_sent": 0,
+        "effective_settings": null,
+        "requested_cache_policy": "fresh database copy; answers enabled within W24's multi-statement run",
+        "quality": {
+          "metric": null,
+          "score": null,
+          "missing_inputs": [
+            "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/data/vg100/gt.json"
+          ],
+          "status": "not_scored_by_paper_systems_table",
+          "optional_metric": "Annotated-object recall (separate ablation scorer)"
+        }
+      }
+    ],
+    "started_at": "2026-11-27T19:07:10.303540+00:00",
+    "finished_at": "2026-11-27T20:09:07.498196+00:00",
+    "effective_live_settings_scope": "Common settings in returned worker records; timed-out workers have no final settings record.",
+    "provider_requests_sent_all_measurement_attempts": 433,
+    "corrections": [
+      {
+        "query": "W14",
+        "change": "Normalize original flight export column names from/to to src/dst for the unchanged original scorer; preserve all route values and native result rows.",
+        "result_sha256": "ec147eb2dfdd1ab310e2ad010d7342920d44e749f37cc6ba4de87959957a85d0",
+        "evidence": {
+          "artifact": "route-quality-recheck.json",
+          "sha256": "7bbee9d13dc99666a378613a44620248cadaa1e6080a5e9a8006e9d33646c776"
+        }
+      },
+      {
+        "query": "W19",
+        "change": "Replace the obsolete quickstart schema with an empty initial database, allowing the original llm_build_graph workload to design its own schema.",
+        "initial": {
+          "artifact": "workloads/W19-initial.json",
+          "sha256": "5a8bef360029ce34aaee784a72c7c18c807169ef910cda5bc264d198df27ca6f"
+        },
+        "rerun": {
+          "artifact": "workload-w19-fixed/W19.json",
+          "sha256": "19d5b3f3b26de51f2b6e7b40514895c6324b6069a3d4e573ecf984bf0a6e1b86"
+        }
+      }
+    ],
+    "measurement_sources": [
+      {
+        "artifact": "workloads/report-initial.json",
+        "sha256": "c59baae41078a620fd05007bcb3bce60e24325f42f4e889e609c5fa50563004a"
+      },
+      {
+        "artifact": "workload-w19-fixed/report.json",
+        "sha256": "7697402f3e3986aeac14ef0f6a401d1cd9dcb5e050b7b83c0a861a91c9650fde"
+      }
+    ],
+    "diagnostics": {
+      "included_in_measurement_request_totals": false,
+      "additional_http_requests": 4,
+      "W19": {
+        "http_requests": 3,
+        "finding": "Reproduced the legacy Professor schema collision before rebuilding the empty fixture.",
+        "artifact": "diagnostics-w19/http-events.jsonl",
+        "sha256": "3156e775e09418faf5112b9904b9c0175bfacbdb09f9d0a6ab44240c368244d5"
+      },
+      "W18": {
+        "http_requests": 1,
+        "finding": "A bounded follow-up captured a provider batch returning United States for all 16 airport codes; stored native values match those provider answers. The original measured accuracy remains unchanged.",
+        "artifact": "diagnostics-w18/http-events.jsonl",
+        "sha256": "93fd297fbffdf19cf0c6cb39ee3011ddf99f4008e99a0f46003265591b797e43"
+      }
+    }
+  },
+  "measurement_limits": {
+    "repetitions": 1,
+    "timeout_seconds_per_workload": 300,
+    "http_request_limit_per_workload": 200,
+    "corrected_preparation_reruns": [
+      "W19"
+    ],
+    "no_paper_baseline_comparison": true,
+    "served_weight_revision": "not exposed by server",
+    "timeout_usage": "HTTP admissions counted; token usage includes only responses received before termination"
+  },
+  "tests": {
+    "regression-final": {
+      "tests": 2298,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 53,
+      "passed": 2245,
+      "seconds": 436.197,
+      "artifact": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/regression-final.xml",
+      "sha256": "6326c0d7ba3f82b31d088ef1e4c0eaecd227df4cdf5fa9493a437c0ca347b490"
+    },
+    "controls-final": {
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 17,
+      "seconds": 15.87,
+      "artifact": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/controls-final.xml",
+      "sha256": "ed184cc6c0bc946407265dc7092b5b59cef9b7566aa74905c10fb5df980a043f"
+    },
+    "browser-semantic": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "seconds": 6.27,
+      "artifact": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/browser-semantic.xml",
+      "sha256": "230149938e6f5abc74a0bd65ff6054a4596b9878a993e71c6337da11be4ac12c"
+    },
+    "browser-refinement": {
+      "tests": 51,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 4,
+      "passed": 47,
+      "seconds": 239.767,
+      "artifact": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/browser-refinement.xml",
+      "sha256": "c0d83d8f48334c82f19a3e04ad612099f8f1fc4b5e603bd49770535e96d1ebdc"
+    },
+    "live-final": {
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 26,
+      "seconds": 94.371,
+      "artifact": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/live-final.xml",
+      "sha256": "01dc0e505110c09696cf9a1382cf428c9c2e5c75f0c0b7b447de348a39e8da47"
+    },
+    "browser-live-final": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "seconds": 6.388,
+      "artifact": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/browser-live-final.xml",
+      "sha256": "30ab5dea8c5928b7d07b23138cd0a1cc650c67fa8c110d059997aa34a91c0878"
+    },
+    "native-fixture-final": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 14,
+      "seconds": 15.309,
+      "artifact": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/native-fixture-final.xml",
+      "sha256": "4bd2f4d2a9ced39cdee26e22e39f3904c7f0df37aa425cea45474a5b489c01ba"
+    },
+    "workload-export-final": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "seconds": 1.148,
+      "artifact": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127/workload-export-final.xml",
+      "sha256": "9f6ff4d37a4e4b9c3f6321b2d9cb6991fb1700b29887b40be8ebe3be9dc1b128"
+    }
+  },
+  "frontend": {
+    "unit_tests_passed": 35,
+    "typecheck": "passed",
+    "api_contract_paths": 181,
+    "contracts_check": "passed"
+  },
+  "artifact_directory": "/home/wajid/projects/graphDatabaseAgent/validation/tento-fixes-20261127",
+  "remaining_inputs": [
+    "author LDBC SF0.1 sample and truth exports",
+    "reference/W4.json",
+    "reference/W5_year.json",
+    "reference/W12.json",
+    "SemBench ecomm sf500 images/products and original Gemini embedding-2 vectors",
+    "Visual Genome vg100 images and gt.json",
+    "W22 vector extension and verified image-input capability"
+  ],
+  "deployment": "not performed",
+  "submodule_modified": false,
+  "shared_vllm_configuration_changed": false,
+  "author_contacted": false
+}

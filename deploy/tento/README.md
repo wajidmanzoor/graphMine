@@ -1,153 +1,134 @@
 # Tentō source build and verification
 
-Phase 1 provides a pinned submodule, a local wheel builder, a lazy optional-engine
-loader and a bounded mock smoke. Phase 2 adds snapshot refinement through the
-existing job and preview APIs, using plain reads or explicitly selected mocks.
-The user approved an explicit label mapping; author fixes remain required for
-live calls, independent answer retention and a total query call budget. The
-[Phase 0 report](../../agent/evaluation/reports/tento_phase0_20261127.md) records
-the unsupported contracts. The [author requests](AUTHOR_REQUESTS.md) are a local
-draft; nothing has been sent to the author.
+GraphMine refines an owned database snapshot in a disposable in-memory Tentō
+worker, publishes a separate immutable graph/table version, and retains its
+parent hash, model settings and usage. Plain reads, explicit mocks and live
+models are supported. Live mode and answer retention must be enabled by an
+administrator; defaults remain explicit mocks and administrator-only access.
 
-The [Phase 1 report](../../agent/evaluation/reports/tento_phase1_20261127.md)
-records the installed artifact, startup/mock verification and regression limits.
-The [Phase 2 report](../../agent/evaluation/reports/tento_phase2_20261127.md)
-records the backend contracts and the approved mapping revision. The
-[Phase 3 report](../../agent/evaluation/reports/tento_phase3_20261127.md)
-records the provider, alias, limits and account-access administration. The
-[backend guide](../../docs/SEMANTIC_SNAPSHOT_BACKEND.md) describes the API and
-query syntax. Open `/admin#semantic` for administration, connection checks and
-the native mock test. The [Phase 4 report](../../agent/evaluation/reports/tento_phase4_20261127.md)
-records the snapshot refinement UI, save/chat flow and recorded provenance.
-Admin settings cannot enable unsupported live or answer-cache contracts.
+The user authorized the remaining fixes on 2026-11-27. The pinned submodule stays
+at `62e124217e2c0f82e327136b5888263e95671fae`; a reviewed
+[native patch](patches/0001-supervised-live-contracts.patch) is applied to an
+isolated source export. Its SHA-256 is locked alongside the wheel version.
+The [live verification report](../../agent/evaluation/reports/tento_fixes_20261127.md)
+records the local-Qwen smoke, native control tests, real Neo4j/save/chat/CPU-solver
+flow, and available paper workloads. Missing author datasets/reference judgments
+remain visible. This is not a completed reproduction of all 24 paper workloads.
 
-## Phase 5 acceptance and workload inventory
+The [backend guide](../../docs/SEMANTIC_SNAPSHOT_BACKEND.md) documents the API,
+query syntax and administration. Earlier reports preserve the phase checkpoints:
+[0](../../agent/evaluation/reports/tento_phase0_20261127.md),
+[1](../../agent/evaluation/reports/tento_phase1_20261127.md),
+[2](../../agent/evaluation/reports/tento_phase2_20261127.md),
+[3](../../agent/evaluation/reports/tento_phase3_20261127.md),
+[4](../../agent/evaluation/reports/tento_phase4_20261127.md), and
+[5](../../agent/evaluation/reports/tento_phase5_20261127.md).
+[Upstream requests](AUTHOR_REQUESTS.md) are an unsent local draft.
 
-The [Phase 5 report](../../agent/evaluation/reports/tento_phase5_20261127.md)
-records cross-feature verification and the remaining live prerequisites. The
-new acceptance tests run real native mock refinement, immutable snapshot
-save/chat attachment, and the real CPU densest-subgraph solver. They enumerate
-all subsets of the small selected graph to check the solver's reported density
-and quality independently. The sentiment is simulated fixture data; this does
-not measure Qwen's classification quality.
-
-From the checkout, with the semantic extra and existing native runtime configured:
-
-```bash
-.venv/bin/python -m pytest agent/tests/test_semantic_acceptance.py \
-  agent/tests/test_admin_semantic.py deploy/tests/test_tento_acceptance.py -q
-.venv/bin/python deploy/tento/smoke.py --live --output /tmp/tento-live-gate.json
-.venv/bin/python deploy/tento/acceptance.py \
-  --model-id Qwen/Qwen3.8-27B-FP8 --data-root "$HOME/lbug_data" \
-  --output /tmp/tento-workload-prerequisites.json
-```
-
-Both live commands currently exit **2 (blocked)**. The first executes a native
-mock before checking the live gate. The second only inventories prerequisites:
-it parses the author's workload metadata without importing the runner or scorer,
-records every W1–W24 workload, and never sends model requests. It does not open
-or validate the contents of workload databases. Change `--data-root` if the
-author's datasets and truth exports are installed elsewhere, and pass the actual
-configured local model ID. An existing database file does not establish readiness.
-
-The pinned paper runner has a remote `r_qwen` alias; it has no configuration for
-GraphMine's local Qwen. Its default query list also excludes W22–W24, so a later
-live run must name all 24 queries explicitly. W22 needs the vector extension,
-image vectors and image assets. W22–W24 require verified image-input support.
-W24 deliberately enables answers within its fresh copied database. Several
-workloads have no score in the paper's systems table; the inventory distinguishes
-those from missing reference files and from measurements that were never run.
-
-The author-supported live controls, local routing and shared planner admission
-must be verified before a live runner adapter is implemented. Clearing blocker
-flags or passing this inventory cannot enable live execution. Keep the Tentō
-submodule unchanged and preserve the requested thinking-off and strict-JSON
-contracts. The resulting live flow and workload measurements remain required
-before Phase 5 can be considered complete.
-
-## Phase 1 installation
+## Build and install
 
 Use Linux, CPython 3.12 with development headers, a C++20 compiler, OpenSSL 3
-development files, CMake, Ninja, make, and uv. Python 3.12 is the tested ABI.
-The builder also accepts 3.13–3.14 but those ABIs have not been validated. The
-pinned build-time NumPy requires Python 3.12 or newer; GraphMine without the
-semantic extra retains its existing Python requirement.
-Access to the private GitHub repository is required; the submodule uses SSH.
-Run from the GraphMine checkout:
+headers/libraries, CMake, Ninja, make and uv. Python 3.12 is the tested ABI;
+3.13–3.14 are accepted by the builder but unverified. The private submodule uses
+SSH. From the checkout, build into a new directory when changing patches:
 
 ```bash
 git submodule update --init third_party/tento
 uv venv --python /usr/bin/python3 .venv-semantic
-deploy/tento/build.sh --python "$PWD/.venv-semantic/bin/python"
+deploy/tento/build.sh --python "$PWD/.venv-semantic/bin/python" \
+  --build-dir "$PWD/build/tento-gm1" --install
 uv pip install --python .venv-semantic/bin/python \
-  --find-links build/tento/wheels -e 'agent[semantic]'
+  --find-links build/tento-gm1/wheels -e 'agent[semantic]'
 .venv-semantic/bin/python deploy/tento/smoke.py
 ```
 
-The `semantic` extra requires `graphmine-tento==0.1.0+62e124217e2c`, supplied by
-the local wheel directory. It intentionally does not depend on the public
-`ladybug` package. Without the local wheel, the extra cannot resolve. A regular
-`agent` installation has no Tentō dependency. Do not install both distributions
-that provide `ladybug` into one environment.
+The extra requires `graphmine-tento==0.1.0+62e124217e2c.gm1` from the local wheel
+directory. It does not depend on the public `ladybug` distribution. Do not install
+both into one environment. Ordinary application startup needs no native import.
 
-`build.sh` builds the unchanged submodule's `build-pybind-subdir` target with
-explicit `LBUG_SOURCE_DIR`, bypassing only its heavyweight `requirements` target.
-It never calls `sync`, `bootstrap-capi`, or downloads an upstream engine binary.
-Eight compiler jobs are used by default; `--jobs` adjusts this. Build tools live
-in a separate virtualenv. Packaging copies the Python sources, compiled extension
-and license notices into a temporary staging directory outside the submodule.
-No source patch is applied.
+The builder verifies the unchanged pin and patch hashes, exports the tracked
+source into `<build-dir>/source`, applies the patches, and builds its
+`build-pybind-subdir` target. Native artifacts, build-only dependencies, logs,
+source identity, wheel and build evidence all stay outside the submodule. It
+never calls `sync` or `bootstrap-capi` or downloads an upstream engine binary.
+The default is eight compiler jobs; use `--jobs` to adjust it. A changed pin or
+patch set requires a fresh build directory.
 
-The resulting wheel carries the commit, native SHA-256, Python ABI and platform
-tag. It is a local host build, not a portable manylinux distribution; compatible
-OpenSSL 3, C++ runtime and libc are still required. A different Python ABI or host
-requires a new build. The engine's reported version is unreliable at this commit;
-the source commit and binary hash identify it instead.
+The wheel includes the commit, patch hashes, native SHA-256, license notices,
+Python ABI and platform tag. The loader checks them before importing native code.
+It is a local host build, not a portable manylinux wheel; compatible OpenSSL,
+C++ runtime and libc are required. Rebuild for another ABI or host. The upstream
+engine version string is unreliable at this pin, so use the recorded identities.
 
-`--build-dir /scratch/tento-build` puts the build-only virtualenv, wheels, log and
-`build-evidence.json` elsewhere. Native CMake artifacts stay in ignored build
-directories within the submodule. `--install` additionally installs the wheel
-into the specified virtualenv; the agent and its extra are still installed with
-the command above. Use disposable or development environments, never a pinned
-production/testing runtime. Existing GraphMine services do not need a restart.
+## Live controls and smoke
 
-`graphmine_agent.semantic_engine` is safe to import without Tentō. Its
-`load_engine()` function loads the native extension only on demand, checks its
-distribution, commit, location and hash, and raises the standard `AnalyticsError`
-with HTTP 503 and an installation instruction when missing or incompatible.
-Phase 2 calls it only in the disposable worker. Ordinary application startup
-still needs no native import.
+Each live HTTP attempt carries thinking off, temperature zero, a strict JSON
+schema, and a 4,096-token output ceiling. A schema rejection fails the job; no
+unconstrained retry follows. One atomic process budget covers every attempt,
+including retries, planning and multiple expressions. Usage reads cannot reset
+that budget. GraphMine runs exactly one job per disposable process.
 
-## Smoke and live gate
+The native engine makes its own HTTP requests. A private Unix socket lets the
+supervisor reserve the existing shared planner/account quota and power leases
+before every attempt, then settle provider usage. No model proxy or shared
+vLLM-default changes are involved. The worker receives only its selected
+provider's key. Every query step must use the selected configured alias.
+
+With retention enabled, completed validated batches are written and fsynced to
+an account-private answer file independent of graph storage. Fresh workers can
+reuse answers after cancellation or a later request-limit failure. Cache identity
+covers the snapshot, prompt/input/types, model/provider, relevant revisions,
+credential rotation and strict/thinking contract. Turning reuse off bypasses
+reads while retaining completed answers. Admin clear waits for active workers.
 
 ```bash
-.venv-semantic/bin/python deploy/tento/smoke.py --output /tmp/tento-mock.json
-.venv-semantic/bin/python deploy/tento/smoke.py --live --output /tmp/tento-live.json
+.venv-semantic/bin/python deploy/tento/smoke.py --live \
+  --base-url http://127.0.0.1:8001/v1 --model Qwen/Qwen3.8-27B-FP8 \
+  --output /tmp/tento-live.json
 ```
 
-The default smoke imports the installed wheel, verifies all six required
-functions, and runs `mock:echo` over a one-row in-memory graph query. It runs in a
-child with a 45-second timeout, disables semantic planning calls, removes model
-credentials and uses an unreachable loopback provider URL. No model server is
-contacted.
+Use the actual served ID and endpoint. `GRAPHMINE_LLM_API_KEY` follows the local
+launcher configuration, including its default for an empty value. The default
+smoke sends no HTTP traffic. `--live` requires an explicit endpoint/model and
+runs one supervised completion after the native mock. Exit 0 means the requested
+checks passed, 1 means failure, and 2 means missing prerequisites. A successful
+smoke does not measure paper-workload quality.
 
-At this pinned revision, `--live` runs the mock then exits **2 (blocked)** with
-`semantic_controls_unsupported` and zero model requests. Thinking-off controls
-and strict JSON without an unconstrained retry are not supported. This is a
-visible failed acceptance gate, not a successful live test. An author revision
-must supply that contract before the real local-Qwen invocation can be added
-and verified. The shared vLLM defaults are not changed to compensate.
+## Paper workload measurements
 
-Exit **0** means the requested mock checks passed; **1** means a build/import/
-smoke failure. A mock pass does not establish live readiness, answer persistence,
-or the total call budget. Those remain documented author dependencies in
-`semantic_engine.lock.json` and `AUTHOR_REQUESTS.md`. Phase 2's native mapping
-tests separately verify the user-approved explicit label helpers.
+Preparation uses the author's loaders and supplied movie CSVs. Optional
+OpenFlights downloads record an exact repository commit, input hashes and
+license. Route exports retain the original values under the scorer's `src,dst`
+column names. W19 starts with an empty database so its graph-building operation
+can design the schema. Existing databases are never overwritten.
 
-For an author update, review the new commit, update the submodule, lock and exact
-`semantic` dependency together, rebuild, rerun Phase 0 acceptance checks, and
-implement the verified live-request controls in the smoke. Merely removing the
-blocker flags cannot enable live calls.
+```bash
+.venv/bin/python deploy/tento/prepare_data.py \
+  --data-root /tmp/tento-paper-data --download-openflights
+.venv/bin/python deploy/tento/acceptance.py \
+  --model-id Qwen/Qwen3.8-27B-FP8 --data-root /tmp/tento-paper-data \
+  --output /tmp/tento-prerequisites.json
+.venv/bin/python deploy/tento/run_local.py \
+  --data-root /tmp/tento-paper-data --output /tmp/tento-measurements \
+  --base-url http://127.0.0.1:8001/v1 --model Qwen/Qwen3.8-27B-FP8 \
+  --timeout 300 --call-limit 200
+```
+
+The inventory is read-only and never claims execution or validates database
+contents. It exits 2. The local runner adds a runtime model configuration to the
+author's runner without editing it. Queries, default setup, fresh-copy/cache
+policies and original quality functions are retained. Every W1–W24 workload gets
+a record, including missing inputs, missing quality references, timeouts and
+failures. The timeout/request budget applies separately to each workload. Use
+`--queries W9` for a bounded targeted run; unselected workloads stay explicit.
+A partial report exits 2 and never promotes an absent score to success.
+
+The author's LDBC SF0.1 sample, reference judgments, SemBench sf500 image assets
+and vectors, and Visual Genome vg100 sample are not supplied here. W22 also
+requires its vector extension. Image capability must be verified separately.
+Several workloads have no quality score in the original systems table; those
+are distinguished from unavailable references. Shared server weight revisions
+are recorded only if exposed; a served model ID alone does not establish them.
 
 ## Reproduce the Phase 0 investigation build
 

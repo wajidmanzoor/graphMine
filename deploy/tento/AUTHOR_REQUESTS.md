@@ -5,35 +5,22 @@ Prepared 2026-11-27 against `zacharyzhijun/francis` commit
 sent to the author. [Report and measurements](../../agent/evaluation/reports/tento_phase0_20261127.md)
 and [reproduction instructions](README.md) accompany every request.
 
-GraphMine needs transient in-memory graphs, one query per disposable worker,
-retained answers, a total query-call limit, thinking off and enforced structured
-output. No source modifications or proxy workarounds have been made.
+The user authorized “fix the rest of the things whatever is needed” after the
+Phase 5 checkpoint. GraphMine now carries a reviewable local patch outside the
+unchanged pinned submodule. Requests 1–3 below describe the original upstream
+deficiencies; the local supervised-worker contract addresses them and passes
+native fixtures plus real local-Qwen verification. No message has been sent to
+the author. The earlier author-only decision is superseded for this local work.
 
-Decision recorded 2026-11-27: the user chose to keep the plan and use fixes from
-Tentō's author. Engine patches are not authorized. The remote `main` head was rechecked after that decision and still
-matched the commit above. This draft is ready for the user to forward; no contact
-with the author has been initiated.
+See [the patch](patches/0001-supervised-live-contracts.patch),
+[build instructions](README.md), and
+[live verification](../../agent/evaluation/reports/tento_fixes_20261127.md).
+The remaining author dependencies are the missing benchmark samples/reference
+judgments and optional estimate/per-input judgment APIs. Upstream incorporation
+of the local fixes is still desirable; the unpatched pin retains the behaviors
+reported below. The approved explicit label/identity mapping remains unchanged.
 
-The user subsequently authorized Phase 1 installation while these fixes are
-pending. The pinned submodule, source-wheel build and mock verification may
-proceed. This does not authorize changing Tentō or relaxing the live-provider,
-answer-retention or call-budget contracts.
-
-The user then approved Phase 2 with explicit label helpers and broad data
-preservation, replacing the original one-table-per-label rule. GraphMine now
-uses one `Vertex` table, retained label lists and stable external edge IDs.
-Plain reads and explicitly selected mocks may run through the backend; live
-provider calls and saved-answer reuse remain blocked by requests 1–3 below.
-See the [Phase 2 report](../../agent/evaluation/reports/tento_phase2_20261127.md).
-
-Phase 5 rechecked remote `main` on 2026-11-27 and reran all eight diagnostic groups
-against the same unchanged pin. Requests 1–3 remain unresolved. Cross-feature
-mock/CPU-solver acceptance is now verified; the
-[Phase 5 report](../../agent/evaluation/reports/tento_phase5_20261127.md) separately
-records missing live workload inputs and local-Qwen runner configuration. This
-draft still has not been sent to the author.
-
-## Required for the supplied integration contract
+## Original upstream requirements, now implemented in the local patch
 
 ### 1. An answer store independent of graph persistence
 
@@ -141,4 +128,4 @@ deleting a failing check. Verify the real local-vLLM request controls and the
 approved graph mapping before claiming the feasibility gate passed. Report the
 evidence before enabling live product execution. Phase 2's snapshot backend and
 explicit mock execution were separately authorized while fixes are pending;
-live acceptance remains open.
+the complete paper reproduction remains open until its missing inputs are available.
