@@ -15,6 +15,11 @@ authorized. The remote `main` head was rechecked after that decision and still
 matched the commit above. This draft is ready for the user to forward; no contact
 with the author has been initiated.
 
+The user subsequently authorized Phase 1 installation while these fixes are
+pending. The pinned submodule, source-wheel build and mock verification may
+proceed. This does not authorize changing Tentō or relaxing the live-provider,
+answer-retention, call-budget or graph-mapping contracts.
+
 ## Required for the supplied integration contract
 
 ### 1. An answer store independent of graph persistence
@@ -119,5 +124,6 @@ condition above. The current diagnostic asserts some old behaviors to prove
 them; update those expectations to the approved fixed contract rather than
 deleting a failing check. Verify the real local-vLLM request controls and the
 approved graph mapping before claiming the feasibility gate passed. Report the
-evidence and obtain the planned phase approval before adding the submodule or
-product integration.
+evidence and obtain the planned Phase 2 approval before adding product execution
+routes. Phase 1's source installation was separately authorized while fixes are
+pending; its live acceptance gate remains open.

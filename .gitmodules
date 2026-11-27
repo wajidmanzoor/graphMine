@@ -1,0 +1,3 @@
+[submodule "tento"]
+	path = third_party/tento
+	url = git@github.com:zacharyzhijun/francis.git

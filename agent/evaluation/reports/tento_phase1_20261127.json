@@ -1,0 +1,257 @@
+{
+  "status": "phase1_installation_verified_live_acceptance_pending",
+  "baseline_commit": "c3dcbcf81116301b8e6d4a04ba83e65fecfa51bf",
+  "build": {
+    "timestamp": "2026-11-27T08:45:08.025665+00:00",
+    "source": {
+      "repository": "https://github.com/zacharyzhijun/francis",
+      "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+      "backend": "pybind",
+      "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+      "native_sha256": "a388ba5ac37262944615148666791009050e37b11b6a442d4134c0f2cbf15c50"
+    },
+    "target": {
+      "venv": true,
+      "implementation": "cpython",
+      "version": [
+        3,
+        12
+      ],
+      "platform": "linux",
+      "suffix": ".cpython-312-x86_64-linux-gnu.so"
+    },
+    "build_requirements": [
+      "setuptools==80.9.0",
+      "wheel==0.45.1",
+      "numpy==2.5.5"
+    ],
+    "jobs": 8,
+    "wheel": "/home/wajid/projects/graphDatabaseAgent/validation/tento-phase1-20261127/build/wheels/graphmine_tento-0.1.0+62e124217e2c-cp312-cp312-linux_x86_64.whl",
+    "wheel_sha256": "3e9303048027addc9e4a3ec92a96560bd7df0ad4c719fd4ab1b2b86311f25e19",
+    "installed": true,
+    "log": "/home/wajid/projects/graphDatabaseAgent/validation/tento-phase1-20261127/build/build.log",
+    "live_blockers": [
+      "thinking_off_control",
+      "strict_json_without_fallback"
+    ]
+  },
+  "wheel": {
+    "wheel_metadata": "Wheel-Version: 1.0\nGenerator: setuptools (80.9.0)\nRoot-Is-Purelib: false\nTag: cp312-cp312-linux_x86_64\n\n",
+    "license_files": 21,
+    "native_sha256": "a388ba5ac37262944615148666791009050e37b11b6a442d4134c0f2cbf15c50",
+    "has_debug_artifacts": false
+  },
+  "smoke": {
+    "status": "blocked",
+    "mock": {
+      "status": "passed",
+      "result": {
+        "columns": [
+          "answer"
+        ],
+        "rows": [
+          [
+            "[\"alpha\"]"
+          ]
+        ]
+      }
+    },
+    "live": {
+      "status": "blocked",
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback"
+      ],
+      "requests_sent": 0
+    },
+    "engine": {
+      "repository": "https://github.com/zacharyzhijun/francis",
+      "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+      "backend": "pybind",
+      "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+      "native_sha256": "a388ba5ac37262944615148666791009050e37b11b6a442d4134c0f2cbf15c50"
+    },
+    "functions": [
+      "LLM",
+      "LLM_AGG",
+      "LLM_PATH_AGG",
+      "LLM_SCORE",
+      "LLM_SG_AGG",
+      "SUBGRAPH"
+    ],
+    "error": {
+      "code": "semantic_controls_unsupported",
+      "message": "This Tent\u014d revision cannot enforce thinking off and strict JSON output. Live semantic calls await the author fixes recorded in deploy/tento/AUTHOR_REQUESTS.md."
+    }
+  },
+  "missing_engine": {
+    "status": "failed",
+    "mock": {
+      "status": "not_run"
+    },
+    "live": {
+      "status": "not_requested"
+    },
+    "error": {
+      "code": "semantic_unavailable",
+      "message": "Semantic support is not installed. Ask an administrator to build Tent\u014d with deploy/tento/build.sh and install the agent semantic extra."
+    }
+  },
+  "startup_tests": {
+    "with-engine": {
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0",
+      "time": "1.668"
+    },
+    "without-engine": {
+      "tests": "9",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "1",
+      "time": "1.352"
+    }
+  },
+  "implementation_sha256": {
+    "deploy/tento/build.sh": "ecd5e98649952bf51d9a74640f65d954bcf098eaf7e125de6e60426b9bb9699f",
+    "deploy/tento/build.py": "74de888b884b5981a6a642bb34f280e1f830442dac00a872276ea5578067728b",
+    "deploy/tento/smoke.py": "8d4cfe2037104ebaaf44185092dc46fa852d2b7718027f36589051af649a170a",
+    "agent/graphmine_agent/semantic_engine.py": "9e03419b0b4a1070e6e7aa9df8df41331a08360aa5e23d654d519cd9756a015b",
+    "agent/graphmine_agent/semantic_engine.lock.json": "1b6d3cd683623afbc29ff124a403747ac98a5ff66eb58dd269da0181cb9d0abd",
+    "agent/pyproject.toml": "73eab07e7b806a8accc9d551851fcb30eebb92b81594ea59b657d96248b76f37"
+  },
+  "regression": {
+    "tests": 2147,
+    "failures": 1,
+    "errors": 4,
+    "skipped": 55,
+    "passed": 2087,
+    "time_seconds": 418.125,
+    "unsuccessful_cases": [
+      {
+        "test": "tests.test_adapter_workflows::test_embedded_client_creates_and_closes_a_separate_application",
+        "kind": "failure"
+      },
+      {
+        "test": "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q01]",
+        "kind": "error"
+      },
+      {
+        "test": "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q02]",
+        "kind": "error"
+      },
+      {
+        "test": "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q08]",
+        "kind": "error"
+      },
+      {
+        "test": "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q24]",
+        "kind": "error"
+      }
+    ],
+    "configuration": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "agent/tests",
+        "deploy/tests",
+        "-q",
+        "--tb=short",
+        "--junitxml=/home/wajid/projects/graphDatabaseAgent/validation/tento-phase1-20261127/regression-configured.xml",
+        "-n",
+        "4",
+        "--dist=loadfile"
+      ],
+      "environment": {
+        "GRAPHMINE_RUNTIME_REPOSITORY": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher",
+        "GRAPHMINE_NATIVE_BINARY": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/build/runtime/graphmine-native",
+        "GRAPHMINE_NATIVE_LIBRARY": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/library/build/runtime/libgraphmine_runtime.so",
+        "GRAPHMINE_ANALYTICS_PYTHON": "/home/wajid/projects/graphDatabaseAgent/graphMine-repo/.venv-analytics/bin/python",
+        "GRAPHMINE_REPO": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher",
+        "GRAPHMINE_AGENT_DATA_ROOT": "/home/wajid/projects/graphDatabaseAgent/validation/tento-phase1-20261127/test-data",
+        "CUDA_VISIBLE_DEVICES": "",
+        "CUFILE_LOGFILE_PATH": "/home/wajid/projects/graphDatabaseAgent/validation/tento-phase1-20261127/cufile.log"
+      }
+    }
+  },
+  "baseline_regression": {
+    "tests": 5,
+    "failures": 1,
+    "errors": 4,
+    "skipped": 0,
+    "passed": 0,
+    "time_seconds": 1.113,
+    "unsuccessful_cases": [
+      {
+        "test": "tests.test_adapter_workflows::test_embedded_client_creates_and_closes_a_separate_application",
+        "kind": "failure"
+      },
+      {
+        "test": "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q01]",
+        "kind": "error"
+      },
+      {
+        "test": "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q02]",
+        "kind": "error"
+      },
+      {
+        "test": "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q08]",
+        "kind": "error"
+      },
+      {
+        "test": "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q24]",
+        "kind": "error"
+      }
+    ],
+    "commit": "c3dcbcf81116301b8e6d4a04ba83e65fecfa51bf"
+  },
+  "development": {
+    "smoke": {
+      "status": "passed",
+      "mock": {
+        "status": "passed",
+        "result": {
+          "columns": [
+            "answer"
+          ],
+          "rows": [
+            [
+              "[\"alpha\"]"
+            ]
+          ]
+        }
+      },
+      "live": {
+        "status": "not_requested"
+      },
+      "engine": {
+        "repository": "https://github.com/zacharyzhijun/francis",
+        "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+        "backend": "pybind",
+        "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+        "native_sha256": "a388ba5ac37262944615148666791009050e37b11b6a442d4134c0f2cbf15c50"
+      },
+      "functions": [
+        "LLM",
+        "LLM_AGG",
+        "LLM_PATH_AGG",
+        "LLM_SCORE",
+        "LLM_SG_AGG",
+        "SUBGRAPH"
+      ]
+    },
+    "tests": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 9,
+      "time_seconds": 1.08,
+      "unsuccessful_cases": []
+    },
+    "dependencies_upgraded": false
+  },
+  "system_python_rejected": true
+}

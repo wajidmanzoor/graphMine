@@ -48,6 +48,8 @@ agent/frontend/node_modules
 # Isolated native development builds.
 /build/native-views-*/
 /build/native-family-*/
+/build/tento/
+/.venv-semantic/
 
 # Keep training, data collection, and deployment documentation local.
 /agent/CLI.md

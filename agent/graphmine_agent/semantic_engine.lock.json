@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/zacharyzhijun/francis",
+  "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+  "distribution": "graphmine-tento",
+  "version": "0.1.0+62e124217e2c",
+  "required_functions": ["LLM", "LLM_SCORE", "LLM_AGG", "LLM_PATH_AGG", "LLM_SG_AGG", "SUBGRAPH"],
+  "live_blockers": ["thinking_off_control", "strict_json_without_fallback"],
+  "integration_blockers": ["persistent_answers_for_memory_database", "query_wide_call_budget", "lossless_label_mapping"]
+}
