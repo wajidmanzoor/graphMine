@@ -25,11 +25,11 @@ MAX_CALLS = 1000
 TIMEOUT_SECONDS = 120
 
 
-def check_request(body):
+def check_request(body, *, allowed_aliases=None):
     from .semantic_engine import require_live_controls
     from .semantic_validation import validate_semantic
 
-    steps = validate_semantic(body["statement"])
+    steps = validate_semantic(body["statement"], aliases=allowed_aliases)
     if body.get("reuse_answers"):
         raise AnalyticsError("Saved-answer reuse awaits Tentō's independent answer store.", "semantic_cache_unsupported", 503)
     if steps:
@@ -85,13 +85,23 @@ def child(request_path):
     db = connection = observer = thread = None
     try:
         payload = json.loads(request_path.read_text())
+        # Linux source builds are supported. Reap native work on supervisor
+        # death as well as explicit cancellation, so admission locks stay honest.
+        if sys.platform.startswith("linux") and payload.get("supervisor_pid"):
+            import ctypes
+            import signal
+            if ctypes.CDLL(None, use_errno=True).prctl(1, signal.SIGKILL, 0, 0, 0) != 0:
+                raise RuntimeError("Worker supervision could not be established")
+            if os.getppid() != payload["supervisor_pid"]:
+                return 1
         body, graph = payload["request"], payload["graph"]
+        execution = payload.get("execution") or {}
         steps = check_request(body)  # repeated at the native trust boundary
         progress("validated")
         engine = load_engine()
         db = engine.module.Database(buffer_pool_size=256 * 1024 * 1024, max_num_threads=2, backend="pybind")
         connection = engine.module.Connection(db, num_threads=2)
-        settings = {"llm_base_url": "'http://127.0.0.1:1/v1'", "llm_threads": "1", "llm_batch_size": "16",
+        settings = {"llm_base_url": "'http://127.0.0.1:1/v1'", "llm_threads": "1", "llm_batch_size": str(execution.get("batch_size", 16)),
                     "llm_max_calls": str(min(MAX_CALLS, max(1, body["call_limit"]))), "llm_timeout_ms": "10000",
                     "llm_persistent_cache": "false", "semantic_selectivity_samples": "0",
                     "semantic_path_decomposition": "false", "semantic_join_decomposition": "false"}
@@ -126,7 +136,7 @@ def child(request_path):
         output.update(schema=loaded.schema, usage=dict(totals), engine=engine.manifest, steps=steps,
                       effective_settings={**settings, "provider": "mock" if steps else "none", "model": "mock:echo" if steps else None,
                                           "http_requests": 0, "call_limit_scope": "per_expression", "query_wide_call_limit_supported": False,
-                                          "answers_retained": 0, "mock": bool(steps)})
+                                          "answers_retained": 0, "mock": bool(steps), "admin_policy": execution})
         raw = json.dumps(output, ensure_ascii=False, allow_nan=False).encode()
         if len(raw) > MAX_BYTES:
             raise AnalyticsError("Semantic output exceeds the result byte budget.", "resource_limit")
@@ -152,11 +162,11 @@ def child(request_path):
                 resource.close()
 
 
-def run_worker(graph, body, *, progress=None, timeout=TIMEOUT_SECONDS, command=None, temporary_root=None):
+def run_worker(graph, body, *, progress=None, timeout=TIMEOUT_SECONDS, command=None, temporary_root=None, execution=None):
     from .database_job_context import checkpoint
 
     check_request(body)
-    raw = json.dumps({"graph": graph, "request": body}, ensure_ascii=False, allow_nan=False).encode()
+    raw = json.dumps({"graph": graph, "request": body, "execution": execution or {}, "supervisor_pid": os.getpid()}, ensure_ascii=False, allow_nan=False).encode()
     if len(raw) > MAX_BYTES:
         raise AnalyticsError("The snapshot exceeds the semantic worker's 64 MiB input budget.", "resource_limit")
     progress = progress or (lambda event: checkpoint(event.get("stage"), event.get("completed"), event.get("total"), usage=event.get("usage")))

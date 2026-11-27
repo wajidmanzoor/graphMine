@@ -1,0 +1,192 @@
+{
+  "date": "2026-11-27",
+  "status": "approved_phase3_admin_complete_mock_only",
+  "branch": "devlopment",
+  "base_commit": "7c214a7b7a88cf4af4f0fce9b2e19c3da0a68fbe",
+  "engine": {
+    "repository": "https://github.com/zacharyzhijun/francis",
+    "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+    "backend": "pybind",
+    "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+    "native_sha256": "a388ba5ac37262944615148666791009050e37b11b6a442d4134c0f2cbf15c50"
+  },
+  "engine_lock": {
+    "repository": "https://github.com/zacharyzhijun/francis",
+    "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+    "distribution": "graphmine-tento",
+    "version": "0.1.0+62e124217e2c",
+    "required_functions": [
+      "LLM",
+      "LLM_SCORE",
+      "LLM_AGG",
+      "LLM_PATH_AGG",
+      "LLM_SG_AGG",
+      "SUBGRAPH"
+    ],
+    "live_blockers": [
+      "thinking_off_control",
+      "strict_json_without_fallback"
+    ],
+    "integration_blockers": [
+      "persistent_answers_for_memory_database",
+      "query_wide_call_budget"
+    ],
+    "graph_mapping": "explicit-labels-v1"
+  },
+  "tento_source_modified": false,
+  "admin_url": "/admin#semantic",
+  "verification": {
+    "initial_full_suite": {
+      "tests": 2262,
+      "failures": 1,
+      "errors": 6,
+      "skipped": 56,
+      "passed": 2199,
+      "seconds": 418.206,
+      "unsuccessful_cases": [
+        "tests.test_adapter_workflows::test_embedded_client_creates_and_closes_a_separate_application",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q01]",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q02]",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q08]",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q24]",
+        "tests.test_native_runner::test_incompatible_native_version_is_rejected",
+        "tests.test_answer_determinism::test_group_attribute_facts_are_identical_across_process_hash_seeds"
+      ]
+    },
+    "final_full_suite": {
+      "tests": 2262,
+      "failures": 1,
+      "errors": 4,
+      "skipped": 56,
+      "passed": 2201,
+      "seconds": 415.005,
+      "unsuccessful_cases": [
+        "tests.test_adapter_workflows::test_embedded_client_creates_and_closes_a_separate_application",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q01]",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q02]",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q08]",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q24]"
+      ]
+    },
+    "source_tree_unchanged_during_final_run": true,
+    "phase2_backend_checks": {
+      "tests": 92,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 92,
+      "seconds": 14.545,
+      "unsuccessful_cases": []
+    },
+    "browser_acceptance": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 3,
+      "seconds": 10.306,
+      "unsuccessful_cases": []
+    },
+    "supervision_and_cross_process_admission": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "seconds": 1.771,
+      "unsuccessful_cases": []
+    },
+    "new_phase3_nonbrowser_checks_passed": 21,
+    "new_phase3_browser_checks_passed": 2,
+    "javascript_syntax_passed": true,
+    "api_contract_and_type_checks_passed": true,
+    "generated_api_paths": 180,
+    "native_hash_verified": true,
+    "baseline_issues_remaining": {
+      "failures": 1,
+      "setup_errors": 4,
+      "evidence": "tento_phase1_20261127.md"
+    },
+    "initial_source_stability_errors_resolved": true
+  },
+  "defaults": {
+    "mode": "mock",
+    "max_concurrent_requests": 1,
+    "batch_size": 16,
+    "default_call_limit": 100,
+    "max_calls_per_expression": 1000,
+    "timeout_seconds": 120,
+    "access": "admins",
+    "cache_enabled": false,
+    "cache_max_age_days": 30,
+    "cache_age_policy_active": false,
+    "required_thinking": "off",
+    "required_strict_json": true,
+    "required_temperature": 0
+  },
+  "ranges": {
+    "concurrency": [
+      1,
+      4
+    ],
+    "batch_size": [
+      1,
+      128
+    ],
+    "default_and_maximum_call_limit": [
+      1,
+      1000
+    ],
+    "timeout_seconds": [
+      5,
+      600
+    ],
+    "cache_max_age_days": [
+      1,
+      365
+    ]
+  },
+  "providers": {
+    "default": "graphmine",
+    "reserved_aliases": [
+      "qwen",
+      "mock"
+    ],
+    "credential_directory": "data_root/semantic-credentials",
+    "directory_mode": "0700",
+    "file_mode": "0600",
+    "keys_in_sqlite": false,
+    "keys_returned_to_browser": false,
+    "connection_test": "GET /models",
+    "connection_test_follows_redirects": false,
+    "connection_test_verifies_live_execution": false
+  },
+  "admission": {
+    "shared_across_processes": true,
+    "covers": [
+      "semantic jobs",
+      "admin mock tests"
+    ],
+    "linux_supervisor_death_kills_child": true,
+    "lowered_capacity_blocks_new_workers": true,
+    "queued_access_rechecked": true,
+    "permission_rechecked_before_publication": true,
+    "live_planner_capacity_integration_complete": false
+  },
+  "screenshots": [
+    "validation/tento-phase3-20261127/screenshots/semantic-desktop.png",
+    "validation/tento-phase3-20261127/screenshots/semantic-mobile.png"
+  ],
+  "live_model_requests_sent": 0,
+  "independently_retained_answers": 0,
+  "deployment_changes": false,
+  "phase4_started": false,
+  "evidence_directory": "validation/tento-phase3-20261127",
+  "remaining_live_requirements": [
+    "thinking_off_control",
+    "strict_json_without_fallback",
+    "persistent_answers_for_memory_database",
+    "query_wide_call_budget",
+    "shared_provider_capacity_coordination"
+  ]
+}

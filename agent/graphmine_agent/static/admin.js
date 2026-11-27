@@ -40,6 +40,7 @@
     jobs: "M3 4h18v6H3z M3 14h18v6H3z M7 7h1 M7 17h1",
     model: "M5 6h14v15H5z M9 6V3h6v3 M9 11h6 M9 15h6", data: "M3 5c0-4 18-4 18 0s-18 4-18 0 M3 5v14c0 4 18 4 18 0V5 M3 12c0 4 18 4 18 0",
     capacity: "M5 2v6 M5 12v10 M2 8h6v4H2z M12 2v12 M12 18v4 M9 14h6v4H9z M19 2v3 M19 9v13 M16 5h6v4h-6z",
+    semantic: "M5 6h14v15H5z M9 6V3h6v3 M9 11h6 M9 15h6",
   };
   function navIcon(key) {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"), path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -49,7 +50,7 @@
   const groups = [
     ["Monitor", [["overview", "Overview", "◫"], ["health", "Health", "♡"], ["activity", "Activity", "≋"], ["usage", "Usage analytics", "▥"], ["performance", "Performance", "↗"]]],
     ["Manage", [["users", "Users", "♙"], ["jobs", "Jobs & queue", "☷"], ["model", "Model", "◇"], ["data", "Data & storage", "▤"]]],
-    ["Configure", [["capacity", "Capacity settings", "☷"]]],
+    ["Configure", [["capacity", "Capacity settings", "☷"], ["semantic", "Semantic engine", "◇"]]],
   ];
   const titles = Object.fromEntries(groups.flatMap(([, items]) => items.map(([route, title]) => [route, title])));
   function notice(text = "", error = false) {

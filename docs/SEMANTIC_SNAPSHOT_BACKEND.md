@@ -7,7 +7,8 @@ and database-job controls. It never reruns the original Neo4j query.
 
 The pinned engine currently supports **plain reads and explicit mock execution**
 through this backend. Live models and saved-answer reuse return 503 before
-starting a worker. Admin controls and the query UI belong to later phases.
+starting a worker. Phase 3 adds administration at **Admin → Configure → Semantic
+engine** (`/admin#semantic`). The snapshot refinement UI remains a later phase.
 Install the optional source-built engine using the [build guide](../deploy/tento/README.md).
 
 ## API
@@ -43,6 +44,11 @@ Example mock request:
 with no model operators works without a provider. Mock operators require an
 explicit request `model: "mock"` and query alias `'mock'` or `'mock:echo'`.
 No arbitrary endpoint/model configuration is accepted from query text.
+Omit `call_limit`, or send null, to use the current administrator default. The
+server clamps an explicit limit to the current maximum when the worker starts.
+With accounts enabled, only administrators may run model steps by default;
+administrators can grant access to selected accounts or all accounts. Plain
+snapshot reads retain normal snapshot access without model-step permission.
 
 Optional fields are `directed`, `weight_property` and `name`. In `elements`
 projection, `weight_property` selects a finite numeric edge attribute. In `rows`
@@ -117,13 +123,20 @@ be literals. The supported mock operators are `llm`, `llm_score`, `llm_agg`,
 `llm_score` supplies its integer output automatically; omit `{score INT64}` from
 its prompt. Other operators accept typed outputs, with STRING as the default.
 
-Current server ceilings, pending Phase 3 administration:
+Current server ceilings:
 
 - 64 MiB serialized worker input and output; 256 KiB parameters.
-- 120-second execution timeout; 256 MiB native buffer pool; two compute threads.
-- One mock dispatch thread, 16 inputs per batch, at most 1,000 calls **per
-  expression**. A requested `call_limit` is clamped to this ceiling. It is not
+- Default 120-second execution timeout, configurable from 5 to 600 seconds;
+  256 MiB native buffer pool; two compute threads.
+- One mock dispatch thread per worker. Default 16 inputs per batch, configurable
+  from 1 to 128. Default call limit 100 and maximum 1,000, both configurable from
+  1 to 1,000, with default no greater than maximum. These limits apply **per
+  expression**. A requested `call_limit` is clamped to the current maximum. It is not
   a total query budget: two expressions may each consume that limit.
+- One semantic worker at once by default, configurable from 1 to 4. Kernel locks
+  share this limit across application processes using the same data root,
+  including admin mock tests. Lowering the limit admits no new worker until
+  active work falls below it. Slot waiting uses the existing model queue timeout.
 - Scalar tables: 100,000 rows; row samples: 50 rows and 256 KiB at collection.
 - Existing account storage, pending-job and upload-concurrency limits apply.
 
@@ -136,8 +149,10 @@ rejected until the author provides an independent answer store. Counters observe
 before termination may omit work performed since the last progress event.
 
 The parent monitors the child independently of native execution and kills/reaps
-it on cancellation or timeout. Temporary files are private and removed on every
-exit path. No provider credentials enter the current mock-only child. Errors
+it on cancellation or timeout. On Linux, a child also receives SIGKILL if its
+supervisor dies. Temporary files are private and removed when the supervisor
+exits normally, including handled errors, cancellation and timeout. No provider
+credentials enter the current mock-only child. Errors
 expose stable codes and parser positions where available, not raw engine messages
 that can contain query/property values. Complete results are validated before
 publication; failure exposes no partial snapshot.
@@ -149,3 +164,58 @@ as simulated. Thinking controls, strict structured output without fallback,
 durable answers, a query-wide call budget and shared live-provider scheduling
 must be verified before live execution can be enabled. See the
 [remaining author requests](../deploy/tento/AUTHOR_REQUESTS.md).
+
+## Administration
+
+The Semantic engine page uses existing administrator sessions, cookie mutation
+protection and the secret-free Activity audit. Settings persist in the existing
+settings database and apply without restarting services. `GRAPHMINE_SEMANTIC_*`
+names identify durable admin overrides; this phase does not add environment
+variable parsing for them. The default model-step mode is `mock`; `disabled`
+blocks model operators while allowing plain reads. Live mode returns 503.
+
+Provider metadata and aliases are stored centrally. **GraphMine vLLM** follows
+the server base endpoint and base model; `qwen` and `mock` are reserved aliases.
+Additional OpenAI-compatible providers use private key files under
+`data_root/semantic-credentials` (directory 0700, files 0600). Responses and audit
+records expose only whether a key is set. Credentials are not stored in SQLite.
+Changing an endpoint requires replacing or explicitly removing its saved key.
+Provider/alias edits reject stale revisions; a provider with aliases cannot be
+removed until those aliases are removed. Back up private credentials with the
+data root and preserve their ownership and permissions.
+
+**Test connection** performs a real bounded `GET /models` against the chosen
+base URL, checks configured model IDs and reports the observation time. It does
+not follow redirects, inherit proxy settings, or send a completion request. A
+successful catalog check does not establish live semantic readiness. **Test mock
+pipeline** runs one native `mock:echo` query and verifies its returned value,
+one engine call and zero HTTP requests.
+
+| Admin API | Behavior |
+| --- | --- |
+| `GET /api/admin/semantic` | Current settings, public provider metadata, aliases, accounts and capabilities |
+| `PATCH /api/admin/semantic/settings` | Confirmed update with expected prior values |
+| `POST /api/admin/semantic/providers` | Add provider, optionally supplying a private key |
+| `PUT / DELETE /api/admin/semantic/providers/{id}` | Update/remove with expected revision; delete requires confirmation |
+| `POST /api/admin/semantic/providers/{id}/test` | Check model catalog and configured model IDs |
+| `PUT /api/admin/semantic/aliases` | Add or update an alias; update requires expected revision |
+| `DELETE /api/admin/semantic/aliases/{alias}` | Confirm removal with expected revision |
+| `POST /api/admin/semantic/test-mock` | Native mock pipeline test under the shared semantic worker limit |
+| `POST /api/admin/semantic/cache/clear` | 503 until independent answer retention exists |
+
+Account access is checked at submission, worker admission and before result
+publication. Queued work uses current limits; an active worker retains its
+recorded limits. Changing settings, providers or aliases does not rewrite saved
+provenance. Legacy operation without accounts retains its existing local access.
+
+Cache enablement and clearing remain unavailable. The maximum answer age
+(default 30 days, configurable from 1 to 365) is saved as inactive policy; zero
+answers are independently retained. Thinking off, strict JSON and temperature 0
+are required policies for future live acceptance, not claims about outbound
+requests made by a mock. The page warns when configured semantic concurrency
+meets or exceeds `GRAPHMINE_LLM_MAX_NUM_SEQS`; it never raises planner/server
+capacity. Live execution still requires verified integration with the existing
+planner admission and model wake/sleep lifecycle.
+
+See the [Phase 3 report](../agent/evaluation/reports/tento_phase3_20261127.md) for
+authorization, secret handling, concurrency and browser evidence.

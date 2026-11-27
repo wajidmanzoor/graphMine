@@ -13,8 +13,12 @@ The [Phase 1 report](../../agent/evaluation/reports/tento_phase1_20261127.md)
 records the installed artifact, startup/mock verification and regression limits.
 The [Phase 2 report](../../agent/evaluation/reports/tento_phase2_20261127.md)
 records the backend contracts and the approved mapping revision. The
+[Phase 3 report](../../agent/evaluation/reports/tento_phase3_20261127.md)
+records the provider, alias, limits and account-access administration. The
 [backend guide](../../docs/SEMANTIC_SNAPSHOT_BACKEND.md) describes the API and
-query syntax. There is no semantic UI or admin page yet.
+query syntax. Open `/admin#semantic` for administration, connection checks and
+the native mock test. The snapshot refinement UI remains a later phase. Admin
+settings cannot enable unsupported live or answer-cache contracts.
 
 ## Phase 1 installation
 

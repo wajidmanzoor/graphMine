@@ -3,6 +3,8 @@
 import json
 import os
 from pathlib import Path
+import signal
+import subprocess
 import sys
 import time
 
@@ -103,3 +105,51 @@ def test_live_request_is_rejected_before_spawning(monkeypatch):
     with pytest.raises(AnalyticsError) as error:
         run_worker(GRAPH, {**BODY, "statement": "RETURN llm('qwen','{answer STRING}')"})
     assert error.value.code == "semantic_controls_unsupported"
+
+
+@pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux parent-death supervision")
+def test_worker_stops_when_its_supervisor_is_killed(tmp_path):
+    pid_path = tmp_path / "worker-pid"
+    child_script = f"""
+import os, time, sys
+from pathlib import Path
+from graphmine_agent import semantic_engine, semantic_worker
+def blocked_engine():
+    marker = Path({str(pid_path)!r})
+    marker.with_suffix('.tmp').write_text(str(os.getpid()))
+    marker.with_suffix('.tmp').replace(marker)
+    time.sleep(30)
+    raise RuntimeError('fixture should have been killed')
+semantic_engine.load_engine = blocked_engine
+sys.exit(semantic_worker.child(Path(sys.argv[-1])))
+"""
+    supervisor_script = f"""
+from pathlib import Path
+from graphmine_agent.semantic_worker import run_worker
+run_worker({GRAPH!r}, {BODY!r}, command={[sys.executable, '-c', child_script]!r}, temporary_root=Path({str(tmp_path)!r}))
+"""
+    def running(pid):
+        try:
+            return Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()[0] != "Z"
+        except FileNotFoundError:
+            return False
+    supervisor = subprocess.Popen([sys.executable, "-c", supervisor_script], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    pid = None
+    try:
+        deadline = time.monotonic() + 5
+        while not pid_path.exists() and supervisor.poll() is None and time.monotonic() < deadline:
+            time.sleep(0.02)
+        assert pid_path.exists(), "worker did not reach its supervised execution boundary"
+        pid = int(pid_path.read_text())
+        assert running(pid)
+        supervisor.kill(); supervisor.wait(timeout=5)
+        deadline = time.monotonic() + 3
+        while running(pid) and time.monotonic() < deadline:
+            time.sleep(0.02)
+        assert not running(pid)
+    finally:
+        if supervisor.poll() is None:
+            supervisor.kill()
+        supervisor.wait(timeout=5)
+        if pid is not None and running(pid):
+            os.kill(pid, signal.SIGKILL)

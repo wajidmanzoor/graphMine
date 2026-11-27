@@ -120,6 +120,16 @@ class Settings:
     max_model_calls: int = 2
     llm_max_num_seqs: int = 2
     model_queue_seconds: int = 60
+    semantic_mode: str = "mock"
+    semantic_max_concurrent_requests: int = 1
+    semantic_batch_size: int = 16
+    semantic_default_call_limit: int = 100
+    semantic_max_calls: int = 1000
+    semantic_timeout_seconds: int = 120
+    semantic_cache_enabled: bool = False
+    semantic_cache_max_age_days: int = 30
+    semantic_access: str = "admins"
+    semantic_accounts: tuple[str, ...] = ()
     account_pending_jobs: int = 8
     account_running_jobs: int = 4
     account_user_running_jobs: int = 1

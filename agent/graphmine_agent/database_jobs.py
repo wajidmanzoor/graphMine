@@ -295,6 +295,8 @@ class DatabaseJobs:
         source = get_source(self.runtime.settings, job["source_id"])
         if job["kind"] == "semantic":
             from .semantic_queries import base_snapshot
+            from .semantic_policy import execution_policy
+            execution_policy(self.runtime, job["query"])
             base = base_snapshot(self.runtime, job["query"]["base_version_id"])
             if base["sha256"] != job["base_sha256"]:
                 raise AnalyticsError("The base snapshot no longer matches the admitted input.", "data_integrity", 409)

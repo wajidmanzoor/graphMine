@@ -173,7 +173,7 @@ def prompt_fields(prompt):
     return inputs, outputs
 
 
-def _validate(items, *, allow_models=True, expression=False):
+def _validate(items, *, allow_models=True, expression=False, aliases=None):
     if not items or not expression and items[0].text.upper() not in READ_START:
         reject()
     if any(t.text == ";" and t.kind == "symbol" for t in items[:-1]) or expression and any(t.text == ";" for t in items):
@@ -209,8 +209,8 @@ def _validate(items, *, allow_models=True, expression=False):
             if len(parts) <= prompt_index or len(parts[model_index]) != 1 or len(parts[prompt_index]) != 1:
                 reject("Use literal model aliases and prompts in semantic functions.")
             model = string_value(parts[model_index][0])
-            if model not in {"mock", "mock:echo", "qwen"}:
-                reject("Choose an approved model alias: mock or qwen.")
+            if model not in (aliases if aliases is not None else {"mock", "mock:echo", "qwen"}):
+                reject("Choose a configured semantic model alias.")
             prompt = string_value(parts[prompt_index][0])
             inputs, outputs = prompt_fields(prompt)
             if name == "LLM_SCORE":
@@ -226,5 +226,5 @@ def _validate(items, *, allow_models=True, expression=False):
     return steps
 
 
-def validate_semantic(statement):
-    return _validate(tokens(statement))
+def validate_semantic(statement, *, aliases=None):
+    return _validate(tokens(statement), aliases=aliases)

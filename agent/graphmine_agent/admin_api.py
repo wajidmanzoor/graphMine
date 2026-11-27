@@ -92,6 +92,8 @@ def register_admin_routes(app):
     router = APIRouter(prefix="/api/admin", dependencies=[Depends(administrator)])
     from .admin_neo4j import register as register_neo4j
     register_neo4j(router)
+    from .admin_semantic import register as register_semantic
+    register_semantic(router)
 
     @router.get("/badges")
     def badges(request: Request):

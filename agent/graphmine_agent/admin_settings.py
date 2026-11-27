@@ -31,7 +31,19 @@ CAPACITY_DEFINITIONS = (
 )
 CAPACITY_KEYS = {key: (attribute, "integer", low, high, restart) for key, attribute, low, high, restart, *_ in CAPACITY_DEFINITIONS}
 NULLABLE_KEYS = {"GRAPHMINE_ANALYTICS_MAX_INPUT_BYTES"}
-ALLOWLIST = {**MODEL_KEYS, **CAPACITY_KEYS}
+SEMANTIC_KEYS = {
+    "GRAPHMINE_SEMANTIC_MODE": ("semantic_mode", "semantic_mode", None, None, False),
+    "GRAPHMINE_SEMANTIC_MAX_CONCURRENT_REQUESTS": ("semantic_max_concurrent_requests", "integer", 1, 4, False),
+    "GRAPHMINE_SEMANTIC_BATCH_SIZE": ("semantic_batch_size", "integer", 1, 128, False),
+    "GRAPHMINE_SEMANTIC_DEFAULT_CALL_LIMIT": ("semantic_default_call_limit", "integer", 1, 1000, False),
+    "GRAPHMINE_SEMANTIC_MAX_CALLS": ("semantic_max_calls", "integer", 1, 1000, False),
+    "GRAPHMINE_SEMANTIC_TIMEOUT_SECONDS": ("semantic_timeout_seconds", "integer", 5, 600, False),
+    "GRAPHMINE_SEMANTIC_CACHE_ENABLED": ("semantic_cache_enabled", "bool", None, None, False),
+    "GRAPHMINE_SEMANTIC_CACHE_MAX_AGE_DAYS": ("semantic_cache_max_age_days", "integer", 1, 365, False),
+    "GRAPHMINE_SEMANTIC_ACCESS": ("semantic_access", "semantic_access", None, None, False),
+    "GRAPHMINE_SEMANTIC_ACCOUNTS": ("semantic_accounts", "account_ids", None, None, False),
+}
+ALLOWLIST = {**MODEL_KEYS, **CAPACITY_KEYS, **SEMANTIC_KEYS}
 _save_lock = RLock()
 
 
@@ -45,9 +57,27 @@ def validate(key, value):
     if key in NULLABLE_KEYS and value is None:
         return None
     _, kind, low, high, _ = ALLOWLIST[key]
+    if key == "GRAPHMINE_SEMANTIC_CACHE_ENABLED" and value is True:
+        from .errors import AnalyticsError
+        raise AnalyticsError("Saved-answer reuse awaits Tentō's independent answer store.", "semantic_cache_unsupported", 503)
     if kind == "bool":
         if type(value) is not bool:
             raise ValueError(f"{key} must be true or false.")
+    elif kind == "semantic_mode":
+        if value == "live":
+            from .semantic_engine import require_live_controls
+            from .errors import AnalyticsError
+            require_live_controls()
+            raise AnalyticsError("Live execution also requires verified answer retention, query budgets and shared provider admission.", "semantic_live_unsupported", 503)
+        if value not in ("disabled", "mock"):
+            raise ValueError("Choose disabled or mock model steps.")
+    elif kind == "semantic_access":
+        if value not in ("admins", "selected", "all"):
+            raise ValueError("Choose administrators, selected accounts or all accounts.")
+    elif kind == "account_ids":
+        if not isinstance(value, (list, tuple)) or len(value) > 1000 or any(not isinstance(x, str) or not 1 <= len(x) <= 128 for x in value) or len(set(value)) != len(value):
+            raise ValueError("Choose distinct account IDs.")
+        value = tuple(value)
     elif kind == "stages":
         if not isinstance(value, (list, tuple)) or any(x not in THINKING_STAGES for x in value) or len(set(value)) != len(value):
             raise ValueError("Choose distinct Family, Topic, Route, Clarify or Explanation steps.")
@@ -73,6 +103,7 @@ def upload_aliases(changes):
 
 def values(settings, keys=MODEL_KEYS):
     return {key: list(THINKING_STAGES) if getattr(settings, spec[0]) is None and spec[1] == "stages"
+            else list(getattr(settings, spec[0])) if spec[1] in {"account_ids", "stages"} and getattr(settings, spec[0]) is not None
             else getattr(settings, spec[0]) for key, spec in keys.items()}
 
 
@@ -100,6 +131,13 @@ def _save(runtime, changes, *, keys, target, expected):
     if expected is not None and any(k not in expected or expected[k] != values(current, keys)[k] for k in checked):
         raise AccountError("Settings changed since this page loaded. Reload and review the new values.", "settings_conflict", 409)
     proposed = replace(current, **upload_aliases({ALLOWLIST[k][0]: v for k, v in checked.items()}))
+    if set(checked) & set(SEMANTIC_KEYS):
+        if proposed.semantic_default_call_limit > proposed.semantic_max_calls:
+            raise ValueError("The default semantic call limit cannot exceed its maximum.")
+        with runtime.database._connect() as db:
+            known = {row[0] for row in db.execute("SELECT id FROM accounts")}
+        if set(proposed.semantic_accounts) - known:
+            raise ValueError("A selected semantic account no longer exists. Reload the account list.")
     if set(checked) & {"GRAPHMINE_MAX_MODEL_CALLS", "GRAPHMINE_LLM_MAX_NUM_SEQS"} and proposed.llm_max_num_seqs < proposed.max_model_calls:
         raise ValueError("vLLM requests at once must be at least Model calls at once.")
     if set(checked) & {"GRAPHMINE_ACCOUNT_DAILY_TOKENS", "GRAPHMINE_SERVER_DAILY_TOKENS"} and proposed.account_daily_tokens > proposed.server_daily_tokens:

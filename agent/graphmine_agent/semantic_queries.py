@@ -19,15 +19,15 @@ from .query_previews import QueryPreviews
 from .query_results import graph_preview, is_database_query
 from .semantic_engine import engine_lock
 from .semantic_loader import encoded, key, schema
-from .semantic_worker import MAX_BYTES, MAX_CALLS, TIMEOUT_SECONDS, check_request, run_worker
+from .semantic_worker import MAX_BYTES, run_worker
 
 
 class SemanticRequest(Strict):
     base_version_id: str = Field(min_length=1, max_length=128)
     statement: str = Field(min_length=1, max_length=20_000)
     parameters: dict[str, Any] = Field(default_factory=dict)
-    model: Literal["qwen", "mock"] = "qwen"
-    call_limit: int = Field(default=100, ge=1, le=1_000_000, strict=True)
+    model: str = Field(default="qwen", pattern=r"^[a-z][a-z0-9_]{0,31}$")
+    call_limit: int | None = Field(default=None, ge=1, le=1_000_000, strict=True)
     reuse_answers: bool = False
     projection: Literal["elements", "rows"] = "elements"
     directed: bool | None = None
@@ -62,7 +62,8 @@ def prepare_request(runtime, body):
         raise AnalyticsError("Semantic parameters exceed the byte budget.", "resource_limit")
     if body.projection == "rows" and body.weight_property:
         raise AnalyticsError("Row projection takes its weight from the column returned AS weight.", "query_projection")
-    check_request(body.model_dump())
+    from .semantic_policy import execution_policy
+    execution_policy(runtime, body.model_dump())
     lock = engine_lock()
     try:
         version = package_metadata.version(lock["distribution"])
@@ -74,20 +75,27 @@ def prepare_request(runtime, body):
 
 
 def snapshot_schema(runtime, identifier):
+    from .admin_settings import load
+    from .semantic_policy import allowed
     metadata, raw = base_snapshot(runtime, identifier, content=True)
+    settings = load(runtime.settings, runtime.database)
     return {"base_version_id": identifier, "sha256": metadata["sha256"], "schema": schema(json.loads(raw)),
-            "capabilities": {"plain_queries": True, "mock_queries": True, "live_queries": False,
+            "capabilities": {"plain_queries": True, "mock_queries": settings.semantic_mode == "mock" and allowed(settings), "live_queries": False,
                              "answer_reuse": False, "query_wide_call_limit": False, "call_estimate": False,
                              "judgments": False, "max_input_bytes": MAX_BYTES, "max_output_bytes": MAX_BYTES,
-                             "timeout_seconds": TIMEOUT_SECONDS, "max_mock_calls_per_expression": MAX_CALLS,
+                             "timeout_seconds": settings.semantic_timeout_seconds, "max_mock_calls_per_expression": settings.semantic_max_calls,
+                             "default_call_limit": settings.semantic_default_call_limit, "max_concurrent_requests": settings.semantic_max_concurrent_requests,
                              "blockers": engine_lock()["live_blockers"] + engine_lock()["integration_blockers"]}}
 
 
 def run_query(runtime, body):
+    from .semantic_policy import slot
     started = perf_counter()
     base, raw = base_snapshot(runtime, body.base_version_id, content=True)
     checkpoint("loading")
-    output = run_worker(json.loads(raw), body.model_dump())
+    with slot(runtime, body.model_dump()) as policy:
+        output = run_worker(json.loads(raw), {**body.model_dump(), "call_limit": policy["call_limit"]},
+                            execution=policy, timeout=policy["timeout_seconds"])
     checkpoint("validating", output["row_count"])
     graph = output["value"] if output["kind"] == "graph" else {
         "graph": {"id": "semantic-table", "directed": True, "allows_self_loops": True, "allows_parallel_edges": True}, "vertices": [], "edges": []}
