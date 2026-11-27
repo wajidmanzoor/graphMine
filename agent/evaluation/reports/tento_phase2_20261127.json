@@ -1,0 +1,124 @@
+{
+  "date": "2026-11-27",
+  "status": "approved_phase2_backend_complete_mock_only",
+  "branch": "devlopment",
+  "base_commit": "5aa105b8942b518303237da6eb9b33db265aec3e",
+  "engine": {
+    "repository": "https://github.com/zacharyzhijun/francis",
+    "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+    "backend": "pybind",
+    "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+    "native_sha256": "a388ba5ac37262944615148666791009050e37b11b6a442d4134c0f2cbf15c50"
+  },
+  "engine_lock": {
+    "repository": "https://github.com/zacharyzhijun/francis",
+    "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+    "distribution": "graphmine-tento",
+    "version": "0.1.0+62e124217e2c",
+    "required_functions": [
+      "LLM",
+      "LLM_SCORE",
+      "LLM_AGG",
+      "LLM_PATH_AGG",
+      "LLM_SG_AGG",
+      "SUBGRAPH"
+    ],
+    "live_blockers": [
+      "thinking_off_control",
+      "strict_json_without_fallback"
+    ],
+    "integration_blockers": [
+      "persistent_answers_for_memory_database",
+      "query_wide_call_budget"
+    ],
+    "graph_mapping": "explicit-labels-v1"
+  },
+  "tento_source_modified": false,
+  "mapping": {
+    "revision": "explicit-labels-v1",
+    "user_approved": true,
+    "vertex_table": "Vertex",
+    "label_helpers": [
+      "has_label",
+      "labels_of"
+    ],
+    "mixed_scalars": "typed UNION",
+    "nested_values": "JSON",
+    "original_snapshot_records_authoritative": true,
+    "json_path_functions_available": false
+  },
+  "verification": {
+    "initial_full_suite": {
+      "tests": 2239,
+      "failures": 3,
+      "errors": 4,
+      "skipped": 54,
+      "passed": 2178,
+      "seconds": 410.743,
+      "unsuccessful_cases": [
+        "tests.test_semantic_native::test_call_limit_failure_retains_usage_without_a_partial_result",
+        "tests.test_adapter_workflows::test_embedded_client_creates_and_closes_a_separate_application",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q01]",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q02]",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q08]",
+        "tests.test_yelp_instance_integration::test_published_yelp_query_through_app_read_path[Q24]",
+        "tests.test_api_contracts::test_generated_contracts_and_type_checks_are_current"
+      ]
+    },
+    "final_affected_suite": {
+      "tests": 174,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 174,
+      "seconds": 20.597,
+      "unsuccessful_cases": []
+    },
+    "new_phase2_tests_passed": 92,
+    "new_failures_resolved": [
+      "test_generated_contracts_and_type_checks_are_current",
+      "test_call_limit_failure_retains_usage_without_a_partial_result"
+    ],
+    "baseline_issues_remaining": {
+      "failures": 1,
+      "setup_errors": 4,
+      "evidence": "tento_phase1_20261127.md"
+    },
+    "full_suite_repeated_after_fixes": false,
+    "generated_api_paths": 171,
+    "mock_batch_limit_observation": {
+      "selected_inputs": 40,
+      "limit_per_expression": 1,
+      "calls": 0,
+      "published_snapshot": false
+    },
+    "two_expression_observation": {
+      "limit_per_expression": 1,
+      "calls": 2,
+      "http_requests": 0
+    },
+    "native_hash_verified": true
+  },
+  "limits": {
+    "input_output_bytes": 67108864,
+    "parameter_bytes": 262144,
+    "timeout_seconds": 120,
+    "buffer_pool_bytes": 268435456,
+    "compute_threads": 2,
+    "mock_dispatch_threads": 1,
+    "batch_size": 16,
+    "mock_calls_per_expression": 1000
+  },
+  "live_requests_sent": 0,
+  "independently_retained_answers": 0,
+  "phase3_started": false,
+  "deployment_changes": false,
+  "evidence_directory": "validation/tento-phase2-20261127",
+  "remaining_live_requirements": [
+    "thinking_off_control",
+    "strict_json_without_fallback",
+    "persistent_answers_for_memory_database",
+    "query_wide_call_budget",
+    "shared_provider_capacity_coordination"
+  ]
+}

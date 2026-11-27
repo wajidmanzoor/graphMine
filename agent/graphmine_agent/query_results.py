@@ -12,7 +12,7 @@ def is_database_query(source):
         if source.get("type") == "database_query":
             return True
         parent = source.get("parent")
-        source = parent.get("source") if source.get("type") == "upload" and isinstance(parent, dict) else None
+        source = parent.get("source") if source.get("type") in {"upload", "semantic_query"} and isinstance(parent, dict) else None
     return False
 
 

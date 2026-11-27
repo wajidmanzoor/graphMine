@@ -340,6 +340,10 @@ class DatasetLibrary:
     def delete(self, version_id):
         self.get(version_id)
         with self.database._lock, self.database._connect() as db:
+            from .query_previews import snapshot_in_use
+            db.execute("BEGIN IMMEDIATE")
+            if snapshot_in_use(db, version_id, _owner()):
+                raise AnalyticsError("This snapshot is in use by a semantic job. Cancel or finish that job first.", "snapshot_in_use", 409)
             db.execute(
                 "DELETE FROM dataset_versions WHERE id=? AND owner_id IS ?",
                 (version_id, _owner()),

@@ -526,12 +526,14 @@ def register_database_query_routes(router):
     from .database_datasets import register_dataset_routes
     from .database_schema import register_schema_routes
     from .table_artifacts import register_table_routes
+    from .semantic_queries import register_semantic_routes
 
     register_connection_routes(router)
     register_benchmark_routes(router)
     register_dataset_routes(router)
     register_schema_routes(router)
     register_table_routes(router)
+    register_semantic_routes(router)
     @router.get("/database-sources")
     def sources(request: Request):
         return [

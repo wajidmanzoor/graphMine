@@ -5,10 +5,12 @@ from contextvars import ContextVar
 current_database_job = ContextVar("graphmine_database_job", default=None)
 
 
-def checkpoint(stage=None, completed=None, total=None, *, message=None):
+def checkpoint(stage=None, completed=None, total=None, *, message=None, usage=None):
     control = current_database_job.get()
     if control:
-        if message is None:
+        if usage is not None:
+            control.checkpoint(stage, completed, total, message=message, usage=usage)
+        elif message is None:
             control.checkpoint(stage, completed, total)
         else:
             control.checkpoint(stage, completed, total, message=message)

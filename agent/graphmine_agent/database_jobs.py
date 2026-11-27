@@ -54,7 +54,7 @@ class JobControl:
         self.last_update = 0
         self.stage = None
 
-    def checkpoint(self, stage=None, completed=None, total=None, *, message=None):
+    def checkpoint(self, stage=None, completed=None, total=None, *, message=None, usage=None):
         if self.sealed:
             return
         if self.stopped.is_set():
@@ -72,6 +72,8 @@ class JobControl:
                 job["progress"] = {"stage": stage, "completed": completed, "total": total}
                 if message:
                     job["progress"]["message"] = message
+                if usage is not None:
+                    job["progress"]["usage"] = usage
         self.service._change(self.job["id"], update)
 
     def seal(self, stage):
@@ -185,14 +187,22 @@ class DatabaseJobs:
                 "offset": offset, "has_more": len(rows) > limit}
 
     def enqueue(self, kind, source_id, query=None, *, request_key=None):
+        if kind == "semantic":
+            return self._enqueue(kind, source_id, query, request_key=request_key)
         from .neo4j_access import admission
         with admission(self.runtime.settings):
             return self._enqueue(kind, source_id, query, request_key=request_key)
 
     def _enqueue(self, kind, source_id, query=None, *, request_key=None):
         source = get_source(self.runtime.settings, source_id)
-        if kind not in {"query", "sync"}:
+        if kind not in {"query", "sync", "semantic"}:
             raise ValueError("Unknown database job kind")
+        base = None
+        if kind == "semantic":
+            from .semantic_queries import prepare_request
+            base = prepare_request(self.runtime, query)
+            if base["source"]["database_source"]["id"] != source_id:
+                raise AnalyticsError("The snapshot does not belong to this source.", "semantic_input", 409)
         if kind == "sync" and source.sql_type is None:
             raise AnalyticsError("This connection has no SQL source to synchronize. Neo4j queries remain available.", "sql_unavailable", 409)
         if kind == "sync" and not source.entities:
@@ -213,6 +223,13 @@ class DatabaseJobs:
                "cancellable": True, "created_at": now, "updated_at": now, "error": None, "result": None}
         with self.database._lock, self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
+            if base:
+                # Recheck under the same writer lock used by expiry/deletion.
+                from .semantic_queries import base_snapshot
+                current = base_snapshot(self.runtime, query.base_version_id)
+                if current["sha256"] != base["sha256"]:
+                    raise AnalyticsError("The base snapshot changed before admission.", "data_integrity", 409)
+                job["base_sha256"] = base["sha256"]
             self._prune_finished()
             if request_key:
                 for entry in self._finished.values():
@@ -267,10 +284,21 @@ class DatabaseJobs:
         if job["status"] not in {"failed", "cancelled", "interrupted"}:
             raise AnalyticsError("Only stopped or failed work can be retried.", "database_job_state", 409)
         self._check_source(job)
-        return self.enqueue(job["kind"], job["source_id"], CypherRequest.model_validate(job["query"]) if job["query"] else None, request_key=request_key)
+        if job["kind"] == "semantic":
+            from .semantic_queries import SemanticRequest
+            query = SemanticRequest.model_validate(job["query"])
+        else:
+            query = CypherRequest.model_validate(job["query"]) if job["query"] else None
+        return self.enqueue(job["kind"], job["source_id"], query, request_key=request_key)
 
     def _check_source(self, job):
         source = get_source(self.runtime.settings, job["source_id"])
+        if job["kind"] == "semantic":
+            from .semantic_queries import base_snapshot
+            base = base_snapshot(self.runtime, job["query"]["base_version_id"])
+            if base["sha256"] != job["base_sha256"]:
+                raise AnalyticsError("The base snapshot no longer matches the admitted input.", "data_integrity", 409)
+            return source
         if source.fingerprint() != job["source_fingerprint"]:
             raise AnalyticsError("The connection or mapping changed. Review it and submit new work.", "source_changed", 409)
         return source
@@ -395,7 +423,11 @@ class DatabaseJobs:
             with identity_scope(self._principal(job["owner_id"])), pool_scope(self.runtime.database_pools):
                 control.checkpoint("connecting")
                 source = self._check_source(job)
-                if job["kind"] == "query":
+                if job["kind"] == "semantic":
+                    from .semantic_queries import SemanticRequest, run_query as run_semantic
+                    response = run_semantic(self.runtime, SemanticRequest.model_validate(job["query"]))
+                    result = self._query_result(response)
+                elif job["kind"] == "query":
                     from .database_queries import CypherRequest, run_query
 
                     response = run_query(self.runtime, job["source_id"], CypherRequest.model_validate(job["query"]))
@@ -507,7 +539,7 @@ def private_response(value):
 
 def register_database_job_routes(router):
     @router.get("/database-jobs")
-    def jobs(request: Request, source_id: str | None = None, kind: Literal["query", "sync"] | None = None, offset: int = Query(0, ge=0), limit: int = Query(20, ge=1, le=100)):
+    def jobs(request: Request, source_id: str | None = None, kind: Literal["query", "sync", "semantic"] | None = None, offset: int = Query(0, ge=0), limit: int = Query(20, ge=1, le=100)):
         return private_response(request.app.state.runtime.database_jobs.list(source_id=source_id, kind=kind, offset=offset, limit=limit))
 
     @router.get("/database-jobs/{identifier}")

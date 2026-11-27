@@ -1,15 +1,20 @@
 # Tentō source build and verification
 
 Phase 1 provides a pinned submodule, a local wheel builder, a lazy optional-engine
-loader and a bounded mock smoke. It does not enable semantic queries in the app.
-The user authorized this installation work after Phase 0; author fixes remain
-required before live acceptance and Phase 2. The
+loader and a bounded mock smoke. Phase 2 adds snapshot refinement through the
+existing job and preview APIs, using plain reads or explicitly selected mocks.
+The user approved an explicit label mapping; author fixes remain required for
+live calls, independent answer retention and a total query call budget. The
 [Phase 0 report](../../agent/evaluation/reports/tento_phase0_20261127.md) records
 the unsupported contracts. The [author requests](AUTHOR_REQUESTS.md) are a local
 draft; nothing has been sent to the author.
 
 The [Phase 1 report](../../agent/evaluation/reports/tento_phase1_20261127.md)
 records the installed artifact, startup/mock verification and regression limits.
+The [Phase 2 report](../../agent/evaluation/reports/tento_phase2_20261127.md)
+records the backend contracts and the approved mapping revision. The
+[backend guide](../../docs/SEMANTIC_SNAPSHOT_BACKEND.md) describes the API and
+query syntax. There is no semantic UI or admin page yet.
 
 ## Phase 1 installation
 
@@ -61,8 +66,8 @@ production/testing runtime. Existing GraphMine services do not need a restart.
 `load_engine()` function loads the native extension only on demand, checks its
 distribution, commit, location and hash, and raises the standard `AnalyticsError`
 with HTTP 503 and an installation instruction when missing or incompatible.
-Phase 2 will call it in the disposable worker. No semantic execution route or UI
-is exposed in Phase 1.
+Phase 2 calls it only in the disposable worker. Ordinary application startup
+still needs no native import.
 
 ## Smoke and live gate
 
@@ -86,8 +91,9 @@ and verified. The shared vLLM defaults are not changed to compensate.
 
 Exit **0** means the requested mock checks passed; **1** means a build/import/
 smoke failure. A mock pass does not establish live readiness, answer persistence,
-the total call budget or correct multi-label mapping. Those remain documented
-author dependencies in `semantic_engine.lock.json` and `AUTHOR_REQUESTS.md`.
+or the total call budget. Those remain documented author dependencies in
+`semantic_engine.lock.json` and `AUTHOR_REQUESTS.md`. Phase 2's native mapping
+tests separately verify the user-approved explicit label helpers.
 
 For an author update, review the new commit, update the submodule, lock and exact
 `semantic` dependency together, rebuild, rerun Phase 0 acceptance checks, and

@@ -10,15 +10,21 @@ retained answers, a total query-call limit, thinking off and enforced structured
 output. No source modifications or proxy workarounds have been made.
 
 Decision recorded 2026-11-27: the user chose to keep the plan and use fixes from
-Tentō's author. Engine patches and a revised GraphMine workaround are not
-authorized. The remote `main` head was rechecked after that decision and still
+Tentō's author. Engine patches are not authorized. The remote `main` head was rechecked after that decision and still
 matched the commit above. This draft is ready for the user to forward; no contact
 with the author has been initiated.
 
 The user subsequently authorized Phase 1 installation while these fixes are
 pending. The pinned submodule, source-wheel build and mock verification may
 proceed. This does not authorize changing Tentō or relaxing the live-provider,
-answer-retention, call-budget or graph-mapping contracts.
+answer-retention or call-budget contracts.
+
+The user then approved Phase 2 with explicit label helpers and broad data
+preservation, replacing the original one-table-per-label rule. GraphMine now
+uses one `Vertex` table, retained label lists and stable external edge IDs.
+Plain reads and explicitly selected mocks may run through the backend; live
+provider calls and saved-answer reuse remain blocked by requests 1–3 below.
+See the [Phase 2 report](../../agent/evaluation/reports/tento_phase2_20261127.md).
 
 ## Required for the supplied integration contract
 
@@ -74,17 +80,19 @@ control and a JSON schema; rejection of the required schema surfaces a structure
 error with no unconstrained retry. Reproduce today with `--case providers` and
 `--case limits`. Live Qwen verification follows once this contract is supported.
 
-### 4. Clarify or support lossless label and relationship identity mapping
+### 4. Label and relationship identity mapping — resolved in GraphMine
 
 Creating a node with two independent labels is rejected. `MATCH
 (n:Person:Review)` returns nodes from either table. A relationship `PRIMARY KEY`
 declaration is rejected, although an ordinary `gm_id` property is retained.
 
-Please confirm the intended representation for Neo4j vertices with several
-labels and stable external relationship IDs. The integration brief currently
-says one table per label with vertex/edge IDs as primary keys. Duplicating one
-vertex across tables changes topology, and silently selecting one label loses
-query semantics. An explicit approved mapping or engine support is needed.
+The user approved an explicit mapping: one `Vertex` table with a label list,
+`has_label(n, label)` and `labels_of(n)` helpers, one relationship table per type,
+typed external IDs and prevalidated edge-ID uniqueness. Returned elements are
+recovered from original snapshot records, including parallel edges. Mixed scalar
+properties use typed unions; nested/irregular properties use JSON. This resolves
+the GraphMine mapping blocker without changing Tentō. Engine-native multi-label
+syntax is no longer required by the revised plan.
 
 Acceptance: a multiply labeled source vertex remains one vertex; both label
 selections and traversals resolve to that same identity; parallel edges retain
@@ -124,6 +132,6 @@ condition above. The current diagnostic asserts some old behaviors to prove
 them; update those expectations to the approved fixed contract rather than
 deleting a failing check. Verify the real local-vLLM request controls and the
 approved graph mapping before claiming the feasibility gate passed. Report the
-evidence and obtain the planned Phase 2 approval before adding product execution
-routes. Phase 1's source installation was separately authorized while fixes are
-pending; its live acceptance gate remains open.
+evidence before enabling live product execution. Phase 2's snapshot backend and
+explicit mock execution were separately authorized while fixes are pending;
+live acceptance remains open.

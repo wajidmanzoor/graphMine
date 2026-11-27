@@ -16,6 +16,18 @@ from .neo4j_records import require_visible, tagged
 
 PREVIEW_SECONDS = 24 * 3600
 
+# Active jobs are durable snapshot leases; completion/cancellation/recovery
+# deletes the job row and releases the lease in the same transaction.
+UNPINNED = """NOT EXISTS (SELECT 1 FROM database_jobs j WHERE j.kind='semantic'
+    AND j.status IN ('queued','running','cancelling') AND j.owner_id=query_previews.owner_id
+    AND json_extract(j.document,'$.query.base_version_id')=query_previews.id)"""
+
+
+def snapshot_in_use(db, identifier, owner):
+    return db.execute("""SELECT 1 FROM database_jobs WHERE kind='semantic' AND owner_id=?
+        AND status IN ('queued','running','cancelling')
+        AND json_extract(document,'$.query.base_version_id')=? LIMIT 1""", (owner or "", identifier)).fetchone() is not None
+
 
 def _discard_unreferenced(db):
     db.execute("""
@@ -38,8 +50,8 @@ def expire_previews(database, now=None):
     with database._lock, database._connect() as db:
         db.execute("BEGIN IMMEDIATE")
         cutoff = time.time() if now is None else now
-        identifiers = [row[0] for row in db.execute("SELECT id FROM query_previews WHERE expires_at<=?", (cutoff,))]
-        deleted = db.execute("DELETE FROM query_previews WHERE expires_at<=?", (cutoff,)).rowcount
+        identifiers = [row[0] for row in db.execute("SELECT id FROM query_previews WHERE expires_at<=? AND " + UNPINNED, (cutoff,))]
+        deleted = db.execute("DELETE FROM query_previews WHERE expires_at<=? AND " + UNPINNED, (cutoff,)).rowcount
         _discard_unreferenced(db)
     _remove_indexes(database, identifiers)
     return deleted
@@ -99,7 +111,7 @@ class QueryPreviews:
         """, (version_id, _owner() or "")).fetchone()
         if row:
             require_visible(json.loads(row["metadata"]), self.settings)
-        if row and row["expires_at"] <= self.clock():
+        if row and row["expires_at"] <= self.clock() and not snapshot_in_use(db, version_id, _owner()):
             raise AnalyticsError("This query preview expired. Run the query again.", "preview_expired", 410)
         return row
 
@@ -135,6 +147,8 @@ class QueryPreviews:
         with self.database._lock, self.database._connect() as db:
             db.execute("BEGIN IMMEDIATE")
             self._row(db, version_id)
+            if snapshot_in_use(db, version_id, _owner()):
+                raise AnalyticsError("This snapshot is in use by a semantic job. Cancel or finish that job first.", "snapshot_in_use", 409)
             removed = db.execute("DELETE FROM query_previews WHERE id=? AND owner_id=?", (version_id, _owner() or "")).rowcount
             _discard_unreferenced(db)
         if removed:

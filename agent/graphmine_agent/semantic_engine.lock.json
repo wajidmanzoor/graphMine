@@ -5,5 +5,6 @@
   "version": "0.1.0+62e124217e2c",
   "required_functions": ["LLM", "LLM_SCORE", "LLM_AGG", "LLM_PATH_AGG", "LLM_SG_AGG", "SUBGRAPH"],
   "live_blockers": ["thinking_off_control", "strict_json_without_fallback"],
-  "integration_blockers": ["persistent_answers_for_memory_database", "query_wide_call_budget", "lossless_label_mapping"]
+  "integration_blockers": ["persistent_answers_for_memory_database", "query_wide_call_budget"],
+  "graph_mapping": "explicit-labels-v1"
 }
