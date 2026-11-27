@@ -120,6 +120,16 @@ Each checkout also needs its locked Node dependencies in both `agent/frontend`
 and `agent/visualization` (`npm ci` in each directory). The visualization
 dependencies are needed by the running application as well as tests.
 
+Semantic snapshot refinement also requires the locked Tentō wheel in each
+managed application's Python environment. Follow the
+[source-build instructions](../deploy/tento/README.md), verify the wheel hash,
+and install that same artifact into testing and production before promotion.
+Run the native smoke and semantic acceptance checks with the target interpreter;
+an installation in the development environment alone is insufficient. This
+optional package is separate from the pinned CPU/GPU solver runtime. Initialize
+the pinned submodule for source-dependent verification. Live refinement and
+answer retention retain their administrator-controlled defaults.
+
 The controller routes cuFile driver logs into each environment's data root via
 `CUFILE_LOGFILE_PATH`, and into the isolated scratch store during verification.
 GPU table loading therefore does not modify a code checkout.

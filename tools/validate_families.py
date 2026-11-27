@@ -250,7 +250,7 @@ def source_family_references(path: Path, record_ids: set[str]):
 
 def invalid_family_references(root: Path, valid: set[str]) -> list[str]:
     # Include source, configs, docs, tests, UI and recorded JSON. Ignore build
-    # products and vendored research inputs, which are not this repository's API.
+    # products and vendored dependencies/research inputs, which are not this API.
     registry_root = root if (root / "library/runtime/registry.cpp").is_file() else ROOT
     record_ids = {identifier for card in registry_cards(registry_root) for identifier in card}
     command = [
@@ -258,6 +258,7 @@ def invalid_family_references(root: Path, valid: set[str]) -> list[str]:
         "-g", "!.git/**", "-g", "!**/.pytest_cache/**", "-g", "!**/__pycache__/**",
         "-g", "!**/node_modules/**", "-g", "!**/.venv*/**", "-g", "!**/build/**",
         "-g", "!problems/_sources/**", "-g", "!problems/*/papers/**",
+        "-g", "!third_party/**",
     ]
     result = subprocess.run(command, cwd=root, capture_output=True, check=False)
     if result.returncode not in (0, 1):

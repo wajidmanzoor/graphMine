@@ -204,6 +204,18 @@ def test_reference_scan_allows_dataset_families_and_stage_names(tmp_path, taxono
     assert VALIDATOR["invalid_family_references"](tmp_path, valid) == []
 
 
+def test_reference_scan_ignores_vendor_families_but_checks_application_callers(tmp_path, taxonomy):
+    vendor = tmp_path / "third_party/dependency/compiler.hpp"
+    vendor.parent.mkdir(parents=True)
+    vendor.write_text('{"family", "clang"}\n')
+    unknown = "obsolete_" + "family"
+    (tmp_path / "caller.py").write_text(f"library.family({unknown!r})\n")
+    valid = {row["id"] for row in taxonomy["families"]}
+    assert VALIDATOR["invalid_family_references"](tmp_path, valid) == [
+        f"caller.py:1: unknown family identifier {unknown!r}"
+    ]
+
+
 def test_repository_has_no_retired_family_identifiers(taxonomy):
     # This is strict throughout the migration: Steps 2–5 must remove each finding.
     # Do not xfail it or add exceptions for obsolete callers to make Step 1 green.

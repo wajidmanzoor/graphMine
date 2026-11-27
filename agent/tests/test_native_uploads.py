@@ -40,7 +40,8 @@ def evidence(request):
     for item in request.session.items:
         files.append(item.path)
     binary = Path(os.environ["GRAPHMINE_NATIVE_BINARY"])
-    library = binary.parent / "libgraphmine_runtime.so"
+    # Managed releases use a launcher in bin/ and a separate pinned library.
+    library = Path(os.environ.get("GRAPHMINE_NATIVE_LIBRARY") or binary.with_name("libgraphmine_runtime.so"))
 
     def snapshot():
         return {
