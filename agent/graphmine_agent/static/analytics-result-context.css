@@ -21,4 +21,6 @@
 .result-context-card pre { font-size: var(--text-small); max-height: 260px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
 .result-source-scope + .result-source-scope { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
 #result-context .completeness { margin: 0; padding: 0; border: 0; background: transparent; color: var(--ink); }
-@media (max-width: 800px) { .result-context-grid { grid-template-columns: minmax(0, 1fr); } .result-context-card summary { min-height: 44px; } }
+/* Preserve the workspace's readable text size in compact result controls. */
+#results-view :is(.view-toolbar button, .view-toolbar summary, .view-toolbar select, .view-toolbar > label, .view-legend, #view-surrounding, #answer-footer, #answer-details > summary, #answer-metrics small, .result-picker, .result-item-table td, #exploration-status) { font-size: var(--text-small); }
+@media (max-width: 800px) { #results-view .result-context-grid { grid-template-columns: minmax(0, 1fr); } .result-context-card summary { min-height: 44px; } }

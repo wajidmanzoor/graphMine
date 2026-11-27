@@ -84,7 +84,7 @@ def exploration_server(loading_server):
 
 
 def saved(browser, predicate=None):
-    wait_for(browser, "document.getElementById('exploration-status').textContent === 'Exploration saved.'")
+    wait_for(browser, "document.getElementById('exploration-status').textContent === 'Saved'")
     if predicate:
         WebDriverWait(browser, 5, poll_frequency=.05).until(lambda _: predicate())
 

@@ -26,6 +26,13 @@ Plain reads and explicitly selected mocks may run through the backend; live
 provider calls and saved-answer reuse remain blocked by requests 1–3 below.
 See the [Phase 2 report](../../agent/evaluation/reports/tento_phase2_20261127.md).
 
+Phase 5 rechecked remote `main` on 2026-11-27 and reran all eight diagnostic groups
+against the same unchanged pin. Requests 1–3 remain unresolved. Cross-feature
+mock/CPU-solver acceptance is now verified; the
+[Phase 5 report](../../agent/evaluation/reports/tento_phase5_20261127.md) separately
+records missing live workload inputs and local-Qwen runner configuration. This
+draft still has not been sent to the author.
+
 ## Required for the supplied integration contract
 
 ### 1. An answer store independent of graph persistence

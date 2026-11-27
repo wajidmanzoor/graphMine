@@ -12,6 +12,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
 from graphmine_agent.exploration import SaveExploration
+from graphmine_agent.view_data import enrich_view, label_records
 from test_workspace_accessibility import assert_readable
 from test_workspace_conversation_graph import open_saved
 from test_workspace_exploration import exploration_server, set_control, saved  # noqa: F401
@@ -35,12 +36,16 @@ def context_server(exploration_server):
     record["input_provenance"] = {"main": provenance(), "unused": provenance("Unused source", 99)}
     server.files.append({**server.files[0], "id": "newer", "original_name": "New graph-v9.json", "provenance": provenance("New graph-v9.json", 9)})
     value = SimpleNamespace(server=server, record=record, output=server.results[record["id"]]["steps"]["core"]["result"],
-                            delay=None, failed_view=False, no_graph=False, truncated=True, rows=None, page_error=False, view_revision=1,
+                            delay=None, failed_view=False, no_graph=False, truncated=True, rows=None, page_error=False, view_revision=1, modern_view=False,
                             primary_graph={"vertex_count": 700, "edge_count": 1500, "directed": False}, view_requests=[], preview_reads=0)
     original = server.route_handler
 
     def route(handler, method):
         parsed = urlsplit(handler.path); path = parsed.path
+        if path.endswith("/labels") and method == "POST":
+            handler.rfile.read(int(handler.headers["Content-Length"]))
+            handler.respond({"labels": label_records(server.graph)})
+            return True
         if path.endswith("/graph-preview"):
             value.preview_reads += 1
         if path.endswith(("/ports/scores", "/ports/groups")) and value.rows is not None:
@@ -60,10 +65,16 @@ def context_server(exploration_server):
             graph = deepcopy(server.graph)
             graph.update(vertex_count=700 if value.truncated else 6, edge_count=1500 if value.truncated else 7, vertices_truncated=value.truncated, edges_truncated=value.truncated,
                          limits={"vertices": 500, "edges": 2000}, input_graph=value.primary_graph, revision=value.view_revision, graph_available=not value.no_graph, enrichable=True, index=index, context=context,
-                         step="core", port=path.split("/")[-2], item_count=2, selected_vertices=[1], selected_edges=[], selection_truncated=value.truncated,
+                         workflow_id=record["id"], step="core", port=path.split("/")[-2], item_count=2, selected_vertices=[1], selected_edges=[], selection_truncated=value.truncated,
                          source_file_ids=["network"], profile={"kind": "subgraph", "title": "Community"}, complete=value.output["ports"].get(path.split("/")[-2], {}).get("complete", False), note="Recorded result")
             if value.no_graph:
                 graph["vertices"] = []; graph["edges"] = []
+            if value.modern_view:
+                # Persistence requires the current server view contract. Keep
+                # the other cases on their legacy response to cover old records.
+                graph = enrich_view(graph, value.output, path.split("/")[-2], server.graph,
+                                    provenance={"workflow_id": record["id"], "revision": value.view_revision,
+                                                "step": "core", "port": path.split("/")[-2]})
             if value.delay:
                 delayed = value.delay; delayed.started.set(); delayed.release.wait(10); delayed.finished.set()
             handler.respond({"error": {"message": "Saved view unavailable"}} if value.failed_view else graph, 503 if value.failed_view else 200)
@@ -115,6 +126,7 @@ def test_result_context_is_readable_and_keeps_quality_scope_and_bounds_separate(
 
 
 def test_older_analysis_keeps_saved_input_when_active_input_changes(loading_browser, context_server):
+    context_server.modern_view = True
     browser = loading_browser; open_context(browser, context_server)
     set_control(browser, "active-input", "newer", "change")
     saved(browser, lambda: context_server.server.preferences["state"]["active_file_id"] == "newer")
@@ -282,6 +294,7 @@ def test_graph_time_filter_and_table_page_counts_change_only_display(loading_bro
 
 
 def test_display_overlay_does_not_replace_the_recorded_input_version(loading_browser, context_server):
+    context_server.modern_view = True
     server = context_server.server
     server.files[1]["provenance"] = {"version": 8, "source": {"fetched_at": "2026-10-21T10:00:00Z"}}
     scope = {"result": {"workflow_id": "saved-analysis", "revision": 1, "step": "core", "port": "groups", "index": None, "context": False}}
@@ -294,11 +307,11 @@ def test_display_overlay_does_not_replace_the_recorded_input_version(loading_bro
 
 def test_context_distinguishes_result_focus_from_saved_input_context(loading_browser, context_server):
     browser = loading_browser; open_context(browser, context_server)
-    Select(browser.find_element(By.ID, "result-view-mode")).select_by_value("context")
+    browser.find_element(By.ID, "view-surrounding-input").click()
     wait_for(browser, "document.getElementById('result-context-display').textContent.includes('Saved step input with the result highlighted')")
     assert "Accounts-v2.json" in content(browser, "inputs")
     context_server.failed_view = True
-    Select(browser.find_element(By.ID, "result-view-mode")).select_by_value("focus")
+    browser.find_element(By.ID, "view-surrounding-input").click()
     wait_for(browser, "document.getElementById('result-context-display').textContent.includes('coverage cannot be verified')")
     assert "output collection is complete" in content(browser, "calculation")
 
@@ -306,7 +319,7 @@ def test_context_distinguishes_result_focus_from_saved_input_context(loading_bro
 def test_late_result_view_cannot_restore_context_after_navigation_home(loading_browser, context_server):
     browser = loading_browser; open_context(browser, context_server)
     context_server.delay = SimpleNamespace(started=Event(), release=Event(), finished=Event())
-    Select(browser.find_element(By.ID, "result-view-mode")).select_by_value("context")
+    browser.find_element(By.ID, "view-surrounding-input").click()
     assert context_server.delay.started.wait(3)
     browser.execute_script("location.hash = '#'")
     wait_for(browser, "GraphMineWorkspace.state.view === 'domains' && document.getElementById('result-context').hidden")
@@ -329,7 +342,7 @@ def test_changed_view_revision_is_not_displayed_under_the_old_snapshot(loading_b
     browser = loading_browser; open_context(browser, context_server)
     assert context_server.view_requests[0]["expected_revision"] == ["1"]
     context_server.view_revision = 2
-    Select(browser.find_element(By.ID, "result-view-mode")).select_by_value("context")
+    browser.find_element(By.ID, "view-surrounding-input").click()
     wait_for(browser, "document.getElementById('notice').textContent.includes('revision changed')")
     assert "coverage cannot be verified" in content(browser, "display")
     assert browser.execute_script("return GraphMineWorkspace.state.resultView") is None
@@ -364,7 +377,7 @@ def test_invalid_group_filters_clear_pending_table_coverage(loading_browser, con
 def test_selected_group_is_not_mislabeled_as_a_truncated_input(loading_browser, context_server):
     context_server.server.visualization = False
     browser = loading_browser; open_context(browser, context_server)
-    Select(browser.find_element(By.ID, "graph-group")).select_by_index(1)
+    browser.find_elements(By.CSS_SELECTOR, "#group-legend button")[1].click()
     wait_for(browser, "document.getElementById('result-context-display').textContent.includes('3 of 3 vertices')")
     assert "3 of 3 connections" in content(browser, "display")
     assert "selected members and their internal connections" in content(browser, "display")
@@ -376,7 +389,7 @@ def test_partial_group_reports_unknown_connection_coverage(loading_browser, cont
     server.graph["edges"] = server.graph["edges"][:2]
     server.graph["edges_truncated"] = True
     browser = loading_browser; open_context(browser, context_server)
-    Select(browser.find_element(By.ID, "graph-group")).select_by_index(1)
+    browser.find_elements(By.CSS_SELECTOR, "#group-legend button")[1].click()
     wait_for(browser, "document.getElementById('result-context-display').textContent.includes('3 of 3 vertices')")
     assert "selected connection total unavailable" in content(browser, "display")
     assert "Graph display is truncated" in content(browser, "display")
@@ -400,6 +413,7 @@ def test_positive_flow_filter_is_not_mislabeled_as_missing_connections(loading_b
 ])
 @pytest.mark.parametrize("status", [200, 409])
 def test_downloads_pin_the_displayed_revision_and_report_conflicts(loading_browser, context_server, button, suffix, filename, status):
+    context_server.modern_view = button == "export-report"
     browser = loading_browser; open_context(browser, context_server)
     browser.execute_script("""
         const original = window.fetch, suffix = arguments[0];
@@ -409,16 +423,26 @@ def test_downloads_pin_the_displayed_revision_and_report_conflicts(loading_brows
           const url = new URL(input, location.href);
           if (!url.pathname.endsWith(suffix)) return original(input, options);
           window.contextExportPath = url.pathname + url.search;
+          const body = options?.body ? JSON.parse(options.body) : null;
+          window.contextExportRequest = {method: options?.method || 'GET', expected_revision: body?.expected_revision,
+            step: body?.step, port: body?.port, hasImage: Boolean(body?.default_image)};
           return new Promise(resolve => {
             window.finishContextExport = status => resolve(new Response(status === 200 ? '{}' : JSON.stringify({error: {code: 'revision_conflict', message: 'Analysis revision changed.'}}),
               {status, headers: {'Content-Type': 'application/json'}}));
           });
         };
-        document.getElementById('result-actions-panel').open = true;
     """, suffix)
+    browser.find_element(By.CSS_SELECTOR, "#result-download-menu > summary").click()
     browser.find_element(By.ID, button).click()
     wait_for(browser, "Boolean(window.finishContextExport)")
-    assert browser.execute_script("return window.contextExportPath") == f"/api/workflows/saved-analysis{suffix}?expected_revision=1"
+    path = browser.execute_script("return window.contextExportPath")
+    if button == "export-report":
+        assert path == f"/api/workflows/saved-analysis{suffix}"
+        assert browser.execute_script("return window.contextExportRequest") == {
+            "method": "POST", "expected_revision": 1, "step": "core", "port": "groups", "hasImage": True}
+        assert context_server.view_requests[-1]["expected_revision"] == ["1"]
+    else:
+        assert path == f"/api/workflows/saved-analysis{suffix}?expected_revision=1"
     # A later workspace read must not rename the already requested download.
     browser.execute_script("GraphMineWorkspace.state.record = {...GraphMineWorkspace.state.record, id:'another-analysis', revision:2}; window.finishContextExport(arguments[0]);", status)
     wait_for(browser, "!GraphMineWorkspace.state.busy")
@@ -445,8 +469,8 @@ def test_json_download_keeps_source_bytes_without_browser_reserialization(loadin
           window.contextExportPath = url.pathname + url.search;
           return Promise.resolve(new Response(raw, {headers: {'Content-Type': 'application/json'}}));
         };
-        document.getElementById('result-actions-panel').open = true;
     """, raw, partial)
+    browser.find_element(By.CSS_SELECTOR, "#result-download-menu > summary").click()
     browser.find_element(By.ID, 'download-result').click()
     wait_for(browser, "window.exportedText !== null && !GraphMineWorkspace.state.busy")
     assert browser.execute_script('return window.exportedText') == raw

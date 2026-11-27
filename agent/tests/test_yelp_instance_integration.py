@@ -11,8 +11,8 @@ from graphmine_agent.database_queries import CypherRequest, execute_query
 from graphmine_agent.database_sources import DatabaseSource, neo4j_session
 
 
-@pytest.fixture(scope="module")
-def yelp_instance():
+@pytest.fixture
+def yelp_instance(settings):
     repository = Path(__file__).resolve().parents[2]
     credentials = repository / ".database-workspace/demo.env"
     if not credentials.is_file():
@@ -24,6 +24,7 @@ def yelp_instance():
         pytest.skip("The local demo has no isolated Yelp instance configured")
     source._registry_password_file = credentials
     source._catalog = {"id": "yelp", "registry": True}
+    source._backend_settings = settings
     try:
         with neo4j_session(source) as session:
             session.run("RETURN 1").consume()

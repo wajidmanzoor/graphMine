@@ -17,8 +17,53 @@ records the backend contracts and the approved mapping revision. The
 records the provider, alias, limits and account-access administration. The
 [backend guide](../../docs/SEMANTIC_SNAPSHOT_BACKEND.md) describes the API and
 query syntax. Open `/admin#semantic` for administration, connection checks and
-the native mock test. The snapshot refinement UI remains a later phase. Admin
-settings cannot enable unsupported live or answer-cache contracts.
+the native mock test. The [Phase 4 report](../../agent/evaluation/reports/tento_phase4_20261127.md)
+records the snapshot refinement UI, save/chat flow and recorded provenance.
+Admin settings cannot enable unsupported live or answer-cache contracts.
+
+## Phase 5 acceptance and workload inventory
+
+The [Phase 5 report](../../agent/evaluation/reports/tento_phase5_20261127.md)
+records cross-feature verification and the remaining live prerequisites. The
+new acceptance tests run real native mock refinement, immutable snapshot
+save/chat attachment, and the real CPU densest-subgraph solver. They enumerate
+all subsets of the small selected graph to check the solver's reported density
+and quality independently. The sentiment is simulated fixture data; this does
+not measure Qwen's classification quality.
+
+From the checkout, with the semantic extra and existing native runtime configured:
+
+```bash
+.venv/bin/python -m pytest agent/tests/test_semantic_acceptance.py \
+  agent/tests/test_admin_semantic.py deploy/tests/test_tento_acceptance.py -q
+.venv/bin/python deploy/tento/smoke.py --live --output /tmp/tento-live-gate.json
+.venv/bin/python deploy/tento/acceptance.py \
+  --model-id Qwen/Qwen3.8-27B-FP8 --data-root "$HOME/lbug_data" \
+  --output /tmp/tento-workload-prerequisites.json
+```
+
+Both live commands currently exit **2 (blocked)**. The first executes a native
+mock before checking the live gate. The second only inventories prerequisites:
+it parses the author's workload metadata without importing the runner or scorer,
+records every W1–W24 workload, and never sends model requests. It does not open
+or validate the contents of workload databases. Change `--data-root` if the
+author's datasets and truth exports are installed elsewhere, and pass the actual
+configured local model ID. An existing database file does not establish readiness.
+
+The pinned paper runner has a remote `r_qwen` alias; it has no configuration for
+GraphMine's local Qwen. Its default query list also excludes W22–W24, so a later
+live run must name all 24 queries explicitly. W22 needs the vector extension,
+image vectors and image assets. W22–W24 require verified image-input support.
+W24 deliberately enables answers within its fresh copied database. Several
+workloads have no score in the paper's systems table; the inventory distinguishes
+those from missing reference files and from measurements that were never run.
+
+The author-supported live controls, local routing and shared planner admission
+must be verified before a live runner adapter is implemented. Clearing blocker
+flags or passing this inventory cannot enable live execution. Keep the Tentō
+submodule unchanged and preserve the requested thinking-off and strict-JSON
+contracts. The resulting live flow and workload measurements remain required
+before Phase 5 can be considered complete.
 
 ## Phase 1 installation
 

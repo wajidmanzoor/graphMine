@@ -1,6 +1,8 @@
 """Phase 3: real authorization, private keys, durable policy and bounded workers."""
 
 from dataclasses import replace
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import subprocess
@@ -19,7 +21,7 @@ from graphmine_agent.semantic_policy import execution_policy, slot
 from test_admin_console import console  # noqa: F401
 from test_database_workspace import source, workspace  # noqa: F401
 from test_semantic_native import native_engine  # noqa: F401
-from test_accounts import login
+from test_accounts import PASSWORD, login
 
 ROOT = "/api/admin/semantic"
 PREFIX = "GRAPHMINE_SEMANTIC_"
@@ -204,6 +206,42 @@ def test_alias_management_cannot_enable_live_calls_or_edit_builtin_models(consol
         assert error.value.code == "semantic_controls_unsupported"
     assert client.put(ROOT + "/aliases", headers=admin, json={"alias": "qwen", "provider_id": saved["id"], "model_id": "wrong-model"}).status_code == 409
     assert client.put(ROOT + "/providers/graphmine", headers=admin, json={"name": "wrong", "base_url": "https://example.org/v1"}).status_code == 409
+
+
+def test_simultaneous_provider_catalog_checks_keep_credentials_independent(console):
+    client, accounts, admin, _ = console
+    # Exercise credential isolation with two admitted catalog checks.
+    client.app.state.runtime.upload_slots = asyncio.Semaphore(2)
+    # Each account admits only one mutation at once; use two authorized admins.
+    accounts.create_user("other-admin", PASSWORD, admin=True)
+    other_admin = login(client, "other-admin")
+    overlap, calls = threading.Barrier(2), []
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            calls.append((self.path, self.headers.get("Authorization")))
+            overlap.wait(timeout=5)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(b'{"data":[{"id":"fixture-model"}]}')
+        def log_message(self, *args):
+            pass
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        providers = [provider(console, name=name, base_url=f"http://127.0.0.1:{server.server_port}/{name}",
+                              api_key=f"synthetic-{name}") for name in ("alpha", "beta")]
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            futures = [pool.submit(client.post, ROOT + "/providers/" + item["id"] + "/test", headers=headers)
+                       for item, headers in zip(providers, (admin, other_admin))]
+            responses = [future.result(timeout=10) for future in futures]
+        assert all(response.status_code == 200 and response.json()["connected"] for response in responses), [response.json() for response in responses]
+        assert set(calls) == {("/alpha/models", "Bearer synthetic-alpha"), ("/beta/models", "Bearer synthetic-beta")}
+        assert all("synthetic-" not in response.text for response in responses)
+        assert "synthetic-" not in client.get(ROOT, headers=admin).text
+    finally:
+        server.shutdown(); server.server_close(); thread.join()
 
 
 def test_admin_mock_uses_the_real_engine_and_current_limits(console, native_engine):

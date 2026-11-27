@@ -154,6 +154,9 @@ async def test_embedded_client_creates_and_closes_a_separate_application(
     settings, tmp_path
 ):
     root = tmp_path / "isolated-app"
+    existed = settings.data_root.exists()
+    before = {path.relative_to(settings.data_root): path.read_bytes()
+              for path in settings.data_root.rglob("*") if path.is_file()}
     factory = embedded_client(Router(), "base_nf4")
     async with factory(settings, data_dir=root) as (client, history):
         response = await client.post(
@@ -164,7 +167,9 @@ async def test_embedded_client_creates_and_closes_a_separate_application(
         assert history.is_relative_to(root)
         assert (await client.get("/api/health")).status_code == 200
     assert root.exists()
-    assert not settings.data_root.exists()
+    assert settings.data_root.exists() == existed
+    assert {path.relative_to(settings.data_root): path.read_bytes()
+            for path in settings.data_root.rglob("*") if path.is_file()} == before
 
 
 @pytest.mark.asyncio

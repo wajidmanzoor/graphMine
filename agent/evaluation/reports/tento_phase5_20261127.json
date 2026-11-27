@@ -1,0 +1,1823 @@
+{
+  "generated_at": "2026-11-27T18:08:41.020642+00:00",
+  "status": "blocked",
+  "kind": "live_acceptance_prerequisites",
+  "engine_commit": "62e124217e2c0f82e327136b5888263e95671fae",
+  "engine_lock": {
+    "repository": "https://github.com/zacharyzhijun/francis",
+    "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+    "distribution": "graphmine-tento",
+    "version": "0.1.0+62e124217e2c",
+    "required_functions": [
+      "LLM",
+      "LLM_SCORE",
+      "LLM_AGG",
+      "LLM_PATH_AGG",
+      "LLM_SG_AGG",
+      "SUBGRAPH"
+    ],
+    "live_blockers": [
+      "thinking_off_control",
+      "strict_json_without_fallback"
+    ],
+    "integration_blockers": [
+      "persistent_answers_for_memory_database",
+      "query_wide_call_budget"
+    ],
+    "graph_mapping": "explicit-labels-v1"
+  },
+  "source_matches_lock": true,
+  "runner": {
+    "path": "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/third_party/tento/ladybug/scripts/paper/run_tento.py",
+    "sha256": "3a1e343f7c1cc4d514598c1190428d3c3309d83612f09d7f1ff9798483624c51",
+    "workload_sha256": "7ae942ffac84cf7cfd7e058ac69e5e7d9f1f434bc11ba795d2e7cff73a307053",
+    "quality_scorer_sha256": "a4a0c8ab93f77f801d550af233f78c55a65e3da307d9cfba90907d33bad29b50",
+    "target_aliases": [],
+    "existing_model_ids": {
+      "g38": "google/gemini-3.8-flash",
+      "h55": "anthropic/claude-haiku-5.5",
+      "r_gemma": "gemma-4-31B-it",
+      "r_gptoss": "gpt-oss-120b",
+      "r_qwen": "qwen3.8-27b",
+      "g38low": "google/gemini-3.8-flash",
+      "mock": "mock",
+      "o55": "anthropic/claude-opus-5.5"
+    },
+    "invoked": false,
+    "required_queries": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "W9",
+      "W10",
+      "W11",
+      "W12",
+      "W13",
+      "W14",
+      "W15",
+      "W16",
+      "W17",
+      "W18",
+      "W19",
+      "W20",
+      "W21",
+      "W22",
+      "W23",
+      "W24"
+    ]
+  },
+  "model": {
+    "configured_id": "Qwen/Qwen3.8-27B-FP8",
+    "loaded_version": null,
+    "verified_live": false
+  },
+  "data_root": "/home/wajid/lbug_data",
+  "requested_settings": {
+    "thinking": "off",
+    "strict_json": true,
+    "temperature": 0
+  },
+  "effective_live_settings": null,
+  "provider_requests_sent": 0,
+  "completed_workloads": 0,
+  "failed_workloads": 0,
+  "blocked_workloads": 24,
+  "live_flow": {
+    "status": "blocked",
+    "input_version": null,
+    "output_version": null,
+    "blockers": [
+      "thinking_off_control",
+      "strict_json_without_fallback",
+      "persistent_answers_for_memory_database",
+      "query_wide_call_budget",
+      "verified_local_qwen_runner_adapter_required",
+      "live_planner_admission_unverified",
+      "local_model_missing_from_paper_runner"
+    ]
+  },
+  "workloads": [
+    {
+      "query": "W1",
+      "feature": 1,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "semantic_movies.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/semantic_movies.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Review sentiment accuracy",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/review.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W2",
+      "feature": 1,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "semantic_movies.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/semantic_movies.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Genre accuracy",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/movie.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W3",
+      "feature": 2,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "semantic_movies.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/semantic_movies.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "One minus relative error of negative-review counts",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/review.csv",
+          "/home/wajid/lbug_data/paper_eval/export/movie.csv",
+          "/home/wajid/lbug_data/paper_eval/export/person.csv",
+          "/home/wajid/lbug_data/paper_eval/export/worked_on.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W4",
+      "feature": 2,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "ldbc.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/ldbc.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Precision against reference-model athlete judgments",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/reference/W4.json"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W5",
+      "feature": 3,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "semantic_movies.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/semantic_movies.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Mean genre and reference-year accuracy",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/movie.csv",
+          "/home/wajid/lbug_data/paper_eval/reference/W5_year.json"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W6",
+      "feature": 4,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "semantic_movies.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/semantic_movies.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": null,
+        "score": null,
+        "missing_inputs": [],
+        "status": "not_scored_by_paper_systems_table",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W7",
+      "feature": 5,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "semantic_movies.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/semantic_movies.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Negative-review precision at five",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/review.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W8",
+      "feature": 5,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "semantic_movies.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/semantic_movies.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Pairwise movie-ranking accuracy",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/review.csv",
+          "/home/wajid/lbug_data/paper_eval/export/movie.csv",
+          "/home/wajid/lbug_data/paper_eval/export/person.csv",
+          "/home/wajid/lbug_data/paper_eval/export/worked_on.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W9",
+      "feature": 6,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "semantic_movies.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/semantic_movies.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "MPAA rating-set F1",
+        "score": null,
+        "missing_inputs": [],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W10",
+      "feature": 7,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "flights_country.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/flights_country.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Airport-country pair F1",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/airport.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W11",
+      "feature": 7,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "semantic_movies.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/semantic_movies.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Negative-review ID F1",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/review.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W12",
+      "feature": 8,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "flights.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/flights.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "End-airport F1 against reference model",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/reference/W12.json"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W13",
+      "feature": 8,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "flights.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/flights.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Reachable-airport F1",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/airport.csv",
+          "/home/wajid/lbug_data/paper_eval/export/flight.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W14",
+      "feature": 9,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "flights_code.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/flights_code.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Route F1",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/flight.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W15",
+      "feature": 10,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "ldbc.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/ldbc.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Reply-path state F1",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/ldbc_w15_truth.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W16",
+      "feature": 11,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "ldbc.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/ldbc.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Friendship-structure predicate accuracy",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/ldbc_knows.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W17",
+      "feature": 11,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "ldbc.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/ldbc.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": null,
+        "score": null,
+        "missing_inputs": [],
+        "status": "not_scored_by_paper_systems_table",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W18",
+      "feature": 12,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "flights_code.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/flights_code.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Airport-country accuracy",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/airport.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W19",
+      "feature": 12,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "kg.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/kg.lbdb"
+      ],
+      "required_native_functions": [
+        "LLM_BUILD_GRAPH"
+      ],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": null,
+        "score": null,
+        "missing_inputs": [],
+        "status": "not_scored_by_paper_systems_table",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W20",
+      "feature": 13,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "ldbc.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/ldbc.lbdb"
+      ],
+      "required_native_functions": [
+        "LLM_PATH_AGG"
+      ],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": null,
+        "score": null,
+        "missing_inputs": [],
+        "status": "not_scored_by_paper_systems_table",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W21",
+      "feature": 13,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "ldbc.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/ldbc.lbdb"
+      ],
+      "required_native_functions": [
+        "LLM_SG_AGG"
+      ],
+      "requires_explicit_query_selection": false,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Company country and central-member accuracy",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/paper_eval/export/ldbc_w21_truth.csv"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W22",
+      "feature": 14,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "ecomm_sf500.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/ecomm_sf500.lbdb",
+        "/home/wajid/projects/graphDatabaseAgent/graphMine-database-cypher/third_party/tento/ladybug/extension/vector/build/libvector.lbug_extension"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": true,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing",
+        "vector_extension_missing",
+        "image_assets_unverified",
+        "model_image_input_unverified"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Description-image pair F1",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/ecomm_sf500/products.json"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W23",
+      "feature": 14,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "ecomm_sf500.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/ecomm_sf500.lbdb"
+      ],
+      "required_native_functions": [],
+      "requires_explicit_query_selection": true,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing",
+        "image_assets_unverified",
+        "model_image_input_unverified"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers off",
+      "quality": {
+        "metric": "Image-pair F1",
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/ecomm_sf500/products.json"
+        ],
+        "status": "not_measured",
+        "optional_metric": null
+      },
+      "missing_native_functions": []
+    },
+    {
+      "query": "W24",
+      "feature": 14,
+      "status": "blocked",
+      "execution_started": false,
+      "database": "vg100.lbdb",
+      "database_present": false,
+      "missing_inputs": [
+        "/home/wajid/lbug_data/demo/vg100.lbdb"
+      ],
+      "required_native_functions": [
+        "LLM_BUILD_GRAPH"
+      ],
+      "requires_explicit_query_selection": true,
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback",
+        "persistent_answers_for_memory_database",
+        "query_wide_call_budget",
+        "verified_local_qwen_runner_adapter_required",
+        "live_planner_admission_unverified",
+        "local_model_missing_from_paper_runner",
+        "workload_database_missing",
+        "quality_reference_missing",
+        "image_assets_unverified",
+        "model_image_input_unverified"
+      ],
+      "duration_seconds": null,
+      "usage": null,
+      "provider_requests_sent": 0,
+      "effective_settings": null,
+      "requested_cache_policy": "fresh database copy; answers enabled within W24's multi-statement run",
+      "quality": {
+        "metric": null,
+        "score": null,
+        "missing_inputs": [
+          "/home/wajid/lbug_data/vg100/gt.json"
+        ],
+        "status": "not_scored_by_paper_systems_table",
+        "optional_metric": "Annotated-object recall (separate ablation scorer)"
+      },
+      "missing_native_functions": []
+    }
+  ],
+  "phase_status": "cross_feature_checks_complete_live_blocked",
+  "engine_installation": {
+    "repository": "https://github.com/zacharyzhijun/francis",
+    "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+    "backend": "pybind",
+    "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+    "native_sha256": "a388ba5ac37262944615148666791009050e37b11b6a442d4134c0f2cbf15c50"
+  },
+  "live_smoke": {
+    "status": "blocked",
+    "mock": {
+      "status": "passed",
+      "result": {
+        "columns": [
+          "answer"
+        ],
+        "rows": [
+          [
+            "[\"alpha\"]"
+          ]
+        ]
+      }
+    },
+    "live": {
+      "status": "blocked",
+      "blockers": [
+        "thinking_off_control",
+        "strict_json_without_fallback"
+      ],
+      "requests_sent": 0
+    },
+    "engine": {
+      "repository": "https://github.com/zacharyzhijun/francis",
+      "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+      "backend": "pybind",
+      "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+      "native_sha256": "a388ba5ac37262944615148666791009050e37b11b6a442d4134c0f2cbf15c50"
+    },
+    "functions": [
+      "LLM",
+      "LLM_AGG",
+      "LLM_PATH_AGG",
+      "LLM_SCORE",
+      "LLM_SG_AGG",
+      "SUBGRAPH"
+    ],
+    "error": {
+      "code": "semantic_controls_unsupported",
+      "message": "This Tent\u014d revision cannot enforce thinking off and strict JSON output. Live semantic calls await the author fixes recorded in deploy/tento/AUTHOR_REQUESTS.md."
+    }
+  },
+  "upstream_main_checked": {
+    "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+    "date": "2026-11-27",
+    "method": "git ls-remote origin refs/heads/main"
+  },
+  "engine_diagnostics": {
+    "functions": {
+      "status": "completed",
+      "duration_seconds": 0.127
+    },
+    "values": {
+      "status": "completed",
+      "duration_seconds": 0.146
+    },
+    "providers": {
+      "status": "completed",
+      "duration_seconds": 1.092
+    },
+    "limits": {
+      "status": "completed",
+      "duration_seconds": 2.24
+    },
+    "cache": {
+      "status": "completed",
+      "duration_seconds": 0.283
+    },
+    "explain": {
+      "status": "completed",
+      "duration_seconds": 1.108
+    },
+    "interrupt": {
+      "status": "completed",
+      "duration_seconds": 1.676
+    },
+    "license": {
+      "status": "completed",
+      "duration_seconds": 0.044
+    }
+  },
+  "verification": {
+    "focused": {
+      "tests": 40,
+      "passed": 36,
+      "failures": [],
+      "errors": [],
+      "skipped": [
+        "test_published_yelp_query_through_app_read_path[Q01]",
+        "test_published_yelp_query_through_app_read_path[Q02]",
+        "test_published_yelp_query_through_app_read_path[Q08]",
+        "test_published_yelp_query_through_app_read_path[Q24]"
+      ],
+      "seconds": 42.556
+    },
+    "final-acceptance": {
+      "tests": 6,
+      "passed": 6,
+      "failures": [],
+      "errors": [],
+      "skipped": [],
+      "seconds": 14.916
+    },
+    "regression": {
+      "tests": 2282,
+      "passed": 2229,
+      "failures": [],
+      "errors": [],
+      "skipped": [
+        "test_agent_api_runs_repaired_backend_and_builds_grounded_answer[acctd]",
+        "test_agent_api_runs_repaired_backend_and_builds_grounded_answer[cds]",
+        "test_agent_api_runs_repaired_backend_and_builds_grounded_answer[cuda-ms]",
+        "test_agent_api_runs_repaired_backend_and_builds_grounded_answer[gamma-butterfly]",
+        "test_agent_api_runs_repaired_backend_and_builds_grounded_answer[gpu4gst]",
+        "test_agent_api_runs_repaired_backend_and_builds_grounded_answer[kpar]",
+        "test_agent_api_runs_repaired_backend_and_builds_grounded_answer[maximum-clique-on-gpu]",
+        "test_agent_api_runs_repaired_backend_and_builds_grounded_answer[mbe-gpu]",
+        "test_agent_api_runs_repaired_backend_and_builds_grounded_answer[superfuser]",
+        "test_agent_runs_native_profile_and_builds_grounded_answer[butterfly-counting]",
+        "test_agent_runs_native_profile_and_builds_grounded_answer[connected-components]",
+        "test_agent_runs_native_profile_and_builds_grounded_answer[linear-assignment]",
+        "test_agent_runs_native_profile_and_builds_grounded_answer[max-flow-min-cut]",
+        "test_agent_runs_native_profile_and_builds_grounded_answer[transitive-closure]",
+        "test_job_process_group_contains_native_worker_for_cancellation",
+        "test_real_gpu1_worker_records_executed_backend_and_physical_lease",
+        "test_live_configured_gpu_workflow",
+        "test_real_incremental_writes_keep_keys_and_leave_unchanged_records_untouched",
+        "test_real_mapping_migration_removes_obsolete_fields_labels_and_relationship_types",
+        "test_real_null_values_remove_previously_copied_properties",
+        "test_real_invalid_source_and_incomplete_comparison_leave_previous_graph_intact[column]",
+        "test_real_invalid_source_and_incomplete_comparison_leave_previous_graph_intact[endpoint]",
+        "test_real_invalid_source_and_incomplete_comparison_leave_previous_graph_intact[read_budget]",
+        "test_real_node_deletion_preserves_foreign_relationships_by_rolling_back",
+        "test_real_empty_source_removes_only_its_own_managed_graph",
+        "test_real_legacy_records_gain_property_ownership_without_changing_ids",
+        "test_real_concurrent_graph_edit_is_not_overwritten",
+        "test_real_cancellation_after_writes_rolls_back_every_change",
+        "test_real_synchronization_history_preserves_saved_graphs_across_data_and_mapping_changes",
+        "test_real_mapping_change_during_sync_rolls_back_before_commit",
+        "test_auto_workflow_gpu_priority_and_quality_preserving_fallback[triangle-counting-parameters0-True-gpu-exact]",
+        "test_auto_workflow_gpu_priority_and_quality_preserving_fallback[triangle-counting-parameters1-False-cpu-exact]",
+        "test_auto_workflow_gpu_priority_and_quality_preserving_fallback[induced-subgraph-parameters2-True-cpu-exact]",
+        "test_auto_workflow_gpu_priority_and_quality_preserving_fallback[community-detection-parameters3-True-cpu-exact]",
+        "test_auto_workflow_gpu_priority_and_quality_preserving_fallback[community-detection-parameters4-True-gpu-heuristic]",
+        "test_auto_workflow_gpu_priority_and_quality_preserving_fallback[community-detection-parameters5-False-cpu-heuristic]",
+        "test_physical_gpu1_serial_reservation_and_cancelled_waiter",
+        "test_reuses_socket_and_resets_transaction_and_session_state",
+        "test_snapshot_ends_at_return_and_named_cursors_do_not_leak",
+        "test_timeout_and_dead_connection_recover_without_reusing_failed_transaction",
+        "test_pool_size_and_credential_generation_are_bounded",
+        "test_failed_connections_retire_and_successful_borrowing_can_recover",
+        "test_repeated_reads_use_bounded_backend_connections_and_shutdown_closes_them",
+        "test_qualified_mapped_reads_and_removed_enrichment_columns",
+        "test_published_yelp_query_through_app_read_path[Q01]",
+        "test_published_yelp_query_through_app_read_path[Q02]",
+        "test_published_yelp_query_through_app_read_path[Q08]",
+        "test_published_yelp_query_through_app_read_path[Q24]",
+        "test_real_shortest_path_focus_and_live_table_attributes",
+        "test_real_densest_view_expands_from_tables_then_reanalyzes",
+        "test_real_parameterized_query_and_scalar_result_have_exact_scope",
+        "test_two_users_query_real_instances_and_keep_snapshots_private",
+        "test_native_table_join_builds_a_scoped_reusable_input[1]"
+      ],
+      "seconds": 434.981
+    },
+    "sql-integration": {
+      "tests": 7,
+      "passed": 7,
+      "failures": [],
+      "errors": [],
+      "skipped": [],
+      "seconds": 2.077
+    },
+    "browser-regression": {
+      "tests": 89,
+      "passed": 68,
+      "failures": [
+        "test_result_context_is_readable_and_keeps_quality_scope_and_bounds_separate[1440]",
+        "test_result_context_is_readable_and_keeps_quality_scope_and_bounds_separate[320]",
+        "test_older_analysis_keeps_saved_input_when_active_input_changes",
+        "test_display_overlay_does_not_replace_the_recorded_input_version",
+        "test_context_distinguishes_result_focus_from_saved_input_context",
+        "test_late_result_view_cannot_restore_context_after_navigation_home",
+        "test_changed_view_revision_is_not_displayed_under_the_old_snapshot",
+        "test_selected_group_is_not_mislabeled_as_a_truncated_input",
+        "test_partial_group_reports_unknown_connection_coverage",
+        "test_downloads_pin_the_displayed_revision_and_report_conflicts[200-export-csv-/steps/core/ports/groups/csv--table.csv]",
+        "test_downloads_pin_the_displayed_revision_and_report_conflicts[200-export-report-/report-.zip]",
+        "test_downloads_pin_the_displayed_revision_and_report_conflicts[200-download-result-/result-.json]",
+        "test_downloads_pin_the_displayed_revision_and_report_conflicts[409-export-csv-/steps/core/ports/groups/csv--table.csv]",
+        "test_downloads_pin_the_displayed_revision_and_report_conflicts[409-export-report-/report-.zip]",
+        "test_downloads_pin_the_displayed_revision_and_report_conflicts[409-download-result-/result-.json]",
+        "test_json_download_keeps_source_bytes_without_browser_reserialization[False]",
+        "test_json_download_keeps_source_bytes_without_browser_reserialization[True]"
+      ],
+      "errors": [],
+      "skipped": [
+        "test_database_cypher_chat_dense_result_and_enrichment",
+        "test_shortest_path_destination_shows_only_its_witness",
+        "test_database_query_dialog_fits_viewport[390-844]",
+        "test_database_query_dialog_fits_viewport[1440-1000]"
+      ],
+      "seconds": 199.685
+    },
+    "result-context": {
+      "tests": 35,
+      "passed": 29,
+      "failures": [
+        "test_older_analysis_keeps_saved_input_when_active_input_changes",
+        "test_display_overlay_does_not_replace_the_recorded_input_version",
+        "test_selected_group_is_not_mislabeled_as_a_truncated_input",
+        "test_partial_group_reports_unknown_connection_coverage",
+        "test_downloads_pin_the_displayed_revision_and_report_conflicts[200-export-report-/report-.zip]",
+        "test_downloads_pin_the_displayed_revision_and_report_conflicts[409-export-report-/report-.zip]"
+      ],
+      "errors": [],
+      "skipped": [],
+      "seconds": 174.588
+    },
+    "context-repairs": {
+      "tests": 10,
+      "passed": 8,
+      "failures": [
+        "test_downloads_pin_the_displayed_revision_and_report_conflicts[200-export-report-/report-.zip]",
+        "test_downloads_pin_the_displayed_revision_and_report_conflicts[409-export-report-/report-.zip]"
+      ],
+      "errors": [],
+      "skipped": [],
+      "seconds": 63.703
+    },
+    "browser-final": {
+      "tests": 89,
+      "passed": 85,
+      "failures": [],
+      "errors": [],
+      "skipped": [
+        "test_database_cypher_chat_dense_result_and_enrichment",
+        "test_shortest_path_destination_shows_only_its_witness",
+        "test_database_query_dialog_fits_viewport[390-844]",
+        "test_database_query_dialog_fits_viewport[1440-1000]"
+      ],
+      "seconds": 179.481
+    },
+    "readability": {
+      "tests": 2,
+      "passed": 2,
+      "failures": [],
+      "errors": [],
+      "skipped": [],
+      "seconds": 15.736
+    },
+    "initial_browser_baseline_comparison": {
+      "same_failures_as_phase4": true
+    }
+  },
+  "mock_acceptance": {
+    "base": {
+      "id": "dataset_version_4b2031c18bdb4d358fc7bc8ae26389e8",
+      "dataset_id": "dataset_8318fb235b734a98ac09bde7a11176fc",
+      "version": 1,
+      "name": "Movie reviews (synthetic)",
+      "kind": "graph",
+      "created_at": "2026-11-27T18:21:15.868901+00:00",
+      "size_bytes": 1119,
+      "sha256": "28dc0551e553f63145d8bbffe3dcfd9819138a21f7d77568cd9f847af37b8877",
+      "source": {
+        "type": "database_query",
+        "database_source": {
+          "id": "demo"
+        },
+        "query": "MATCH p=(r:Review)-[:REVIEWS]->(m:Movie) RETURN p",
+        "lineage": {}
+      },
+      "source_complete": true,
+      "backend_id": "local"
+    },
+    "refined": {
+      "id": "dataset_version_a26fec00322d4a8294eaf0c302aa846d",
+      "dataset_id": "dataset_9c070ee09cc64f8eb8b9c9eb59092064",
+      "version": 1,
+      "name": "Movie reviews (synthetic) refinement",
+      "kind": "graph",
+      "created_at": "2026-11-27T18:21:16.320231+00:00",
+      "size_bytes": 921,
+      "sha256": "bb170a12dee5aa795c5d076da6bbde0cd9eff2f3d60fcc09cf26fa643a0e8bac",
+      "source": {
+        "type": "semantic_query",
+        "backend_id": "local",
+        "database_source": {
+          "id": "demo"
+        },
+        "database_dataset": null,
+        "parent": {
+          "version_id": "dataset_version_4b2031c18bdb4d358fc7bc8ae26389e8",
+          "dataset_id": "dataset_8318fb235b734a98ac09bde7a11176fc",
+          "sha256": "28dc0551e553f63145d8bbffe3dcfd9819138a21f7d77568cd9f847af37b8877",
+          "source": {
+            "type": "database_query",
+            "database_source": {
+              "id": "demo"
+            },
+            "query": "MATCH p=(r:Review)-[:REVIEWS]->(m:Movie) RETURN p",
+            "lineage": {}
+          }
+        },
+        "base_version_id": "dataset_version_4b2031c18bdb4d358fc7bc8ae26389e8",
+        "base_sha256": "28dc0551e553f63145d8bbffe3dcfd9819138a21f7d77568cd9f847af37b8877",
+        "query": "MATCH (r:Vertex)-[e:REVIEWS]->(m:Vertex)\nWHERE has_label(r,'Review') AND has_label(m,'Movie')\nWITH r,e,m,r.mock_sentiment AS sentiment\nWHERE llm('mock','Echo {{sentiment}} {answer STRING}') = $negative\nRETURN r,e,m",
+        "parameters": {
+          "negative": "[\"negative\"]"
+        },
+        "projection": "elements",
+        "directed": false,
+        "weight_property": null,
+        "lineage": {
+          "vertices": {},
+          "edges": {}
+        },
+        "steps": [
+          {
+            "kind": "llm",
+            "model_alias": "mock",
+            "prompt": "Echo {{sentiment}} {answer STRING}",
+            "inputs": [
+              "sentiment"
+            ],
+            "outputs": [
+              {
+                "name": "answer",
+                "type": "STRING"
+              }
+            ]
+          }
+        ],
+        "engine": {
+          "repository": "https://github.com/zacharyzhijun/francis",
+          "commit": "62e124217e2c0f82e327136b5888263e95671fae",
+          "backend": "pybind",
+          "native_file": "_lbug.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "a388ba5ac37262944615148666791009050e37b11b6a442d4134c0f2cbf15c50"
+        },
+        "schema": {
+          "mapping": "explicit-labels-v1",
+          "vertex_table": "Vertex",
+          "vertex_properties": [
+            {
+              "name": "mock_sentiment",
+              "source_property": "mock_sentiment",
+              "type": "STRING",
+              "encoding": "text",
+              "variants": []
+            },
+            {
+              "name": "neo4j_labels",
+              "source_property": "neo4j_labels",
+              "type": "JSON",
+              "encoding": "json",
+              "variants": []
+            },
+            {
+              "name": "text",
+              "source_property": "text",
+              "type": "STRING",
+              "encoding": "text",
+              "variants": []
+            },
+            {
+              "name": "title",
+              "source_property": "title",
+              "type": "STRING",
+              "encoding": "text",
+              "variants": []
+            }
+          ],
+          "labels": [
+            "Movie",
+            "Review"
+          ],
+          "relationships": [
+            {
+              "table": "REVIEWS",
+              "source_type": "REVIEWS",
+              "properties": []
+            }
+          ],
+          "helpers": [
+            "has_label(n, label)",
+            "labels_of(n)",
+            "graph_id(n)",
+            "has_property(n, name)",
+            "property_names(n)"
+          ],
+          "nested_properties": "JSON; returned JSON cells are decoded without changing their types"
+        },
+        "settings": {
+          "llm_base_url": "'http://127.0.0.1:1/v1'",
+          "llm_threads": "1",
+          "llm_batch_size": "16",
+          "llm_max_calls": "100",
+          "llm_timeout_ms": "10000",
+          "llm_persistent_cache": "false",
+          "semantic_selectivity_samples": "0",
+          "semantic_path_decomposition": "false",
+          "semantic_join_decomposition": "false",
+          "provider": "mock",
+          "model": "mock:echo",
+          "http_requests": 0,
+          "call_limit_scope": "per_expression",
+          "query_wide_call_limit_supported": false,
+          "answers_retained": 0,
+          "mock": true,
+          "admin_policy": {
+            "call_limit": 100,
+            "batch_size": 16,
+            "timeout_seconds": 120,
+            "max_concurrent_requests": 1,
+            "queue_seconds": 60,
+            "mode": "mock",
+            "cache_enabled": false,
+            "thinking": "off",
+            "strict_json": true,
+            "temperature": 0
+          }
+        },
+        "requested_call_limit": null,
+        "usage": {
+          "calls": 1,
+          "input_rows": 4,
+          "llm_rows": 2,
+          "cache_hits": 2,
+          "failed_rows": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "stored_hits": 0,
+          "request_chars": 72,
+          "request_images": 0
+        },
+        "column_types": {
+          "r": "NODE",
+          "e": "REL",
+          "m": "NODE"
+        },
+        "row_count": 3,
+        "model_dependent_input": false,
+        "simulation": true,
+        "completion_state": "completed",
+        "duration_ms": 386,
+        "fetched_at": "2026-11-27T18:21:16.304950+00:00",
+        "scope": "mock semantic refinement"
+      },
+      "source_complete": true,
+      "backend_id": "local"
+    },
+    "workflow_id": "e2a35eff-ed3f-4c98-88d8-36410b22f2f0",
+    "revision": 1,
+    "result": {
+      "parameters": {
+        "weight_mode": "unweighted",
+        "solution_quality": "approximate",
+        "minimum_vertices": 1,
+        "clique_order": 2
+      },
+      "result": {
+        "vertices": [
+          "r1",
+          "movie-a",
+          "r2"
+        ],
+        "optimal": true,
+        "clique_order": 2,
+        "clique_count": 2,
+        "density": 0.6666666666666666,
+        "density_exact": {
+          "numerator": "2",
+          "denominator": "3"
+        },
+        "density_rounded": true,
+        "induced_edge_value": 2,
+        "induced_edge_value_exact": {
+          "numerator": "2",
+          "denominator": "1"
+        },
+        "induced_edge_value_rounded": false
+      },
+      "ports": {
+        "vertices": {
+          "type": "vertex_set",
+          "value": [
+            "r1",
+            "movie-a",
+            "r2"
+          ],
+          "complete": true,
+          "input_fingerprint": "94a0cf1195fe35aa35bc70268652e1a8c3c1f2c3388c6990be52e3d10151149e",
+          "graph_fingerprint": "94a0cf1195fe35aa35bc70268652e1a8c3c1f2c3388c6990be52e3d10151149e"
+        }
+      },
+      "complete": true,
+      "quality": "exact",
+      "diagnostics": {
+        "solver": "native_exact_maximum_weight_closure",
+        "arithmetic": "exact rational"
+      },
+      "schema_version": "2.0.0",
+      "problem": "densest-subgraph",
+      "topic_id": "densest_subgraph",
+      "family": "dense",
+      "input_kind": "graph",
+      "input_fingerprint": "94a0cf1195fe35aa35bc70268652e1a8c3c1f2c3388c6990be52e3d10151149e",
+      "graph_fingerprint": "94a0cf1195fe35aa35bc70268652e1a8c3c1f2c3388c6990be52e3d10151149e",
+      "implementation_sha256": "62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66",
+      "requested_device": "cpu",
+      "backend": {
+        "id": "cpp",
+        "device": "cpu",
+        "implementation_language": "c++/cuda",
+        "python_runtime_required": false
+      },
+      "representations": [
+        {
+          "kind": "canonical_graph",
+          "key": "94a0cf1195fe35aa35bc70268652e1a8c3c1f2c3388c6990be52e3d10151149e:canonical-records-v1:62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66",
+          "hit": false,
+          "retained": true
+        },
+        {
+          "kind": "coo",
+          "key": "94a0cf1195fe35aa35bc70268652e1a8c3c1f2c3388c6990be52e3d10151149e:62e49f43423d2ad5937d2a8c182f3e68128cd61782d50a04d1eef383e25d6a66:bd801b5b0d0f393a0c05501d2d046ada71fdb7ca717caadf584077480ea5d8df:standard-view-v2:{\"bipartite_sides\":\"none\",\"coo_layout\":\"arcs\",\"direction\":\"keep\",\"drop_zero_weights\":false,\"edge_ids\":true,\"index_width\":\"u32\",\"kind\":\"coo\",\"labels\":[],\"limits\":{\"max_edges\":18446744073709551615,\"max_vertices\":4294967295},\"nonnegative_edge_weights\":false,\"nonnegative_weights\":true,\"parallel_edges\":\"collapse:first\",\"require_edge_weights\":false,\"self_loops\":\"drop\",\"sorted_neighbors\":true,\"sum_arithmetic\":\"standard\",\"weight_source\":\"unit\",\"weights\":\"rational_exact\"}",
+          "hit": false,
+          "retained": true,
+          "view_profile": "densest-subgraph:cpp:unweighted",
+          "view": {
+            "bipartite_sides": "none",
+            "coo_layout": "arcs",
+            "direction": "keep",
+            "drop_zero_weights": false,
+            "edge_ids": true,
+            "index_width": "u32",
+            "kind": "coo",
+            "labels": [],
+            "limits": {
+              "max_edges": 18446744073709551615,
+              "max_vertices": 4294967295
+            },
+            "nonnegative_edge_weights": false,
+            "nonnegative_weights": true,
+            "parallel_edges": "collapse:first",
+            "require_edge_weights": false,
+            "self_loops": "drop",
+            "sorted_neighbors": true,
+            "sum_arithmetic": "standard",
+            "weight_source": "unit",
+            "weights": "rational_exact"
+          },
+          "normalization": {
+            "projection_applied": false,
+            "self_loops_removed": 0,
+            "parallel_edges_collapsed": 0,
+            "weights_cast": 3,
+            "vertices": 5,
+            "edges": 6
+          }
+        }
+      ],
+      "budget": {
+        "max_candidates": null,
+        "max_output_items": null,
+        "timeout_seconds": 9.896144655998796
+      },
+      "elapsed_seconds": 0.00021228
+    },
+    "independent_optimum": 0.6666666666666666,
+    "input_graph": {
+      "graph": {
+        "id": "movie-review-fixture",
+        "directed": false,
+        "allows_self_loops": false,
+        "allows_parallel_edges": false
+      },
+      "vertices": [
+        {
+          "id": "movie-a",
+          "type": "Movie",
+          "attributes": {
+            "title": "movie-a",
+            "neo4j_labels": [
+              "Movie"
+            ]
+          }
+        },
+        {
+          "id": "movie-b",
+          "type": "Movie",
+          "attributes": {
+            "title": "movie-b",
+            "neo4j_labels": [
+              "Movie"
+            ]
+          }
+        },
+        {
+          "id": "r1",
+          "type": "Review",
+          "attributes": {
+            "text": "Tedious and disappointing.",
+            "mock_sentiment": "negative",
+            "neo4j_labels": [
+              "Review"
+            ]
+          }
+        },
+        {
+          "id": "r2",
+          "type": "Review",
+          "attributes": {
+            "text": "The ending ruined it.",
+            "mock_sentiment": "negative",
+            "neo4j_labels": [
+              "Review"
+            ]
+          }
+        },
+        {
+          "id": "r3",
+          "type": "Review",
+          "attributes": {
+            "text": "A delightful film.",
+            "mock_sentiment": "positive",
+            "neo4j_labels": [
+              "Review"
+            ]
+          }
+        },
+        {
+          "id": "r4",
+          "type": "Review",
+          "attributes": {
+            "text": "Not worth watching.",
+            "mock_sentiment": "negative",
+            "neo4j_labels": [
+              "Review"
+            ]
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "r1",
+          "target": "movie-a",
+          "type": "REVIEWS",
+          "weight": 1
+        },
+        {
+          "id": "e2",
+          "source": "r2",
+          "target": "movie-a",
+          "type": "REVIEWS",
+          "weight": 1
+        },
+        {
+          "id": "e3",
+          "source": "r3",
+          "target": "movie-a",
+          "type": "REVIEWS",
+          "weight": 1
+        },
+        {
+          "id": "e4",
+          "source": "r4",
+          "target": "movie-b",
+          "type": "REVIEWS",
+          "weight": 1
+        }
+      ]
+    },
+    "refined_graph": {
+      "graph": {
+        "id": "movie-review-fixture",
+        "directed": false,
+        "allows_self_loops": false,
+        "allows_parallel_edges": false
+      },
+      "vertices": [
+        {
+          "id": "r1",
+          "type": "Review",
+          "attributes": {
+            "text": "Tedious and disappointing.",
+            "mock_sentiment": "negative",
+            "neo4j_labels": [
+              "Review"
+            ]
+          }
+        },
+        {
+          "id": "movie-a",
+          "type": "Movie",
+          "attributes": {
+            "title": "movie-a",
+            "neo4j_labels": [
+              "Movie"
+            ]
+          }
+        },
+        {
+          "id": "r2",
+          "type": "Review",
+          "attributes": {
+            "text": "The ending ruined it.",
+            "mock_sentiment": "negative",
+            "neo4j_labels": [
+              "Review"
+            ]
+          }
+        },
+        {
+          "id": "r4",
+          "type": "Review",
+          "attributes": {
+            "text": "Not worth watching.",
+            "mock_sentiment": "negative",
+            "neo4j_labels": [
+              "Review"
+            ]
+          }
+        },
+        {
+          "id": "movie-b",
+          "type": "Movie",
+          "attributes": {
+            "title": "movie-b",
+            "neo4j_labels": [
+              "Movie"
+            ]
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "r1",
+          "target": "movie-a",
+          "type": "REVIEWS",
+          "weight": 1
+        },
+        {
+          "id": "e2",
+          "source": "r2",
+          "target": "movie-a",
+          "type": "REVIEWS",
+          "weight": 1
+        },
+        {
+          "id": "e4",
+          "source": "r4",
+          "target": "movie-b",
+          "type": "REVIEWS",
+          "weight": 1
+        }
+      ]
+    }
+  }
+}
