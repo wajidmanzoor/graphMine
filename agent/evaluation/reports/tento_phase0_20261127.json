@@ -1,0 +1,2059 @@
+{
+  "source_commit": "62e124217e2c0f82e327136b5888263e95671fae",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "probe_sha256": "61c64d322699a3ce53867c0bb61f1229ebdadba97d7fdd7ad277f2710f91bc9d",
+  "captured_at": "2026-11-27T08:08:34.940494+00:00",
+  "cases": {
+    "functions": {
+      "probe_status": "completed",
+      "findings": {
+        "python_package": "/home/wajid/projects/graphDatabaseAgent/validation/tento-phase0-20261127/francis/ladybug/tools/python_api/build/ladybug/__init__.py",
+        "native_module": "/home/wajid/projects/graphDatabaseAgent/validation/tento-phase0-20261127/francis/ladybug/tools/python_api/build/ladybug/_lbug.cpython-312-x86_64-linux-gnu.so",
+        "native_sha256": "f26749618f09744cd9e58e6fcd1fdfb9a64f2fd4be7dacde3ae9cef84f6e653f",
+        "reported_engine_version": "2.13.1",
+        "source_project_version": "0.21.0",
+        "database_path": ":memory:",
+        "required_functions": [
+          "LLM",
+          "LLM_AGG",
+          "LLM_PATH_AGG",
+          "LLM_SCORE",
+          "LLM_SG_AGG",
+          "SUBGRAPH"
+        ],
+        "llm_functions": [
+          "LLM",
+          "LLM_AGG",
+          "LLM_ANSWERS",
+          "LLM_BUILD_GRAPH",
+          "LLM_CLEAR_ANSWERS",
+          "LLM_COMPACT_ANSWERS",
+          "LLM_GENERATE",
+          "LLM_GRAPH_PLAN",
+          "LLM_PATH_AGG",
+          "LLM_SCORE",
+          "LLM_SG_AGG",
+          "LLM_USAGE",
+          "_LLM_AGG_CALL",
+          "_LLM_CALL",
+          "_LLM_CONFIGURED",
+          "_LLM_NODE_GRAPH",
+          "_LLM_PATH_AGG_CALL",
+          "_LLM_PATH_GRAPH",
+          "_LLM_SG_AGG_CALL",
+          "_LLM_SUBGRAPH_KEEP"
+        ],
+        "mock_echo": {
+          "columns": [
+            "answer"
+          ],
+          "data_types": [
+            "STRING"
+          ],
+          "rows": [
+            [
+              "[\"alpha\"]"
+            ]
+          ]
+        }
+      },
+      "duration_seconds": 0.116
+    },
+    "values": {
+      "probe_status": "completed",
+      "findings": {
+        "node": {
+          "statement": "MATCH (p:Person) RETURN p",
+          "columns": [
+            "p"
+          ],
+          "data_types": [
+            "NODE"
+          ],
+          "rows": [
+            [
+              {
+                "_ID": {
+                  "offset": 0,
+                  "table": 1
+                },
+                "_LABEL": "Person",
+                "gm_id": "p:1",
+                "name": "Ada",
+                "tags": [
+                  "reader",
+                  "critic"
+                ]
+              }
+            ]
+          ],
+          "python_types": {
+            "type": "list",
+            "items": [
+              {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "dict",
+                    "fields": {
+                      "_ID": {
+                        "type": "dict",
+                        "fields": {
+                          "offset": "int",
+                          "table": "int"
+                        }
+                      },
+                      "_LABEL": "str",
+                      "gm_id": "str",
+                      "name": "str",
+                      "tags": {
+                        "type": "list",
+                        "items": [
+                          "str",
+                          "str"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "relationship": {
+          "statement": "MATCH (:Person)-[e:REVIEWS]->(:Review) RETURN e ORDER BY e.gm_id",
+          "columns": [
+            "e"
+          ],
+          "data_types": [
+            "REL"
+          ],
+          "rows": [
+            [
+              {
+                "_SRC": {
+                  "offset": 0,
+                  "table": 1
+                },
+                "_DST": {
+                  "offset": 0,
+                  "table": 0
+                },
+                "_LABEL": "REVIEWS",
+                "_ID": {
+                  "offset": 0,
+                  "table": 2
+                },
+                "gm_id": "edge:1",
+                "weight": 2.5
+              }
+            ],
+            [
+              {
+                "_SRC": {
+                  "offset": 0,
+                  "table": 1
+                },
+                "_DST": {
+                  "offset": 0,
+                  "table": 0
+                },
+                "_LABEL": "REVIEWS",
+                "_ID": {
+                  "offset": 1,
+                  "table": 2
+                },
+                "gm_id": "edge:2",
+                "weight": 2.5
+              }
+            ]
+          ],
+          "python_types": {
+            "type": "list",
+            "items": [
+              {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "dict",
+                    "fields": {
+                      "_SRC": {
+                        "type": "dict",
+                        "fields": {
+                          "offset": "int",
+                          "table": "int"
+                        }
+                      },
+                      "_DST": {
+                        "type": "dict",
+                        "fields": {
+                          "offset": "int",
+                          "table": "int"
+                        }
+                      },
+                      "_LABEL": "str",
+                      "_ID": {
+                        "type": "dict",
+                        "fields": {
+                          "offset": "int",
+                          "table": "int"
+                        }
+                      },
+                      "gm_id": "str",
+                      "weight": "float"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "dict",
+                    "fields": {
+                      "_SRC": {
+                        "type": "dict",
+                        "fields": {
+                          "offset": "int",
+                          "table": "int"
+                        }
+                      },
+                      "_DST": {
+                        "type": "dict",
+                        "fields": {
+                          "offset": "int",
+                          "table": "int"
+                        }
+                      },
+                      "_LABEL": "str",
+                      "_ID": {
+                        "type": "dict",
+                        "fields": {
+                          "offset": "int",
+                          "table": "int"
+                        }
+                      },
+                      "gm_id": "str",
+                      "weight": "float"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "path": {
+          "statement": "MATCH p=(a:Person)-[e:REVIEWS*1..1]->(b:Review) RETURN p, e",
+          "columns": [
+            "p",
+            "e"
+          ],
+          "data_types": [
+            "RECURSIVE_REL",
+            "RECURSIVE_REL"
+          ],
+          "rows": [
+            [
+              {
+                "_NODES": [
+                  {
+                    "_ID": {
+                      "offset": 0,
+                      "table": 1
+                    },
+                    "_LABEL": "Person",
+                    "gm_id": "p:1",
+                    "name": "Ada",
+                    "tags": [
+                      "reader",
+                      "critic"
+                    ],
+                    "text": null
+                  },
+                  {
+                    "_ID": {
+                      "offset": 0,
+                      "table": 0
+                    },
+                    "_LABEL": "Review",
+                    "gm_id": "r:1",
+                    "name": null,
+                    "tags": null,
+                    "text": "bad acting"
+                  }
+                ],
+                "_RELS": [
+                  {
+                    "_SRC": {
+                      "offset": 0,
+                      "table": 1
+                    },
+                    "_DST": {
+                      "offset": 0,
+                      "table": 0
+                    },
+                    "_LABEL": "REVIEWS",
+                    "_ID": {
+                      "offset": 1,
+                      "table": 2
+                    },
+                    "gm_id": "edge:2",
+                    "weight": 2.5
+                  }
+                ]
+              },
+              {
+                "_NODES": [],
+                "_RELS": [
+                  {
+                    "_SRC": {
+                      "offset": 0,
+                      "table": 1
+                    },
+                    "_DST": {
+                      "offset": 0,
+                      "table": 0
+                    },
+                    "_LABEL": "REVIEWS",
+                    "_ID": {
+                      "offset": 1,
+                      "table": 2
+                    },
+                    "gm_id": "edge:2",
+                    "weight": 2.5
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "_NODES": [
+                  {
+                    "_ID": {
+                      "offset": 0,
+                      "table": 1
+                    },
+                    "_LABEL": "Person",
+                    "gm_id": "p:1",
+                    "name": "Ada",
+                    "tags": [
+                      "reader",
+                      "critic"
+                    ],
+                    "text": null
+                  },
+                  {
+                    "_ID": {
+                      "offset": 0,
+                      "table": 0
+                    },
+                    "_LABEL": "Review",
+                    "gm_id": "r:1",
+                    "name": null,
+                    "tags": null,
+                    "text": "bad acting"
+                  }
+                ],
+                "_RELS": [
+                  {
+                    "_SRC": {
+                      "offset": 0,
+                      "table": 1
+                    },
+                    "_DST": {
+                      "offset": 0,
+                      "table": 0
+                    },
+                    "_LABEL": "REVIEWS",
+                    "_ID": {
+                      "offset": 0,
+                      "table": 2
+                    },
+                    "gm_id": "edge:1",
+                    "weight": 2.5
+                  }
+                ]
+              },
+              {
+                "_NODES": [],
+                "_RELS": [
+                  {
+                    "_SRC": {
+                      "offset": 0,
+                      "table": 1
+                    },
+                    "_DST": {
+                      "offset": 0,
+                      "table": 0
+                    },
+                    "_LABEL": "REVIEWS",
+                    "_ID": {
+                      "offset": 0,
+                      "table": 2
+                    },
+                    "gm_id": "edge:1",
+                    "weight": 2.5
+                  }
+                ]
+              }
+            ]
+          ],
+          "python_types": {
+            "type": "list",
+            "items": [
+              {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "dict",
+                    "fields": {
+                      "_NODES": {
+                        "type": "list",
+                        "items": [
+                          {
+                            "type": "dict",
+                            "fields": {
+                              "_ID": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_LABEL": "str",
+                              "gm_id": "str",
+                              "name": "str",
+                              "tags": {
+                                "type": "list",
+                                "items": [
+                                  "str",
+                                  "str"
+                                ]
+                              },
+                              "text": "NoneType"
+                            }
+                          },
+                          {
+                            "type": "dict",
+                            "fields": {
+                              "_ID": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_LABEL": "str",
+                              "gm_id": "str",
+                              "name": "NoneType",
+                              "tags": "NoneType",
+                              "text": "str"
+                            }
+                          }
+                        ]
+                      },
+                      "_RELS": {
+                        "type": "list",
+                        "items": [
+                          {
+                            "type": "dict",
+                            "fields": {
+                              "_SRC": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_DST": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_LABEL": "str",
+                              "_ID": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "gm_id": "str",
+                              "weight": "float"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "dict",
+                    "fields": {
+                      "_NODES": {
+                        "type": "list",
+                        "items": []
+                      },
+                      "_RELS": {
+                        "type": "list",
+                        "items": [
+                          {
+                            "type": "dict",
+                            "fields": {
+                              "_SRC": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_DST": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_LABEL": "str",
+                              "_ID": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "gm_id": "str",
+                              "weight": "float"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "dict",
+                    "fields": {
+                      "_NODES": {
+                        "type": "list",
+                        "items": [
+                          {
+                            "type": "dict",
+                            "fields": {
+                              "_ID": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_LABEL": "str",
+                              "gm_id": "str",
+                              "name": "str",
+                              "tags": {
+                                "type": "list",
+                                "items": [
+                                  "str",
+                                  "str"
+                                ]
+                              },
+                              "text": "NoneType"
+                            }
+                          },
+                          {
+                            "type": "dict",
+                            "fields": {
+                              "_ID": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_LABEL": "str",
+                              "gm_id": "str",
+                              "name": "NoneType",
+                              "tags": "NoneType",
+                              "text": "str"
+                            }
+                          }
+                        ]
+                      },
+                      "_RELS": {
+                        "type": "list",
+                        "items": [
+                          {
+                            "type": "dict",
+                            "fields": {
+                              "_SRC": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_DST": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_LABEL": "str",
+                              "_ID": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "gm_id": "str",
+                              "weight": "float"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "dict",
+                    "fields": {
+                      "_NODES": {
+                        "type": "list",
+                        "items": []
+                      },
+                      "_RELS": {
+                        "type": "list",
+                        "items": [
+                          {
+                            "type": "dict",
+                            "fields": {
+                              "_SRC": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_DST": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "_LABEL": "str",
+                              "_ID": {
+                                "type": "dict",
+                                "fields": {
+                                  "offset": "int",
+                                  "table": "int"
+                                }
+                              },
+                              "gm_id": "str",
+                              "weight": "float"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "scalar": {
+          "statement": "RETURN 7 AS n, 3.5 AS f, true AS b, NULL AS missing, [1,2] AS items, {answer:'yes'} AS object, 9007199254740993 AS large_integer",
+          "columns": [
+            "n",
+            "f",
+            "b",
+            "missing",
+            "items",
+            "object",
+            "large_integer"
+          ],
+          "data_types": [
+            "INT64",
+            "DOUBLE",
+            "BOOL",
+            "STRING",
+            "INT64[]",
+            "STRUCT(answer STRING)",
+            "INT64"
+          ],
+          "rows": [
+            [
+              7,
+              3.5,
+              true,
+              null,
+              [
+                1,
+                2
+              ],
+              {
+                "answer": "yes"
+              },
+              9007199254740993
+            ]
+          ],
+          "python_types": {
+            "type": "list",
+            "items": [
+              {
+                "type": "list",
+                "items": [
+                  "int",
+                  "float",
+                  "bool",
+                  "NoneType",
+                  {
+                    "type": "list",
+                    "items": [
+                      "int",
+                      "int"
+                    ]
+                  },
+                  {
+                    "type": "dict",
+                    "fields": {
+                      "answer": "str"
+                    }
+                  },
+                  "int"
+                ]
+              }
+            ]
+          }
+        },
+        "scalar_node_shaped_map": {
+          "statement": "RETURN {_ID: {offset: 0, `table`: 1}, _LABEL: 'Person', gm_id: 'p:1'} AS pretend",
+          "columns": [
+            "pretend"
+          ],
+          "data_types": [
+            "STRUCT(_ID STRUCT(offset INT64, table INT64), _LABEL STRING, gm_id STRING)"
+          ],
+          "rows": [
+            [
+              {
+                "_ID": {
+                  "offset": 0,
+                  "table": 1
+                },
+                "_LABEL": "Person",
+                "gm_id": "p:1"
+              }
+            ]
+          ],
+          "python_types": {
+            "type": "list",
+            "items": [
+              {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "dict",
+                    "fields": {
+                      "_ID": {
+                        "type": "dict",
+                        "fields": {
+                          "offset": "int",
+                          "table": "int"
+                        }
+                      },
+                      "_LABEL": "str",
+                      "gm_id": "str"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "nested_properties": {
+          "statement": "MATCH (p:Person) RETURN p.tags, p.gm_id",
+          "columns": [
+            "p.tags",
+            "p.gm_id"
+          ],
+          "data_types": [
+            "STRING[]",
+            "STRING"
+          ],
+          "rows": [
+            [
+              [
+                "reader",
+                "critic"
+              ],
+              "p:1"
+            ]
+          ],
+          "python_types": {
+            "type": "list",
+            "items": [
+              {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "list",
+                    "items": [
+                      "str",
+                      "str"
+                    ]
+                  },
+                  "str"
+                ]
+              }
+            ]
+          }
+        },
+        "node_multiple_labels": {
+          "ok": true,
+          "result": {
+            "columns": [
+              "p"
+            ],
+            "data_types": [
+              "NODE"
+            ],
+            "rows": [
+              [
+                {
+                  "_ID": {
+                    "offset": 0,
+                    "table": 1
+                  },
+                  "_LABEL": "Person",
+                  "gm_id": "p:1",
+                  "text": null,
+                  "name": "Ada",
+                  "tags": [
+                    "reader",
+                    "critic"
+                  ]
+                }
+              ],
+              [
+                {
+                  "_ID": {
+                    "offset": 0,
+                    "table": 0
+                  },
+                  "_LABEL": "Review",
+                  "gm_id": "r:1",
+                  "text": "bad acting",
+                  "name": null,
+                  "tags": null
+                }
+              ],
+              [
+                {
+                  "_ID": {
+                    "offset": 1,
+                    "table": 0
+                  },
+                  "_LABEL": "Review",
+                  "gm_id": "r:2",
+                  "text": "good acting",
+                  "name": null,
+                  "tags": null
+                }
+              ],
+              [
+                {
+                  "_ID": {
+                    "offset": 2,
+                    "table": 0
+                  },
+                  "_LABEL": "Review",
+                  "gm_id": "r:3",
+                  "text": "awful ending",
+                  "name": null,
+                  "tags": null
+                }
+              ]
+            ]
+          }
+        },
+        "create_multiple_labels": {
+          "ok": false,
+          "error_type": "RuntimeError",
+          "error": "Binder exception: Create node  with multiple node labels is not supported."
+        },
+        "relationship_primary_key": {
+          "ok": false,
+          "error_type": "RuntimeError",
+          "error": "Parser exception: mismatched input 'PRIMARY' expecting {ADD, ALTER, ANALYZE, AS, ATTACH, BEGIN, BY, CALL, CHECKPOINT, COMMENT, COMMIT, CONTAINS, COPY, COUNT, CYCLE, DATABASE, DELETE, DETACH, DROP, EXPLAIN, EXPORT, EXTENSION, FROM, FORCE, GRAPH, HASH, IMPORT, IF, INCREMENT, IS, KEY, LIMIT, LIST, LOAD, LOGICAL, MATCH, MAXVALUE, MERGE, MINVALUE, NO, NODE, PROJECT, RANGE, READ, REL, RENAME, RETURN, ROLLBACK, SEQUENCE, SET, START, STRUCT, TO, TRANSACTION, TYPE, UNINSTALL, UPDATE, USE, WRITE, YIELD, USER, PARTITION, PARTITIONS, PASSWORD, ROLE, MAP, STATE, INITIAL, DECIMAL, L_SKIP, HexLetter, UnescapedSymbolicName, EscapedSymbolicName} (line: 1, offset: 60)\n\"CREATE REL TABLE Keyed(FROM Person TO Review, gm_id STRING, PRIMARY KEY(gm_id))\"\n                                                             ^^^^^^^"
+        },
+        "integer_identity": {
+          "columns": [
+            "n"
+          ],
+          "data_types": [
+            "NODE"
+          ],
+          "rows": [
+            [
+              {
+                "_ID": {
+                  "offset": 0,
+                  "table": 4
+                },
+                "_LABEL": "NumericID",
+                "gm_id": 1
+              }
+            ]
+          ]
+        },
+        "bulk_copy": {
+          "columns": [
+            "r"
+          ],
+          "data_types": [
+            "NODE"
+          ],
+          "rows": [
+            [
+              {
+                "_ID": {
+                  "offset": 0,
+                  "table": 5
+                },
+                "_LABEL": "Copied",
+                "gm_id": "copy:1",
+                "text": "bad, but watchable"
+              }
+            ],
+            [
+              {
+                "_ID": {
+                  "offset": 1,
+                  "table": 5
+                },
+                "_LABEL": "Copied",
+                "gm_id": "copy:2",
+                "text": "good film"
+              }
+            ]
+          ]
+        }
+      },
+      "duration_seconds": 0.137
+    },
+    "providers": {
+      "probe_status": "completed",
+      "findings": {
+        "missing_key": {
+          "ok": false,
+          "error_type": "RuntimeError",
+          "error": "Binder exception: llm: no API key found for model 'phase0/qwen'. Set OPENROUTER_API_KEY (or LLM_API_KEY) in the environment of the process running Ladybug."
+        },
+        "alias_result": {
+          "columns": [
+            "answer"
+          ],
+          "data_types": [
+            "STRING"
+          ],
+          "rows": [
+            [
+              "fixture"
+            ]
+          ]
+        },
+        "default_endpoint_requests": [
+          {
+            "path": "/v1/chat/completions",
+            "body": {
+              "model": "phase0/default",
+              "temperature": 0.0,
+              "messages": [
+                {
+                  "role": "system",
+                  "content": "You are a precise data-processing function running inside a graph database query. Apply the instruction to every input row independently and reply with one JSON object only, with no explanations or code fences."
+                },
+                {
+                  "role": "user",
+                  "content": "Instruction: Different `text` `answer`\n\nEvery row provides the input field(s): `text`.\nFor every row, produce the output field(s): `answer` (string).\n\nRows:\n[{\"id\":0,\"text\":\"alpha\"}]\n\nReply with {\"results\":[{\"id\":<row id>, ...output fields}]} containing exactly one result per row and keeping each row's id."
+                }
+              ],
+              "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                  "name": "llm_result",
+                  "strict": true,
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "results": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "answer": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "answer"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "results"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            },
+            "authorization_present": true,
+            "uses_primary_fixture_key": true,
+            "uses_precedence_fixture_key": false
+          }
+        ],
+        "alias_endpoint_requests": [
+          {
+            "path": "/v1/chat/completions",
+            "body": {
+              "model": "phase0/qwen",
+              "temperature": 0.0,
+              "messages": [
+                {
+                  "role": "system",
+                  "content": "You are a precise data-processing function running inside a graph database query. Apply the instruction to every input row independently and reply with one JSON object only, with no explanations or code fences."
+                },
+                {
+                  "role": "user",
+                  "content": "Instruction: Echo `text` `answer`\n\nEvery row provides the input field(s): `text`.\nFor every row, produce the output field(s): `answer` (string).\n\nRows:\n[{\"id\":0,\"text\":\"alpha\"}]\n\nReply with {\"results\":[{\"id\":<row id>, ...output fields}]} containing exactly one result per row and keeping each row's id."
+                }
+              ],
+              "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                  "name": "llm_result",
+                  "strict": true,
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "results": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "answer": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "answer"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "results"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            },
+            "authorization_present": true,
+            "uses_primary_fixture_key": true,
+            "uses_precedence_fixture_key": false
+          },
+          {
+            "path": "/v1/chat/completions",
+            "body": {
+              "model": "phase0/qwen",
+              "temperature": 0.0,
+              "messages": [
+                {
+                  "role": "system",
+                  "content": "You are a precise data-processing function running inside a graph database query. Apply the instruction to every input row independently and reply with one JSON object only, with no explanations or code fences."
+                },
+                {
+                  "role": "user",
+                  "content": "Instruction: Precedence `text` `answer`\n\nEvery row provides the input field(s): `text`.\nFor every row, produce the output field(s): `answer` (string).\n\nRows:\n[{\"id\":0,\"text\":\"alpha\"}]\n\nReply with {\"results\":[{\"id\":<row id>, ...output fields}]} containing exactly one result per row and keeping each row's id."
+                }
+              ],
+              "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                  "name": "llm_result",
+                  "strict": true,
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "results": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "answer": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "answer"
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": [
+                      "results"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            },
+            "authorization_present": true,
+            "uses_primary_fixture_key": false,
+            "uses_precedence_fixture_key": true
+          }
+        ],
+        "thinking_fields": {
+          "reasoning_effort: 'none'": {
+            "ok": false,
+            "error_type": "RuntimeError",
+            "error": "Binder exception: llm: unknown field 'reasoning_effort' in model configuration thinking_a."
+          },
+          "enable_thinking: false": {
+            "ok": false,
+            "error_type": "RuntimeError",
+            "error": "Binder exception: llm: unknown field 'enable_thinking' in model configuration thinking_b."
+          },
+          "chat_template_kwargs: {enable_thinking: false}": {
+            "ok": false,
+            "error_type": "RuntimeError",
+            "error": "Binder exception: llm: unknown field 'chat_template_kwargs' in model configuration thinking_c."
+          }
+        },
+        "request_thinking_fields": {
+          "reasoning_effort": null,
+          "chat_template_kwargs": null,
+          "enable_thinking": null
+        }
+      },
+      "duration_seconds": 1.092
+    },
+    "limits": {
+      "probe_status": "completed",
+      "findings": {
+        "two_expressions_with_limit_one": {
+          "columns": [
+            "_LLM_CALL({\"model\":\"mock:echo\",\"base_url\":\"http://127.0.0.1:1/v1\",\"temperature\":0.000000,\"batch_size\":1,\"threads\":1,\"max_calls\":1,\"timeout_ms\":120000},First {{t}} {a STRING},t)",
+            "_LLM_CALL({\"model\":\"mock:echo\",\"base_url\":\"http://127.0.0.1:1/v1\",\"temperature\":0.000000,\"batch_size\":1,\"threads\":1,\"max_calls\":1,\"timeout_ms\":120000},Second {{t}} {b STRING},t)"
+          ],
+          "data_types": [
+            "STRING",
+            "STRING"
+          ],
+          "rows": [
+            [
+              "[\"alpha\"]",
+              "[\"alpha\"]"
+            ]
+          ]
+        },
+        "two_expression_usage": {
+          "calls": 2,
+          "input_rows": 2,
+          "llm_rows": 2,
+          "cache_hits": 0,
+          "failed_rows": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "stored_hits": 0,
+          "request_chars": 56,
+          "request_images": 0
+        },
+        "immediate_second_usage_read": {
+          "calls": 0,
+          "input_rows": 0,
+          "llm_rows": 0,
+          "cache_hits": 0,
+          "failed_rows": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "stored_hits": 0,
+          "request_chars": 0,
+          "request_images": 0
+        },
+        "single_expression_limit_error": {
+          "ok": false,
+          "error_type": "RuntimeError",
+          "error": "Runtime exception: llm: this query needs more than llm_max_calls=1 model calls for one llm expression. Raise the limit with CALL llm_max_calls=<n>."
+        },
+        "limit_error_usage": {
+          "calls": 0,
+          "input_rows": 2,
+          "llm_rows": 2,
+          "cache_hits": 0,
+          "failed_rows": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "stored_hits": 0,
+          "request_chars": 0,
+          "request_images": 0
+        },
+        "schema_fallback": {
+          "result": {
+            "columns": [
+              "answer"
+            ],
+            "data_types": [
+              "STRING"
+            ],
+            "rows": [
+              [
+                "fixture"
+              ]
+            ]
+          },
+          "usage": {
+            "calls": 2,
+            "input_rows": 1,
+            "llm_rows": 1,
+            "cache_hits": 0,
+            "failed_rows": 0,
+            "prompt_tokens": 10,
+            "completion_tokens": 5,
+            "stored_hits": 0,
+            "request_chars": 31,
+            "request_images": 0
+          },
+          "requests": [
+            {
+              "path": "/v1/chat/completions",
+              "body": {
+                "model": "phase0/schema_fallback",
+                "temperature": 0.0,
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a precise data-processing function running inside a graph database query. Apply the instruction to every input row independently and reply with one JSON object only, with no explanations or code fences."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Instruction: Echo `text` `answer`\n\nEvery row provides the input field(s): `text`.\nFor every row, produce the output field(s): `answer` (string).\n\nRows:\n[{\"id\":0,\"text\":\"alpha\"}]\n\nReply with {\"results\":[{\"id\":<row id>, ...output fields}]} containing exactly one result per row and keeping each row's id."
+                  }
+                ],
+                "response_format": {
+                  "type": "json_schema",
+                  "json_schema": {
+                    "name": "llm_result",
+                    "strict": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "answer": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "answer"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "results"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              },
+              "authorization_present": true,
+              "uses_primary_fixture_key": true,
+              "uses_precedence_fixture_key": false
+            },
+            {
+              "path": "/v1/chat/completions",
+              "body": {
+                "model": "phase0/schema_fallback",
+                "temperature": 0.0,
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a precise data-processing function running inside a graph database query. Apply the instruction to every input row independently and reply with one JSON object only, with no explanations or code fences."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Instruction: Echo `text` `answer`\n\nEvery row provides the input field(s): `text`.\nFor every row, produce the output field(s): `answer` (string).\n\nRows:\n[{\"id\":0,\"text\":\"alpha\"}]\n\nReply with {\"results\":[{\"id\":<row id>, ...output fields}]} containing exactly one result per row and keeping each row's id."
+                  }
+                ]
+              },
+              "authorization_present": true,
+              "uses_primary_fixture_key": true,
+              "uses_precedence_fixture_key": false
+            }
+          ]
+        },
+        "http_retry": {
+          "result": {
+            "columns": [
+              "answer"
+            ],
+            "data_types": [
+              "STRING"
+            ],
+            "rows": [
+              [
+                "fixture"
+              ]
+            ]
+          },
+          "usage": {
+            "calls": 2,
+            "input_rows": 1,
+            "llm_rows": 1,
+            "cache_hits": 0,
+            "failed_rows": 0,
+            "prompt_tokens": 10,
+            "completion_tokens": 5,
+            "stored_hits": 0,
+            "request_chars": 31,
+            "request_images": 0
+          },
+          "requests": [
+            {
+              "path": "/v1/chat/completions",
+              "body": {
+                "model": "phase0/http_retry",
+                "temperature": 0.0,
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a precise data-processing function running inside a graph database query. Apply the instruction to every input row independently and reply with one JSON object only, with no explanations or code fences."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Instruction: Echo `text` `answer`\n\nEvery row provides the input field(s): `text`.\nFor every row, produce the output field(s): `answer` (string).\n\nRows:\n[{\"id\":0,\"text\":\"alpha\"}]\n\nReply with {\"results\":[{\"id\":<row id>, ...output fields}]} containing exactly one result per row and keeping each row's id."
+                  }
+                ],
+                "response_format": {
+                  "type": "json_schema",
+                  "json_schema": {
+                    "name": "llm_result",
+                    "strict": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "answer": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "answer"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "results"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              },
+              "authorization_present": true,
+              "uses_primary_fixture_key": true,
+              "uses_precedence_fixture_key": false
+            },
+            {
+              "path": "/v1/chat/completions",
+              "body": {
+                "model": "phase0/http_retry",
+                "temperature": 0.0,
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a precise data-processing function running inside a graph database query. Apply the instruction to every input row independently and reply with one JSON object only, with no explanations or code fences."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Instruction: Echo `text` `answer`\n\nEvery row provides the input field(s): `text`.\nFor every row, produce the output field(s): `answer` (string).\n\nRows:\n[{\"id\":0,\"text\":\"alpha\"}]\n\nReply with {\"results\":[{\"id\":<row id>, ...output fields}]} containing exactly one result per row and keeping each row's id."
+                  }
+                ],
+                "response_format": {
+                  "type": "json_schema",
+                  "json_schema": {
+                    "name": "llm_result",
+                    "strict": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "answer": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "answer"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "results"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              },
+              "authorization_present": true,
+              "uses_primary_fixture_key": true,
+              "uses_precedence_fixture_key": false
+            }
+          ]
+        }
+      },
+      "duration_seconds": 2.712
+    },
+    "cache": {
+      "probe_status": "completed",
+      "findings": {
+        "same_in_memory_database_new_connections": [
+          {
+            "usage": {
+              "calls": 1,
+              "input_rows": 1,
+              "llm_rows": 1,
+              "cache_hits": 0,
+              "failed_rows": 0,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "stored_hits": 0,
+              "request_chars": 31,
+              "request_images": 0
+            },
+            "answers": {
+              "columns": [
+                "question",
+                "model",
+                "instruction",
+                "answers",
+                "oldest",
+                "newest",
+                "path"
+              ],
+              "data_types": [
+                "STRING",
+                "STRING",
+                "STRING",
+                "INT64",
+                "TIMESTAMP",
+                "TIMESTAMP",
+                "STRING"
+              ],
+              "rows": [
+                [
+                  "6720792af0db2c24",
+                  "mock:echo",
+                  "Echo `$1` `answer` -> answer STRING",
+                  1,
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  null
+                ]
+              ]
+            }
+          },
+          {
+            "usage": {
+              "calls": 0,
+              "input_rows": 1,
+              "llm_rows": 0,
+              "cache_hits": 1,
+              "failed_rows": 0,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "stored_hits": 1,
+              "request_chars": 0,
+              "request_images": 0
+            },
+            "answers": {
+              "columns": [
+                "question",
+                "model",
+                "instruction",
+                "answers",
+                "oldest",
+                "newest",
+                "path"
+              ],
+              "data_types": [
+                "STRING",
+                "STRING",
+                "STRING",
+                "INT64",
+                "TIMESTAMP",
+                "TIMESTAMP",
+                "STRING"
+              ],
+              "rows": [
+                [
+                  "6720792af0db2c24",
+                  "mock:echo",
+                  "Echo `$1` `answer` -> answer STRING",
+                  1,
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  null
+                ]
+              ]
+            }
+          }
+        ],
+        "fresh_worker_processes": [
+          {
+            "usage": {
+              "calls": 1,
+              "input_rows": 1,
+              "llm_rows": 1,
+              "cache_hits": 0,
+              "failed_rows": 0,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "stored_hits": 0,
+              "request_chars": 31,
+              "request_images": 0
+            },
+            "answers": {
+              "columns": [
+                "question",
+                "model",
+                "instruction",
+                "answers",
+                "oldest",
+                "newest",
+                "path"
+              ],
+              "data_types": [
+                "STRING",
+                "STRING",
+                "STRING",
+                "INT64",
+                "TIMESTAMP",
+                "TIMESTAMP",
+                "STRING"
+              ],
+              "rows": [
+                [
+                  "6720792af0db2c24",
+                  "mock:echo",
+                  "Echo `$1` `answer` -> answer STRING",
+                  1,
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  null
+                ]
+              ]
+            }
+          },
+          {
+            "usage": {
+              "calls": 1,
+              "input_rows": 1,
+              "llm_rows": 1,
+              "cache_hits": 0,
+              "failed_rows": 0,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "stored_hits": 0,
+              "request_chars": 31,
+              "request_images": 0
+            },
+            "answers": {
+              "columns": [
+                "question",
+                "model",
+                "instruction",
+                "answers",
+                "oldest",
+                "newest",
+                "path"
+              ],
+              "data_types": [
+                "STRING",
+                "STRING",
+                "STRING",
+                "INT64",
+                "TIMESTAMP",
+                "TIMESTAMP",
+                "STRING"
+              ],
+              "rows": [
+                [
+                  "6720792af0db2c24",
+                  "mock:echo",
+                  "Echo `$1` `answer` -> answer STRING",
+                  1,
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  null
+                ]
+              ]
+            }
+          }
+        ],
+        "temporary_file_database_positive_control": [
+          {
+            "usage": {
+              "calls": 1,
+              "input_rows": 1,
+              "llm_rows": 1,
+              "cache_hits": 0,
+              "failed_rows": 0,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "stored_hits": 0,
+              "request_chars": 31,
+              "request_images": 0
+            },
+            "answers": {
+              "columns": [
+                "question",
+                "model",
+                "instruction",
+                "answers",
+                "oldest",
+                "newest",
+                "path"
+              ],
+              "data_types": [
+                "STRING",
+                "STRING",
+                "STRING",
+                "INT64",
+                "TIMESTAMP",
+                "TIMESTAMP",
+                "STRING"
+              ],
+              "rows": [
+                [
+                  "6720792af0db2c24",
+                  "mock:echo",
+                  "Echo `$1` `answer` -> answer STRING",
+                  1,
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  "/tmp/tento-cache-positive-control-uiqpmhqk/fixture.lbdb.llm_answers"
+                ]
+              ]
+            }
+          },
+          {
+            "usage": {
+              "calls": 0,
+              "input_rows": 1,
+              "llm_rows": 0,
+              "cache_hits": 1,
+              "failed_rows": 0,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "stored_hits": 1,
+              "request_chars": 0,
+              "request_images": 0
+            },
+            "answers": {
+              "columns": [
+                "question",
+                "model",
+                "instruction",
+                "answers",
+                "oldest",
+                "newest",
+                "path"
+              ],
+              "data_types": [
+                "STRING",
+                "STRING",
+                "STRING",
+                "INT64",
+                "TIMESTAMP",
+                "TIMESTAMP",
+                "STRING"
+              ],
+              "rows": [
+                [
+                  "6720792af0db2c24",
+                  "mock:echo",
+                  "Echo `$1` `answer` -> answer STRING",
+                  1,
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  {
+                    "python_type": "datetime",
+                    "iso": "2026-11-27T08:08:39"
+                  },
+                  "/tmp/tento-cache-positive-control-uiqpmhqk/fixture.lbdb.llm_answers"
+                ]
+              ]
+            }
+          }
+        ],
+        "positive_control_files_removed": [
+          "fixture.lbdb",
+          "fixture.lbdb.llm_answers"
+        ],
+        "answer_table_columns": [
+          "question",
+          "model",
+          "instruction",
+          "answers",
+          "oldest",
+          "newest",
+          "path"
+        ]
+      },
+      "duration_seconds": 0.277
+    },
+    "explain": {
+      "probe_status": "completed",
+      "findings": {
+        "default_planning": {
+          "statement": "EXPLAIN MATCH (r:Review) WHERE llm('phase0/explain', 'Is {{r.text}} negative? {yes BOOLEAN}') AND llm('phase0/explain', 'Is {{r.text}} about acting? {yes BOOLEAN}') RETURN r",
+          "result": {
+            "columns": [
+              "explain result"
+            ],
+            "data_types": [
+              "STRING"
+            ],
+            "rows": [
+              [
+                "\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\u2502\n\u2502\u2502                                                                                                      Physical Plan                                                                                                      \u2502\u2502\n\u2502\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                                                    RESULT_COLLECTOR[4]                                                                                                    \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                      Expressions: r                                                                                                       \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    NumOutputTuples: 0                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                  ExecutionTime: 0.000000                                                                                                  \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    TotalTime: 0.000000                                                                                                    \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                                                       PROJECTION[3]                                                                                                       \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                      Expressions: r                                                                                                       \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    NumOutputTuples: 0                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                  ExecutionTime: 0.000000                                                                                                  \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    TotalTime: 0.000000                                                                                                    \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                                                         FILTER[2]                                                                                                         \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502   _LLM_CALL({\"model\":\"phase0/explain\",\"base_url\":\"http://127.0.0.1:39311/v1\",\"temperature\":0.000000,\"batch_size\":16,\"threads\":1,\"max_calls\":1000,\"timeout_ms\":120000},Is {{r.text}} about acting? {yes BOOLEAN},r.text)   \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                      LlmUsage: calls=1, input_rows=3, rows_sent=3, stored_hits=0, failed_rows=0, prompt_tokens=10, completion_tokens=5, request_images=0, wait_ms=1                                       \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    NumOutputTuples: 0                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                  ExecutionTime: 0.000000                                                                                                  \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    TotalTime: 0.000000                                                                                                    \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                                                         FILTER[1]                                                                                                         \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502     _LLM_CALL({\"model\":\"phase0/explain\",\"base_url\":\"http://127.0.0.1:39311/v1\",\"temperature\":0.000000,\"batch_size\":16,\"threads\":1,\"max_calls\":1000,\"timeout_ms\":120000},Is {{r.text}} negative? {yes BOOLEAN},r.text)     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                      LlmUsage: calls=1, input_rows=3, rows_sent=3, stored_hits=0, failed_rows=0, prompt_tokens=10, completion_tokens=5, request_images=0, wait_ms=2                                       \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    NumOutputTuples: 0                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                  ExecutionTime: 0.000000                                                                                                  \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    TotalTime: 0.000000                                                                                                    \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                                                    SCAN_NODE_TABLE[0]                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                      Tables: Review                                                                                                       \u2502\n\u2502                                                                                                         Alias: r                                                                                                          \u2502\n\u2502                                                                                                    Properties: r.gm_id                                                                                                    \u2502\n\u2502                                                                                                          r.text                                                                                                           \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    NumOutputTuples: 0                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                  ExecutionTime: 0.000000                                                                                                  \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    TotalTime: 0.000000                                                                                                    \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n"
+              ]
+            ]
+          },
+          "usage": {
+            "calls": 2,
+            "input_rows": 6,
+            "llm_rows": 6,
+            "cache_hits": 0,
+            "failed_rows": 0,
+            "prompt_tokens": 20,
+            "completion_tokens": 10,
+            "stored_hits": 0,
+            "request_chars": 210,
+            "request_images": 0
+          },
+          "requests": [
+            {
+              "path": "/v1/chat/completions",
+              "body": {
+                "model": "phase0/explain",
+                "temperature": 0.0,
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a precise data-processing function running inside a graph database query. Apply the instruction to every input row independently and reply with one JSON object only, with no explanations or code fences."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Instruction: Is `r.text` negative? `yes`\n\nEvery row provides the input field(s): `r.text`.\nFor every row, produce the output field(s): `yes` (boolean).\n\nRows:\n[{\"id\":0,\"r.text\":\"good acting\"},\n{\"id\":1,\"r.text\":\"bad acting\"},\n{\"id\":2,\"r.text\":\"awful ending\"}]\n\nReply with {\"results\":[{\"id\":<row id>, ...output fields}]} containing exactly one result per row and keeping each row's id."
+                  }
+                ],
+                "response_format": {
+                  "type": "json_schema",
+                  "json_schema": {
+                    "name": "llm_result",
+                    "strict": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "yes": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "yes"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "results"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              },
+              "authorization_present": true,
+              "uses_primary_fixture_key": true,
+              "uses_precedence_fixture_key": false
+            },
+            {
+              "path": "/v1/chat/completions",
+              "body": {
+                "model": "phase0/explain",
+                "temperature": 0.0,
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a precise data-processing function running inside a graph database query. Apply the instruction to every input row independently and reply with one JSON object only, with no explanations or code fences."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Instruction: Is `r.text` about acting? `yes`\n\nEvery row provides the input field(s): `r.text`.\nFor every row, produce the output field(s): `yes` (boolean).\n\nRows:\n[{\"id\":0,\"r.text\":\"awful ending\"},\n{\"id\":1,\"r.text\":\"bad acting\"},\n{\"id\":2,\"r.text\":\"good acting\"}]\n\nReply with {\"results\":[{\"id\":<row id>, ...output fields}]} containing exactly one result per row and keeping each row's id."
+                  }
+                ],
+                "response_format": {
+                  "type": "json_schema",
+                  "json_schema": {
+                    "name": "llm_result",
+                    "strict": true,
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "results": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "yes": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "yes"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "results"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              },
+              "authorization_present": true,
+              "uses_primary_fixture_key": true,
+              "uses_precedence_fixture_key": false
+            }
+          ]
+        },
+        "model_planning_disabled": {
+          "statement": "EXPLAIN MATCH (r:Review) WHERE llm('phase0/explain', 'Is {{r.text}} negative? {yes BOOLEAN}') AND llm('phase0/explain', 'Is {{r.text}} about acting? {yes BOOLEAN}') RETURN r",
+          "result": {
+            "columns": [
+              "explain result"
+            ],
+            "data_types": [
+              "STRING"
+            ],
+            "rows": [
+              [
+                "\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\u2502\n\u2502\u2502                                                                                                      Physical Plan                                                                                                      \u2502\u2502\n\u2502\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                                                    RESULT_COLLECTOR[4]                                                                                                    \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                      Expressions: r                                                                                                       \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    NumOutputTuples: 0                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                  ExecutionTime: 0.000000                                                                                                  \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    TotalTime: 0.000000                                                                                                    \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                                                       PROJECTION[3]                                                                                                       \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                      Expressions: r                                                                                                       \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    NumOutputTuples: 0                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                  ExecutionTime: 0.000000                                                                                                  \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    TotalTime: 0.000000                                                                                                    \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                                                         FILTER[2]                                                                                                         \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502   _LLM_CALL({\"model\":\"phase0/explain\",\"base_url\":\"http://127.0.0.1:35699/v1\",\"temperature\":0.000000,\"batch_size\":16,\"threads\":1,\"max_calls\":1000,\"timeout_ms\":120000},Is {{r.text}} about acting? {yes BOOLEAN},r.text)   \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                       LlmUsage: calls=0, input_rows=0, rows_sent=0, stored_hits=0, failed_rows=0, prompt_tokens=0, completion_tokens=0, request_images=0, wait_ms=0                                       \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    NumOutputTuples: 0                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                  ExecutionTime: 0.000000                                                                                                  \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    TotalTime: 0.000000                                                                                                    \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                                                         FILTER[1]                                                                                                         \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502     _LLM_CALL({\"model\":\"phase0/explain\",\"base_url\":\"http://127.0.0.1:35699/v1\",\"temperature\":0.000000,\"batch_size\":16,\"threads\":1,\"max_calls\":1000,\"timeout_ms\":120000},Is {{r.text}} negative? {yes BOOLEAN},r.text)     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                       LlmUsage: calls=0, input_rows=0, rows_sent=0, stored_hits=0, failed_rows=0, prompt_tokens=0, completion_tokens=0, request_images=0, wait_ms=0                                       \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    NumOutputTuples: 0                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                  ExecutionTime: 0.000000                                                                                                  \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    TotalTime: 0.000000                                                                                                    \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                                                    SCAN_NODE_TABLE[0]                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                      Tables: Review                                                                                                       \u2502\n\u2502                                                                                                         Alias: r                                                                                                          \u2502\n\u2502                                                                                                    Properties: r.gm_id                                                                                                    \u2502\n\u2502                                                                                                          r.text                                                                                                           \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    NumOutputTuples: 0                                                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                  ExecutionTime: 0.000000                                                                                                  \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                                                    TotalTime: 0.000000                                                                                                    \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n"
+              ]
+            ]
+          },
+          "usage": {
+            "calls": 0,
+            "input_rows": 0,
+            "llm_rows": 0,
+            "cache_hits": 0,
+            "failed_rows": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "stored_hits": 0,
+            "request_chars": 0,
+            "request_images": 0
+          },
+          "requests": []
+        },
+        "profile": {
+          "columns": [
+            "explain result"
+          ],
+          "data_types": [
+            "STRING"
+          ],
+          "rows": [
+            [
+              "\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\u2502\n\u2502\u2502                                                                  Physical Plan                                                                  \u2502\u2502\n\u2502\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                    PROFILE[7]                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                NumOutputTuples: 0                                                                 \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                              ExecutionTime: 0.000000                                                              \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                TotalTime: 0.000000                                                                \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                              WallClockTime: 1.411000                                                              \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                RESULT_COLLECTOR[6]                                                                \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                Expressions: answer                                                                \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                NumOutputTuples: 1                                                                 \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                              ExecutionTime: 0.428000                                                              \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                TotalTime: 0.635000                                                                \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                   PROJECTION[5]                                                                   \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                Expressions: answer                                                                \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502   LlmUsage: calls=1, input_rows=1, rows_sent=1, stored_hits=0, failed_rows=0, prompt_tokens=0, completion_tokens=0, request_images=0, wait_ms=0   \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                NumOutputTuples: 1                                                                 \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                              ExecutionTime: 0.199000                                                              \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                TotalTime: 0.207000                                                                \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                              TABLE_FUNCTION_CALL[4]                                                               \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                               Function: READ_FTABLE                                                               \u2502\n\u2502                                                                 Expressions: text                                                                 \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                NumOutputTuples: 1                                                                 \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                              ExecutionTime: 0.008000                                                              \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                TotalTime: 0.008000                                                                \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                RESULT_COLLECTOR[3]                                                                \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                 Expressions: text                                                                 \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                NumOutputTuples: 1                                                                 \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                              ExecutionTime: 0.235000                                                              \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                TotalTime: 0.239000                                                                \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                    FLATTEN[2]                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                NumOutputTuples: 1                                                                 \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                              ExecutionTime: 0.001000                                                              \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                TotalTime: 0.004000                                                                \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                                     UNWIND[1]                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                  Unwind: [alpha]                                                                  \u2502\n\u2502                                                                      As: text                                                                     \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                NumOutputTuples: 1                                                                 \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                              ExecutionTime: 0.002000                                                              \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                TotalTime: 0.003000                                                                \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502                                                              TABLE_FUNCTION_CALL[0]                                                               \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                               Function: READ_FTABLE                                                               \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                NumOutputTuples: 1                                                                 \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                              ExecutionTime: 0.001000                                                              \u2502\n\u2502   ---------------------------------------------------------------------------------------------------------------------------------------------   \u2502\n\u2502                                                                TotalTime: 0.001000                                                                \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n"
+            ]
+          ]
+        }
+      },
+      "duration_seconds": 1.105
+    },
+    "interrupt": {
+      "probe_status": "completed",
+      "findings": {
+        "interrupt": {
+          "still_running_after_400ms": true,
+          "seconds_until_return": 0.401,
+          "live_usage_from_second_connection": {
+            "calls": 1,
+            "input_rows": 1,
+            "llm_rows": 1,
+            "cache_hits": 0,
+            "failed_rows": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "stored_hits": 0,
+            "request_chars": 31,
+            "request_images": 0
+          },
+          "outcome": {
+            "ok": false,
+            "error_type": "RuntimeError",
+            "error": "Interrupted."
+          }
+        },
+        "query_timeout": {
+          "still_running_after_400ms": true,
+          "seconds_until_return": 0.401,
+          "live_usage_from_second_connection": {
+            "calls": 1,
+            "input_rows": 1,
+            "llm_rows": 1,
+            "cache_hits": 0,
+            "failed_rows": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "stored_hits": 0,
+            "request_chars": 31,
+            "request_images": 0
+          },
+          "outcome": {
+            "ok": false,
+            "error_type": "RuntimeError",
+            "error": "Interrupted."
+          }
+        },
+        "hard_kill": {
+          "exit_code": -9,
+          "seconds": 0.003,
+          "reaped": true,
+          "fixture_still_processing": true,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "duration_seconds": 1.667
+    },
+    "license": {
+      "probe_status": "completed",
+      "findings": {
+        "path": "ladybug/LICENSE",
+        "sha256": "1c495c9546d0de02e83c9d50d5f7eb21f0085bc8f77a0ee333081a123a9c8d0c",
+        "text": "MIT License\n\nCopyright (c) 2022-2025 K\u00f9zu Inc.\nCopyright (c) 2025-2026 Ladybug Memory Inc.\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+        "python_declares_mit": true
+      },
+      "duration_seconds": 0.04
+    }
+  }
+}
