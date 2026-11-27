@@ -17,7 +17,7 @@ def test_local_release_includes_database_and_query_contracts():
     assert {
         "test_api_contracts",
         "test_neo4j_backend", "test_neo4j_local", "test_neo4j_visibility", "test_remote_neo4j",
-        "test_remote_neo4j_integration", "test_iu_neo4j_connections", "test_admin_neo4j", "test_check_iu_neo4j",
+        "test_remote_neo4j_integration", "test_iu_neo4j_connections", "test_iu_neo4j_datasets", "test_admin_neo4j", "test_check_iu_neo4j",
         "test_llm_power", "test_llm_power_api", "test_llm_power_integration",
         "test_studio_exchange",
         "test_database_connections", "test_database_workspace", "test_database_datasets", "test_database_jobs", "test_database_pools", "test_database_independent_sources", "test_database_sync", "test_database_mcp",

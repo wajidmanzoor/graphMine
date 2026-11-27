@@ -28,7 +28,8 @@ def iu_settings(settings, tmp_path):
     return value
 
 
-def test_configured_iu_driver_uses_no_credentials_and_pins_only_exact_address(iu_settings, monkeypatch):
+@pytest.mark.parametrize("database", ["neo4j", "yelp", "amazon", "fars20-22"])
+def test_configured_iu_driver_uses_no_credentials_and_pins_only_exact_address(iu_settings, monkeypatch, database):
     from graphmine_agent.remote_neo4j import get_remote
     power = get_remote(iu_settings)
     monkeypatch.setattr(power, "tcp", lambda *_: True)
@@ -46,9 +47,10 @@ def test_configured_iu_driver_uses_no_credentials_and_pins_only_exact_address(iu
     monkeypatch.setattr("graphmine_agent.database_sources.source_secret",
                         lambda *_: pytest.fail("An unauthenticated configured source read a password"))
     source = configured(iu_settings)[0]
+    source.neo4j_database = database
     assert source.auth_disabled and source.neo4j_password_env is None
     with neo4j_session(source) as session:
-        assert session == {"database": "neo4j", "default_access_mode": "READ"}
+        assert session == {"database": database, "default_access_mode": "READ"}
     uri, options = calls[0]
     assert uri == IU_URI and options["auth"] is None
     resolver = options["resolver"]

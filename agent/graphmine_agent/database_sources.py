@@ -278,9 +278,15 @@ def available(settings):
     if allowlist:
         # The configured demo and verified registries are the only routes in
         # curated mode, including requests made directly to the query API.
-        choices = {"default": s for s in sources if s.id == "local-transfers" or active == "iu-remote"}
+        choices = {"default": s for s in sources if s.id == "local-transfers"
+                   or active == "iu-remote" and s.neo4j_database == "neo4j"}
+        if active == "iu-remote":
+            # IU databases share one server, but each configured database is a
+            # separate dataset. The operator allowlist selects their source IDs.
+            choices.update({s.id: s for s in sources})
         choices.update({s._catalog["id"]: s for s in benchmarks})
-        return [choices[key] for key in dict.fromkeys(allowlist) if key in choices]
+        selected = {choices[key].id: choices[key] for key in dict.fromkeys(allowlist) if key in choices}
+        return list(selected.values())
     return sources + benchmarks + [source for source in managed_sources(settings) if source.backend_id == active]
 
 

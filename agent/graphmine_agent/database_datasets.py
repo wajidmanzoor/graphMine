@@ -11,10 +11,13 @@ from .neo4j_registry import ready_datasets
 
 
 def default_dataset(source):
+    name = ("Transfers demo" if source.id == "local-transfers" else "Mapped graph") if source.entities else "Neo4j graph"
+    if source.backend_id == "iu-remote":
+        name = source.name
     return {
         "id": "default",
         "backend_id": source.backend_id,
-        "name": ("Transfers demo" if source.id == "local-transfers" else "Mapped graph") if source.entities else "Neo4j graph",
+        "name": name,
         "status": "ready", "graph_label": None, "schemas": [],
         "tables": [
             {"name": m.table, "kind": "relationships" if hasattr(m, "source_entity") else "nodes",

@@ -95,7 +95,28 @@ local entries for later switching. The file grants network access to exactly
 10.2.147.169:7689 for the listed users. It grants no general private-network
 exemption. Only configured sources can use `auth_disabled`; user-created
 connections still require credentials. When using a curated dataset allowlist,
-`default` includes the configured IU graph while IU is selected.
+`default` includes the configured `neo4j` database while IU is selected.
+
+Each IU database has its own configured source and appears as a separate dataset
+in the picker. Set `neo4j_database` to its actual database name, for example
+`yelp` or `amazon`; queries and schema samples use that database through the same
+direct Bolt endpoint. In curated mode, include its source ID (for example
+`iu-yelp` and `iu-amazon`) in `GRAPHMINE_DATABASE_DATASET_ALLOWLIST`. Retain the
+local allowlist entries so switching back restores the existing local choices.
+
+To discover the currently online data databases and prepare a source file:
+
+```sh
+.venv/bin/python scripts/discover_iu_neo4j.py --output /tmp/iu-sources-proposed.json
+```
+
+The script uses `SHOW DATABASES` in a read transaction on `system`, excludes
+system/composite/offline databases, and prints the dataset names and source IDs.
+It writes an optional mode-0600 proposal, retains existing configured entries,
+and never wakes Neo4j or publishes configuration. Review and install that proposal
+as the environment's source file and add the reported IDs to its curated
+allowlist during deployment. The UI reads this configured inventory without
+contacting or waking the server. Use the script again when IU databases change.
 
 Read queries, schema discovery and connectivity verification use read
 transactions. Explicit SQL-to-Neo4j synchronization/reconciliation remains a

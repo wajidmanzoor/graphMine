@@ -266,7 +266,8 @@ def get_active_neo4j(settings=None, source=None, *, write=False, target=None,
             raise RecordNotFound("Database source not found")
         if source is not None and (not source.auth_disabled or source.managed or not source._configured):
             raise _configuration_error()
-        return Neo4jBackend(identifier, (Neo4jEndpoint(identifier, IU_URI, auth_disabled=True),))
+        database = source.neo4j_database if source is not None else connector.database if connector is not None else "neo4j"
+        return Neo4jBackend(identifier, (Neo4jEndpoint(identifier, IU_URI, database, auth_disabled=True),))
     if local_record is not None:
         return Neo4jBackend(identifier, (registry_endpoint(local_record,
             getattr(settings, "neo4j_datasets_password_file", None), credentials, local_only=True),))
