@@ -98,6 +98,28 @@ def test_explicit_mock_has_honest_usage_and_complete_scalar_artifact(workspace, 
     assert len(json.loads(raw)["rows"]) == 75
 
 
+def test_inspection_checks_owned_snapshot_policy_without_starting_work(workspace, monkeypatch):
+    identifier = workspace.snapshot["dataset"]["id"]
+    def no_worker(*args, **kwargs):
+        pytest.fail("Inspection must not execute a query or reserve a job")
+    monkeypatch.setattr(workspace.runtime.database_jobs, "enqueue", no_worker)
+    body = {"base_version_id": identifier, "statement": "MATCH(n:Vertex) RETURN llm('mock','Describe {{n.name}} {answer STRING}')", "model": "mock", "call_limit": 10000}
+    response = workspace.client.post("/api/semantic-queries/validate", json=body)
+    assert response.status_code == 200, response.text
+    assert response.headers["Cache-Control"] == "private, no-store"
+    value = response.json()
+    assert value["base_version_id"] == identifier and value["syntax_checked"] is False
+    assert value["call_limit"] == 1000 and value["call_limit_scope"] == "per_expression"
+    assert value["steps"][0]["outputs"] == [{"name": "answer", "type": "STRING"}]
+    assert workspace.client.post("/api/semantic-queries/validate", json={**body, "statement": "CREATE (n)"}).status_code == 422
+    assert workspace.client.post("/api/semantic-queries/validate", json={**body, "reuse_answers": True}).status_code == 503
+    assert workspace.client.post("/api/semantic-queries/validate", json={**body, "base_version_id": "missing"}).status_code == 404
+    info = workspace.client.get(f"/api/database-query-snapshots/{identifier}/semantic-schema").json()
+    assert next(m for m in info["models"] if m["alias"] == "mock")["available"] is True
+    assert next(m for m in info["models"] if m["alias"] == "qwen")["available"] is False
+    assert all(set(model) == {"alias", "model_id", "available"} for model in info["models"])
+
+
 def test_schema_and_admission_reject_live_cache_writes_and_missing_support(workspace, monkeypatch):
     identifier = workspace.snapshot["dataset"]["id"]
     response = workspace.client.get(f"/api/database-query-snapshots/{identifier}/semantic-schema")

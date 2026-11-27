@@ -84,6 +84,7 @@ window.GraphMineResultContext = ({state, W, node, qualityDescriptions, title, pa
         if (source.query) saved.append(node("pre", {tabindex: "0"}, source.query));
         saved.append(node("pre", {tabindex: "0"}, W.stringify({parameters: source.parameters || {}, projection: source.projection || null, weight_property: source.weight_property || null, connection_revision: source.database_source.revision ?? null, mapping_hash: source.database_source.mapping_hash || null}, true)));
         section.append(saved); cards.scope.append(section);
+        if (source.type === "semantic_query") cards.scope.append(window.GraphMineSemanticDetails({node, W, source, versionId: data.version_id}));
       }
       if (data.projection) {
         scoped = true; line(cards.scope, label, "Graph constructed from saved tables using recorded joins, filters and projection settings.");

@@ -1,5 +1,5 @@
 "use strict";
-window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, previewActive, upload, clearResults, openData, leaveData, dataPartChanged, dataReturnLabel}) => {
+window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, previewActive, upload, clearResults, openData, leaveData, dataPartChanged, dataReturnLabel, refine}) => {
   const $ = id => document.getElementById(id);
   const icon = name => {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -109,7 +109,9 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const count = node("span", {id: "database-preview-count", class: "source-hint"}, "No query run yet");
     previewHeader.append(node("h2", {id: "data-preview-heading"}, "Graph preview"), count);
     const previewActions = node("div", {class: "source-preview-actions", hidden: true});
-    previewActions.append(saveSnapshot, discardPreview);
+    const refineSnapshot = button("refine-query-snapshot", "Refine with model"); refineSnapshot.hidden = true;
+    refineSnapshot.onclick = () => { const snapshot = saved?.response?.dataset; if (snapshot) refine(snapshot.id, null, domain.value); };
+    previewActions.append(saveSnapshot, discardPreview, refineSnapshot);
     const canvas = node("div", {id: "database-query-graph", class: "database-query-graph", role: "img", "aria-label": "Query graph preview"});
     const placeholder = node("div", {class: "source-preview-empty"});
     const emptyTitle = node("strong", {}, "A first look at your graph");
@@ -172,7 +174,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       draftStatus.textContent = persisted ? "Draft saved in this browser." : "Draft saved for this tab only. Browser storage is unavailable or full.";
     };
     const resetPreview = () => {
-      generation++; saved = null; cy?.destroy(); cy = null; canvas.replaceChildren();
+      generation++; saved = null; refineSnapshot.hidden = true; cy?.destroy(); cy = null; canvas.replaceChildren();
       tableView.setSnapshot(null); rows.hidden = false; previewFrame.hidden = false;
       previewHeader.querySelector("h2").textContent = "Graph preview";
       rows.textContent = ""; placeholder.hidden = false; count.textContent = "No query run yet";
@@ -501,6 +503,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     }
     function renderQuery(response, signature) {
       saved = {signature, response};
+      refineSnapshot.hidden = !response.dataset?.source_complete || !response.dataset?.source?.database_source;
       const snapshot = response.dataset || response.table;
       continueBox.hidden = !snapshot;
       previewActions.hidden = !snapshot;

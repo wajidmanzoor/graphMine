@@ -125,6 +125,35 @@ def test_older_analysis_keeps_saved_input_when_active_input_changes(loading_brow
     assert "version 2" in content(browser, "inputs")
 
 
+def test_semantic_input_provenance_uses_saved_revision_and_parent(loading_browser, context_server):
+    browser = loading_browser
+    recorded = context_server.record["input_provenance"]["main"]
+    parent = deepcopy(recorded)
+    recorded["source"].update(type="semantic_query", base_version_id="original-version", base_sha256="b" * 64,
+        query="MATCH (n:Vertex) RETURN n", parameters={"name": "recorded-parameter"}, simulation=True,
+        settings={"model": "mock:echo", "mock": True, "llm_max_calls": "7", "http_requests": 0, "answers_retained": 0},
+        usage={"calls": 2, "llm_rows": 3, "cache_hits": 0}, steps=[], completion_state="completed", parent=parent)
+    context_server.output["quality"] = "exact"
+    open_context(browser, context_server)
+    assert "simulated model judgments" in content(browser, "scope")
+    assert "Exact" in content(browser, "calculation")
+    browser.execute_script("GraphMineWorkspace.state.active = 'newer'")
+    assert "mock:echo" in content(browser, "scope")
+    assert "New graph-v9.json" not in content(browser, "inputs")
+    disclosure = browser.find_element(By.CSS_SELECTOR, ".semantic-card details summary")
+    browser.execute_script("arguments[0].scrollIntoView({block:'center'})", disclosure)
+    disclosure.click()
+    assert "original-version" in content(browser, "scope")
+    assert "recorded-parameter" in content(browser, "scope")
+    assert "LIMIT 10" in content(browser, "scope")  # Original Neo4j selection.
+    browser.execute_script("document.addEventListener('graphmine:refine-snapshot', e => {window.recordedRefinement = e.detail;}, {once:true})")
+    rerun = browser.find_element(By.CSS_SELECTOR, ".semantic-card button")
+    browser.execute_script("arguments[0].scrollIntoView({block:'center'})", rerun)
+    rerun.click()
+    assert browser.execute_script("return window.recordedRefinement.baseId") == "original-version"
+    assert browser.execute_script("return window.recordedRefinement.recorded.parameters.name") == "recorded-parameter"
+
+
 def test_removed_original_file_does_not_prevent_saved_result_context_or_graph(loading_browser, context_server):
     context_server.server.files = []
     open_context(loading_browser, context_server)

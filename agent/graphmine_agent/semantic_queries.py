@@ -77,9 +77,14 @@ def prepare_request(runtime, body):
 def snapshot_schema(runtime, identifier):
     from .admin_settings import load
     from .semantic_policy import allowed
+    from .semantic_providers import catalog
     metadata, raw = base_snapshot(runtime, identifier, content=True)
     settings = load(runtime.settings, runtime.database)
-    return {"base_version_id": identifier, "sha256": metadata["sha256"], "schema": schema(json.loads(raw)),
+    mock_allowed = settings.semantic_mode == "mock" and allowed(settings)
+    models = [{"alias": item["alias"], "model_id": item["model_id"],
+               "available": item["alias"] == "mock" and mock_allowed}
+              for item in catalog(runtime)["aliases"]]
+    return {"base_version_id": identifier, "sha256": metadata["sha256"], "schema": schema(json.loads(raw)), "models": models,
             "capabilities": {"plain_queries": True, "mock_queries": settings.semantic_mode == "mock" and allowed(settings), "live_queries": False,
                              "answer_reuse": False, "query_wide_call_limit": False, "call_estimate": False,
                              "judgments": False, "max_input_bytes": MAX_BYTES, "max_output_bytes": MAX_BYTES,
@@ -113,6 +118,7 @@ def run_query(runtime, body):
         "parent": {"version_id": base["id"], "dataset_id": base["dataset_id"], "sha256": base["sha256"], "source": copy.deepcopy(ancestry)},
         "base_version_id": base["id"], "base_sha256": base["sha256"],
         "query": body.statement, "parameters": body.parameters, "projection": body.projection,
+        "directed": graph["graph"]["directed"] if output["kind"] == "graph" else body.directed,
         "weight_property": body.weight_property, "lineage": lineage,
         "steps": output["steps"], "engine": output["engine"], "schema": output["schema"],
         "settings": output["effective_settings"], "requested_call_limit": body.call_limit,
@@ -145,6 +151,25 @@ def register_semantic_routes(router):
         runtime = request.app.state.runtime
         async with runtime.upload_slots:
             return private_response(await run_in_threadpool(snapshot_schema, runtime, identifier))
+
+    @router.post("/semantic-queries/validate")
+    async def inspect_query(body: SemanticRequest, request: Request):
+        """Inspect read policy and model steps without executing or reserving work."""
+        from .database_jobs import private_response
+        from .semantic_policy import execution_policy
+        from .semantic_validation import validate_semantic
+        runtime = request.app.state.runtime
+
+        def inspect():
+            metadata = prepare_request(runtime, body)
+            policy = execution_policy(runtime, body.model_dump())
+            return {"base_version_id": metadata["id"], "sha256": metadata["sha256"],
+                    "steps": validate_semantic(body.statement), "call_limit": policy["call_limit"],
+                    "call_limit_scope": "per_expression", "syntax_checked": False,
+                    "message": "Read-only policy checked. Schema and native syntax are checked when the query runs."}
+
+        async with runtime.upload_slots:
+            return private_response(await run_in_threadpool(inspect))
 
     @router.post("/semantic-queries", status_code=202)
     async def enqueue(body: SemanticRequest, request: Request):

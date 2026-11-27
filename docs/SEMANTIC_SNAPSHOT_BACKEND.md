@@ -8,8 +8,51 @@ and database-job controls. It never reruns the original Neo4j query.
 The pinned engine currently supports **plain reads and explicit mock execution**
 through this backend. Live models and saved-answer reuse return 503 before
 starting a worker. Phase 3 adds administration at **Admin → Configure → Semantic
-engine** (`/admin#semantic`). The snapshot refinement UI remains a later phase.
+engine** (`/admin#semantic`). Phase 4 adds **Refine with model** after a complete
+database graph preview and in a saved conversation input's source details.
 Install the optional source-built engine using the [build guide](../deploy/tento/README.md).
+
+## Refinement workspace
+
+Open **Refine with model** on a graph preview to query that complete snapshot.
+The workspace shows its version/hash, actual loaded tables, original labels,
+property aliases and types. It does not refresh the source database. Use
+`Vertex` and `has_label()` rather than source label patterns.
+
+Start with a plain query, or explicitly choose a mock template/model. Templates
+cover extraction, filtering, ranking, group summaries, subgraphs, paths,
+consecutive steps and carried path state. Relationship-dependent examples appear
+when the snapshot has a relationship table. Prompts use variables bound with
+`WITH`: the pinned engine does not accept arbitrary expressions or quoted
+property identifiers inside prompt placeholders. **Check query** inspects
+read-only policy, permissions and model steps without running the query; native
+syntax and schema binding are checked on execution.
+
+The editor reuses formatting, schema suggestions (Ctrl+Space), typed/JSON
+parameters and error navigation. Ctrl/Cmd+Enter runs the refinement. Projection,
+direction and optional edge weight are explicit controls. Call limits follow
+administrator policy and apply per expression; live aliases and saved-answer
+reuse remain unavailable. Drafts are scoped to API identity, conversation and
+base snapshot. Editing inputs clears the current result selection.
+
+**Run refinement** uses the durable job queue with measured progress and
+cancellation. Match counts and completed judgments are not reported by the
+engine; selected inputs, engine calls and in-worker cache hits are labeled
+separately. Closing the workspace stops observation; it does not cancel a job.
+Late responses cannot select a result in another workspace or conversation.
+
+On success, inspect the graph or complete paged table, returned row samples and
+Model usage card. **Save version to datasets** and **Use graph/table in chat**
+reuse the existing immutable snapshot lifecycle. A temporary result can also be
+discarded. The original input is unchanged. Earlier calculation revisions show
+their recorded semantic ancestry alongside the solver's actual quality, even
+when the active conversation input changes. Mock provenance is visibly simulated.
+
+**Run again without saved answers** opens the original parent snapshot and
+recorded query/parameters/direction for review; running creates another version
+under current access and limits. The parent must still be available. Saving a
+result does not independently retain an expired temporary parent. Estimates,
+live models and a per-row judgments table remain gated on author fixes.
 
 ## API
 
@@ -19,6 +62,7 @@ Responses use `Cache-Control: private, no-store`.
 | Request | Result |
 | --- | --- |
 | `GET /api/database-query-snapshots/{id}/semantic-schema` | Actual loaded tables, property aliases/types, labels, helpers and capability limits |
+| `POST /api/semantic-queries/validate` | Ownership/policy check and model-step summary; no execution or job reservation |
 | `POST /api/semantic-queries` | 202 with a durable database job; supports `Idempotency-Key` |
 | `GET /api/database-jobs?kind=semantic` | Active jobs owned by the caller |
 | `GET /api/database-jobs/{id}` | Progress or terminal state |
@@ -158,7 +202,7 @@ that can contain query/property values. Complete results are validated before
 publication; failure exposes no partial snapshot.
 
 Provenance records the parent hash, query/parameters, model steps, actual schema,
-engine commit/hash, effective settings, usage and simulation status. It preserves
+engine commit/hash, effective settings, usage, effective graph direction and simulation status. It preserves
 original source identity and filtered entity lineage. Mock judgments are marked
 as simulated. Thinking controls, strict structured output without fallback,
 durable answers, a query-wide call budget and shared live-provider scheduling

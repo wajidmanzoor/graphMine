@@ -1,5 +1,6 @@
 "use strict";
-window.GraphMineQueryEditor = ({api, node, W, editor, parameters, parameterBox, onChange}) => {
+window.GraphMineQueryEditor = ({api, node: makeNode, W, editor, parameters, parameterBox, onChange, prefix = "", schemaLoader = null, hintId = "cypher-hint"}) => {
+  const node = (tag, attrs = {}, text) => makeNode(tag, {...attrs, ...(attrs.id ? {id: prefix + attrs.id} : {})}, text);
   const label = (text, input) => { const el = node("label", {}, text); el.append(input); return el; };
   const button = (id, text) => node("button", {id, type: "button", class: "quiet"}, text);
   const toolbar = node("div", {class: "query-editor-tools"});
@@ -16,7 +17,7 @@ window.GraphMineQueryEditor = ({api, node, W, editor, parameters, parameterBox, 
   const errorBox = node("div", {id: "query-inline-error", class: "query-inline-error", role: "alert", hidden: true});
   const errorText = node("p"), goToError = button("goto-query-error", "Go to error");
   errorBox.append(errorText, goToError); editor.after(errorBox);
-  editor.setAttribute("aria-describedby", "cypher-hint query-inline-error");
+  editor.setAttribute("aria-describedby", `${hintId} ${prefix}query-inline-error`);
   let context = null, epoch = 0, controller = null;
   let externalBusy = false, schema = null, schemaPromise = null, parameterTimer = null, suggestionRange = null;
   function lock() {
@@ -65,6 +66,7 @@ window.GraphMineQueryEditor = ({api, node, W, editor, parameters, parameterBox, 
   format.onclick = () => { editor.value = window.GraphMineCypherTools.format(editor.value); onChange(); sync(); toolStatus.textContent = "Query formatted. Strings and comments are preserved."; };
   async function getSchema() {
     if (schema) return schema;
+    if (schemaLoader) return schemaLoader();
     if (!context) return {entities: [], relationships: []};
     if (!schemaPromise) {
       const current = epoch;
@@ -116,17 +118,21 @@ window.GraphMineQueryEditor = ({api, node, W, editor, parameters, parameterBox, 
     sync,
     validate() { if (paramForm.querySelector('[aria-invalid="true"]')) throw new Error("Correct the invalid parameter value before running the query."); },
     error(error) {
-      if (!["cypher_syntax", "cypher_parameters", "cypher_read_only"].includes(error.code)) return;
+      if (!["cypher_syntax", "cypher_parameters", "cypher_read_only", "semantic_syntax", "semantic_parameters", "semantic_read_only", "semantic_validation"].includes(error.code)) return;
       errorBox.hidden = false; errorText.textContent = error.message;
-      (error.code === "cypher_parameters" ? parameters : editor).setAttribute("aria-invalid", "true");
-      const position = error.details;
+      const parameterError = ["cypher_parameters", "semantic_parameters"].includes(error.code);
+      (parameterError ? parameters : editor).setAttribute("aria-invalid", "true");
+      const position = {...error.details};
+      if (!Number.isInteger(position.offset) && Number.isInteger(position.line) && Number.isInteger(position.column)) {
+        position.offset = [...editor.value.split("\n").slice(0, Math.max(0, position.line - 1)).join("\n")].length + (position.line > 1 ? 1 : 0) + Math.max(0, position.column - 1);
+      }
       goToError.hidden = !Number.isInteger(position?.offset);
       goToError.onclick = () => {
         // Neo4j offsets count Unicode code points; textarea selection uses UTF-16.
         const offset = [...editor.value].slice(0, Math.max(0, position.offset)).join("").length;
         editor.focus(); editor.setSelectionRange(offset, Math.min(editor.value.length, offset + 1));
       };
-      if (error.code === "cypher_parameters") { parameterBox.open = true; renderParameters(); }
+      if (parameterError) { parameterBox.open = true; renderParameters(); }
     },
     destroy() { epoch++; controller?.abort(); clearTimeout(parameterTimer); toolbar.remove(); suggestionBox.remove(); errorBox.remove(); paramForm.remove(); paramStatus.remove(); },
   };
