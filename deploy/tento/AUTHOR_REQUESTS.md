@@ -9,6 +9,12 @@ GraphMine needs transient in-memory graphs, one query per disposable worker,
 retained answers, a total query-call limit, thinking off and enforced structured
 output. No source modifications or proxy workarounds have been made.
 
+Decision recorded 2026-11-27: the user chose to keep the plan and use fixes from
+Tentō's author. Engine patches and a revised GraphMine workaround are not
+authorized. The remote `main` head was rechecked after that decision and still
+matched the commit above. This draft is ready for the user to forward; no contact
+with the author has been initiated.
+
 ## Required for the supplied integration contract
 
 ### 1. An answer store independent of graph persistence
@@ -104,3 +110,14 @@ today with `--case values`.
   `ladybug/CMakeLists.txt` declares `0.21.0`. Use the engine's own project version
   for `LBUG_CMAKE_VERSION`. Until corrected, GraphMine should identify the engine
   by commit and artifact hash, not this reported version alone.
+
+## When an author-provided revision is available
+
+Record its exact commit and review its source changes. Build it separately from
+the baseline, then rerun the individual reproductions and check each acceptance
+condition above. The current diagnostic asserts some old behaviors to prove
+them; update those expectations to the approved fixed contract rather than
+deleting a failing check. Verify the real local-vLLM request controls and the
+approved graph mapping before claiming the feasibility gate passed. Report the
+evidence and obtain the planned phase approval before adding the submodule or
+product integration.

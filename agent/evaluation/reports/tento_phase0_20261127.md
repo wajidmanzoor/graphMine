@@ -246,3 +246,11 @@ The supplied brief says, “If a decision above turns out impossible, stop and
 explain why with evidence; don't work around it.” It also requires approval
 between phases. This report is that review point: the full integration goal
 remains unfinished, and no Phase 1 submodule or product backend/UI has been added.
+
+User decision after review, 2026-11-27: **keep the plan and use fixes from Tentō's
+author**. The remote `main` head was rechecked and remains
+`62e124217e2c0f82e327136b5888263e95671fae`; no newer candidate was available there.
+The author-request draft has not been sent. The next dependency is an
+author-provided revision addressing the required contracts, followed by a fresh
+source review, build and verification of those fixes. No engine patches or
+integration workarounds are authorized by this decision.
