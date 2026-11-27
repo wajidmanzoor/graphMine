@@ -103,8 +103,8 @@ def test_live_request_is_rejected_before_spawning(monkeypatch):
         pytest.fail("A live request must not start a process")
     monkeypatch.setattr("graphmine_agent.semantic_worker.subprocess.Popen", forbidden)
     with pytest.raises(AnalyticsError) as error:
-        run_worker(GRAPH, {**BODY, "statement": "RETURN llm('qwen','{answer STRING}')"})
-    assert error.value.code == "semantic_controls_unsupported"
+        run_worker(GRAPH, {**BODY, "model": "qwen", "statement": "RETURN llm('qwen','{answer STRING}')"})
+    assert error.value.code == "semantic_admission"
 
 
 @pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux parent-death supervision")

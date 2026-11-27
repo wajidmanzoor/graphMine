@@ -65,7 +65,7 @@ def test_missing_engine_is_an_actionable_503(monkeypatch):
         assert "deploy/tento/build.sh" in response.json()["error"]["message"]
 
 
-@pytest.mark.parametrize("problem", ["version", "commit", "native_hash", "missing_native", "shadowed"])
+@pytest.mark.parametrize("problem", ["version", "commit", "patches", "native_hash", "missing_native", "shadowed"])
 def test_foreign_or_damaged_engine_is_rejected(tmp_path, monkeypatch, problem):
     lock = semantic_engine.engine_lock()
     package = tmp_path / "ladybug"
@@ -74,13 +74,15 @@ def test_foreign_or_damaged_engine_is_rejected(tmp_path, monkeypatch, problem):
     native.write_bytes(b"fixture native artifact")
     manifest = {
         "commit": lock["commit"], "backend": "pybind", "native_file": native.name,
-        "native_sha256": hashlib.sha256(native.read_bytes()).hexdigest(),
+        "native_sha256": hashlib.sha256(native.read_bytes()).hexdigest(), "patches": lock.get("patches", []),
     }
     version = lock["version"]
     if problem == "version":
         version = "0.0.1"
     elif problem == "commit":
         manifest["commit"] = "0" * 40
+    elif problem == "patches":
+        manifest["patches"] = []
     elif problem == "native_hash":
         native.write_bytes(b"replaced binary")
     elif problem == "missing_native":
@@ -105,7 +107,9 @@ def test_foreign_or_damaged_engine_is_rejected(tmp_path, monkeypatch, problem):
     assert str(tmp_path) not in str(error.value)
 
 
-def test_live_gate_does_not_claim_controls_the_engine_lacks():
+def test_live_gate_does_not_claim_controls_the_engine_lacks(monkeypatch):
+    lock = {**semantic_engine.engine_lock(), "live_blockers": ["strict_json_without_fallback"]}
+    monkeypatch.setattr(semantic_engine, "engine_lock", lambda: lock)
     with pytest.raises(AnalyticsError) as error:
         semantic_engine.require_live_controls()
     assert error.value.status == 503
@@ -129,4 +133,4 @@ def test_installed_engine_smoke_and_live_gate():
         assert report["engine"]["commit"] == semantic_engine.engine_lock()["commit"]
         if arguments:
             assert report["live"]["requests_sent"] == 0
-            assert report["error"]["code"] == "semantic_controls_unsupported"
+            assert report["error"]["code"] == "semantic_live_configuration"

@@ -523,7 +523,7 @@ class Settings:
             llm_base_url=os.getenv(
                 "GRAPHMINE_LLM_BASE_URL", "http://127.0.0.1:8001/v1"
             ).rstrip("/"),
-            llm_api_key=os.getenv("GRAPHMINE_LLM_API_KEY", "local-graphmine"),
+            llm_api_key=os.getenv("GRAPHMINE_LLM_API_KEY") or "local-graphmine",
             llm_model=os.getenv("GRAPHMINE_LLM_MODEL", "Qwen/Qwen3.8-27B-FP8"),
             llm_enabled=_boolean("GRAPHMINE_LLM_ENABLED", True),
             llm_sleep_mode=_boolean("GRAPHMINE_LLM_SLEEP_MODE", True),

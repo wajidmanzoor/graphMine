@@ -58,19 +58,17 @@ def validate(key, value):
         return None
     _, kind, low, high, _ = ALLOWLIST[key]
     if key == "GRAPHMINE_SEMANTIC_CACHE_ENABLED" and value is True:
-        from .errors import AnalyticsError
-        raise AnalyticsError("Saved-answer reuse awaits Tentō's independent answer store.", "semantic_cache_unsupported", 503)
+        from .semantic_engine import require_live_controls
+        require_live_controls()
     if kind == "bool":
         if type(value) is not bool:
             raise ValueError(f"{key} must be true or false.")
     elif kind == "semantic_mode":
         if value == "live":
             from .semantic_engine import require_live_controls
-            from .errors import AnalyticsError
             require_live_controls()
-            raise AnalyticsError("Live execution also requires verified answer retention, query budgets and shared provider admission.", "semantic_live_unsupported", 503)
-        if value not in ("disabled", "mock"):
-            raise ValueError("Choose disabled or mock model steps.")
+        if value not in ("disabled", "mock", "live"):
+            raise ValueError("Choose disabled, mock or live model steps.")
     elif kind == "semantic_access":
         if value not in ("admins", "selected", "all"):
             raise ValueError("Choose administrators, selected accounts or all accounts.")

@@ -46,7 +46,8 @@ def load_engine() -> SemanticEngine:
             raise ValueError("Different engine distribution")
         package = Path(distribution.locate_file("ladybug")).resolve()
         manifest = json.loads((package / "_graphmine_tento.json").read_text())
-        if manifest["commit"] != lock["commit"] or manifest["backend"] != "pybind":
+        if (manifest["commit"] != lock["commit"] or manifest["backend"] != "pybind"
+                or manifest.get("patches", []) != lock.get("patches", [])):
             raise ValueError("Different engine source")
         native_path = (package / manifest["native_file"]).resolve()
         if native_path.parent != package:
@@ -71,10 +72,19 @@ def load_engine() -> SemanticEngine:
 
 def require_live_controls() -> None:
     """Fail before contacting a model when the pinned engine lacks its controls."""
-    if engine_lock()["live_blockers"]:
+    lock = engine_lock()
+    if (lock["live_blockers"] or lock["integration_blockers"] or not lock.get("patches")
+            or lock.get("contract") != "supervised-live-v1"):
         raise AnalyticsError(
-            "This Tentō revision cannot enforce thinking off and strict JSON output. "
-            "Live semantic calls await the author fixes recorded in "
-            "deploy/tento/AUTHOR_REQUESTS.md.",
+            "Live semantic execution requires the verified native request controls, "
+            "query budget and independent answer store for this GraphMine release.",
             "semantic_controls_unsupported", 503,
         )
+
+
+def live_supported():
+    try:
+        require_live_controls()
+        return metadata.version(engine_lock()["distribution"]) == engine_lock()["version"]
+    except (AnalyticsError, metadata.PackageNotFoundError):
+        return False

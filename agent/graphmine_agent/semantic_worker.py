@@ -1,7 +1,7 @@
 """Disposable native worker and its cancellable JSON-lines supervisor.
 
-Only plain reads and explicit mock steps are enabled at the pinned revision.
-No provider credentials cross this process boundary while live gates are open.
+Each live worker receives only its selected provider credential. Every native
+HTTP attempt waits for the parent's model admission and token reservation.
 """
 
 from __future__ import annotations
@@ -31,11 +31,12 @@ def check_request(body, *, allowed_aliases=None):
 
     steps = validate_semantic(body["statement"], aliases=allowed_aliases)
     if body.get("reuse_answers"):
-        raise AnalyticsError("Saved-answer reuse awaits Tentō's independent answer store.", "semantic_cache_unsupported", 503)
+        require_live_controls()
     if steps:
         if body.get("model") != "mock" or any(step["model_alias"] not in {"mock", "mock:echo"} for step in steps):
             require_live_controls()
-            raise AnalyticsError("Live semantic execution awaits the verified query-wide budget and answer-store contracts.", "semantic_live_unsupported", 503)
+            if any(step["model_alias"] != body["model"] for step in steps):
+                raise AnalyticsError("Use the selected model alias for every model step in this refinement.", "semantic_alias", 422)
     return steps
 
 
@@ -43,7 +44,19 @@ def classify(error, usage):
     if isinstance(error, AnalyticsError):
         return {"code": error.code, "message": str(error), "status": error.status, "details": {"usage": usage}}
     text = str(error)
-    if "llm_max_calls" in text:
+    if "graphmine_request_limit" in text:
+        code, message = "semantic_call_limit", "The query reached its total HTTP request limit. Completed answers were retained when caching was enabled; no result was published."
+    elif "graphmine_schema_rejected" in text or "graphmine_schema_required" in text:
+        code, message = "semantic_structured_output", "The provider rejected the required JSON schema. No unconstrained retry or result was produced."
+    elif "graphmine_invalid_response" in text:
+        code, message = "semantic_structured_output", "The model did not return every required structured answer. No result was published."
+    elif "graphmine_cache_write_failed" in text:
+        code, message = "semantic_cache", "Completed model answers could not be retained. No result was published."
+    elif "graphmine_admission" in text:
+        code, message = "semantic_admission", "The model request was not admitted. No result was published."
+    elif "request to" in text or "Connection" in text:
+        code, message = "semantic_model_server", "The model server could not complete the request. No result was published."
+    elif "llm_max_calls" in text:
         code, message = "semantic_call_limit", "The mock step would exceed its per-expression call limit. No result was published."
     elif any(word in text.lower() for word in ("parser exception", "binder exception", "catalog exception")):
         code, message = "semantic_syntax", "The semantic query does not match the loaded schema or supported syntax."
@@ -96,18 +109,28 @@ def child(request_path):
                 return 1
         body, graph = payload["request"], payload["graph"]
         execution = payload.get("execution") or {}
-        steps = check_request(body)  # repeated at the native trust boundary
+        steps = check_request(body, allowed_aliases=set(execution.get("aliases", {})) | {"qwen", "mock", "mock:echo"})
+        live = bool(steps) and body.get("model") != "mock"
+        if live and (os.environ.get("GRAPHMINE_TENTO_STRICT") != "1" or not os.environ.get("GRAPHMINE_TENTO_ADMISSION")):
+            raise AnalyticsError("Live workers require supervisor admission.", "semantic_admission", 503)
+        os.umask(0o077)
         progress("validated")
         engine = load_engine()
         db = engine.module.Database(buffer_pool_size=256 * 1024 * 1024, max_num_threads=2, backend="pybind")
         connection = engine.module.Connection(db, num_threads=2)
-        settings = {"llm_base_url": "'http://127.0.0.1:1/v1'", "llm_threads": "1", "llm_batch_size": str(execution.get("batch_size", 16)),
-                    "llm_max_calls": str(min(MAX_CALLS, max(1, body["call_limit"]))), "llm_timeout_ms": "10000",
-                    "llm_persistent_cache": "false", "semantic_selectivity_samples": "0",
+        from .semantic_loader import encoded as literal
+        provider = execution.get("provider") or {}
+        settings = {"llm_base_url": literal(provider.get("base_url", "http://127.0.0.1:1/v1")), "llm_threads": "1", "llm_batch_size": str(execution.get("batch_size", 16)),
+                    "llm_max_calls": "1000000000" if live else str(min(MAX_CALLS, max(1, body["call_limit"]))),
+                    "llm_timeout_ms": str(min(120000, int(execution.get("timeout_seconds", TIMEOUT_SECONDS)) * 1000)),
+                    "llm_persistent_cache": "true" if execution.get("cache_enabled") else "false",
+                    "llm_answer_max_age": str(execution.get("cache_max_age_seconds", 0)), "semantic_selectivity_samples": "0",
                     "semantic_path_decomposition": "false", "semantic_join_decomposition": "false"}
         for name, value in settings.items():
             execute(connection, f"CALL {name}={value}")
         execute(connection, "CREATE MACRO mock() AS {model:'mock:echo', temperature:0}")
+        for alias, model in execution.get("aliases", {}).items():
+            execute(connection, f"CREATE MACRO {alias}() AS {{model:{literal(model)}, temperature:0}}")
         loaded = load_graph(connection, graph, request_path.parent, progress=progress)
         progress("loaded")
         observer = engine.module.Connection(db, num_threads=1)
@@ -134,9 +157,14 @@ def child(request_path):
         stop.set(); thread.join(); thread = None
         read_usage(observer)
         output.update(schema=loaded.schema, usage=dict(totals), engine=engine.manifest, steps=steps,
-                      effective_settings={**settings, "provider": "mock" if steps else "none", "model": "mock:echo" if steps else None,
-                                          "http_requests": 0, "call_limit_scope": "per_expression", "query_wide_call_limit_supported": False,
-                                          "answers_retained": 0, "mock": bool(steps), "admin_policy": execution})
+                      effective_settings={**settings, "provider": provider if live else "mock" if steps else "none",
+                                          "model": execution.get("aliases", {}).get(body["model"]) if live else "mock:echo" if steps else None,
+                                          "model_alias": body["model"] if steps else None,
+                                          "http_requests": totals.get("http_requests", 0), "call_limit_scope": "query_http_attempts" if live else "per_expression",
+                                          "query_wide_call_limit_supported": live, "request_limit": body["call_limit"] if live else None,
+                                          "answers_retained": 0, "reuse_answers": body.get("reuse_answers", False),
+                                          "thinking": "off" if live else None, "strict_json": live, "temperature": 0,
+                                          "mock": bool(steps) and not live, "admin_policy": execution})
         raw = json.dumps(output, ensure_ascii=False, allow_nan=False).encode()
         if len(raw) > MAX_BYTES:
             raise AnalyticsError("Semantic output exceeds the result byte budget.", "resource_limit")
@@ -162,10 +190,12 @@ def child(request_path):
                 resource.close()
 
 
-def run_worker(graph, body, *, progress=None, timeout=TIMEOUT_SECONDS, command=None, temporary_root=None, execution=None):
+def run_worker(graph, body, *, progress=None, timeout=TIMEOUT_SECONDS, command=None, temporary_root=None, execution=None, environment=None):
     from .database_job_context import checkpoint
 
-    check_request(body)
+    steps = check_request(body, allowed_aliases=set((execution or {}).get("aliases", {})) | {"qwen", "mock", "mock:echo"})
+    if steps and body.get("model") != "mock" and not (environment or {}).get("GRAPHMINE_TENTO_ADMISSION"):
+        raise AnalyticsError("Live workers require supervisor admission.", "semantic_admission", 503)
     raw = json.dumps({"graph": graph, "request": body, "execution": execution or {}, "supervisor_pid": os.getpid()}, ensure_ascii=False, allow_nan=False).encode()
     if len(raw) > MAX_BYTES:
         raise AnalyticsError("The snapshot exceeds the semantic worker's 64 MiB input budget.", "resource_limit")
@@ -176,6 +206,7 @@ def run_worker(graph, body, *, progress=None, timeout=TIMEOUT_SECONDS, command=N
         request.write_bytes(raw); request.chmod(0o600)
         env = {name: os.environ[name] for name in ("PATH", "LANG", "LC_ALL", "TZ", "LD_LIBRARY_PATH") if name in os.environ}
         env["PYTHONUNBUFFERED"] = "1"
+        env.update(environment or {})
         argv = command or [sys.executable, "-m", "graphmine_agent.semantic_worker"]
         process = subprocess.Popen([*argv, str(request)], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL,
                                    env=env, bufsize=0)

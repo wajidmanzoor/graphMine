@@ -16,8 +16,8 @@ def test_semantic_configuration_mock_and_provider_flows(browser_app, model_catal
     sign_in(page, base, "review-admin")
     page.goto(base + "/admin#semantic")
     pw.expect(page.get_by_role("heading", name="Semantic engine", exact=True)).to_be_visible()
-    pw.expect(page.get_by_label("Reuse saved answers")).to_be_disabled()
-    pw.expect(page.get_by_role("button", name="Clear retained answers")).to_be_disabled()
+    pw.expect(page.get_by_label("Reuse saved answers")).to_be_enabled()
+    pw.expect(page.get_by_role("button", name="Clear retained answers")).to_be_enabled()
     page.get_by_role("button", name="Test mock pipeline").click()
     pw.expect(page.get_by_text(re.compile("Mock pipeline passed"))).to_be_visible(timeout=15000)
     screenshot(page, "semantic-desktop")
@@ -43,6 +43,8 @@ def test_semantic_configuration_mock_and_provider_flows(browser_app, model_catal
     pw.expect(dialog).not_to_be_visible()
     pw.expect(page.get_by_role("cell", name="browser_test", exact=True)).to_be_visible()
 
+    page.get_by_label("Model steps", exact=True).select_option("live")
+    page.get_by_label("Reuse saved answers").check()
     page.get_by_label("Semantic requests at once", exact=False).fill("2")
     pw.expect(page.get_by_text(re.compile("Semantic concurrency meets or exceeds"))).to_be_visible()
     page.get_by_label("Rows per request", exact=False).fill("2")
@@ -62,6 +64,11 @@ def test_semantic_configuration_mock_and_provider_flows(browser_app, model_catal
     response = page.request.get(base + "/api/admin/semantic")
     assert "synthetic-browser-key" not in response.text()
     assert response.json()["values"]["GRAPHMINE_SEMANTIC_MAX_CALLS"] == 7
+    assert response.json()["values"]["GRAPHMINE_SEMANTIC_MODE"] == "live"
+    assert response.json()["values"]["GRAPHMINE_SEMANTIC_CACHE_ENABLED"] is True
+    page.get_by_role("button", name="Clear retained answers").click()
+    page.get_by_role("dialog", name="Clear retained answers").get_by_role("button", name="Clear answers", exact=True).click()
+    pw.expect(page.get_by_role("dialog")).not_to_be_visible()
 
     page.set_viewport_size({"width": 390, "height": 844})
     page.get_by_role("heading", name="Semantic engine", exact=True).scroll_into_view_if_needed()

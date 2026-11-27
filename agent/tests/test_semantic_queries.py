@@ -15,6 +15,7 @@ from graphmine_agent.identity import Principal, identity_scope
 from graphmine_agent.query_previews import QueryPreviews, expire_previews
 from graphmine_agent.query_results import is_database_query
 from graphmine_agent.semantic_queries import SemanticRequest
+from graphmine_agent.semantic_engine import engine_lock
 from test_database_jobs import wait_job
 from test_database_workspace import source, workspace  # noqa: F401
 from test_semantic_native import native_engine  # noqa: F401
@@ -26,7 +27,7 @@ def installed_distribution(monkeypatch):
     # separately require native_engine, preserving failure on an incompatible pin.
     original = metadata.version
     monkeypatch.setattr("graphmine_agent.semantic_queries.package_metadata", SimpleNamespace(
-        version=lambda name: "0.1.0+62e124217e2c" if name == "graphmine-tento" else original(name),
+        version=lambda name: engine_lock()["version"] if name == "graphmine-tento" else original(name),
         PackageNotFoundError=metadata.PackageNotFoundError))
 
 
@@ -128,8 +129,8 @@ def test_schema_and_admission_reject_live_cache_writes_and_missing_support(works
     assert value["schema"]["vertex_table"] == "Vertex"
     assert value["capabilities"]["live_queries"] is False
     for fields, code in [
-        ({"statement": "RETURN llm('qwen','{answer STRING}')"}, "semantic_controls_unsupported"),
-        ({"reuse_answers": True}, "semantic_cache_unsupported"),
+        ({"statement": "RETURN llm('qwen','{answer STRING}')"}, "semantic_live_disabled"),
+        ({"reuse_answers": True}, "semantic_cache_disabled"),
         ({"statement": "MATCH(n) SET n.x=1 RETURN n"}, "semantic_read_only"),
         ({"projection": "rows", "weight_property": "amount"}, "query_projection"),
         ({"parameters": {"text": "x" * (256 * 1024)}}, "resource_limit"),

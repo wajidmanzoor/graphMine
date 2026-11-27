@@ -229,3 +229,35 @@ def test_member_capabilities_and_plain_read_access(semantic_page, native_engine)
     pw.expect(page.locator("#semantic-status")).to_contain_text("cannot run semantic model steps")
     page.locator("#semantic-editor").fill("MATCH (n:Vertex) RETURN n")
     assert run_result(page)["vertex_count"] == 2
+
+
+def test_live_provider_selection_and_durable_reuse_in_browser(semantic_page, native_engine):
+    from agent.tests.semantic_provider_fixture import provider
+    page, base, snapshot, calls, _ = semantic_page
+    headers = {'X-GraphMine-Request': '1'}
+    with provider() as (url, model_calls):
+        root = base + '/api/admin/semantic'
+        previous = page.request.get(root).json()['values']
+        response = page.request.patch(root+'/settings', headers=headers, data={
+            'values': {'GRAPHMINE_SEMANTIC_MODE':'live','GRAPHMINE_SEMANTIC_CACHE_ENABLED':True},
+            'expected':previous,'confirm':True})
+        assert response.ok,response.text()
+        saved = page.request.post(root+'/providers',headers=headers,data={
+            'name':'Browser live fixture','base_url':url,'api_key':'synthetic-browser-live-key'})
+        assert saved.ok,saved.text()
+        alias = page.request.put(root+'/aliases',headers=headers,data={
+            'alias':'browser_live','provider_id':saved.json()['id'],'model_id':'fixture-model'})
+        assert alias.ok,alias.text()
+        open_refinement(page,snapshot)
+        page.locator('#semantic-model').select_option('browser_live')
+        page.locator('#semantic-editor').fill("MATCH(n:Vertex) WHERE llm('browser_live','Select {{n.text}} {keep BOOLEAN}') RETURN n")
+        page.locator('#semantic-reuse').check()
+        first = run_result(page)
+        assert first['usage']['http_requests'] == 1 and len(model_calls) == 1
+        assert first['dataset']['source']['model_dependent_input'] is True
+        assert first['dataset']['source']['simulation'] is False
+        second = run_result(page)
+        assert second['usage']['stored_hits'] == 2 and second['usage']['http_requests'] == 0
+        assert len(model_calls) == 1 and len(calls) == 1
+        assert 'synthetic-browser-live-key' not in page.content()
+        screenshot(page, 'refinement-live-reuse')

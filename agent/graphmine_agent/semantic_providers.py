@@ -92,6 +92,27 @@ def catalog(runtime):
     return {"providers": providers, "aliases": aliases}
 
 
+def resolve(runtime, alias):
+    """Resolve one worker's provider, keeping its credential out of metadata."""
+    configured = catalog(runtime)
+    selected = next((item for item in configured["aliases"] if item["alias"] == alias), None)
+    if selected is None or not selected["provider_id"]:
+        raise AnalyticsError("Choose an available live model alias.", "semantic_alias", 422)
+    provider = next((item for item in configured["providers"] if item["id"] == selected["provider_id"]), None)
+    if provider is None or not provider["base_url"]:
+        raise AnalyticsError("The configured provider is unavailable.", "semantic_provider", 503)
+    if provider["id"] == BUILTIN:
+        credential = runtime.settings.llm_api_key
+    else:
+        with runtime.database._connect() as db:
+            row = db.execute("SELECT document,revision FROM semantic_providers WHERE id=?", (provider["id"],)).fetchone()
+        if row is None or row[1] != provider["revision"]:
+            conflict()
+        reference = json.loads(row[0]).get("secret_ref")
+        credential = read_secret(runtime, reference) if reference else ""
+    return provider, selected, credential
+
+
 def conflict():
     raise AnalyticsError("This configuration changed. Reload and review the current values.", "settings_conflict", 409)
 

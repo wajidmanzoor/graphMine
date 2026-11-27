@@ -72,12 +72,14 @@ def test_defaults_builtin_provider_policy_and_live_cache_gates(console):
     assert data["aliases"][0]["model_id"] == client.app.state.runtime.settings.llm_model
     assert data["values"][PREFIX + "ACCESS"] == "admins"
     assert data["requirements"] == {"thinking": "off", "strict_json": True, "temperature": 0}
-    assert not data["capabilities"]["live"] and not data["capabilities"]["cache"]
-    for change, code in [({"MODE": "live"}, "semantic_controls_unsupported"), ({"CACHE_ENABLED": True}, "semantic_cache_unsupported")]:
+    assert data["capabilities"]["live"] == data["engine"]["installed"]
+    assert data["capabilities"]["cache"] == data["engine"]["installed"]
+    assert data["values"][PREFIX + "MODE"] == "mock"
+    for change in ({"MODE": "live"}, {"CACHE_ENABLED": True}):
         result = save(console, **change)
-        assert result.status_code == 503 and result.json()["error"]["code"] == code
-    assert client.post(ROOT + "/cache/clear", headers=admin).status_code == 503
-    assert client.get(ROOT, headers=admin).json()["values"] == data["values"]
+        assert result.status_code == 200, result.text
+    assert client.post(ROOT + "/cache/clear", headers=admin, json={"confirm": False}).status_code == 422
+    assert client.post(ROOT + "/cache/clear", headers=admin, json={"confirm": True}).json() == {"cleared_answers": 0}
 
 
 def test_settings_persist_apply_and_warn_without_changing_vllm(console):
@@ -203,7 +205,7 @@ def test_alias_management_cannot_enable_live_calls_or_edit_builtin_models(consol
     with identity_scope(accounts.authenticate(admin["Authorization"].removeprefix("Bearer "))):
         with pytest.raises(AnalyticsError) as error:
             execution_policy(client.app.state.runtime, {"model": "secondary", "statement": "RETURN llm('secondary','{answer STRING}')"})
-        assert error.value.code == "semantic_controls_unsupported"
+        assert error.value.code == "semantic_live_disabled"
     assert client.put(ROOT + "/aliases", headers=admin, json={"alias": "qwen", "provider_id": saved["id"], "model_id": "wrong-model"}).status_code == 409
     assert client.put(ROOT + "/providers/graphmine", headers=admin, json={"name": "wrong", "base_url": "https://example.org/v1"}).status_code == 409
 
@@ -389,6 +391,6 @@ def test_queued_work_rechecks_access_and_run_uses_current_limits(console, source
         assert QueryPreviews(runtime).get(base["id"], content=True) == before
         output_before = QueryPreviews(runtime).get(result["dataset"]["id"], content=True)
     assert save(console, CACHE_MAX_AGE_DAYS=1, BATCH_SIZE=8).status_code == 200
-    assert client.post(ROOT + "/cache/clear", headers=admin).status_code == 503
+    assert client.post(ROOT + "/cache/clear", headers=admin, json={"confirm": True}).status_code == 200
     with identity_scope(principal):
         assert QueryPreviews(runtime).get(result["dataset"]["id"], content=True) == output_before

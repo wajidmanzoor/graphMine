@@ -12,7 +12,7 @@ window.GraphMineSemanticRefinement = ({state, api, W, node, openSession, loadSes
     const header = node("header", {class: "section-heading"}), dismiss = button("close-semantic", "Close", "quiet");
     header.append(node("h2", {id: "semantic-title"}, "Refine saved snapshot"), dismiss);
     const status = node("p", {id: "semantic-status", role: "status"}, "Loading the complete snapshot schema…");
-    const warning = node("p", {class: "semantic-notice"}, "Plain snapshot reads and explicit mocks are available. Live models await engine fixes. Each successful run creates a new version.");
+    const warning = node("p", {class: "semantic-notice"}, "Refine this saved snapshot using the available models below. Each successful run creates a new version; mock judgments are simulated.");
     const nav = node("nav", {class: "semantic-navigation", "aria-label": "Refinement sections"});
     const grid = node("div", {class: "semantic-grid"});
     const schemaBox = node("section", {id: "semantic-schema", tabindex: "-1"}), work = node("section", {id: "semantic-query-pane", tabindex: "-1"}), output = node("section", {id: "semantic-output", tabindex: "-1", hidden: true});
@@ -37,7 +37,7 @@ window.GraphMineSemanticRefinement = ({state, api, W, node, openSession, loadSes
     const weight = node("input", {id: "semantic-weight", type: "text", maxlength: "128"});
     const reuse = node("input", {id: "semantic-reuse", type: "checkbox", disabled: true});
     const options = node("div", {class: "semantic-options"});
-    options.append(label("Model", model), label("Call limit per expression", limit), label("Projection", projection), label("Direction", direction), label("Edge weight property (optional)", weight), label("Reuse saved answers · unavailable", reuse));
+    options.append(label("Model", model), label("Request limit", limit), label("Projection", projection), label("Direction", direction), label("Edge weight property (optional)", weight), label("Reuse saved answers", reuse));
     const policyNote = node("p", {class: "source-hint"});
     const draftNote = node("p", {id: "semantic-draft-status", class: "source-hint"}), discardDraft = button("semantic-discard-draft", "Discard refinement draft", "quiet");
     fields.append(templateTools, node("label", {for: editor.id}, "Query"), editor, hint, syntaxDetails, parameterBox, options, policyNote, draftNote, discardDraft);
@@ -68,7 +68,7 @@ window.GraphMineSemanticRefinement = ({state, api, W, node, openSession, loadSes
       }
       status.classList.remove("source-error"); status.textContent = "Ready to check or run this refinement.";
     }
-    for (const input of [editor, parameters, model, limit, projection, direction, weight]) input.addEventListener(input.tagName === "SELECT" ? "change" : "input", changed);
+    for (const input of [editor, parameters, model, limit, projection, direction, weight, reuse]) input.addEventListener(input.tagName === "SELECT" ? "change" : "input", changed);
     for (const name of ["input", "change"]) fields.addEventListener(name, event => { if (event.target.closest(".query-parameter-row")) changed(); });
     projection.addEventListener("change", () => { weight.disabled = projection.value === "rows"; if (weight.disabled) weight.value = ""; changed(); });
     function body() {
@@ -79,7 +79,7 @@ window.GraphMineSemanticRefinement = ({state, api, W, node, openSession, loadSes
       const calls = Number(limit.value);
       if (!Number.isInteger(calls) || calls < 1 || calls > description.capabilities.max_mock_calls_per_expression) throw new Error(`Choose a call limit from 1 to ${description.capabilities.max_mock_calls_per_expression}.`);
       if (!editor.value.trim()) throw new Error("Write a semantic query first.");
-      return {base_version_id: baseId, statement: editor.value, parameters: values, model: model.value || "qwen", call_limit: calls, reuse_answers: false,
+      return {base_version_id: baseId, statement: editor.value, parameters: values, model: model.value || "qwen", call_limit: calls, reuse_answers: !reuse.disabled && reuse.checked,
         projection: projection.value, directed: direction.value ? direction.value === "directed" : null, weight_property: projection.value === "elements" && weight.value.trim() ? weight.value.trim() : null};
     }
     function errorState(error) {
@@ -196,23 +196,29 @@ window.GraphMineSemanticRefinement = ({state, api, W, node, openSession, loadSes
       schemaBox.append(node("p", {class: "source-hint"}, s.helpers.join(" · ")), node("p", {class: "source-hint"}, "Nested values are preserved as JSON. JSON path functions are unavailable."));
       model.append(node("option", {value: ""}, "No model steps"));
       for (const m of loaded.models) {
-        const option = node("option", {value: m.alias}, `${m.alias} · ${m.model_id}${m.alias === "mock" ? " · simulated" : " · live unavailable"}${m.alias === "mock" && !m.available ? " · access disabled" : ""}`);
+        const option = node("option", {value: m.alias}, `${m.alias} · ${m.model_id}${m.alias === "mock" ? " · simulated" : m.available ? "" : " · live unavailable"}${m.alias === "mock" && !m.available ? " · access disabled" : ""}`);
         option.disabled = !m.available; model.append(option);
       }
       limit.max = String(caps.max_mock_calls_per_expression);
-      policyNote.textContent = `Maximum ${caps.max_mock_calls_per_expression} calls per expression; this is not a total query budget. Timeout: ${caps.timeout_seconds}s. ${caps.mock_queries ? "Mock calls send no provider requests." : "Model steps are unavailable to this account. Plain reads remain available."} Answer reuse, estimates and judgment inspection are unavailable.`;
+      reuse.disabled = !caps.answer_reuse;
+      policyNote.textContent = `Live queries share a total budget of up to ${caps.max_mock_calls_per_expression} HTTP attempts, including retries. Mock limits apply per expression. Timeout: ${caps.timeout_seconds}s. ${caps.answer_reuse ? "Saved answers are private to your account." : "Saved-answer reuse is disabled."} Call estimates and individual judgment inspection are unavailable.`;
       const choices = window.GraphMineSemanticTemplates(s).filter(t => t[0] === "plain" || caps.mock_queries);
+      if (caps.live_queries) {
+        const liveAlias = loaded.models.find(m => m.available && m.alias !== "mock")?.alias;
+        if (liveAlias) choices.push(...choices.filter(t => t[0] !== "plain").map(t => ["live_" + t[0], t[1].replace("Mock ", "Model "), t[2].replaceAll("'mock'", "'" + liveAlias + "'"), liveAlias]));
+      }
       templates.append(...choices.map(([id, name]) => node("option", {value: id}, name)));
       function restore(value) {
+        reuse.checked = false;
         editor.value = value?.query || "MATCH (n:Vertex)\nRETURN n"; parameters.value = value?.parameters || "{}";
         projection.value = value?.projection || "elements"; direction.value = value?.inherit_direction === false ? value.direction : "";
         model.value = value?.model || ""; limit.value = String(Math.min(Number(value?.call_limit) || caps.default_call_limit, caps.max_mock_calls_per_expression)); weight.value = value?.weight_property || "";
         weight.disabled = projection.value === "rows"; changed(); queryTools.sync();
       }
       restore(recorded ? {query: recorded.query, parameters: W.stringify(recorded.parameters || {}, true), projection: recorded.projection, weight_property: recorded.weight_property,
-        model: recorded.settings?.mock ? "mock" : "", call_limit: recorded.requested_call_limit,
+        model: recorded.settings?.model_alias || (recorded.settings?.mock ? "mock" : ""), call_limit: recorded.requested_call_limit,
         inherit_direction: recorded.directed == null, direction: recorded.directed ? "directed" : "undirected"} : drafts.get("semantic", baseId));
-      insert.onclick = () => { const choice = choices.find(t => t[0] === templates.value); editor.value = choice[2]; model.value = choice[0] === "plain" ? "" : "mock"; projection.value = "elements"; weight.disabled = false; changed(); queryTools.sync(); editor.focus(); };
+      insert.onclick = () => { const choice = choices.find(t => t[0] === templates.value); editor.value = choice[2]; model.value = choice[3] || (choice[0] === "plain" ? "" : "mock"); projection.value = "elements"; weight.disabled = false; changed(); queryTools.sync(); editor.focus(); };
       discardDraft.onclick = () => { restore(null); drafts.discard("semantic", baseId); draftNote.textContent = "Refinement draft discarded."; };
       setBusy(false); editor.focus();
     } catch (error) { if (current() && error.name !== "AbortError") { description = null; errorState(error); } }

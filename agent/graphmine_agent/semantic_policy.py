@@ -33,12 +33,18 @@ def execution_policy(runtime, body):
             raise AccountError("This account cannot run semantic model steps.", "semantic_access", 403)
         if settings.semantic_mode == "disabled":
             raise AnalyticsError("Semantic model steps are disabled by the administrator.", "semantic_disabled", 503)
+        if body["model"] != "mock" and settings.semantic_mode != "live":
+            raise AnalyticsError("Live model steps are disabled by the administrator.", "semantic_live_disabled", 503)
     check_request(body, allowed_aliases=aliases)
+    if body.get("reuse_answers") and not settings.semantic_cache_enabled:
+        raise AnalyticsError("Saved-answer reuse is disabled by the administrator.", "semantic_cache_disabled", 503)
     return {"call_limit": min(body.get("call_limit") or settings.semantic_default_call_limit, settings.semantic_max_calls),
             "batch_size": settings.semantic_batch_size, "timeout_seconds": settings.semantic_timeout_seconds,
             "max_concurrent_requests": settings.semantic_max_concurrent_requests,
             "queue_seconds": settings.model_queue_seconds, "mode": settings.semantic_mode,
-            "cache_enabled": False, "thinking": "off", "strict_json": True, "temperature": 0}
+            "cache_enabled": bool(steps) and settings.semantic_cache_enabled,
+            "cache_max_age_seconds": settings.semantic_cache_max_age_days * 86400,
+            "thinking": "off", "strict_json": True, "temperature": 0}
 
 
 @contextmanager

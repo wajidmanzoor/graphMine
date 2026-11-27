@@ -1,0 +1,338 @@
+--- a/ladybug/src/function/llm/llm_answer_store.cpp
++++ b/ladybug/src/function/llm/llm_answer_store.cpp
+@@ -4,6 +4,9 @@
+ #include <chrono>
+ #include <cstdio>
+ #include <fstream>
++#include <cerrno>
++#include "common/exception/runtime.h"
++#include "function/llm/graphmine_contract.h"
+ 
+ #include "common/sha256.h"
+ #include "llm_json.h"
+@@ -144,6 +147,8 @@
+ std::optional<std::string> LlmAnswerStore::get(const std::string& key, uint64_t maxAgeSeconds) {
+     std::unique_lock lck{mtx};
+     loadIfNeeded();
++    if (const auto* reuse = std::getenv("GRAPHMINE_TENTO_REUSE");
++        reuse != nullptr && std::string(reuse) == "0") { return std::nullopt; }
+     auto it = answers.find(key);
+     if (it == answers.end()) {
+         return std::nullopt;
+@@ -182,18 +187,26 @@
+         return;
+     }
+ #ifndef _WIN32
+-    auto fd = ::open(path.c_str(), O_WRONLY | O_APPEND | O_CREAT, 0644);
++    auto fd = ::open(path.c_str(), O_WRONLY | O_APPEND | O_CREAT | O_NOFOLLOW, 0600);
+     if (fd < 0) {
+-        // The answers stay in memory; a file that cannot be written only costs reuse later.
++        if (graphmineStrict()) { throw RuntimeException("graphmine_cache_write_failed"); }
+         return;
+     }
+     if (::lseek(fd, 0, SEEK_END) == 0) {
+         text = std::string(VERSION_LINE) + "\n" + text;
+     }
+     // One write, so that answers appended by several processes do not interleave.
+-    auto written = ::write(fd, text.data(), text.size());
++    size_t written = 0;
++    while (written < text.size()) {
++        auto count = ::write(fd, text.data() + written, text.size() - written);
++        if (count < 0 && errno == EINTR) { continue; }
++        if (count <= 0) { break; }
++        written += count;
++    }
++    const bool durable = !graphmineStrict() || ::fsync(fd) == 0;
+     ::close(fd);
+-    if (written != static_cast<ssize_t>(text.size())) {
++    if (written != text.size() || !durable) {
++        if (graphmineStrict()) { throw RuntimeException("graphmine_cache_write_failed"); }
+         return;
+     }
+ #else
+--- a/ladybug/src/function/llm/llm_runtime.cpp
++++ b/ladybug/src/function/llm/llm_runtime.cpp
+@@ -1,4 +1,5 @@
+ #include "function/llm/llm_runtime.h"
++#include "function/llm/graphmine_contract.h"
+ 
+ #include <algorithm>
+ #include <chrono>
+@@ -442,7 +443,7 @@
+     answerMaxAge = maxAgeSeconds;
+     answerKeyPrefix = config.model + "\n" + config.baseURL + "\n" +
+                       std::to_string(config.temperature) + "\n" +
+-                      taskKindInfo(kind).key + "\n" + prompt.canonicalInstruction;
++                      taskKindInfo(kind).key + "\n" + prompt.canonicalInstruction + graphmineCacheIdentity();
+     std::string outputs;
+     for (auto& output : prompt.outputs) {
+         answerKeyPrefix += "\n" + output.name + ":" + output.type.toString();
+@@ -651,7 +652,7 @@
+                 }
+             }
+         }
+-        if (answerStore != nullptr) {
++        if (answerStore != nullptr && !graphmineStrict()) {
+             answerStore->put(answerQuestionID, answerQuestion, newAnswers);
+         }
+     }
+@@ -921,6 +922,15 @@
+     if (error != nullptr) {
+         std::rethrow_exception(error);
+     }
++    if (graphmineStrict()) {
++        for (const auto& batch : results) {
++            for (const auto& value : batch) {
++                if (value == nullptr || value->isNull()) {
++                    throw RuntimeException("graphmine_invalid_response");
++                }
++            }
++        }
++    }
+     return results;
+ }
+ 
+@@ -1183,6 +1193,21 @@
+         }
+     }
+     yyjson_doc_free(doc);
++    // Commit each validated batch before another request can fail or be killed.
++    if (graphmineStrict()) {
++        std::vector<std::pair<std::string, std::string>> completed;
++        for (size_t i = 0; i < results.size(); ++i) {
++            if (results[i] != nullptr && !results[i]->isNull()) {
++                LlmUsageStats::get().completedRows++;
++                usage.completedRows++;
++                if (answerStore != nullptr) {
++                    completed.emplace_back(LlmAnswerStore::makeKey(answerKeyPrefix, batch[i].key),
++                        outputsToJson(*results[i]));
++                }
++            }
++        }
++        if (answerStore != nullptr) { answerStore->put(answerQuestionID, answerQuestion, completed); }
++    }
+     return results;
+ }
+ 
+@@ -1339,9 +1364,12 @@
+     uint32_t attempt = 0;
+     std::string lastError;
+     const auto supportKey = schemaKey(config, responseSchema);
++    if (graphmineStrict() && responseSchema.empty()) {
++        throw RuntimeException("graphmine_schema_required");
++    }
+     while (true) {
+-        const bool withSchema = useResponseSchema.load() && !responseSchema.empty() &&
+-                                getSchemaSupport(supportKey) != SchemaSupport::REJECTED;
++        const bool withSchema = graphmineStrict() || (useResponseSchema.load() && !responseSchema.empty() &&
++                                getSchemaSupport(supportKey) != SchemaSupport::REJECTED);
+         std::string body =
+             "{\"model\":" + jsonQuote(config.model) +
+             ",\"temperature\":" + std::to_string(config.temperature) +
+@@ -1352,10 +1380,19 @@
+                 R"(,"response_format":{"type":"json_schema","json_schema":{"name":"llm_result","strict":true,"schema":)" +
+                 responseSchema + "}}";
+         }
++        if (graphmineStrict()) {
++            body += R"(,"chat_template_kwargs":{"enable_thinking":false},"max_tokens":4096)";
++        }
+         body += "}";
++        graphmineReserveRequest();
++        GraphmineAdmission admission;
++        admission.begin(config.baseURL, body);
++        stats.httpRequests++;
++        usage.httpRequests++;
+         stats.calls++;
+         usage.calls++;
+         auto res = client.Post(path, headers, body, "application/json");
++        admission.finish(res ? res->status : 0, res ? res->body : "");
+         if (res && res->status == 200) {
+             if (withSchema) {
+                 setSchemaSupport(supportKey, SchemaSupport::ACCEPTED);
+@@ -1364,6 +1401,9 @@
+         }
+         if (res) {
+             const auto status = res->status;
++            if (status == 400 && withSchema && graphmineStrict()) {
++                throw RuntimeException("graphmine_schema_rejected");
++            }
+             if (status == 400 && withSchema) {
+                 // The model may not support structured outputs, or not a schema this large; the
+                 // prompt itself asks for JSON.
+--- a/ladybug/src/function/llm/llm_table_functions.cpp
++++ b/ladybug/src/function/llm/llm_table_functions.cpp
+@@ -103,7 +103,7 @@
+     const TableFuncBindInput* input) {
+     std::vector<std::string> columnNames = {"calls", "input_rows", "llm_rows", "cache_hits",
+         "failed_rows", "prompt_tokens", "completion_tokens", "stored_hits", "request_chars",
+-        "request_images"};
++        "request_images", "http_requests", "completed_rows"};
+     std::vector<LogicalType> columnTypes;
+     for (auto i = 0u; i < columnNames.size(); ++i) {
+         columnTypes.push_back(LogicalType::INT64());
+@@ -123,7 +123,7 @@
+         inputRows >= llmRows ? inputRows - llmRows : 0, stats.failedRows.exchange(0),
+         stats.promptTokens.exchange(0), stats.completionTokens.exchange(0),
+         stats.storedHits.exchange(0), stats.requestChars.exchange(0),
+-        stats.requestImages.exchange(0)};
++        stats.requestImages.exchange(0), stats.httpRequests.exchange(0), stats.completedRows.exchange(0)};
+     for (auto c = 0u; c < values.size() && c < output.getNumValueVectors(); ++c) {
+         output.getValueVectorMutable(c).setValue<int64_t>(0, static_cast<int64_t>(values[c]));
+     }
+--- /dev/null
++++ b/ladybug/src/include/function/llm/graphmine_contract.h
+@@ -0,0 +1,123 @@
++#pragma once
++
++// GraphMine runs exactly one job per disposable native process. These controls
++// are supplied only by its supervisor, never by user Cypher. A process budget
++// cannot be reset by llm_usage(), a second expression, planning, or a retry.
++#include <atomic>
++#include <charconv>
++#include <cstdlib>
++#include <cstring>
++#include <string>
++#include "common/exception/runtime.h"
++#ifndef _WIN32
++#include <sys/socket.h>
++#include <sys/un.h>
++#include <unistd.h>
++#endif
++
++namespace lbug::function::llm {
++std::string jsonQuote(const std::string&);
++
++inline bool graphmineStrict() {
++    const auto* value = std::getenv("GRAPHMINE_TENTO_STRICT");
++    return value != nullptr && std::string(value) == "1";
++}
++
++inline std::string graphmineCacheIdentity() {
++    std::string identity = graphmineStrict() ? "\ngraphmine:strict-json,thinking-off:v1" : "";
++    if (const auto* value = std::getenv("GRAPHMINE_TENTO_CACHE_NAMESPACE")) {
++        identity += "\n" + std::string(value);
++    }
++    return identity;
++}
++
++inline void graphmineReserveRequest() {
++    const auto* value = std::getenv("GRAPHMINE_TENTO_REQUEST_LIMIT");
++    if (value == nullptr) {
++        if (graphmineStrict()) {
++            throw common::RuntimeException("graphmine_request_limit_missing");
++        }
++        return;
++    }
++    uint64_t limit = 0;
++    const auto* end = value + std::strlen(value);
++    const auto parsed = std::from_chars(value, end, limit);
++    if (parsed.ec != std::errc() || parsed.ptr != end || limit == 0) {
++        throw common::RuntimeException("graphmine_request_limit_invalid");
++    }
++    static std::atomic<uint64_t> used{0};
++    auto previous = used.load();
++    do {
++        if (previous >= limit) {
++            throw common::RuntimeException("graphmine_request_limit");
++        }
++    } while (!used.compare_exchange_weak(previous, previous + 1));
++}
++
++// A private admission socket is optional for standalone probes/paper runs.
++// In the app, every HTTP attempt waits for the parent's shared planner slot,
++// token reservation and power lease. The native engine still performs HTTP.
++// Closing the socket (including hard cancellation) releases the parent lease.
++class GraphmineAdmission {
++public:
++    GraphmineAdmission() = default;
++    GraphmineAdmission(const GraphmineAdmission&) = delete;
++    GraphmineAdmission& operator=(const GraphmineAdmission&) = delete;
++    ~GraphmineAdmission() {
++#ifndef _WIN32
++        if (fd >= 0) { ::close(fd); }
++#endif
++    }
++    void begin(const std::string& baseURL, const std::string& body) {
++#ifndef _WIN32
++        const auto* path = std::getenv("GRAPHMINE_TENTO_ADMISSION");
++        if (path == nullptr) { return; }
++        sockaddr_un address{};
++        address.sun_family = AF_UNIX;
++        if (std::strlen(path) >= sizeof(address.sun_path)) {
++            throw common::RuntimeException("graphmine_admission_path");
++        }
++        std::strcpy(address.sun_path, path);
++        fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
++        if (fd < 0 || ::connect(fd, reinterpret_cast<sockaddr*>(&address), sizeof(address)) != 0) {
++            throw common::RuntimeException("graphmine_admission_unavailable");
++        }
++        sendLine("{\"base_url\":" + jsonQuote(baseURL) + ",\"body\":" + body + "}");
++        std::string reply;
++        char next;
++        while (reply.size() < 1024 && ::recv(fd, &next, 1, 0) == 1 && next != '\n') {
++            reply += next;
++        }
++        if (reply != "ok") {
++            throw common::RuntimeException("graphmine_admission_denied");
++        }
++#else
++        throw common::RuntimeException("graphmine_admission_requires_linux");
++#endif
++    }
++    void finish(int status, const std::string& response) {
++#ifndef _WIN32
++        if (fd < 0) { return; }
++        sendLine("{\"status\":" + std::to_string(status) + ",\"response\":" + jsonQuote(response) + "}");
++        // Wait until the parent has settled this attempt before issuing another.
++        char next;
++        while (::recv(fd, &next, 1, 0) == 1 && next != '\n') {}
++        ::close(fd);
++        fd = -1;
++#endif
++    }
++private:
++    void sendLine(const std::string& text) {
++#ifndef _WIN32
++        const auto line = text + "\n";
++        size_t sent = 0;
++        while (sent < line.size()) {
++            const auto count = ::send(fd, line.data() + sent, line.size() - sent, MSG_NOSIGNAL);
++            if (count <= 0) { throw common::RuntimeException("graphmine_admission_unavailable"); }
++            sent += count;
++        }
++#endif
++    }
++    int fd = -1;
++};
++} // namespace lbug::function::llm
+--- a/ladybug/src/include/function/llm/llm_runtime.h
++++ b/ladybug/src/include/function/llm/llm_runtime.h
+@@ -139,6 +139,8 @@
+ // Process-wide counters reported (and reset) by CALL llm_usage().
+ struct LlmUsageStats {
+     std::atomic<uint64_t> calls{0};
++    std::atomic<uint64_t> httpRequests{0};
++    std::atomic<uint64_t> completedRows{0};
+     std::atomic<uint64_t> inputRows{0};
+     std::atomic<uint64_t> llmRows{0};
+     std::atomic<uint64_t> failedRows{0};
+--- a/ladybug/src/main/database.cpp
++++ b/ladybug/src/main/database.cpp
+@@ -1,6 +1,7 @@
+ #include "main/database.h"
+ 
+ #include <algorithm>
++#include <cstdlib>
+ 
+ #include "extension/binder_extension.h"
+ #include "extension/extension_manager.h"
+@@ -190,7 +191,8 @@
+     if (llmAnswers.store == nullptr) {
+         auto inMemory = databasePath.empty() || databasePath == ":memory:";
+         llmAnswers.store = std::make_shared<function::llm::LlmAnswerStore>(
+-            inMemory ? "" : databasePath + ".llm_answers", isReadOnly());
++            inMemory ? (std::getenv("GRAPHMINE_TENTO_ANSWER_STORE") != nullptr ?
++                std::getenv("GRAPHMINE_TENTO_ANSWER_STORE") : "") : databasePath + ".llm_answers", isReadOnly());
+     }
+     return llmAnswers.store;
+ }

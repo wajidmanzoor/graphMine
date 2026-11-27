@@ -9,7 +9,7 @@ from starlette.concurrency import run_in_threadpool
 
 from . import admin_settings, semantic_providers
 from .errors import AnalyticsError
-from .semantic_engine import engine_lock
+from .semantic_engine import engine_lock, live_supported
 from .semantic_policy import slot
 from .semantic_worker import run_worker
 
@@ -40,6 +40,7 @@ async def validated(request, model):
 
 
 def snapshot(runtime):
+    from .semantic_cache import summary
     settings = admin_settings.load(runtime.settings, runtime.database)
     lock = engine_lock()
     try:
@@ -54,12 +55,13 @@ def snapshot(runtime):
         "accounts": users, "engine": {"commit": lock["commit"], "installed_version": installed,
             "expected_version": lock["version"], "installed": installed == lock["version"]},
         "requirements": {"thinking": "off", "strict_json": True, "temperature": 0},
-        "capabilities": {"live": False, "cache": False, "judgments": False, "estimates": False,
+        "capabilities": {"live": live_supported(), "cache": live_supported(), "judgments": False, "estimates": False,
                          "blockers": lock["live_blockers"] + lock["integration_blockers"]},
-        "cache": {"retained_answers": 0, "clear_available": False, "reason": "An independent answer store is not available in this Tentō revision."},
+        "cache": {"retained_answers": summary(runtime), "clear_available": live_supported(),
+                  "reason": "Answers are private to each account. Completed batches survive worker cancellation; clearing waits for active workers."},
         "concurrency": {"configured_vllm_limit": runtime.settings.llm_max_num_seqs, "warning": warning,
             "message": "Semantic concurrency meets or exceeds the configured vLLM request limit. Leave capacity for planner work." if warning else None,
-            "policy": "One dispatch thread per worker; a shared lock limits all semantic jobs and mock tests. Mocks send no provider requests. Live execution remains blocked until shared planner admission is integrated and verified."},
+            "policy": "One dispatch thread per worker. Every live HTTP attempt shares planner admission, token accounting and model wake/sleep leases. Mocks send no provider requests."},
     }
 
 
@@ -98,6 +100,17 @@ def register(router):
     @router.get("/semantic")
     async def status(request: Request):
         return await perform(request, snapshot)
+
+    @router.post("/semantic/cache/clear")
+    async def clear_cache(request: Request):
+        from .semantic_cache import clear
+        class Confirmation(BaseModel):
+            model_config = ConfigDict(extra="forbid")
+            confirm: bool = Field(strict=True)
+        body = await validated(request, Confirmation)
+        if not body.confirm:
+            raise AnalyticsError("Confirm clearing retained answers.", "semantic_cache", 422)
+        return await perform(request, clear)
 
     @router.patch("/semantic/settings")
     async def settings(request: Request):
@@ -143,7 +156,3 @@ def register(router):
     async def test_mock(request: Request):
         async with request.app.state.runtime.upload_slots:
             return await perform(request, mock_test)
-
-    @router.post("/semantic/cache/clear")
-    async def clear_cache(request: Request):
-        raise AnalyticsError("No independent answer store exists in this Tentō revision; saved graph provenance is unchanged.", "semantic_cache_unsupported", 503)

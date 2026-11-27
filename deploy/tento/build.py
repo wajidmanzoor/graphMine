@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build unchanged Tentō sources and package a local, interpreter-specific wheel."""
+"""Build pinned Tentō plus reviewed patches in an isolated source tree."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import tarfile
 import tomllib
 
 
@@ -40,6 +41,33 @@ def checked_source(source, lock):
         raise ValueError("Tentō has tracked changes; build the unmodified pinned source")
 
 
+def patched_source(source, build_dir, lock):
+    patches = lock.get("patches", [])
+    for item in patches:
+        if digest(ROOT / item["path"]) != item["sha256"]:
+            raise ValueError("Native patch does not match the engine lock")
+    identity = {"commit": lock["commit"], "patches": patches}
+    destination = build_dir / "source"
+    stamp = build_dir / "source-identity.json"
+    if destination.exists():
+        if not stamp.is_file() or json.loads(stamp.read_text()) != identity:
+            raise ValueError("Use a new --build-dir for a changed source or patch set")
+        return destination
+    destination.mkdir()
+    process = subprocess.Popen(["git", "-C", str(source), "archive", lock["commit"]], stdout=subprocess.PIPE)
+    try:
+        with tarfile.open(fileobj=process.stdout, mode="r|") as archive:
+            archive.extractall(destination, filter="data")
+    finally:
+        process.stdout.close()
+    if process.wait():
+        raise ValueError("Could not export the pinned native source")
+    for item in patches:
+        subprocess.run(["git", "apply", str(ROOT / item["path"])], cwd=destination, check=True)
+    stamp.write_text(json.dumps(identity, indent=2) + "\n")
+    return destination
+
+
 def stage_package(stage, source, native, lock):
     package = stage / "ladybug"
     shutil.copytree(source / "ladybug/tools/python_api/src_py", package,
@@ -48,6 +76,7 @@ def stage_package(stage, source, native, lock):
     manifest = {
         "repository": lock["repository"], "commit": lock["commit"],
         "backend": "pybind", "native_file": native.name, "native_sha256": digest(native),
+        "patches": lock.get("patches", []),
     }
     (package / "_graphmine_tento.json").write_text(json.dumps(manifest, indent=2) + "\n")
     shutil.copy2(source / "ladybug/LICENSE", stage / "LICENSE")
@@ -129,6 +158,8 @@ def main():
     if build_dir == source or source in build_dir.parents:
         parser.error("The packaging directory must be outside the Tentō submodule")
     build_dir.mkdir(parents=True, exist_ok=True)
+    upstream = source
+    source = patched_source(upstream, build_dir, lock)
     build_python = build_dir / "venv/bin/python"
     env = os.environ.copy()
     for name in ("PYTHONPATH", "PYTHONHOME", "OPENROUTER_API_KEY", "LLM_API_KEY", "GRAPHMINE_LLM_API_KEY"):
@@ -165,7 +196,7 @@ def main():
         if args.install:
             run(["uv", "pip", "install", "--python", target_python,
                  "--reinstall-package", lock["distribution"], wheel])
-    checked_source(source, lock)
+    checked_source(upstream, lock)
     evidence = {
         "timestamp": datetime.now(timezone.utc).isoformat(), "source": manifest,
         "target": target, "build_requirements": BUILD_REQUIREMENTS, "jobs": args.jobs,

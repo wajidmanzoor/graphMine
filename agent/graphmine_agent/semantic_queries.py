@@ -1,6 +1,7 @@
 """Owned snapshot refinement; publication uses the existing preview lifecycle."""
 
 import copy
+from contextlib import ExitStack
 import hashlib
 from importlib import metadata as package_metadata
 import json
@@ -17,7 +18,7 @@ from .errors import AnalyticsError
 from .models import utc_now
 from .query_previews import QueryPreviews
 from .query_results import graph_preview, is_database_query
-from .semantic_engine import engine_lock
+from .semantic_engine import engine_lock, live_supported
 from .semantic_loader import encoded, key, schema
 from .semantic_worker import MAX_BYTES, run_worker
 
@@ -80,13 +81,15 @@ def snapshot_schema(runtime, identifier):
     from .semantic_providers import catalog
     metadata, raw = base_snapshot(runtime, identifier, content=True)
     settings = load(runtime.settings, runtime.database)
-    mock_allowed = settings.semantic_mode == "mock" and allowed(settings)
+    mock_allowed = settings.semantic_mode in {"mock", "live"} and allowed(settings)
+    live_allowed = settings.semantic_mode == "live" and allowed(settings) and live_supported()
     models = [{"alias": item["alias"], "model_id": item["model_id"],
-               "available": item["alias"] == "mock" and mock_allowed}
+               "available": mock_allowed if item["alias"] == "mock" else live_allowed}
               for item in catalog(runtime)["aliases"]]
     return {"base_version_id": identifier, "sha256": metadata["sha256"], "schema": schema(json.loads(raw)), "models": models,
-            "capabilities": {"plain_queries": True, "mock_queries": settings.semantic_mode == "mock" and allowed(settings), "live_queries": False,
-                             "answer_reuse": False, "query_wide_call_limit": False, "call_estimate": False,
+            "capabilities": {"plain_queries": True, "mock_queries": mock_allowed, "live_queries": live_allowed,
+                             "answer_reuse": settings.semantic_cache_enabled and allowed(settings) and live_supported(),
+                             "query_wide_call_limit": live_supported(), "call_estimate": False,
                              "judgments": False, "max_input_bytes": MAX_BYTES, "max_output_bytes": MAX_BYTES,
                              "timeout_seconds": settings.semantic_timeout_seconds, "max_mock_calls_per_expression": settings.semantic_max_calls,
                              "default_call_limit": settings.semantic_default_call_limit, "max_concurrent_requests": settings.semantic_max_concurrent_requests,
@@ -99,8 +102,41 @@ def run_query(runtime, body):
     base, raw = base_snapshot(runtime, body.base_version_id, content=True)
     checkpoint("loading")
     with slot(runtime, body.model_dump()) as policy:
-        output = run_worker(json.loads(raw), {**body.model_dump(), "call_limit": policy["call_limit"]},
-                            execution=policy, timeout=policy["timeout_seconds"])
+        from .semantic_validation import validate_semantic
+        from .semantic_providers import catalog, resolve
+        from .semantic_admission import admit
+        from .semantic_cache import lease, inspect_file
+        aliases = {item["alias"] for item in catalog(runtime)["aliases"]} | {"mock:echo"}
+        steps = validate_semantic(body.statement, aliases=aliases)
+        live = bool(steps) and body.model != "mock"
+        environment, gate = {}, None
+        with ExitStack() as stack:
+            if live:
+                provider, selected, credential = resolve(runtime, body.model)
+                policy = {**policy, "provider": provider, "aliases": {body.model: selected["model_id"]}}
+                path, gate = stack.enter_context(admit(runtime, provider, [selected["model_id"]], credential))
+                environment.update(GRAPHMINE_TENTO_STRICT="1", GRAPHMINE_TENTO_REQUEST_LIMIT=str(policy["call_limit"]),
+                                   GRAPHMINE_TENTO_ADMISSION=path, LLM_API_KEY=credential or "graphmine-no-auth")
+                # A key rotation or alias/provider revision invalidates prior answers.
+                namespace = encoded({"provider": provider, "alias": selected, "graph": base["sha256"],
+                                     "credential_digest": hashlib.sha256(credential.encode()).hexdigest()})
+                environment["GRAPHMINE_TENTO_CACHE_NAMESPACE"] = hashlib.sha256(namespace.encode()).hexdigest()
+            cache_path = None
+            if policy["cache_enabled"]:
+                cache_path = stack.enter_context(lease(runtime, timeout=policy["queue_seconds"]))
+                environment.update(GRAPHMINE_TENTO_ANSWER_STORE=str(cache_path),
+                                   GRAPHMINE_TENTO_REUSE="1" if body.reuse_answers else "0")
+            try:
+                output = run_worker(json.loads(raw), {**body.model_dump(), "call_limit": policy["call_limit"]},
+                                    execution=policy, timeout=policy["timeout_seconds"], environment=environment)
+            except Exception:
+                if gate is not None and gate.error is not None:
+                    raise gate.error from None
+                raise
+            if gate is not None and gate.error is not None:
+                raise gate.error
+            if cache_path:
+                output["effective_settings"]["answers_retained"] = inspect_file(cache_path)
     checkpoint("validating", output["row_count"])
     graph = output["value"] if output["kind"] == "graph" else {
         "graph": {"id": "semantic-table", "directed": True, "allows_self_loops": True, "allows_parallel_edges": True}, "vertices": [], "edges": []}
@@ -123,10 +159,10 @@ def run_query(runtime, body):
         "steps": output["steps"], "engine": output["engine"], "schema": output["schema"],
         "settings": output["effective_settings"], "requested_call_limit": body.call_limit,
         "usage": output["usage"], "column_types": output["column_types"], "row_count": output["row_count"],
-        "model_dependent_input": bool(ancestry.get("model_dependent_input")),
-        "simulation": bool(output["steps"]) or bool(ancestry.get("simulation")),
+        "model_dependent_input": live or bool(ancestry.get("model_dependent_input")),
+        "simulation": bool(output["effective_settings"].get("mock")) or bool(ancestry.get("simulation")),
         "completion_state": "completed", "duration_ms": duration, "fetched_at": utc_now().isoformat(),
-        "scope": "mock semantic refinement" if output["steps"] else "structural refinement of a saved snapshot",
+        "scope": "model semantic refinement" if live else "mock semantic refinement" if output["steps"] else "structural refinement of a saved snapshot",
     }
     # The complete graph/table is validated before cancellation is sealed.
     if output["kind"] == "graph":
@@ -141,7 +177,7 @@ def run_query(runtime, body):
     return {"dataset": snapshot if output["kind"] == "graph" else None, "table": snapshot if output["kind"] == "table" else None,
             "graph": preview, "rows": output["rows"], "row_count": output["row_count"], "rows_truncated": output["rows_truncated"],
             "vertex_count": len(graph["vertices"]), "edge_count": len(graph["edges"]), "usage": output["usage"], "elapsed_ms": duration,
-            "message": "Mock refinement ready; its judgments are simulated." if output["steps"] else "Snapshot refinement ready."}
+            "message": "Model refinement ready." if live else "Mock refinement ready; its judgments are simulated." if output["steps"] else "Snapshot refinement ready."}
 
 
 def register_semantic_routes(router):
@@ -158,14 +194,16 @@ def register_semantic_routes(router):
         from .database_jobs import private_response
         from .semantic_policy import execution_policy
         from .semantic_validation import validate_semantic
+        from .semantic_providers import catalog
         runtime = request.app.state.runtime
 
         def inspect():
             metadata = prepare_request(runtime, body)
             policy = execution_policy(runtime, body.model_dump())
             return {"base_version_id": metadata["id"], "sha256": metadata["sha256"],
-                    "steps": validate_semantic(body.statement), "call_limit": policy["call_limit"],
-                    "call_limit_scope": "per_expression", "syntax_checked": False,
+                    "steps": validate_semantic(body.statement, aliases={item["alias"] for item in catalog(runtime)["aliases"]} | {"mock:echo"}),
+                    "call_limit": policy["call_limit"],
+                    "call_limit_scope": "per_expression" if body.model == "mock" else "query_http_attempts", "syntax_checked": False,
                     "message": "Read-only policy checked. Schema and native syntax are checked when the query runs."}
 
         async with runtime.upload_slots:

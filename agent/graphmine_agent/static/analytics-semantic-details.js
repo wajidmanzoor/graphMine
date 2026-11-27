@@ -13,9 +13,11 @@ window.GraphMineSemanticDetails = ({node, W, source, versionId}) => {
       : "Structural refinement of a saved snapshot. This run made no model judgments."));
   line("Model", settings.model || "No model steps");
   line("Engine calls observed", usage.calls ?? "Not reported");
-  line("Limit per expression (not query total)", settings.llm_max_calls);
+  line(settings.query_wide_call_limit_supported ? "Total HTTP request limit" : "Limit per expression (not query total)", settings.request_limit ?? settings.llm_max_calls);
   line("Selected inputs (not completed judgments)", usage.llm_rows ?? "Not reported");
-  line("In-worker cache hits", usage.cache_hits ?? "Not reported");
+  if (usage.completed_rows != null) line("Completed answer evaluations", usage.completed_rows);
+  if (usage.stored_hits != null) line("Retained answers reused", usage.stored_hits);
+  line("Cached inputs (includes retained)", usage.cache_hits ?? "Not reported");
   line("Provider HTTP requests", settings.http_requests);
   line("Independently retained answers", settings.answers_retained);
   line("Output rows", source.row_count);
@@ -31,7 +33,7 @@ window.GraphMineSemanticDetails = ({node, W, source, versionId}) => {
       version_id: source.parent.version_id ?? null, sha256: source.parent.sha256 ?? null,
       query: source.parent.source?.query ?? null, parameters: source.parent.source?.parameters ?? null,
     } : null}, true)));
-  card.append(details, node("p", {class: "source-hint"}, "Call estimates, durable answer reuse and per-row judgment inspection are unavailable in this engine revision."));
+  card.append(details, node("p", {class: "source-hint"}, "Call estimates and per-row judgment inspection are unavailable. Cache policy and reuse counts above describe this recorded run."));
   if (source.base_version_id && source.query) {
     const rerun = node("button", {type: "button", class: "secondary"}, "Run again without saved answers");
     rerun.onclick = () => document.dispatchEvent(new CustomEvent("graphmine:refine-snapshot", {detail: {baseId: source.base_version_id, recorded: source}}));

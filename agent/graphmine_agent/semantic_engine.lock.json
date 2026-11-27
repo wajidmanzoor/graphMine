@@ -2,9 +2,23 @@
   "repository": "https://github.com/zacharyzhijun/francis",
   "commit": "62e124217e2c0f82e327136b5888263e95671fae",
   "distribution": "graphmine-tento",
-  "version": "0.1.0+62e124217e2c",
-  "required_functions": ["LLM", "LLM_SCORE", "LLM_AGG", "LLM_PATH_AGG", "LLM_SG_AGG", "SUBGRAPH"],
-  "live_blockers": ["thinking_off_control", "strict_json_without_fallback"],
-  "integration_blockers": ["persistent_answers_for_memory_database", "query_wide_call_budget"],
-  "graph_mapping": "explicit-labels-v1"
+  "version": "0.1.0+62e124217e2c.gm1",
+  "required_functions": [
+    "LLM",
+    "LLM_SCORE",
+    "LLM_AGG",
+    "LLM_PATH_AGG",
+    "LLM_SG_AGG",
+    "SUBGRAPH"
+  ],
+  "live_blockers": [],
+  "integration_blockers": [],
+  "graph_mapping": "explicit-labels-v1",
+  "patches": [
+    {
+      "path": "deploy/tento/patches/0001-supervised-live-contracts.patch",
+      "sha256": "c711e4c782ae05bb0e7218689027bf989a901f6853970c4bb5425550728388fe"
+    }
+  ],
+  "contract": "supervised-live-v1"
 }

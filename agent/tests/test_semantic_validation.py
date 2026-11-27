@@ -67,9 +67,12 @@ def test_prompt_inputs_preserve_nested_braces_and_escaped_quotes():
     ({"statement": "RETURN llm('qwen', '{answer STRING}')", "model": "qwen"}, "semantic_controls_unsupported"),
     ({"statement": "RETURN llm('qwen', '{answer STRING}')", "model": "mock"}, "semantic_controls_unsupported"),
     ({"statement": "RETURN llm('mock', '{answer STRING}')", "model": "qwen"}, "semantic_controls_unsupported"),
-    ({"statement": "RETURN 1", "reuse_answers": True}, "semantic_cache_unsupported"),
+    ({"statement": "RETURN 1", "reuse_answers": True}, "semantic_controls_unsupported"),
 ])
-def test_live_and_cache_gates_fail_before_any_worker_is_created(body, code):
+def test_live_and_cache_gates_fail_before_any_worker_is_created(body, code, monkeypatch):
+    from graphmine_agent import semantic_engine
+    lock = {**semantic_engine.engine_lock(), "live_blockers": ["strict_json_without_fallback"]}
+    monkeypatch.setattr(semantic_engine, "engine_lock", lambda: lock)
     with pytest.raises(AnalyticsError) as error:
         check_request(body)
     assert error.value.code == code and error.value.status == 503

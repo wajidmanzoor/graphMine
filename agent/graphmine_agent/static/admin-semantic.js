@@ -36,11 +36,11 @@
     const save = button("Save alias", () => action(save, error, async () => {
       if (![name, model].every(input => input.reportValidity())) return;
       await mutate(root + "/aliases", {alias: name.value, provider_id: provider.value, model_id: model.value, ...(alias ? {expected_revision: alias.revision} : {})}, "PUT");
-      d.close(); await refresh("Model alias saved. Live execution remains unavailable.");
+      d.close(); await refresh("Model alias saved.");
     }), "primary");
     d.node.append(field("Alias", name, "Lowercase letters, numbers and underscores; start with a letter."),
       field("Provider", provider), field("Model ID", model, "Use the model ID reported by the provider."),
-      hint("These aliases prepare provider configuration. They cannot bypass the live execution gate."), error, footer(d, save)); d.open();
+      hint("Every step uses the selected alias and its configured provider."), error, footer(d, save)); d.open();
   }
 
   function remove(kind, item) {
@@ -58,7 +58,7 @@
     const data = await api(root); if (revision !== state.revision) return;
     container.replaceChildren(heading("Semantic engine", "Configure snapshot refinement, model access and verified tests."));
     container.append(el("div", {class: "notice warning", role: "status"},
-      "Live calls and saved-answer reuse await Tentō author fixes. Plain reads and explicit mocks are available; mock judgments are simulated."));
+      data.capabilities.live ? "Live refinement is available when enabled below. Required controls are thinking off, strict JSON and a total HTTP request budget." : "Install the verified semantic engine to enable live refinement. Explicit mocks use simulated judgments."));
     const mockStatus = message();
     const mock = button("Test mock pipeline", () => action(mock, mockStatus, async () => {
       mockStatus.setAttribute("role", "status");
@@ -103,16 +103,16 @@
     container.append(card("Model aliases", table(["Alias", "Provider / model", "Actions"], aliasRows), button("Add model alias", () => aliasEditor(data))));
 
     const inputs = new Map(), controls = el("div", {class: "semantic-fields"});
-    const mode = el("select", {"aria-label": "Model steps"}, option("disabled", "Disabled"), option("mock", "Explicit mocks only"), el("option", {value: "live", disabled: true}, "Live — awaiting author fixes"));
+    const mode = el("select", {"aria-label": "Model steps"}, option("disabled", "Disabled"), option("mock", "Explicit mocks only"), el("option", {value: "live", disabled: !data.capabilities.live}, "Live models and explicit mocks"));
     mode.value = data.values[key("MODE")]; inputs.set(key("MODE"), () => mode.value);
     controls.append(field("Model steps", mode, "Plain snapshot reads remain available when model steps are disabled."));
     const numbers = [
       ["MAX_CONCURRENT_REQUESTS", "Semantic requests at once", 1, 4, "Applies across all semantic jobs and admin mock tests."],
-      ["BATCH_SIZE", "Rows per request", 1, 128, "Inputs grouped into one mock call."],
+      ["BATCH_SIZE", "Rows per request", 1, 128, "Inputs grouped into one model request."],
       ["DEFAULT_CALL_LIMIT", "Default call limit", 1, 1000, "Used when a run omits its limit."],
-      ["MAX_CALLS", "Maximum call limit", 1, 1000, "Requests above this value are clamped. This pin limits each expression, not the total query."],
+      ["MAX_CALLS", "Maximum call limit", 1, 1000, "Live HTTP attempts across all steps and retries share this total limit. Mock limits remain per expression."],
       ["TIMEOUT_SECONDS", "Worker timeout (seconds)", 5, 600, "The child is terminated if execution exceeds this time."],
-      ["CACHE_MAX_AGE_DAYS", "Maximum answer age (days)", 1, 365, "Saved policy only; inactive until a supported answer store is available."]
+      ["CACHE_MAX_AGE_DAYS", "Maximum answer age (days)", 1, 365, "Older retained answers are not reused."]
     ];
     for (const [name, label, minimum, maximum, help] of numbers) {
       const input = el("input", {type: "number", min: minimum, max: maximum, step: 1, required: true, value: data.values[key(name)]});
@@ -151,10 +151,17 @@
           display(name, data.values[name]) + " → " + display(name, value)])), error, footer(d, submit)); d.open();
     }, "primary");
     container.append(card("Limits and access", controls, users, warning,
-      hint("One dispatch thread per worker. Mock runs send no vLLM requests. Live execution remains blocked until shared planner capacity is integrated and verified."), save));
-    const cache = check("Reuse saved answers", false); cache.input.disabled = true;
-    const clear = button("Clear retained answers", () => {}); clear.disabled = true;
+      hint("One dispatch thread per worker. Live attempts share planner slots and token accounting. Mock runs send no vLLM requests."), save));
+    const cache = check("Reuse saved answers", data.values[key("CACHE_ENABLED")]); cache.input.disabled = !data.capabilities.cache;
+    inputs.set(key("CACHE_ENABLED"), () => cache.input.checked);
+    const clear = button("Clear retained answers", () => {
+      const d = dialog("Clear retained answers"), error = message();
+      const submit = button("Clear answers", () => action(submit, error, async () => {
+        await mutate(root + "/cache/clear", {confirm: true}); d.close(); await refresh("Retained answers cleared.");
+      }), "danger");
+      d.node.append(hint("Clear retained model answers for all accounts? Saved graphs and their provenance remain available."), error, footer(d, submit)); d.open();
+    }); clear.disabled = !data.cache.clear_available;
     container.append(card("Answer cache", cache.label, details([["Independently retained answers", data.cache.retained_answers]]),
-      hint(data.cache.reason + " Cache controls are unavailable; saved graph provenance is unaffected."), clear));
+      hint(data.cache.reason + " Use Review settings to save the cache choice."), clear));
   });
 })();

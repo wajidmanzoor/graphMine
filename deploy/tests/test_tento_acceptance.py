@@ -40,6 +40,21 @@ def test_present_database_does_not_hide_missing_contracts_or_quality_inputs(sour
     report = acceptance.inventory(source, tmp_path, "local-fixture-model")
     first = report["workloads"][0]
     assert first["database_present"] and "workload_database_missing" not in first["blockers"]
-    assert "strict_json_without_fallback" in first["blockers"]
+    assert "live_measurement_required" in first["blockers"]
     assert "quality_reference_missing" in first["blockers"]
     assert first["status"] == "blocked" and first["quality"]["score"] is None
+
+
+def test_local_runner_records_missing_inputs_without_inference(source, tmp_path):
+    import json
+    import subprocess
+    import sys
+    result = subprocess.run([sys.executable, str(ROOT / 'deploy/tento/run_local.py'),
+        '--data-root', str(tmp_path/'absent'), '--output', str(tmp_path/'report'),
+        '--base-url', 'http://127.0.0.1:1/v1', '--model', 'unavailable-fixture', '--queries', 'W9'],
+        capture_output=True, text=True, timeout=30)
+    assert result.returncode == 2, result.stderr
+    report = json.loads((tmp_path/'report/report.json').read_text())
+    assert report['blocked_workloads'] == 24 and report['provider_requests_sent'] == 0
+    assert not report['model']['verified_live']
+    assert all(not row['execution_started'] for row in report['workloads'])

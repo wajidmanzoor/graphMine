@@ -67,12 +67,12 @@ def inventory(source, data_root, model_id):
     declared = declarations(paper / "workload.py")
     workload, models = fields(declared["WORKLOAD"]), fields(declared["MODELS"])
     lock = json.loads((ROOT / "agent/graphmine_agent/semantic_engine.lock.json").read_text())
-    # Clearing a future lock cannot silently activate an unverified runner.
-    blockers = [*lock["live_blockers"], *lock["integration_blockers"],
-                "verified_local_qwen_runner_adapter_required", "live_planner_admission_unverified"]
+    # Inventory does not validate an installed artifact, server or dataset contents.
+    blockers = [*lock["live_blockers"], *lock["integration_blockers"], "live_measurement_required"]
     model_ids = {name: ast.literal_eval(fields(value)["model"]) for name, value in models.items()}
     target_aliases = [name for name, value in model_ids.items() if value == model_id]
-    if not target_aliases:
+    adapter = ROOT / "deploy/tento/run_local.py"
+    if not target_aliases and not adapter.is_file():
         blockers.append("local_model_missing_from_paper_runner")
     records = []
     for number in range(1, 25):
@@ -121,7 +121,7 @@ def inventory(source, data_root, model_id):
         "runner": {"path": str(paper / "run_tento.py"), "sha256": digest(paper / "run_tento.py"),
                    "workload_sha256": digest(paper / "workload.py"), "quality_scorer_sha256": digest(paper / "make_eval_table.py"),
                    "target_aliases": target_aliases, "existing_model_ids": model_ids,
-                   "invoked": False, "required_queries": [f"W{i}" for i in range(1, 25)]},
+                   "local_adapter": str(adapter), "invoked": False, "required_queries": [f"W{i}" for i in range(1, 25)]},
         "model": {"configured_id": model_id, "loaded_version": None, "verified_live": False},
         "data_root": str(data_root), "requested_settings": {"thinking": "off", "strict_json": True, "temperature": 0},
         "effective_live_settings": None, "provider_requests_sent": 0,
