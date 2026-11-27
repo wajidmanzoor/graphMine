@@ -58,3 +58,27 @@ def test_local_runner_records_missing_inputs_without_inference(source, tmp_path)
     assert report['blocked_workloads'] == 24 and report['provider_requests_sent'] == 0
     assert not report['model']['verified_live']
     assert all(not row['execution_started'] for row in report['workloads'])
+
+
+def test_original_route_scorer_accepts_prepared_export_columns(source, tmp_path):
+    def load(name):
+        spec = importlib.util.spec_from_file_location('tento_'+name, ROOT/'deploy/tento'/f'{name}.py')
+        value = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(value)
+        return value
+    prepare, local = load('prepare_data'), load('run_local')
+    export = tmp_path/'paper_eval/export'
+    export.mkdir(parents=True)
+    incoming = tmp_path/'flight.csv'
+    incoming.write_text('from,to\nJFK,LHR\n')
+    prepare.export_flights(incoming, export/'flight.csv')
+    for name, contents in {
+        'review.csv':'id,text,sentiment_gt,critic,movie_id\n',
+        'movie.csv':'id,title,genre_gt\n', 'person.csv':'id,name\n',
+        'worked_on.csv':'person_id,movie_id,role\n',
+        'airport.csv':'code,gt_country\nJFK,United States\nLHR,United Kingdom\n',
+    }.items():
+        (export/name).write_text(contents)
+    quality = local.scorer(tmp_path)
+    assert quality('W14', [[['JFK','LHR']]]) == 1.0
+    assert quality('W14', [[['JFK','LHR']], [['JFK','MIA']]]) < 1.0

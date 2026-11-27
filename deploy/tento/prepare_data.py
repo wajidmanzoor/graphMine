@@ -10,7 +10,6 @@ import csv
 import hashlib
 import json
 from pathlib import Path
-import re
 import shutil
 import subprocess
 import sys
@@ -39,6 +38,15 @@ def build(path, script):
         connection.close(); db.close()
 
 
+def export_flights(source, target):
+    """Keep the author's route values, using the scorer's export column names."""
+    with source.open(newline="") as incoming, target.open("w", newline="") as outgoing:
+        writer = csv.DictWriter(outgoing, fieldnames=["src", "dst"])
+        writer.writeheader()
+        for row in csv.DictReader(incoming):
+            writer.writerow({"src": row["from"], "dst": row["to"]})
+
+
 def prepare(destination, download=False):
     destination.mkdir(parents=True, exist_ok=True)
     demo, export = destination / "demo", destination / "paper_eval/export"
@@ -58,12 +66,12 @@ def prepare(destination, download=False):
         writer = csv.DictWriter(target, fieldnames=["person_id", "movie_id", "role", "note"]); writer.writeheader()
         for row in csv.DictReader(source):
             writer.writerow({"person_id": row["from"], "movie_id": row["to"], "role": row["role"], "note": row["note"]})
-    guide = (SOURCE / "ladybug/docs/llm_quickstart.md").read_text()
-    section = guide[guide.index("\n### 10.1 "):]
-    script = re.search(r"```cypher\n(.*?)```", section, re.S).group(1)
-    build(demo / "kg.lbdb", script)
+    # W19 asks llm_build_graph to design its own schema. Precreating the older
+    # quickstart's Professor(field) table collides with generated properties.
+    build(demo / "kg.lbdb", "RETURN 1;")
     origins = {"semantic_movies": {"repository_commit": subprocess.check_output(
         ["git", "-C", str(SOURCE), "rev-parse", "HEAD"], text=True).strip(), "loader": "load_semantic_movies.py"}}
+    origins["kg"] = {"workload": "W19", "initial_state": "empty database; model designs the schema"}
     if download:
         revision = subprocess.check_output(["git", "ls-remote", "https://github.com/jpatokal/openflights.git", "HEAD"], text=True).split()[0]
         flights = destination / "openflights"; flights.mkdir(exist_ok=True)
@@ -79,19 +87,21 @@ def prepare(destination, download=False):
         build(demo / "flights.lbdb", load)
         build(demo / "flights_country.lbdb", load + "\nCREATE NODE TABLE Country(name STRING PRIMARY KEY);\n"
               "MATCH (a:Airport) WHERE a.gt_country IS NOT NULL AND a.gt_country <> '' WITH DISTINCT a.gt_country AS name CREATE (:Country {name:name});")
-        for name in ("airport.csv", "flight.csv"):
-            shutil.copy2(flights / "csv" / name, export / name)
+        shutil.copy2(flights / "csv/airport.csv", export / "airport.csv")
+        export_flights(flights / "csv/flight.csv", export / "flight.csv")
         codes = flights / "codes.csv"
         with codes.open("w") as target, (export / "airport.csv").open() as source:
             writer = csv.writer(target); writer.writerow(["code"])
             writer.writerows([row["code"]] for row in csv.DictReader(source))
         build(demo / "flights_code.lbdb", "CREATE NODE TABLE Airport(code STRING PRIMARY KEY);\n"
               "CREATE REL TABLE FLIGHT(FROM Airport TO Airport);\n"
-              f"COPY Airport FROM '{codes}' (HEADER=true);\nCOPY FLIGHT FROM '{export / 'flight.csv'}' (HEADER=true);")
+              f"COPY Airport FROM '{codes}' (HEADER=true);\nCOPY FLIGHT FROM '{flights / 'csv/flight.csv'}' (HEADER=true);")
         origins["openflights"] = {"repository": "https://github.com/jpatokal/openflights", "commit": revision, "license": "ODbL"}
     report = {"origins": origins, "files": {str(path.relative_to(destination)): hashlib.sha256(path.read_bytes()).hexdigest()
               for path in sorted(destination.rglob("*")) if path.is_file()},
               "unavailable": ["author's LDBC SF0.1 sample", "author's reference judgments", "SemBench sf500 image sample and vectors", "Visual Genome vg100 sample"]}
+    if download:
+        report["scorer_export_columns"] = {"flight.csv": {"src": "original from", "dst": "original to"}}
     (destination / "preparation.json").write_text(json.dumps(report, indent=2) + "\n")
     return report
 
