@@ -56,24 +56,11 @@
 
   routes.set("semantic", async (container, params, revision) => {
     const data = await api(root); if (revision !== state.revision) return;
-    container.replaceChildren(heading("Semantic engine", "Configure snapshot refinement, model access and verified tests."));
-    container.append(el("div", {class: "notice warning", role: "status"},
-      data.capabilities.live ? "Live refinement is available when enabled below. Required controls are thinking off, strict JSON and a total HTTP request budget." : "Install the verified semantic engine to enable live refinement. Explicit mocks use simulated judgments."));
-    const mockStatus = message();
-    const mock = button("Test mock pipeline", () => action(mock, mockStatus, async () => {
-      mockStatus.setAttribute("role", "status");
-      mockStatus.textContent = "Testing in an isolated worker…";
-      const result = await mutate(root + "/test-mock");
-      if (revision !== state.revision || !mockStatus.isConnected) return;
-      mockStatus.textContent = result.passed ? "Mock pipeline passed · " + result.usage.calls + " engine call · 0 HTTP requests · 0 retained answers." : "Mock pipeline did not pass.";
-    }));
-    mock.disabled = !data.engine.installed || data.values[key("MODE")] === "disabled";
+    container.replaceChildren(heading("Semantic engine", "Configure query models, access and request limits."));
     container.append(card("Engine and required controls",
       details([["Installation", data.engine.installed ? data.engine.installed_version : "Pinned semantic engine is not installed"],
-        ["Source commit", data.engine.commit], ["Thinking", "Off (required for live calls)"],
-        ["Structured output", "Strict JSON required"], ["Temperature", "0"]]),
-      hint("A connection test does not verify live semantic execution. The mock test verifies the installed engine without contacting a model."),
-      mock, mockStatus));
+        ["Thinking", "Off"], ["Structured output", "Strict JSON"], ["Temperature", "0"]]),
+      hint("Queries use their named model aliases and fresh model calls by default.")));
 
     const providerRows = data.providers.map(provider => {
       const result = message();
@@ -95,19 +82,19 @@
     });
     container.append(card("Providers", table(["Provider", "Authentication", "Connection and actions"], providerRows),
       button("Add provider", () => providerEditor()), hint("Tests read the model catalog only. Redirects are not followed and no completion request is sent.")));
-    const aliasRows = data.aliases.map(alias =>
-      el("tr", {}, el("td", {}, el("code", {}, alias.alias)), el("td", {}, data.providers.find(p => p.id === alias.provider_id)?.name || "Local mock",
+    const aliasRows = data.aliases.filter(alias => alias.alias !== "mock").map(alias =>
+      el("tr", {}, el("td", {}, el("code", {}, alias.alias)), el("td", {}, data.providers.find(p => p.id === alias.provider_id)?.name || "Unavailable provider",
         hint(alias.model_id)), el("td", {}, alias.builtin ? badge("Server managed") :
         el("div", {class: "row-actions"}, button("Edit", () => aliasEditor(data, alias), "quiet"),
           button("Remove", () => remove("aliases", alias), "danger quiet")))));
     container.append(card("Model aliases", table(["Alias", "Provider / model", "Actions"], aliasRows), button("Add model alias", () => aliasEditor(data))));
 
     const inputs = new Map(), controls = el("div", {class: "semantic-fields"});
-    const mode = el("select", {"aria-label": "Model steps"}, option("disabled", "Disabled"), option("mock", "Explicit mocks only"), el("option", {value: "live", disabled: !data.capabilities.live}, "Live models and explicit mocks"));
-    mode.value = data.values[key("MODE")]; inputs.set(key("MODE"), () => mode.value);
+    const mode = el("select", {"aria-label": "Model steps"}, option("disabled", "Disabled"), el("option", {value: "live", disabled: !data.capabilities.live}, "Live models"));
+    mode.value = data.values[key("MODE")] === "mock" ? "disabled" : data.values[key("MODE")]; inputs.set(key("MODE"), () => mode.value);
     controls.append(field("Model steps", mode, "Plain snapshot reads remain available when model steps are disabled."));
     const numbers = [
-      ["MAX_CONCURRENT_REQUESTS", "Semantic requests at once", 1, 4, "Applies across all semantic jobs and admin mock tests."],
+      ["MAX_CONCURRENT_REQUESTS", "Semantic requests at once", 1, 4, "Applies across model queries and native worker checks."],
       ["BATCH_SIZE", "Rows per request", 1, 128, "Inputs grouped into one model request."],
       ["DEFAULT_CALL_LIMIT", "Default call limit", 1, 1000, "Used when a run omits its limit."],
       ["MAX_CALLS", "Maximum call limit", 1, 1000, "Live HTTP attempts across all steps and retries share this total limit. Mock limits remain per expression."],
@@ -151,7 +138,7 @@
           display(name, data.values[name]) + " → " + display(name, value)])), error, footer(d, submit)); d.open();
     }, "primary");
     container.append(card("Limits and access", controls, users, warning,
-      hint("One dispatch thread per worker. Live attempts share planner slots and token accounting. Mock runs send no vLLM requests."), save));
+      hint("One dispatch thread per worker. Live attempts share planner slots and token accounting. Model aliases select the configured provider."), save));
     const cache = check("Reuse saved answers", data.values[key("CACHE_ENABLED")]); cache.input.disabled = !data.capabilities.cache;
     inputs.set(key("CACHE_ENABLED"), () => cache.input.checked);
     const clear = button("Clear retained answers", () => {

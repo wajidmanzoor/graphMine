@@ -2,6 +2,7 @@
 
 from importlib import metadata
 import json
+from dataclasses import replace
 from threading import Event
 from types import SimpleNamespace
 
@@ -117,11 +118,12 @@ def test_inspection_checks_owned_snapshot_policy_without_starting_work(workspace
     assert workspace.client.post("/api/semantic-queries/validate", json={**body, "base_version_id": "missing"}).status_code == 404
     info = workspace.client.get(f"/api/database-query-snapshots/{identifier}/semantic-schema").json()
     assert next(m for m in info["models"] if m["alias"] == "mock")["available"] is True
-    assert next(m for m in info["models"] if m["alias"] == "qwen")["available"] is False
+    assert next(m for m in info["models"] if m["alias"] == "qwen")["available"] is True
     assert all(set(model) == {"alias", "model_id", "available"} for model in info["models"])
 
 
 def test_schema_and_admission_reject_live_cache_writes_and_missing_support(workspace, monkeypatch):
+    workspace.runtime.settings = replace(workspace.runtime.settings, semantic_mode="mock")
     identifier = workspace.snapshot["dataset"]["id"]
     response = workspace.client.get(f"/api/database-query-snapshots/{identifier}/semantic-schema")
     assert response.status_code == 200, response.text

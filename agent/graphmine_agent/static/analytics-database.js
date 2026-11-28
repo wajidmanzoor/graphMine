@@ -2,9 +2,7 @@
 window.GraphMineDatabaseWorkspace = argumentsForSource => {
   const {state, api, W, node, runAction, notice, go, renderFiles, renderGraph, previewActive, clearResults, viewScope} = argumentsForSource;
   const $ = id => document.getElementById(id);
-  const semantic = window.GraphMineSemanticRefinement(argumentsForSource);
-  const {show, close: closeSource, mount} = window.GraphMineDataSource({...argumentsForSource, refine: semantic.open});
-  const close = () => { semantic.close(); closeSource(); };
+  const {show, close, mount} = window.GraphMineDataSource(argumentsForSource);
   const context = node("details", {id: "database-context", class: "database-context", hidden: true});
   $("messages").before(context);
   const overlays = new Map();
@@ -21,11 +19,8 @@ window.GraphMineDatabaseWorkspace = argumentsForSource => {
     context.replaceChildren(); context.hidden = !source?.database_source;
     if (context.hidden) return;
     context.append(node("summary", {}, `${source.database_source.name} · graph version ${file.provenance.version} · ${file.metadata?.vertex_count ?? "?"} vertices`), node("pre", {}, source.query || "Expanded database graph"), node("p", {class: "muted"}, `Saved ${source.fetched_at || ""}. Analysis uses this snapshot.`));
-    if (source.type === "semantic_query") context.append(window.GraphMineSemanticDetails({node, W, source, versionId: file.provenance.version_id}));
-    if (file.provenance.version_id && file.provenance.kind !== "table") {
-      const refine = node("button", {type: "button", class: "secondary"}, "Refine with model");
-      refine.onclick = () => semantic.open(file.provenance.version_id); context.append(refine);
-    }
+    if (source.type === "semantic_query" || source.steps?.length) context.append(window.GraphMineSemanticDetails({node, W, source, versionId: file.provenance.version_id}));
+
   }
   const attributes = node("button", {id: "enrich-attributes", type: "button", class: "secondary"}, "Add table attributes");
   const relationships = node("button", {id: "enrich-relationships", type: "button", class: "secondary"}, "Add relationships");

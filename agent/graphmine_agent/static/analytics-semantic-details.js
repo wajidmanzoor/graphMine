@@ -6,7 +6,8 @@ window.GraphMineSemanticDetails = ({node, W, source, versionId}) => {
   card.classList.toggle("semantic-plain", !source.simulation && !source.model_dependent_input);
   const metrics = node("dl", {class: "semantic-metrics"});
   const line = (label, value) => { const pair = node("div"); pair.append(node("dt", {}, label), node("dd", {}, String(value ?? "Not recorded"))); metrics.append(pair); };
-  const settings = source.settings || {}, usage = source.usage || {};
+  const runs = source.model_settings || [];
+  const settings = source.settings || {model: runs.map(s => s.model).join(", "), http_requests: source.usage?.http_requests, query_wide_call_limit_supported: true, request_limit: source.effective_call_limit, answers_retained: runs.reduce((n, s) => n + (s.answers_retained || 0), 0)}, usage = source.usage || {};
   card.append(node("p", {class: "semantic-notice"}, source.simulation
     ? "This input includes simulated model judgments. Mock answers do not establish real classifications."
     : source.model_dependent_input ? "A model helped select or derive this input. Calculation quality does not establish the accuracy of those judgments."
@@ -34,11 +35,6 @@ window.GraphMineSemanticDetails = ({node, W, source, versionId}) => {
       query: source.parent.source?.query ?? null, parameters: source.parent.source?.parameters ?? null,
     } : null}, true)));
   card.append(details, node("p", {class: "source-hint"}, "Call estimates and per-row judgment inspection are unavailable. Cache policy and reuse counts above describe this recorded run."));
-  if (source.base_version_id && source.query) {
-    const rerun = node("button", {type: "button", class: "secondary"}, "Run again without saved answers");
-    rerun.onclick = () => document.dispatchEvent(new CustomEvent("graphmine:refine-snapshot", {detail: {baseId: source.base_version_id, recorded: source}}));
-    card.append(rerun, node("p", {class: "source-hint"}, "Opens the recorded query on its original snapshot for review. Running creates another version using current access and limits."));
-  }
   return card;
 };
 

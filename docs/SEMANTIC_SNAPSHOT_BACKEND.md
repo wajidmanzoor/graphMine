@@ -1,61 +1,74 @@
-# Semantic snapshot backend
+# Query workspace and semantic backend
 
-GraphMine refines an owned, complete database graph snapshot in a disposable
-in-memory Tentō process. It creates a separate immutable graph or table preview,
-retains the parent snapshot hash and source lineage, and reuses save/chat/export
-and database-job controls. It never reruns the original Neo4j query.
+The data workspace uses one Cypher editor next to a graph preview. Choose the
+dataset at the top, write the source selection and optional model annotations,
+and select **Run query**. There is no separate refinement step. New installations
+use live model execution by default; existing administrator restrictions remain
+in force. Mock aliases are rejected by the query annotation endpoint.
 
-The pinned engine plus the locked local patch supports **plain reads, explicit
-mocks and supervised live execution**. Administrators enable live mode and
-answer retention at **Admin → Configure → Semantic engine** (`/admin#semantic`).
-Defaults remain mock mode and administrator-only model access. Open **Refine
-with model** after a complete database graph preview or in a saved conversation
-input's source details.
-Install the optional source-built engine using the [build guide](../deploy/tento/README.md).
+```cypher
+MATCH (r:Review)-[e:REVIEWS]->(b:Business)
+WHERE r.text IS NOT NULL
+SET r.summary = llm('qwen', 'Summarize the main praise or complaint: {{r.text}} {summary STRING}')
+RETURN r, e, b
+LIMIT 10
+```
 
-## Refinement workspace
+`SET` annotates the **result graph only**. The compiler sends Neo4j a read query
+with the same source selection and captures prompt inputs alongside those exact
+rows. Filters, ordering and the final LIMIT select rows before model calls.
+Generated attributes cannot be used to filter or order the source in that same
+query. No writes or model functions are sent to Neo4j, and no partial graph is
+published after failure or cancellation.
 
-Open **Refine with model** on a graph preview to query that complete snapshot.
-The workspace shows its version/hash, actual loaded tables, original labels,
-property aliases and types. It does not refresh the source database. Use
-`Vertex` and `has_label()` rather than source label patterns.
+Use one terminal SET clause with up to eight comma-separated assignments. Each
+value is `llm('alias', 'prompt')` or `llm_score('alias', 'prompt')`; each target
+must be a named node or relationship explicitly returned, optionally with AS.
+Put grouping, DISTINCT and source aggregates in WITH before SET. For example,
+collect review text in WITH, then summarize the collected input onto a business
+node. Repeated identical target/input pairs are evaluated once. Conflicting
+inputs for one target are rejected instead of selecting an arbitrary answer.
+The legacy native read dialect remains available through its API below.
 
-Start with a plain query, or select an available live or explicit mock template/model. Templates
-cover extraction, filtering, ranking, group summaries, subgraphs, paths,
-consecutive steps and carried path state. Relationship-dependent examples appear
-when the snapshot has a relationship table. Prompts use variables bound with
-`WITH`: the pinned engine does not accept arbitrary expressions or quoted
-property identifiers inside prompt placeholders. **Check query** inspects
-read-only policy, permissions and model steps without running the query; native
-syntax and schema binding are checked on execution.
+The alias in each expression selects its configured provider/model. Different
+assignments may use different aliases; all share the query's HTTP request limit.
+Every run makes fresh calls; cross-run answer reuse is off for annotations.
+Model configuration shows aliases and allows smaller request, batch and timeout
+limits within administrator limits. The admin link manages providers and model
+aliases. Strict structured output, temperature zero and thinking off remain
+required. Install the source-built engine using the
+[build guide](../deploy/tento/README.md).
 
-The editor reuses formatting, schema suggestions (Ctrl+Space), typed/JSON
-parameters and error navigation. Ctrl/Cmd+Enter runs the refinement. Projection,
-direction and optional edge weight are explicit controls. Call limits follow
-administrator policy. Live budgets count all HTTP attempts across the entire
-query, including retries. Mocks retain the upstream per-expression limit.
-Answer reuse is available when enabled by an administrator. Drafts are scoped to API identity, conversation and
-base snapshot. Editing inputs clears the current result selection.
+The preview offers Spread, Circular, Bipartite, Grid, Concentric and Hierarchy
+layouts. Layout and node-label changes do not rerun the query or change graph
+contents. Bipartite layout reports an odd cycle when the graph is not bipartite.
+Select a node or edge to inspect its attributes, including generated summaries.
+Save the complete graph to datasets or use it in chat through the existing
+immutable snapshot lifecycle. On mobile, Query and Graph preview are tabs;
+dataset selection remains at the top.
 
-**Run refinement** uses the durable job queue with measured progress and
-cancellation. Selected inputs, completed answer evaluations, HTTP attempts,
-counters for cached inputs and independently retained hits are reported separately. These
-counters are not a per-input judgments export. Closing the workspace stops observation; it does not cancel a job.
-Late responses cannot select a result in another workspace or conversation.
+Schema opens an interactive diagram for the selected database. Mapped sources
+use their graph mappings. Unmapped sources use all Neo4j catalog labels with
+bounded property samples per label and relationship type. Neo4j infers possible
+relationship patterns, which the dialog explicitly explains. If catalog access
+is unavailable, the diagram reports its bounded sample and possible omissions.
 
-On success, inspect the graph or complete paged table, returned row samples and
-Model usage card. **Save version to datasets** and **Use graph/table in chat**
-reuse the existing immutable snapshot lifecycle. A temporary result can also be
-discarded. The original input is unchanged. Earlier calculation revisions show
-their recorded semantic ancestry alongside the solver's actual quality, even
-when the active conversation input changes. Mock provenance is visibly simulated.
+`POST /api/database-sources/{source_id}/queries` accepts these queries using its
+normal sync/async job, cancellation, save and chat routes. Optional request
+fields are `call_limit`, `batch_size`, and `model_timeout_seconds`.
+`GET /api/query-models` exposes non-secret aliases, defaults, limits and account
+availability. `GET /api/database-sources/{source_id}/schema?dataset_id=…&diagram=true`
+returns the diagram schema. A completed snapshot records the original query,
+model targets, effective model settings, source lineage and observed usage.
 
-**Run again without saved answers** opens the original parent snapshot and
-recorded query/parameters/direction for review; running creates another version
-under current access and limits. The parent must still be available. Saving a
-result does not independently retain an expired temporary parent. Estimates and a per-row judgments table still require additional engine APIs.
+## Legacy snapshot API
 
-## API
+The snapshot API evaluates an owned, complete database graph in a disposable
+in-memory Tentō process without rerunning the original Neo4j query. It remains
+available for native semantic operators and existing integrations. Its explicit
+mock mode is retained for test fixtures and historical compatibility; it is not
+part of the query workspace. Historical simulated results retain that label.
+
 
 All routes use the application's existing authentication and account scope.
 Responses use `Cache-Control: private, no-store`.
@@ -85,7 +98,7 @@ Example mock request:
 }
 ```
 
-`model` defaults to `qwen`; live steps require administrator-enabled live mode
+`model` defaults to `qwen`; live steps require permitted live mode
 and the verified patched installation. A query
 with no model operators works without a provider. Mock operators require an
 explicit request `model: "mock"` and query alias `'mock'` or `'mock:echo'`.

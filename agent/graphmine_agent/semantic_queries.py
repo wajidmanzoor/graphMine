@@ -96,38 +96,36 @@ def snapshot_schema(runtime, identifier):
                              "blockers": engine_lock()["live_blockers"] + engine_lock()["integration_blockers"]}}
 
 
-def run_query(runtime, body):
+def evaluate(runtime, graph, body):
+    """Run model work through the shared admission, limits and worker contract."""
     from .semantic_policy import slot
-    started = perf_counter()
-    base, raw = base_snapshot(runtime, body.base_version_id, content=True)
-    checkpoint("loading")
-    with slot(runtime, body.model_dump()) as policy:
+    with slot(runtime, body) as policy:
         from .semantic_validation import validate_semantic
         from .semantic_providers import catalog, resolve
         from .semantic_admission import admit
         from .semantic_cache import lease, inspect_file
         aliases = {item["alias"] for item in catalog(runtime)["aliases"]} | {"mock:echo"}
-        steps = validate_semantic(body.statement, aliases=aliases)
-        live = bool(steps) and body.model != "mock"
+        steps = validate_semantic(body["statement"], aliases=aliases)
+        live = bool(steps) and body["model"] != "mock"
         environment, gate = {}, None
         with ExitStack() as stack:
             if live:
-                provider, selected, credential = resolve(runtime, body.model)
-                policy = {**policy, "provider": provider, "aliases": {body.model: selected["model_id"]}}
+                provider, selected, credential = resolve(runtime, body["model"])
+                policy = {**policy, "provider": provider, "aliases": {body["model"]: selected["model_id"]}}
                 path, gate = stack.enter_context(admit(runtime, provider, [selected["model_id"]], credential))
                 environment.update(GRAPHMINE_TENTO_STRICT="1", GRAPHMINE_TENTO_REQUEST_LIMIT=str(policy["call_limit"]),
                                    GRAPHMINE_TENTO_ADMISSION=path, LLM_API_KEY=credential or "graphmine-no-auth")
                 # A key rotation or alias/provider revision invalidates prior answers.
-                namespace = encoded({"provider": provider, "alias": selected, "graph": base["sha256"],
+                namespace = encoded({"provider": provider, "alias": selected, "graph": hashlib.sha256(encoded(graph).encode()).hexdigest(),
                                      "credential_digest": hashlib.sha256(credential.encode()).hexdigest()})
                 environment["GRAPHMINE_TENTO_CACHE_NAMESPACE"] = hashlib.sha256(namespace.encode()).hexdigest()
             cache_path = None
             if policy["cache_enabled"]:
                 cache_path = stack.enter_context(lease(runtime, timeout=policy["queue_seconds"]))
                 environment.update(GRAPHMINE_TENTO_ANSWER_STORE=str(cache_path),
-                                   GRAPHMINE_TENTO_REUSE="1" if body.reuse_answers else "0")
+                                   GRAPHMINE_TENTO_REUSE="1" if body.get("reuse_answers", False) else "0")
             try:
-                output = run_worker(json.loads(raw), {**body.model_dump(), "call_limit": policy["call_limit"]},
+                output = run_worker(graph, {**body, "call_limit": policy["call_limit"]},
                                     execution=policy, timeout=policy["timeout_seconds"], environment=environment)
             except Exception:
                 if gate is not None and gate.error is not None:
@@ -137,6 +135,15 @@ def run_query(runtime, body):
                 raise gate.error
             if cache_path:
                 output["effective_settings"]["answers_retained"] = inspect_file(cache_path)
+    return output
+
+
+def run_query(runtime, body):
+    started = perf_counter()
+    base, raw = base_snapshot(runtime, body.base_version_id, content=True)
+    checkpoint("loading")
+    output = evaluate(runtime, json.loads(raw), body.model_dump())
+    live = bool(output["steps"]) and body.model != "mock"
     checkpoint("validating", output["row_count"])
     graph = output["value"] if output["kind"] == "graph" else {
         "graph": {"id": "semantic-table", "directed": True, "allows_self_loops": True, "allows_parallel_edges": True}, "vertices": [], "edges": []}
@@ -181,6 +188,28 @@ def run_query(runtime, body):
 
 
 def register_semantic_routes(router):
+    @router.get("/query-models")
+    async def query_models(request: Request):
+        from .admin_settings import load
+        from .semantic_policy import allowed
+        from .semantic_providers import catalog
+        from .database_jobs import private_response
+        from .identity import current_principal
+        runtime = request.app.state.runtime
+        settings = load(runtime.settings, runtime.database)
+        principal = current_principal.get()
+        return private_response({
+            "models": [{"alias": item["alias"], "model_id": item["model_id"]}
+                       for item in catalog(runtime)["aliases"] if item["alias"] != "mock"],
+            "available": settings.semantic_mode == "live" and allowed(settings) and live_supported(),
+            "can_administer": bool(principal and principal.is_admin),
+            "defaults": {"call_limit": settings.semantic_default_call_limit, "batch_size": settings.semantic_batch_size,
+                         "model_timeout_seconds": settings.semantic_timeout_seconds},
+            "limits": {"call_limit": settings.semantic_max_calls, "batch_size": settings.semantic_batch_size,
+                       "model_timeout_seconds": settings.semantic_timeout_seconds},
+            "temperature": 0, "thinking": "off", "reuse_answers": False,
+        })
+
     @router.get("/database-query-snapshots/{identifier}/semantic-schema")
     async def get_schema(identifier: str, request: Request):
         from .database_jobs import private_response

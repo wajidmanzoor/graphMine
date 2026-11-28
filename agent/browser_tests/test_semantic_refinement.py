@@ -1,263 +1,150 @@
-"""Snapshot refinement acceptance with real APIs/native mocks and a disposable app."""
+"""One query, real native model HTTP, graph attributes and responsive workspace."""
 import json
 import re
 from dataclasses import replace
 
 import pytest
+from neo4j import Record
+from neo4j.graph import Graph, Node
 
 from agent.tests.conftest import fake_binary, settings as base_settings  # noqa: F401
 from agent.tests.test_admin_browser import browser_app, sign_in, screenshot, pw  # noqa: F401
 from agent.tests.test_semantic_native import native_engine  # noqa: F401
+from agent.tests.semantic_provider_fixture import provider
+from agent.tests.test_database_query_projection import read_transaction
 from graphmine_agent.database_sources import DatabaseSource
-from test_workspace_accessibility import TEXT_AUDIT
 
-
-@pytest.fixture
-def settings(base_settings, tmp_path):
-    path = tmp_path / "semantic-sources.json"
-    source = DatabaseSource(id="demo", name="Saved reviews", users=["*"], neo4j_uri="bolt://127.0.0.1:17687", neo4j_password_env="SEMANTIC_BROWSER_TEST_PASSWORD")
-    path.write_text(json.dumps([source.model_dump()]))
-    path.chmod(0o600)
-    return replace(base_settings, database_sources_file=path)
-
+QUERY = "MATCH (r:Review)-[e:REVIEWS]->(b:Business)\nSET r.summary=llm('qwen','Summarize {{r.text}} {answer STRING}')\nRETURN r,e,b LIMIT 10"
 
 @pytest.fixture
-def semantic_page(browser_app, monkeypatch):
-    browser, base, _, accounts = browser_app
-    graph = {"graph": {"id": "reviews", "directed": True, "allows_self_loops": False, "allows_parallel_edges": True},
-             "vertices": [{"id": 1, "type": "Review", "attributes": {"text": "alpha", "neo4j_labels": ["Review", "Item"]}},
-                          {"id": "1", "type": "Review", "attributes": {"text": "beta", "neo4j_labels": ["Review"]}}],
-             "edges": [{"id": "r", "source": 1, "target": "1", "type": "LINK", "attributes": {"weight": 2}}]}
-    calls = []
-    def execute(*args, **kwargs):
-        calls.append(1)
-        return graph, {"vertices": {}, "edges": {}}, [], 2, None
-    monkeypatch.setattr("graphmine_agent.database_queries.execute_query", execute)
-    page = browser.new_page(viewport={"width": 1440, "height": 1100}, reduced_motion="reduce")
-    errors = []
-    page.on("pageerror", lambda error: errors.append(str(error)))
-    sign_in(page, base, "review-admin")
-    created = page.request.post(base + "/api/database-sources/demo/queries", data={"statement": "MATCH p=()-[]->() RETURN p"}, headers={"X-GraphMine-Request": "1"})
-    assert created.status == 201, created.text()
-    snapshot = created.json()
-    page.goto(base + "/")
-    page.wait_for_function("() => window.GraphMineWorkspace?.state.domains.length && !GraphMineWorkspace.state.busy")
-    yield page, base, snapshot, calls, errors
+def model_server():
+    with provider() as value:
+        yield value
+
+@pytest.fixture
+def settings(base_settings, tmp_path, model_server):
+    path = tmp_path / 'sources.json'
+    source = DatabaseSource(id='demo', name='Yelp', users=['*'], neo4j_uri='bolt://127.0.0.1:17687', neo4j_password_env='BROWSER_TEST_PASSWORD')
+    path.write_text(json.dumps([source.model_dump()])); path.chmod(0o600)
+    return replace(base_settings, database_sources_file=path, semantic_mode='live', llm_base_url=model_server[0], llm_model='fixture-model')
+
+@pytest.fixture
+def query_page(browser_app, monkeypatch, model_server, native_engine):
+    browser, base, _, _ = browser_app
+    g = Graph(); r = Node(g,'r',1,{'Review'},{'text':'Great food'}); b=Node(g,'b',2,{'Business'},{'name':'Cafe'})
+    e=g.relationship_type('REVIEWS')(g,'e',3,{}); e._start_node=r; e._end_node=b
+    read_transaction(monkeypatch, [Record({'r':r,'e':e,'b':b,'__gm_input_0_0':'Great food'})])
+    page = browser.new_page(viewport={'width':1440,'height':1050}, reduced_motion='reduce')
+    errors=[]; page.on('pageerror', lambda error: errors.append(str(error)))
+    sign_in(page,base,'review-admin')
+    source={'id':'demo','name':'Yelp','entities':[],'relationships':[],'capabilities':{'sync':False},'connection':{'neo4j':{}}}
+    page.route('**/api/data-sources', lambda route: route.fulfill(json={'items':[{'provider':'database','connection':source}], 'warnings':[], 'active_backend':'local','dataset_picker_only':True}))
+    for endpoint in ('status','open'):
+        page.route('**/api/database-sources/demo/'+endpoint, lambda route: route.fulfill(json={'neo4j':{'connected':True}}))
+    page.route('**/api/database-sources/demo/schema?*', lambda route: route.fulfill(json={
+        'entities':[{'id':'review','label':'Review','properties':[{'name':'text','type':'STRING'}]}, {'id':'business','label':'Business','properties':[{'name':'name','type':'STRING'}]}],
+        'relationships':[{'id':'edge','label':'REVIEWS','source_entity':'review','target_entity':'business','properties':[]}], 'message':'Property sample.'}))
+    page.goto(base+'/'); page.wait_for_function('() => window.GraphMineWorkspace?.state.domains.length && !GraphMineWorkspace.state.busy')
+    page.locator('#open-database-workspace').click(); pw.expect(page.locator('#preview-cypher')).to_be_enabled()
+    page.locator('#cypher-editor').fill(QUERY)
+    yield page,base,model_server[1],errors
     assert errors == []
     page.close()
 
-
-def open_refinement(page, snapshot, recorded=None):
-    page.evaluate("d => document.dispatchEvent(new CustomEvent('graphmine:refine-snapshot', {detail:d}))", {"baseId": snapshot["dataset"]["id"], "recorded": recorded})
-    pw.expect(page.locator("#semantic-run")).to_be_enabled()
-
-
-def run_result(page):
-    with page.expect_response(re.compile(r"/api/database-jobs/[^/]+/result$"), timeout=30000) as response:
-        page.locator("#semantic-run").click()
-    value = response.value
+def run(page):
+    with page.expect_response(re.compile(r'/api/database-jobs/[^/]+/result$'), timeout=30000) as response:
+        page.locator('#preview-cypher').click()
+    value=response.value
     assert value.ok, value.text()
-    pw.expect(page.locator("#semantic-use")).to_be_visible()
-    pw.expect(page.locator("#semantic-run")).to_be_enabled()
+    pw.expect(page.locator('#preview-cypher')).to_be_enabled()
     return value.json()
 
 
-def test_preview_refine_save_attach_and_immutable_parent(semantic_page, native_engine):
-    page, base, snapshot, calls, _ = semantic_page
-    source = {"id": "demo", "name": "Saved reviews", "entities": [], "relationships": [], "capabilities": {"sync": False}, "connection": {"neo4j": {}}}
-    page.route("**/api/data-sources", lambda route: route.fulfill(json={"items": [{"provider": "database", "connection": source}], "warnings": [], "active_backend": "local"}))
-    page.route("**/api/database-sources/demo/datasets", lambda route: route.fulfill(json=[{"id": "default", "name": "Reviews", "status": "ready", "default_query": "MATCH (n) RETURN n", "schemas": [], "tables": []}]))
-    page.route("**/api/database-sources/demo/status", lambda route: route.fulfill(json={"connected": True, "neo4j": {"connected": True}}))
-    page.route("**/api/database-sources/demo/schema?*", lambda route: route.fulfill(json={"entities": [], "relationships": []}))
-    page.route("**/api/database-sources/demo/queries", lambda route: route.fulfill(json=snapshot))
-    page.locator("#open-database-workspace").click()
-    pw.expect(page.locator("#preview-cypher")).to_be_enabled()
-    page.locator("#preview-cypher").click()
-    page.locator("#refine-query-snapshot").click()
-    pw.expect(page.locator("#semantic-run")).to_be_enabled()
-    pw.expect(page.locator("#semantic-schema")).to_contain_text("Item, Review")
-    page.locator("#semantic-template").select_option("extract")
-    page.locator("#semantic-insert-template").click()
-    page.locator("#semantic-direction").select_option("undirected")
-    page.locator("#semantic-check").click()
-    pw.expect(page.locator("#semantic-steps")).to_contain_text("answer STRING")
-    result = run_result(page)
-    assert result["dataset"]["id"] != snapshot["dataset"]["id"]
-    assert result["dataset"]["source"]["base_sha256"] == snapshot["dataset"]["sha256"]
-    assert result["graph"]["graph"]["directed"] is False
-    assert result["dataset"]["source"]["simulation"] is True
-    assert len(calls) == 1  # No implicit source refresh during semantic work.
-    pw.expect(page.locator("#semantic-output")).to_contain_text("simulated model judgments")
-    page.locator("#semantic-save").click()
-    pw.expect(page.locator("#semantic-save")).to_be_disabled()
-    screenshot(page, "refinement-desktop")
-    page.get_by_role("button", name="Run again without saved answers", exact=True).click()
-    pw.expect(page.locator("#semantic-direction")).to_have_value("undirected")
-    pw.expect(page.locator("#semantic-reuse")).not_to_be_checked()
-    rerun = run_result(page)
-    assert rerun["dataset"]["id"] != result["dataset"]["id"]
-    with page.expect_response(re.compile(r"/api/database-query-snapshots/[^/]+/chat$")) as attached:
-        page.locator("#semantic-use").click()
-    attachment = attached.value.json()
-    pw.expect(page.locator("#semantic-refinement")).to_have_count(0)
-    page.wait_for_function("id => GraphMineWorkspace.state.session?.id === id", arg=attachment["session"]["id"])
-    assert attachment["file"]["provenance"]["source"]["base_version_id"] == snapshot["dataset"]["id"]
-    before = page.request.get(base + f"/api/database-query-snapshots/{snapshot['dataset']['id']}/semantic-schema").json()
-    assert before["sha256"] == snapshot["dataset"]["sha256"]
+def test_single_query_node_attributes_layouts_save_and_fresh_rerun(query_page):
+    page,base,calls,_=query_page
+    pw.expect(page.get_by_role('button',name='Refine with model')).to_have_count(0)
+    left=page.locator('#data-query-pane').bounding_box(); right=page.locator('#data-preview-pane').bounding_box()
+    assert left['x']+left['width'] <= right['x']+2
+    result=run(page)
+    assert result['graph']['vertices'][0]['attributes']['summary']=='negative'
+    assert result['usage']['http_requests']==1 and len(calls)==1
+    pw.expect(page.locator('#database-query-status')).to_contain_text('1 HTTP requests')
+    page.wait_for_function("() => document.querySelector('#database-query-graph')._cyreg?.cy?.nodes().length === 2")
+    for layout in ['circle','bipartite','grid','concentric','breadthfirst','cose']:
+        page.get_by_label('Graph layout',exact=True).select_option(layout)
+    page.evaluate("() => document.querySelector('#database-query-graph')._cyreg.cy.nodes()[0].emit('tap')")
+    pw.expect(page.locator('#query-element-details')).to_contain_text('negative')
+    page.locator('#query-node-label').select_option('summary')
+    page.locator('#save-query-snapshot').click(); pw.expect(page.locator('#save-query-snapshot')).to_be_disabled()
+    screenshot(page,'query-workspace-desktop')
+    second=run(page); assert second['dataset']['id']!=result['dataset']['id'] and len(calls)==2
+    with page.expect_response(re.compile(r'/api/database-query-snapshots/[^/]+/chat$')) as response:
+        page.locator('#run-cypher-chat').click()
+    assert response.value.ok, response.value.text()
 
 
-def test_drafts_invalidation_table_and_mobile_keyboard(semantic_page, native_engine):
-    page, _, snapshot, _, _ = semantic_page
-    page.set_viewport_size({"width": 390, "height": 844})
-    open_refinement(page, snapshot)
-    page.locator("#semantic-editor").fill("MATCH (n:Vertex) WHERE n.text=$text RETURN n")
-    page.locator("#semantic-parameters").evaluate("el => {el.value = '{\"text\":\"alpha\"}'; el.dispatchEvent(new Event('input'));}")
-    page.keyboard.press("Escape")
-    pw.expect(page.locator("#semantic-refinement")).to_have_count(0)
-    open_refinement(page, snapshot)
-    pw.expect(page.locator("#semantic-editor")).to_have_value("MATCH (n:Vertex) WHERE n.text=$text RETURN n")
-    page.locator("#semantic-editor").press("Control+Enter")
-    pw.expect(page.locator("#semantic-use")).to_be_visible(timeout=30000)
-    screenshot(page, "refinement-mobile")
-    assert page.locator("#semantic-refinement").evaluate("el => el.scrollWidth <= el.clientWidth + 1")
-    issues = page.evaluate("() => {" + TEXT_AUDIT.replace("body *", "#semantic-refinement *") + "}")
-    assert all(issue["contrast"] >= 4.5 for issue in issues), issues
-    page.locator("#close-semantic").focus()
-    page.keyboard.press("Shift+Tab")
-    assert page.evaluate("() => Boolean(document.activeElement.closest('#semantic-refinement'))")
-    page.locator("#semantic-parameters").evaluate("el => {el.closest('details').open = true;}")
-    page.get_by_label("Type for $text", exact=True).select_option("number")
-    pw.expect(page.locator("#semantic-use")).to_have_count(0)
-    page.get_by_label("Type for $text", exact=True).select_option("text")
-    page.locator("#semantic-editor").fill("MATCH (n:Vertex) RETURN graph_id(n) AS id, n.text AS text")
-    pw.expect(page.locator("#semantic-use")).to_have_count(0)
-    result = run_result(page)
-    assert result["table"]["table"]["row_count"] == 2
-    pw.expect(page.get_by_role("region", name="Complete query table")).to_contain_text("alpha")
-    page.locator("#semantic-discard").click()
-    pw.expect(page.locator("#semantic-output")).to_be_hidden()
+def test_schema_model_config_and_mobile_query_preservation(query_page):
+    page,_,calls,_=query_page
+    page.locator('#open-dataset-schema').click()
+    dialog=page.get_by_role('dialog',name='Dataset schema')
+    pw.expect(dialog.get_by_text(re.compile('2 labels'))).to_be_visible()
+    page.wait_for_function("() => document.querySelector('.workspace-schema-canvas')._cyreg?.cy?.edges().length === 1")
+    page.wait_for_function("() => {const ns=document.querySelector('.workspace-schema-canvas')._cyreg.cy.nodes(); return Math.hypot(ns[0].position('x')-ns[1].position('x'),ns[0].position('y')-ns[1].position('y')) > 100;}")
+    screenshot(page,'query-workspace-schema')
+    page.keyboard.press('Escape'); pw.expect(dialog).to_have_count(0)
+    page.locator('#open-query-models').click(); dialog=page.get_by_role('dialog',name='Model configuration')
+    pw.expect(dialog).to_contain_text('fixture-model')
+    pw.expect(dialog).not_to_contain_text('mock')
+    dialog.get_by_label('Maximum HTTP requests per query',exact=True).fill('3')
+    dialog.get_by_label('Inputs per model batch',exact=True).fill('1')
+    dialog.get_by_role('button',name='Apply query settings').click()
+    with page.expect_request(re.compile(r'/api/database-sources/demo/queries$')) as request:
+        result=run(page)
+    assert request.value.post_data_json['call_limit']==3 and request.value.post_data_json['batch_size']==1
+    page.set_viewport_size({'width':390,'height':844})
+    page.locator('#data-step-query').click()
+    pw.expect(page.locator('#cypher-editor')).to_have_value(QUERY)
+    page.locator('#data-step-query').focus(); page.keyboard.press('ArrowRight')
+    pw.expect(page.locator('#data-step-preview')).to_be_focused()
+    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1')
+    screenshot(page,'query-workspace-mobile')
+    page.locator('#data-step-query').click()
+    page.locator('#cypher-editor').fill(QUERY.replace('LIMIT 10','LIMIT 5'))
+    pw.expect(page.locator('#source-continue')).to_be_hidden()
+    assert len(calls)==1
 
 
-@pytest.mark.parametrize("code", ["semantic_call_limit", "semantic_timeout", "semantic_syntax", "semantic_worker_failed", "semantic_model_server", "database_cancelled"])
-def test_failure_usage_and_syntax_navigation(semantic_page, code):
-    page, _, snapshot, _, _ = semantic_page
-    open_refinement(page, snapshot)
-    page.route("**/api/semantic-queries", lambda route: route.fulfill(status=202, json={"job": {"id": "failure", "kind": "semantic", "status": "queued", "cancellable": True}}))
-    page.route("**/api/database-jobs/failure", lambda route: route.fulfill(json={"id": "failure", "kind": "semantic", "status": "cancelled" if code == "database_cancelled" else "failed", "cancellable": False,
-        "error": {"code": code, "message": "Controlled failure", "details": {"line": 2, "column": 2, "usage": {"calls": 3, "llm_rows": 7}}}}))
-    page.locator("#semantic-run").click()
-    pw.expect(page.locator("#semantic-status")).to_contain_text("Controlled failure")
-    pw.expect(page.locator(".semantic-progress")).to_contain_text("Engine calls observed: 3")
-    pw.expect(page.locator(".semantic-progress")).to_contain_text("No new graph was published")
-    pw.expect(page.locator("#semantic-use")).to_have_count(0)
-    if code == "semantic_syntax":
-        page.locator("#semantic-goto-query-error").click()
-        assert page.locator("#semantic-editor").evaluate("el => el.selectionStart") == len("MATCH (n:Vertex)\n") + 1
+@pytest.mark.parametrize('code',['semantic_call_limit','semantic_timeout','semantic_structured_output','semantic_model_server','database_cancelled'])
+def test_failed_model_query_never_offers_partial_graph(query_page,code):
+    page,_,calls,_=query_page
+    page.route('**/api/database-sources/demo/queries',lambda route:route.fulfill(status=202,json={'job':{'id':'failure','kind':'query','status':'queued','cancellable':True}}))
+    page.route('**/api/database-jobs/failure',lambda route:route.fulfill(json={'id':'failure','kind':'query','status':'failed','cancellable':False,'error':{'code':code,'message':'Controlled model failure','details':{'usage':{'http_requests':2}}}}))
+    page.locator('#preview-cypher').click()
+    pw.expect(page.locator('#database-query-status')).to_contain_text('Controlled model failure')
+    pw.expect(page.locator('#source-continue')).to_be_hidden()
+    pw.expect(page.locator('#preview-cypher')).to_be_enabled()
+    assert calls==[]
 
 
-def test_cancel_and_ignore_late_result_after_close(semantic_page):
-    page, _, snapshot, _, _ = semantic_page
-    open_refinement(page, snapshot)
-    cancelled = []
-    page.route("**/api/semantic-queries", lambda route: route.fulfill(status=202, json={"job": {"id": "waiting", "kind": "semantic", "status": "running", "cancellable": True}}))
-    def job(route):
-        if route.request.method == "DELETE": cancelled.append(True)
-        route.fulfill(json={"id": "waiting", "kind": "semantic", "status": "cancelled" if cancelled else "running", "cancellable": not cancelled, "progress": {"stage": "asking_model", "usage": {"calls": 2}}})
-    page.route("**/api/database-jobs/waiting", job)
-    page.locator("#semantic-run").click()
-    pw.expect(page.locator(".semantic-progress")).to_contain_text("Running simulated model steps")
-    page.locator("#semantic-cancel-database-job").click()
-    pw.expect(page.locator("#semantic-run")).to_be_enabled()
-    assert cancelled
-    cancelled.clear()
-    page.locator("#semantic-run").click()
-    pw.expect(page.locator("#semantic-cancel-database-job")).to_be_visible()
-    page.locator("#close-semantic").click()
-    open_refinement(page, snapshot)
-    pw.expect(page.locator("#semantic-output")).to_be_hidden()
-    pw.expect(page.locator("#semantic-run")).to_be_enabled()
+def test_member_model_access_remains_enforced(query_page):
+    page,base,calls,_=query_page
+    sign_in(page,base,'review-member')
+    response=page.request.post(base+'/api/database-sources/demo/queries',data={'statement':QUERY},headers={'X-GraphMine-Request':'1'})
+    assert response.status==403 and calls==[]
+    assert page.request.get(base+'/api/query-models').json()['available'] is False
 
 
-def test_late_submission_cannot_replace_reopened_snapshot(semantic_page):
-    page, _, snapshot, _, _ = semantic_page
-    open_refinement(page, snapshot)
+def test_non_bipartite_graph_keeps_a_usable_layout_without_model_calls(query_page):
+    page,_,calls,_=query_page
+    run(page)
+    page.wait_for_function("() => document.querySelector('#database-query-graph')._cyreg?.cy?.nodes().length === 2")
     page.evaluate("""() => {
-      const original = window.fetch;
-      window.fetch = (path, options) => String(path).endsWith('/api/semantic-queries')
-        ? new Promise(resolve => { window.finishLateRefinement = value => resolve(new Response(JSON.stringify(value), {headers: {'Content-Type': 'application/json'}})); })
-        : original(path, options);
+      const cy=document.querySelector('#database-query-graph')._cyreg.cy, nodes=cy.nodes();
+      cy.add([{data:{id:'triangle-node',label:'Third node',color:'#35775c'}},
+        {data:{id:'triangle-a',source:nodes[0].id(),target:'triangle-node'}},
+        {data:{id:'triangle-b',source:'triangle-node',target:nodes[1].id()}}]);
     }""")
-    page.locator("#semantic-run").click()
-    page.wait_for_function("() => Boolean(window.finishLateRefinement)")
-    page.locator("#close-semantic").click()
-    open_refinement(page, snapshot)
-    page.locator("#semantic-editor").fill("MATCH (n:Vertex) RETURN n LIMIT 1")
-    page.evaluate("value => window.finishLateRefinement(value)", snapshot)
-    # Synchronize through the browser's request/microtask boundary.
-    page.evaluate("() => new Promise(resolve => requestAnimationFrame(resolve))")
-    pw.expect(page.locator("#semantic-editor")).to_have_value("MATCH (n:Vertex) RETURN n LIMIT 1")
-    pw.expect(page.locator("#semantic-output")).to_be_hidden()
-    pw.expect(page.locator("#semantic-run")).to_be_enabled()
-
-
-def test_refinement_drafts_are_scoped_to_snapshot(semantic_page):
-    page, base, first, _, _ = semantic_page
-    created = page.request.post(base + "/api/database-sources/demo/queries", data={"statement": "MATCH (n) RETURN n"}, headers={"X-GraphMine-Request": "1"})
-    assert created.status == 201
-    second = created.json()
-    open_refinement(page, first)
-    page.locator("#semantic-editor").fill("MATCH (n:Vertex) RETURN n LIMIT 1")
-    open_refinement(page, second)
-    pw.expect(page.locator("#semantic-editor")).to_have_value("MATCH (n:Vertex)\nRETURN n")
-    open_refinement(page, first)
-    pw.expect(page.locator("#semantic-editor")).to_have_value("MATCH (n:Vertex) RETURN n LIMIT 1")
-
-
-def test_member_capabilities_and_plain_read_access(semantic_page, native_engine):
-    page, base, _, _, _ = semantic_page
-    sign_in(page, base, "review-member")
-    created = page.request.post(base + "/api/database-sources/demo/queries", data={"statement": "MATCH (n) RETURN n"}, headers={"X-GraphMine-Request": "1"})
-    assert created.status == 201, created.text()
-    snapshot = created.json()
-    page.reload()
-    page.wait_for_function("() => window.GraphMineWorkspace?.state.domains.length && !GraphMineWorkspace.state.busy")
-    open_refinement(page, snapshot)
-    assert page.locator('#semantic-model option[value="mock"]').is_disabled()
-    assert page.locator("#semantic-template option").count() == 1
-    page.locator("#semantic-editor").fill("MATCH (n:Vertex) RETURN n, llm('mock', 'Describe {answer STRING}') AS answer")
-    page.locator("#semantic-check").click()
-    pw.expect(page.locator("#semantic-status")).to_contain_text("cannot run semantic model steps")
-    page.locator("#semantic-editor").fill("MATCH (n:Vertex) RETURN n")
-    assert run_result(page)["vertex_count"] == 2
-
-
-def test_live_provider_selection_and_durable_reuse_in_browser(semantic_page, native_engine):
-    from agent.tests.semantic_provider_fixture import provider
-    page, base, snapshot, calls, _ = semantic_page
-    headers = {'X-GraphMine-Request': '1'}
-    with provider() as (url, model_calls):
-        root = base + '/api/admin/semantic'
-        previous = page.request.get(root).json()['values']
-        response = page.request.patch(root+'/settings', headers=headers, data={
-            'values': {'GRAPHMINE_SEMANTIC_MODE':'live','GRAPHMINE_SEMANTIC_CACHE_ENABLED':True},
-            'expected':previous,'confirm':True})
-        assert response.ok,response.text()
-        saved = page.request.post(root+'/providers',headers=headers,data={
-            'name':'Browser live fixture','base_url':url,'api_key':'synthetic-browser-live-key'})
-        assert saved.ok,saved.text()
-        alias = page.request.put(root+'/aliases',headers=headers,data={
-            'alias':'browser_live','provider_id':saved.json()['id'],'model_id':'fixture-model'})
-        assert alias.ok,alias.text()
-        open_refinement(page,snapshot)
-        page.locator('#semantic-model').select_option('browser_live')
-        page.locator('#semantic-editor').fill("MATCH(n:Vertex) WHERE llm('browser_live','Select {{n.text}} {keep BOOLEAN}') RETURN n")
-        page.locator('#semantic-reuse').check()
-        first = run_result(page)
-        assert first['usage']['http_requests'] == 1 and len(model_calls) == 1
-        assert first['dataset']['source']['model_dependent_input'] is True
-        assert first['dataset']['source']['simulation'] is False
-        second = run_result(page)
-        assert second['usage']['stored_hits'] == 2 and second['usage']['http_requests'] == 0
-        assert len(model_calls) == 1 and len(calls) == 1
-        assert 'synthetic-browser-live-key' not in page.content()
-        screenshot(page, 'refinement-live-reuse')
+    page.get_by_label('Graph layout',exact=True).select_option('bipartite')
+    pw.expect(page.get_by_label('Graph layout',exact=True)).to_have_value('cose')
+    pw.expect(page.get_by_text('This graph has an odd cycle; showing Spread instead of Bipartite.')).to_be_visible()
+    assert len(calls)==1

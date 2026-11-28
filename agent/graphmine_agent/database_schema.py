@@ -9,16 +9,16 @@ from .database_datasets import selected_dataset
 from .database_sources import get_source
 
 
-def describe_schema(settings, source_id, dataset_id):
+def describe_schema(settings, source_id, dataset_id, diagram=False):
     source = get_source(settings, source_id)
     dataset = selected_dataset(settings, source, dataset_id)
     mapped = resolve_source(settings, source, dataset_id)
     entities, relationships = [], []
     sampled = None
     if (dataset_id == "default" or dataset.get("registry")) and not mapped.entities:
-        from .neo4j_schema import sample_schema
+        from .neo4j_schema import sample_schema, diagram_schema
 
-        sampled = sample_schema(mapped)
+        sampled = diagram_schema(mapped) if diagram else sample_schema(mapped)
         entities, relationships = sampled["entities"], sampled["relationships"]
         if resolve_source(settings, get_source(settings, source_id), dataset_id).fingerprint() != mapped.fingerprint():
             raise AnalyticsError("The connection changed. Reload its schema.", "source_changed", 409)
@@ -41,9 +41,9 @@ def describe_schema(settings, source_id, dataset_id):
 
 def register_schema_routes(router):
     @router.get("/database-sources/{source_id}/schema")
-    async def describe(source_id: str, request: Request, dataset_id: str = Query(default="default", max_length=128)):
+    async def describe(source_id: str, request: Request, dataset_id: str = Query(default="default", max_length=128), diagram: bool = False):
         runtime = request.app.state.runtime
         if runtime.upload_slots.locked():
             raise AnalyticsError("Database reads are busy. Retry shortly.", "busy", 429)
         async with runtime.upload_slots:
-            return await run_in_threadpool(describe_schema, runtime.settings, source_id, dataset_id)
+            return await run_in_threadpool(describe_schema, runtime.settings, source_id, dataset_id, diagram)

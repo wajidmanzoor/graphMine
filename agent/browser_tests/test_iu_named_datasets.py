@@ -45,8 +45,6 @@ def test_iu_database_choices_and_query_scope(loading_browser, loading_server, wi
     assert "Yelp" in labels and "Amazon" in labels and "system" not in labels
     assert not browser.find_element(By.ID, "database-dataset").is_displayed()
     for database in ["yelp", "amazon"]:
-        if browser.find_element(By.ID, "data-step-connection").is_displayed():
-            browser.find_element(By.ID, "data-step-connection").click()
         Select(picker).select_by_value("iu-" + database)
         wait_for(browser, "document.getElementById('database-query-scope').textContent === 'Queries run only on " + database.title() + ".' && !document.getElementById('preview-cypher').disabled")
         if browser.find_element(By.ID, "data-step-query").is_displayed():

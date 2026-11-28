@@ -1,5 +1,5 @@
 "use strict";
-window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, previewActive, upload, clearResults, openData, leaveData, dataPartChanged, dataReturnLabel, refine}) => {
+window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSession, loadSessions, go, renderFiles, previewActive, upload, clearResults, openData, leaveData, dataPartChanged, dataReturnLabel}) => {
   const $ = id => document.getElementById(id);
   const icon = name => {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -68,9 +68,16 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const discoveryWarning = node("p", {id: "source-discovery-warning", class: "source-hint", role: "status", hidden: true});
     connectionDetails.append(connectionSummary, health, check); connectionActions.append(add, edit);
     const sourceLabel = label("Connection", source), datasetLabel = label("Dataset", dataset);
+    for (const field of [sourceLabel, datasetLabel]) field.firstChild.replaceWith(node("span", {class: "workspace-selection-title"}, field.firstChild.textContent));
     const connectionHeading = node("h2", {id: "data-connection-heading"}, "Connection & schema");
-    sidebar.append(connectionHeading, sourceLabel, connectionActions, discoveryWarning, connectionDetails,
-      datasetLabel, datasetStatus, reloadDatasets, schema);
+    const connectionMenu = node("details", {class: "workspace-connection-menu"});
+    const connectionPopup = node("div", {class: "workspace-connection-content"});
+    connectionPopup.append(connectionActions, discoveryWarning, connectionDetails, reloadDatasets, schema);
+    const connectionToggle = node("summary", {"aria-label": "Connection settings"});
+    connectionToggle.append(node("span", {class: "workspace-connection-title"}, "Connection"), node("span", {class: "workspace-connection-more", "aria-hidden": "true"}, "⋯"));
+    connectionMenu.append(connectionToggle, connectionPopup);
+    connectionHeading.hidden = true;
+    sidebar.append(connectionHeading, sourceLabel, datasetLabel, connectionMenu, datasetStatus);
     const work = node("section", {class: "source-work data-pane", id: "data-query-pane", "data-heading": "data-query-heading", tabindex: "0"});
     const schemaBox = node("details", {class: "source-dataset-schema"}), schemaView = node("div");
     schemaBox.open = !window.matchMedia("(max-width: 600px)").matches;
@@ -90,28 +97,26 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const direction = node("select", {id: "query-graph-direction", "aria-label": "Graph direction for analysis"});
     direction.append(node("option", {value: "directed"}, "Directed graph"), node("option", {value: "undirected"}, "Undirected graph"));
     const projection = node("select", {id: "query-graph-projection", "aria-label": "Graph mode", "aria-describedby": "cypher-hint"});
-    projection.append(node("option", {value: "elements"}, "Existing Neo4j graph"), node("option", {value: "rows"}, "Connections from query rows"));
+    projection.append(node("option", {value: "elements"}, "Existing graph"), node("option", {value: "rows"}, "Connections from query rows"));
     const projectionField = label("Graph mode", projection); projectionField.append(hint);
     const describeProjection = () => {
       hint.textContent = projection.value === "rows"
         ? "Connect each row’s source and target nodes in the analysis graph, using its optional weight column."
         : "Use the Neo4j nodes and relationships returned by your query, including those in returned paths.";
     };
-    const preview = button("preview-cypher", "Preview query");
+    const preview = button("preview-cypher", "Run query");
     const saveSnapshot = button("save-query-snapshot", "Save graph to datasets");
     const discardPreview = button("discard-query-preview", "Discard preview", "quiet"); discardPreview.hidden = true;
     const open = button("run-cypher-chat", state.session ? "Use graph in chat" : "Start conversation", "primary");
     const actions = node("div", {class: "source-query-actions"});
     const options = node("div", {class: "source-query-options"});
     options.append(parameterBox, projectionField, label("Direction", direction));
-    actions.append(node("span", {class: "source-hint"}, "⌘ / Ctrl + Enter to preview"), preview);
+    actions.append(node("span", {class: "source-hint"}, "⌘ / Ctrl + Enter to run"), preview);
     const previewHeader = node("div", {class: "source-section-heading"});
     const count = node("span", {id: "database-preview-count", class: "source-hint"}, "No query run yet");
     previewHeader.append(node("h2", {id: "data-preview-heading"}, "Graph preview"), count);
     const previewActions = node("div", {class: "source-preview-actions", hidden: true});
-    const refineSnapshot = button("refine-query-snapshot", "Refine with model"); refineSnapshot.hidden = true;
-    refineSnapshot.onclick = () => { const snapshot = saved?.response?.dataset; if (snapshot) refine(snapshot.id, null, domain.value); };
-    previewActions.append(saveSnapshot, discardPreview, refineSnapshot);
+    previewActions.append(saveSnapshot, discardPreview);
     const canvas = node("div", {id: "database-query-graph", class: "database-query-graph", role: "img", "aria-label": "Query graph preview"});
     const placeholder = node("div", {class: "source-preview-empty"});
     const emptyTitle = node("strong", {}, "A first look at your graph");
@@ -136,13 +141,22 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const importDescription = node("p", {id: "source-import-description", class: "source-hint", hidden: true});
     work.append(queryHeading, queryScope, sharedMovies, editor, draftStatus, options, jobsBox);
     work.append(importDescription);
-    sidebar.append(sync, schemaBox);
+    connectionPopup.append(sync, schemaBox);
     const previewPane = node("section", {class: "source-preview data-pane", id: "data-preview-pane", "data-heading": "data-preview-heading", tabindex: "0"});
-    previewPane.append(previewHeader, previewActions, previewFrame, rowDetails);
-    const grid = node("div", {class: "database-grid"}); grid.append(sidebar, work, previewPane);
+    const graphControls = node("div", {class: "workspace-graph-controls"});
+    const elementDetails = node("div", {id: "query-element-details", class: "workspace-element-details"});
+    previewPane.append(previewHeader, graphControls, previewFrame, previewActions, elementDetails, rowDetails);
+    const graphView = window.GraphMineWorkspaceGraph({node, W, canvas, controls: graphControls, details: elementDetails});
+    const nodeLabels = node("select", {id: "query-node-label", "aria-label": "Node label attribute"});
+    nodeLabels.append(node("option", {value: ""}, "Default labels"));
+    nodeLabels.onchange = () => graphView.label(nodeLabels.value);
+    options.append(label("Node labels", nodeLabels));
+    const modelHint = node("p", {class: "source-hint workspace-model-hint"}, "Add attributes with SET r.summary = llm('qwen', 'Summarize {{r.text}} {summary STRING}'). SET applies to the returned graph. Source filters, ordering and LIMIT run before model calls.");
+    work.append(modelHint);
+    const grid = node("div", {class: "database-grid"}); grid.append(work, previewPane);
     const stepControls = node("div");
     const connectionEditor = node("section", {class: "source-connection-editor", hidden: true});
-    databasePanel.append(stepControls, grid, connectionEditor, footer);
+    databasePanel.append(sidebar, stepControls, grid, connectionEditor, footer);
     const file = node("input", {id: "source-file-upload", type: "file", accept: ".json,.csv,.txt", "aria-label": "Choose graph file"});
     const uploadZone = node("label", {class: "source-upload-zone"});
     uploadZone.append(icon("arrow"), node("strong", {}, "Drop a file here, or browse"), node("span", {}, "Graph JSON or a CSV of relationships"), file);
@@ -159,14 +173,17 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const fileControls = $("data-file-controls"), controlsPlace = document.createComment("Data controls");
     if (fileControls) { fileControls.before(controlsPlace); fileControls.hidden = false; filePanel.append(fileControls); }
     dialog.append(heading, tabs, databasePanel, filePanel); $("data-workspace-view").append(dialog);
-    let sources = [], datasets = [], generation = 0, healthGeneration = 0, datasetGeneration = 0, sourceGeneration = 0, saved = null, cy = null, busy = false, uploading = false, benchmarks = null;
+    let sources = [], datasets = [], generation = 0, healthGeneration = 0, datasetGeneration = 0, sourceGeneration = 0, saved = null, busy = false, uploading = false, benchmarks = null;
     let canManageImports = false, discoveryPending = true, datasetPickerOnly = false;
     const selectedSource = () => sources.find(item => item.id === source.value);
     const importing = () => selectedSource()?.source_kind === "connector";
     const readController = new AbortController();
-    const layout = window.GraphMineDataLayout({node, host: dialog, panes: [sidebar, work, previewPane], controls: stepControls, footer, queryAction: actions, onChange: dataPartChanged, onResize: () => cy?.resize()});
+    document.addEventListener("pointerdown", event => { if (!connectionMenu.contains(event.target)) connectionMenu.open = false; }, {signal: readController.signal});
+    document.addEventListener("keydown", event => { if (event.key === "Escape") connectionMenu.open = false; }, {signal: readController.signal});
+    const layout = window.GraphMineDataLayout({node, host: dialog, panes: [work, previewPane], controls: stepControls, footer, queryAction: actions, onChange: dataPartChanged, onResize: () => graphView.resize()});
     let draftContext = null, draftPresent = false, draftDirty = false;
-    const provenance = currentFile?.provenance?.source;
+    let provenance = currentFile?.provenance?.source;
+    while (provenance?.type === "semantic_query" && provenance.parent?.source) provenance = provenance.parent.source;
     const remember = () => {
       if (!draftContext || !draftDirty) return;
       const persisted = drafts.put(draftContext.source, draftContext.dataset, {query: editor.value, parameters: parameters.value, direction: direction.value, projection: projection.value});
@@ -174,7 +191,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       draftStatus.textContent = persisted ? "Draft saved in this browser." : "Draft saved for this tab only. Browser storage is unavailable or full.";
     };
     const resetPreview = () => {
-      generation++; saved = null; refineSnapshot.hidden = true; cy?.destroy(); cy = null; canvas.replaceChildren();
+      generation++; saved = null; graphView.reset();
       tableView.setSnapshot(null); rows.hidden = false; previewFrame.hidden = false;
       previewHeader.querySelector("h2").textContent = "Graph preview";
       rows.textContent = ""; placeholder.hidden = false; count.textContent = "No query run yet";
@@ -184,13 +201,15 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       continueBox.hidden = previewActions.hidden = true; discardPreview.hidden = true; open.disabled = true;
     };
     const invalidate = () => { resetPreview(); draftDirty = true; remember(); status.textContent = "Query changed. Preview it to update the graph."; };
+    const workspaceTools = window.GraphMineWorkspaceTools({api, W, node, host: sidebar,
+      context: () => ({source: source.value, dataset: dataset.value}), onChange: invalidate});
     const queryTools = window.GraphMineQueryEditor({api, node, W, editor, parameters, parameterBox, onChange: invalidate});
     const jobs = window.GraphMineQueryProgress({api, W, node, container: jobsBox});
     const finish = () => {
       if (!dialog.isConnected) return;
       if (source.value) remember();
       window.removeEventListener("pagehide", remember);
-      generation++; healthGeneration++; datasetGeneration++; sourceGeneration++; readController.abort(); cy?.destroy(); benchmarks?.destroy(); queryTools.destroy(); tableView.destroy(); jobs.destroy(); layout.destroy();
+      generation++; healthGeneration++; datasetGeneration++; sourceGeneration++; readController.abort(); graphView.destroy(); workspaceTools.destroy(); benchmarks?.destroy(); queryTools.destroy(); tableView.destroy(); jobs.destroy(); layout.destroy();
       if (fileControls) { fileControls.hidden = true; controlsPlace.replaceWith(fileControls); }
       dialog.remove(); opening = false; closeDialog = null; selectPart = null;
     };
@@ -323,12 +342,14 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     const defaultQuery = item => item?.entities?.length
       ? `MATCH p = (a:${item.entities[0].label})-[r${item.relationships?.length ? ":" + item.relationships[0].label : ""}]->(b)\nRETURN p\nLIMIT 1000`
       : "MATCH p = (a)-[r]->(b)\nRETURN p\nLIMIT 1000";
+    const modelExample = item => /yelp/i.test(`${selectedSource()?.name || ""} ${item?.name || ""}`)
+      ? "MATCH (r:Review)-[e:REVIEWS]->(b:Business)\nWHERE r.text IS NOT NULL\nSET r.summary = llm('qwen', 'Summarize the main praise or complaint: {{r.text}} {summary STRING}')\nRETURN r, e, b\nLIMIT 10" : null;
     function restoreDraft(useSaved = true) {
       const selected = datasets.find(d => d.id === dataset.value);
       draftContext = selected ? {source: source.value, dataset: dataset.value} : null;
       const draft = useSaved && draftContext ? drafts.get(source.value, dataset.value) : null;
       const sameInput = provenance?.database_source?.id === source.value && (provenance?.database_dataset?.id || "default") === dataset.value;
-      editor.value = draft?.query ?? (sameInput ? provenance.query : null) ?? selected?.default_query ?? defaultQuery(sources.find(s => s.id === source.value));
+      editor.value = draft?.query ?? (sameInput ? provenance.query : null) ?? modelExample(selected) ?? selected?.default_query ?? defaultQuery(sources.find(s => s.id === source.value));
       parameters.value = draft?.parameters ?? W.stringify(sameInput ? provenance.parameters || {} : {}, true);
       direction.value = draft?.direction ?? (sameInput && currentFile?.metadata?.directed === false ? "undirected" : "directed");
       projection.value = draft?.projection ?? (sameInput ? provenance.projection : null) ?? "elements";
@@ -344,7 +365,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       draftStatus.textContent = discarded ? "Draft discarded. The starting query has been restored." : "Draft cleared for this tab. Browser storage could not be updated.";
     };
     function describeDataset(preserve = false) {
-      resetPreview(); benchmarks?.destroy();
+      resetPreview(); workspaceTools.contextChanged(); benchmarks?.destroy();
       const selected = datasets.find(d => d.id === dataset.value);
       queryScope.textContent = selected?.status === "ready" ? `Queries run only on ${selected.name}.` : "Choose a ready dataset to run a query.";
       schemaView.replaceChildren();
@@ -353,6 +374,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       queryTools.setContext(source.value, dataset.value, selected?.status === "ready");
       sharedMovies.hidden = selected?.id !== "movielens-32m";
       describeProjection();
+      datasetStatus.classList.remove("source-error");
       datasetStatus.textContent = !selected ? datasetPickerOnly ? "Choose an available dataset." : "No datasets are available in this connection."
         : selected.status === "ready" ? selected.node_count != null
           ? `${selected.node_count.toLocaleString()} nodes · ${selected.relationship_count.toLocaleString()} relationships`
@@ -379,7 +401,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       queryHeading.querySelector("h2").textContent = isImport ? "Import" : "Query";
       queryHeading.querySelector(".source-badge").textContent = isImport ? selected.type === "sqlite" ? "SQLite" : selected.type === "rest" ? "REST API" : "HTTP export" : "Cypher";
       actions.firstElementChild.hidden = isImport;
-      preview.textContent = isImport ? "Preview source" : "Preview query";
+      preview.textContent = isImport ? "Preview source" : "Run query";
       check.hidden = isImport;
       layout.mode?.(isImport ? "import" : "query");
       jobs.setContext(isImport ? null : selected?.id || null);
@@ -417,12 +439,12 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
         describeDataset(preserve);
         return true;
       } catch (error) {
-        if (current === datasetGeneration && dialog.isConnected) { datasets = []; dataset.replaceChildren(); datasetStatus.textContent = error.message; setBusy(false); }
+        if (current === datasetGeneration && dialog.isConnected) { datasets = []; dataset.replaceChildren(); datasetStatus.textContent = error.message; datasetStatus.classList.add("source-error"); setBusy(false); }
       }
     }
     source.onchange = async () => { remember(); dataset.replaceChildren(); await describe(); await openSource(); };
     dataset.onchange = () => { remember(); describeDataset(); };
-    reloadDatasets.onclick = async () => { try { if (await refresh(source.value)) await describe(false, true); } catch (error) { if (dialog.isConnected) datasetStatus.textContent = error.message; } };
+    reloadDatasets.onclick = async () => { connectionMenu.open = false; try { if (await refresh(source.value)) await describe(false, true); } catch (error) { if (dialog.isConnected) datasetStatus.textContent = error.message; } };
     check.onclick = openSource;
     const refresh = async selected => {
       const current = ++sourceGeneration;
@@ -446,11 +468,12 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
         }
         canManageImports = Boolean(response.can_manage_imports);
         datasetPickerOnly = Boolean(response.dataset_picker_only);
-        sourceLabel.firstChild.nodeValue = datasetPickerOnly ? "Dataset" : "Connection";
+        sidebar.classList.toggle("dataset-picker-only", datasetPickerOnly);
+        sourceLabel.firstElementChild.textContent = datasetPickerOnly ? "Dataset" : "Connection";
         source.setAttribute("aria-label", datasetPickerOnly ? "Dataset" : "Database");
         connectionHeading.textContent = datasetPickerOnly ? "Dataset & schema" : "Connection & schema";
         databaseTab.textContent = datasetPickerOnly ? "Datasets" : "Database";
-        connectionActions.hidden = connectionDetails.hidden = datasetLabel.hidden = datasetPickerOnly;
+        connectionActions.hidden = connectionDetails.hidden = datasetLabel.hidden = connectionMenu.hidden = datasetPickerOnly;
         layout.datasetPicker?.(datasetPickerOnly);
         sources = response.items.map(item => item.provider === "database" ? item.connection : {...item, id: `connector:${item.source_id}`, connector_id: item.source_id, source_kind: "connector"});
         discoveryWarning.textContent = (response.warnings || []).map(warning => warning.message).join(" "); discoveryWarning.hidden = !discoveryWarning.textContent;
@@ -487,7 +510,7 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
         if (!values || Array.isArray(values) || typeof values !== "object") throw new Error("Parameters must be a JSON object.");
         queryTools.validate();
       } catch (error) { error.code = "cypher_parameters"; throw error; }
-      const body = {statement: editor.value, parameters: values, directed: direction.value === "directed", dataset_id: dataset.value, projection: projection.value};
+      const body = {...workspaceTools.settings(), statement: editor.value, parameters: values, directed: direction.value === "directed", dataset_id: dataset.value, projection: projection.value};
       if (!body.statement.trim()) throw new Error("Write a Cypher query first.");
       return body;
     }
@@ -503,7 +526,6 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
     }
     function renderQuery(response, signature) {
       saved = {signature, response};
-      refineSnapshot.hidden = !response.dataset?.source_complete || !response.dataset?.source?.database_source;
       const snapshot = response.dataset || response.table;
       continueBox.hidden = !snapshot;
       previewActions.hidden = !snapshot;
@@ -512,6 +534,10 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       status.textContent = response.dataset ? `${response.row_count.toLocaleString()} rows returned${response.elapsed_ms != null ? ` in ${(response.elapsed_ms / 1000).toFixed(2)}s` : ""}. Ready to use in chat.` : response.message;
       if (snapshot?.temporary) status.textContent += " This preview expires in 24 hours. Save it or use it in analysis to keep it.";
       if (response.row_sample_warning) status.textContent += " " + response.row_sample_warning;
+      if (response.usage) status.textContent += ` Model: ${response.usage.http_requests || 0} HTTP requests · ${response.usage.completed_rows || 0} generated answers.`;
+      const previousLabel = nodeLabels.value, names = [...new Set(response.graph.vertices.flatMap(v => Object.keys(v.attributes || {})))].sort();
+      nodeLabels.replaceChildren(node("option", {value: ""}, "Default labels"), ...names.map(name => node("option", {value: name}, name)));
+      if (names.includes(previousLabel)) nodeLabels.value = previousLabel;
       rows.textContent = W.stringify(response.rows, true);
       rowSummary.textContent = response.table ? `Complete query table · ${response.row_count.toLocaleString()} rows` : `Returned rows · ${response.row_count.toLocaleString()}${response.rows_truncated ? ` (showing first ${response.rows.length})` : ""}`;
       rowDetails.open = !response.dataset;
@@ -531,17 +557,9 @@ window.GraphMineDataSource = ({state, api, W, node, runAction, notice, openSessi
       return response;
     }
     function drawPreview(graph) {
-      if (graph.vertices.length && !window.cytoscape) {
-        const current = generation;
-        window.GraphMineGraphLibrary().then(() => {
-          if (current === generation && canvas.isConnected) drawPreview(graph);
-        }).catch(error => { if (current === generation && canvas.isConnected) status.textContent = error.message; });
-        return;
-      }
-      if (window.cytoscape && graph.vertices.length) cy = window.cytoscape({container: canvas, elements: [
-        ...graph.vertices.map(v => ({data: {id: W.idKey(v.id), label: v.label || v.type || String(v.id)}})),
-        ...graph.edges.map((e, i) => ({data: {id: `edge:${i}`, source: W.idKey(e.source), target: W.idKey(e.target)}}))
-      ], style: [{selector: "node", style: {label: "data(label)", "font-size": 10, "background-color": "#35775c", color: "#234638", "text-margin-y": 6, "text-valign": "bottom", width: 22, height: 22}}, {selector: "edge", style: {"target-arrow-shape": graph.graph.directed ? "triangle" : "none", "curve-style": "bezier", width: 1.5, "line-color": "#b9cdc1", "target-arrow-color": "#b9cdc1"}}], layout: {name: "cose", animate: false, padding: 30}});
+      const current = generation;
+      graphView.draw(graph).then(() => { if (current === generation) graphView.label(nodeLabels.value); })
+        .catch(error => { if (current === generation && canvas.isConnected) status.textContent = error.message; });
     }
     async function previewConnector() {
       const selected = selectedSource(); resetPreview(); const current = generation;

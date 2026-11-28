@@ -42,6 +42,9 @@ class CypherRequest(Strict):
     dataset_id: str | None = Field(default=None, max_length=128)
     projection: Literal["elements", "rows"] = "elements"
     weight_property: str | None = Field(default=None, min_length=1, max_length=128)
+    call_limit: int | None = Field(default=None, ge=1, le=1000, strict=True)
+    batch_size: int | None = Field(default=None, ge=1, le=128, strict=True)
+    model_timeout_seconds: int | None = Field(default=None, ge=5, le=600, strict=True)
 
 
 class OpenChat(Strict):
@@ -310,7 +313,7 @@ class RowGraphCollector(GraphCollector):
         return {"source": {"node": source}, "target": {"node": target}, **properties}
 
 
-def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
+def execute_query(source, body, byte_limit=None, *, timeout_seconds=None, annotations=None):
     # Source limits still govern SQL synchronization/enrichment. Interactive
     # Cypher retains the whole result unless a caller explicitly supplies a cap.
     checkpoint("validating")
@@ -335,6 +338,8 @@ def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
     collector_class = RowGraphCollector if body.projection == "rows" else GraphCollector
     def read(transaction):
         # A managed read can retry; every attempt needs a fresh collector.
+        if annotations:
+            annotations.reset()
         collector, sample_records, rows, used = collector_class(source, byte_limit, body.weight_property), [], 0, 0
         scalar_rows = []
         explanation = transaction.run(
@@ -346,7 +351,7 @@ def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
             )
         response = transaction.run(body.statement, body.parameters)
         checkpoint("reading", 0)
-        columns = list(response.keys())
+        columns = [name for name in response.keys() if not annotations or not name.startswith("__gm_input_")]
         if body.projection == "rows" and not {"source", "target"}.issubset(columns):
             raise AnalyticsError(
                 "This graph mode requires RETURN a AS source, b AS target. "
@@ -361,7 +366,10 @@ def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
                     "Query exceeds the row limit. Add a filter or an explicit LIMIT.",
                     "resource_limit",
                 )
-            item = collector.record(record, rows)
+            visible = annotations.visible(record) if annotations else record
+            item = collector.record(visible, rows)
+            if annotations:
+                annotations.capture(record, item)
             if byte_limit is None and not (collector.vertices or collector.edges):
                 # Scalar tables retain their separate row/byte budgets.
                 if rows > source.max_rows:
@@ -376,7 +384,7 @@ def execute_query(source, body, byte_limit=None, *, timeout_seconds=None):
                     "Query exceeds the result byte limit.", "resource_limit"
                 )
             if len(sample_records) < 50:
-                sample_records.append((rows, record))
+                sample_records.append((rows, visible))
             if collector.vertices or collector.edges:
                 scalar_rows = None
             elif scalar_rows is not None:
@@ -440,15 +448,28 @@ def run_query(runtime, source_id, body):
 
 
 def _run_query(runtime, source_id, body):
+    from .query_annotations import prepare, annotate
     started = perf_counter()
     source = get_source(runtime.settings, source_id)
+    annotations = prepare(runtime, body)
     dataset = None
     if body.dataset_id or source._catalog.get("registry"):
         from .database_datasets import selected_dataset
 
         dataset = selected_dataset(runtime.settings, source, body.dataset_id or source._catalog["id"])
         source = resolve_source(runtime.settings, source, dataset["id"])
-    graph, lineage, sample, rows, table = execute_query(source, body, None)
+    if annotations:
+        from .semantic_worker import MAX_BYTES
+        read_body = body.model_copy(update={"statement": annotations.statement})
+        graph, lineage, sample, rows, table = execute_query(source, read_body, MAX_BYTES, annotations=annotations)
+        model_details = annotate(runtime, body, annotations, graph)
+        table = None  # An empty graph selection is still a graph query.
+        runtime.graph_store._validate_graph(graph)
+        if len(_json(graph).encode()) > MAX_BYTES:
+            raise AnalyticsError("Annotated graph exceeds the result byte limit.", "resource_limit")
+    else:
+        graph, lineage, sample, rows, table = execute_query(source, body, None)
+        model_details = {}
     checkpoint("validating", rows)
     if source.fingerprint() != resolve_source(runtime.settings, get_source(runtime.settings, source_id), body.dataset_id).fingerprint():
         raise AnalyticsError(
@@ -456,6 +477,7 @@ def _run_query(runtime, source_id, body):
         )
     metadata = table_metadata = None
     provenance = {
+        **model_details,
         "type": "database_query",
         "backend_id": source.backend_id,
         "database_dataset": {key: dataset[key] for key in ("id", "name", "registry", "workload_url", "load_finished_at", "load_seconds", "script_hashes")
@@ -480,6 +502,7 @@ def _run_query(runtime, source_id, body):
         table_metadata = QueryPreviews(runtime).store(table, name=name, kind="table", complete=True, source=provenance)
     preview = graph_preview(graph)
     return {
+        **({"usage": model_details["usage"]} if model_details else {}),
         "dataset": metadata,
         "table": table_metadata,
         "row_count": rows,

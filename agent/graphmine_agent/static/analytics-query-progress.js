@@ -56,26 +56,26 @@ window.GraphMineQueryProgress = ({api, W, node: makeNode, container, prefix = ""
     renderSynchronization(job.kind === "sync" ? job.synchronization : null);
     active = job; monitor.hidden = section.hidden = false;
     const stage = job.progress || {};
-    const isSemantic = job.kind === "semantic";
+    const isSemantic = job.kind === "semantic" || Boolean(stage.usage || job.error?.details?.usage) || ["waiting_for_semantic_slot", "loaded", "asking_model", "building_graph"].includes(stage.stage);
     semantic.hidden = !isSemantic;
     if (isSemantic) {
       const terminal = ["failed", "cancelled", "interrupted"].includes(job.status);
-      const stageNames = {queued: "Waiting for a semantic worker", waiting_for_semantic_slot: "Waiting for a semantic worker", loading: "Loading the saved snapshot", validated: "Checked the query", loaded: "Snapshot loaded", asking_model: "Running simulated model steps", querying: "Matching the query pattern", building_graph: "Building the result", validating: "Validating the complete result", saving: "Saving a new version", completed: "Completed"};
+      const stageNames = {queued: "Waiting for a semantic worker", waiting_for_semantic_slot: "Waiting for a semantic worker", loading: "Loading the saved snapshot", validated: "Checked the query", loaded: "Snapshot loaded", asking_model: "Calling the model", querying: "Matching the query pattern", building_graph: "Building the result", validating: "Validating the complete result", saving: "Saving a new version", completed: "Completed"};
       const usage = job.error?.details?.usage || stage.usage || {};
       semantic.replaceChildren(node("p", {}, stageNames[stage.stage] || stage.stage || job.status),
-        node("p", {class: "source-hint"}, "Pattern match counts and completed judgments are not reported by this engine."));
-      const stages = node("ol", {class: "semantic-progress-stages", "aria-label": "Refinement stages"});
+        node("p", {class: "source-hint"}, "Model usage is reported as each batch completes."));
+      const stages = node("ol", {class: "semantic-progress-stages", "aria-label": "Model query stages"});
       const building = ["building_graph", "saving", "completed"].includes(stage.stage) || stage.stage === "validating" && stage.completed != null;
       const checked = ["validated", "loaded", "asking_model", "querying", "building_graph", "saving", "completed"].includes(stage.stage) || building;
       for (const text of [checked ? "Checked query · observed" : "Check query", "Match pattern · separate progress unavailable",
-        stage.stage === "asking_model" ? "Model steps · running simulation" : "Model steps · if requested",
+        stage.stage === "asking_model" ? "Model steps · running" : "Model steps · if requested",
         building ? "Build result · " + (job.status === "completed" ? "complete" : "in progress") : "Build result"]) stages.append(node("li", {}, text));
       semantic.append(stages);
       const start = Date.parse(job.started_at || job.created_at), end = Date.parse(job.finished_at || job.updated_at);
       if (Number.isFinite(start)) semantic.append(node("p", {}, `Elapsed: ${Math.max(0, ((["completed", "failed", "cancelled", "interrupted"].includes(job.status) && Number.isFinite(end) ? end : Date.now()) - start) / 1000).toFixed(1)}s`));
-      const counts = Object.entries({calls: "Engine calls observed", llm_rows: "Selected inputs", cache_hits: "In-worker cache hits"}).filter(([key]) => usage[key] != null).map(([key, label]) => `${label}: ${usage[key]}`);
+      const counts = Object.entries({http_requests: "HTTP requests", completed_rows: "Completed answers", calls: "Engine calls observed", llm_rows: "Selected inputs"}).filter(([key]) => usage[key] != null).map(([key, label]) => `${label}: ${usage[key]}`);
       if (counts.length) semantic.append(node("p", {}, counts.join(" · ")));
-      if (terminal) semantic.append(node("p", {}, "No new graph was published. Independently retained answers: 0."));
+      if (terminal) semantic.append(node("p", {}, "No new graph was published. The source data is unchanged."));
     }
     status.textContent = job.status === "cancelling" ? isSemantic ? "Cancellation requested. Stopping the snapshot worker." : "Cancellation requested. Waiting for the current database problem to return and roll back."
       : ["failed", "interrupted", "cancelled"].includes(job.status) ? errorFrom(job).message

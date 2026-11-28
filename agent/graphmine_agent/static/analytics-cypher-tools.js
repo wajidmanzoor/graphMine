@@ -30,7 +30,7 @@
     return [...names];
   }
   function format(text) {
-    const clauses = new Set(["MATCH", "OPTIONAL", "WHERE", "WITH", "UNWIND", "RETURN", "ORDER", "SKIP", "LIMIT", "UNION"]);
+    const clauses = new Set(["MATCH", "OPTIONAL", "WHERE", "WITH", "UNWIND", "SET", "RETURN", "ORDER", "SKIP", "LIMIT", "UNION"]);
     let out = "", depth = 0, previous = "";
     for (const token of tokens(text)) {
       if (token.kind === "space") { if (out && !/\s$/.test(out)) out += " "; continue; }

@@ -74,7 +74,7 @@ def test_defaults_builtin_provider_policy_and_live_cache_gates(console):
     assert data["requirements"] == {"thinking": "off", "strict_json": True, "temperature": 0}
     assert data["capabilities"]["live"] == data["engine"]["installed"]
     assert data["capabilities"]["cache"] == data["engine"]["installed"]
-    assert data["values"][PREFIX + "MODE"] == "mock"
+    assert data["values"][PREFIX + "MODE"] == "live"
     for change in ({"MODE": "live"}, {"CACHE_ENABLED": True}):
         result = save(console, **change)
         assert result.status_code == 200, result.text
@@ -198,6 +198,7 @@ def test_connection_failures_are_sanitized_and_redirects_are_not_followed(consol
 
 
 def test_alias_management_cannot_enable_live_calls_or_edit_builtin_models(console):
+    assert save(console, MODE="mock").status_code == 200
     client, accounts, admin, _ = console
     saved = provider(console)
     response = client.put(ROOT + "/aliases", headers=admin, json={"alias": "secondary", "provider_id": saved["id"], "model_id": "another-base"})

@@ -208,7 +208,8 @@ class DatabaseJobs:
         if kind == "sync" and not source.entities:
             raise AnalyticsError("Add entity table mappings before synchronizing this connection.", "database_mapping", 409)
         if kind == "query":
-            validate_cypher(query.statement)
+            from .query_annotations import prepare
+            prepare(self.runtime, query)
             if len(_json(query.parameters).encode()) > 256 * 1024:
                 raise AnalyticsError("Query parameters exceed the byte limit.", "resource_limit")
         if request_key is not None and not re.fullmatch(r"[A-Za-z0-9_.:-]{1,128}", request_key):

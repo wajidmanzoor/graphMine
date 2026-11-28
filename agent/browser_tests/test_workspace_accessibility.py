@@ -128,8 +128,9 @@ def test_data_tabs_and_editor_have_visible_keyboard_focus(loading_browser, loadi
     browser.execute_script("document.querySelector('.skip-link').focus()")
     browser.switch_to.active_element.send_keys(Keys.ENTER)
     assert browser.switch_to.active_element.get_attribute("id") == "data-workspace-view"
-    browser.execute_script("document.getElementById('data-step-connection').focus()")
-    browser.switch_to.active_element.send_keys(Keys.ARROW_RIGHT)
+    browser.execute_script("document.getElementById('data-step-query').focus()")
+    browser.switch_to.active_element.send_keys(Keys.END)
+    browser.switch_to.active_element.send_keys(Keys.HOME)
     assert browser.switch_to.active_element.get_attribute("id") == "data-step-query"
     browser.switch_to.active_element.send_keys(Keys.TAB)
     assert browser.switch_to.active_element.get_attribute("id") == "data-query-pane"

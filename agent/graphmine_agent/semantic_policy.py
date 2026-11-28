@@ -39,7 +39,8 @@ def execution_policy(runtime, body):
     if body.get("reuse_answers") and not settings.semantic_cache_enabled:
         raise AnalyticsError("Saved-answer reuse is disabled by the administrator.", "semantic_cache_disabled", 503)
     return {"call_limit": min(body.get("call_limit") or settings.semantic_default_call_limit, settings.semantic_max_calls),
-            "batch_size": settings.semantic_batch_size, "timeout_seconds": settings.semantic_timeout_seconds,
+            "batch_size": min(body.get("batch_size") or settings.semantic_batch_size, settings.semantic_batch_size),
+            "timeout_seconds": min(body.get("timeout_seconds") or settings.semantic_timeout_seconds, settings.semantic_timeout_seconds),
             "max_concurrent_requests": settings.semantic_max_concurrent_requests,
             "queue_seconds": settings.model_queue_seconds, "mode": settings.semantic_mode,
             "cache_enabled": bool(steps) and settings.semantic_cache_enabled,

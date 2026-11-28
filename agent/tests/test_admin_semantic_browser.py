@@ -7,7 +7,7 @@ from test_admin_semantic import model_catalog  # noqa: F401
 from test_semantic_native import native_engine  # noqa: F401
 
 
-def test_semantic_configuration_mock_and_provider_flows(browser_app, model_catalog, native_engine):
+def test_semantic_configuration_and_provider_flows(browser_app, model_catalog, native_engine):
     browser, base, _, accounts = browser_app
     url, calls, _ = model_catalog
     page = browser.new_page(viewport={"width": 1440, "height": 1100}, reduced_motion="reduce")
@@ -18,8 +18,7 @@ def test_semantic_configuration_mock_and_provider_flows(browser_app, model_catal
     pw.expect(page.get_by_role("heading", name="Semantic engine", exact=True)).to_be_visible()
     pw.expect(page.get_by_label("Reuse saved answers")).to_be_enabled()
     pw.expect(page.get_by_role("button", name="Clear retained answers")).to_be_enabled()
-    page.get_by_role("button", name="Test mock pipeline").click()
-    pw.expect(page.get_by_text(re.compile("Mock pipeline passed"))).to_be_visible(timeout=15000)
+    pw.expect(page.get_by_role("button", name="Test mock pipeline")).to_have_count(0)
     screenshot(page, "semantic-desktop")
 
     page.get_by_role("button", name="Add provider", exact=True).click()

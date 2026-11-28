@@ -120,7 +120,7 @@ class Settings:
     max_model_calls: int = 2
     llm_max_num_seqs: int = 2
     model_queue_seconds: int = 60
-    semantic_mode: str = "mock"
+    semantic_mode: str = "live"
     semantic_max_concurrent_requests: int = 1
     semantic_batch_size: int = 16
     semantic_default_call_limit: int = 100

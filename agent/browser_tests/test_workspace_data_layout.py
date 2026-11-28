@@ -92,15 +92,16 @@ def click(browser, identifier):
     element.click()
 
 
-def test_desktop_has_three_independent_panes_and_real_page_navigation(loading_browser, loading_server, data_page):
+def test_desktop_has_top_selection_and_two_independent_panes(loading_browser, loading_server, data_page):
     browser = loading_browser
     open_page(browser, loading_server)
     assert browser.execute_script("return GraphMineWorkspace.state.view") == "data"
     assert browser.execute_script("return document.querySelectorAll('dialog[open]').length") == 0
     dimensions = browser.execute_script("return ['data-connection-pane','data-query-pane','data-preview-pane'].map(id => { const e = document.getElementById(id), r = e.getBoundingClientRect(); return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,overflow:getComputedStyle(e).overflowY}; })")
-    assert dimensions[0]["right"] <= dimensions[1]["left"] + .5
+    assert dimensions[0]["bottom"] <= dimensions[1]["top"] + .5
     assert dimensions[1]["right"] <= dimensions[2]["left"] + .5
-    assert all(value["top"] == dimensions[0]["top"] and value["overflow"] == "auto" for value in dimensions)
+    assert all(value["top"] == dimensions[1]["top"] and value["overflow"] == "auto" for value in dimensions[1:])
+    browser.find_element(By.CSS_SELECTOR, ".workspace-connection-menu > summary").click()
     assert browser.find_element(By.ID, "app-sidebar").is_displayed()
     assert browser.find_element(By.ID, "nav-database").get_attribute("aria-current") == "page"
     search = browser.find_element(By.ID, "database-schema-search")
@@ -176,12 +177,11 @@ def test_mobile_steps_preserve_draft_and_preview_without_reexecuting(loading_bro
     browser = loading_browser
     open_page(browser, loading_server, width)
     assert browser.find_element(By.ID, "data-connection-pane").is_displayed()
-    assert not browser.find_element(By.ID, "data-query-pane").is_displayed()
-    click(browser, "data-step-next")
+    assert browser.find_element(By.ID, "data-query-pane").is_displayed()
     editor = browser.find_element(By.ID, "cypher-editor")
     editor.clear(); editor.send_keys("MATCH (n) WHERE n.name = $name RETURN n")
     browser.execute_script("const p = document.getElementById('cypher-parameters'); p.value = '{\"name\":\"Ada\"}'; p.dispatchEvent(new Event('input',{bubbles:true})); window.originalEditor = document.getElementById('cypher-editor');")
-    click(browser, "data-step-connection")
+    click(browser, "data-step-preview")
     click(browser, "data-step-query")
     assert browser.execute_script("return window.originalEditor === document.getElementById('cypher-editor')")
     assert "$name" in editor.get_attribute("value")
@@ -204,10 +204,12 @@ def test_short_mobile_view_keeps_preview_and_primary_action_reachable(loading_br
     browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": 320, "height": 640})
     click(browser, "data-step-query"); click(browser, "preview-cypher")
     wait_for(browser, "document.getElementById('save-query-snapshot').disabled === false")
-    assert browser.execute_script("""
+    geometry = browser.execute_script("""
         const p=document.getElementById('data-preview-pane').getBoundingClientRect(), action=document.getElementById('run-cypher-chat').getBoundingClientRect();
-        return p.height >= 180 && action.bottom <= innerHeight && action.top >= p.bottom && document.documentElement.scrollWidth <= innerWidth;
+        return {height:p.height, bottom:p.bottom, actionTop:action.top, actionBottom:action.bottom, viewport:innerHeight, width:innerWidth, scrollWidth:document.documentElement.scrollWidth};
     """)
+    browser.save_screenshot("/tmp/graphmine-query-short.png")
+    assert geometry['height'] >= 180 and geometry['actionBottom'] <= geometry['viewport'] and geometry['actionTop'] >= geometry['bottom'] and geometry['scrollWidth'] <= geometry['width'], geometry
     click(browser, "run-cypher-chat")
     wait_for(browser, "GraphMineWorkspace.state.view === 'chat' && GraphMineWorkspace.state.active === 'input'")
 
@@ -261,7 +263,7 @@ def test_conversation_data_route_and_draft_survive_reload_and_back(loading_brows
 def test_mobile_steps_have_keyboard_navigation_and_readable_errors(loading_browser, loading_server, data_page):
     browser = loading_browser
     open_page(browser, loading_server, 320)
-    step = browser.find_element(By.ID, "data-step-connection")
+    step = browser.find_element(By.ID, "data-step-preview")
     step.click(); step.send_keys(Keys.ARROW_RIGHT)
     assert browser.switch_to.active_element.get_attribute("id") == "data-step-query"
     editor = browser.find_element(By.ID, "cypher-editor")
@@ -281,12 +283,13 @@ def test_mobile_missing_dataset_keeps_connection_step_actionable(loading_browser
     browser.browsing_context.set_viewport(context=browser.current_window_handle, viewport={"width": 320, "height": 800})
     browser.get(loading_server.url + "/#data")
     wait_for(browser, "document.getElementById('database-dataset-status')?.textContent.includes('unavailable')")
-    assert not browser.find_element(By.ID, "data-step-next").is_enabled()
+    assert not browser.find_element(By.ID, "preview-cypher").is_enabled()
+    browser.find_element(By.CSS_SELECTOR, ".workspace-connection-menu > summary").click()
     assert browser.find_element(By.ID, "add-connection").is_enabled()
     data_page.dataset_error = False
     click(browser, "refresh-database-datasets")
-    wait_for(browser, "document.getElementById('data-step-next').disabled === false")
-    click(browser, "data-step-next")
+    wait_for(browser, "document.getElementById('preview-cypher').disabled === false")
+    click(browser, "data-step-query")
     assert browser.find_element(By.ID, "cypher-editor").is_displayed()
 
 
@@ -313,7 +316,8 @@ def test_leaving_while_page_initializes_does_not_mount_a_stale_workspace(loading
     wait_for(browser, "Boolean(window.releaseDataDrafts)")
     browser.back()
     wait_for(browser, "GraphMineWorkspace.state.view === 'domains'")
+    reads_before_release = data_page.source_reads
     browser.execute_script("window.releaseDataDrafts()")
     browser.execute_async_script("setTimeout(arguments[0], 100)")
     assert not browser.find_elements(By.ID, "database-workspace")
-    assert data_page.source_reads == 0
+    assert data_page.source_reads == reads_before_release

@@ -57,6 +57,7 @@ def test_repeated_preview_and_refresh_preserve_query_parameters(loading_browser,
       params.value = '{"name":"Ada"}';
       editor.dispatchEvent(new Event('input', {bubbles:true}));
     """)
+    browser.find_element(By.CSS_SELECTOR, ".workspace-connection-menu > summary").click()
     refresh = browser.find_element(By.ID, "refresh-database-datasets")
     browser.execute_script("arguments[0].scrollIntoView({block:'center'})", refresh)
     refresh.click()

@@ -42,13 +42,10 @@ def test_one_picker_routes_arbitrary_queries_and_keeps_drafts_separate(loading_b
                      for row in ready_datasets(database_server.app.state.runtime.settings)})
     assert len(expected) == 5
     for source_id, (dataset_id, count) in expected.items():
-        if width <= 1100:
-            click(browser, 'data-step-connection')
-            assert browser.find_element(By.ID, 'data-step-connection').text.endswith('Dataset')
         Select(picker).select_by_value(source_id)
         wait(browser, f"document.getElementById('database-dataset').value === {json.dumps(dataset_id)} && !document.getElementById('preview-cypher').disabled")
         assert browser.find_element(By.ID, 'database-preview-count').get_attribute('textContent') == 'No query run yet'
-        if width <= 1100:
+        if width <= 800:
             click(browser, 'data-step-query')
         selected_name = Select(picker).first_selected_option.get_attribute('textContent')
         assert browser.find_element(By.ID, 'database-query-scope').text == f'Queries run only on {selected_name}.'
@@ -60,8 +57,6 @@ def test_one_picker_routes_arbitrary_queries_and_keeps_drafts_separate(loading_b
         wait(browser, "document.getElementById('database-preview-count').textContent.includes('1 rows') && !document.getElementById('preview-cypher').disabled")
         rows = json.loads(browser.find_element(By.ID, 'database-query-rows').get_attribute('textContent'))
         assert rows == [{'nodes': count}]
-    if width <= 1100:
-        click(browser, 'data-step-connection')
     Select(picker).select_by_value('benchmark-yelp')
     wait(browser, "document.getElementById('database-dataset').value === 'yelp' && !document.getElementById('preview-cypher').disabled")
     assert browser.find_element(By.ID, 'cypher-editor').get_attribute('value') == 'MATCH (n) RETURN count(n) AS nodes'

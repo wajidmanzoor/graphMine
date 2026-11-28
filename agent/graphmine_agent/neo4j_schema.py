@@ -6,6 +6,58 @@ from .analytics import AnalyticsError, _json
 from .database_sources import neo4j_read, neo4j_session
 
 
+def diagram_schema(source):
+    """Read all catalog labels, then bounded property samples per label/type.
+
+    Neo4j's visualization procedure infers possible endpoint combinations from
+    its catalog. Report that distinction instead of calling it exact topology.
+    """
+    def quote(name):
+        return "`" + name.replace("`", "``") + "`"
+
+    def properties(rows):
+        return [{"name": name, "type": ""} for name in sorted({name for row in rows for name in row["properties"]
+                 if isinstance(name, str) and len(name) <= 128 and not name.startswith(("gm_", "_gm_"))})][:128]
+
+    def read(tx):
+        rows = list(tx.run("CALL db.schema.visualization()", {}))
+        if len(rows) != 1:
+            raise ValueError("Schema metadata unavailable")
+        nodes, edges = rows[0]["nodes"], rows[0]["relationships"]
+        if len(nodes) > 128 or len(edges) > 512:
+            raise AnalyticsError("This schema is too large for the diagram. Narrow the dataset scope.", "resource_limit")
+        entities, relationships, identifiers, edge_properties = [], [], {}, {}
+        for item in nodes:
+            label = item.get("name")
+            if not isinstance(label, str) or not label:
+                raise ValueError("Invalid schema label")
+            identity = "label:" + label
+            identifiers[item.element_id] = identity
+            props = properties(tx.run(f"MATCH (n:{quote(label)}) RETURN keys(n) AS properties LIMIT 8", {}))
+            entities.append({"id": identity, "label": label, "properties": props})
+        for i, item in enumerate(edges):
+            if item.type not in edge_properties:
+                edge_properties[item.type] = properties(tx.run(f"MATCH ()-[r:{quote(item.type)}]->() RETURN keys(r) AS properties LIMIT 8", {}))
+            relationships.append({"id": f"schema-edge:{i}", "label": item.type,
+                                  "source_entity": identifiers[item.start_node.element_id], "target_entity": identifiers[item.end_node.element_id],
+                                  "properties": edge_properties[item.type]})
+        result = {"entities": entities, "relationships": relationships,
+                  "schema_scope": {"complete_labels": True, "sampled_properties": True, "inferred_relationships": True},
+                  "message": "All catalog labels are shown. Properties are sampled per label and type; Neo4j infers the possible relationship patterns."}
+        if len(_json(result).encode()) > 256 * 1024:
+            raise AnalyticsError("Schema exceeds the diagram byte limit.", "resource_limit")
+        return result
+    try:
+        with neo4j_session(source) as session:
+            return neo4j_read(session, source, read, timeout=min(source.timeout_seconds, 15))
+    except AnalyticsError:
+        raise
+    except Exception:
+        result = sample_schema(source)
+        result["message"] = "Full catalog access is unavailable. " + result["message"]
+        return result
+
+
 def sample_schema(source):
     limit = min(500, source.max_rows)
     entities, relationships = {}, {}
